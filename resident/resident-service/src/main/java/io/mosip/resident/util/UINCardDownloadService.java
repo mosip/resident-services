@@ -1,9 +1,10 @@
 package io.mosip.resident.util;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -31,6 +32,7 @@ public class UINCardDownloadService {
     
     private static final String PRINT_ID="mosip.registration.processor.print.id";
     private static final String PRINT_VERSION="mosip.registration.processor.application.version";
+    private static final String ERRORS="errors";
     
     public byte[] getUINCard(String individualId,String cardType,IdType idType) throws ApisResourceAccessException {
     	PrintRequest request=new PrintRequest();
@@ -46,12 +48,19 @@ public class UINCardDownloadService {
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),
 					null, request, byte[].class, tokenGenerator.getToken());
+			String res= new String(response);
+			if(res.contains(ERRORS)) {
+				JSONObject responseJson=new JSONObject(res);
+				JSONArray errorJson=responseJson.getJSONArray(ERRORS);
+				JSONObject message =errorJson.getJSONObject(0);
+				throw new ApisResourceAccessException( message.getString("message"));
+			}
 		
 		} catch ( Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					idType.toString(), ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
 					+ e.getMessage()+ ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Unable to fetch uin card");
+			throw new ApisResourceAccessException("Unable to fetch uin card -->"+e.getMessage());
 		} 
 		return response;
     }
