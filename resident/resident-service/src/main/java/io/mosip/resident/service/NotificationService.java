@@ -123,7 +123,7 @@ public class NotificationService {
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);
 			throw new ResidentServiceException(ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode(),
-					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage() + SMS_EMAIL_FAILED);
+					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage() + " " + SMS_EMAIL_FAILED);
 		}
 
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),

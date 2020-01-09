@@ -18,7 +18,7 @@ public enum ResidentErrorCode {
 	REQUEST_FAILED("RES-SER-014", "Your request is not successful, please try again later."),
 	TEMPLATE_EXCEPTION("RES-SER-015","Template exception"),
 	TEMPLATE_SUBJECT_EXCEPTION("RES-SER-016","Template subject exception"),
-	NOTIFICATION_FAILURE("RES-SER-017","Sending notification(Email and SMS) to resident failed"),
+	NOTIFICATION_FAILURE("RES-SER-017","Sending notification(Email and SMS) to resident failed."),
 	IN_VALID_UIN_OR_VID_OR_RID("RES-SER-018", "Invalid individualId"),
 	RE_PRINT_REQUEST_FAILED("RES-SER-019","Re print UIN request failed"),
 	VID_REVOCATION_EXCEPTION("RES-RID-005","VID revocation request failed. Please visit the nearest registration center for assistance."),

@@ -38,6 +38,13 @@ public class ResidentVidExceptionHandler {
 		return buildRegStatusExceptionResponse((Exception) e);
 	}
 
+	@ExceptionHandler(ResidentServiceException.class)
+	public ResponseEntity<Object> residentServiceException(ResidentServiceException e) {
+		logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				e.getErrorCode(), e.getMessage());
+		return buildRegStatusExceptionResponse((Exception) e);
+	}
+
 	@ExceptionHandler(VidAlreadyPresentException.class)
 	public ResponseEntity<Object> vidAlreadyPresent(VidAlreadyPresentException e) {
 		logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
