@@ -48,13 +48,21 @@ public class UINCardDownloadService {
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),
 					null, request, byte[].class, tokenGenerator.getToken());
+			if(response ==null) {
+				throw new ApisResourceAccessException();
+			}
 			String res= new String(response);
 			if(res.contains(ERRORS)) {
 				JSONObject responseJson=new JSONObject(res);
 				JSONArray errorJson=responseJson.getJSONArray(ERRORS);
-				JSONObject message =errorJson.getJSONObject(0);
-				throw new ApisResourceAccessException( message.getString("message"));
-			}
+				for(int i=0;i<errorJson.length();i++) {
+					if(!errorJson.getJSONObject(i).getString("message").isEmpty()) {
+						throw new ApisResourceAccessException( errorJson.getJSONObject(i).getString("message"));
+					}
+				}
+				
+				
+			} 
 		
 		} catch ( Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),

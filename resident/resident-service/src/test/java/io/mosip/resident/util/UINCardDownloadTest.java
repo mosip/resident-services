@@ -38,6 +38,11 @@ public class UINCardDownloadTest {
 		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
+	public void testgetUINCardregprocNull() throws ApisResourceAccessException {
+		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(null);
+		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
+	}
+	@Test(expected=ApisResourceAccessException.class)
 	public void testgetUINCardFailure() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new ApisResourceAccessException());
 		uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN);
