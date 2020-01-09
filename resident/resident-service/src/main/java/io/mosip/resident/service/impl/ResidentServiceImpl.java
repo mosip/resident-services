@@ -209,19 +209,19 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqEuin():: entry");
 		byte[] response = null;
-
+		IdType idtype=getIdType(dto.getIndividualIdType());
 		try {
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
-					dto.getIndividualIdType().name(), dto.getOtp())) {
-
+					dto.getIndividualIdType(), dto.getOtp())) {
+				
 				response = uinCardDownloadService.getUINCard(dto.getIndividualId(), dto.getCardType(),
-						dto.getIndividualIdType());
+						idtype);
 				if (response != null) {
-					sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+					sendNotification(dto.getIndividualId(), idtype,
 							NotificationTemplateCode.RS_DOW_UIN_SUCCESS, null);
 
 				} else {
-					sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+					sendNotification(dto.getIndividualId(),idtype,
 							NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
 					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
@@ -230,13 +230,13 @@ public class ResidentServiceImpl implements ResidentService {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-				sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+				sendNotification(dto.getIndividualId(), idtype,
 						NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+			sendNotification(dto.getIndividualId(), idtype,
 					NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
@@ -259,7 +259,7 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode()
 							+ ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
-			sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+			sendNotification(dto.getIndividualId(), idtype,
 					NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
@@ -422,20 +422,21 @@ public class ResidentServiceImpl implements ResidentService {
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAuthHistory():: entry");
 
 		AuthHistoryResponseDTO response = new AuthHistoryResponseDTO();
+		IdType idtype=getIdType(dto.getIndividualIdType());
 		try {
-
+			
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
-					dto.getIndividualIdType().name(), dto.getOtp())) {
+					dto.getIndividualIdType(), dto.getOtp())) {
 				List<AuthTxnDetailsDTO> details = idAuthService.getAuthHistoryDetails(dto.getIndividualId(),
-						dto.getIndividualIdType().name(), dto.getPageStart(), dto.getPageFetch());
+						dto.getIndividualIdType(), dto.getPageStart(), dto.getPageFetch());
 				if (details != null) {
 					response.setAuthHistory(details);
 
 					NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(),
-							dto.getIndividualIdType(), NotificationTemplateCode.RS_AUTH_HIST_SUCCESS, null);
+							idtype, NotificationTemplateCode.RS_AUTH_HIST_SUCCESS, null);
 					response.setMessage(notificationResponseDTO.getMessage());
 				} else {
-					sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+					sendNotification(dto.getIndividualId(), idtype,
 							NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
 					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
@@ -444,7 +445,7 @@ public class ResidentServiceImpl implements ResidentService {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-				sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+				sendNotification(dto.getIndividualId(), idtype,
 						NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
@@ -456,7 +457,7 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode()
 							+ ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
-			sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+			sendNotification(dto.getIndividualId(), idtype,
 					NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
@@ -474,7 +475,7 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
 							+ ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
-			sendNotification(dto.getIndividualId(), dto.getIndividualIdType(),
+			sendNotification(dto.getIndividualId(), idtype,
 					NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
@@ -604,5 +605,17 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.DOCUMENT_NOT_FOUND.getErrorCode(),
 					ResidentErrorCode.DOCUMENT_NOT_FOUND.getErrorMessage());
 
+	}
+	private IdType getIdType(String individualType) {
+		if(individualType.equalsIgnoreCase(IdType.UIN.name())) {
+			return IdType.UIN;
+		}
+		if(individualType.equalsIgnoreCase(IdType.VID.name())) {
+			return IdType.VID;
+		}
+		if(individualType.equalsIgnoreCase(IdType.RID.name())) {
+			return IdType.RID;
+		}
+		return null;
 	}
 }

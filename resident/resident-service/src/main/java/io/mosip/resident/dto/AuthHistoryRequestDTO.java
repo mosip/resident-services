@@ -20,7 +20,8 @@ public class AuthHistoryRequestDTO {
 	@NotNull(message = "individualId should not be null")
 	private String individualId;
 	@NotNull(message = "individualIdType should not be null")
-	private IdType individualIdType;
+	@NotBlank(message = "individualIdType should not be empty")
+	private String individualIdType;
 	@NotBlank(message = "otp should not be empty")
 	@NotNull(message = "otp should not be null")
 	private String otp;

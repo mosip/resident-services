@@ -183,12 +183,12 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (!requestDTO.getRequest().getIndividualIdType().name().equalsIgnoreCase(IdType.UIN.name())
-				&& !requestDTO.getRequest().getIndividualIdType().name().equalsIgnoreCase(IdType.VID.name()))
+		if (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
+				&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name()))
 			throw new InvalidInputException("individualIdType");
 
 		if (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
-				requestDTO.getRequest().getIndividualIdType().name())) {
+				requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -200,12 +200,12 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (!requestDTO.getRequest().getIndividualIdType().name().equalsIgnoreCase(IdType.UIN.name())
-				&& !requestDTO.getRequest().getIndividualIdType().name().equalsIgnoreCase(IdType.VID.name()))
+		if (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
+				&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name()))
 			throw new InvalidInputException("individualIdType");
 
 		if (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
-				requestDTO.getRequest().getIndividualIdType().name())) {
+				requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 

@@ -202,7 +202,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testeuinValidIndividualType() throws Exception {
 		EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
-		euinRequestDTO.setIndividualIdType(IdType.RID);
+		euinRequestDTO.setIndividualIdType(IdType.RID.name());
 		RequestWrapper<EuinRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(euinRequestDTO);
 		requestWrapper.setVersion("v1");
@@ -214,7 +214,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidIndividualType() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.RID);
+		authRequestDTO.setIndividualIdType(IdType.RID.name());
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(authRequestDTO);
 		requestWrapper.setVersion("v1");
@@ -273,7 +273,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidPageFetch() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.VID);
+		authRequestDTO.setIndividualIdType(IdType.VID.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageStart(1);
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
@@ -287,7 +287,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidPageStart() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.VID);
+		authRequestDTO.setIndividualIdType(IdType.VID.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch(1);
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
@@ -302,7 +302,7 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidIndividualId() throws Exception {
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(false);
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN);
+		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch(1);
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
@@ -317,7 +317,7 @@ public class RequestValidatorTest {
 	public void testeuinValidIndividualId() throws Exception {
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(false);
 		EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
-		euinRequestDTO.setIndividualIdType(IdType.VID);
+		euinRequestDTO.setIndividualIdType(IdType.VID.name());
 		RequestWrapper<EuinRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(euinRequestDTO);
 		requestWrapper.setVersion("v1");

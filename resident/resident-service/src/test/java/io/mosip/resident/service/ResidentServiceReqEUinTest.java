@@ -49,7 +49,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.UIN);
+		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("UIN");
 		assertEquals(card, residentServiceImpl.reqEuin(dto));
@@ -59,7 +59,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("MASKED_UIN");
 		assertEquals(card, residentServiceImpl.reqEuin(dto));
@@ -70,7 +70,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("MASKED_UIN");
 		 residentServiceImpl.reqEuin(dto);
@@ -81,7 +81,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("MASKED_UIN");
 		assertEquals(card, residentServiceImpl.reqEuin(dto));
@@ -92,7 +92,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("MASKED_UIN");
 		assertEquals(card, residentServiceImpl.reqEuin(dto));
@@ -104,7 +104,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("MASKED_UIN");
 		residentServiceImpl.reqEuin(dto);
@@ -116,7 +116,7 @@ public class ResidentServiceReqEUinTest {
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		dto.setCardType("MASKED_UIN");
 		residentServiceImpl.reqEuin(dto);

@@ -55,7 +55,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.UIN);
+		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setIndividualId("123456789");
 		
 		assertEquals("OTP_AUTH", residentServiceImpl.reqAuthHistory(dto).getAuthHistory().get(0).getAuthModality());
@@ -65,7 +65,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		
 		assertEquals("OTP_AUTH", residentServiceImpl.reqAuthHistory(dto).getAuthHistory().get(0).getAuthModality());
@@ -76,7 +76,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		
 		residentServiceImpl.reqAuthHistory(dto);
@@ -87,7 +87,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		residentServiceImpl.reqAuthHistory(dto);
 	}
@@ -97,7 +97,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		residentServiceImpl.reqAuthHistory(dto);
 	}
@@ -108,7 +108,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		residentServiceImpl.reqAuthHistory(dto);
 	}
@@ -118,7 +118,7 @@ public class ResidentServiceReqAuthHistoryTest {
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID);
+		dto.setIndividualIdType(IdType.VID.name());
 		dto.setIndividualId("123456789");
 		residentServiceImpl.reqAuthHistory(dto);
 	}
