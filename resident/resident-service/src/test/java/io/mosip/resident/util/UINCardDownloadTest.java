@@ -26,9 +26,15 @@ public class UINCardDownloadTest {
 	@InjectMocks
 	UINCardDownloadService uinCardDownloadService;
 	byte[] arr= new byte[10];
+	String res="{\"errors\":[{\"message\":\"error occured\"}]}";
 	@Test
 	public void testgetUINCard() throws ApisResourceAccessException {
 		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(arr);
+		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
+	}
+	@Test(expected=ApisResourceAccessException.class)
+	public void testgetUINCardregprocfailure() throws ApisResourceAccessException {
+		Mockito.when(residentServiceRestClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(res.getBytes());
 		assertEquals(arr,uinCardDownloadService.getUINCard("123456789", "UIN", IdType.UIN));
 	}
 	@Test(expected=ApisResourceAccessException.class)
