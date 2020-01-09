@@ -101,7 +101,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
 			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
-			throw new OtpValidationFailedException(response.getErrors().get(0).getErrorCode(),
+			throw new OtpValidationFailedException(
 					response.getErrors().get(0).getErrorMessage());
 
 		}

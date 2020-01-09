@@ -24,7 +24,7 @@ public class OtpValidationFailedException extends BaseCheckedException {
      *            the error message
      */
     public OtpValidationFailedException(String errorMessage) {
-        super(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode() + EMPTY_SPACE, errorMessage);
+        super(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), errorMessage);
     }
 
     /**
@@ -44,6 +44,6 @@ public class OtpValidationFailedException extends BaseCheckedException {
      *            the cause
      */
     public OtpValidationFailedException(String message, Throwable cause) {
-        super(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode() + EMPTY_SPACE, message, cause);
+        super(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), message, cause);
     }
 }
