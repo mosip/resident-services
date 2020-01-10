@@ -47,6 +47,7 @@ public class ResidentController {
 	@PostMapping(value = "/rid/check-status")
 	public ResponseWrapper<RegStatusCheckResponseDTO> getRidStatus(
 			@Valid @RequestBody RequestWrapper<RequestDTO> requestDTO) throws ApisResourceAccessException {
+		validator.validateRequest(requestDTO, RequestIdType.CHECK_STATUS);
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
 		return response;

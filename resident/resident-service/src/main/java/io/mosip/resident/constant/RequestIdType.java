@@ -6,5 +6,6 @@ public enum RequestIdType {
 	AUTH_UNLOCK_ID,
 	RE_PRINT_ID,
 	RES_UPDATE,
+	CHECK_STATUS,
 	VERSION;
 }

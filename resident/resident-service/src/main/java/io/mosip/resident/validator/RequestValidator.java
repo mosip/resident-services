@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.kernel.core.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -97,6 +98,9 @@ public class RequestValidator {
 	@Value("${mosip.id.validation.identity.email}")
 	private String emailRegex;
 
+	@Value("${resident.checkstatus.id}")
+	private String checkStatusID;
+
 	private Map<RequestIdType, String> map;
 
 	@Value("${resident.printuin.id}")
@@ -113,10 +117,17 @@ public class RequestValidator {
 		map.put(RequestIdType.E_UIN_ID, euinId);
 		map.put(RequestIdType.AUTH_HISTORY_ID, authHstoryId);
 		map.put(RequestIdType.RES_UPDATE, uinUpdateId);
+		map.put(RequestIdType.CHECK_STATUS, checkStatusID);
 
 	}
 
 	public void validateVidCreateRequest(ResidentVidRequestDto requestDto) {
+
+		try {
+			DateUtils.convertUTCToLocalDateTime(requestDto.getRequesttime());
+		} catch (Exception e) {
+			throw new InvalidInputException("requesttime");
+		}
 
 		if (requestDto.getId() == null || !requestDto.getId().equalsIgnoreCase(id))
 			throw new InvalidInputException("id");
@@ -281,6 +292,12 @@ public class RequestValidator {
 		if (request.getId() == null || !request.getId().equalsIgnoreCase(revokeVidId))
 			throw new InvalidInputException("id");
 
+		try {
+			DateUtils.convertUTCToLocalDateTime(request.getRequesttime());
+		} catch (Exception e) {
+			throw new InvalidInputException("requesttime");
+		}
+
 		if (request.getVersion() == null || !request.getVersion().equalsIgnoreCase(version))
 			throw new InvalidInputException("version");
 
@@ -291,19 +308,11 @@ public class RequestValidator {
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
 		if (request.getId() == null || request.getId().isEmpty())
 			throw new InvalidInputException("id");
-		if (request.getVersion() == null || request.getVersion().isEmpty())
-			throw new InvalidInputException("version");
-		if (!request.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
-		if (!request.getVersion().equals(version))
-			throw new InvalidInputException("version");
-		return true;
-
-	}
-
-	public boolean validateRequest(BaseRequestDTO request, RequestIdType requestIdType) {
-		if (request.getId() == null || request.getId().isEmpty())
-			throw new InvalidInputException("id");
+		try {
+			DateUtils.convertUTCToLocalDateTime(request.getRequesttime());
+		} catch (Exception e) {
+			throw new InvalidInputException("requesttime");
+		}
 		if (request.getVersion() == null || request.getVersion().isEmpty())
 			throw new InvalidInputException("version");
 		if (!request.getId().equals(map.get(requestIdType)))
