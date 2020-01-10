@@ -19,5 +19,5 @@ public interface IdAuthService {
 			AuthTypeStatus authTypeStatus) throws ApisResourceAccessException;
 	
 	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId, String individualIdType,
-			Integer pageStart,Integer pageFetch) throws ApisResourceAccessException;
+			String pageStart, String pageFetch) throws ApisResourceAccessException;
 }

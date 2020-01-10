@@ -273,7 +273,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Override
 	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId, String individualIdType,
-			Integer pageStart, Integer pageFetch) throws ApisResourceAccessException {
+			String pageStart, String pageFetch) throws ApisResourceAccessException {
 		List<AuthTxnDetailsDTO> details = null;
 		int count = 1;
 		AutnTxnResponseDto autnTxnResponseDto;
@@ -284,10 +284,10 @@ public class IdAuthServiceImpl implements IdAuthService {
 		pathsegments.add(3, individualId);
 		String queryParamName = null;
 		String queryParamValue = null;
-		if (pageStart != null && pageFetch != null) {
+		if (pageStart != null && pageFetch != null && !pageStart.isEmpty() && !pageFetch.isEmpty()) {
 			queryParamName = "pageFetch,pageStart";
-			queryParamValue = pageFetch.toString() + "," + pageStart.toString();
-			count = count + pageFetch * (pageStart - 1);
+			queryParamValue = pageFetch + "," + pageStart;
+			count = count + Integer.parseInt(pageFetch) * ( Integer.parseInt(pageStart)- 1);
 		}
 		try {
 			autnTxnResponseDto = (AutnTxnResponseDto) restClient.getApi(ApiName.INTERNALAUTHTRANSACTIONS, pathsegments,

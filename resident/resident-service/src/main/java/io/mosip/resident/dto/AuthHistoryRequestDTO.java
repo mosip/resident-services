@@ -25,9 +25,9 @@ public class AuthHistoryRequestDTO {
 	@NotBlank(message = "otp should not be empty")
 	@NotNull(message = "otp should not be null")
 	private String otp;
-	@Positive
-	private Integer pageStart;
-	@Positive
-	private Integer pageFetch;
+	
+	private String pageStart;
+	
+	private String pageFetch;
 	
 }

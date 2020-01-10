@@ -251,6 +251,6 @@ public class IdAuthServiceTest {
 	@Test(expected = ApisResourceAccessException.class)
 	public void testGetAuthHistoryDetailsFetchFailure() throws ApisResourceAccessException {
 		when(restClient.getApi(any(), any(),any(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException() );
-		idAuthService.getAuthHistoryDetails("1234", "WN", 1, 10);
+		idAuthService.getAuthHistoryDetails("1234", "WN", "1", "10");
 	}
 }

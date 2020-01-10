@@ -219,12 +219,31 @@ public class RequestValidator {
 				requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
+		
+		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
+				&& requestDTO.getRequest().getPageStart()!=null && requestDTO.getRequest().getPageStart().trim().isEmpty())
+			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
 
-		if (requestDTO.getRequest().getPageFetch() == null && requestDTO.getRequest().getPageStart() != null)
+		if ((requestDTO.getRequest().getPageFetch() == null || requestDTO.getRequest().getPageFetch().trim().isEmpty())
+				&& requestDTO.getRequest().getPageStart()!=null && !requestDTO.getRequest().getPageStart().trim().isEmpty())
 			throw new InvalidInputException("please provide Page size to be Fetched");
 
-		if (requestDTO.getRequest().getPageStart() == null && requestDTO.getRequest().getPageFetch() != null)
-			throw new InvalidInputException("please provide Page numer to be Fetched");
+		if ((requestDTO.getRequest().getPageStart() == null ||requestDTO.getRequest().getPageStart().trim().isEmpty())
+				&& requestDTO.getRequest().getPageFetch()!=null&& !requestDTO.getRequest().getPageFetch().trim().isEmpty())
+			throw new InvalidInputException("please provide Page number to be Fetched");
+		
+		if(!(requestDTO.getRequest().getPageStart() == null || requestDTO.getRequest().getPageFetch() == null
+				|| requestDTO.getRequest().getPageStart().trim().isEmpty() || requestDTO.getRequest().getPageFetch().trim().isEmpty())) {
+			if(!isNumeric(requestDTO.getRequest().getPageStart())) {
+				throw new InvalidInputException("pageStart");
+			}
+			if(!isNumeric(requestDTO.getRequest().getPageFetch())) {
+				throw new InvalidInputException("pageFetch");
+			}
+			if(Integer.parseInt(requestDTO.getRequest().getPageStart())<1 ||Integer.parseInt(requestDTO.getRequest().getPageFetch())<1 ) {
+				throw new InvalidInputException("Page Fetch or Page Start must be greater than 0");
+			}
+		}
 	}
 
 	public void validateAuthType(List<String> authType) {
@@ -322,5 +341,12 @@ public class RequestValidator {
 		return true;
 
 	}
-
+	public static boolean isNumeric(String strNum) {
+	    try {
+	         Integer.parseInt(strNum);
+	    } catch (NumberFormatException nfe) {
+	        return false;
+	    }
+	    return true;
+	}
 }
