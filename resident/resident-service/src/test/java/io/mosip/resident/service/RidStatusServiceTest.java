@@ -80,7 +80,9 @@ public class RidStatusServiceTest {
 		response.setStatusCode("PROCESSED");
 		responseWrapper.setErrors(null);
 		responseWrapper.setId("mosip.resident.status");
-		responseWrapper.setResponse(response);
+		List<RegistrationStatusDTO> list = new ArrayList<>();
+		list.add(response);
+		responseWrapper.setResponse(list);
 
 		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(responseWrapper);
 
@@ -93,22 +95,25 @@ public class RidStatusServiceTest {
 
 		// REJECTED
 		response.setStatusCode("REJECTED");
-		responseWrapper.setResponse(response);
+		List<RegistrationStatusDTO> list = new ArrayList<>();
+		list.add(response);
+		responseWrapper.setResponse(list);
 		residentService.getRidStatus(requestDTO);
 
 		// REREGISTER
 		response.setStatusCode("REREGISTER");
-		responseWrapper.setResponse(response);
+		responseWrapper.setResponse(list);
 		residentService.getRidStatus(requestDTO);
 
 		// RESEND
 		response.setStatusCode("RESEND");
-		responseWrapper.setResponse(response);
+		responseWrapper.setResponse(list);
 		residentService.getRidStatus(requestDTO);
 
 		// PROCESSING
 		response.setStatusCode("PROCESSING");
-		responseWrapper.setResponse(response);
+		
+		responseWrapper.setResponse(list);
 		RegStatusCheckResponseDTO result = residentService.getRidStatus(requestDTO);
 		assertEquals(result.getRidStatus(), "UNDER PROCESSING - PLEASE CHECK BACK AGAIN LATER.");
 
@@ -118,7 +123,9 @@ public class RidStatusServiceTest {
 	public void getRidStatusExceptionTest() throws ApisResourceAccessException {
 		try {
 			response.setStatusCode("PROCESSED");
-			responseWrapper.setResponse(response);
+			List<RegistrationStatusDTO> list = new ArrayList<>();
+			list.add(response);
+			responseWrapper.setResponse(list);
 			Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(false);
 			residentService.getRidStatus(requestDTO);
 		} catch (ResidentServiceException e) {

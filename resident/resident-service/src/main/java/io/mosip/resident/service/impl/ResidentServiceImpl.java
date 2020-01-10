@@ -153,14 +153,14 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.NO_RID_FOUND_EXCEPTION.getErrorMessage()
 								+ responseWrapper.getErrors().get(0).toString());
 			}
-			if (responseWrapper.getResponse() == null) {
+			if ((responseWrapper.getResponse() == null || responseWrapper.getResponse().isEmpty()) ) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(), "In valid response from Registration status API");
 				throw new RIDInvalidException(ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorCode(),
 						ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorMessage() + ApiName.REGISTRATIONSTATUSSEARCH);
 			}
 
-			String status = validateResponse(responseWrapper.getResponse().getStatusCode());
+			String status = validateResponse(responseWrapper.getResponse().get(0).getStatusCode());
 			response = new RegStatusCheckResponseDTO();
 			response.setRidStatus(status);
 
