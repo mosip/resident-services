@@ -1,22 +1,10 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.JsonUtils;
-import io.mosip.kernel.core.util.exception.JsonProcessingException;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.*;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.Utilitiy;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -26,11 +14,46 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.JsonUtils;
+import io.mosip.kernel.core.util.exception.JsonProcessingException;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateEnum;
+import io.mosip.resident.constant.VidType;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.VidGeneratorRequestDto;
+import io.mosip.resident.dto.VidGeneratorResponseDto;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidResponseDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.DataNotFoundException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidAlreadyPresentException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.exception.VidRevocationException;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TokenGenerator;
+import io.mosip.resident.util.Utilitiy;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
@@ -50,6 +73,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
     
     @Value("${vid.revoke.id}")
     private String vidRevokeId;
+
+	@Value("${resident.revokevid.id}")
+	private String revokeVidId;
 
     @Autowired
     private ObjectMapper mapper;
@@ -195,6 +221,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if (!isAuthenticated)
 				throw new OtpValidationFailedException();
 		} catch (OtpValidationFailedException e) {
+			notificationRequestDto.setId(requestDto.getIndividualId());
+			notificationRequestDto.setIdType(IdType.VID);
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_SUCCESS);
 			notificationService.sendNotification(notificationRequestDto);
 			throw e;
@@ -243,7 +271,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			throw e;
 		}
 
-		responseDto.setId(id);
+		responseDto.setId(revokeVidId);
 		responseDto.setVersion(version);
 		responseDto.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 

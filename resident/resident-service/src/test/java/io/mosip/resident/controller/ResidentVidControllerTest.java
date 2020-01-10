@@ -1,25 +1,10 @@
 package io.mosip.resident.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.ResidentTestBootApplication;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentVidRequestDto;
-import io.mosip.resident.dto.ResponseWrapper;
-import io.mosip.resident.dto.VidRequestDto;
-import io.mosip.resident.dto.VidResponseDto;
-import io.mosip.resident.dto.VidRevokeRequestDTO;
-import io.mosip.resident.dto.VidRevokeResponseDTO;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.exception.VidRevocationException;
-import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.impl.ResidentVidServiceImpl;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
+import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,10 +23,27 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.ResidentTestBootApplication;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentVidRequestDto;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidResponseDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.exception.VidRevocationException;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.service.impl.ResidentVidServiceImpl;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TokenGenerator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -97,7 +99,7 @@ public class ResidentVidControllerTest {
 		vidRevokeRequestDTO.setIndividualIdType(IdType.VID.name());
 		vidRevokeRequestDTO.setOtp("974436");
 		vidRevokeRequestDTO.setTransactionID("1111122222");
-		vidRevokeRequestDTO.setVidStatus("REVOKE");
+		vidRevokeRequestDTO.setVidStatus("REVOKED");
 
 		RequestWrapper request = new RequestWrapper();
 		request.setId("mosip.resident.vidstatus");

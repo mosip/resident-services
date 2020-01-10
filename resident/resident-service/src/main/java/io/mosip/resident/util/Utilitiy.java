@@ -95,7 +95,7 @@ public class Utilitiy {
 				if (!vidResponse.getErrors().isEmpty()) {
 					List<ServiceError> error = vidResponse.getErrors();
 					throw new IdRepoAppException(ResidentErrorCode.IN_VALID_VID.getErrorCode(),
-							ResidentErrorCode.IN_VALID_VID.getErrorCode(), error.get(0).getMessage());
+							ResidentErrorCode.IN_VALID_VID.getErrorMessage(), error.get(0).getMessage());
 				}
 
 				VidGeneratorResponseDto vidGeneratorResponseDto = JsonUtil.readValue(

@@ -258,7 +258,8 @@ public class RequestValidator {
 
 		if (requestDto.getRequest().getVidStatus() == null)
 			throw new InvalidInputException("vidStatus");
-
+		if (!requestDto.getRequest().getVidStatus().equalsIgnoreCase("REVOKED"))
+			throw new InvalidInputException("vidStatus");
 		if (requestDto.getRequest().getIndividualIdType() == null
 				|| (!requestDto.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
