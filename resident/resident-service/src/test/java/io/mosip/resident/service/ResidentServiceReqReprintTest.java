@@ -130,7 +130,7 @@ public class ResidentServiceReqReprintTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testOtpValidationException() throws OtpValidationFailedException, ResidentServiceCheckedException {
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenThrow(OtpValidationFailedException.class);
+				Mockito.anyString())).thenThrow(new OtpValidationFailedException("OTP validation failed"));
 		residentServiceImpl.reqPrintUin(residentReqDto);
 	}
 

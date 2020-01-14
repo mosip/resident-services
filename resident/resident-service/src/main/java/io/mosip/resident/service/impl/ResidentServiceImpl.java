@@ -119,7 +119,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getRidStatus():: entry");
-	
+
 		RegStatusCheckResponseDTO response = null;
 		RegistrationStatusResponseDTO responseWrapper = null;
 		RegistrationStatusRequestDTO dto = new RegistrationStatusRequestDTO();
@@ -211,7 +211,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
 					dto.getIndividualIdType(), dto.getOtp())) {
-				
+
 				response = uinCardDownloadService.getUINCard(dto.getIndividualId(), dto.getCardType(),
 						idtype);
 				if (response != null) {
@@ -260,7 +260,7 @@ public class ResidentServiceImpl implements ResidentService {
 			sendNotification(dto.getIndividualId(), idtype,
 					NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
+					e.getErrorText(), e);
 		}
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -320,7 +320,7 @@ public class ResidentServiceImpl implements ResidentService {
 			sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
 					NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
+					e.getErrorText(), e);
 		} catch (ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
 					NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
@@ -393,7 +393,7 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
 		} catch (OtpValidationFailedException e) {
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
+					e.getErrorText(), e);
 		} finally {
 			NotificationTemplateCode templateCode;
 			if (authTypeStatus.equals(AuthTypeStatus.LOCK)) {
@@ -423,7 +423,7 @@ public class ResidentServiceImpl implements ResidentService {
 		AuthHistoryResponseDTO response = new AuthHistoryResponseDTO();
 		IdType idtype=getIdType(dto.getIndividualIdType());
 		try {
-			
+
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
 					dto.getIndividualIdType(), dto.getOtp())) {
 				List<AuthTxnDetailsDTO> details = idAuthService.getAuthHistoryDetails(dto.getIndividualId(),
@@ -459,7 +459,7 @@ public class ResidentServiceImpl implements ResidentService {
 			sendNotification(dto.getIndividualId(), idtype,
 					NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
+					e.getErrorText(), e);
 		} catch (ResidentServiceCheckedException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
@@ -558,7 +558,7 @@ public class ResidentServiceImpl implements ResidentService {
 			sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
 					NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage(), e);
+					e.getErrorText(), e);
 
 		} catch (ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(),  IdType.valueOf(dto.getIndividualIdType()),
