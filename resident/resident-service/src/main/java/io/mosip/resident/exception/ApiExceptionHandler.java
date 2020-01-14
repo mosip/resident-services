@@ -56,7 +56,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlDataServiceException(
 			HttpServletRequest httpServletRequest, final ResidentServiceException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
-		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.INTERNAL_SERVER_ERROR);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(DataNotFoundException.class)
@@ -145,7 +145,7 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), exception.getMessage());
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(exception);
-		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}
 
 	private ResponseWrapper<ServiceError> setErrors(HttpServletRequest httpServletRequest) throws IOException {

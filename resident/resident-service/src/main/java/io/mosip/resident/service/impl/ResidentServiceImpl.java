@@ -119,9 +119,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getRidStatus():: entry");
-		if (!ridValidator.validateId(request.getIndividualId()))
-			throw new ResidentServiceException(ResidentErrorCode.INVALID_RID_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.INVALID_RID_EXCEPTION.getErrorMessage());
+	
 		RegStatusCheckResponseDTO response = null;
 		RegistrationStatusResponseDTO responseWrapper = null;
 		RegistrationStatusRequestDTO dto = new RegistrationStatusRequestDTO();

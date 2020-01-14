@@ -73,7 +73,7 @@ public class RidStatusServiceTest {
 		Mockito.when(env.getProperty(DATETIME_PATTERN)).thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		Mockito.when(env.getProperty(REGISTRATIONSTATUSSEARCH)).thenReturn(REGISTRATIONSTATUSSEARCH);
 
-		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
+
 		responseWrapper = new RegistrationStatusResponseDTO();
 		response = new RegistrationStatusDTO();
 		response.setRegistrationId("10008100670000320191212101846");
@@ -126,10 +126,10 @@ public class RidStatusServiceTest {
 			List<RegistrationStatusDTO> list = new ArrayList<>();
 			list.add(response);
 			responseWrapper.setResponse(list);
-			Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(false);
+
 			residentService.getRidStatus(requestDTO);
 		} catch (ResidentServiceException e) {
-			Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
+
 		}
 		try {
 			Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(null);
