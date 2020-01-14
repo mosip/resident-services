@@ -70,7 +70,7 @@ public class ResidentServiceReqReprintTest {
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		residentReqDto = new ResidentReprintRequestDto();
 		residentReqDto.setIndividualId("3527812406");
-		residentReqDto.setIndividualIdType(IdType.UIN);
+		residentReqDto.setIndividualIdType(IdType.UIN.name());
 		residentReqDto.setOtp("689745");
 		residentReqDto.setTransactionID("0987654321");
 

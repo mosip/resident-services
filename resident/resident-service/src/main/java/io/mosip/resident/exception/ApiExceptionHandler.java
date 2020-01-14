@@ -9,8 +9,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.controller.ResidentController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -31,6 +29,8 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.controller.ResidentController;
 
 @RestControllerAdvice(assignableTypes = ResidentController.class)
 public class ApiExceptionHandler {
@@ -175,7 +175,7 @@ public class ApiExceptionHandler {
 		idMap.put("/vid", env.getProperty(VID));
 		idMap.put("/auth-lock", env.getProperty(AUTH_LOCK));
 		idMap.put("/auth-unlock", env.getProperty(AUTH_UNLOCK));
-		idMap.put("/auth-history", env.getProperty(CHECK_STATUS));
+		idMap.put("/auth-history", env.getProperty(AUTH_HISTORY));
 
 		for (Map.Entry<String, String> entry : idMap.entrySet()) {
 			if (requestURI.contains(entry.getKey())) {

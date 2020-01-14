@@ -28,7 +28,6 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.UINCardDownloadService;
 
 /**
@@ -81,12 +80,12 @@ public class ResidentServiceRequestAuthLockTest {
 		response.setMessage("Notification success");
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType().name(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
 				.thenReturn(true);
 		Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
 		ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdate(authLockRequestDto,
@@ -103,7 +102,7 @@ public class ResidentServiceRequestAuthLockTest {
 				.thenReturn(false);
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
@@ -119,11 +118,11 @@ public class ResidentServiceRequestAuthLockTest {
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType().name(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
 				.thenReturn(false);
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
 
@@ -138,11 +137,11 @@ public class ResidentServiceRequestAuthLockTest {
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType().name(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
 				.thenReturn(true);
 		Mockito.when(notificationService.sendNotification(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException());
@@ -159,11 +158,11 @@ public class ResidentServiceRequestAuthLockTest {
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType().name(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
 				.thenThrow(new ApisResourceAccessException());
 
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
@@ -178,7 +177,7 @@ public class ResidentServiceRequestAuthLockTest {
 				.thenThrow(new OtpValidationFailedException());
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);

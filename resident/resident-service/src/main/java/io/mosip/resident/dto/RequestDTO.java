@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class RequestDTO {
-	@NotBlank
+
 	private String individualId;
-	@NotBlank
+
 	private String individualIdType;
 
 }

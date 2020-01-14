@@ -14,18 +14,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResidentUpdateRequestDto {
-	@NotBlank(message = "transactionID should not be empty")
-	@NotNull(message = "transactionID should not be null")
+
 	private String transactionID;
-	@NotBlank(message = "individualId should not be empty")
-	@NotNull(message = "individualId should not be null")
+
 	private String individualId;
-	@NotNull(message = "individualIdType should not be null")
-	private IdType individualIdType;
-	@NotBlank(message = "otp should not be empty")
-	@NotNull(message = "otp should not be null")
+
+	private String individualIdType;
+
 	private String otp;
-	@NotNull(message = "identityJson should not be null")
+
 	private String identityJson;
 	private List<ResidentDocuments> documents;
 

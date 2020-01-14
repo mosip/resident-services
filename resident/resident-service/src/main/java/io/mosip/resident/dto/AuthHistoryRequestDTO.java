@@ -13,17 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthHistoryRequestDTO {
-	@NotBlank(message = "transactionID should not be empty")
-	@NotNull(message = "transactionID should not be null")
+
 	private String transactionID;
-	@NotBlank(message = "individualId should not be empty")
-	@NotNull(message = "individualId should not be null")
+
 	private String individualId;
-	@NotNull(message = "individualIdType should not be null")
-	@NotBlank(message = "individualIdType should not be empty")
+
 	private String individualIdType;
-	@NotBlank(message = "otp should not be empty")
-	@NotNull(message = "otp should not be null")
+
 	private String otp;
 	
 	private String pageStart;

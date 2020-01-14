@@ -91,7 +91,7 @@ public class ResidentControllerTest {
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
-		authLockRequestDto.setIndividualIdType(IdType.UIN);
+		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		List<String> authTypes = new ArrayList<>();
@@ -174,7 +174,7 @@ public class ResidentControllerTest {
 		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
 		ResidentReprintRequestDto request = new ResidentReprintRequestDto();
 		request.setIndividualId("3527812406");
-		request.setIndividualIdType(IdType.UIN);
+		request.setIndividualIdType(IdType.UIN.name());
 		request.setOtp("1234");
 		request.setTransactionID("9876543210");
 		requestWrapper.setRequest(request);
@@ -258,7 +258,7 @@ public class ResidentControllerTest {
 		dto.setDocuments(list);
 		dto.setIdentityJson("sdgfdgsfhfh");
 		dto.setIndividualId("9876543210");
-		dto.setIndividualIdType(IdType.UIN);
+		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setOtp("1234");
 		dto.setTransactionID("12345");
 		RequestWrapper<ResidentUpdateRequestDto> reqWrapper = new RequestWrapper<>();

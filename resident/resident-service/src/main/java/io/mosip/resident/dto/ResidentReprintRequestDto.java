@@ -15,15 +15,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResidentReprintRequestDto implements Serializable {
 	private static final long serialVersionUID = -4492209826585681216L;
-	@NotBlank(message = "transactionID should not be empty")
-	@NotNull(message = "transactionID should not be null")
+	
 	private String transactionID;
-	@NotBlank(message = "individualId should not be empty")
-	@NotNull(message = "individualId should not be null")
+	
 	private String individualId;
-	@NotNull(message = "individualIdType should not be null")
-	private IdType individualIdType;
-	@NotBlank(message = "otp should not be empty")
-	@NotNull(message = "otp should not be null")
+
+	private String individualIdType;
+	
+	private String cardType;
+
 	private String otp;
 }

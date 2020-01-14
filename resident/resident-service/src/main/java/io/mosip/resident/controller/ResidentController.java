@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -47,7 +46,7 @@ public class ResidentController {
 	@PostMapping(value = "/rid/check-status")
 	public ResponseWrapper<RegStatusCheckResponseDTO> getRidStatus(
 			@Valid @RequestBody RequestWrapper<RequestDTO> requestDTO) throws ApisResourceAccessException {
-		validator.validateRequest(requestDTO, RequestIdType.CHECK_STATUS);
+		validator.validateRequestDTO(requestDTO);
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
 		return response;
@@ -71,7 +70,7 @@ public class ResidentController {
 	@PostMapping(value = "/req/print-uin")
 	public ResponseEntity<Object> reqPrintUin(@Valid @RequestBody RequestWrapper<ResidentReprintRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		validator.validateRequest(requestDTO, RequestIdType.RE_PRINT_ID);
+		validator.validateReprintRequest(requestDTO);
 		ResponseWrapper<ResidentReprintResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqPrintUin(requestDTO.getRequest()));
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -115,7 +114,7 @@ public class ResidentController {
 	public ResponseWrapper<ResidentUpdateResponseDTO> updateUin(
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		validator.validateRequest(requestDTO, RequestIdType.RES_UPDATE);
+		validator.validateUpdateRequest(requestDTO);
 		ResponseWrapper<ResidentUpdateResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()));
 		return response;

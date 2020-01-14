@@ -26,18 +26,11 @@ public class AuthLockOrUnLockRequestDto implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@NotBlank(message = "transactionID should not be empty")
-	@NotNull(message = "transactionID should not be null")
-	private String transactionID;
-	@NotBlank(message = "individualId should not be empty")
-	@NotNull(message = "individualId should not be null")
-	private String individualId;
 
-	@NotNull(message = "individualIdType should not be null")
-	private IdType individualIdType;
-	@NotBlank(message = "otp should not be empty")
-	@NotNull(message = "otp should not be null")
-	private String otp;
+	private String transactionID;
+	private String individualId;
+    private String individualIdType;
+    private String otp;
 	private List<String> authType;
 
 }

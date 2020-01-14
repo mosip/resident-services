@@ -80,7 +80,7 @@ public class ResidentServiceResUpdateTest {
 		dto.setIdentityJson(
 				"ew0KICAiaWRlbnRpdHkiIDogew0KICAgICJkYXRlT2ZCaXJ0aCIgOiAiMTk5NS8wOC8wOCIsDQogICAgImFnZSIgOiAyNywNCiAgICAicGhvbmUiIDogIjk3ODY1NDMyMTAiLA0KICAgICJlbWFpbCIgOiAiZ2lyaXNoLnlhcnJ1QG1pbmR0cmVlLmNvbSIsDQogICAgInByb29mT2ZBZGRyZXNzIiA6IHsNCiAgICAgICJ2YWx1ZSIgOiAiUE9BX0NlcnRpZmljYXRlIG9mIHJlc2lkZW5jZSIsDQogICAgICAidHlwZSIgOiAiQ09SIiwNCiAgICAgICJmb3JtYXQiIDogImpwZyINCiAgICB9LA0KCSJVSU4iOiAzNTI3ODEyNDA2LA0KICAgICJJRFNjaGVtYVZlcnNpb24iIDogMS4wDQogIH0NCn0");
 		dto.setIndividualId("3527812406");
-		dto.setIndividualIdType(IdType.UIN);
+		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setTransactionID("12345");
 		dto.setOtp("12345");
 		ReflectionTestUtils.setField(residentServiceImpl, "centerId", "10008");
