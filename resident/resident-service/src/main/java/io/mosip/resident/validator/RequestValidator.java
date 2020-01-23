@@ -251,6 +251,14 @@ public class RequestValidator {
 		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
 				&& requestDTO.getRequest().getPageStart()!=null && requestDTO.getRequest().getPageStart().trim().isEmpty())
 			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
+		
+		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
+				&& requestDTO.getRequest().getPageStart()==null )
+			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
+		
+		if (requestDTO.getRequest().getPageFetch() == null && requestDTO.getRequest().getPageStart()!=null 
+				&& requestDTO.getRequest().getPageStart().trim().isEmpty())
+			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
 
 		if ((requestDTO.getRequest().getPageFetch() == null || requestDTO.getRequest().getPageFetch().trim().isEmpty())
 				&& requestDTO.getRequest().getPageStart()!=null && !requestDTO.getRequest().getPageStart().trim().isEmpty())

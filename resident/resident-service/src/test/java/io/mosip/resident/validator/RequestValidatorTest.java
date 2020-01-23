@@ -406,6 +406,42 @@ public class RequestValidatorTest {
 	}
 	
 	@Test(expected = InvalidInputException.class)
+	public void testAuthHistoryValidPageStartnullPageFetch() throws Exception {
+		
+		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
+		authRequestDTO.setIndividualIdType(IdType.UIN.name());
+		authRequestDTO.setIndividualId("123");
+		authRequestDTO.setOtp("12345");
+		authRequestDTO.setTransactionID("12345");
+		authRequestDTO.setPageStart(" ");
+		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestWrapper.setRequest(authRequestDTO);
+		requestWrapper.setVersion("v1");
+		requestWrapper.setId("mosip.resident.authhistory");
+		requestValidator.validateAuthHistoryRequest(requestWrapper);
+
+	}
+	
+	@Test(expected = InvalidInputException.class)
+	public void testAuthHistoryValidnullPageStartPageFetch() throws Exception {
+		
+		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
+		authRequestDTO.setIndividualIdType(IdType.UIN.name());
+		authRequestDTO.setIndividualId("123");
+		authRequestDTO.setPageFetch(" ");
+		authRequestDTO.setOtp("12345");
+		authRequestDTO.setTransactionID("12345");
+		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestWrapper.setRequest(authRequestDTO);
+		requestWrapper.setVersion("v1");
+		requestWrapper.setId("mosip.resident.authhistory");
+		requestValidator.validateAuthHistoryRequest(requestWrapper);
+
+	}
+	
+	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryinValidpageStartPageFetch() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
