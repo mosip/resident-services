@@ -1,5 +1,6 @@
 package io.mosip.resident.validator;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
@@ -127,7 +129,7 @@ public class RequestValidator {
 	public void validateVidCreateRequest(ResidentVidRequestDto requestDto) {
 
 		try {
-			DateUtils.convertUTCToLocalDateTime(requestDto.getRequesttime());
+			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
@@ -342,13 +344,21 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionId");
 	}
 
+	/** The env. */
+	@Autowired
+	private Environment env;
+	
+	/** The Constant DATETIME_PATTERN. */
+	private static final String DATETIME_PATTERN = "mosip.registration.processor.datetime.pattern";
+
+	
 	public void validateRequestWrapper(RequestWrapper<?> request) {
 
 		if (request.getId() == null || !request.getId().equalsIgnoreCase(revokeVidId))
 			throw new InvalidInputException("id");
 
 		try {
-			DateUtils.convertUTCToLocalDateTime(request.getRequesttime());
+			DateUtils.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
@@ -364,7 +374,7 @@ public class RequestValidator {
 		if (request.getId() == null || request.getId().isEmpty())
 			throw new InvalidInputException("id");
 		try {
-			DateUtils.convertUTCToLocalDateTime(request.getRequesttime());
+			DateUtils.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}

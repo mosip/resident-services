@@ -11,6 +11,9 @@ import lombok.Setter;
 @Setter
 public class VidRevokeRequestDTO implements Serializable {
 
+	
+	private static final long serialVersionUID = 1L;
+	
 	private String transactionID;
 	private String individualId;
 	private String individualIdType;
