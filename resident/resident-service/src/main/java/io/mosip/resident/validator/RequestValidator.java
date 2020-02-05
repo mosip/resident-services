@@ -20,6 +20,7 @@ import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
@@ -57,7 +58,7 @@ public class RequestValidator {
 	private String authHstoryId;
 
 	private String authLockId;
-	
+
 	private String uinUpdateId;
 
 	@Value("${resident.updateuin.id}")
@@ -134,21 +135,21 @@ public class RequestValidator {
 			throw new InvalidInputException("requesttime");
 		}
 
-		if (requestDto.getId() == null || !requestDto.getId().equalsIgnoreCase(id))
+		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(id))
 			throw new InvalidInputException("id");
 
-		if (requestDto.getVersion() == null || !requestDto.getVersion().equalsIgnoreCase(version))
+		if (StringUtils.isEmpty(requestDto.getVersion()) || !requestDto.getVersion().equalsIgnoreCase(version))
 			throw new InvalidInputException("version");
 
 		if (requestDto.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (requestDto.getRequest().getVidType() == null
+		if (StringUtils.isEmpty(requestDto.getRequest().getVidType())
 				|| (!requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.PERPETUAL.name())
 						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name())))
 			throw new InvalidInputException("vidType");
 
-		if (requestDto.getRequest().getIndividualIdType() == null
+		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualIdType())
 				|| (!requestDto.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
 						&& !requestDto.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
@@ -157,10 +158,10 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 
-		if (requestDto.getRequest().getOtp() == null)
+		if (StringUtils.isEmpty(requestDto.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDto.getRequest().getTransactionID() == null)
+		if (StringUtils.isEmpty(requestDto.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 	}
 
@@ -172,20 +173,20 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if ((requestDTO.getRequest().getIndividualIdType() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
 						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
 
-		if ((requestDTO.getRequest().getIndividualId() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
-		if (requestDTO.getRequest().getOtp() == null || requestDTO.getRequest().getOtp().isEmpty())
+		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDTO.getRequest().getTransactionID() == null || requestDTO.getRequest().getTransactionID().isEmpty())
+		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 		validateAuthType(requestDTO.getRequest().getAuthType());
 
@@ -206,26 +207,26 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (requestDTO.getRequest().getIndividualIdType() == null
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
 						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
 
-		if (requestDTO.getRequest().getIndividualId() == null
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType()))) {
 			throw new InvalidInputException("individualId");
 		}
 
-		if (requestDTO.getRequest().getCardType() == null
+		if (StringUtils.isEmpty(requestDTO.getRequest().getCardType())
 				|| (!requestDTO.getRequest().getCardType().equalsIgnoreCase(CardType.UIN.name())
 						&& !requestDTO.getRequest().getCardType().equalsIgnoreCase(CardType.MASKED_UIN.name())))
 			throw new InvalidInputException("cardType");
 
-		if (requestDTO.getRequest().getOtp() == null || requestDTO.getRequest().getOtp().isEmpty())
+		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDTO.getRequest().getTransactionID() == null || requestDTO.getRequest().getTransactionID().isEmpty())
+		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 	}
 
@@ -235,57 +236,60 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (requestDTO.getRequest().getIndividualIdType() == null
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
 						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
 
-		if (requestDTO.getRequest().getIndividualId() == null
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType()))) {
 			throw new InvalidInputException("individualId");
 		}
-		if (requestDTO.getRequest().getOtp() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDTO.getRequest().getTransactionID() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
-				&& requestDTO.getRequest().getPageStart()!=null && requestDTO.getRequest().getPageStart().trim().isEmpty())
-			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
-		
-		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
-				&& requestDTO.getRequest().getPageStart()==null )
-			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
-		
-		if (requestDTO.getRequest().getPageFetch() == null && requestDTO.getRequest().getPageStart()!=null 
+				&& requestDTO.getRequest().getPageStart() != null
 				&& requestDTO.getRequest().getPageStart().trim().isEmpty())
 			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
 
-		if ((requestDTO.getRequest().getPageFetch() == null || requestDTO.getRequest().getPageFetch().trim().isEmpty())
-				&& requestDTO.getRequest().getPageStart()!=null && !requestDTO.getRequest().getPageStart().trim().isEmpty())
+		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
+				&& StringUtils.isEmpty(requestDTO.getRequest().getPageStart()))
+			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
+
+		if (StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()) && requestDTO.getRequest().getPageStart() != null
+				&& requestDTO.getRequest().getPageStart().trim().isEmpty())
+			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
+
+		if (StringUtils.isEmpty(requestDTO.getRequest().getPageFetch())
+				&& StringUtils.isNotEmpty(requestDTO.getRequest().getPageStart()))
 			throw new InvalidInputException("please provide Page size to be Fetched");
 
-		if ((requestDTO.getRequest().getPageStart() == null ||requestDTO.getRequest().getPageStart().trim().isEmpty())
-				&& requestDTO.getRequest().getPageFetch()!=null&& !requestDTO.getRequest().getPageFetch().trim().isEmpty())
+		if (StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
+				&& StringUtils.isNotEmpty(requestDTO.getRequest().getPageFetch()))
 			throw new InvalidInputException("please provide Page number to be Fetched");
+
 		
-		if(!(requestDTO.getRequest().getPageStart() == null || requestDTO.getRequest().getPageFetch() == null
-				|| requestDTO.getRequest().getPageStart().trim().isEmpty() || requestDTO.getRequest().getPageFetch().trim().isEmpty())) {
-			if(!isNumeric(requestDTO.getRequest().getPageStart())) {
+		if (!(StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
+				|| StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()))) {
+			if (!isNumeric(requestDTO.getRequest().getPageStart())) {
 				throw new InvalidInputException("pageStart");
 			}
-			if(!isNumeric(requestDTO.getRequest().getPageFetch())) {
+			if (!isNumeric(requestDTO.getRequest().getPageFetch())) {
 				throw new InvalidInputException("pageFetch");
 			}
-			if(Integer.parseInt(requestDTO.getRequest().getPageStart())<1 ||Integer.parseInt(requestDTO.getRequest().getPageFetch())<1 ) {
+			if (Integer.parseInt(requestDTO.getRequest().getPageStart()) < 1
+					|| Integer.parseInt(requestDTO.getRequest().getPageFetch()) < 1) {
 				throw new InvalidInputException("Page Fetch or Page Start must be greater than 0");
 			}
 		}
 	}
 
 	public void validateAuthType(List<String> authType) {
-		if (authType == null) {
+		if (authType == null || authType.isEmpty()) {
 			throw new InvalidInputException("authType");
 		}
 		String[] authTypesArray = authTypes.split(",");
@@ -324,23 +328,22 @@ public class RequestValidator {
 
 		validateRequestWrapper(requestDto);
 
-		if (requestDto.getRequest().getVidStatus() == null)
+		if (StringUtils.isEmpty(requestDto.getRequest().getVidStatus())
+				|| !requestDto.getRequest().getVidStatus().equalsIgnoreCase("REVOKED"))
 			throw new InvalidInputException("vidStatus");
-		if (!requestDto.getRequest().getVidStatus().equalsIgnoreCase("REVOKED"))
-			throw new InvalidInputException("vidStatus");
-		if (requestDto.getRequest().getIndividualIdType() == null
+		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualIdType())
 				|| (!requestDto.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
 
-		if (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-				requestDto.getRequest().getIndividualIdType())) {
+		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
+				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(),
+						requestDto.getRequest().getIndividualIdType())))
 			throw new InvalidInputException("individualId");
-		}
 
-		if (requestDto.getRequest().getOtp() == null)
+		if (StringUtils.isEmpty(requestDto.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDto.getRequest().getTransactionID() == null)
+		if (StringUtils.isEmpty(requestDto.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 	}
 
@@ -354,7 +357,7 @@ public class RequestValidator {
 	
 	public void validateRequestWrapper(RequestWrapper<?> request) {
 
-		if (request.getId() == null || !request.getId().equalsIgnoreCase(revokeVidId))
+		if (StringUtils.isEmpty(request.getId()) || !request.getId().equalsIgnoreCase(revokeVidId))
 			throw new InvalidInputException("id");
 
 		try {
@@ -363,7 +366,7 @@ public class RequestValidator {
 			throw new InvalidInputException("requesttime");
 		}
 
-		if (request.getVersion() == null || !request.getVersion().equalsIgnoreCase(version))
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equalsIgnoreCase(version))
 			throw new InvalidInputException("version");
 
 		if (request.getRequest() == null)
@@ -371,29 +374,26 @@ public class RequestValidator {
 	}
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (request.getId() == null || request.getId().isEmpty())
+		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
 			throw new InvalidInputException("id");
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
-		if (request.getVersion() == null || request.getVersion().isEmpty())
-			throw new InvalidInputException("version");
-		if (!request.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
-		if (!request.getVersion().equals(version))
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(version))
 			throw new InvalidInputException("version");
 		return true;
 
 	}
+
 	public static boolean isNumeric(String strNum) {
-	    try {
-	         Integer.parseInt(strNum);
-	    } catch (NumberFormatException nfe) {
-	        return false;
-	    }
-	    return true;
+		try {
+			Integer.parseInt(strNum);
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+		return true;
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
@@ -402,26 +402,26 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if ((requestDTO.getRequest().getIndividualIdType() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
 						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
 
-		if ((requestDTO.getRequest().getIndividualId() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 
-		if (requestDTO.getRequest().getCardType() == null
+		if (StringUtils.isEmpty(requestDTO.getRequest().getCardType())
 				|| (!requestDTO.getRequest().getCardType().equalsIgnoreCase(CardType.UIN.name())
 						&& !requestDTO.getRequest().getCardType().equalsIgnoreCase(CardType.MASKED_UIN.name())))
 			throw new InvalidInputException("cardType");
 
-		if (requestDTO.getRequest().getOtp() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDTO.getRequest().getTransactionID() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 	}
 
@@ -431,20 +431,20 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if ((requestDTO.getRequest().getIndividualIdType() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
 						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
 			throw new InvalidInputException("individualIdType");
 
-		if ((requestDTO.getRequest().getIndividualId() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
-		if (requestDTO.getRequest().getOtp() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
-		if (requestDTO.getRequest().getTransactionID() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
 
 		if (requestDTO.getRequest().getIdentityJson() == null || requestDTO.getRequest().getIdentityJson().isEmpty())
@@ -458,12 +458,11 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if ((requestDTO.getRequest().getIndividualIdType() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.RID.name())))
-						
 			throw new InvalidInputException("individualIdType");
 
-		if ((requestDTO.getRequest().getIndividualId() == null)
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
