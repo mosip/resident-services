@@ -214,17 +214,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 				response = uinCardDownloadService.getUINCard(dto.getIndividualId(), dto.getCardType(),
 						idtype);
-				if (response != null) {
+				
 					sendNotification(dto.getIndividualId(), idtype,
 							NotificationTemplateCode.RS_DOW_UIN_SUCCESS, null);
-
-				} else {
-					sendNotification(dto.getIndividualId(),idtype,
-							NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
-					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
-							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
-				}
-			} else {
+               } else {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());

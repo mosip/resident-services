@@ -64,17 +64,7 @@ public class ResidentServiceReqEUinTest {
 		dto.setCardType("MASKED_UIN");
 		assertEquals(card, residentServiceImpl.reqEuin(dto));
 	}
-	@Test(expected=ResidentServiceException.class)
-	public void testReqEuinNull() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(uinCardDownloadService.getUINCard(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(null);
-		EuinRequestDTO dto=new EuinRequestDTO();
-		dto.setOtp("1235");
-		dto.setTransactionID("1234567890");
-		dto.setIndividualIdType(IdType.VID.name());
-		dto.setIndividualId("123456789");
-		dto.setCardType("MASKED_UIN");
-		 residentServiceImpl.reqEuin(dto);
-	}
+	
 	@Test(expected=ResidentServiceException.class)
 	public void testReqEuinUINCardFetchFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Mockito.when(uinCardDownloadService.getUINCard(Mockito.anyString(),Mockito.anyString(), Mockito.any())).thenThrow(new ApisResourceAccessException("Unable to fetch uin card"));
