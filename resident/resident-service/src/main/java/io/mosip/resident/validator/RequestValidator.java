@@ -1,6 +1,6 @@
 package io.mosip.resident.validator;
 
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -12,7 +12,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
@@ -144,15 +143,10 @@ public class RequestValidator {
 		if (requestDto.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getVidType())
-				|| (!requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.PERPETUAL.name())
-						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name())))
-			throw new InvalidInputException("vidType");
+		validateVidType(requestDto);
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualIdType())
-				|| (!requestDto.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
-						&& !requestDto.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
-			throw new InvalidInputException("individualIdType");
+		validateIndividualIdType(requestDto.getRequest().getIndividualIdType());
+
 		if (!validateIndividualId(requestDto.getRequest().getIndividualId(),
 				requestDto.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
@@ -165,6 +159,13 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionId");
 	}
 
+	public void validateVidType(ResidentVidRequestDto requestDto) {
+		if (StringUtils.isEmpty(requestDto.getRequest().getVidType())
+				|| (!requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.PERPETUAL.name())
+						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name())))
+			throw new InvalidInputException("vidType");
+	}
+
 	public void validateAuthLockOrUnlockRequest(RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO,
 			AuthTypeStatus authTypeStatus) {
 
@@ -173,11 +174,8 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
-				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
-						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
-			throw new InvalidInputException("individualIdType");
 
+		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType())) {
@@ -207,10 +205,8 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
-				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
-						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
-			throw new InvalidInputException("individualIdType");
+
+		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
@@ -236,10 +232,8 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
-				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
-						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
-			throw new InvalidInputException("individualIdType");
+
+		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
@@ -251,6 +245,10 @@ public class RequestValidator {
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID()))
 			throw new InvalidInputException("transactionId");
+		validatePagefetchAndPageStart(requestDTO);
+	}
+
+	public void validatePagefetchAndPageStart(RequestWrapper<AuthHistoryRequestDTO> requestDTO) {
 		if (requestDTO.getRequest().getPageFetch() != null && requestDTO.getRequest().getPageFetch().trim().isEmpty()
 				&& requestDTO.getRequest().getPageStart() != null
 				&& requestDTO.getRequest().getPageStart().trim().isEmpty())
@@ -260,10 +258,14 @@ public class RequestValidator {
 				&& StringUtils.isEmpty(requestDTO.getRequest().getPageStart()))
 			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
 
+		validatePageFetchAndPageStartEmptyCheck(requestDTO);
+		validatePageFetchAndPageStartFormat(requestDTO);
+	}
+
+	private void validatePageFetchAndPageStartEmptyCheck(RequestWrapper<AuthHistoryRequestDTO> requestDTO) {
 		if (StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()) && requestDTO.getRequest().getPageStart() != null
 				&& requestDTO.getRequest().getPageStart().trim().isEmpty())
 			throw new InvalidInputException("please provide Page size and Page number to be Fetched");
-
 		if (StringUtils.isEmpty(requestDTO.getRequest().getPageFetch())
 				&& StringUtils.isNotEmpty(requestDTO.getRequest().getPageStart()))
 			throw new InvalidInputException("please provide Page size to be Fetched");
@@ -271,8 +273,10 @@ public class RequestValidator {
 		if (StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
 				&& StringUtils.isNotEmpty(requestDTO.getRequest().getPageFetch()))
 			throw new InvalidInputException("please provide Page number to be Fetched");
+	}
 
-		
+	public void validatePageFetchAndPageStartFormat(RequestWrapper<AuthHistoryRequestDTO> requestDTO) {
+
 		if (!(StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
 				|| StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()))) {
 			if (!isNumeric(requestDTO.getRequest().getPageStart())) {
@@ -347,14 +351,7 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionId");
 	}
 
-	/** The env. */
-	@Autowired
-	private Environment env;
-	
-	/** The Constant DATETIME_PATTERN. */
-	private static final String DATETIME_PATTERN = "mosip.registration.processor.datetime.pattern";
 
-	
 	public void validateRequestWrapper(RequestWrapper<?> request) {
 
 		if (StringUtils.isEmpty(request.getId()) || !request.getId().equalsIgnoreCase(revokeVidId))
@@ -402,10 +399,8 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
-				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
-						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
-			throw new InvalidInputException("individualIdType");
+
+		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
@@ -431,11 +426,8 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
-				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.UIN.name())
-						&& !requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.VID.name())))
-			throw new InvalidInputException("individualIdType");
 
+		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
 						requestDTO.getRequest().getIndividualIdType())) {
@@ -468,5 +460,11 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 
+	}
+
+	public void validateIndividualIdType(String individualIdType) {
+		if (StringUtils.isEmpty(individualIdType) || (!individualIdType.equalsIgnoreCase(IdType.UIN.name())
+				&& !individualIdType.equalsIgnoreCase(IdType.VID.name())))
+			throw new InvalidInputException("individualIdType");
 	}
 }
