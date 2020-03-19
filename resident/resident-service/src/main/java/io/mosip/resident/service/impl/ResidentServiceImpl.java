@@ -139,8 +139,8 @@ public class ResidentServiceImpl implements ResidentService {
 			if (responseWrapper == null) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(), "In valid response from Registration status API");
-				throw new RIDInvalidException(ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorCode(),
-						ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorMessage()
+				throw new RIDInvalidException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
+						ResidentErrorCode.INVALID_API_RESPONSE.getErrorMessage()
 								+ ApiName.REGISTRATIONSTATUSSEARCH.name());
 			}
 
@@ -154,8 +154,8 @@ public class ResidentServiceImpl implements ResidentService {
 			if ((responseWrapper.getResponse() == null || responseWrapper.getResponse().isEmpty()) ) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(), "In valid response from Registration status API");
-				throw new RIDInvalidException(ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorCode(),
-						ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorMessage() + ApiName.REGISTRATIONSTATUSSEARCH);
+				throw new RIDInvalidException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
+						ResidentErrorCode.INVALID_API_RESPONSE.getErrorMessage() + ApiName.REGISTRATIONSTATUSSEARCH);
 			}
 
 			String status = validateResponse(responseWrapper.getResponse().get(0).getStatusCode());
