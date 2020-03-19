@@ -231,8 +231,8 @@ public class NotificationService {
 			resp = restClient.postApi(env.getProperty(ApiName.SMSNOTIFIER.name()), MediaType.APPLICATION_JSON, req,
 					ResponseWrapper.class, tokenGenerator.getToken());
 			if (nullCheckForResponse(resp)) {
-				throw new ResidentServiceException(ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorCode(),
-						ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorMessage() + " SMSNOTIFIER API"
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
+						ResidentErrorCode.INVALID_API_RESPONSE.getErrorMessage() + " SMSNOTIFIER API"
 								+ (resp != null ? resp.getErrors().get(0) : ""));
 			}
 			NotificationResponseDTO notifierResponse = JsonUtil
@@ -319,8 +319,8 @@ public class NotificationService {
 			response = restClient.postApi(builder.build().toUriString(), MediaType.MULTIPART_FORM_DATA, params,
 					ResponseWrapper.class, tokenGenerator.getToken());
 			if (nullCheckForResponse(response)) {
-				throw new ResidentServiceException(ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorCode(),
-						ResidentErrorCode.IN_VALID_API_RESPONSE.getErrorMessage() + " EMAILNOTIFIER API"
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
+						ResidentErrorCode.INVALID_API_RESPONSE.getErrorMessage() + " EMAILNOTIFIER API"
 								+ (response != null ? response.getErrors().get(0) : ""));
 			}
 			NotificationResponseDTO notifierResponse = JsonUtil

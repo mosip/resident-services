@@ -89,13 +89,13 @@ public class Utilitiy {
 				logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 						"Utilitiy::retrieveIdrepoJson()::vidResponse::" + JsonUtil.writeValueAsString(vidResponse));
 				if (vidResponse == null)
-					throw new IdRepoAppException(ResidentErrorCode.IN_VALID_VID.getErrorCode(),
-							ResidentErrorCode.IN_VALID_VID.getErrorCode(),
+					throw new IdRepoAppException(ResidentErrorCode.INVALID_VID.getErrorCode(),
+							ResidentErrorCode.INVALID_VID.getErrorCode(),
 							"In valid response while requesting from ID Repositary");
 				if (!vidResponse.getErrors().isEmpty()) {
 					List<ServiceError> error = vidResponse.getErrors();
-					throw new IdRepoAppException(ResidentErrorCode.IN_VALID_VID.getErrorCode(),
-							ResidentErrorCode.IN_VALID_VID.getErrorMessage(), error.get(0).getMessage());
+					throw new IdRepoAppException(ResidentErrorCode.INVALID_VID.getErrorCode(),
+							ResidentErrorCode.INVALID_VID.getErrorMessage(), error.get(0).getMessage());
 				}
 
 				VidGeneratorResponseDto vidGeneratorResponseDto = JsonUtil.readValue(
@@ -135,11 +135,11 @@ public class Utilitiy {
 	public JSONObject retrieveErrorCode(IdType idType,ResponseWrapper<IdRepoResponseDto> response,String id) throws ResidentServiceCheckedException {
 		ResidentErrorCode errorCode;
 		if (idType.equals(IdType.UIN))
-			errorCode = ResidentErrorCode.IN_VALID_UIN;
+			errorCode = ResidentErrorCode.INVALID_UIN;
 		else if (idType.equals(IdType.RID))
-			errorCode = ResidentErrorCode.IN_VALID_RID;
+			errorCode = ResidentErrorCode.INVALID_RID;
 		else
-			errorCode = ResidentErrorCode.IN_VALID_VID_UIN;
+			errorCode = ResidentErrorCode.INVALID_VID_UIN;
 		try {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 					"Utilitiy::retrieveIdrepoJson()::id repo response for given id::"
