@@ -223,7 +223,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		} catch (OtpValidationFailedException e) {
 			notificationRequestDto.setId(requestDto.getIndividualId());
 			notificationRequestDto.setIdType(IdType.VID);
-			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_SUCCESS);
+			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
 			notificationService.sendNotification(notificationRequestDto);
 			throw e;
 		}
