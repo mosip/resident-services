@@ -34,6 +34,7 @@ import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ JsonUtil.class })
@@ -158,6 +159,23 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
+		Utilitiy utilitySpy = Mockito.spy(utility);
+		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", IdType.UIN);
+		assertEquals("girish.yarru@mindtree.com", attributes.get("email"));
+
+		ReflectionTestUtils.setField(utilitySpy, "languageType", "NA");
+		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", IdType.UIN);
+		assertEquals("girish.yarru@mindtree.com", attributes1.get("email"));
+
+	}
+	
+	@Test(expected = ResidentServiceException.class)
+	public void testGetMailingAttributesJSONParsingException() throws Exception {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = "";
 		Utilitiy utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", IdType.UIN);
