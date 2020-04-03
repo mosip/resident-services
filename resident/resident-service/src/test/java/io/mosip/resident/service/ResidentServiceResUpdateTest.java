@@ -122,6 +122,14 @@ public class ResidentServiceResUpdateTest {
 		residentServiceImpl.reqUinUpdate(dto);
 
 	}
+	
+	@Test(expected = ResidentServiceException.class)
+	public void JsonParsingException()
+			throws OtpValidationFailedException, IOException, ResidentServiceCheckedException {
+		Mockito.when(utility.getMappingJson()).thenReturn(null);
+		residentServiceImpl.reqUinUpdate(dto);
+
+	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void inValidResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {

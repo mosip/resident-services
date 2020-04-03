@@ -30,6 +30,7 @@ import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 
 /**
  * 
@@ -171,6 +172,10 @@ public class Utilitiy {
 				"Utilitiy::getMailingAttributes()::entry");
 		Map<String, Object> attributes = new HashMap<>();
 		String mappingJsonString = getMappingJson();
+		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
+		}
 		JSONObject mappingJsonObject;
 		try {
 			JSONObject demographicIdentity = retrieveIdrepoJson(id, idType);

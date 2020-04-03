@@ -507,6 +507,10 @@ public class ResidentServiceImpl implements ResidentService {
 			JSONObject demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
 			String mappingJson = utility.getMappingJson();
+			if(demographicIdentity==null || demographicIdentity.isEmpty()|| mappingJson==null || mappingJson.trim().isEmpty()) {
+				throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+						ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
+			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
 			JSONObject mappingIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 			String poaMapping = getDocumentName(mappingIdentity, PROOF_OF_ADDRESS);
