@@ -1,6 +1,11 @@
 package io.mosip.resident.util;
 
-import io.mosip.resident.exception.TokenGenerationFailedException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+import java.io.IOException;
+
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -12,19 +17,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.core.env.Environment;
 
-import java.io.IOException;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import io.mosip.kernel.core.util.TokenHandlerUtil;
+import io.mosip.resident.exception.TokenGenerationFailedException;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ HttpClientBuilder.class })
+@PrepareForTest({ HttpClientBuilder.class, TokenHandlerUtil.class })
 public class TokenGeneratorTest {
 
     @Mock
@@ -52,6 +55,8 @@ public class TokenGeneratorTest {
         when(environment.getProperty("KERNELAUTHMANAGER")).thenReturn("http://localhost:8080");
         when(environment.getProperty("token.request.id")).thenReturn("RequestId");
         when(environment.getProperty("token.request.id")).thenReturn("RequestId");
+		when(environment.getProperty("token.request.issuerUrl")).thenReturn("http://keycloak");
+		when(environment.getProperty("resident.clientId")).thenReturn("resident");
         mockStatic(HttpClientBuilder.class);
         when(HttpClientBuilder.create()).thenReturn(httpClientBuilder);
         when(httpClientBuilder.build()).thenReturn(httpClient);
@@ -60,9 +65,9 @@ public class TokenGeneratorTest {
 
     @Test
     public void getTokenTest() throws IOException {
-        String token = "token";
+		String token = "Authorizationtoken";
         org.apache.http.HttpEntity entity = new StringEntity(token, null, null);
-        BasicHeader header = new BasicHeader("token", "token;");
+		BasicHeader header = new BasicHeader("token", "Authorizationtoken;");
         BasicHeader[] headers = new BasicHeader[1];
         headers[0] = header;
 
@@ -93,4 +98,22 @@ public class TokenGeneratorTest {
 
         tokenGenerator.getToken();
     }
+
+	@Test
+	public void getExistingTokenTest() throws Exception {
+		PowerMockito.mockStatic(TokenHandlerUtil.class);
+		PowerMockito.when(TokenHandlerUtil.class, "isValidBearerToken", "Authorizationtoken", "", "").thenReturn(true);
+		String token = "Authorizationtoken";
+		org.apache.http.HttpEntity entity = new StringEntity(token, null, null);
+		BasicHeader header = new BasicHeader("token", "Authorizationtoken;");
+		BasicHeader[] headers = new BasicHeader[1];
+		headers[0] = header;
+
+		when(response.getEntity()).thenReturn(entity);
+		when(response.getHeaders("Set-Cookie")).thenReturn(headers);
+		System.setProperty("token", "token");
+		String result = tokenGenerator.getToken();
+
+		Assert.assertTrue("Expected token", result.equals(token));
+	}
 }
