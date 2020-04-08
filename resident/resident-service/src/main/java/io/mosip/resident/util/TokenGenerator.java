@@ -1,13 +1,7 @@
 package io.mosip.resident.util;
 
-import com.google.gson.Gson;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.dto.ClientIdSecretKeyRequestDto;
-import io.mosip.resident.dto.TokenRequestDto;
-import io.mosip.resident.exception.TokenGenerationFailedException;
+import java.io.IOException;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -20,7 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import com.google.gson.Gson;
+
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.kernel.core.util.TokenHandlerUtil;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.dto.ClientIdSecretKeyRequestDto;
+import io.mosip.resident.dto.TokenRequestDto;
+import io.mosip.resident.exception.TokenGenerationFailedException;
 
 @Component
 public class TokenGenerator {
@@ -29,6 +33,8 @@ public class TokenGenerator {
 
     @Autowired
     Environment environment;
+
+	private static final String AUTHORIZATION = "Authorization=";
 
 
     /**
@@ -44,6 +50,16 @@ public class TokenGenerator {
     private String generateToken(ClientIdSecretKeyRequestDto dto) throws IOException {
         // TokenRequestDTO<PasswordRequest> tokenRequest = new
         // TokenRequestDTO<PasswordRequest>();
+		String token = System.getProperty("token");
+		boolean isValid = false;
+
+		if (StringUtils.isNotEmpty(token)) {
+
+			isValid = TokenHandlerUtil.isValidBearerToken(token, environment.getProperty("token.request.issuerUrl"),
+					environment.getProperty("resident.clientId"));
+
+		}
+		if (!isValid) {
         TokenRequestDto tokenRequest = new TokenRequestDto();
         tokenRequest.setId(environment.getProperty("token.request.id"));
 
@@ -69,16 +85,18 @@ public class TokenGenerator {
             Header[] cookie = response.getHeaders("Set-Cookie");
             if (cookie.length == 0)
                 throw new TokenGenerationFailedException();
-            String token = response.getHeaders("Set-Cookie")[0].getValue();
+				token = response.getHeaders("Set-Cookie")[0].getValue();
             logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "Cookie => " + cookie[0]);
-
+				System.setProperty("token", token.substring(14, token.indexOf(';')));
             return token.substring(0, token.indexOf(';'));
         } catch (IOException e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
             throw e;
         }
+		}
+		return AUTHORIZATION + token;
     }
 
     private ClientIdSecretKeyRequestDto setRequestDto() {
