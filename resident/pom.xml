@@ -221,11 +221,12 @@
                     <artifactId>sonar-maven-plugin</artifactId>
                     <version>${maven.sonar.plugin.version}</version>
                 </plugin>
-                <plugin>
+   <!--             <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven.javadoc.version}</version>
                 </plugin>
+   -->
             </plugins>
         </pluginManagement>
         <plugins>
@@ -257,10 +258,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+  <!--          <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
             </plugin>
+-->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -269,7 +271,7 @@
                 <configuration>
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
             <plugin>
@@ -306,7 +308,7 @@
                     </archive>
                 </configuration>
             </plugin>
-			<!--                    <plugin>
+	                 <plugin>
                   		<groupId>org.apache.maven.plugins</groupId>
                   		<artifactId>maven-source-plugin</artifactId>
                   		<version>2.2.1</version>
@@ -347,10 +349,15 @@
                           			<goals>
                                 			<goal>sign</goal>
                           			</goals>
+						<configuration>
+                					<gpgArguments>
+                    						<arg>--pinentry-mode</arg>
+                    						<arg>loopback</arg>
+                					</gpgArguments>
+            		 			</configuration>
                         		</execution>
                   		</executions>
                 	</plugin>
--->
         </plugins>
     </build>
 </project>
