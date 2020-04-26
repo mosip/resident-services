@@ -7,11 +7,11 @@
 	<parent>
 		<groupId>io.mosip.resident</groupId>
 		<artifactId>resident-parent</artifactId>
-		<version>1.0.6</version>
+		<version>1.0.9</version>
 	</parent>
 	<artifactId>resident-service</artifactId>
 	<name>resident-service</name>
-	<version>1.0.8</version>
+	<version>1.0.9</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -141,6 +141,16 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>${google.gson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+			<version>${io.micrometer.prometheus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${io.micrometer.prometheus.version}</version>
 		</dependency>
 	</dependencies>
 		<build>
