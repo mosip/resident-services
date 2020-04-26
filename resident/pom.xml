@@ -6,7 +6,7 @@
 
     <groupId>io.mosip.resident</groupId>
     <artifactId>resident-parent</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.9</version>
     <packaging>pom</packaging>
     <name>resident</name>
     <description>Parent project of MOSIP Resident</description>
@@ -146,6 +146,7 @@
         <powermock.module.junit4.version>2.0.0</powermock.module.junit4.version>
         <powermock.api.mockito.version>2.0.2</powermock.api.mockito.version>
         <mockito.version>2.22.0</mockito.version>
+        <io.micrometer.prometheus.version>1.4.2</io.micrometer.prometheus.version>
 
 
         <sonar.coverage.exclusions>
