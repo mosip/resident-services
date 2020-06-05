@@ -52,7 +52,7 @@ public class Utilitiy {
 	@Value("${config.server.file.storage.uri}")
 	private String configServerFileStorageURL;
 
-	@Value("${registration.processor.identityjson}")
+	@Value("${resident.identityjson}")
 	private String getRegProcessorIdentityJson;
 
 	@Value("${mosip.primary-language}")
