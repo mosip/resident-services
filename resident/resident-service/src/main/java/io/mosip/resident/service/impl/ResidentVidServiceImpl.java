@@ -212,7 +212,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-		Long uin = null;
+		String uin = null;
 
 		try {
 			boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(), requestDto.getIndividualId(),
@@ -278,13 +278,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return responseDto;
 	}
 
-	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, Long uin)
+	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, String uin)
 			throws JsonProcessingException, IOException, ApisResourceAccessException, ResidentServiceCheckedException {
 		VidGeneratorRequestDto vidRequestDto = new VidGeneratorRequestDto();
 		RequestWrapper<VidGeneratorRequestDto> request = new RequestWrapper<>();
 		ResponseWrapper<VidGeneratorResponseDto> response = null;
 
-		vidRequestDto.setUIN(uin.toString());
+		vidRequestDto.setUIN(uin);
 		vidRequestDto.setVidStatus(requestDto.getVidStatus());
 		vidRequestDto.setVidType(VidType.PERPETUAL.name());
 		request.setId(vidRevokeId);
