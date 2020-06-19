@@ -171,7 +171,7 @@
             <version>${jcl.to.slf4j.version}</version>
         </dependency>
     </dependencies>
-    <profiles>
+<!--    <profiles>
         <profile>
             <id>LOCAL</id>
             <properties>
@@ -200,6 +200,7 @@
             </properties>
         </profile>
     </profiles>
+-->
     <build>
         <pluginManagement>
             <plugins>
