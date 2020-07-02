@@ -104,7 +104,7 @@ jobs:
     - name: Publish the maven package
       run: |
         chmod +x ./deploy.sh
-        ./deploy.sh resident $GITHUB_WORKSPACE/settings.xml SNAPSHOT
+        cd resident && mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml -f pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.access_token }}
         GPG_TTY: $(tty)
