@@ -50,15 +50,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- maven -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.version>3.7.0</maven.compiler.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.version>3.8.0</maven.compiler.version>
         <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
         <maven.war.plugin.version>3.1.0</maven.war.plugin.version>
-        <maven.surefire.plugin.version>2.9</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>2.22.0</maven.surefire.plugin.version>
         <maven.jacoco.plugin.version>0.8.1</maven.jacoco.plugin.version>
         <maven.sonar.plugin.version>3.7.0.1746</maven.sonar.plugin.version>
-        <maven.javadoc.version>3.0.1</maven.javadoc.version>
+        <!-- <maven.javadoc.version>3.2.0</maven.javadoc.version> -->
         <maven-shade-plugin.version>2.3</maven-shade-plugin.version>
 
         <!-- spring -->
@@ -90,9 +90,9 @@
 
         <!-- test -->
         <junit.version>4.12</junit.version>
-        <mockito.version>1.10.19</mockito.version>
+        <mockito.version>2.23.4</mockito.version>
         <powermock.version>1.7.4</powermock.version>
-        <powermock.beta.version>2.0.0-beta.5</powermock.beta.version>
+        <powermock.beta.version>2.0.7</powermock.beta.version>
 
         <!-- logger -->
         <logback.version>1.2.3</logback.version>
@@ -117,7 +117,7 @@
         <commons.configuration2.version>2.2</commons.configuration2.version>
         <apache.httpcomponents.version>4.5.6</apache.httpcomponents.version>
         <guava.version>19.0</guava.version>
-        <lombok.version>1.16.18</lombok.version>
+        <lombok.version>1.18.8</lombok.version>
         <jsch.version>0.1.54</jsch.version>
         <sshd.version>1.4.0</sshd.version>
         <itextcore.version>7.1.0</itextcore.version>
@@ -211,6 +211,9 @@
                     <configuration>
                         <skip>false</skip>
                         <useFile>false</useFile>
+                        <argLine>
+							--illegal-access=permit
+						</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -230,13 +233,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
-                <!--             <plugin>
-                                 <groupId>org.apache.maven.plugins</groupId>
-                                 <artifactId>maven-javadoc-plugin</artifactId>
-                                 <version>${maven.javadoc.version}</version>
-                             </plugin>
-                -->
+                </plugin>                        
             </plugins>
         </pluginManagement>
         <plugins>
@@ -268,11 +265,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--          <plugin>
-                          <groupId>org.apache.maven.plugins</groupId>
-                          <artifactId>maven-javadoc-plugin</artifactId>
-                      </plugin>
-          -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -331,7 +323,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!-- <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9.1</version>
@@ -344,9 +336,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <doclint>none</doclint>
                 </configuration>
-            </plugin>
+            </plugin> -->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -474,7 +474,7 @@ public class RequestValidatorTest {
 
 	}
 
-	@Test
+	@Test(expected = InvalidInputException.class)
 	public void testValidateRequest() {
 		ResidentReprintRequestDto request = new ResidentReprintRequestDto();
 		request.setIndividualId("3542102");
@@ -486,8 +486,8 @@ public class RequestValidatorTest {
 		reqWrapper.setRequest(request);
 		reqWrapper.setId("mosip.resident.print");
 		reqWrapper.setVersion("v1");
-		boolean result = requestValidator.validateRequest(reqWrapper, RequestIdType.RE_PRINT_ID);
-		assertTrue(result);
+		requestValidator.validateRequest(reqWrapper, RequestIdType.RE_PRINT_ID);
+		//assertTrue(result);
 	}
 
 	@Test(expected = InvalidInputException.class)
