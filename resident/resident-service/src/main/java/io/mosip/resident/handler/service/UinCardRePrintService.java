@@ -75,13 +75,9 @@ public class UinCardRePrintService {
     @Autowired
     private ResidentServiceRestClient restClientService;
 
-    /** The packet creation service. */
-    @Autowired
-    private PacketCreationService packetCreationService;
-
     /** The sync upload encryption service. */
     @Autowired
-    SyncUploadEncryptionService syncUploadEncryptionService;
+    SyncAndUploadService syncUploadEncryptionService;
 
     /** The validator. */
     @Autowired

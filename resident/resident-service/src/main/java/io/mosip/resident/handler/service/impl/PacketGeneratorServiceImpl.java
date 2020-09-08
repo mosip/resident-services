@@ -1,6 +1,5 @@
 package io.mosip.resident.handler.service.impl;
 
-import ch.qos.logback.core.status.StatusUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
@@ -14,16 +13,13 @@ import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.PacketMetaInfoConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DemographicDTO;
-import io.mosip.resident.dto.ErrorDTO;
 import io.mosip.resident.dto.PackerGeneratorFailureDto;
 import io.mosip.resident.dto.PacketGeneratorDto;
 import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.RegistrationDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.PacketCreationService;
-import io.mosip.resident.handler.service.PacketGeneratorService;
-import io.mosip.resident.handler.service.SyncUploadEncryptionService;
+import io.mosip.resident.handler.service.SyncAndUploadService;
 import io.mosip.resident.handler.validator.RequestHandlerRequestValidator;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -37,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -50,7 +45,7 @@ import java.util.Map;
  */
 @Service
 @Qualifier("packetGeneratorService")
-public class PacketGeneratorServiceImpl implements PacketGeneratorService<PacketGeneratorDto> {
+public class PacketGeneratorServiceImpl {
 
 	/** The packet creation service. */
 	@Autowired
@@ -61,7 +56,7 @@ public class PacketGeneratorServiceImpl implements PacketGeneratorService<Packet
 
 	/** The sync upload encryption service. */
 	@Autowired
-	SyncUploadEncryptionService syncUploadEncryptionService;
+	SyncAndUploadService syncUploadEncryptionService;
 
 	@Autowired
 	private Utilities utilities;
@@ -89,7 +84,6 @@ public class PacketGeneratorServiceImpl implements PacketGeneratorService<Packet
 	 * createPacket(io.mosip.registration.processor.packet.service.dto.
 	 * PacketGeneratorDto)
 	 */
-	@Override
 	public PacketGeneratorResDto createPacket(PacketGeneratorDto request) throws BaseCheckedException, IOException {
 		boolean isTransactional = false;
 		PacketGeneratorResDto packerGeneratorResDto = null;

@@ -1,4 +1,4 @@
-package io.mosip.resident.handler.service.impl;
+package io.mosip.resident.handler.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,11 +21,9 @@ import io.mosip.resident.dto.SupervisorStatus;
 import io.mosip.resident.dto.SyncRegistrationDto;
 import io.mosip.resident.dto.SyncResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.SyncUploadEncryptionService;
 import io.mosip.resident.util.EncryptorUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
-import org.jose4j.json.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -40,8 +38,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,8 +49,7 @@ import static io.mosip.kernel.core.util.JsonUtils.javaObjectToJsonString;
  * @author Rishabh Keshari
  */
 @Service
-public class SyncUploadEncryptionServiceImpl
-		implements SyncUploadEncryptionService {
+public class SyncAndUploadService {
 
 	private static final String PACKET_RECEIVED = "PACKET_RECEIVED";
 
@@ -63,7 +58,7 @@ public class SyncUploadEncryptionServiceImpl
 	private static final String FAILURE = "FAILURE";
 
 	/** The reg proc logger. */
-	private static final Logger logger = LoggerConfiguration.logConfig(SyncUploadEncryptionServiceImpl.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(SyncAndUploadService.class);
 
 	/** The rest client service. */
 	@Autowired
