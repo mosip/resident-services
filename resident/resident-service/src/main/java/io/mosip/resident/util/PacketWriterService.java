@@ -1,3 +1,4 @@
+/*
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,7 +15,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.dto.PacketInfo;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.PacketManagerException;
-import io.mosip.resident.handler.service.impl.PacketCreationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -68,3 +68,4 @@ public class PacketWriterService {
     }
 
 }
+*/

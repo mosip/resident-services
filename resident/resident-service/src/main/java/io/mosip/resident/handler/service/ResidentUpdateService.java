@@ -1,13 +1,18 @@
-package io.mosip.resident.handler.service.impl;
+package io.mosip.resident.handler.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.commons.packet.dto.Document;
+import io.mosip.commons.packet.dto.PacketInfo;
 import io.mosip.commons.packet.dto.packet.PacketDto;
+import io.mosip.commons.packet.exception.PacketCreatorException;
+import io.mosip.commons.packet.facade.PacketWriter;
 import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.FileUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -19,24 +24,28 @@ import io.mosip.resident.dto.FieldValue;
 import io.mosip.resident.dto.PackerGeneratorFailureDto;
 import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.PacketCreationService;
-import io.mosip.resident.handler.service.PacketGeneratorService;
-import io.mosip.resident.handler.service.SyncUploadEncryptionService;
 import io.mosip.resident.handler.validator.RequestHandlerRequestValidator;
+import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.PacketWriterService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,23 +57,29 @@ import java.util.Map;
 
 @Service
 @Qualifier("residentUpdateService")
-public class ResidentUpdateServiceImpl implements PacketGeneratorService<ResidentUpdateDto> {
+public class ResidentUpdateService {
 
-	private final Logger logger = LoggerConfiguration.logConfig(ResidentUpdateServiceImpl.class);
+	private final Logger logger = LoggerConfiguration.logConfig(ResidentUpdateService.class);
 	@Autowired
 	private ResidentServiceRestClient restClientService;
 
 	@Autowired
 	RequestHandlerRequestValidator validator;
 
-	@Autowired
-	private PacketCreationService packetCreationService;
+	@Value("${IDSchema.Version}")
+	private String idschemaVersion;
 
 	@Autowired
-	SyncUploadEncryptionService syncUploadEncryptionService;
+	private IdSchemaUtil idSchemaUtil;
 
 	@Autowired
-	private PacketWriterService packetWriterService;
+	SyncAndUploadService syncUploadEncryptionService;
+
+	@Autowired
+	private PacketWriter packetWriter;
+
+	@Autowired
+	private Environment env;
 
 	@Autowired
 	private TokenGenerator tokenGenerator;
@@ -81,24 +96,22 @@ public class ResidentUpdateServiceImpl implements PacketGeneratorService<Residen
 	private static final String TYPE = "type";
 	private static final String VALUE = "value";
 
-	@Override
 	public PacketGeneratorResDto createPacket(ResidentUpdateDto request) throws BaseCheckedException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
 		byte[] packetZipBytes = null;
 		PackerGeneratorFailureDto dto = new PackerGeneratorFailureDto();
-		boolean isTransactional = false;
-		if (true/*validator.isValidCenter(request.getCenterId()) && validator.isValidMachine(request.getMachineId())
+		if (validator.isValidCenter(request.getCenterId()) && validator.isValidMachine(request.getMachineId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
 						? validator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.toString(),
 								request.getIdValue())
-						: validator.isValidVid(request.getIdValue())*/) {
+						: validator.isValidVid(request.getIdValue())) {
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 					request.getIdValue(),
 					"ResidentUpdateServiceImpl::createPacket()::validations for UIN,TYPE,CENTER,MACHINE are successful");
 
-			PacketDto packetDto = new PacketDto();
+			File file = null;
 
 			try {
 				Map<String, String> idMap = new HashMap<>();
@@ -106,8 +119,14 @@ public class ResidentUpdateServiceImpl implements PacketGeneratorService<Residen
 				JSONObject demoJsonObject = JsonUtil.objectMapperReadValue(demoJsonString, JSONObject.class);
 				LinkedHashMap<String, String> fields = (LinkedHashMap<String, String>) demoJsonObject.get(IDENTITY);
 
-				fields.keySet().forEach(key -> idMap.put(key, fields.get(key)));
-
+				fields.keySet().forEach(key -> {
+					try {
+						idMap.put(key, fields.get(key) != null ? JsonUtils.javaObjectToJsonString(fields.get(key)) : null);
+					} catch (JsonProcessingException e) {
+						throw new BaseUncheckedException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+								ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage(), e);
+					}
+				});
 
 				// set demographic documents
 				Map<String, Document> map = new HashMap<>();
@@ -121,22 +140,30 @@ public class ResidentUpdateServiceImpl implements PacketGeneratorService<Residen
 				if (request.getProofOfIdentity() != null && !request.getProofOfIdentity().isEmpty())
 					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_IDENTITY, map);
 
-
+				PacketDto packetDto = new PacketDto();
+				packetDto.setId(generateRegistrationId(request.getCenterId(), request.getMachineId()));
+				packetDto.setSource(utilities.getDefaultSource());
+				packetDto.setProcess(RegistrationType.RES_UPDATE.toString());
+				packetDto.setSchemaVersion(idschemaVersion);
+				packetDto.setSchemaJson(idSchemaUtil.getIdSchema(Double.valueOf(idschemaVersion)));
 				packetDto.setFields(idMap);
 				packetDto.setDocuments(map);
 				packetDto.setMetaInfo(getRegistrationMetaData(request.getIdValue(),
 						request.getRequestType().toString(), request.getCenterId(), request.getMachineId()));
-				packetDto.setId(generateRegistrationId(request.getCenterId(), request.getMachineId()));
-				packetDto.setProcess(RegistrationType.RES_UPDATE.toString());
-				packetDto.setSource(utilities.getDefaultSource());
+				packetDto.setAudits(utilities.generateAudit(packetDto.getId()));
 
-				/*RegistrationDTO registrationDTO = createRegistrationDTOObject(request.getIdValue(),
-						request.getRequestType().toString(), request.getCenterId(), request.getMachineId());
+				List<PacketInfo> packetInfos = packetWriter.createPacket(packetDto, false);
 
-				registrationDTO.setRegType(RegistrationType.RES_UPDATE.toString());
-				registrationDTO.setDemographicDTO(demographicDTO);*/
+				if (CollectionUtils.isEmpty(packetInfos) || packetInfos.iterator().next().getId() == null)
+					throw new PacketCreatorException(ResidentErrorCode.PACKET_CREATION_EXCEPTION.getErrorCode(), ResidentErrorCode.PACKET_CREATION_EXCEPTION.getErrorMessage());
 
-				packetZipBytes = packetCreationService.create(packetDto, request.getCenterId(), request.getMachineId());
+				file = new File(env.getProperty("object.store.base.location")
+						+ File.separator + env.getProperty("packet.manager.account.name")
+						+ File.separator + packetInfos.iterator().next().getId() + ".zip");
+
+				FileInputStream fis = new FileInputStream(file);
+
+				packetZipBytes = IOUtils.toByteArray(fis);
 
 				String rid = packetDto.getId();
 				String packetCreatedDateTime = rid.substring(rid.length() - 14);
@@ -157,7 +184,6 @@ public class ResidentUpdateServiceImpl implements PacketGeneratorService<Residen
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(),
 						"ResidentUpdateServiceImpl::createPacket()::packet synched and uploaded");
-				isTransactional = true;
 				return packerGeneratorResDto;
 			} catch (Exception e) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(),
@@ -170,6 +196,9 @@ public class ResidentUpdateServiceImpl implements PacketGeneratorService<Residen
 				throw new BaseCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage(), e);
 
+			} finally {
+				if (file != null && file.exists())
+					FileUtils.forceDelete(file);
 			}
 
 		} else
@@ -190,37 +219,31 @@ public class ResidentUpdateServiceImpl implements PacketGeneratorService<Residen
 		map.put(documentName, docDetailsDto);
 	}
 
-	/*private RegistrationDTO createRegistrationDTOObject(String uin, String registrationType, String centerId,
-			String machineId) throws BaseCheckedException {
-		RegistrationDTO registrationDTO = new RegistrationDTO();
-		Map<String, String> metadata = getRegistrationMetaData(registrationType, uin, centerId,
-				machineId);
-		String registrationId = generateRegistrationId(centerId,
-				machineId);
-		registrationDTO.setRegistrationId(registrationId);
-		registrationDTO.setMetadata(metadata);
-		return registrationDTO;
-
-	}*/
-
 	private Map<String, String> getRegistrationMetaData(String registrationType, String uin, String centerId,
 															String machineId) throws JsonProcessingException {
 
 		Map<String, String> metadata = new HashMap<>();
 
 		FieldValue[] fieldValues = new FieldValue[4];
+		FieldValue fieldValue0 = new FieldValue();
+		fieldValue0.setLabel(PacketMetaInfoConstants.CENTERID);
+		fieldValue0.setValue(centerId);
+		fieldValues[0] = fieldValue0;
 
-		fieldValues[0].setLabel(PacketMetaInfoConstants.CENTERID);
-		fieldValues[0].setValue(centerId);
+		FieldValue fieldValue1 = new FieldValue();
+		fieldValue1.setLabel(PacketMetaInfoConstants.MACHINEID);
+		fieldValue1.setValue(machineId);
+		fieldValues[1] = fieldValue1;
 
-		fieldValues[1].setLabel(PacketMetaInfoConstants.MACHINEID);
-		fieldValues[1].setValue(machineId);
+		FieldValue fieldValue2 = new FieldValue();
+		fieldValue2.setLabel(PacketMetaInfoConstants.REGISTRATION_TYPE);
+		fieldValue2.setValue(registrationType);
+		fieldValues[2] = fieldValue2;
 
-		fieldValues[2].setLabel(PacketMetaInfoConstants.REGISTRATION_TYPE);
-		fieldValues[2].setValue(registrationType);
-
-		fieldValues[3].setLabel(PacketMetaInfoConstants.UIN);
-		fieldValues[3].setValue(uin);
+		FieldValue fieldValue3 = new FieldValue();
+		fieldValue3.setLabel(PacketMetaInfoConstants.UIN);
+		fieldValue3.setValue(uin);
+		fieldValues[3] = fieldValue3;
 
 		metadata.put("metadata", JsonUtils.javaObjectToJsonString(fieldValues));
 		return metadata;
