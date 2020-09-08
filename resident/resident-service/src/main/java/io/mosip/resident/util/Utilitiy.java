@@ -10,7 +10,9 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -64,6 +66,9 @@ public class Utilitiy {
 	@Value("${mosip.notification.language-type}")
 	private String languageType;
 
+	@Autowired
+	private RestTemplate residentRestTemplate;
+
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 
@@ -77,15 +82,15 @@ public class Utilitiy {
 		try {
 			if (IdType.UIN.equals(idType))
 				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
-						ApiName.IDREPOGETIDBYUIN, pathsegments, null, null, ResponseWrapper.class,
-						tokenGenerator.getToken());
+						ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class,
+						tokenGenerator.getRegprocToken());
 			else if (IdType.RID.equals(idType))
 				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
-						ApiName.IDREPOGETIDBYRID, pathsegments, null, null, ResponseWrapper.class,
+						ApiName.IDREPOGETIDBYRID, pathsegments, "", null, ResponseWrapper.class,
 						tokenGenerator.getToken());
 			else if (IdType.VID.equals(idType)) {
 				ResponseWrapper<VidGeneratorResponseDto> vidResponse = (ResponseWrapper<VidGeneratorResponseDto>) residentServiceRestClient
-						.getApi(ApiName.GETUINBYVID, pathsegments, null, null, ResponseWrapper.class,
+						.getApi(ApiName.GETUINBYVID, pathsegments, "", null, ResponseWrapper.class,
 								tokenGenerator.getToken());
 				logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 						"Utilitiy::retrieveIdrepoJson()::vidResponse::" + JsonUtil.writeValueAsString(vidResponse));
@@ -105,7 +110,7 @@ public class Utilitiy {
 				pathsegments.clear();
 				pathsegments.add(uin);
 				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
-						ApiName.IDREPOGETIDBYUIN, pathsegments, null, null, ResponseWrapper.class,
+						ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class,
 						tokenGenerator.getToken());
 			}
 		} catch (IOException e) {
@@ -217,8 +222,7 @@ public class Utilitiy {
 	}
 
 	public String getMappingJson() {
-		RestTemplate restTemplate = new RestTemplate();
-		return restTemplate.getForObject(configServerFileStorageURL + getRegProcessorIdentityJson, String.class);
+		return residentRestTemplate.getForObject(configServerFileStorageURL + getRegProcessorIdentityJson, String.class);
 	}
 
 }

@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-core</artifactId>
-			<version>1.0.8</version>
+			<version>1.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -161,6 +161,22 @@
 		    <groupId>javax.xml.bind</groupId>
 		    <artifactId>jaxb-api</artifactId>
 		    <version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.8.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.commons</groupId>
+			<artifactId>commons-packet-manager</artifactId>
+			<version>1.2.0-SNAPSHOT</version>
+			<!--<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-auth-adapter</artifactId>
+				</exclusion>
+			</exclusions>-->
 		</dependency>
 	</dependencies>
 		<build>

@@ -68,7 +68,7 @@ public class ResidentServiceRestClientTest {
 		ResponseEntity<AutnTxnResponseDto> obj=new ResponseEntity<AutnTxnResponseDto>(autnTxnResponseDto, HttpStatus.OK);
 		URI uri=UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234").build(false).encode().toUri();
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenReturn(obj);
 		
@@ -81,7 +81,7 @@ public class ResidentServiceRestClientTest {
 		
 		URI uri=UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234").build(false).encode().toUri();
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.exchange(any(URI.class), any(HttpMethod.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenThrow(new RestClientException(""));
 		
@@ -103,7 +103,7 @@ public class ResidentServiceRestClientTest {
 		list.add("1234");
 		
 		
-		assertTrue(client.getApi(ApiName.INTERNALAUTHTRANSACTIONS,list,null,null, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+		assertTrue(client.getApi(ApiName.INTERNALAUTHTRANSACTIONS,list,"",null, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
 	}
 	@Test(expected=ApisResourceAccessException.class)
 	public void testgetApiObjectException() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ApisResourceAccessException {
@@ -130,7 +130,7 @@ public class ResidentServiceRestClientTest {
 		
 		
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.postForObject(any(String.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenReturn(autnTxnResponseDto);
 		
@@ -143,7 +143,7 @@ public class ResidentServiceRestClientTest {
 		
 		
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.postForObject(any(String.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenThrow(new RestClientException(""));
 		
@@ -157,7 +157,7 @@ public class ResidentServiceRestClientTest {
 		
 		
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.patchForObject(any(String.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenReturn(autnTxnResponseDto);
 		
@@ -170,7 +170,7 @@ public class ResidentServiceRestClientTest {
 		
 		
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.patchForObject(any(String.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenThrow(new RestClientException(""));
 		
@@ -184,7 +184,7 @@ public class ResidentServiceRestClientTest {
 		ResponseEntity<AutnTxnResponseDto> obj=new ResponseEntity<AutnTxnResponseDto>(autnTxnResponseDto, HttpStatus.OK);
 		
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.exchange(any(String.class), any(HttpMethod.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenReturn(obj);
 		
@@ -197,7 +197,7 @@ public class ResidentServiceRestClientTest {
 		
 		
 		ResidentServiceRestClient client=Mockito.spy(residentServiceRestClient);
-		doReturn(restTemplate).when(client).getRestTemplate();
+		doReturn(restTemplate).when(client).getResidentRestTemplate();
 		when(restTemplate.exchange(any(String.class), any(HttpMethod.class),any(),Matchers.<Class<AutnTxnResponseDto>>any())).
 		thenThrow(new RestClientException(""));
 		
@@ -206,6 +206,6 @@ public class ResidentServiceRestClientTest {
 	@Test
 	public void testgetRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		when(environment.getActiveProfiles()).thenReturn(new String[10]);
-		assertEquals(residentServiceRestClient.getRestTemplate().getRequestFactory().getClass(),HttpComponentsClientHttpRequestFactory.class);
+		assertEquals(residentServiceRestClient.getResidentRestTemplate().getRequestFactory().getClass(),HttpComponentsClientHttpRequestFactory.class);
 	} 
 }

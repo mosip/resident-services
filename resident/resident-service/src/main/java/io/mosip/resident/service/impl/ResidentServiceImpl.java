@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.handler.service.UinCardRePrintService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +106,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private RidValidator<String> ridValidator;
+
+	@Autowired
+	private UinCardRePrintService rePrintService;
 
 	@Autowired
 	Environment env;
@@ -281,32 +288,16 @@ public class ResidentServiceImpl implements ResidentService {
 			rePrintReq.setId(dto.getIndividualId());
 			rePrintReq.setIdType(dto.getIndividualIdType());
 			rePrintReq.setReason("resident");
-			rePrintReq.setRegistrationType("RES_REPRINT");
-			RequestWrapper<RegProcRePrintRequestDto> request = new RequestWrapper<>();
-			request.setRequest(rePrintReq);
-			request.setId("mosip.uincard.reprint");
-			request.setVersion("1.0");
-			request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
-			ResponseWrapper<RegProcCommonResponseDto> response = residentServiceRestClient.postApi(
-					env.getProperty(ApiName.REPRINTUIN.name()), MediaType.APPLICATION_JSON, request,
-					ResponseWrapper.class, tokenGenerator.getToken());
-			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-				sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
-						NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
-				throw new ResidentServiceException(ResidentErrorCode.RE_PRINT_REQUEST_FAILED.getErrorCode(),
-						ResidentErrorCode.RE_PRINT_REQUEST_FAILED.getErrorMessage()
-								+ (response.getErrors().get(0).toString()));
-			}
+			rePrintReq.setRegistrationType(RegistrationType.RES_REPRINT.name());
 
-			RegProcCommonResponseDto responseDto = JsonUtil
-					.readValue(JsonUtil.writeValueAsString(response.getResponse()), RegProcCommonResponseDto.class);
+			PacketGeneratorResDto resDto = rePrintService.createPacket(rePrintReq);
 
 			Map<String, Object> additionalAttributes = new HashMap<>();
-			additionalAttributes.put("RID", responseDto.getRegistrationId());
+			additionalAttributes.put(IdType.RID.name(), resDto.getRegistrationId());
 			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(),
 					IdType.valueOf(dto.getIndividualIdType()), NotificationTemplateCode.RS_UIN_RPR_SUCCESS,
 					additionalAttributes);
-			reprintResponse.setRegistrationId(responseDto.getRegistrationId());
+			reprintResponse.setRegistrationId(resDto.getRegistrationId());
 			reprintResponse.setMessage(notificationResponseDTO.getMessage());
 
 		} catch (OtpValidationFailedException e) {
@@ -340,6 +331,11 @@ public class ResidentServiceImpl implements ResidentService {
 					NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode(),
 					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage(), e);
+		} catch (BaseCheckedException e) {
+			sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
+					NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
+			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 		}
 
 		return reprintResponse;
@@ -525,6 +521,13 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setProofOfRelationship(getDocumentValue(proofOfrelationJson, documents));
 			JSONObject proofOfBirthJson = JsonUtil.getJSONObject(demographicIdentity, pobMapping);
 			regProcReqUpdateDto.setProofOfDateOfBirth(getDocumentValue(proofOfBirthJson, documents));
+
+
+
+
+
+
+
 			RequestWrapper<RegProcUpdateRequestDTO> request = new RequestWrapper<>();
 			request.setId("mosip.registration.update");
 			request.setRequest(regProcReqUpdateDto);

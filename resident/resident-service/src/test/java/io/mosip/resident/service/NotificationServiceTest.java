@@ -110,7 +110,7 @@ public class NotificationServiceTest {
 		primaryTemplateList.add(primaryTemplateDto);
 		primaryTemplateResp.setTemplates(primaryTemplateList);
 		primaryLangResp.setResponse(primaryTemplateResp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
 				Mockito.any(Class.class), Mockito.any())).thenReturn(primaryLangResp);
 
 		String primaryTemplatetext = "Hi Test,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is 10008200070004420191203104356.";
@@ -166,7 +166,7 @@ public class NotificationServiceTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void getTemplateNullResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
 				Mockito.any(Class.class), Mockito.any())).thenReturn(null);
 		notificationService.sendNotification(reqDto);
 
@@ -183,7 +183,7 @@ public class NotificationServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", clientExp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
 				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 
@@ -193,7 +193,7 @@ public class NotificationServiceTest {
 	public void testApiResourceServerException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", serverExp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
 				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
@@ -202,7 +202,7 @@ public class NotificationServiceTest {
 	public void testApiResourceUnknownException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		RuntimeException runTimeExp = new RuntimeException();
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
 				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}

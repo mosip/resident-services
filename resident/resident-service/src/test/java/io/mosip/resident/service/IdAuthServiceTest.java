@@ -235,7 +235,7 @@ public class IdAuthServiceTest {
 		Map<String, List<AutnTxnDto>> responsemap=new HashMap<>();
 		responsemap.put("authTransactions", Arrays.asList(autnTxnDto));
 		response.setResponse(responsemap);
-		when(restClient.getApi(any(), any(),any(), any(), any(Class.class), any())).thenReturn(response);
+		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenReturn(response);
 		assertEquals("OTP-AUTH",idAuthService.getAuthHistoryDetails("1234", "WN", null, null).get(0).getAuthModality());
 	}
 	
@@ -244,13 +244,13 @@ public class IdAuthServiceTest {
 		AutnTxnResponseDto response= new AutnTxnResponseDto();
 		AuthError error=new AuthError("e","e");
 		response.setErrors(Arrays.asList(error));
-		when(restClient.getApi(any(), any(),any(), any(), any(Class.class), any())).thenReturn(response);
+		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenReturn(response);
 		assertEquals(null,idAuthService.getAuthHistoryDetails("1234", "WN", null, null));
 	}
 	
 	@Test(expected = ApisResourceAccessException.class)
 	public void testGetAuthHistoryDetailsFetchFailure() throws ApisResourceAccessException {
-		when(restClient.getApi(any(), any(),any(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException() );
+		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException() );
 		idAuthService.getAuthHistoryDetails("1234", "WN", "1", "10");
 	}
 }
