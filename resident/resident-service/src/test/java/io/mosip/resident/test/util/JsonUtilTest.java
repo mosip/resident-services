@@ -1,10 +1,11 @@
-package io.mosip.resident.util;
+package io.mosip.resident.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import io.mosip.resident.util.JsonUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Before;

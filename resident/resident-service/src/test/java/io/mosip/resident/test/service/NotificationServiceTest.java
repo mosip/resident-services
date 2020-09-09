@@ -1,4 +1,4 @@
-package io.mosip.resident.service;
+package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
 

@@ -28,7 +28,7 @@ import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.validator.RequestHandlerRequestValidator;
+import io.mosip.resident.validator.RequestHandlerRequestValidator;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -37,10 +37,9 @@ import io.mosip.resident.util.Utilities;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -55,8 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
-@Qualifier("residentUpdateService")
+@Component
 public class ResidentUpdateService {
 
 	private final Logger logger = LoggerConfiguration.logConfig(ResidentUpdateService.class);
@@ -80,6 +78,9 @@ public class ResidentUpdateService {
 
 	@Autowired
 	private Environment env;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Autowired
 	private TokenGenerator tokenGenerator;
@@ -256,14 +257,13 @@ public class ResidentUpdateService {
 		String rid = null;
 		ResponseWrapper<?> responseWrapper;
 		JSONObject ridJson;
-		ObjectMapper mapper = new ObjectMapper();
 		try {
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					"", "PacketGeneratorServiceImpl::generateRegistrationId():: RIDgeneration Api call started");
 			responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.RIDGENERATION, pathsegments, "", "",
 					ResponseWrapper.class, tokenGenerator.getToken());
-			if (responseWrapper.getErrors() == null) {
+			if (CollectionUtils.isEmpty(responseWrapper.getErrors())) {
 				ridJson = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()), JSONObject.class);
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), "",

@@ -1778,4 +1778,10 @@ public class RegistrationConstants {
 
 	public static final String EXCEPTION_PHOTO = "Exception_Photo";
 
+	public static final String REG_SYNC_SERVICE_ID = "mosip.registration.processor.registration.sync.id";
+	public static final String REG_SYNC_APPLICATION_VERSION = "mosip.registration.processor.application.version";
+	public static final String DATETIME_PATTERN = "mosip.registration.processor.datetime.pattern";
+	public static final String SYNCSTATUSCOMMENT = "UIN Reactivation and Deactivation By External Resources";
+	public static final String EXTENSION_OF_FILE = ".zip";
+
 }

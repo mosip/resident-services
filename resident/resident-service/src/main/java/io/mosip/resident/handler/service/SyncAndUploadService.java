@@ -12,6 +12,7 @@ import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.RegistrationConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.PacketReceiverResponseDTO;
@@ -84,12 +85,6 @@ public class SyncAndUploadService {
 	@Autowired
 	private Environment env;
 
-	private static final String REG_SYNC_SERVICE_ID = "mosip.registration.processor.registration.sync.id";
-	private static final String REG_SYNC_APPLICATION_VERSION = "mosip.registration.processor.application.version";
-	private static final String DATETIME_PATTERN = "mosip.registration.processor.datetime.pattern";
-	private static final String SYNCSTATUSCOMMENT = "UIN Reactivation and Deactivation By External Resources";
-	private static final String EXTENSION_OF_FILE = ".zip";
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,7 +105,7 @@ public class SyncAndUploadService {
 			ByteArrayResource contentsAsResource = new ByteArrayResource(packetZipBytes) {
 				@Override
 				public String getFilename() {
-					return registartionId + EXTENSION_OF_FILE;
+					return registartionId + RegistrationConstants.EXTENSION_OF_FILE;
 				}
 			};
 
@@ -227,10 +222,10 @@ public class SyncAndUploadService {
 			String hashSequence = HMACUtils.digestAsPlainText(HMACUtils.updatedHash());
 
 			// Prepare RegistrationSyncRequestDTO
-			registrationSyncRequestDTO.setId(env.getProperty(REG_SYNC_SERVICE_ID));
-			registrationSyncRequestDTO.setVersion(env.getProperty(REG_SYNC_APPLICATION_VERSION));
+			registrationSyncRequestDTO.setId(env.getProperty(RegistrationConstants.REG_SYNC_SERVICE_ID));
+			registrationSyncRequestDTO.setVersion(env.getProperty(RegistrationConstants.REG_SYNC_APPLICATION_VERSION));
 			registrationSyncRequestDTO
-					.setRequesttime(DateUtils.getUTCCurrentDateTimeString(env.getProperty(DATETIME_PATTERN)));
+					.setRequesttime(DateUtils.getUTCCurrentDateTimeString(env.getProperty(RegistrationConstants.DATETIME_PATTERN)));
 
 			syncDto.setLangCode("eng");
 			syncDto.setRegistrationId(regId);
@@ -238,7 +233,7 @@ public class SyncAndUploadService {
 			syncDto.setPacketHashValue(hashSequence);
 			syncDto.setPacketSize(BigInteger.valueOf(enryptedUinZipFile.length));
 			syncDto.setSupervisorStatus(SupervisorStatus.APPROVED.toString());
-			syncDto.setSupervisorComment(SYNCSTATUSCOMMENT);
+			syncDto.setSupervisorComment(RegistrationConstants.SYNCSTATUSCOMMENT);
 
 			syncDtoList.add(syncDto);
 			registrationSyncRequestDTO.setRequest(syncDtoList);

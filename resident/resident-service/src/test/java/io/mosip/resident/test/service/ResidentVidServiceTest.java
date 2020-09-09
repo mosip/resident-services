@@ -1,4 +1,4 @@
-package io.mosip.resident.service;
+package io.mosip.resident.test.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.ServiceError;
@@ -6,6 +6,9 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.*;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;

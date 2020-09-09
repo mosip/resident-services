@@ -29,10 +29,9 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidRequestDto1;
 import io.mosip.resident.dto.VidResponseDTO1;
-import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.handler.validator.RequestHandlerRequestValidator;
+import io.mosip.resident.validator.RequestHandlerRequestValidator;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -70,6 +69,9 @@ public class UinCardRePrintService {
 
     @Autowired
     private IdSchemaUtil idSchemaUtil;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     /** The rest client service. */
     @Autowired
@@ -166,14 +168,14 @@ public class UinCardRePrintService {
                             "UinCardRePrintService::createPacket():: post CREATEVID service call started with request data : "
                                     + JsonUtil.objectMapperObjectToJson(vidRequestDto));
 
-                    response = (VidResponseDTO1) restClientService.postApi(env.getProperty(ApiName.CREATEVID.name()), MediaType.APPLICATION_JSON, request,
-                            VidResponseDto.class, tokenGenerator.getToken());
+                    response = restClientService.postApi(env.getProperty(ApiName.CREATEVID.name()), MediaType.APPLICATION_JSON, request,
+                            VidResponseDTO1.class, tokenGenerator.getToken());
 
                     logger.debug(LoggerFileConstant.SESSIONID.toString(),
                             LoggerFileConstant.REGISTRATIONID.toString(), "",
                             "UinCardRePrintService::createPacket():: post CREATEVID service call ended successfully");
 
-                    if (!response.getErrors().isEmpty()) {
+                    if (!CollectionUtils.isEmpty(response.getErrors())) {
                         throw new VidCreationException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
 
                     } else {
@@ -328,14 +330,13 @@ public class UinCardRePrintService {
         String rid = null;
         ResponseWrapper<?> responseWrapper;
         JSONObject ridJson;
-        ObjectMapper mapper = new ObjectMapper();
         try {
 
             logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
                     "", "UinCardRePrintServiceImpl::generateRegistrationId():: RIDgeneration Api call started");
             responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.RIDGENERATION, pathsegments, "", "",
                     ResponseWrapper.class, tokenGenerator.getToken());
-            if (responseWrapper.getErrors() == null) {
+            if (CollectionUtils.isEmpty(responseWrapper.getErrors())) {
                 ridJson = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()), JSONObject.class);
                 logger.debug(LoggerFileConstant.SESSIONID.toString(),
                         LoggerFileConstant.REGISTRATIONID.toString(), "",

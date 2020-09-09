@@ -1,6 +1,5 @@
-package io.mosip.resident.handler.validator;
+package io.mosip.resident.validator;
 
-import ch.qos.logback.core.status.StatusUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
@@ -15,7 +14,6 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.ErrorDTO;
 import io.mosip.resident.dto.LogDescription;
 import io.mosip.resident.dto.MachineResponseDto;
 import io.mosip.resident.dto.RegistrationCenterResponseDto;

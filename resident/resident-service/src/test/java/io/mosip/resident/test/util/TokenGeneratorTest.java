@@ -1,4 +1,4 @@
-package io.mosip.resident.util;
+package io.mosip.resident.test.util;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -6,6 +6,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.io.IOException;
 
+import io.mosip.resident.util.TokenGenerator;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;

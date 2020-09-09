@@ -1,4 +1,4 @@
-package io.mosip.resident.util;
+package io.mosip.resident.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.mosip.resident.util.ResidentServiceRestClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 @RunWith(MockitoJUnitRunner.class)
 public class ResidentServiceRestClientTest {
 	@InjectMocks
-	ResidentServiceRestClient residentServiceRestClient=new ResidentServiceRestClient();
+    ResidentServiceRestClient residentServiceRestClient=new ResidentServiceRestClient();
 	
 	@Mock
 	RestTemplateBuilder builder;
