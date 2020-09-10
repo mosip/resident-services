@@ -71,7 +71,6 @@ public class RequestHandlerRequestValidatorTest {
 
     @Before
     public void setup() throws ApisResourceAccessException, IOException {
-        ReflectionTestUtils.setField(requestHandlerRequestValidator, "gracePeriod", 120);
         ReflectionTestUtils.setField(requestHandlerRequestValidator, "primaryLanguagecode", "eng");
         Mockito.when(env.getProperty(any())).thenReturn(PROPERTY);
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class), any())).thenReturn(new ResponseWrapper<>());
@@ -95,16 +94,6 @@ public class RequestHandlerRequestValidatorTest {
         rcpdto.setRegistrationCenters(Lists.newArrayList(registrationCenterDto));
 
         Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenReturn(rcpdto);
-
-        boolean result = requestHandlerRequestValidator.isValidCenter(ID);
-        assertTrue(result);
-    }
-
-    @Test(expected = BaseCheckedException.class)
-    @Ignore
-    public void testApisResourceAccessExceptionForCenter() throws BaseCheckedException, IOException {
-        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
-                any(Class.class), any())).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
 
         boolean result = requestHandlerRequestValidator.isValidCenter(ID);
         assertTrue(result);

@@ -98,15 +98,15 @@ public class Utilities {
 	private String configServerFileStorageURL;
 
 	/** The get reg processor identity json. */
-	@Value("${registration.processor.identityjson}")
+	@Value("${resident.identityjson}")
 	private String getRegProcessorIdentityJson;
 
 	/** The id repo update. */
-	@Value("${registration.processor.id.repo.update}")
+	@Value("${id.repo.update}")
 	private String idRepoUpdate;
 
 	/** The vid version. */
-	@Value("${registration.processor.id.repo.vidVersion}")
+	@Value("${resident.vid.version}")
 	private String vidVersion;
 
 

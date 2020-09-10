@@ -96,17 +96,17 @@ public class UinCardRePrintService {
     Utilities utilities;
 
     /** The vid type. */
-    @Value("${registration.processor.id.repo.vidType}")
+    @Value("${id.repo.vidType}")
     private String vidType;
 
     /** The Constant VID_CREATE_ID. */
-    public static final String VID_CREATE_ID = "registration.processor.id.repo.generate";
+    public static final String VID_CREATE_ID = "vid.create.id";
 
     /** The Constant REG_PROC_APPLICATION_VERSION. */
-    public static final String REG_PROC_APPLICATION_VERSION = "registration.processor.id.repo.vidVersion";
+    public static final String REG_PROC_APPLICATION_VERSION = "resident.vid.version";
 
     /** The Constant DATETIME_PATTERN. */
-    public static final String DATETIME_PATTERN = "mosip.registration.processor.datetime.pattern";
+    public static final String DATETIME_PATTERN = "resident.datetime.pattern";
 
     /** The Constant UIN. */
     public static final String UIN = "UIN";
@@ -117,7 +117,7 @@ public class UinCardRePrintService {
     /** The reg proc logger. */
     private final Logger logger = LoggerConfiguration.logConfig(UinCardRePrintService.class);
 
-    public static final String VID_TYPE = "registration.processor.id.repo.vidType";
+    public static final String VID_TYPE = "id.repo.vidType";
 
     /**
      * Creates the packet.

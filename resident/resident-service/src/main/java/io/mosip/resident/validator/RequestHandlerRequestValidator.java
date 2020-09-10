@@ -58,7 +58,7 @@ public class RequestHandlerRequestValidator {
 	private static final String DATETIME_TIMEZONE = "mosip.registration.processor.timezone";
 
 	/** The Constant DATETIME_PATTERN. */
-	private static final String DATETIME_PATTERN = "mosip.registration.processor.datetime.pattern";
+	private static final String DATETIME_PATTERN = "resident.datetime.pattern";
 
 	/** The mosip logger. */
 	private final Logger logger = LoggerConfiguration.logConfig(RequestHandlerRequestValidator.class);
@@ -108,10 +108,6 @@ public class RequestHandlerRequestValidator {
 
 	/** The id. */
 	private Map<String, String> id = new HashMap<>();
-
-	/** The grace period. */
-	@Value("${mosip.registration.processor.grace.period}")
-	private int gracePeriod;
 
 	/** The primary languagecode. */
 	@Value("${mosip.primary-language}")
