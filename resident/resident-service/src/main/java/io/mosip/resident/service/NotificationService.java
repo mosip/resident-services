@@ -142,7 +142,7 @@ public class NotificationService {
 		pathSegments.add(templatetypecode);
 		try {
 			ResponseWrapper<TemplateResponseDto> resp = (ResponseWrapper<TemplateResponseDto>) restClient.getApi(
-					ApiName.TEMPLATES, pathSegments, null, null, ResponseWrapper.class, tokenGenerator.getToken());
+					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class, tokenGenerator.getToken());
 			if (resp == null || resp.getErrors() != null && !resp.getErrors().isEmpty()) {
 				throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorMessage()
