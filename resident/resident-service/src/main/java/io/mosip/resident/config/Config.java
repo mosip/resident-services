@@ -26,7 +26,6 @@ import java.util.Properties;
 
 
 @Configuration
-@ComponentScan(basePackages = { "io.mosip.commons.packet" })
 public class Config {
 	private String defaultEncoding = StandardCharsets.UTF_8.name();
 	/** The resource loader. */

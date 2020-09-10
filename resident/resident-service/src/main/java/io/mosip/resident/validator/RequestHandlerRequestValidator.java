@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -181,78 +182,6 @@ public class RequestHandlerRequestValidator {
 	}
 
 	/**
-	 * Validate ver.
-	 *
-	 * @param ver
-	 *            the ver
-	 * @throws RequestHandlerValidationException
-	 *             the packet generator validation exception
-	 */
-	private void validateVersion(String ver) throws RequestHandlerValidationException {
-		String version = env.getProperty(REG_PACKET_GENERATOR_APPLICATION_VERSION);
-		RequestHandlerValidationException exception = new RequestHandlerValidationException();
-		if (Objects.isNull(ver)) {
-			throw new RequestHandlerValidationException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(), VER), exception);
-
-		} else if (!version.equals(ver)) {
-			throw new RequestHandlerValidationException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(), VER), exception);
-
-		}
-	}
-
-	/**
-	 * Validate req time.
-	 *
-	 * @param timestamp
-	 *            the timestamp
-	 * @throws RequestHandlerValidationException
-	 *             the packet generator validation exception
-	 */
-	private void validateReqTime(String timestamp) throws RequestHandlerValidationException {
-		RequestHandlerValidationException exception = new RequestHandlerValidationException();
-		if (Objects.isNull(timestamp)) {
-			throw new RequestHandlerValidationException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(), TIMESTAMP),
-					exception);
-
-		} else {
-			try {
-				if (Objects.nonNull(env.getProperty(DATETIME_PATTERN))) {
-					DateTimeFormatterFactory timestampFormat = new DateTimeFormatterFactory(
-							env.getProperty(DATETIME_PATTERN));
-					timestampFormat.setTimeZone(TimeZone.getTimeZone(env.getProperty(DATETIME_TIMEZONE)));
-					if (!(DateTime.parse(timestamp, timestampFormat.createDateTimeFormatter())
-							.isAfter(new DateTime().minusSeconds(gracePeriod))
-							&& DateTime.parse(timestamp, timestampFormat.createDateTimeFormatter())
-									.isBefore(new DateTime().plusSeconds(gracePeriod)))) {
-						logger.error(REQUEST_HANDLER_SERVICE, "PacketGeneratorRequestValidator",
-								"validateReqTime",
-								"\n" + ResidentErrorCode.INVALID_INPUT.getErrorMessage());
-
-						throw new RequestHandlerValidationException(
-								ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-								String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(),
-										TIMESTAMP),
-								exception);
-
-					}
-
-				}
-			} catch (IllegalArgumentException e) {
-				logger.error(REQUEST_HANDLER_SERVICE, "PacketGeneratorRequestValidator", "validateReqTime",
-						"\n" + ExceptionUtils.getStackTrace(e));
-				throw new RequestHandlerValidationException(
-						ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-						String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(), TIMESTAMP),
-						exception);
-
-			}
-		}
-	}
-
-	/**
 	 * Checks if is valid center.
 	 *
 	 * @param centerId
@@ -283,11 +212,10 @@ public class RequestHandlerRequestValidator {
 						LoggerFileConstant.REGISTRATIONID.toString(), "",
 						"\"PacketGeneratorServiceImpl::isValidCenter():: Centerdetails Api call  ended with response data : "
 								+ JsonUtil.objectMapperObjectToJson(rcpdto));
-				if (responseWrapper.getErrors() == null && !rcpdto.getRegistrationCenters().isEmpty()) {
+				if (CollectionUtils.isEmpty(responseWrapper.getErrors()) && !rcpdto.getRegistrationCenters().isEmpty()) {
 					isValidCenter = true;
 				} else {
 					List<ServiceError> error = responseWrapper.getErrors();
-
 					throw new BaseCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage()+" "+error.get(0).getMessage());
 				}
 			} else {
@@ -338,7 +266,7 @@ public class RequestHandlerRequestValidator {
 						LoggerFileConstant.REGISTRATIONID.toString(), "",
 						"\"PacketGeneratorServiceImpl::isValidMachine():: MachienDetails Api call  ended with response data : "
 								+ JsonUtil.objectMapperObjectToJson(machinedto));
-				if (responseWrapper.getErrors() == null && !machinedto.getMachines().isEmpty()) {
+				if (CollectionUtils.isEmpty(responseWrapper.getErrors()) && !machinedto.getMachines().isEmpty()) {
 					isValidMachine = true;
 				} else {
 					List<ServiceError> error = responseWrapper.getErrors();
@@ -521,14 +449,11 @@ public class RequestHandlerRequestValidator {
 	 *             the reg base checked exception
 	 */
 	public boolean isValidIdType(String idType) throws BaseCheckedException {
-		if (idType != null && (idType.equalsIgnoreCase(UIN) || idType.equalsIgnoreCase(VID))) {
+		if (idType != null && (idType.equalsIgnoreCase(UIN) || idType.equalsIgnoreCase(VID)))
 			return true;
-		} else {
-
+		else
 			throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					"Invalid IdType : Enter UIN or VID", new Throwable());
-		}
-
 	}
 
 	/**
@@ -552,27 +477,6 @@ public class RequestHandlerRequestValidator {
 	}
 
 	/**
-	 * Checks if is valid id type for lost.
-	 *
-	 * @param idType
-	 *            the id type
-	 * @return true, if is valid id type for lost
-	 * @throws BaseCheckedException
-	 *             the reg base checked exception
-	 */
-	public boolean isValidIdTypeForLost(String idType, LogDescription description) throws BaseCheckedException {
-		if (idType != null && (idType.equalsIgnoreCase(UIN) || idType.equalsIgnoreCase(RID))) {
-			return true;
-		} else {
-			description.setMessage(ResidentErrorCode.INVALID_INPUT.getErrorMessage());
-			description.setCode(ResidentErrorCode.INVALID_INPUT.getErrorCode());
-			throw new BaseCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					ResidentErrorCode.INVALID_INPUT.getErrorMessage(), new Throwable());
-		}
-
-	}
-
-	/**
 	 * Checks if is valid contact type.
 	 *
 	 * @param contactType
@@ -591,68 +495,6 @@ public class RequestHandlerRequestValidator {
 					ResidentErrorCode.INVALID_INPUT.getErrorMessage(), new Throwable());
 		}
 
-	}
-
-	/**
-	 * Checks if is valid name.
-	 *
-	 * @param name
-	 *            the name
-	 * @return true, if is valid name
-	 * @throws BaseCheckedException
-	 *             the reg base checked exception
-	 */
-	public boolean isValidName(String name, LogDescription description) throws BaseCheckedException {
-		if (name == null || name.isEmpty()) {
-			description.setMessage(ResidentErrorCode.INVALID_INPUT.getErrorMessage());
-			description.setCode(ResidentErrorCode.INVALID_INPUT.getErrorCode());
-			throw new BaseCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					ResidentErrorCode.INVALID_INPUT.getErrorMessage(), new Throwable());
-		} else {
-			return true;
-		}
-
-	}
-
-	/**
-	 * Checks if is valid contact value.
-	 *
-	 * @param contactValue
-	 *            the contact value
-	 * @return true, if is valid contact value
-	 * @throws BaseCheckedException
-	 *             the reg base checked exception
-	 */
-	public boolean isValidContactValue(String contactValue, LogDescription description) throws BaseCheckedException {
-		if (contactValue == null || contactValue.isEmpty()) {
-			description.setMessage(ResidentErrorCode.INVALID_INPUT.getErrorMessage());
-			description.setCode(ResidentErrorCode.INVALID_INPUT.getErrorCode());
-			throw new BaseCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					ResidentErrorCode.INVALID_INPUT.getErrorMessage(), new Throwable());
-		} else {
-			return true;
-		}
-
-	}
-
-	/**
-	 * Checks if is valid postal code.
-	 *
-	 * @param postalCode
-	 *            the postal code
-	 * @return true, if is valid postal code
-	 * @throws BaseCheckedException
-	 *             the reg base checked exception
-	 */
-	public boolean isValidPostalCode(String postalCode, LogDescription description) throws BaseCheckedException {
-		if (postalCode == null || postalCode.isEmpty()) {
-			description.setMessage(ResidentErrorCode.INVALID_INPUT.getErrorMessage());
-			description.setCode(ResidentErrorCode.INVALID_INPUT.getErrorCode());
-			throw new BaseCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-					ResidentErrorCode.INVALID_INPUT.getErrorMessage(), new Throwable());
-		} else {
-			return true;
-		}
 	}
 
 }

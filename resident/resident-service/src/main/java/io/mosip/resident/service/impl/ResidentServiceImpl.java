@@ -111,9 +111,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
-	private RidValidator<String> ridValidator;
-
-	@Autowired
 	private UinCardRePrintService rePrintService;
 
 	@Autowired

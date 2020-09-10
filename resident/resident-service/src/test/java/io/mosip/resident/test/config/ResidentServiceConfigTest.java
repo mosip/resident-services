@@ -2,6 +2,12 @@ package io.mosip.resident.test.config;
 
 import io.mosip.commons.packet.facade.PacketWriter;
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.idvalidator.spi.RidValidator;
+import io.mosip.kernel.core.idvalidator.spi.UinValidator;
+import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.kernel.idvalidator.rid.impl.RidValidatorImpl;
+import io.mosip.kernel.idvalidator.uin.impl.UinValidatorImpl;
+import io.mosip.kernel.idvalidator.vid.impl.VidValidatorImpl;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -35,4 +41,26 @@ public class ResidentServiceConfigTest {
 
 	@MockBean
 	private CbeffImpl cbeff;
+
+	@MockBean
+	private PacketWriter packetWriter;
+
+	@Bean
+	@Primary
+	public VidValidator<String> vidValidator1() {
+		return new VidValidatorImpl();
+	}
+
+	@Bean
+	@Primary
+	public UinValidator<String> uinValidator1() {
+		return new UinValidatorImpl();
+	}
+
+	@Bean
+	@Primary
+	public RidValidator<String> ridValidator1() {
+		return new RidValidatorImpl();
+	}
+
 }

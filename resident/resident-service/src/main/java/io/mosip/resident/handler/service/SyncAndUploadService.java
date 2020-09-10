@@ -209,7 +209,7 @@ public class SyncAndUploadService {
 	 */
 	@SuppressWarnings("unchecked")
 	private RegSyncResponseDTO packetSync(String regId, String regType, byte[] enryptedUinZipFile, String creationTime)
-			throws ApisResourceAccessException, BaseCheckedException {
+			throws BaseCheckedException {
 		RegSyncResponseDTO regSyncResponseDTO = null;
 		InputStream inputStream;
 		try {
@@ -257,7 +257,7 @@ public class SyncAndUploadService {
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(javaObjectToJsonString(requestObject), headers);
 			String response = (String) restClientService.postApi(env.getProperty(ApiName.SYNCSERVICE.name()), MediaType.APPLICATION_JSON, requestEntity,
 					String.class, tokenGenerator.getRegprocToken());
-			regSyncResponseDTO = new Gson().fromJson(response, RegSyncResponseDTO.class);
+			regSyncResponseDTO = gson.fromJson(response, RegSyncResponseDTO.class);
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					regId,
 					"SyncUploadEncryptionServiceImpl::packetSync()::Sync service call ended with response data : "

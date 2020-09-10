@@ -6,10 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.mosip.resident.test.ResidentTestBootApplication;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,37 +78,10 @@ public class ResidentVidControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
-	private static ResidentVidRequestDto getRequest() {
-		VidRequestDto vidRequestDto = new VidRequestDto();
-		vidRequestDto.setIndividualId("9072037081");
-		vidRequestDto.setIndividualIdType(IdType.UIN.name());
-		vidRequestDto.setOtp("974436");
-		vidRequestDto.setTransactionID("1111122222");
-		vidRequestDto.setVidType("Temporary");
 
-		ResidentVidRequestDto request = new ResidentVidRequestDto();
-		request.setId("mosip.resident.vid");
-		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
-		request.setRequest(vidRequestDto);
-		return request;
-	}
-
-	private static RequestWrapper<VidRevokeRequestDTO> getRevokeRequest() {
-		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
-		vidRevokeRequestDTO.setIndividualId("2038096257310540");
-		vidRevokeRequestDTO.setIndividualIdType(IdType.VID.name());
-		vidRevokeRequestDTO.setOtp("974436");
-		vidRevokeRequestDTO.setTransactionID("1111122222");
-		vidRevokeRequestDTO.setVidStatus("REVOKED");
-
-		RequestWrapper request = new RequestWrapper();
-		request.setId("mosip.resident.vidstatus");
-		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
-		request.setRequest(vidRevokeRequestDTO);
-		return request;
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
@@ -439,6 +414,38 @@ public class ResidentVidControllerTest {
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+	}
+
+	private static ResidentVidRequestDto getRequest() {
+		VidRequestDto vidRequestDto = new VidRequestDto();
+		vidRequestDto.setIndividualId("9072037081");
+		vidRequestDto.setIndividualIdType(IdType.UIN.name());
+		vidRequestDto.setOtp("974436");
+		vidRequestDto.setTransactionID("1111122222");
+		vidRequestDto.setVidType("Temporary");
+
+		ResidentVidRequestDto request = new ResidentVidRequestDto();
+		request.setId("mosip.resident.vid");
+		request.setVersion("v1");
+		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		request.setRequest(vidRequestDto);
+		return request;
+	}
+
+	private static RequestWrapper<VidRevokeRequestDTO> getRevokeRequest() {
+		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
+		vidRevokeRequestDTO.setIndividualId("2038096257310540");
+		vidRevokeRequestDTO.setIndividualIdType(IdType.VID.name());
+		vidRevokeRequestDTO.setOtp("974436");
+		vidRevokeRequestDTO.setTransactionID("1111122222");
+		vidRevokeRequestDTO.setVidStatus("REVOKED");
+
+		RequestWrapper request = new RequestWrapper();
+		request.setId("mosip.resident.vidstatus");
+		request.setVersion("v1");
+		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		request.setRequest(vidRevokeRequestDTO);
+		return request;
 	}
 
 }

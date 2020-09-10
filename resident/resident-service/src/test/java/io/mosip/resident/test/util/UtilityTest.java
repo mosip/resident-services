@@ -1,7 +1,8 @@
-/*
 package io.mosip.resident.test.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TokenGenerator;
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -64,8 +69,9 @@ public class UtilityTest {
 		idRepoResponseDto.setStatus("Activated");
 		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
 		response.setResponse(idRepoResponseDto);
-		Mockito.when(residentServiceRestClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenReturn(response);
+        Mockito.when(tokenGenerator.getRegprocToken()).thenReturn("sbfdsafuadfkbdsf");
+        Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+                any(), any(Class.class), any())).thenReturn(response);
 		Mockito.when(tokenGenerator.getToken()).thenReturn("abcdefghijklmn");
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "getRegProcessorIdentityJson", "json");
@@ -76,15 +82,18 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void retrieveIdrepoJsonSuccessTest()
-			throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+	public void retrieveIdrepoJsonSuccessTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		// UIN
 		JSONObject identityJsonObj = utility.retrieveIdrepoJson("3527812406", IdType.UIN);
 		assertEquals(identityJsonObj.get("UIN"), JsonUtil.getJSONObject(identity, "identity").get("UIN"));
 		// RID
 		JSONObject jsonUsingRID = utility.retrieveIdrepoJson("10008200070004420191203104356", IdType.RID);
 		assertEquals(jsonUsingRID.get("UIN"), JsonUtil.getJSONObject(identity, "identity").get("UIN"));
-		// VID
+
+	}
+
+	@Test
+	public void testRetrieveVidSuccess() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add("5628965106742572");
 		VidGeneratorResponseDto vidResponse = new VidGeneratorResponseDto();
@@ -92,19 +101,25 @@ public class UtilityTest {
 		vidResponse.setVidStatus("Active");
 		ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(vidResponse);
-		Mockito.when(residentServiceRestClient.getApi(ApiName.GETUINBYVID, pathsegments, null, null,
-				ResponseWrapper.class, "abcdefghijklmn")).thenReturn(response);
+
+		ResponseWrapper<IdRepoResponseDto> response1 = new ResponseWrapper<>();
+		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
+		idRepoResponseDto.setStatus("Activated");
+		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
+		response1.setResponse(idRepoResponseDto);
+
+		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+				any(), any(Class.class), any())).thenReturn(response).thenReturn(response1);
 		JSONObject jsonUsingVID = utility.retrieveIdrepoJson("5628965106742572", IdType.VID);
 		assertEquals(jsonUsingVID.get("UIN"), JsonUtil.getJSONObject(identity, "identity").get("UIN"));
-
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void retrieveIdrepoJsonClientError() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", clientExp);
-		Mockito.when(residentServiceRestClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
+        Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+                any(), any(Class.class), any())).thenThrow(apiResourceAccessExp);
 		utility.retrieveIdrepoJson("3527812406", IdType.UIN);
 
 	}
@@ -113,8 +128,8 @@ public class UtilityTest {
 	public void retrieveIdrepoJsonServerError() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", serverExp);
-		Mockito.when(residentServiceRestClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
+        Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+                any(), any(Class.class), any())).thenThrow(apiResourceAccessExp);
 		utility.retrieveIdrepoJson("3527812406", IdType.UIN);
 
 	}
@@ -124,24 +139,24 @@ public class UtilityTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway",
 				new RuntimeException());
-		Mockito.when(residentServiceRestClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
+        Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+                any(), any(Class.class), any())).thenThrow(apiResourceAccessExp);
 		utility.retrieveIdrepoJson("3527812406", IdType.UIN);
 
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void tokenGeneratorException()
-			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+			throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
 		Mockito.when(tokenGenerator.getToken()).thenThrow(new IOException());
-		utility.retrieveIdrepoJson("3527812406", IdType.UIN);
+		utility.retrieveIdrepoJson("3527812406", IdType.RID);
 
 	}
 
 	@Test(expected = IdRepoAppException.class)
 	public void testIdRepoAppException() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		Mockito.when(residentServiceRestClient.getApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenReturn(null);
+        Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+                any(), any(Class.class), any())).thenReturn(null);
 		utility.retrieveIdrepoJson("3527812406", IdType.UIN);
 
 	}
@@ -150,8 +165,8 @@ public class UtilityTest {
 	public void vidResponseNull() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add("5628965106742572");
-		Mockito.when(residentServiceRestClient.getApi(ApiName.GETUINBYVID, pathsegments, null, null,
-				ResponseWrapper.class, "abcdefghijklmn")).thenReturn(null);
+        Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+                any(), any(Class.class), any())).thenReturn(null);
 		utility.retrieveIdrepoJson("5628965106742572", IdType.VID);
 
 	}
@@ -206,4 +221,3 @@ public class UtilityTest {
 
 	}
 }
-*/
