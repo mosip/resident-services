@@ -23,6 +23,8 @@ public class PublicKeyResponseDto implements Serializable {
 
 	/** The expiry at. */
 	private String expiryAt;
+	
+	private String certificate;
 
 	/**
 	 * Instantiates a new public key response dto.

@@ -27,4 +27,8 @@ public class AuthRequestDTO extends BaseAuthRequestDTO {
 	
 	private String version;
 	
+	private String env;
+	
+	private String  domainUri;
+	
 }

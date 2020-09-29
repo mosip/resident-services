@@ -1,20 +1,27 @@
 package io.mosip.resident.service.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.crypto.SecretKey;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -37,6 +44,7 @@ import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AuthRequestDTO;
 import io.mosip.resident.dto.AuthResponseDTO;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
@@ -49,6 +57,7 @@ import io.mosip.resident.dto.AutnTxnResponseDto;
 import io.mosip.resident.dto.OtpAuthRequestDTO;
 import io.mosip.resident.dto.PublicKeyResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -67,6 +76,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Value("${auth.type.status.id}")
 	private String authTypeStatusId;
+	
+	@Value("${mosipbox.public.url:null}")
+	private String domainUrl;
 
 	@Autowired
 	ObjectMapper mapper;
@@ -120,6 +132,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authRequestDTO.setVersion(internalAuthVersion);
 		authRequestDTO.setRequestTime(DateUtils.getUTCCurrentDateTimeString());
 		authRequestDTO.setTransactionID(transactionID);
+		authRequestDTO.setEnv(domainUrl);
+		authRequestDTO.setDomainUri(domainUrl);
 
 		AuthTypeDTO authType = new AuthTypeDTO();
 		authType.setOtp(true);
@@ -200,13 +214,15 @@ public class IdAuthServiceImpl implements IdAuthService {
 		}
 		publicKeyResponsedto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 				PublicKeyResponseDto.class);
+		X509Certificate req509=(X509Certificate)convertToCertificate(publicKeyResponsedto.getCertificate());
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), refId,
 				"IdAuthServiceImpl::encryptRSA():: ENCRYPTIONSERVICE GET service call ended with response data "
 						+ JsonUtils.javaObjectToJsonString(responseWrapper));
 
-		PublicKey publicKey = KeyFactory.getInstance("RSA")
-				.generatePublic(new X509EncodedKeySpec(CryptoUtil.decodeBase64(publicKeyResponsedto.getPublicKey())));
+		PublicKey publicKey = req509.getPublicKey();
+		/*PublicKey publicKey = KeyFactory.getInstance("RSA")
+				.generatePublic(new X509EncodedKeySpec(CryptoUtil.decodeBase64(publicKeyResponsedto.getPublicKey())));*/
 
 		return encryptor.asymmetricEncrypt(publicKey, sessionKey);
 
@@ -329,4 +345,22 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authTxnDetailsDTO.setTime(autnTxnDto.getRequestdatetime().format(DateTimeFormatter.ISO_LOCAL_TIME));
 		return authTxnDetailsDTO;
 	}
+	
+	public java.security.cert.Certificate convertToCertificate(String certData)  {
+        try {
+            StringReader strReader = new StringReader(certData);
+            PemReader pemReader = new PemReader(strReader);
+            PemObject pemObject = pemReader.readPemObject();
+            if (Objects.isNull(pemObject)) {
+                throw new CertificateException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), 
+                		ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage());
+            }
+            byte[] certBytes = pemObject.getContent();
+            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+            return certFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+        } catch(IOException | java.security.cert.CertificateException e) {
+        	throw new CertificateException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), 
+            		ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(),e);
+        }
+    }
 }
