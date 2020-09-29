@@ -43,7 +43,7 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	@GetMapping(value = "req/credential/status/{requestId}")
-	public ResponseEntity<Object> getCancelCredentialRequest(@PathVariable("requestId") String requestId)
+	public ResponseEntity<Object> getCredentialStatus(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
 		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getStatus(requestId));
@@ -58,7 +58,7 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	@GetMapping(value = "req/credential/cancel/{requestId}")
-	public ResponseEntity<Object> getCredentialStatus(@PathVariable("requestId") String requestId)
+	public ResponseEntity<Object> getCancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getCancelCredentialRequest(requestId));
