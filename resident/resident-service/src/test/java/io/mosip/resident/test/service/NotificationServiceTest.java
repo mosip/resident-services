@@ -30,7 +30,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
@@ -86,7 +85,7 @@ public class NotificationServiceTest {
 		mailingAttributes.put("fullName_ara", "Test");
 		mailingAttributes.put("phone", "9876543210");
 		mailingAttributes.put("email", "test@test.com");
-		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any())).thenReturn(mailingAttributes);
 		ReflectionTestUtils.setField(notificationService, "languageType", "BOTH");
 		ReflectionTestUtils.setField(notificationService, "primaryLang", "eng");
 		ReflectionTestUtils.setField(notificationService, "secondaryLang", "ara");
@@ -97,7 +96,6 @@ public class NotificationServiceTest {
 		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
 		reqDto = new NotificationRequestDto();
 		reqDto.setId("3527812406");
-		reqDto.setIdType(IdType.UIN);
 		reqDto.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
 		reqDto.setAdditionalAttributes(additionalAttributes);
 		ResponseWrapper<TemplateResponseDto> primaryLangResp = new ResponseWrapper<>();

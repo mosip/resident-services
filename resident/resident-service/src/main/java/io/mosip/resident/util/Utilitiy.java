@@ -10,9 +10,7 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -23,12 +21,10 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.JsonValue;
-import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -73,46 +69,17 @@ public class Utilitiy {
 	private static final String VALUE = "value";
 
 	@SuppressWarnings("unchecked")
-	public JSONObject retrieveIdrepoJson(String id, IdType idType) throws ResidentServiceCheckedException {
+	public JSONObject retrieveIdrepoJson(String id) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 				"Utilitiy::retrieveIdrepoJson()::entry");
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(id);
 		ResponseWrapper<IdRepoResponseDto> response = null;
 		try {
-			if (IdType.UIN.equals(idType))
 				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
 						ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class,
 						tokenGenerator.getRegprocToken());
-			else if (IdType.RID.equals(idType))
-				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
-						ApiName.IDREPOGETIDBYRID, pathsegments, "", null, ResponseWrapper.class,
-						tokenGenerator.getToken());
-			else if (IdType.VID.equals(idType)) {
-				ResponseWrapper<VidGeneratorResponseDto> vidResponse = (ResponseWrapper<VidGeneratorResponseDto>) residentServiceRestClient
-						.getApi(ApiName.GETUINBYVID, pathsegments, "", null, ResponseWrapper.class,
-								tokenGenerator.getToken());
-				logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-						"Utilitiy::retrieveIdrepoJson()::vidResponse::" + JsonUtil.writeValueAsString(vidResponse));
-				if (vidResponse == null)
-					throw new IdRepoAppException(ResidentErrorCode.INVALID_VID.getErrorCode(),
-							ResidentErrorCode.INVALID_VID.getErrorCode(),
-							"In valid response while requesting from ID Repositary");
-				if (!vidResponse.getErrors().isEmpty()) {
-					List<ServiceError> error = vidResponse.getErrors();
-					throw new IdRepoAppException(ResidentErrorCode.INVALID_VID.getErrorCode(),
-							ResidentErrorCode.INVALID_VID.getErrorMessage(), error.get(0).getMessage());
-				}
 
-				VidGeneratorResponseDto vidGeneratorResponseDto = JsonUtil.readValue(
-						JsonUtil.writeValueAsString(vidResponse.getResponse()), VidGeneratorResponseDto.class);
-				String uin = String.valueOf(vidGeneratorResponseDto.getUIN());
-				pathsegments.clear();
-				pathsegments.add(uin);
-				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
-						ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class,
-						tokenGenerator.getToken());
-			}
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
@@ -135,17 +102,13 @@ public class Utilitiy {
 			}
 		}
 		
-		return retrieveErrorCode(idType, response,id);
+		return retrieveErrorCode(response, id);
 	}
 	
-	public JSONObject retrieveErrorCode(IdType idType,ResponseWrapper<IdRepoResponseDto> response,String id) throws ResidentServiceCheckedException {
+	public JSONObject retrieveErrorCode(ResponseWrapper<IdRepoResponseDto> response, String id)
+			throws ResidentServiceCheckedException {
 		ResidentErrorCode errorCode;
-		if (idType.equals(IdType.UIN))
-			errorCode = ResidentErrorCode.INVALID_UIN;
-		else if (idType.equals(IdType.RID))
-			errorCode = ResidentErrorCode.INVALID_RID;
-		else
-			errorCode = ResidentErrorCode.INVALID_VID_UIN;
+		errorCode = ResidentErrorCode.INVALID_ID;
 		try {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 					"Utilitiy::retrieveIdrepoJson()::id repo response for given id::"
@@ -172,7 +135,7 @@ public class Utilitiy {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> getMailingAttributes(String id, IdType idType) throws ResidentServiceCheckedException {
+	public Map<String, Object> getMailingAttributes(String id) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 				"Utilitiy::getMailingAttributes()::entry");
 		Map<String, Object> attributes = new HashMap<>();
@@ -183,7 +146,7 @@ public class Utilitiy {
 		}
 		JSONObject mappingJsonObject;
 		try {
-			JSONObject demographicIdentity = retrieveIdrepoJson(id, idType);
+			JSONObject demographicIdentity = retrieveIdrepoJson(id);
 			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
 			JSONObject mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 			List<String> mapperJsonKeys = new ArrayList<>(mapperIdentity.keySet());

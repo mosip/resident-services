@@ -7,13 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.idvalidator.spi.RidValidator;
+import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
@@ -43,27 +36,29 @@ import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.RegProcCommonResponseDto;
+import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegProcUpdateRequestDTO;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusRequestDTO;
 import io.mosip.resident.dto.RegistrationStatusResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
+import io.mosip.resident.dto.RegistrationType;
 import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
@@ -479,7 +474,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private NotificationResponseDTO sendNotification(String id, IdType idType,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
 			throws ResidentServiceCheckedException {
-		NotificationRequestDto notificationRequest = new NotificationRequestDto(id, idType, templateTypeCode,
+		NotificationRequestDto notificationRequest = new NotificationRequestDto(id, templateTypeCode,
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}

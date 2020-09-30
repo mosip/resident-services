@@ -102,7 +102,7 @@ public class NotificationService {
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus;
 		boolean emailStatus;
-		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), dto.getIdType());
+		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId());
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}

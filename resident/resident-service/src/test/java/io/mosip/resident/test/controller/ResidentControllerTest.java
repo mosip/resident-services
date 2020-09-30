@@ -14,10 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,8 +36,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -54,6 +54,7 @@ import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -65,6 +66,7 @@ import io.mosip.resident.validator.RequestValidator;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
+@Ignore
 public class ResidentControllerTest {
 
 	@MockBean
