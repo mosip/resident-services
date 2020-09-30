@@ -94,11 +94,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					requestDto.setRequest(credentialReqestDto);
 					requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
 					requestDto.setVersion("1.0");
-					ResponseWrapper<ResidentCredentialResponseDto> responseDto=residentServiceRestClient.postApi(credentailReqUrl, MediaType.APPLICATION_JSON, requestDto,
-							ResponseWrapper.class, tokenGenerator.getToken());
-					residentCredentialResponseDto = JsonUtil
-							.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), ResidentCredentialResponseDto.class);
-
 					parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class,
 							tokenGenerator.getToken());
 					partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
@@ -106,6 +101,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					additionalAttributes.put("partnerName",
 							partnerResponseDto.getOrganizationName());
 					additionalAttributes.put("encryptionKey", credentialReqestDto.getEncryptionKey());
+					ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
+							credentailReqUrl, MediaType.APPLICATION_JSON, requestDto, ResponseWrapper.class,
+							tokenGenerator.getToken());
+					residentCredentialResponseDto = JsonUtil.readValue(
+							JsonUtil.writeValueAsString(responseDto.getResponse()),
+							ResidentCredentialResponseDto.class);
+
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, null);
 			   } else {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -122,17 +124,18 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					e.getErrorText(), e);
 		}*/
 		catch (ResidentServiceCheckedException e) {
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, null);
+
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (ApisResourceAccessException e) {
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, null);
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (IOException e) {
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, null);
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -143,6 +146,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Override
 	public CredentialRequestStatusResponseDto getStatus(String requestId) {
 		ResponseWrapper<CredentialRequestStatusResponseDto> responseDto = null;
+		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialRequestStatusResponseDto credentialRequestStatusResponseDto=new CredentialRequestStatusResponseDto();
 		try {
 			String credentialUrl=credentailStatusUrl+requestId;
@@ -150,9 +154,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class, tokenGenerator.getToken());
 			credentialRequestStatusResponseDto = JsonUtil
 						.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusResponseDto.class);
-
+			additionalAttributes.put("requestId", credentialRequestStatusResponseDto.getRequestId());
+			additionalAttributes.put("statusCode", credentialRequestStatusResponseDto.getStatusCode());
 			sendNotification(credentialRequestStatusResponseDto.getId(), NotificationTemplateCode.RS_CRE_STATUS,
-					null);
+					additionalAttributes);
 		} catch (ApisResourceAccessException e) {
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -190,6 +195,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Override
 	public CredentialCancelRequestResponseDto getCancelCredentialRequest(String requestId) {
 		ResponseWrapper<CredentialCancelRequestResponseDto> responseDto = null;
+		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialCancelRequestResponseDto credentialCancelRequestResponseDto=new CredentialCancelRequestResponseDto();
 		boolean flag=true;
 		try {
@@ -202,8 +208,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					responseDto =residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class, tokenGenerator.getToken());
 					credentialCancelRequestResponseDto = JsonUtil
 								.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialCancelRequestResponseDto.class);
+					additionalAttributes.put("requestId", credentialCancelRequestResponseDto.getRequestId());
 					sendNotification(credentialCancelRequestResponseDto.getId(),
-							NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, null);
+							NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, additionalAttributes);
 			   } else {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
