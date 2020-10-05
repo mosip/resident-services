@@ -29,6 +29,7 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentCredentialServiceException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -83,11 +84,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		Map<String, Object> additionalAttributes = new HashedMap();
 		String partnerUrl = partnerReqUrl + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
-		boolean flag=true;
 		try {
-			/*if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
-					"UIN", dto.getOtp())) {*/
-			if(flag) {
+			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), "UIN", dto.getOtp())) {
 
 				    credentialReqestDto=prepareCredentialRequest(dto);
 					requestDto.setId("mosip.credential.request.service.id");
@@ -107,22 +105,22 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					residentCredentialResponseDto = JsonUtil.readValue(
 							JsonUtil.writeValueAsString(responseDto.getResponse()),
 							ResidentCredentialResponseDto.class);
-
-					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, null);
+					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
+							additionalAttributes);
 			   } else {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, null);
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
+						additionalAttributes);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 			}
-		}/* catch (OtpValidationFailedException e) {
-			sendNotification(dto.getIndividualId(), IdType.valueOf("UIN"),
-					NotificationTemplateCode.RS_CREDENTIAL_FAILURE, null);
+		} catch (OtpValidationFailedException e) {
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 					e.getErrorText(), e);
-		}*/
+		}
 		catch (ResidentServiceCheckedException e) {
 
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
