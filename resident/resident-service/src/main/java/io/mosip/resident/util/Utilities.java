@@ -215,7 +215,7 @@ public class Utilities {
 			idRequestDTO.setVersion(vidVersion);
 
 			idResponse = (IdResponseDTO) residentServiceRestClient.patchApi(env.getProperty(ApiName.IDREPOSITORY.name()), MediaType.APPLICATION_JSON, idRequestDTO,
-					IdResponseDTO.class, tokenGenerator.getToken());
+					IdResponseDTO.class, tokenGenerator.getRegprocToken());
 
 			if (idResponse != null && idResponse.getResponse() != null) {
 
