@@ -99,12 +99,15 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					additionalAttributes.put("partnerName",
 							partnerResponseDto.getOrganizationName());
 					additionalAttributes.put("encryptionKey", credentialReqestDto.getEncryptionKey());
+					additionalAttributes.put("credentialName", credentialReqestDto.getCredentialType());
+
 					ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
 							credentailReqUrl, MediaType.APPLICATION_JSON, requestDto, ResponseWrapper.class,
 							tokenGenerator.getToken());
 					residentCredentialResponseDto = JsonUtil.readValue(
 							JsonUtil.writeValueAsString(responseDto.getResponse()),
 							ResidentCredentialResponseDto.class);
+					additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
 							additionalAttributes);
 			   } else {
@@ -152,8 +155,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class, tokenGenerator.getToken());
 			credentialRequestStatusResponseDto = JsonUtil
 						.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusResponseDto.class);
-			additionalAttributes.put("requestId", credentialRequestStatusResponseDto.getRequestId());
-			additionalAttributes.put("statusCode", credentialRequestStatusResponseDto.getStatusCode());
+			additionalAttributes.put("RID", credentialRequestStatusResponseDto.getRequestId());
+			additionalAttributes.put("status", credentialRequestStatusResponseDto.getStatusCode());
 			sendNotification(credentialRequestStatusResponseDto.getId(), NotificationTemplateCode.RS_CRE_STATUS,
 					additionalAttributes);
 		} catch (ApisResourceAccessException e) {
@@ -206,7 +209,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					responseDto =residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class, tokenGenerator.getToken());
 					credentialCancelRequestResponseDto = JsonUtil
 								.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialCancelRequestResponseDto.class);
-					additionalAttributes.put("requestId", credentialCancelRequestResponseDto.getRequestId());
+					additionalAttributes.put("RID", credentialCancelRequestResponseDto.getRequestId());
 					sendNotification(credentialCancelRequestResponseDto.getId(),
 							NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, additionalAttributes);
 			   } else {
