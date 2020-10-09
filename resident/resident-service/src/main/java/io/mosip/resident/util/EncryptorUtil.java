@@ -104,7 +104,7 @@ public class EncryptorUtil {
             request.setVersion(APPLICATION_VERSION);
 
             ResponseWrapper responseDto = restClientService
-                    .postApi(env.getProperty(ApiName.ENCRYPTURL.name()), MediaType.APPLICATION_JSON, request, ResponseWrapper.class, tokenGenerator.getRegprocToken());
+                    .postApi(env.getProperty(ApiName.ENCRYPTURL.name()), MediaType.APPLICATION_JSON, request, ResponseWrapper.class, tokenGenerator.getToken());
 
             if (responseDto != null && !CollectionUtils.isEmpty(responseDto.getErrors())) {
                 ServiceError error = (ServiceError) responseDto.getErrors().get(0);

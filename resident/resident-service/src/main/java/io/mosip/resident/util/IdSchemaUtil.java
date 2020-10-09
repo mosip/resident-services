@@ -95,7 +95,7 @@ public class IdSchemaUtil {
             return idschema.get(version);
 
         String response = (String) residentServiceRestClient.getApi(ApiName.MIDSCHEMAURL, null,
-                Lists.newArrayList(SCHEMA_VERSION_QUERY_PARAM), Lists.newArrayList(version), String.class, tokenGenerator.getRegprocToken());
+                Lists.newArrayList(SCHEMA_VERSION_QUERY_PARAM), Lists.newArrayList(version), String.class, tokenGenerator.getToken());
 
         if (response == null)
             throw new ApisResourceAccessException("Could not fetch idschema with version : " + version);

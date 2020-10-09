@@ -78,7 +78,7 @@ public class Utilitiy {
 		try {
 				response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
 						ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class,
-						tokenGenerator.getRegprocToken());
+						tokenGenerator.getToken());
 
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
