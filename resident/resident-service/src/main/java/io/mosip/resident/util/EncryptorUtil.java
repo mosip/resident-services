@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.commons.khazana.util.EncryptionUtil;
 import io.mosip.commons.packet.constants.CryptomanagerConstant;
 import io.mosip.commons.packet.dto.packet.CryptomanagerRequestDto;
 import io.mosip.commons.packet.dto.packet.DecryptResponseDto;
@@ -86,7 +85,7 @@ public class EncryptorUtil {
             }
 
             DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
-            return CryptoUtil.encodeBase64(EncryptionUtil.mergeEncryptedData(CryptoUtil.decodeBase64(responseObject.getData()), nonce, aad));
+            return CryptoUtil.encodeBase64(mergeEncryptedData(CryptoUtil.decodeBase64(responseObject.getData()), nonce, aad));
 
         } catch (IOException e) {
             throw new PacketDecryptionFailureException(IO_EXCEPTION, e);
@@ -103,6 +102,14 @@ public class EncryptorUtil {
                 throw new PacketDecryptionFailureException(e);
             }
         }
+    }
+
+    private static byte[] mergeEncryptedData(byte[] encryptedData, byte[] nonce, byte[] aad) {
+        byte[] finalEncData = new byte[encryptedData.length + CryptomanagerConstant.GCM_AAD_LENGTH + CryptomanagerConstant.GCM_NONCE_LENGTH];
+        System.arraycopy(nonce, 0, finalEncData, 0, nonce.length);
+        System.arraycopy(aad, 0, finalEncData, nonce.length, aad.length);
+        System.arraycopy(encryptedData, 0, finalEncData, nonce.length + aad.length,	encryptedData.length);
+        return finalEncData;
     }
 
 }
