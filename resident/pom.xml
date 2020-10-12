@@ -147,6 +147,9 @@
         <mockito.version>2.22.0</mockito.version>
         <io.micrometer.prometheus.version>1.4.2</io.micrometer.prometheus.version>
 
+        <commons.packet.manager.version>1.1.2-SNAPSHOT</commons.packet.manager.version>
+        <kernel.core.version>1.1.2-SNAPSHOT</kernel.core.version>
+
 
         <sonar.coverage.exclusions>
             **/constant/**,**/config/**,**/httpfilter/**,**/cache/**,**/dto/**,**/entity/**,**/model/**,**/exception/**,**/repository/**,**/security/**,**/*Config.java,**/*BootApplication.java,**/*VertxApplication.java,**/cbeffutil/**

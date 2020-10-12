@@ -254,7 +254,7 @@ public class SyncAndUploadService {
 			headers.add("Center-Machine-RefId", refId);
 			headers.add("timestamp", creationTime);
 
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(javaObjectToJsonString(requestObject), headers);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(javaObjectToJsonString(requestObject).getBytes(), headers);
 			String response = (String) restClientService.postApi(env.getProperty(ApiName.SYNCSERVICE.name()), MediaType.APPLICATION_JSON, requestEntity,
 					String.class, tokenGenerator.getToken());
 			regSyncResponseDTO = gson.fromJson(response, RegSyncResponseDTO.class);
