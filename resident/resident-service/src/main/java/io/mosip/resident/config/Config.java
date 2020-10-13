@@ -1,12 +1,7 @@
 package io.mosip.resident.config;
 
-import io.mosip.kernel.core.idvalidator.spi.RidValidator;
-import io.mosip.kernel.core.idvalidator.spi.UinValidator;
-import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
-import io.mosip.kernel.idvalidator.rid.impl.RidValidatorImpl;
-import io.mosip.kernel.idvalidator.uin.impl.UinValidatorImpl;
-import io.mosip.kernel.idvalidator.vid.impl.VidValidatorImpl;
+import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -15,7 +10,6 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
@@ -56,22 +50,12 @@ public class Config {
 	public Filter getReqResFilter() {
 		return new ReqResFilter();
 	}
-	
+
 	@Bean
-	public VidValidator<String> vidValidator() {
-		return new VidValidatorImpl();
+	public KeyGenerator keyGenerator() {
+		return new KeyGenerator();
 	}
-	
-	@Bean
-	public UinValidator<String> uinValidator() {
-		return new UinValidatorImpl();
-	}
-	
-	@Bean
-	public RidValidator<String> ridValidator() {
-		return new RidValidatorImpl();
-	}
-	
+
 	@Bean
 	public TemplateManager getTemplateManager() {
 		final Properties properties = new Properties();
