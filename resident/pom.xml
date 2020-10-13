@@ -149,6 +149,7 @@
 
         <commons.packet.manager.version>1.1.2-SNAPSHOT</commons.packet.manager.version>
         <kernel.core.version>1.1.2-SNAPSHOT</kernel.core.version>
+        <kernel-keymanager-service.version>1.1.2-SNAPSHOT</kernel-keymanager-service.version>
 
 
         <sonar.coverage.exclusions>

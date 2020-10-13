@@ -146,6 +146,18 @@
 			<artifactId>commons-packet-manager</artifactId>
 			<version>${commons.packet.manager.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-keymanager-service</artifactId>
+			<version>${kernel-keymanager-service.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-config</artifactId>
+				</exclusion>
+			</exclusions>
+			<classifier>lib</classifier>
+		</dependency>
 	</dependencies>
 		<build>
 		<plugins>
