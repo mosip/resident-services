@@ -13,6 +13,9 @@
 	<name>resident-service</name>
 	<version>1.1.2-SNAPSHOT</version>
 	<properties>
+		<commons.packet.manager.version>1.1.2-SNAPSHOT</commons.packet.manager.version>
+		<kernel.core.version>1.1.2-SNAPSHOT</kernel.core.version>
+		<kernel-keymanager-service.version>1.1.2-SNAPSHOT</kernel-keymanager-service.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
@@ -145,18 +148,6 @@
 			<groupId>io.mosip.commons</groupId>
 			<artifactId>commons-packet-manager</artifactId>
 			<version>${commons.packet.manager.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.mosip.kernel</groupId>
-			<artifactId>kernel-keymanager-service</artifactId>
-			<version>${kernel-keymanager-service.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.security</groupId>
-					<artifactId>spring-security-config</artifactId>
-				</exclusion>
-			</exclusions>
-			<classifier>lib</classifier>
 		</dependency>
 	</dependencies>
 		<build>
