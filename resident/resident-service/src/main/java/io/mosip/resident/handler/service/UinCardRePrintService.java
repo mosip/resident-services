@@ -282,7 +282,7 @@ public class UinCardRePrintService {
         fieldValue5.setValue(cardType);
         fieldValues[5] = fieldValue5;
 
-        metadata.put("metadata", JsonUtils.javaObjectToJsonString(fieldValues));
+        metadata.put("metaData", JsonUtils.javaObjectToJsonString(fieldValues));
         return metadata;
     }
 
