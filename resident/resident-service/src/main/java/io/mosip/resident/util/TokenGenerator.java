@@ -107,12 +107,4 @@ public class TokenGenerator {
         return request;
     }
 
-    public String getRegprocToken() throws IOException {
-        ClientIdSecretKeyRequestDto request = new ClientIdSecretKeyRequestDto();
-        request.setAppId(environment.getProperty("token.request.appid"));
-        request.setClientId(environment.getProperty("token.request.clientId"));
-        request.setSecretKey(environment.getProperty("token.request.secretKey"));
-        return generateToken(request);
-    }
-
 }

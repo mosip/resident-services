@@ -68,7 +68,7 @@ public class UtilityTest {
 		idRepoResponseDto.setStatus("Activated");
 		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
 		response.setResponse(idRepoResponseDto);
-        Mockito.when(tokenGenerator.getRegprocToken()).thenReturn("sbfdsafuadfkbdsf");
+        Mockito.when(tokenGenerator.getToken()).thenReturn("sbfdsafuadfkbdsf");
         Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
                 any(), any(Class.class), any())).thenReturn(response);
 		Mockito.when(tokenGenerator.getToken()).thenReturn("abcdefghijklmn");

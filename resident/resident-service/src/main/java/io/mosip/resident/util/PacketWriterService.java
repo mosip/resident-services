@@ -52,7 +52,7 @@ public class PacketWriterService {
         request.setRequest(packetDto);
 
         ResponseWrapper<List<PacketInfo>> response = (ResponseWrapper) restApi.putApi(
-                env.getProperty(ApiName.PACKETMANAGER_CREATE.name()), request, ResponseWrapper.class, MediaType.APPLICATION_JSON, tokenGenerator.getRegprocToken());
+                env.getProperty(ApiName.PACKETMANAGER_CREATE.name()), request, ResponseWrapper.class, MediaType.APPLICATION_JSON, tokenGenerator.getToken());
 
         if (response.getErrors() != null && response.getErrors().size() > 0) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(), JsonUtils.javaObjectToJsonString(response));
