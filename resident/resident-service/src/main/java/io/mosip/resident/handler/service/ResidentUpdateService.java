@@ -246,7 +246,7 @@ public class ResidentUpdateService {
 		fieldValue3.setValue(uin);
 		fieldValues[3] = fieldValue3;
 
-		metadata.put("metadata", JsonUtils.javaObjectToJsonString(fieldValues));
+		metadata.put("metaData", JsonUtils.javaObjectToJsonString(fieldValues));
 		return metadata;
 	}
 
