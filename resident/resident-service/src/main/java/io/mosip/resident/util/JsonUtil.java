@@ -1,11 +1,17 @@
 package io.mosip.resident.util;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -190,6 +196,46 @@ public class JsonUtil {
 	}
 
 	public static String writeValueAsString(Object obj) throws IOException {
+		return objectMapper.writeValueAsString(obj);
+	}
+
+	public static Object inputStreamtoJavaObject(InputStream stream, Class<?> clazz)
+			throws UnsupportedEncodingException {
+		JsonParser jsonParser = new JsonParser();
+		Gson gson = new Gson();
+		JsonObject jsonObject = (JsonObject) jsonParser.parse(new InputStreamReader(stream, "UTF-8"));
+		try {
+			return gson.fromJson(jsonObject, clazz);
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	/**
+	 * Object mapper read value. This method maps the jsonString to particular type
+	 *
+	 * @param <T>
+	 *            the generic type
+	 * @param jsonString
+	 *            the json string
+	 * @param clazz
+	 *            the clazz
+	 * @return the t
+	 * @throws JsonParseException
+	 *             the json parse exception
+	 * @throws JsonMappingException
+	 *             the json mapping exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T objectMapperReadValue(String jsonString, Class<?> clazz) throws IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
+		return (T) objectMapper.readValue(jsonString, clazz);
+	}
+
+	public static String objectMapperObjectToJson(Object obj) throws IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
 		return objectMapper.writeValueAsString(obj);
 	}
 

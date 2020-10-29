@@ -102,7 +102,7 @@ public class NotificationService {
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus;
 		boolean emailStatus;
-		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), dto.getIdType());
+		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId());
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
@@ -142,7 +142,7 @@ public class NotificationService {
 		pathSegments.add(templatetypecode);
 		try {
 			ResponseWrapper<TemplateResponseDto> resp = (ResponseWrapper<TemplateResponseDto>) restClient.getApi(
-					ApiName.TEMPLATES, pathSegments, null, null, ResponseWrapper.class, tokenGenerator.getToken());
+					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class, tokenGenerator.getToken());
 			if (resp == null || resp.getErrors() != null && !resp.getErrors().isEmpty()) {
 				throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorMessage()
