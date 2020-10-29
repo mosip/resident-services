@@ -28,7 +28,17 @@ public enum ResidentErrorCode {
 	RESIDENT_SYS_EXCEPTION("RES-SER-SYS-001","System exception occured"),
 	IO_EXCEPTION("RES-SER-SYS-002","IO Exception occured"),
 	JSON_PROCESSING_EXCEPTION("RES-SER-SYS-003","JSON Processing Exception occured"), 
-	INVALID_RID_EXCEPTION("RES-TUG-001", "RID entered is not valid");
+	INVALID_RID_EXCEPTION("RES-TUG-001", "RID entered is not valid"),
+	INVLAID_KEY_EXCEPTION("RES-SER-25",
+			"Exception occured while encryting the packet Invalid Key"),
+	UNKNOWN_EXCEPTION("RES-SER-26",
+			"Unknown exception occured."),
+	BASE_EXCEPTION("RES-SER-27",
+			"Base exception."),
+	PACKET_CREATION_EXCEPTION("RES-SER-28",
+			"Exception while creating packet."),
+
+	INVALID_ID("RES-SER-29", "Invalid id");
 	
 	private final String errorCode;
 	private final String errorMessage;

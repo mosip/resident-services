@@ -104,7 +104,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         ResponseWrapper<VidResponseDto> responseDto = new ResponseWrapper<>();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
         notificationRequestDto.setId(requestDto.getIndividualId());
-        notificationRequestDto.setIdType(IdType.valueOf(requestDto.getIndividualIdType()));
 
         try {
             boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(),
@@ -212,7 +211,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-		Long uin = null;
+		String uin = null;
 
 		try {
 			boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(), requestDto.getIndividualId(),
@@ -222,7 +221,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				throw new OtpValidationFailedException();
 		} catch (OtpValidationFailedException e) {
 			notificationRequestDto.setId(requestDto.getIndividualId());
-			notificationRequestDto.setIdType(IdType.VID);
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
 			notificationService.sendNotification(notificationRequestDto);
 			throw e;
@@ -230,14 +228,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 
 		try {
-			JSONObject jsonObject = utilitiy.retrieveIdrepoJson(vid, IdType.VID);
+			JSONObject jsonObject = utilitiy.retrieveIdrepoJson(vid);
 			uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
 		} catch (IdRepoAppException e) {
 			throw new DataNotFoundException(e.getErrorCode(),e.getMessage());
 		}
 
 		notificationRequestDto.setId(uin.toString());
-		notificationRequestDto.setIdType(IdType.UIN);
 		
 		try {
 
@@ -278,13 +275,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return responseDto;
 	}
 
-	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, Long uin)
+	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, String uin)
 			throws JsonProcessingException, IOException, ApisResourceAccessException, ResidentServiceCheckedException {
 		VidGeneratorRequestDto vidRequestDto = new VidGeneratorRequestDto();
 		RequestWrapper<VidGeneratorRequestDto> request = new RequestWrapper<>();
 		ResponseWrapper<VidGeneratorResponseDto> response = null;
 
-		vidRequestDto.setUIN(uin.toString());
+		vidRequestDto.setUIN(uin);
 		vidRequestDto.setVidStatus(requestDto.getVidStatus());
 		vidRequestDto.setVidType(VidType.PERPETUAL.name());
 		request.setId(vidRevokeId);

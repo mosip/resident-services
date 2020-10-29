@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.idvalidator.spi.RidValidator;
+import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
@@ -36,27 +36,29 @@ import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.RegProcCommonResponseDto;
+import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegProcUpdateRequestDTO;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusRequestDTO;
 import io.mosip.resident.dto.RegistrationStatusResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
+import io.mosip.resident.dto.RegistrationType;
 import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
@@ -89,6 +91,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private UINCardDownloadService uinCardDownloadService;
 
 	@Autowired
+	private ResidentUpdateService residentUpdateService;
+
+	@Autowired
 	private IdAuthService idAuthService;
 
 	@Autowired
@@ -101,7 +106,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
-	private RidValidator<String> ridValidator;
+	private UinCardRePrintService rePrintService;
 
 	@Autowired
 	Environment env;
@@ -281,32 +286,16 @@ public class ResidentServiceImpl implements ResidentService {
 			rePrintReq.setId(dto.getIndividualId());
 			rePrintReq.setIdType(dto.getIndividualIdType());
 			rePrintReq.setReason("resident");
-			rePrintReq.setRegistrationType("RES_REPRINT");
-			RequestWrapper<RegProcRePrintRequestDto> request = new RequestWrapper<>();
-			request.setRequest(rePrintReq);
-			request.setId("mosip.uincard.reprint");
-			request.setVersion("1.0");
-			request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
-			ResponseWrapper<RegProcCommonResponseDto> response = residentServiceRestClient.postApi(
-					env.getProperty(ApiName.REPRINTUIN.name()), MediaType.APPLICATION_JSON, request,
-					ResponseWrapper.class, tokenGenerator.getToken());
-			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-				sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
-						NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
-				throw new ResidentServiceException(ResidentErrorCode.RE_PRINT_REQUEST_FAILED.getErrorCode(),
-						ResidentErrorCode.RE_PRINT_REQUEST_FAILED.getErrorMessage()
-								+ (response.getErrors().get(0).toString()));
-			}
+			rePrintReq.setRegistrationType(RegistrationType.RES_REPRINT.name());
 
-			RegProcCommonResponseDto responseDto = JsonUtil
-					.readValue(JsonUtil.writeValueAsString(response.getResponse()), RegProcCommonResponseDto.class);
+			PacketGeneratorResDto resDto = rePrintService.createPacket(rePrintReq);
 
 			Map<String, Object> additionalAttributes = new HashMap<>();
-			additionalAttributes.put("RID", responseDto.getRegistrationId());
+			additionalAttributes.put(IdType.RID.name(), resDto.getRegistrationId());
 			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(),
 					IdType.valueOf(dto.getIndividualIdType()), NotificationTemplateCode.RS_UIN_RPR_SUCCESS,
 					additionalAttributes);
-			reprintResponse.setRegistrationId(responseDto.getRegistrationId());
+			reprintResponse.setRegistrationId(resDto.getRegistrationId());
 			reprintResponse.setMessage(notificationResponseDTO.getMessage());
 
 		} catch (OtpValidationFailedException e) {
@@ -340,6 +329,11 @@ public class ResidentServiceImpl implements ResidentService {
 					NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode(),
 					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage(), e);
+		} catch (BaseCheckedException e) {
+			sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
+					NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
+			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 		}
 
 		return reprintResponse;
@@ -480,7 +474,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private NotificationResponseDTO sendNotification(String id, IdType idType,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
 			throws ResidentServiceCheckedException {
-		NotificationRequestDto notificationRequest = new NotificationRequestDto(id, idType, templateTypeCode,
+		NotificationRequestDto notificationRequest = new NotificationRequestDto(id, templateTypeCode,
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
@@ -496,9 +490,9 @@ public class ResidentServiceImpl implements ResidentService {
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 			}
-			RegProcUpdateRequestDTO regProcReqUpdateDto = new RegProcUpdateRequestDTO();
+			ResidentUpdateDto regProcReqUpdateDto = new ResidentUpdateDto();
 			regProcReqUpdateDto.setIdValue(dto.getIndividualId());
-			regProcReqUpdateDto.setIdType(dto.getIndividualIdType());
+			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));
 			regProcReqUpdateDto.setCenterId(centerId);
 			regProcReqUpdateDto.setMachineId(machineId);
 			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
@@ -525,31 +519,15 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setProofOfRelationship(getDocumentValue(proofOfrelationJson, documents));
 			JSONObject proofOfBirthJson = JsonUtil.getJSONObject(demographicIdentity, pobMapping);
 			regProcReqUpdateDto.setProofOfDateOfBirth(getDocumentValue(proofOfBirthJson, documents));
-			RequestWrapper<RegProcUpdateRequestDTO> request = new RequestWrapper<>();
-			request.setId("mosip.registration.update");
-			request.setRequest(regProcReqUpdateDto);
-			request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
-			request.setVersion("1.0");
-			ResponseWrapper<RegProcCommonResponseDto> response = residentServiceRestClient.postApi(
-					env.getProperty(ApiName.REGPROCRESUPDATE.name()), MediaType.APPLICATION_JSON, request,
-					ResponseWrapper.class, tokenGenerator.getToken());
 
-			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-				sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
-						NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
-				throw new ResidentServiceException(ResidentErrorCode.UIN_UPDATE_FAILED.getErrorCode(),
-						ResidentErrorCode.UIN_UPDATE_FAILED.getErrorMessage()
-								+ (response.getErrors().get(0).toString()));
-			}
-			RegProcCommonResponseDto regProcResponseDto = JsonUtil
-					.readValue(JsonUtil.writeValueAsString(response.getResponse()), RegProcCommonResponseDto.class);
 
+			PacketGeneratorResDto response = residentUpdateService.createPacket(regProcReqUpdateDto);
 			Map<String, Object> additionalAttributes = new HashMap<>();
-			additionalAttributes.put("RID", regProcResponseDto.getRegistrationId());
+			additionalAttributes.put("RID", response.getRegistrationId());
 			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(),
 					IdType.valueOf(dto.getIndividualIdType()), NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
 			responseDto.setMessage(notificationResponseDTO.getMessage());
-			responseDto.setRegistrationId(regProcResponseDto.getRegistrationId());
+			responseDto.setRegistrationId(response.getRegistrationId());
 
 		} catch (OtpValidationFailedException e) {
 			sendNotification(dto.getIndividualId(), IdType.valueOf(dto.getIndividualIdType()),
@@ -578,6 +556,11 @@ public class ResidentServiceImpl implements ResidentService {
 					NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} catch (BaseCheckedException e) {
+			sendNotification(dto.getIndividualId(),  IdType.valueOf(dto.getIndividualIdType()),
+					NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
+			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 		}
 		return responseDto;
 	}

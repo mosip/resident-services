@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -55,6 +56,9 @@ public class ResidentServiceRestClient {
 	RestTemplateBuilder builder;
 
 	@Autowired
+	private RestTemplate residentRestTemplate;
+
+	@Autowired
 	Environment environment;
 
 	/**
@@ -70,10 +74,9 @@ public class ResidentServiceRestClient {
 	 * @throws Exception
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType, String token) throws ApisResourceAccessException {
-		RestTemplate restTemplate;
 		try {
-			restTemplate = getRestTemplate();
-			return (T) restTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null, token), responseType)
+			residentRestTemplate = getResidentRestTemplate();
+			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null, token), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -98,10 +101,9 @@ public class ResidentServiceRestClient {
 						builder.pathSegment(segment);
 					}
 				}
-
 			}
 
-			if (!((queryParamName == null) || (("").equals(queryParamName)))) {
+			if (StringUtils.isNotEmpty(queryParamName)) {
 
 				String[] queryParamNameArr = queryParamName.split(",");
 				String[] queryParamValueArr = queryParamValue.split(",");
@@ -125,15 +127,54 @@ public class ResidentServiceRestClient {
 		return obj;
 	}
 
+
+	public Object getApi(ApiName apiName, List<String> pathsegments, List<String> queryParamName, List<Object> queryParamValue,
+						 Class<?> responseType, String token) throws ApisResourceAccessException {
+
+		Object obj = null;
+		String apiHostIpPort = environment.getProperty(apiName.name());
+		UriComponentsBuilder builder = null;
+		UriComponents uriComponents = null;
+		if (apiHostIpPort != null) {
+			builder = UriComponentsBuilder.fromUriString(apiHostIpPort);
+			if (!((pathsegments == null) || (pathsegments.isEmpty()))) {
+				for (String segment : pathsegments) {
+					if (!((segment == null) || (("").equals(segment)))) {
+						builder.pathSegment(segment);
+					}
+				}
+			}
+
+			if (!((queryParamName == null) || (("").equals(queryParamName)))) {
+
+				for (int i = 0; i < queryParamName.size(); i++) {
+					builder.queryParam(queryParamName.get(i), queryParamValue.get(i));
+				}
+
+			}
+			try {
+
+				uriComponents = builder.build(false).encode();
+				obj = getApi(uriComponents.toUri(), responseType, token);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new ApisResourceAccessException("Exception occured while accessing ", e);
+
+			}
+		}
+
+		return obj;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass, String token)
 			throws ApisResourceAccessException {
-		RestTemplate restTemplate;
 		try {
-			restTemplate = getRestTemplate();
+			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-			T response = (T) restTemplate.postForObject(uri, setRequestHeader(requestType, mediaType, token),
+			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType, token),
 					responseClass);
 			return response;
 
@@ -162,13 +203,12 @@ public class ResidentServiceRestClient {
 	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass, String token)
 			throws ApisResourceAccessException {
 
-		RestTemplate restTemplate;
 		T result = null;
 		try {
-			restTemplate = getRestTemplate();
+			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-			result = (T) restTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType, token),
+			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType, token),
 					responseClass);
 
 		} catch (Exception e) {
@@ -205,15 +245,14 @@ public class ResidentServiceRestClient {
 	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType, String token)
 			throws ApisResourceAccessException {
 
-		RestTemplate restTemplate;
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {
-			restTemplate = getRestTemplate();
+			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 
-			response = (ResponseEntity<T>) restTemplate.exchange(uri, HttpMethod.PUT,
+			response = (ResponseEntity<T>) residentRestTemplate.exchange(uri, HttpMethod.PUT,
 					setRequestHeader(requestType.toString(), mediaType, token), responseClass);
 			result = response.getBody();
 		} catch (Exception e) {
@@ -226,7 +265,7 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	public RestTemplate getRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+	public RestTemplate getResidentRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
 		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), Arrays.asList(environment.getActiveProfiles()).toString());
 
@@ -259,8 +298,10 @@ public class ResidentServiceRestClient {
 			throws IOException {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		headers.add("Cookie", token);
+		headers.add("Authorization", token);
 		if (mediaType != null) {
 			headers.add("Content-Type", mediaType.toString());
+
 		}
 		if (requestType != null) {
 			try {
