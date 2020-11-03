@@ -147,8 +147,7 @@ public class RequestValidator {
 
 		validateIndividualIdType(requestDto.getRequest().getIndividualIdType());
 
-		if (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-				requestDto.getRequest().getIndividualIdType())) {
+		if (!validateIndividualId(requestDto.getRequest().getIndividualId())) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -177,8 +176,7 @@ public class RequestValidator {
 
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
@@ -209,8 +207,7 @@ public class RequestValidator {
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType()))) {
+				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId()))) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -231,13 +228,8 @@ public class RequestValidator {
 
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
-
-
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
-
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType()))) {
+				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId()))) {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
@@ -312,16 +304,11 @@ public class RequestValidator {
 		return email.matches(emailRegex);
 	}
 
-	private boolean validateIndividualId(String individualId, String individualIdType) {
+	private boolean validateIndividualId(String individualId) {
 		boolean validation = false;
 		try {
-			if (individualIdType.equalsIgnoreCase(IdType.UIN.toString())) {
 				validation = uinValidator.validateId(individualId);
-			} else if (individualIdType.equalsIgnoreCase(IdType.VID.toString())) {
-				validation = vidValidator.validateId(individualId);
-			} else if (individualIdType.equalsIgnoreCase(IdType.RID.toString())) {
-				validation = ridValidator.validateId(individualId);
-			}
+
 		} catch (InvalidIDException e) {
 			throw new InvalidInputException("individualId");
 		}
@@ -340,8 +327,7 @@ public class RequestValidator {
 			throw new InvalidInputException("individualIdType");
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-						requestDto.getRequest().getIndividualIdType())))
+				|| (!validateIndividualId(requestDto.getRequest().getIndividualId())))
 			throw new InvalidInputException("individualId");
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getOtp()))
@@ -371,7 +357,7 @@ public class RequestValidator {
 	}
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+		if (StringUtils.isEmpty(request.getId()))
 			throw new InvalidInputException("id");
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());
@@ -403,8 +389,7 @@ public class RequestValidator {
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -429,8 +414,7 @@ public class RequestValidator {
 
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
@@ -455,8 +439,7 @@ public class RequestValidator {
 			throw new InvalidInputException("individualIdType");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
 			throw new InvalidInputException("individualId");
 		}
 
