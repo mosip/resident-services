@@ -131,7 +131,7 @@ public class SyncAndUploadService {
 						map, headers);
 
 				String result = (String) restClientService.postApi(env.getProperty(ApiName.PACKETRECEIVER.name()), MediaType.MULTIPART_FORM_DATA, requestEntity,
-						String.class, tokenGenerator.getRegprocToken());
+						String.class, tokenGenerator.getToken());
 				if (result != null) {
 					packetReceiverResponseDTO = gson.fromJson(result, PacketReceiverResponseDTO.class);
 					logger.debug(LoggerFileConstant.SESSIONID.toString(),
@@ -254,9 +254,9 @@ public class SyncAndUploadService {
 			headers.add("Center-Machine-RefId", refId);
 			headers.add("timestamp", creationTime);
 
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(javaObjectToJsonString(requestObject), headers);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(javaObjectToJsonString(requestObject).getBytes(), headers);
 			String response = (String) restClientService.postApi(env.getProperty(ApiName.SYNCSERVICE.name()), MediaType.APPLICATION_JSON, requestEntity,
-					String.class, tokenGenerator.getRegprocToken());
+					String.class, tokenGenerator.getToken());
 			regSyncResponseDTO = gson.fromJson(response, RegSyncResponseDTO.class);
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					regId,

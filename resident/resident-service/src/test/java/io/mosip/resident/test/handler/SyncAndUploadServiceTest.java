@@ -92,7 +92,7 @@ public class SyncAndUploadServiceTest {
         Mockito.when(env.getProperty(any())).thenReturn("property");
         Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(new String(""));
         Mockito.when(encryptorUtil.encrypt(any(), any())).thenReturn("encrypted request String");
-        Mockito.when(tokenGenerator.getRegprocToken()).thenReturn("sbfdsafuadfkbdsf");
+        Mockito.when(tokenGenerator.getToken()).thenReturn("sbfdsafuadfkbdsf");
 
         PacketReceiverSubResponseDTO packetReceiverSubResponseDTO = new PacketReceiverSubResponseDTO();
         packetReceiverSubResponseDTO.setStatus(status);
@@ -137,7 +137,7 @@ public class SyncAndUploadServiceTest {
 
     @Test(expected = BaseCheckedException.class)
     public void testIOException() throws BaseCheckedException, IOException {
-        Mockito.when(tokenGenerator.getRegprocToken()).thenThrow(new IOException("io exception"));
+        Mockito.when(tokenGenerator.getToken()).thenThrow(new IOException("io exception"));
 
         PacketGeneratorResDto response = syncAndUploadService.uploadUinPacket(registartionId, creationTime, regType, packetZipBytes);
     }
@@ -152,7 +152,7 @@ public class SyncAndUploadServiceTest {
 
     @Test(expected = BaseCheckedException.class)
     public void testIOExceptionForPacketUpload() throws BaseCheckedException, IOException {
-        Mockito.when(tokenGenerator.getRegprocToken()).thenReturn("token").thenThrow(new IOException("io exception"));
+        Mockito.when(tokenGenerator.getToken()).thenReturn("token").thenThrow(new IOException("io exception"));
 
         PacketGeneratorResDto response = syncAndUploadService.uploadUinPacket(registartionId, creationTime, regType, packetZipBytes);
     }

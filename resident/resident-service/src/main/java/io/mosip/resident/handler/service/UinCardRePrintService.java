@@ -219,13 +219,8 @@ public class UinCardRePrintService {
                         DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
                 String creationTime = ldt.toString() + ".000Z";
 
-                if (utilities.linkRegIdWrtUin(rid, uin))
-                    packetGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
-                            packetDto.getId(), creationTime, regType, packetZipBytes);
-                else
-                    logger.debug(LoggerFileConstant.SESSIONID.toString(),
-                            LoggerFileConstant.REGISTRATIONID.toString(), rid,
-                            "UinCardRePrintServiceImpl::createPacket():: RID link to UIN failed");
+                packetGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
+                        packetDto.getId(), creationTime, regType, packetZipBytes);
 
             }
             return packetGeneratorResDto;
@@ -287,7 +282,7 @@ public class UinCardRePrintService {
         fieldValue5.setValue(cardType);
         fieldValues[5] = fieldValue5;
 
-        metadata.put("metadata", JsonUtils.javaObjectToJsonString(fieldValues));
+        metadata.put("metaData", JsonUtils.javaObjectToJsonString(fieldValues));
         return metadata;
     }
 

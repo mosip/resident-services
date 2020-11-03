@@ -36,7 +36,9 @@ public enum ResidentErrorCode {
 	BASE_EXCEPTION("RES-SER-27",
 			"Base exception."),
 	PACKET_CREATION_EXCEPTION("RES-SER-28",
-			"Exception while creating packet.");
+			"Exception while creating packet."),
+
+	INVALID_ID("RES-SER-29", "Invalid id");
 	
 	private final String errorCode;
 	private final String errorMessage;

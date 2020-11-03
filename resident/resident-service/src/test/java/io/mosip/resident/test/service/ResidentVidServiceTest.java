@@ -1,19 +1,16 @@
 package io.mosip.resident.test.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.*;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.ResidentVidServiceImpl;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.Utilitiy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
@@ -28,16 +25,33 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.VidGeneratorResponseDto;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidResponseDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidAlreadyPresentException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.exception.VidRevocationException;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentVidServiceImpl;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TokenGenerator;
+import io.mosip.resident.util.Utilitiy;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -107,7 +121,6 @@ public class ResidentVidServiceTest {
 		
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
 		notificationRequestDto.setId("1234567");
-		notificationRequestDto.setIdType(IdType.UIN);
     }
 
     @Test
@@ -216,7 +229,7 @@ public class ResidentVidServiceTest {
 		responseWrapper.setVersion("v1");
 		responseWrapper.setResponsetime(DateUtils.getCurrentDateTimeString());
 		
-		when(utilitiy.retrieveIdrepoJson(anyString(), any())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
+		when(utilitiy.retrieveIdrepoJson(anyString())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
 	
 		doReturn(objectMapper.writeValueAsString(dto)).when(mapper).writeValueAsString(any());
 		doReturn(dto).when(mapper).readValue(anyString(), any(Class.class));
@@ -247,7 +260,7 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
-        when(utilitiy.retrieveIdrepoJson(anyString(), any())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
+		when(utilitiy.retrieveIdrepoJson(anyString())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
     	
         when(idAuthService.validateOtp(anyString(), anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
         when(idAuthService.validateOtp(anyString(), anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
@@ -269,7 +282,7 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
-        when(utilitiy.retrieveIdrepoJson(anyString(), any())).thenThrow(VidRevocationException.class);
+		when(utilitiy.retrieveIdrepoJson(anyString())).thenThrow(VidRevocationException.class);
     	
         when(idAuthService.validateOtp(anyString(), anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
         when(idAuthService.validateOtp(anyString(), anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
