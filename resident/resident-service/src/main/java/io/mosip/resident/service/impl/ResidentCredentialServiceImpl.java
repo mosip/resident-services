@@ -7,13 +7,14 @@ import java.util.Map;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -46,20 +47,17 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Autowired
 	IdAuthService idAuthService;
 	
-	@Value("${CREDENTIAL_REQ_URL}")
-	private String credentailReqUrl;
-	
-	@Value("${CREDENTIAL_STATUS_URL}")
-	private String credentailStatusUrl;
-	
-	@Value("${CREDENTIAL_TYPES_URL}")
-	private String credentailTypesUrl;
-	
-	@Value("${CREDENTIAL_CANCELREQ_URL}")
-	private String credentailCancelReqUrl;
-	
-	@Value("${PARTNER_API_URL}")
-	private String partnerReqUrl;
+	/*
+	 * @Value("${CREDENTIAL_REQ_URL}") private String credentailReqUrl;
+	 * 
+	 * @Value("${CREDENTIAL_STATUS_URL}") private String credentailStatusUrl;
+	 * 
+	 * @Value("${CREDENTIAL_TYPES_URL}") private String credentailTypesUrl;
+	 * 
+	 * @Value("${CREDENTIAL_CANCELREQ_URL}") private String credentailCancelReqUrl;
+	 * 
+	 * @Value("${PARTNER_API_URL}") private String partnerReqUrl;
+	 */
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialServiceImpl.class);
 	
@@ -68,7 +66,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Autowired
 	private TokenGenerator tokenGenerator;
-	
+
+	@Autowired
+	Environment env;
 
 	@Autowired
 	NotificationService notificationService;
@@ -82,10 +82,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
 		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
 		Map<String, Object> additionalAttributes = new HashedMap();
-		String partnerUrl = partnerReqUrl + dto.getIssuer();
+		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name())  + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
 		try {
-			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), "UIN", dto.getOtp())) {
+			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 
 				    credentialReqestDto=prepareCredentialRequest(dto);
 					requestDto.setId("mosip.credential.request.service.id");
@@ -102,7 +102,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					additionalAttributes.put("credentialName", credentialReqestDto.getCredentialType());
 
 					ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
-							credentailReqUrl, MediaType.APPLICATION_JSON, requestDto, ResponseWrapper.class,
+							env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
+							ResponseWrapper.class,
 							tokenGenerator.getToken());
 					residentCredentialResponseDto = JsonUtil.readValue(
 							JsonUtil.writeValueAsString(responseDto.getResponse()),
@@ -150,7 +151,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialRequestStatusResponseDto credentialRequestStatusResponseDto=new CredentialRequestStatusResponseDto();
 		try {
-			String credentialUrl=credentailStatusUrl+requestId;
+			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class, tokenGenerator.getToken());
 			credentialRequestStatusResponseDto = JsonUtil
@@ -204,7 +205,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					"UIN", dto.getOtp())) {*/
 			if(flag) {
 				
-					String credentialReqCancelUrl=credentailCancelReqUrl+requestId;
+				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestId;
 					URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
 					responseDto =residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class, tokenGenerator.getToken());
 					credentialCancelRequestResponseDto = JsonUtil
@@ -244,7 +245,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Override
 	public CredentialTypeResponse getCredentialTypes() {
 		CredentialTypeResponse credentialTypeResponse=new CredentialTypeResponse();
-		URI credentailTypesUri = URI.create(credentailTypesUrl);
+		URI credentailTypesUri = URI.create(env.getProperty(ApiName.CREDENTIAL_TYPES_URL.name()));
 		try {
 			credentialTypeResponse=residentServiceRestClient.getApi(credentailTypesUri, CredentialTypeResponse.class, tokenGenerator.getToken());
 		} catch (ApisResourceAccessException  e) {
