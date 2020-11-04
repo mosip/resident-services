@@ -12,12 +12,12 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 @Service
 public interface IdAuthService {
 
-	public boolean validateOtp(String transactionID, String individualId, String individualIdType, String otp)
+	public boolean validateOtp(String transactionID, String individualId, String otp)
 			throws OtpValidationFailedException;
 
 	public boolean authTypeStatusUpdate(String individualId, String individualIdType, List<String> authType,
 			AuthTypeStatus authTypeStatus) throws ApisResourceAccessException;
 	
-	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId, String individualIdType,
+	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId,
 			String pageStart, String pageFetch) throws ApisResourceAccessException;
 }

@@ -113,6 +113,7 @@ public class IdAuthServiceTest {
 		assertTrue(isUpdated);
 	}
 
+	@Ignore
 	@Test
 	@Ignore
 	public void validateOtpSuccessTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
@@ -148,7 +149,7 @@ public class IdAuthServiceTest {
 
 		when(restClient.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(response);
 
-		boolean result = idAuthService.validateOtp(transactionID, individualId, individualIdType, otp);
+		boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 
 		assertThat("Expected otp validation successful", result, is(true));
 	}
@@ -179,15 +180,15 @@ public class IdAuthServiceTest {
 		doReturn(responseDto).when(mapper).readValue(anyString(), any(Class.class));
 
 		when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
-
 		when(tokenGenerator.getToken()).thenReturn("token");
 
 		when(restClient.postApi(any(), any(), any(), any(Class.class), any()))
 				.thenThrow(new ApisResourceAccessException());
 
-		idAuthService.validateOtp(transactionID, individualId, individualIdType, otp);
+		idAuthService.validateOtp(transactionID, individualId, otp);
 	}
 
+	@Ignore
 	@Test(expected = OtpValidationFailedException.class)
 	@Ignore
 	public void idAuthErrorsTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
@@ -222,7 +223,7 @@ public class IdAuthServiceTest {
 
 		when(restClient.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(response);
 
-		idAuthService.validateOtp(transactionID, individualId, individualIdType, otp);
+		idAuthService.validateOtp(transactionID, individualId, otp);
 	}
 	
 	@Test
@@ -240,7 +241,7 @@ public class IdAuthServiceTest {
 		responsemap.put("authTransactions", Arrays.asList(autnTxnDto));
 		response.setResponse(responsemap);
 		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenReturn(response);
-		assertEquals("OTP-AUTH",idAuthService.getAuthHistoryDetails("1234", "WN", "1", "1").get(0).getAuthModality());
+		assertEquals("OTP-AUTH", idAuthService.getAuthHistoryDetails("1234", "1", "1").get(0).getAuthModality());
 	}
 	
 	@Test
@@ -249,12 +250,12 @@ public class IdAuthServiceTest {
 		AuthError error=new AuthError("e","e");
 		response.setErrors(Arrays.asList(error));
 		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenReturn(response);
-		assertEquals(null,idAuthService.getAuthHistoryDetails("1234", "WN", "1", "1"));
+		assertEquals(null, idAuthService.getAuthHistoryDetails("1234", "1", "1"));
 	}
 	
 	@Test(expected = ApisResourceAccessException.class)
 	public void testGetAuthHistoryDetailsFetchFailure() throws ApisResourceAccessException {
 		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException() );
-		idAuthService.getAuthHistoryDetails("1234", "WN", "1", "10");
+		idAuthService.getAuthHistoryDetails("1234", "1", "10");
 	}
 }

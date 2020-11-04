@@ -107,7 +107,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
         try {
             boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(),
-                    requestDto.getIndividualId(), requestDto.getIndividualIdType(), requestDto.getOtp());
+					requestDto.getIndividualId(), requestDto.getOtp());
             if (!isAuthenticated)
                 throw new OtpValidationFailedException();
         } catch (OtpValidationFailedException e) {
@@ -215,7 +215,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		try {
 			boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(), requestDto.getIndividualId(),
-					requestDto.getIndividualIdType(), requestDto.getOtp());
+					requestDto.getOtp());
 
 			if (!isAuthenticated)
 				throw new OtpValidationFailedException();

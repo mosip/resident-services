@@ -48,16 +48,16 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Value("${CREDENTIAL_REQ_URL}")
 	private String credentailReqUrl;
-	
+
 	@Value("${CREDENTIAL_STATUS_URL}")
 	private String credentailStatusUrl;
-	
+
 	@Value("${CREDENTIAL_TYPES_URL}")
 	private String credentailTypesUrl;
-	
+
 	@Value("${CREDENTIAL_CANCELREQ_URL}")
 	private String credentailCancelReqUrl;
-	
+
 	@Value("${PARTNER_API_URL}")
 	private String partnerReqUrl;
 
@@ -68,7 +68,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Autowired
 	private TokenGenerator tokenGenerator;
-	
+
 
 	@Autowired
 	NotificationService notificationService;
