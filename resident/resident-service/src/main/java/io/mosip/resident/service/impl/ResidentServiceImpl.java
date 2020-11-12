@@ -84,6 +84,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String PROOF_OF_IDENTITY = "poi";
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
+	private static final String DOCUMENT = "documents";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 
@@ -482,8 +483,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
 		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
 		try {
-			if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
-					dto.getOtp())) {
+			if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
@@ -505,11 +505,11 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
-			JSONObject mappingIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
-			String poaMapping = getDocumentName(mappingIdentity, PROOF_OF_ADDRESS);
-			String poiMapping = getDocumentName(mappingIdentity, PROOF_OF_IDENTITY);
-			String porMapping = getDocumentName(mappingIdentity, PROOF_OF_RELATIONSHIP);
-			String pobMapping = getDocumentName(mappingIdentity, PROOF_OF_DOB);
+			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
+			String poaMapping = getDocumentName(mappingDocument, PROOF_OF_ADDRESS);
+			String poiMapping = getDocumentName(mappingDocument, PROOF_OF_IDENTITY);
+			String porMapping = getDocumentName(mappingDocument, PROOF_OF_RELATIONSHIP);
+			String pobMapping = getDocumentName(mappingDocument, PROOF_OF_DOB);
 			JSONObject proofOfAddressJson = JsonUtil.getJSONObject(demographicIdentity, poaMapping);
 			regProcReqUpdateDto.setProofOfAddress(getDocumentValue(proofOfAddressJson, documents));
 			JSONObject proofOfIdentityJson = JsonUtil.getJSONObject(demographicIdentity, poiMapping);
