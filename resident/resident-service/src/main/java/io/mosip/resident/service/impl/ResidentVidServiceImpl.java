@@ -50,6 +50,8 @@ import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
@@ -97,6 +99,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
     
     @Autowired
     private Utilitiy utilitiy;
+    
+    @Autowired
+    private AuditUtil audit;
 
     @Override
     public ResponseWrapper<VidResponseDto> generateVid(VidRequestDto requestDto) throws OtpValidationFailedException, ResidentServiceCheckedException {
@@ -109,18 +114,22 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         try {
             boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(),
                     requestDto.getIndividualId(), requestDto.getIndividualIdType(), requestDto.getOtp());
-            if (!isAuthenticated)
-                throw new OtpValidationFailedException();
+            if (!isAuthenticated) {
+            	throw new OtpValidationFailedException();
+            }
         } catch (OtpValidationFailedException e) {
+        	audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,requestDto.getTransactionID(),"Request to generate VID"));
             notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
             notificationService.sendNotification(notificationRequestDto);
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(),"Request to generate VID"));
+            
             throw e;
         }
 
         try {
             // generate vid
             VidGeneratorResponseDto vidResponse = vidGenerator(requestDto);
-
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_GENERATED,requestDto.getTransactionID()));
             // send notification
             Map<String, Object> additionalAttributes = new HashMap<>();
             additionalAttributes.put(TemplateEnum.VID.name(), vidResponse.getVID());
@@ -128,23 +137,29 @@ public class ResidentVidServiceImpl implements ResidentVidService {
             notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_SUCCESS);
 
             NotificationResponseDTO notificationResponseDTO = notificationService.sendNotification(notificationRequestDto);
-
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,requestDto.getTransactionID(), "Request to generate VID"));
             // create response dto
             VidResponseDto vidResponseDto = new VidResponseDto();
             vidResponseDto.setVid(vidResponse.getVID());
             vidResponseDto.setMessage(notificationResponseDTO.getMessage());
             responseDto.setResponse(vidResponseDto);
         } catch (JsonProcessingException e) {
+        	audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_JSON_PARSING_EXCEPTION,requestDto.getTransactionID(),"Request to generate VID"));
             notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
             notificationService.sendNotification(notificationRequestDto);
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(), "Request to generate VID"));
             throw new VidCreationException(e.getErrorText());
         } catch (IOException | ApisResourceAccessException | VidCreationException e) {
+        	audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_GENERATION_FAILURE,requestDto.getTransactionID()));
             notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
             notificationService.sendNotification(notificationRequestDto);
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(), "Request to generate VID"));
             throw new VidCreationException(e.getMessage());
         } catch (VidAlreadyPresentException e) {
+        	audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_ALREADY_EXISTS,requestDto.getTransactionID()));
             notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
             notificationService.sendNotification(notificationRequestDto);
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(), "Request to generate VID"));
             throw e;
         }
 
@@ -215,16 +230,20 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		String uin = null;
 
 		try {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,requestDto.getTransactionID() ,"Request to revoke VID"));
 			boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(), requestDto.getIndividualId(),
 					requestDto.getIndividualIdType(), requestDto.getOtp());
 
 			if (!isAuthenticated)
 				throw new OtpValidationFailedException();
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,requestDto.getTransactionID() ,"Request to revoke VID"));
 		} catch (OtpValidationFailedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,requestDto.getTransactionID() ,"Request to revoke VID"));
 			notificationRequestDto.setId(requestDto.getIndividualId());
 			notificationRequestDto.setIdType(IdType.VID);
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
 			notificationService.sendNotification(notificationRequestDto);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID() ,"Request to revoke VID"));
 			throw e;
 		}
 
@@ -243,7 +262,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 			// revoke vid
 			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin);
-
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.DEACTIVATED_VID,requestDto.getTransactionID()));
 			// send notification
 			Map<String, Object> additionalAttributes = new HashMap<>();
 			additionalAttributes.put(TemplateEnum.VID.name(), vid);
@@ -252,22 +271,28 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 			NotificationResponseDTO notificationResponseDTO = notificationService
 					.sendNotification(notificationRequestDto);
-
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,requestDto.getTransactionID(),"Request to revoke VID"));
 			// create response dto
 			VidRevokeResponseDTO vidRevokeResponseDto = new VidRevokeResponseDTO();
 			vidRevokeResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidRevokeResponseDto);
 		} catch (JsonProcessingException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_JSON_PARSING_EXCEPTION,requestDto.getTransactionID(),"Request to revoke VID"));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
 			notificationService.sendNotification(notificationRequestDto);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(),"Request to revoke VID"));
 			throw new VidRevocationException(e.getErrorText());
 		} catch (IOException | ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_REVOKE_EXCEPTION,requestDto.getTransactionID()));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
 			notificationService.sendNotification(notificationRequestDto);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(),"Request to revoke VID"));
 			throw new VidRevocationException(e.getMessage());
 		} catch ( VidRevocationException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_REVOKE_EXCEPTION,requestDto.getTransactionID()));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
 			notificationService.sendNotification(notificationRequestDto);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,requestDto.getTransactionID(),"Request to revoke VID"));
 			throw e;
 		}
 
