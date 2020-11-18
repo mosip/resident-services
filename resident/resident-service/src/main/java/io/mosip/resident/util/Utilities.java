@@ -75,7 +75,7 @@ public class Utilities {
 	@Value("${IDSchema.Version}")
 	private String idschemaVersion;
 
-	@Value("${provider.packetreader.mosip}")
+	@Value("${provider.packetwriter.resident}")
 	private String provider;
 
 	@Autowired
