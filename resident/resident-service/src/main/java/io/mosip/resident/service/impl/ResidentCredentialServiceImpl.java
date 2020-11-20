@@ -178,7 +178,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
 			String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class,
 					tokenGenerator.getToken());
-			System.out.println("encryptData" + encryptedData);
 			RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
 			CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
 			cryptomanagerRequestDto.setApplicationId(applicationId);
