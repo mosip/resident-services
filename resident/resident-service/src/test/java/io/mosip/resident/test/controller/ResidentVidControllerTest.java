@@ -97,8 +97,8 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(getRequest());
 
-		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json));
-				//.andExpect(status().isOk()).andExpect(jsonPath("$.response.vid", is("12345")));
+		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.response.vid", is("12345")));
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-004")));
 	}
 
 	@Test
@@ -126,7 +126,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-007")));
 	}
 
 	@Test
@@ -273,7 +273,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-RID-005")));
 
 	}
 
@@ -424,7 +424,8 @@ public class ResidentVidControllerTest {
 		ResidentVidRequestDto request = new ResidentVidRequestDto();
 		request.setId("mosip.resident.vid");
 		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+
+		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRequestDto);
 		return request;
 	}
@@ -440,7 +441,7 @@ public class ResidentVidControllerTest {
 		RequestWrapper request = new RequestWrapper();
 		request.setId("mosip.resident.vidstatus");
 		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRevokeRequestDTO);
 		return request;
 	}

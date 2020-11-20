@@ -147,7 +147,8 @@ public class RequestValidator {
 
 		validateIndividualIdType(requestDto.getRequest().getIndividualIdType());
 
-		if (!validateIndividualId(requestDto.getRequest().getIndividualId())) {
+		if (!validateIndividualId(requestDto.getRequest().getIndividualId(),
+				requestDto.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -176,7 +177,8 @@ public class RequestValidator {
 
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
+						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
@@ -207,7 +209,8 @@ public class RequestValidator {
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId()))) {
+				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
+						requestDTO.getRequest().getIndividualIdType()))) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -228,10 +231,7 @@ public class RequestValidator {
 
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId()))) {
-			throw new InvalidInputException("individualId");
-		}
+
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
@@ -304,11 +304,16 @@ public class RequestValidator {
 		return email.matches(emailRegex);
 	}
 
-	private boolean validateIndividualId(String individualId) {
+	private boolean validateIndividualId(String individualId, String individualIdType) {
 		boolean validation = false;
 		try {
+			if (individualIdType.equalsIgnoreCase(IdType.UIN.toString())) {
 				validation = uinValidator.validateId(individualId);
-
+			} else if (individualIdType.equalsIgnoreCase(IdType.VID.toString())) {
+				validation = vidValidator.validateId(individualId);
+			} else if (individualIdType.equalsIgnoreCase(IdType.RID.toString())) {
+				validation = ridValidator.validateId(individualId);
+			}
 		} catch (InvalidIDException e) {
 			throw new InvalidInputException("individualId");
 		}
@@ -327,7 +332,8 @@ public class RequestValidator {
 			throw new InvalidInputException("individualIdType");
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDto.getRequest().getIndividualId())))
+				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(),
+						requestDto.getRequest().getIndividualIdType())))
 			throw new InvalidInputException("individualId");
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getOtp()))
@@ -389,7 +395,8 @@ public class RequestValidator {
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
+						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 
@@ -414,7 +421,8 @@ public class RequestValidator {
 
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
+						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
@@ -439,7 +447,8 @@ public class RequestValidator {
 			throw new InvalidInputException("individualIdType");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId())) {
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
+						requestDTO.getRequest().getIndividualIdType())) {
 			throw new InvalidInputException("individualId");
 		}
 
