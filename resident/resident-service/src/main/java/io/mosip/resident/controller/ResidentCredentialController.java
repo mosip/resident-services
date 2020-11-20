@@ -1,9 +1,13 @@
 package io.mosip.resident.controller;
 
+import java.io.ByteArrayInputStream;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +52,17 @@ public class ResidentCredentialController {
 		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getStatus(requestId));
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	@GetMapping(value = "req/card/{requestId}")
+	public ResponseEntity<Object> getCard(@PathVariable("requestId") String requestId)
+			throws Exception {
+		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
+		byte[] pdfBytes = residentCredentialService.getCard(requestId);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + requestId + ".pdf\"")
+				.body((Object) resource);
 	}
 	
 	@GetMapping(value = "credential/types")

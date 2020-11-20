@@ -2,16 +2,21 @@ package io.mosip.resident.service.impl;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
@@ -20,8 +25,11 @@ import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialReqestDto;
+import io.mosip.resident.dto.CredentialRequestStatusDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.CryptomanagerResponseDto;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.PartnerResponseDto;
@@ -58,6 +66,15 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	 * 
 	 * @Value("${PARTNER_API_URL}") private String partnerReqUrl;
 	 */
+
+	@Value("${PARTNER_REFERENCE_Id}")
+	private String partnerReferenceId;
+
+	@Value("${APPLICATION_Id}")
+	private String applicationId;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialServiceImpl.class);
 	
@@ -146,20 +163,65 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 	
 	@Override
+	public byte[] getCard(String requestId) throws Exception {
+		// TODO Auto-generated method stub
+		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
+		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
+		try {
+
+			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+			URI credentailStatusUri = URI.create(credentialUrl);
+			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class,
+					tokenGenerator.getToken());
+			credentialRequestStatusResponseDto = JsonUtil.readValue(
+					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
+			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
+			String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class,
+					tokenGenerator.getToken());
+			RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
+			CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
+			cryptomanagerRequestDto.setApplicationId(applicationId);
+			cryptomanagerRequestDto.setData(encryptedData);
+			cryptomanagerRequestDto.setReferenceId(partnerReferenceId);
+			LocalDateTime localdatetime = LocalDateTime.now();
+			request.setRequesttime(localdatetime.toString());
+			cryptomanagerRequestDto.setTimeStamp(localdatetime);
+			request.setRequest(cryptomanagerRequestDto);
+			String response = residentServiceRestClient.postApi(
+					env.getProperty(ApiName.DECRYPT_API_URL.name()), MediaType.APPLICATION_JSON, request,
+					String.class, tokenGenerator.getToken());
+			CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
+			byte[] pdfBytes = CryptoUtil.decodeBase64(responseObject.getResponse().getData());
+			return pdfBytes;
+		} catch (ApisResourceAccessException e) {
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+	}
+
+	@Override
 	public CredentialRequestStatusResponseDto getStatus(String requestId) {
-		ResponseWrapper<CredentialRequestStatusResponseDto> responseDto = null;
+		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
+		CredentialRequestStatusDto credentialRequestStatusDto = new CredentialRequestStatusDto();
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialRequestStatusResponseDto credentialRequestStatusResponseDto=new CredentialRequestStatusResponseDto();
 		try {
 			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class, tokenGenerator.getToken());
-			credentialRequestStatusResponseDto = JsonUtil
-						.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusResponseDto.class);
+			credentialRequestStatusDto = JsonUtil
+						.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
+			credentialRequestStatusResponseDto.setId(credentialRequestStatusDto.getId());
+			credentialRequestStatusResponseDto.setRequestId(credentialRequestStatusDto.getRequestId());
+			credentialRequestStatusResponseDto.setStatusCode(credentialRequestStatusDto.getStatusCode());
 			additionalAttributes.put("RID", credentialRequestStatusResponseDto.getRequestId());
 			additionalAttributes.put("status", credentialRequestStatusResponseDto.getStatusCode());
 			sendNotification(credentialRequestStatusResponseDto.getId(), NotificationTemplateCode.RS_CRE_STATUS,
 					additionalAttributes);
+
 		} catch (ApisResourceAccessException e) {
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
