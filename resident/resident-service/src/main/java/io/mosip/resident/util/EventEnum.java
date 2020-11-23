@@ -33,7 +33,7 @@ public enum EventEnum {
 	SEND_NOTIFICATION_FAILURE("RES-SER-403",RegistrationConstants.SYSTEM,"%s","Failure notification sent for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
 	OBTAINED_RID("RES-SER-114",RegistrationConstants.SYSTEM,"Request print UIN","Obtained RID for transaction id %s while requesting for printing UIN","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
 	OBTAINED_RID_UIN_UPDATE("RES-SER-115",RegistrationConstants.SYSTEM,"Request UIN Update","Obtained RID for transaction id %s while requesting for update UIN","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
-	VID_GENERATED("RES-SER-116",RegistrationConstants.SYSTEM,"Request to generate VID","VID generated for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	VID_GENERATED("RES-SER-117",RegistrationConstants.SYSTEM,"Request to generate VID","VID generated for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
 	VID_ALREADY_EXISTS("RES-SER-405",RegistrationConstants.SYSTEM,"Request to generate VID","VID already exists for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
 	VID_GENERATION_FAILURE("RES-SER-406",RegistrationConstants.SYSTEM,"Request to generate VID","VID generated failed for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
 	VID_JSON_PARSING_EXCEPTION("RES-SER-404",RegistrationConstants.SYSTEM,"%s","JSON parsing exception for transaction id %s while generating VID","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
@@ -56,7 +56,14 @@ public enum EventEnum {
 	JSON_PARSING_EXCEPTION("RES-SER-421",RegistrationConstants.SYSTEM,"Request for UIN update","JSON parsing exception for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
     OTP_VALIDATION_FAILED("RES-SER-422",RegistrationConstants.SYSTEM,"%s","OTP validation failed for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
     BASE_EXCEPTION("RES-SER-401",RegistrationConstants.SYSTEM,"%s","Base exception for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
-    REQUEST_FAILED("RES-SER-402",RegistrationConstants.SYSTEM,"%s","Request failed for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME);
+    REQUEST_FAILED("RES-SER-402",RegistrationConstants.SYSTEM,"%s","Request failed for transaction id %s","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	CREATE_PACKET("RES-SER-118",RegistrationConstants.SYSTEM,"Request to create packet","Started packet creation","RES-SER","Residence service","NO_ID","NO_ID_TYPE",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	UNKNOWN_EXCEPTION("RES-SER-423",RegistrationConstants.SYSTEM,"Request to create packet","Unknown exception occured","RES-SER","Residence service","%s","Transaction id",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	PACKET_CREATED("RES-SER-119",RegistrationConstants.SYSTEM,"Request to upload UIN packet","Uploading UIN packet","RES-SER","Residence service","NO_ID","NO_ID_TYPE",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	PACKET_CREATED_FAILURE("RES-SER-425",RegistrationConstants.SYSTEM,"Request to upload UIN packet","Packet sync failure","RES-SER","Residence service","NO_ID","NO_ID_TYPE",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	PACKET_CREATED_EXCEPTION("RES-SER-424",RegistrationConstants.SYSTEM,"Request to create packet","Exception while creating packet","RES-SER","Residence service","NO_ID","NO_ID_TYPE",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME),
+	PACKET_SYNC("RES-SER-120",RegistrationConstants.SYSTEM,"Request to upload UIN packet","Sync packet","RES-SER","Residence service","NO_ID","NO_ID_TYPE",RegistrationConstants.APPLICATIONID,RegistrationConstants.APPLICATIONNAME);
+	
 	
 	private final String eventId;
 

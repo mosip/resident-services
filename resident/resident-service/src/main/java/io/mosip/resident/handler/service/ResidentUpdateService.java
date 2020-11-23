@@ -29,6 +29,8 @@ import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -87,6 +89,9 @@ public class ResidentUpdateService {
 
 	@Autowired
 	private Utilities utilities;
+	
+	@Autowired
+	AuditUtil audit;
 
 	private static final String PROOF_OF_ADDRESS = "proofOfAddress";
 	private static final String PROOF_OF_DOB = "proofOfDOB";
@@ -101,6 +106,7 @@ public class ResidentUpdateService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
 		byte[] packetZipBytes = null;
+		audit.setAuditRequestDto(EventEnum.CREATE_PACKET);
 		PackerGeneratorFailureDto dto = new PackerGeneratorFailureDto();
 		if (validator.isValidCenter(request.getCenterId()) && validator.isValidMachine(request.getMachineId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
@@ -194,6 +200,7 @@ public class ResidentUpdateService {
 				if (e instanceof BaseCheckedException) {
 					throw (BaseCheckedException) e;
 				}
+				audit.setAuditRequestDto(EventEnum.UNKNOWN_EXCEPTION);
 				throw new BaseCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage(), e);
 
