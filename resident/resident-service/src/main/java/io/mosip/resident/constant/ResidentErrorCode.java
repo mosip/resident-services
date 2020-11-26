@@ -54,3 +54,5 @@ public enum ResidentErrorCode {
 		return errorMessage;
 	}
 }
+
+

@@ -285,18 +285,8 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for auth history");
-
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType()))) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request for auth history"));
-			throw new InvalidInputException("individualId");
-		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for auth history"));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for auth history"));
 			throw new InvalidInputException("otp");
 		}
 
@@ -467,7 +457,7 @@ public class RequestValidator {
 	}
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+		if (StringUtils.isEmpty(request.getId()))
 			throw new InvalidInputException("id");
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());

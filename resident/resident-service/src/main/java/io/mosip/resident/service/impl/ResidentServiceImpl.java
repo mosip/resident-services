@@ -677,4 +677,5 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		return null;
 	}
+
 }

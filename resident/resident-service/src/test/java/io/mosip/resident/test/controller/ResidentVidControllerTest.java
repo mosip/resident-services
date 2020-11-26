@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.mosip.resident.test.ResidentTestBootApplication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -26,11 +24,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jayway.jsonpath.PathNotFoundException;
 
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
@@ -47,6 +43,7 @@ import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -100,8 +97,8 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(getRequest());
 
-		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json));
-				//.andExpect(status().isOk()).andExpect(jsonPath("$.response.vid", is("12345")));
+		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.response.vid", is("12345")));
 	}
 
 	@Test
@@ -115,7 +112,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-004")));
 	}
 
 	@Test
@@ -129,7 +126,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-007")));
 	}
 
 	@Test
@@ -276,7 +273,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-RID-005")));
 
 	}
 
@@ -427,7 +424,8 @@ public class ResidentVidControllerTest {
 		ResidentVidRequestDto request = new ResidentVidRequestDto();
 		request.setId("mosip.resident.vid");
 		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+
+		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRequestDto);
 		return request;
 	}
@@ -443,7 +441,7 @@ public class ResidentVidControllerTest {
 		RequestWrapper request = new RequestWrapper();
 		request.setId("mosip.resident.vidstatus");
 		request.setVersion("v1");
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRevokeRequestDTO);
 		return request;
 	}
