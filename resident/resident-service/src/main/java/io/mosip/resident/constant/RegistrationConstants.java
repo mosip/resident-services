@@ -1528,6 +1528,8 @@ public class RegistrationConstants {
 	public static final String MESSAGE_CODE = "message";
 	public static final String TPM_PUBLIC_KEY_SYNC_SERVICE_NAME = "tpm_public_key";
 	public static final String SERIAL_NUMBER = "serialnumber";
+	
+	public static final String SYSTEM="SYSTEM";
 
 	public static final Map<String, String> userOnBoardMap = new HashMap<String, String>() {
 
@@ -1783,5 +1785,11 @@ public class RegistrationConstants {
 	public static final String DATETIME_PATTERN = "resident.datetime.pattern";
 	public static final String SYNCSTATUSCOMMENT = "UIN Reactivation and Deactivation By External Resources";
 	public static final String EXTENSION_OF_FILE = ".zip";
+	
+	public static final  String APPLICATIONNAME="Resident portal";
+	
+	public static final  String APPLICATIONID="10011";
+	
+	
 
 }

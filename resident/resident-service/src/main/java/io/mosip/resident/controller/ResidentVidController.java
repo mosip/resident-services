@@ -11,6 +11,8 @@ import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,14 +44,20 @@ public class ResidentVidController {
 
     @Autowired
     private RequestValidator validator;
+    
+    @Autowired
+    private AuditUtil auditUtil;
 
     @PostMapping(path = "/vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Generate new VID", response = ResidentVidRequestDto.class)
     @ApiResponses(value = { @ApiResponse(code = 200, message = "VID successfully generated"),
             @ApiResponse(code = 400, message = "Unable to generate VID") })
     public ResponseEntity<Object> generateVid(@RequestBody(required = true) ResidentVidRequestDto requestDto) throws OtpValidationFailedException, ResidentServiceCheckedException {
-        validator.validateVidCreateRequest(requestDto);
+    	auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"Request to generate VID"));
+    	validator.validateVidCreateRequest(requestDto);
+        auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID,requestDto.getRequest().getIndividualId()));
         ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest());
+        auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,requestDto.getRequest().getIndividualId()));
         return ResponseEntity.ok().body(vidResponseDto);
     }
     
@@ -58,8 +66,11 @@ public class ResidentVidController {
     @ApiResponses(value = { @ApiResponse(code = 200, message = "VID successfully revoked"),
             @ApiResponse(code = 400, message = "Unable to revoke VID") })
     public ResponseEntity<Object> revokeVid(@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTO> requestDto, @PathVariable String vid) throws OtpValidationFailedException, ResidentServiceCheckedException {
-        validator.validateVidRevokeRequest(requestDto);
+    	auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"Request to revoke VID"));
+    	validator.validateVidRevokeRequest(requestDto);
+        auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID,requestDto.getRequest().getIndividualId()));
         ResponseWrapper<VidRevokeResponseDTO> vidResponseDto = residentVidService.revokeVid(requestDto.getRequest(),vid);
+        auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,requestDto.getRequest().getIndividualId()));
         return ResponseEntity.ok().body(vidResponseDto);
     }
 }
