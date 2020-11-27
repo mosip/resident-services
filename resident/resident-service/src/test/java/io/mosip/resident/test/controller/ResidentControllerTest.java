@@ -59,6 +59,7 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -80,6 +81,9 @@ public class ResidentControllerTest {
 
 	@MockBean
 	private RequestValidator validator;
+	
+	@MockBean
+	private AuditUtil audit;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -100,6 +104,8 @@ public class ResidentControllerTest {
 	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
+	
+
 
 	@Before
 	public void setUp() {
@@ -121,6 +127,7 @@ public class ResidentControllerTest {
 		gson = new GsonBuilder().serializeNulls().create();
 		authLockRequestToJson = gson.toJson(authLockRequest);
 		euinRequestToJson = gson.toJson(euinRequest);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 	}
 

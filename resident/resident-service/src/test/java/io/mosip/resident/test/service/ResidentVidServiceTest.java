@@ -20,7 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,6 +50,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
@@ -80,6 +83,9 @@ public class ResidentVidServiceTest {
     
     @Mock
 	private Utilitiy utilitiy;
+    
+	@MockBean
+	private AuditUtil audit;
 
     private VidRequestDto requestDto;
     
@@ -121,6 +127,7 @@ public class ResidentVidServiceTest {
 		
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
 		notificationRequestDto.setId("1234567");
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
     @Test

@@ -28,7 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
@@ -53,6 +55,7 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -80,6 +83,9 @@ public class IdAuthServiceTest {
 
 	@Mock
 	private ResidentServiceRestClient restClient;
+	
+	@MockBean
+	private AuditUtil audit;
 
 	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -89,6 +95,7 @@ public class IdAuthServiceTest {
 
 	@Before
 	public void setup() {
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		// when(environment.getProperty(ApiName.KERNELENCRYPTIONSERVICE.name()))
 		// .thenReturn("https://dev.mosip.net/idauthentication/v1/internal/getCertificate");
 

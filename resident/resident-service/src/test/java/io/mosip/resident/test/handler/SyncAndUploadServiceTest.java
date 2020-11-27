@@ -22,6 +22,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -61,6 +62,9 @@ public class SyncAndUploadServiceTest {
 
     @Mock
     Gson gson;
+    
+	@MockBean
+	private AuditUtil audit;
 
     String registartionId;
     String creationTime;
@@ -105,7 +109,7 @@ public class SyncAndUploadServiceTest {
         regSyncResponseDTO.setErrors(null);
         regSyncResponseDTO.setResponse(Lists.newArrayList(syncResponseDto));
         Mockito.when(gson.fromJson(anyString(), any(Class.class))).thenReturn(regSyncResponseDTO).thenReturn(packetReceiverResponseDTO);
-
+        Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
     @Test
