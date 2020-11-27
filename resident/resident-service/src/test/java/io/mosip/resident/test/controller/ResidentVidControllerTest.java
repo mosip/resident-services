@@ -44,6 +44,7 @@ import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -76,9 +77,13 @@ public class ResidentVidControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@MockBean
+	private AuditUtil audit;
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test
