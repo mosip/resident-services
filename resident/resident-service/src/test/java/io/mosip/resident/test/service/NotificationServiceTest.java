@@ -68,7 +68,7 @@ public class NotificationServiceTest {
 	@Mock
 	private TemplateManager templateManager;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	@Mock

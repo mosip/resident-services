@@ -63,7 +63,7 @@ public class SyncAndUploadServiceTest {
     @Mock
     Gson gson;
     
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
     String registartionId;

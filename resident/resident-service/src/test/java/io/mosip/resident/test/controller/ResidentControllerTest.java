@@ -82,7 +82,7 @@ public class ResidentControllerTest {
 	@MockBean
 	private RequestValidator validator;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	@MockBean
@@ -166,7 +166,7 @@ public class ResidentControllerTest {
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-lock").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-205"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public class ResidentControllerTest {
 
 		MvcResult result = this.mockMvc.perform(post("/req/euin").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-205"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -243,7 +243,7 @@ public class ResidentControllerTest {
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-205"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -277,7 +277,7 @@ public class ResidentControllerTest {
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-history").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-205"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test

@@ -34,7 +34,7 @@ public class ResidentServiceReqAuthHistoryTest {
 	@Mock
 	private IdAuthService idAuthService;
 
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 	
 	@Mock
