@@ -89,7 +89,7 @@ public class ResidentUpdateServiceTest {
     @Mock
     private FileInputStream fileInputStream;
     
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
     private static final String rid = "10001100770000320200720092256";

@@ -57,7 +57,7 @@ public class RidStatusServiceTest {
 	@Mock
 	private RidValidator<String> ridValidator;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	@InjectMocks

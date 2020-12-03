@@ -62,7 +62,7 @@ public class ResidentServiceRequestAuthLockTest {
 	@Mock
     NotificationService notificationService;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	@InjectMocks

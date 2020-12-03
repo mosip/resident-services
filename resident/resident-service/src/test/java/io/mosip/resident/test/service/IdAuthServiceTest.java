@@ -84,9 +84,6 @@ public class IdAuthServiceTest {
 	@Mock
 	private ResidentServiceRestClient restClient;
 	
-	@MockBean
-	private AuditUtil audit;
-
 	@Mock
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
@@ -95,7 +92,7 @@ public class IdAuthServiceTest {
 
 	@Before
 	public void setup() {
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		
 		// when(environment.getProperty(ApiName.KERNELENCRYPTIONSERVICE.name()))
 		// .thenReturn("https://dev.mosip.net/idauthentication/v1/internal/getCertificate");
 

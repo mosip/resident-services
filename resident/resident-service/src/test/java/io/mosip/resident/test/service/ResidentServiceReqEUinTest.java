@@ -36,7 +36,7 @@ public class ResidentServiceReqEUinTest {
 	@Mock
 	private IdAuthService idAuthService;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	@Mock

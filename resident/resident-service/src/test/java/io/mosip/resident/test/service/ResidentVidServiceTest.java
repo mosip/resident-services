@@ -84,7 +84,7 @@ public class ResidentVidServiceTest {
     @Mock
 	private Utilitiy utilitiy;
     
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
     private VidRequestDto requestDto;

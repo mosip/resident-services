@@ -68,7 +68,7 @@ public class ResidentServiceReqReprintTest {
 	@Mock
     NotificationService notificationService;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	private ResidentReprintRequestDto residentReqDto;

@@ -74,7 +74,7 @@ public class ResidentServiceResUpdateTest {
 	@Mock
 	private Utilitiy utility;
 	
-	@MockBean
+	@Mock
 	private AuditUtil audit;
 
 	ResidentUpdateRequestDto dto;
