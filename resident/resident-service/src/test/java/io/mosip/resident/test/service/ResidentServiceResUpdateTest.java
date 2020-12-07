@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -40,6 +41,7 @@ import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
@@ -71,6 +73,9 @@ public class ResidentServiceResUpdateTest {
     NotificationService notificationService;
 	@Mock
 	private Utilitiy utility;
+
+	@Mock
+	private AuditUtil audit;
 
 	ResidentUpdateRequestDto dto;
 
@@ -119,6 +124,7 @@ public class ResidentServiceResUpdateTest {
 		PacketGeneratorResDto updateDto = new PacketGeneratorResDto();
 		updateDto.setRegistrationId("10008100670001720191120095702");
 		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test

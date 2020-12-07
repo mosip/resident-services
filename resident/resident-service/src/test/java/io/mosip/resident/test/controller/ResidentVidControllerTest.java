@@ -44,6 +44,7 @@ import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -76,9 +77,13 @@ public class ResidentVidControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 
+	@Mock
+	private AuditUtil audit;
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test
@@ -112,7 +117,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-004")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -126,7 +131,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-007")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -139,7 +144,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -152,7 +157,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -165,7 +170,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -178,7 +183,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -191,7 +196,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -204,7 +209,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -217,7 +222,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -230,7 +235,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -273,7 +278,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-RID-005")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-407")));
 
 	}
 
@@ -291,7 +296,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -308,7 +313,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -325,7 +330,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -342,7 +347,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -359,7 +364,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -376,7 +381,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -393,7 +398,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -410,7 +415,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-009")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	private static ResidentVidRequestDto getRequest() {

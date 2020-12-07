@@ -32,6 +32,8 @@ import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -94,6 +96,9 @@ public class UinCardRePrintService {
     /** The utilities. */
     @Autowired
     Utilities utilities;
+    
+    @Autowired
+    AuditUtil audit;
 
     /** The vid type. */
     @Value("${id.repo.vidType}")
@@ -176,7 +181,7 @@ public class UinCardRePrintService {
                             "UinCardRePrintService::createPacket():: post CREATEVID service call ended successfully");
 
                     if (!CollectionUtils.isEmpty(response.getErrors())) {
-                        throw new VidCreationException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
+                    	throw new VidCreationException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
 
                     } else {
                         vid = response.getResponse().getVid();
@@ -201,9 +206,10 @@ public class UinCardRePrintService {
 
                 List<PacketInfo> packetInfos = packetWriter.createPacket(packetDto, false);
 
-                if (CollectionUtils.isEmpty(packetInfos) || packetInfos.iterator().next().getId() == null)
+                if (CollectionUtils.isEmpty(packetInfos) || packetInfos.iterator().next().getId() == null) {
+                	audit.setAuditRequestDto(EventEnum.PACKET_CREATED_EXCEPTION);
                     throw new PacketCreatorException(ResidentErrorCode.PACKET_CREATION_EXCEPTION.getErrorCode(), ResidentErrorCode.PACKET_CREATION_EXCEPTION.getErrorMessage());
-
+            }
                 file = new File(env.getProperty("object.store.base.location")
                         + File.separator + env.getProperty("packet.manager.account.name")
                         + File.separator + packetInfos.iterator().next().getId() + ".zip");

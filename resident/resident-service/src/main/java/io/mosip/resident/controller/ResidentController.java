@@ -31,6 +31,8 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 
 @RestController
@@ -41,23 +43,31 @@ public class ResidentController {
 
 	@Autowired
 	private RequestValidator validator;
+	
+	@Autowired
+	private AuditUtil audit;
 
 	@ResponseFilter
 	@PostMapping(value = "/rid/check-status")
 	public ResponseWrapper<RegStatusCheckResponseDTO> getRidStatus(
 			@Valid @RequestBody RequestWrapper<RequestDTO> requestDTO) throws ApisResourceAccessException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"get Rid status API"));
 		validator.validateRequestDTO(requestDTO);
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.RID_STATUS);
 		response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
+		audit.setAuditRequestDto(EventEnum.RID_STATUS_SUCCESS);
 		return response;
 	}
 
 	@PostMapping(value = "/req/euin")
 	public ResponseEntity<Object> reqEuin(@Valid @RequestBody RequestWrapper<EuinRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request Euin API"));
 		validator.validateEuinRequest(requestDTO);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_EUIN,requestDTO.getRequest().getTransactionID()));
 		byte[] pdfbytes = residentService.reqEuin(requestDTO.getRequest());
-
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_EUIN_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfbytes));
 
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
@@ -70,9 +80,12 @@ public class ResidentController {
 	@PostMapping(value = "/req/print-uin")
 	public ResponseEntity<Object> reqPrintUin(@Valid @RequestBody RequestWrapper<ResidentReprintRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request print Uin API"));
 		validator.validateReprintRequest(requestDTO);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_PRINTUIN,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResidentReprintResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqPrintUin(requestDTO.getRequest()));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_PRINTUIN_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
@@ -81,9 +94,12 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAauthLock(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth lock API"));
 		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.LOCK);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.LOCK));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
 
@@ -92,9 +108,12 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAuthUnlock(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth unlock  API"));
 		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.UNLOCK));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
 
@@ -103,9 +122,12 @@ public class ResidentController {
 	public ResponseWrapper<AuthHistoryResponseDTO> reqAuthHistory(
 			@Valid @RequestBody RequestWrapper<AuthHistoryRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth history"));
 		validator.validateAuthHistoryRequest(requestDTO);
 		ResponseWrapper<AuthHistoryResponseDTO> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY,requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
 
@@ -114,9 +136,12 @@ public class ResidentController {
 	public ResponseWrapper<ResidentUpdateResponseDTO> updateUin(
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"update Uin API"));
 		validator.validateUpdateRequest(requestDTO);
 		ResponseWrapper<ResidentUpdateResponseDTO> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN,requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
 }

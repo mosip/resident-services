@@ -59,6 +59,7 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -80,6 +81,9 @@ public class ResidentControllerTest {
 
 	@MockBean
 	private RequestValidator validator;
+	
+	@Mock
+	private AuditUtil audit;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -100,6 +104,8 @@ public class ResidentControllerTest {
 	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
+	
+
 
 	@Before
 	public void setUp() {
@@ -121,6 +127,7 @@ public class ResidentControllerTest {
 		gson = new GsonBuilder().serializeNulls().create();
 		authLockRequestToJson = gson.toJson(authLockRequest);
 		euinRequestToJson = gson.toJson(euinRequest);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 	}
 
@@ -159,7 +166,7 @@ public class ResidentControllerTest {
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-lock").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-020"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -180,7 +187,7 @@ public class ResidentControllerTest {
 
 		MvcResult result = this.mockMvc.perform(post("/req/euin").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-020"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -236,7 +243,7 @@ public class ResidentControllerTest {
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-020"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
@@ -270,7 +277,7 @@ public class ResidentControllerTest {
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-history").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
-		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-020"));
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
