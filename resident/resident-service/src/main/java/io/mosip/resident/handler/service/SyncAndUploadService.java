@@ -1,12 +1,33 @@
 package io.mosip.resident.handler.service;
 
+import static io.mosip.kernel.core.util.JsonUtils.javaObjectToJsonString;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -27,24 +48,6 @@ import io.mosip.resident.util.EncryptorUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
-import static io.mosip.kernel.core.util.JsonUtils.javaObjectToJsonString;
 
 /**
  * The Class SyncUploadEncryptionServiceImpl.
@@ -225,8 +228,8 @@ public class SyncAndUploadService {
 			SyncRegistrationDto syncDto = new SyncRegistrationDto();
 
 			// Calculate HashSequense for the enryptedUinZipFile file
-			HMACUtils.update(enryptedUinZipFile);
-			String hashSequence = HMACUtils.digestAsPlainText(HMACUtils.updatedHash());
+			// HMACUtils2.update(enryptedUinZipFile);
+			String hashSequence = HMACUtils2.digestAsPlainText(HMACUtils2.generateHash(enryptedUinZipFile));
 
 			// Prepare RegistrationSyncRequestDTO
 			registrationSyncRequestDTO.setId(env.getProperty(RegistrationConstants.REG_SYNC_SERVICE_ID));
@@ -276,6 +279,9 @@ public class SyncAndUploadService {
 			throw new BaseCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (JsonProcessingException e) {
 			throw new BaseCheckedException(ResidentErrorCode.INVLAID_KEY_EXCEPTION.getErrorCode(), ResidentErrorCode.INVLAID_KEY_EXCEPTION.getErrorMessage(), e);
+		} catch (NoSuchAlgorithmException e) {
+			throw new BaseCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		return regSyncResponseDTO;
 	}

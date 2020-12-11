@@ -1,16 +1,9 @@
 package io.mosip.resident.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.commons.packet.constants.CryptomanagerConstant;
-import io.mosip.commons.packet.dto.packet.CryptomanagerRequestDto;
-import io.mosip.commons.packet.dto.packet.DecryptResponseDto;
-import io.mosip.commons.packet.exception.ApiNotAccessibleException;
-import io.mosip.commons.packet.exception.PacketDecryptionFailureException;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.dto.ResponseWrapper;
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.time.format.DateTimeParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -20,9 +13,18 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.time.format.DateTimeParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.commons.packet.constants.CryptomanagerConstant;
+import io.mosip.commons.packet.dto.packet.DecryptResponseDto;
+import io.mosip.commons.packet.exception.ApiNotAccessibleException;
+import io.mosip.commons.packet.exception.PacketDecryptionFailureException;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.ResponseWrapper;
 
 /**
  * The Class EncryptorUtil.
@@ -42,6 +44,9 @@ public class EncryptorUtil {
     @Value("${mosip.kernel.cryptomanager.request_version:v1}")
     private String APPLICATION_VERSION;
 
+	@Value("${crypto.PrependThumbprint.enable:true}")
+	private boolean isPrependThumbprintEnabled;
+
     @Value("${CRYPTOMANAGER_ENCRYPT:null}")
     private String cryptomanagerEncryptUrl;
 
@@ -57,7 +62,7 @@ public class EncryptorUtil {
         try {
             String packetString = CryptoUtil.encodeBase64String(data);
             CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
-            io.mosip.kernel.core.http.RequestWrapper<CryptomanagerRequestDto> request = new io.mosip.kernel.core.http.RequestWrapper<>();
+			io.mosip.kernel.core.http.RequestWrapper<CryptomanagerRequestDto> request = new io.mosip.kernel.core.http.RequestWrapper<>();
             cryptomanagerRequestDto.setApplicationId(APPLICATION_ID);
             cryptomanagerRequestDto.setData(packetString);
             cryptomanagerRequestDto.setReferenceId(refId);
@@ -69,7 +74,7 @@ public class EncryptorUtil {
             cryptomanagerRequestDto.setAad(CryptoUtil.encodeBase64String(aad));
             cryptomanagerRequestDto.setSalt(CryptoUtil.encodeBase64String(nonce));
             cryptomanagerRequestDto.setTimeStamp(DateUtils.getUTCCurrentDateTime());
-
+			cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
             request.setId(DECRYPT_SERVICE_ID);
             request.setMetadata(null);
             request.setRequest(cryptomanagerRequestDto);
