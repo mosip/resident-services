@@ -229,7 +229,7 @@ public class SyncAndUploadService {
 
 			// Calculate HashSequense for the enryptedUinZipFile file
 			// HMACUtils2.update(enryptedUinZipFile);
-			String hashSequence = HMACUtils2.digestAsPlainText(HMACUtils2.generateHash(enryptedUinZipFile));
+			String hashSequence = HMACUtils2.digestAsPlainText(enryptedUinZipFile);
 
 			// Prepare RegistrationSyncRequestDTO
 			registrationSyncRequestDTO.setId(env.getProperty(RegistrationConstants.REG_SYNC_SERVICE_ID));
