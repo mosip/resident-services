@@ -73,7 +73,7 @@ public class ResidentServiceResUpdateTest {
     NotificationService notificationService;
 	@Mock
 	private Utilitiy utility;
-	
+
 	@Mock
 	private AuditUtil audit;
 

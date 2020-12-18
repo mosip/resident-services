@@ -79,7 +79,7 @@ public class ResidentVidControllerTest {
 
 	@Mock
 	private AuditUtil audit;
-	
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -103,7 +103,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk());//.andExpect(jsonPath("$.response.vid", is("12345")));
+				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")));
 	}
 
 	@Test
