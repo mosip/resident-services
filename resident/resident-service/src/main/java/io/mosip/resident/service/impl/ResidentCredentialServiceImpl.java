@@ -54,19 +54,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Autowired
 	IdAuthService idAuthService;
-	
-	/*
-	 * @Value("${CREDENTIAL_REQ_URL}") private String credentailReqUrl;
-	 * 
-	 * @Value("${CREDENTIAL_STATUS_URL}") private String credentailStatusUrl;
-	 * 
-	 * @Value("${CREDENTIAL_TYPES_URL}") private String credentailTypesUrl;
-	 * 
-	 * @Value("${CREDENTIAL_CANCELREQ_URL}") private String credentailCancelReqUrl;
-	 * 
-	 * @Value("${PARTNER_API_URL}") private String partnerReqUrl;
-	 */
 
+	@Value("${crypto.PrependThumbprint.enable:true}")
+	private boolean isPrependThumbprintEnabled;
+	
 	@Value("${PARTNER_REFERENCE_Id}")
 	private String partnerReferenceId;
 
@@ -183,6 +174,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			cryptomanagerRequestDto.setApplicationId(applicationId);
 			cryptomanagerRequestDto.setData(encryptedData);
 			cryptomanagerRequestDto.setReferenceId(partnerReferenceId);
+			cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
 			LocalDateTime localdatetime = LocalDateTime.now();
 			request.setRequesttime(localdatetime.toString());
 			cryptomanagerRequestDto.setTimeStamp(localdatetime);
@@ -259,36 +251,26 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Override
 	public CredentialCancelRequestResponseDto getCancelCredentialRequest(String requestId) {
 		ResponseWrapper<CredentialCancelRequestResponseDto> responseDto = null;
+		String response = null;
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialCancelRequestResponseDto credentialCancelRequestResponseDto=new CredentialCancelRequestResponseDto();
-		boolean flag=true;
 		try {
-			/*if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(),
-					"UIN", dto.getOtp())) {*/
-			if(flag) {
-				
 				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestId;
-					URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
-					responseDto =residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class, tokenGenerator.getToken());
-					credentialCancelRequestResponseDto = JsonUtil
-								.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialCancelRequestResponseDto.class);
-					additionalAttributes.put("RID", credentialCancelRequestResponseDto.getRequestId());
-					sendNotification(credentialCancelRequestResponseDto.getId(),
-							NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, additionalAttributes);
-			   } else {
-				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-
-				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+				URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
+				response = residentServiceRestClient.getApi(credentailReqCancelUri, String.class,
+						tokenGenerator.getToken());
+				if (response.contains("errors")) {
+					throw new ResidentCredentialServiceException(
+							ResidentErrorCode.CREDENTIAL_ISSUED_EXCEPTION.getErrorCode(),
+							ResidentErrorCode.CREDENTIAL_ISSUED_EXCEPTION.getErrorMessage());
+				} else {
+					credentialCancelRequestResponseDto = JsonUtil.readValue(response,
+						CredentialCancelRequestResponseDto.class);
+				additionalAttributes.put("RID", credentialCancelRequestResponseDto.getRequestId());
+				sendNotification(credentialCancelRequestResponseDto.getId(),
+						NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, additionalAttributes);
 			}
-		} /*
-			 * catch (OtpValidationFailedException e) { throw new
-			 * ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode
-			 * (), e.getErrorText(), e); }
-			 */
-		catch (ApisResourceAccessException e) {
+		} catch (ApisResourceAccessException e) {
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}

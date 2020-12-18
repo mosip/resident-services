@@ -8,6 +8,7 @@ public enum ResidentErrorCode {
 	OTP_VALIDATION_FAILED("RES-SER-422","OTP validation failed"),
 	API_RESOURCE_UNAVAILABLE("RES-SER-411","API resource is not available"),
 	API_RESOURCE_ACCESS_EXCEPTION("RES-SER-412", "Unable to access API resource"),
+	CREDENTIAL_ISSUED_EXCEPTION("RES-SER-24", "Credential is issued"),
 	VID_CREATION_EXCEPTION("RES-SER-406", "Exception while creating VID"),
 	VID_ALREADY_PRESENT("RES-SER-405","Maximum allowed VIDs are active. Deactivate VID to generate new one."), 
 	INVALID_INPUT("RES-SER-410","Invalid Input Parameter- "),
