@@ -190,10 +190,11 @@ public class RequestValidator {
 	public void validateVidType(ResidentVidRequestDto requestDto, String msg) {
 		if (StringUtils.isEmpty(requestDto.getRequest().getVidType())
 				|| (!requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.PERPETUAL.name())
-						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name())))
+						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name()))) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "vidType", msg));
 
-		throw new InvalidInputException("vidType");
+			throw new InvalidInputException("vidType");
+		}
 	}
 
 	public void validateAuthLockOrUnlockRequest(RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO,
