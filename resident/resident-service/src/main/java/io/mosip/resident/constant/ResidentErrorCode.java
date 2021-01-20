@@ -38,7 +38,8 @@ public enum ResidentErrorCode {
 			"Base exception."),
 	PACKET_CREATION_EXCEPTION("RES-SER-424",
 			"Exception while creating packet."),
-	INVALID_ID("RES-SER-29", "Invalid id");
+	INVALID_ID("RES-SER-29", "Invalid id"),
+	OTP_GENERATION_EXCEPTION("RES-SER-425", "while generating otp error is occured");
 	
 	private final String errorCode;
 	private final String errorMessage;
