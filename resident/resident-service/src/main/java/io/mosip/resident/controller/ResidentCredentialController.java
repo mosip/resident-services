@@ -25,6 +25,8 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 
 @RestController
@@ -36,30 +38,37 @@ public class ResidentCredentialController {
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
 
+	@Autowired
+	private AuditUtil audit;
+
 	@ResponseFilter
 	@PostMapping(value = "/req/credential")
 	public ResponseEntity<Object> reqCredential(
 			@Valid @RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		//validator.validateCredentialRequest(requestDTO);
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	@GetMapping(value = "req/credential/status/{requestId}")
 	public ResponseEntity<Object> getCredentialStatus(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS);
 		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getStatus(requestId));
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
 	@GetMapping(value = "req/card/{requestId}")
 	public ResponseEntity<Object> getCard(@PathVariable("requestId") String requestId)
 			throws Exception {
-		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.REQ_CARD);
 		byte[] pdfBytes = residentCredentialService.getCard(requestId);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		audit.setAuditRequestDto(EventEnum.REQ_CARD_SUCCESS);
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + requestId + ".pdf\"")
 				.body((Object) resource);
@@ -68,15 +77,20 @@ public class ResidentCredentialController {
 	@GetMapping(value = "credential/types")
 	public ResponseEntity<Object> getCredentialTypes()
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES);
 		ResponseWrapper<CredentialTypeResponse> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getCredentialTypes());
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	@GetMapping(value = "req/credential/cancel/{requestId}")
 	public ResponseEntity<Object> getCancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ);
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getCancelCredentialRequest(requestId));
+		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
 }
