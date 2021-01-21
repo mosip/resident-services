@@ -85,7 +85,7 @@ public class ResidentCredentialController {
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ);
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.getCancelCredentialRequest(requestId));
+		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
