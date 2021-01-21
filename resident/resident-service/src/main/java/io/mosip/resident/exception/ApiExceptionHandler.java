@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,9 +32,9 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.controller.ResidentController;
 
-@RestControllerAdvice(assignableTypes = ResidentController.class)
+@RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ApiExceptionHandler {
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -55,6 +57,13 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(ResidentServiceException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlDataServiceException(
 			HttpServletRequest httpServletRequest, final ResidentServiceException e) throws IOException {
+		ExceptionUtils.logRootCause(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+
+	@ExceptionHandler(ResidentCredentialServiceException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlDataServiceException(
+			HttpServletRequest httpServletRequest, final ResidentCredentialServiceException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
