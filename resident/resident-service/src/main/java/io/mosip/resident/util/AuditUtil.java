@@ -19,12 +19,12 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.mosip.commons.packet.dto.packet.AuditRequestDto;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ValidationException;
 
 @Component
@@ -71,7 +71,7 @@ public class AuditUtil {
 	}
 	
 	public  void setAuditRequestDto(EventEnum eventEnum) {
-		AuditRequestDto auditRequestDto = new AuditRequestDto();
+		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
 		auditRequestDto.setHostIp(hostIpAddress);
 		auditRequestDto.setHostName(hostName);
@@ -80,7 +80,7 @@ public class AuditUtil {
 		auditRequestDto.setSessionUserId(SecurityContextHolder.getContext().getAuthentication().getName());
 		auditRequestDto.setSessionUserName(SecurityContextHolder.getContext().getAuthentication().getName());
 		auditRequestDto.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
-		auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime().toString());
+		auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
 		auditRequestDto.setDescription(eventEnum.getDescription());
 		auditRequestDto.setEventType(eventEnum.getType());
 		auditRequestDto.setEventName(eventEnum.getName());
@@ -92,11 +92,11 @@ public class AuditUtil {
 		callAuditManager(auditRequestDto);
 	}
 	
-	private void callAuditManager(io.mosip.commons.packet.dto.packet.AuditRequestDto auditRequestDto) {
+	private void callAuditManager(AuditRequestDTO auditRequestDto) {
 
-		RequestWrapper<AuditRequestDto> auditReuestWrapper = new RequestWrapper<>();
+		RequestWrapper<AuditRequestDTO> auditReuestWrapper = new RequestWrapper<>();
 		auditReuestWrapper.setRequest(auditRequestDto);
-		HttpEntity<RequestWrapper<AuditRequestDto>> httpEntity = new HttpEntity<>(auditReuestWrapper);
+		HttpEntity<RequestWrapper<AuditRequestDTO>> httpEntity = new HttpEntity<>(auditReuestWrapper);
 		ResponseEntity<String> response = null;
 		try {
 			response = restTemplate.exchange(auditUrl, HttpMethod.POST, httpEntity, String.class);

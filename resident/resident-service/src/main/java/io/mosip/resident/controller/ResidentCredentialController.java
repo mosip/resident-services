@@ -2,8 +2,6 @@ package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -43,8 +41,7 @@ public class ResidentCredentialController {
 
 	@ResponseFilter
 	@PostMapping(value = "/req/credential")
-	public ResponseEntity<Object> reqCredential(
-			@Valid @RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
+	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
@@ -84,11 +81,11 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	@GetMapping(value = "req/credential/cancel/{requestId}")
-	public ResponseEntity<Object> getCancelCredentialRequest(@PathVariable("requestId") String requestId)
+	public ResponseEntity<Object> cancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ);
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.getCancelCredentialRequest(requestId));
+		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
