@@ -32,6 +32,7 @@ import io.mosip.resident.dto.CryptomanagerRequestDto;
 import io.mosip.resident.dto.CryptomanagerResponseDto;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.PartnerResponseDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
@@ -265,26 +266,24 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Override
 	public CredentialCancelRequestResponseDto cancelCredentialRequest(String requestId) {
-		ResponseWrapper<CredentialCancelRequestResponseDto> responseDto = null;
-		String response = null;
+		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<CredentialCancelRequestResponseDto>();
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialCancelRequestResponseDto credentialCancelRequestResponseDto=new CredentialCancelRequestResponseDto();
 		try {
 				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestId;
 				URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
-				response = residentServiceRestClient.getApi(credentailReqCancelUri, String.class,
+				response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class,
 						tokenGenerator.getToken());
-				if (response.contains("errors")) {
-					throw new ResidentCredentialServiceException(
-							ResidentErrorCode.CREDENTIAL_ISSUED_EXCEPTION.getErrorCode(),
-							ResidentErrorCode.CREDENTIAL_ISSUED_EXCEPTION.getErrorMessage());
-				} else {
-					credentialCancelRequestResponseDto = JsonUtil.readValue(response,
-						CredentialCancelRequestResponseDto.class);
+				if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+					throw new ResidentCredentialServiceException(response.getErrors().get(0).getErrorCode(),
+							response.getErrors().get(0).getMessage());
+				}
+				credentialCancelRequestResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(response.getResponse()),
+							CredentialCancelRequestResponseDto.class);
 				additionalAttributes.put("RID", credentialCancelRequestResponseDto.getRequestId());
 				sendNotification(credentialCancelRequestResponseDto.getId(),
 						NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, additionalAttributes);
-			}
+
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
@@ -299,6 +298,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			throw new ResidentCredentialServiceException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage());
 		}
+
 
 		return credentialCancelRequestResponseDto;
 	}
@@ -320,6 +320,27 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			}
 		return credentialTypeResponse;
 	}
+
+	@Override
+	public ResponseWrapper<PartnerCredentialTypePolicyDto> getPolicyByCredentialType(String partnerId,
+			String credentialType)
+	{
+		ResponseWrapper<PartnerCredentialTypePolicyDto> response = new ResponseWrapper<PartnerCredentialTypePolicyDto>();
+		String policyReqUrl = env.getProperty(ApiName.POLICY_REQ_URL.name()) + "/partnerId/" + partnerId
+				+ "/credentialType/"
+				+ credentialType;
+		URI credentailReqCancelUri = URI.create(policyReqUrl);
+		try {
+			response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class,
+					tokenGenerator.getToken());
+		} catch (ApisResourceAccessException | IOException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+		return response;
+	}
+
 	public String generatePin() {
 		return RandomStringUtils.randomNumeric(6);
 	}
@@ -332,4 +353,23 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
+	/*
+	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
+	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
+	 * PartnerCredentialTypePolicyResponseDto policy = new
+	 * PartnerCredentialTypePolicyResponseDto();
+	 * policy.setCr_by(partnerCredentialTypePolicyDto.getCr_by());
+	 * policy.setCr_dtimes(partnerCredentialTypePolicyDto.getCr_dtimes());
+	 * policy.setCredentialType(partnerCredentialTypePolicyDto.getCredentialType());
+	 * policy.setIs_Active(partnerCredentialTypePolicyDto.getIs_Active());
+	 * policy.setPartnerId(partnerCredentialTypePolicyDto.getPartnerId());
+	 * policy.setPolicyDesc(partnerCredentialTypePolicyDto.getPolicyDesc());
+	 * policy.setPolicyId(policyId); policy.setPolicyName(policyName);
+	 * policy.setPolicyType(policyType); policy.setPublishDate(publishDate);
+	 * policy.setSchema(schema); policy.setStatus(status); policy.setUp_by(up_by);
+	 * policy.setUpd_dtimes(upd_dtimes); policy.setVersion(version);
+	 * policy.setValidTill(validTill);
+	 * 
+	 * }
+	 */
 }
