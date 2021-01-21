@@ -159,7 +159,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		// sha256 of the request block before encryption and the hash is encrypted
 		// using the requestSessionKey
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
-				HMACUtils2.digestAsPlainText(HMACUtils2.generateHash(identityBlock.getBytes())).getBytes(), null);
+				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
 		authRequestDTO.setRequestHMAC(Base64.encodeBase64String(byteArray));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,

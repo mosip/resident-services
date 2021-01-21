@@ -15,7 +15,7 @@ public interface ResidentCredentialService {
 
 	public CredentialTypeResponse getCredentialTypes();
 
-	public CredentialCancelRequestResponseDto getCancelCredentialRequest(String requestId);
+	public CredentialCancelRequestResponseDto cancelCredentialRequest(String requestId);
 
 	public byte[] getCard(String requestId) throws Exception;
 }

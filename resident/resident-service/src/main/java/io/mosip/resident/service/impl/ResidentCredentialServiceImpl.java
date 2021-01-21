@@ -264,7 +264,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 
 	@Override
-	public CredentialCancelRequestResponseDto getCancelCredentialRequest(String requestId) {
+	public CredentialCancelRequestResponseDto cancelCredentialRequest(String requestId) {
 		ResponseWrapper<CredentialCancelRequestResponseDto> responseDto = null;
 		String response = null;
 		Map<String, Object> additionalAttributes = new HashedMap();
