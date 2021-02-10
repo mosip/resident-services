@@ -2,6 +2,8 @@ package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
