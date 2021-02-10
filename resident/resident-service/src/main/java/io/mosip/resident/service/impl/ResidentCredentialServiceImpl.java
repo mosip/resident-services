@@ -369,7 +369,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	 * policy.setSchema(schema); policy.setStatus(status); policy.setUp_by(up_by);
 	 * policy.setUpd_dtimes(upd_dtimes); policy.setVersion(version);
 	 * policy.setValidTill(validTill);
-	 * 
+	 *
 	 * }
 	 */
 }
