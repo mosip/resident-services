@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
@@ -80,6 +81,8 @@ public class ResidentCredentialController {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
+
 	@GetMapping(value = "req/credential/cancel/{requestId}")
 	public ResponseEntity<Object> cancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
@@ -87,6 +90,16 @@ public class ResidentCredentialController {
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	@GetMapping(value = "req/policy/partnerId/{partnerId}/credentialType/{credentialType}")
+	public ResponseEntity<Object> getPolicyByCredentialType(@PathVariable @Valid String partnerId,
+			@PathVariable @Valid String credentialType) throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.REQ_POLICY);
+		ResponseWrapper<PartnerCredentialTypePolicyDto> response = residentCredentialService
+				.getPolicyByCredentialType(partnerId, credentialType);
+		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 

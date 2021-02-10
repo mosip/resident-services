@@ -39,8 +39,8 @@ public enum ResidentErrorCode {
 	PACKET_CREATION_EXCEPTION("RES-SER-424",
 			"Exception while creating packet."),
 	INVALID_ID("RES-SER-29", "Invalid id"),
-	OTP_GENERATION_EXCEPTION("RES-SER-425", "while generating otp error is occured");
-	
+	OTP_GENERATION_EXCEPTION("RES-SER-425", "while generating otp error is occured"),
+	POLICY_EXCEPTION("RES-SER-426", "while retrieving policy details error is occured");
 	private final String errorCode;
 	private final String errorMessage;
 
