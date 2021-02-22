@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.CredentialTypeResponse;
@@ -23,7 +24,6 @@ import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
-import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
@@ -99,7 +99,7 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> getPolicyByCredentialType(@PathVariable @Valid String partnerId,
 			@PathVariable @Valid String credentialType) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY);
-		ResponseWrapper<PartnerCredentialTypePolicyDto> response = residentCredentialService
+		io.mosip.resident.dto.ResponseWrapper<PartnerCredentialTypePolicyDto> response = residentCredentialService
 				.getPolicyByCredentialType(partnerId, credentialType);
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
