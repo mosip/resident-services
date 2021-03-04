@@ -7,6 +7,8 @@ public class PartnerResponseDto {
 
 	private String partnerID;
 
+	private String status;
+
 	private String policyGroup;
 
 	private String organizationName;
@@ -16,5 +18,7 @@ public class PartnerResponseDto {
 	private String contactNumber;
 
 	private String emailId;
+
+	private String partnerType;
 
 }
