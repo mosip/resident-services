@@ -9,6 +9,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 
@@ -165,6 +166,29 @@ public class ResidentServiceRestClient {
 		}
 
 		return obj;
+	}
+
+	@SuppressWarnings({ "unchecked", "null" })
+	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType, String token)
+			throws Exception {
+
+		String apiHostIpPort = environment.getProperty(apiName.name());
+		Object obj = null;
+		UriComponentsBuilder builder = null;
+		if (apiHostIpPort != null) {
+
+			builder = UriComponentsBuilder.fromUriString(apiHostIpPort);
+
+			URI urlWithPath = builder.build(pathsegments);
+			try {
+				obj = getApi(urlWithPath, responseType, token);
+
+			} catch (Exception e) {
+				throw new Exception(e);
+			}
+
+		}
+		return (T) obj;
 	}
 
 	@SuppressWarnings("unchecked")
