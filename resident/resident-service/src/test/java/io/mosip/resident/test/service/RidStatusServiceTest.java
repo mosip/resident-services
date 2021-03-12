@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -30,6 +31,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -54,6 +56,9 @@ public class RidStatusServiceTest {
 
 	@Mock
 	private RidValidator<String> ridValidator;
+	
+	@Mock
+	private AuditUtil audit;
 
 	@InjectMocks
 	ResidentServiceImpl residentService = new ResidentServiceImpl();
@@ -86,7 +91,7 @@ public class RidStatusServiceTest {
 		responseWrapper.setResponse(list);
 
 		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(responseWrapper);
-
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test

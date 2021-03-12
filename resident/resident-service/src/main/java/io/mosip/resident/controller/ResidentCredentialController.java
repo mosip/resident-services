@@ -1,9 +1,11 @@
 package io.mosip.resident.controller;
 
-import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +36,7 @@ public class ResidentCredentialController {
 
 	@ResponseFilter
 	@PostMapping(value = "/req/credential")
-	public ResponseEntity<Object> reqCredential(
-			@Valid @RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
+	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		//validator.validateCredentialRequest(requestDTO);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
@@ -49,7 +50,18 @@ public class ResidentCredentialController {
 		response.setResponse(residentCredentialService.getStatus(requestId));
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-	
+
+	@GetMapping(value = "req/card/{requestId}")
+	public ResponseEntity<Object> getCard(@PathVariable("requestId") String requestId)
+			throws Exception {
+		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
+		byte[] pdfBytes = residentCredentialService.getCard(requestId);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + requestId + ".pdf\"")
+				.body((Object) resource);
+	}
+
 	@GetMapping(value = "credential/types")
 	public ResponseEntity<Object> getCredentialTypes()
 			throws ResidentServiceCheckedException {
@@ -58,10 +70,10 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	@GetMapping(value = "req/credential/cancel/{requestId}")
-	public ResponseEntity<Object> getCancelCredentialRequest(@PathVariable("requestId") String requestId)
+	public ResponseEntity<Object> cancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.getCancelCredentialRequest(requestId));
+		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 }

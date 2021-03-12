@@ -1,5 +1,7 @@
 package io.mosip.resident.test.service;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,10 +29,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.RegProcCommonResponseDto;
 import io.mosip.resident.dto.ResidentDocuments;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
@@ -38,7 +42,11 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
@@ -73,6 +81,9 @@ public class ResidentServiceResUpdateTest {
 	@Mock
 	private Utilitiy utility;
 
+	@Mock
+	private AuditUtil audit;
+
 	ResidentUpdateRequestDto dto;
 
 	@Before
@@ -101,7 +112,7 @@ public class ResidentServiceResUpdateTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Mockito.when(utility.getMappingJson()).thenReturn(mappingJson);
 
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenReturn(true);
 		ResponseWrapper<RegProcCommonResponseDto> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setId("mosip.resident.uin");
@@ -120,6 +131,7 @@ public class ResidentServiceResUpdateTest {
 		PacketGeneratorResDto updateDto = new PacketGeneratorResDto();
 		updateDto.setRegistrationId("10008100670001720191120095702");
 		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test
@@ -130,7 +142,7 @@ public class ResidentServiceResUpdateTest {
 	@Test(expected = ResidentServiceException.class)
 	public void validateOtpException()
 			throws OtpValidationFailedException, IOException, ResidentServiceCheckedException {
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenReturn(false);
 		residentServiceImpl.reqUinUpdate(dto);
 
@@ -165,7 +177,7 @@ public class ResidentServiceResUpdateTest {
 	
 	@Test(expected = ResidentServiceException.class)
 	public void otpValidationFailedException() throws OtpValidationFailedException, ResidentServiceCheckedException {
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenThrow(new OtpValidationFailedException());
 		residentServiceImpl.reqUinUpdate(dto);
 

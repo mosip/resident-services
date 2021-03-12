@@ -39,6 +39,8 @@ import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
@@ -82,6 +84,9 @@ public class NotificationService {
 
 	@Autowired
 	private RequestValidator requestValidator;
+	
+	@Autowired
+	private AuditUtil audit;
 
 	private static final String LINE_SEPARATOR = new  StringBuilder().append('\n').append('\n').append('\n').toString();
 	private static final String BOTH = "both";
@@ -144,6 +149,7 @@ public class NotificationService {
 			ResponseWrapper<TemplateResponseDto> resp = (ResponseWrapper<TemplateResponseDto>) restClient.getApi(
 					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class, tokenGenerator.getToken());
 			if (resp == null || resp.getErrors() != null && !resp.getErrors().isEmpty()) {
+				audit.setAuditRequestDto(EventEnum.TEMPLATE_EXCEPTION);
 				throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorMessage()
 								+ (resp != null ? resp.getErrors().get(0) : ""));
@@ -157,6 +163,7 @@ public class NotificationService {
 					"NotificationService::getTemplate()::exit");
 			return response.get(0).getFileText().replaceAll("^\"|\"$", "");
 		} catch (IOException e) {
+			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		} catch (ApisResourceAccessException e) {
@@ -274,6 +281,7 @@ public class NotificationService {
 		} catch (IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 					e.getMessage() + ExceptionUtils.getStackTrace(e));
+			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		}
@@ -353,6 +361,7 @@ public class NotificationService {
 			}
 
 		} catch (IOException e) {
+			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
 					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
 		}

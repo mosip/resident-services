@@ -34,7 +34,7 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
@@ -97,11 +97,11 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@Override
-	public boolean validateOtp(String transactionID, String individualId, String individualIdType, String otp)
+	public boolean validateOtp(String transactionID, String individualId, String otp)
 			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
 		try {
-			response = internelOtpAuth(transactionID, individualId, individualIdType, otp);
+			response = internelOtpAuth(transactionID, individualId, otp);
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
@@ -119,7 +119,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return response.getResponse().isAuthStatus();
 	}
 
-	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId, String individualIdType,
+	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,
 			String otp) throws ApisResourceAccessException, InvalidKeySpecException, NoSuchAlgorithmException,
 			IOException, JsonProcessingException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
@@ -140,7 +140,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		authRequestDTO.setConsentObtained(true);
 		authRequestDTO.setIndividualId(individualId);
-		authRequestDTO.setIndividualIdType(individualIdType);
 
 		OtpAuthRequestDTO request = new OtpAuthRequestDTO();
 		request.setOtp(otp);
@@ -160,7 +159,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		// sha256 of the request block before encryption and the hash is encrypted
 		// using the requestSessionKey
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
-				HMACUtils.digestAsPlainText(HMACUtils.generateHash(identityBlock.getBytes())).getBytes(), null);
+				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
 		authRequestDTO.setRequestHMAC(Base64.encodeBase64String(byteArray));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
@@ -284,16 +283,14 @@ public class IdAuthServiceImpl implements IdAuthService {
 	}
 
 	@Override
-	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId, String individualIdType,
+	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId,
 			String pageStart, String pageFetch) throws ApisResourceAccessException {
 		List<AuthTxnDetailsDTO> details = null;
 		int count = 1;
 		AutnTxnResponseDto autnTxnResponseDto;
 		List<String> pathsegments = new ArrayList<>();
-		pathsegments.add(0, "individualIdType");
-		pathsegments.add(1, individualIdType);
-		pathsegments.add(2, "individualId");
-		pathsegments.add(3, individualId);
+		pathsegments.add(0, "individualId");
+		pathsegments.add(1, individualId);
 		String queryParamName = null;
 		String queryParamValue = null;
 		if (pageStart != null && pageFetch != null && !pageStart.isEmpty() && !pageFetch.isEmpty()) {
@@ -342,7 +339,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return authTxnDetailsDTO;
 	}
 
-	public java.security.cert.Certificate convertToCertificate(String certData) {
+	private java.security.cert.Certificate convertToCertificate(String certData) {
 		try {
 			StringReader strReader = new StringReader(certData);
 			PemReader pemReader = new PemReader(strReader);

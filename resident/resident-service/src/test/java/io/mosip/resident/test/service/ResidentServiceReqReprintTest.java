@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,11 +27,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
-import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.RegProcCommonResponseDto;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
@@ -39,7 +41,11 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -68,13 +74,16 @@ public class ResidentServiceReqReprintTest {
 
 	@Mock
     NotificationService notificationService;
+	
+	@Mock
+	private AuditUtil audit;
 
 	private ResidentReprintRequestDto residentReqDto;
 
 	@Before
 	public void setUp() throws IOException, BaseCheckedException {
 		Mockito.when(tokenGenerator.getToken()).thenReturn("assagfdhsfiuhewqedsavckdsann");
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenReturn(true);
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		residentReqDto = new ResidentReprintRequestDto();
@@ -85,6 +94,7 @@ public class ResidentServiceReqReprintTest {
 		PacketGeneratorResDto resDto = new PacketGeneratorResDto();
 		resDto.setRegistrationId("10008200070004620191203115734");
 		Mockito.when(rePrintService.createPacket(any())).thenReturn(resDto);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 	}
 
@@ -107,7 +117,7 @@ public class ResidentServiceReqReprintTest {
 	@Test(expected = ResidentServiceException.class)
 	public void validateOtpException()
 			throws OtpValidationFailedException, IOException, ResidentServiceCheckedException {
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenReturn(false);
 		residentServiceImpl.reqPrintUin(residentReqDto);
 
@@ -134,7 +144,7 @@ public class ResidentServiceReqReprintTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testOtpValidationException() throws OtpValidationFailedException, ResidentServiceCheckedException {
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenThrow(new OtpValidationFailedException("OTP validation failed"));
 		residentServiceImpl.reqPrintUin(residentReqDto);
 	}
