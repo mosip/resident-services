@@ -232,14 +232,6 @@ public class RequestValidator {
 		if (requestDTO.getRequest() == null)
 			throw new InvalidInputException("request");
 
-
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType());
-
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType()))) {
-			throw new InvalidInputException("individualId");
-		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp()))
 			throw new InvalidInputException("otp");
 
@@ -371,7 +363,7 @@ public class RequestValidator {
 	}
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+		if (StringUtils.isEmpty(request.getId()))
 			throw new InvalidInputException("id");
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());

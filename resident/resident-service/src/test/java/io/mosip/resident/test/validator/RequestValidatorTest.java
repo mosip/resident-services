@@ -34,6 +34,7 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.validator.RequestValidator;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -237,7 +238,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidIndividualType() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.RID.name());
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
 		requestWrapper.setRequest(authRequestDTO);
@@ -251,7 +251,6 @@ public class RequestValidatorTest {
 	public void testValidOtp() throws Exception {
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setTransactionID("12345");
-		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setIndividualId("12344567");
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
@@ -300,7 +299,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidPageFetch() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.VID.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageStart("1");
 		authRequestDTO.setOtp("12345");
@@ -317,7 +315,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidPageStart() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.VID.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch("1");
 		authRequestDTO.setOtp("12345");
@@ -335,7 +332,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidIndividualId() throws Exception {
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(false);
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch("1");
 		authRequestDTO.setOtp("12345");
@@ -353,7 +349,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidpageFetch() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch("1Q");
 		authRequestDTO.setPageStart("1");
@@ -372,7 +367,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidpageStart() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch("1");
 		authRequestDTO.setPageStart("1Q");
@@ -391,7 +385,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidpageStartPageFetch() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch(" ");
 		authRequestDTO.setOtp("12345");
@@ -410,7 +403,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidPageStartnullPageFetch() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setOtp("12345");
 		authRequestDTO.setTransactionID("12345");
@@ -428,7 +420,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidnullPageStartPageFetch() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch(" ");
 		authRequestDTO.setOtp("12345");
@@ -446,7 +437,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryinValidpageStartPageFetch() throws Exception {
 		
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.UIN.name());
 		authRequestDTO.setIndividualId("123");
 		authRequestDTO.setPageFetch("-10");
 		authRequestDTO.setPageStart("-11");
@@ -807,7 +797,6 @@ public class RequestValidatorTest {
 	public void testAuthHistoryValidOtp() throws Exception
 	{
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.VID.name());
 		authRequestDTO.setIndividualId("1234567");
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
@@ -821,7 +810,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testAuthHistoryValidTransactionId() throws Exception {
 		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
-		authRequestDTO.setIndividualIdType(IdType.VID.name());
 		authRequestDTO.setIndividualId("1234567");
 		authRequestDTO.setOtp("1245");
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();

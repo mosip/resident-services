@@ -11,8 +11,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.SecretKey;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -37,6 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.controller.ResidentController;
@@ -78,6 +83,9 @@ public class ResidentControllerTest {
 	@MockBean
 	private RequestValidator validator;
 
+	@MockBean
+	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
+
 	@InjectMocks
     ResidentController residentController;
 
@@ -101,16 +109,16 @@ public class ResidentControllerTest {
 		authLockRequest = new RequestWrapper<AuthLockOrUnLockRequestDto>();
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
-		authLockRequestDto.setIndividualId("1234567889");
+		authLockRequestDto.setIndividualId("5734728510");
 		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
-		authLockRequestDto.setOtp("1234");
+		authLockRequestDto.setOtp("111111");
 		authLockRequestDto.setTransactionID("1234567898");
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
 		authLockRequestDto.setAuthType(authTypes);
 		authLockRequest.setRequest(authLockRequestDto);
 		euinRequest = new RequestWrapper<EuinRequestDTO>();
-		euinRequest.setRequest(new EuinRequestDTO("1234567890", "1234567890", IdType.UIN.name(), "UIN", "4567"));
+		euinRequest.setRequest(new EuinRequestDTO("5734728510", "1234567890", IdType.UIN.name(), "UIN", "111111"));
 
 		gson = new GsonBuilder().serializeNulls().create();
 		authLockRequestToJson = gson.toJson(authLockRequest);
@@ -239,7 +247,6 @@ public class ResidentControllerTest {
 		authHistoryRequest = new RequestWrapper<AuthHistoryRequestDTO>();
 		AuthHistoryRequestDTO hisdto = new AuthHistoryRequestDTO();
 		hisdto.setIndividualId("1234");
-		hisdto.setIndividualIdType(IdType.UIN.name());
 		hisdto.setOtp("1234");
 		hisdto.setTransactionID("1234");
 		authHistoryRequest.setRequest(hisdto);

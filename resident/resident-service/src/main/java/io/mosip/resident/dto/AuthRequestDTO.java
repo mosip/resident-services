@@ -8,8 +8,6 @@ import lombok.EqualsAndHashCode;
 public class AuthRequestDTO extends BaseAuthRequestDTO {
 	
 	private String individualId;
-
-	private String individualIdType;
 	
 	private String keyIndex;
 
