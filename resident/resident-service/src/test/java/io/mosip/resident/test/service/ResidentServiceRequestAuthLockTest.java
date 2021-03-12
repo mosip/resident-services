@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -34,6 +35,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 
 /**
@@ -62,6 +64,9 @@ public class ResidentServiceRequestAuthLockTest {
 
 	@Mock
     NotificationService notificationService;
+	
+	@Mock
+	private AuditUtil audit;
 
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
@@ -73,6 +78,7 @@ public class ResidentServiceRequestAuthLockTest {
 
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 	}
 

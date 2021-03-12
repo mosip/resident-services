@@ -34,7 +34,7 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
@@ -159,7 +159,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		// sha256 of the request block before encryption and the hash is encrypted
 		// using the requestSessionKey
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
-				HMACUtils.digestAsPlainText(HMACUtils.generateHash(identityBlock.getBytes())).getBytes(), null);
+				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
 		authRequestDTO.setRequestHMAC(Base64.encodeBase64String(byteArray));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,

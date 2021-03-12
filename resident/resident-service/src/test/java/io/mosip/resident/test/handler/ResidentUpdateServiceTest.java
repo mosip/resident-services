@@ -14,6 +14,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.SyncAndUploadService;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
@@ -31,6 +32,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -86,6 +88,9 @@ public class ResidentUpdateServiceTest {
 
     @Mock
     private FileInputStream fileInputStream;
+    
+	@Mock
+	private AuditUtil audit;
 
     private static final String rid = "10001100770000320200720092256";
 
@@ -142,6 +147,7 @@ public class ResidentUpdateServiceTest {
         resDto.setMessage("packet uploaded");
         resDto.setStatus("PROCESSING");
         Mockito.when(syncUploadEncryptionService.uploadUinPacket(any(), any(), any(), any())).thenReturn(resDto);
+        Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
     @Test
