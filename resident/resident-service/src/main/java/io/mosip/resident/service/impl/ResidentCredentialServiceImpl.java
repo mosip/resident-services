@@ -3,6 +3,7 @@ package io.mosip.resident.service.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.map.HashedMap;
@@ -96,9 +97,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
 		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
 		Map<String, Object> additionalAttributes = new HashedMap();
-		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name())  + dto.getIssuer();
+		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
 		try {
+
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 
 				    credentialReqestDto=prepareCredentialRequest(dto);
@@ -125,22 +127,26 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
 							additionalAttributes);
-			   } else {
-				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+
+				} else {
+					logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
+							additionalAttributes);
+					audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+				}
+
+			} catch (OtpValidationFailedException e) {
+				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 						additionalAttributes);
-				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+						e.getErrorText(), e);
 			}
-		} catch (OtpValidationFailedException e) {
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					e.getErrorText(), e);
-		}
+
 		catch (ResidentServiceCheckedException e) {
 
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
@@ -326,14 +332,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			String credentialType)
 	{
 		ResponseWrapper<PartnerCredentialTypePolicyDto> response = new ResponseWrapper<PartnerCredentialTypePolicyDto>();
-		String policyReqUrl = env.getProperty(ApiName.POLICY_REQ_URL.name()) + "/partnerId/" + partnerId
-				+ "/credentialType/"
-				+ credentialType;
-		URI credentailReqCancelUri = URI.create(policyReqUrl);
+		Map<String, String> pathsegments = new HashMap<>();
+		pathsegments.put("partnerId", partnerId);
+		pathsegments.put("credentialType", credentialType);
 		try {
-			response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class,
-					tokenGenerator.getToken());
-		} catch (ApisResourceAccessException | IOException e) {
+			response = residentServiceRestClient.getApi(ApiName.POLICY_REQ_URL, pathsegments,
+					ResponseWrapper.class, tokenGenerator.getToken());
+		} catch (Exception e) {
 			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
