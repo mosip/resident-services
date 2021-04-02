@@ -286,6 +286,9 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId()))
+			throw new InvalidInputException("individualId");
+
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for auth history"));
 			throw new InvalidInputException("otp");
@@ -458,7 +461,7 @@ public class RequestValidator {
 	}
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()))
+		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
 			throw new InvalidInputException("id");
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());
