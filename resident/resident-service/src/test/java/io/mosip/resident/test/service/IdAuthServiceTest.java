@@ -28,9 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,7 +53,6 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 
@@ -104,7 +101,8 @@ public class IdAuthServiceTest {
 		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
-		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.LOCK);
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.LOCK,
+				null);
 		assertTrue(isUpdated);
 	}
 
@@ -114,7 +112,8 @@ public class IdAuthServiceTest {
 		when(restClient.postApi(any(), any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
-		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.LOCK);
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.LOCK,
+				null);
 		assertTrue(isUpdated);
 	}
 

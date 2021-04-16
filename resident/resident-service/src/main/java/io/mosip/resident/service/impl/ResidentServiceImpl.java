@@ -33,6 +33,7 @@ import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
@@ -404,8 +405,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+				String unlockForMinutes = null;
+				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
+					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
+					unlockForMinutes=authUnLockRequestDTO.getUnlockForMinutes();
+				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
-						dto.getIndividualIdType(), dto.getAuthType(), authTypeStatus);
+						dto.getIndividualIdType(), dto.getAuthType(), authTypeStatus, unlockForMinutes);
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
 				} else {
