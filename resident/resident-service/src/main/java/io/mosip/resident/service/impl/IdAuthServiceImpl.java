@@ -254,6 +254,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			}
 			if (authTypeStatusConstant.equals(io.mosip.resident.constant.AuthTypeStatus.LOCK)) {
 				authTypeStatus.setLocked(true);
+				authTypeStatus.setUnlockForMinutes(null);
 			} else {
 				authTypeStatus.setUnlockForMinutes(Integer.parseInt(unlockForMinutes));
 				authTypeStatus.setLocked(false);

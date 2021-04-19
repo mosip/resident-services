@@ -18,5 +18,5 @@ public class AuthTypeStatus {
 
 	private boolean locked;
 	
-	private int unlockForMinutes;
+	private Integer unlockForMinutes;
 }
