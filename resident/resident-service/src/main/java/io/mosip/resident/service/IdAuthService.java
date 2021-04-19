@@ -16,7 +16,7 @@ public interface IdAuthService {
 			throws OtpValidationFailedException;
 
 	public boolean authTypeStatusUpdate(String individualId, String individualIdType, List<String> authType,
-			AuthTypeStatus authTypeStatus) throws ApisResourceAccessException;
+			AuthTypeStatus authTypeStatus, String unlockForMinutes) throws ApisResourceAccessException;
 	
 	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId,
 			String pageStart, String pageFetch) throws ApisResourceAccessException;

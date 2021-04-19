@@ -12,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -94,7 +93,7 @@ public class ResidentServiceRequestAuthLockTest {
 		authLockRequestDto.setTransactionID("1234567898");
 
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK, null))
 				.thenReturn(true);
 		Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
 		ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdate(authLockRequestDto,
@@ -131,7 +130,7 @@ public class ResidentServiceRequestAuthLockTest {
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK, null))
 				.thenReturn(false);
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
 
@@ -150,7 +149,7 @@ public class ResidentServiceRequestAuthLockTest {
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK, null))
 				.thenReturn(true);
 		Mockito.when(notificationService.sendNotification(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException());
@@ -171,7 +170,7 @@ public class ResidentServiceRequestAuthLockTest {
 		authLockRequestDto.setOtp("1234");
 		authLockRequestDto.setTransactionID("1234567898");
 		Mockito.when(idAuthService.authTypeStatusUpdate(authLockRequestDto.getIndividualId(),
-				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK))
+				authLockRequestDto.getIndividualIdType(), authLockRequestDto.getAuthType(), AuthTypeStatus.LOCK, null))
 				.thenThrow(new ApisResourceAccessException());
 
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);

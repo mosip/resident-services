@@ -231,7 +231,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Override
 	public boolean authTypeStatusUpdate(String individualId, String individualIdType, List<String> authType,
-			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant) throws ApisResourceAccessException {
+			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant, String unlockForMinutes)
+			throws ApisResourceAccessException {
 		boolean isAuthTypeStatusSuccess = false;
 		AuthTypeStatusRequestDto authTypeStatusRequestDto = new AuthTypeStatusRequestDto();
 		authTypeStatusRequestDto.setConsentObtained(true);
@@ -253,7 +254,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 			}
 			if (authTypeStatusConstant.equals(io.mosip.resident.constant.AuthTypeStatus.LOCK)) {
 				authTypeStatus.setLocked(true);
+				authTypeStatus.setUnlockForMinutes(null);
 			} else {
+				authTypeStatus.setUnlockForMinutes(Integer.parseInt(unlockForMinutes));
 				authTypeStatus.setLocked(false);
 			}
 

@@ -19,6 +19,7 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RequestDTO;
@@ -106,10 +107,10 @@ public class ResidentController {
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-unlock")
 	public ResponseWrapper<ResponseDTO> reqAuthUnlock(
-			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
+			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth unlock  API"));
-		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
+		validator.validateAuthUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.UNLOCK));
