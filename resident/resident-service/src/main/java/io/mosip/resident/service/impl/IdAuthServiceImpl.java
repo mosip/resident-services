@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -249,6 +250,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 			String[] types = type.split("-");
 			AuthTypeStatus authTypeStatus = new AuthTypeStatus();
+			String requestId = UUID.randomUUID().toString();
+			authTypeStatus.setRequestId(requestId);
 			if (types.length == 1) {
 				authTypeStatus.setAuthType(types[0]);
 			} else {
