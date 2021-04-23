@@ -260,4 +260,28 @@ public class IdAuthServiceTest {
 		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException() );
 		idAuthService.getAuthHistoryDetails("1234", "1", "10");
 	}
+
+	@Test
+	public void testAuthTypeStatusUpdateUnlockSuccess()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
+		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
+		List<String> authTypes = new ArrayList<>();
+		authTypes.add("bio-FIR");
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.UNLOCK,
+				null);
+		assertTrue(isUpdated);
+	}
+
+	@Test
+	public void testAuthTypeStatusUpdateUnlockSuccessWithUnlockForSeconds()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
+		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
+		List<String> authTypes = new ArrayList<>();
+		authTypes.add("bio-FIR");
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.UNLOCK,
+				2L);
+		assertTrue(isUpdated);
+	}
 }

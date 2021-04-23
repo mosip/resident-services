@@ -886,43 +886,6 @@ public class RequestValidatorTest {
 
 	}
 
-	@Test(expected = InvalidInputException.class)
-	public void testValidunlockForMinutesForAuthUnlockRequest() throws Exception {
-		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
-		authUnLockRequestDto.setIndividualIdType(IdType.UIN.name());
-		authUnLockRequestDto.setIndividualId("12344567");
-		authUnLockRequestDto.setOtp("12345");
-		authUnLockRequestDto.setTransactionID("12345");
-		List<String> authTypes = new ArrayList<String>();
-		authTypes.add("bio-FIR");
-		authUnLockRequestDto.setAuthType(authTypes);
-		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
-		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.authunlock");
-		requestWrapper.setVersion("v1");
-		requestWrapper.setRequest(authUnLockRequestDto);
-		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
-
-	}
-
-	@Test(expected = InvalidInputException.class)
-	public void testInValidunlockForMinutesForAuthUnlockRequest() throws Exception {
-		AuthUnLockRequestDTO authUnLockRequestDto1 = new AuthUnLockRequestDTO();
-		authUnLockRequestDto1.setIndividualIdType(IdType.UIN.name());
-		authUnLockRequestDto1.setIndividualId("12344567");
-		authUnLockRequestDto1.setOtp("12345");
-		authUnLockRequestDto1.setTransactionID("12345");
-		authUnLockRequestDto1.setUnlockForMinutes("test");
-		List<String> authTypes = new ArrayList<String>();
-		authTypes.add("bio-FIR");
-		authUnLockRequestDto1.setAuthType(authTypes);
-		RequestWrapper<AuthUnLockRequestDTO> requestWrapper1 = new RequestWrapper<>();
-		requestWrapper1.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper1.setId("mosip.resident.authunlock");
-		requestWrapper1.setVersion("v1");
-		requestWrapper1.setRequest(authUnLockRequestDto1);
-		requestValidator.validateAuthUnlockRequest(requestWrapper1, AuthTypeStatus.LOCK);
-	}
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidunlockForMinutesLessThanZeroForAuthUnlockRequest() throws Exception {
@@ -931,7 +894,7 @@ public class RequestValidatorTest {
 		authUnLockRequestDto1.setIndividualId("12344567");
 		authUnLockRequestDto1.setOtp("12345");
 		authUnLockRequestDto1.setTransactionID("12345");
-		authUnLockRequestDto1.setUnlockForMinutes("-1");
+		authUnLockRequestDto1.setUnlockForSeconds(-1L);
 		List<String> authTypes = new ArrayList<String>();
 		authTypes.add("bio-FIR");
 		authUnLockRequestDto1.setAuthType(authTypes);

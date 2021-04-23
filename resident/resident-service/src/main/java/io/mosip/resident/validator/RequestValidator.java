@@ -624,26 +624,19 @@ public class RequestValidator {
 		}
 		validateAuthType(requestDTO.getRequest().getAuthType(),
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		validateunlockForMinutes(requestDTO.getRequest().getUnlockForMinutes(),
+		validateUnlockForSeconds(requestDTO.getRequest().getUnlockForSeconds(),
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
 
 	}
 
-	private void validateunlockForMinutes(String unlockForMinutes, String message) {
-		if (StringUtils.isEmpty(unlockForMinutes)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForMinutes",
-					message));
-			throw new InvalidInputException("unlockForMinutes");
-		}
-		if (!isNumeric(unlockForMinutes)) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForMinutes", message));
-			throw new InvalidInputException("unlockForMinutes");
-		}
-		if (Integer.parseInt(unlockForMinutes) <= 0) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"Page Fetch or Page Start must be greater than 0", message));
-			throw new InvalidInputException("unlockForMinutes must be greater than 0");
+	private void validateUnlockForSeconds(Long unlockForSeconds, String message) {
+		if (unlockForSeconds != null) {
+			if (unlockForSeconds < 0) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+						"UnlockForSeconds must be greater than or equal to 0", message));
+				throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
+			}
+
 		}
 	}
 }

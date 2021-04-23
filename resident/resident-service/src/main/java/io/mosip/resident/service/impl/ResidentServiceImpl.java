@@ -405,13 +405,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
-				String unlockForMinutes = null;
+				Long unlockForSeconds = null;
 				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
 					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
-					unlockForMinutes=authUnLockRequestDTO.getUnlockForMinutes();
+					unlockForSeconds = authUnLockRequestDTO.getUnlockForSeconds();
 				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
-						dto.getIndividualIdType(), dto.getAuthType(), authTypeStatus, unlockForMinutes);
+						dto.getIndividualIdType(), dto.getAuthType(), authTypeStatus, unlockForSeconds);
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
 				} else {

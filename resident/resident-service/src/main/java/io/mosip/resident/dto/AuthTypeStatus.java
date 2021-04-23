@@ -17,6 +17,8 @@ public class AuthTypeStatus {
 	private String authType;
 
 	private boolean locked;
-	
-	private Integer unlockForMinutes;
+
+	private Long unlockForSeconds;
+
+	private String requestId;
 }
