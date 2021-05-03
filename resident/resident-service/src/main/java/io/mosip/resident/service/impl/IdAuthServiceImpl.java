@@ -40,7 +40,6 @@ import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
-import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -262,16 +261,10 @@ public class IdAuthServiceImpl implements IdAuthService {
 				authTypeStatus.setLocked(true);
 				authTypeStatus.setUnlockForSeconds(null);
 			} else {
-				Long unlockForSecondsValue = null;
-                if(unlockForSeconds==null) {
-					String unlockForSecondsString = environment.getProperty(DEFAULT_UNLOCKFORSECONDS);
-					if (!StringUtils.isEmpty(unlockForSecondsString)) {
-						unlockForSecondsValue = Long.parseLong(unlockForSecondsString);
-					}
-                }else {
-					unlockForSecondsValue = unlockForSeconds;
+				if (unlockForSeconds != null) {
+					authTypeStatus.setUnlockForSeconds(unlockForSeconds);
                 }
-				authTypeStatus.setUnlockForSeconds(unlockForSecondsValue);
+
 				authTypeStatus.setLocked(false);
 			}
 
