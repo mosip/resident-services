@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -39,6 +40,7 @@ import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -100,6 +102,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 	
 	private String thumbprint=null;
+
+	private static final String DEFAULT_UNLOCKFORSECONDS = "auth.type.status.unlockforseconds";
 
 	@Override
 	public boolean validateOtp(String transactionID, String individualId, String otp)
@@ -231,7 +235,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Override
 	public boolean authTypeStatusUpdate(String individualId, String individualIdType, List<String> authType,
-			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant) throws ApisResourceAccessException {
+			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant, Long unlockForSeconds)
+			throws ApisResourceAccessException {
 		boolean isAuthTypeStatusSuccess = false;
 		AuthTypeStatusRequestDto authTypeStatusRequestDto = new AuthTypeStatusRequestDto();
 		authTypeStatusRequestDto.setConsentObtained(true);
@@ -245,6 +250,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 			String[] types = type.split("-");
 			AuthTypeStatus authTypeStatus = new AuthTypeStatus();
+			String requestId = UUID.randomUUID().toString();
+			authTypeStatus.setRequestId(requestId);
 			if (types.length == 1) {
 				authTypeStatus.setAuthType(types[0]);
 			} else {
@@ -253,7 +260,18 @@ public class IdAuthServiceImpl implements IdAuthService {
 			}
 			if (authTypeStatusConstant.equals(io.mosip.resident.constant.AuthTypeStatus.LOCK)) {
 				authTypeStatus.setLocked(true);
+				authTypeStatus.setUnlockForSeconds(null);
 			} else {
+				Long unlockForSecondsValue = null;
+                if(unlockForSeconds==null) {
+					String unlockForSecondsString = environment.getProperty(DEFAULT_UNLOCKFORSECONDS);
+					if (!StringUtils.isEmpty(unlockForSecondsString)) {
+						unlockForSecondsValue = Long.parseLong(unlockForSecondsString);
+					}
+                }else {
+					unlockForSecondsValue = unlockForSeconds;
+                }
+				authTypeStatus.setUnlockForSeconds(unlockForSecondsValue);
 				authTypeStatus.setLocked(false);
 			}
 

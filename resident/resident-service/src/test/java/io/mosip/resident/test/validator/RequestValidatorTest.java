@@ -27,6 +27,7 @@ import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -828,4 +829,81 @@ public class RequestValidatorTest {
 		requestValidator.validateAuthHistoryRequest(requestWrapper);
 
 	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testAuthUnlockRequestNull() throws Exception {
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidIndividualIdForAuthUnlockRequest() throws Exception {
+		Mockito.when(vidValidator.validateId(Mockito.any())).thenReturn(false);
+		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
+		authUnLockRequestDto.setTransactionID("12345");
+		authUnLockRequestDto.setIndividualIdType(IdType.VID.name());
+		authUnLockRequestDto.setIndividualId("12345");
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authUnLockRequestDto);
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidOtpForAuthUnlockRequest() throws Exception {
+		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
+		authUnLockRequestDto.setTransactionID("12345");
+		authUnLockRequestDto.setIndividualId("12344567");
+		authUnLockRequestDto.setIndividualIdType(IdType.UIN.name());
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authUnLockRequestDto);
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidTransactionIdForAuthUnlockRequest() throws Exception {
+		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
+		authUnLockRequestDto.setIndividualIdType(IdType.UIN.name());
+		authUnLockRequestDto.setIndividualId("12344567");
+		authUnLockRequestDto.setOtp("12345");
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authUnLockRequestDto);
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+
+	}
+
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidunlockForMinutesLessThanZeroForAuthUnlockRequest() throws Exception {
+		AuthUnLockRequestDTO authUnLockRequestDto1 = new AuthUnLockRequestDTO();
+		authUnLockRequestDto1.setIndividualIdType(IdType.UIN.name());
+		authUnLockRequestDto1.setIndividualId("12344567");
+		authUnLockRequestDto1.setOtp("12345");
+		authUnLockRequestDto1.setTransactionID("12345");
+		authUnLockRequestDto1.setUnlockForSeconds(-1L);
+		List<String> authTypes = new ArrayList<String>();
+		authTypes.add("bio-FIR");
+		authUnLockRequestDto1.setAuthType(authTypes);
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper1 = new RequestWrapper<>();
+		requestWrapper1.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper1.setId("mosip.resident.authunlock");
+		requestWrapper1.setVersion("v1");
+		requestWrapper1.setRequest(authUnLockRequestDto1);
+		requestValidator.validateAuthUnlockRequest(requestWrapper1, AuthTypeStatus.LOCK);
+	}
+
 }

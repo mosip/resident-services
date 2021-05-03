@@ -26,6 +26,7 @@ import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.VidType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -588,6 +589,54 @@ public class RequestValidator {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individual type", typeofRequest));
 			throw new InvalidInputException("individualIdType");
+		}
+	}
+
+	public void validateAuthUnlockRequest(RequestWrapper<AuthUnLockRequestDTO> requestDTO,
+			AuthTypeStatus authTypeStatus) {
+
+		validateRequest(requestDTO, RequestIdType.AUTH_UNLOCK_ID);
+
+		if (requestDTO.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("request");
+		}
+
+		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(),
+				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
+				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
+						requestDTO.getRequest().getIndividualIdType())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
+			throw new InvalidInputException("individualId");
+		}
+		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp",
+					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
+			throw new InvalidInputException("otp");
+		}
+
+		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionId",
+					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
+			throw new InvalidInputException("transactionId");
+		}
+		validateAuthType(requestDTO.getRequest().getAuthType(),
+				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
+		validateUnlockForSeconds(requestDTO.getRequest().getUnlockForSeconds(),
+				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
+
+	}
+
+	private void validateUnlockForSeconds(Long unlockForSeconds, String message) {
+		if (unlockForSeconds != null) {
+			if (unlockForSeconds < 0) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+						"UnlockForSeconds must be greater than or equal to 0", message));
+				throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
+			}
+
 		}
 	}
 }
