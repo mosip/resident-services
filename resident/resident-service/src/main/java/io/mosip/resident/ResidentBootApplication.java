@@ -2,13 +2,10 @@ package io.mosip.resident;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import io.mosip.kernel.dataaccess.hibernate.config.HibernateDaoConfig;
 
 @SpringBootApplication(scanBasePackages = { "io.mosip.resident.*", "io.mosip.kernel.core.*",
 		"io.mosip.kernel.crypto.jce.*", "io.mosip.commons.packet.*", "io.mosip.kernel.keygenerator.bouncycastle.*",
-		"${mosip.auth.adapter.impl.basepackage}" }
-		, exclude = HibernateDaoConfig.class
-)
+		"${mosip.auth.adapter.impl.basepackage}" })
 
 public class ResidentBootApplication {
 
