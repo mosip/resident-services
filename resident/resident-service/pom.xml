@@ -147,7 +147,7 @@
 		<dependency>
 			<groupId>io.mosip.commons</groupId>
 			<artifactId>commons-packet-manager</artifactId>
-			<version>1.1.5.3</version>
+			<version>${commons.packet.manager.version}</version>
 		</dependency>
 	</dependencies>
 		<build>
@@ -178,11 +178,6 @@
 				<dependency>
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-auth-adapter</artifactId>
-					<version>${project.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>io.mosip.kernel</groupId>
-					<artifactId>kernel-dataaccess-hibernate</artifactId>
 					<version>${project.version}</version>
 				</dependency>
 			</dependencies>
