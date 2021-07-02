@@ -7,14 +7,15 @@
 	<parent>
 		<groupId>io.mosip.resident</groupId>
 		<artifactId>resident-parent</artifactId>
-		<version>1.1.5</version>
+		<version>1.1.5.1</version>
 	</parent>
 	<artifactId>resident-service</artifactId>
 	<name>resident-service</name>
-	<version>1.1.5</version>
+	<version>1.1.5.1</version>
 	<properties>
 		<commons.packet.manager.version>1.1.5</commons.packet.manager.version>
 		<kernel.core.version>1.1.5</kernel.core.version>
+		<kernel.idvalidator.uin.version>1.1.5.4</kernel.idvalidator.uin.version>
 		<kernel-keymanager-service.version>1.1.5</kernel-keymanager-service.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -91,7 +92,7 @@
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-idvalidator-uin</artifactId>
-			<version>${kernel.core.version}</version>
+			<version>${kernel.idvalidator.uin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
