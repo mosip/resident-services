@@ -10,11 +10,8 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +29,7 @@ public class AuditUtil {
 	
 
 	@Autowired
-	RestTemplate restTemplate;
+	private ResidentServiceRestClient residentServiceRestClient;
 	
 	@Value("${mosip.kernel.masterdata.audit-url}")
 	private String auditUrl;
@@ -48,6 +45,9 @@ public class AuditUtil {
 
 	private String hostName = null;
 	
+	@Autowired
+	private TokenGenerator tokenGenerator;
+
 	public String getServerIp() {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
@@ -97,10 +97,11 @@ public class AuditUtil {
 		RequestWrapper<AuditRequestDTO> auditReuestWrapper = new RequestWrapper<>();
 		auditReuestWrapper.setRequest(auditRequestDto);
 		HttpEntity<RequestWrapper<AuditRequestDTO>> httpEntity = new HttpEntity<>(auditReuestWrapper);
-		ResponseEntity<String> response = null;
+
 		try {
-			response = restTemplate.exchange(auditUrl, HttpMethod.POST, httpEntity, String.class);
-			String responseBody = response.getBody();
+			String responseBody = residentServiceRestClient.postApi(auditUrl, null, httpEntity, String.class,
+					tokenGenerator.getToken());
+
 			getAuditDetailsFromResponse(responseBody);
 		} catch (Exception ex) {
 			ex.printStackTrace();
