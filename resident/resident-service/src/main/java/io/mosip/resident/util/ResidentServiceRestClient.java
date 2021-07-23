@@ -20,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.TrustStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -57,6 +58,7 @@ public class ResidentServiceRestClient {
 	RestTemplateBuilder builder;
 
 	@Autowired
+	@Qualifier("residentRestTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired

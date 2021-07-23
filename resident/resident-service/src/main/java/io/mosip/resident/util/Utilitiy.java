@@ -10,6 +10,7 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -63,6 +64,7 @@ public class Utilitiy {
 	private String languageType;
 
 	@Autowired
+	@Qualifier("residentRestTemplate")
 	private RestTemplate residentRestTemplate;
 
 	private static final String IDENTITY = "identity";
