@@ -97,6 +97,7 @@ public class NotificationService {
 	private static final String IS_EMAIL_NOTIFICATION_SUCCESS = "NotificationService::sendEmailNotification()::isSuccess?::";
 	private static final String TEMPLATE_CODE = "Template Code";
 	private static final String SUCCESS = "success";
+	private static final String SEPARATOR = "/";
 
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
@@ -321,7 +322,7 @@ public class NotificationService {
 				mergedEmailSubject = emailSubject;
 			} else {
 				mergedTemplate = mergedTemplate + LINE_SEPARATOR + languageTemplate;
-				mergedEmailSubject = mergedEmailSubject + LINE_SEPARATOR + emailSubject;
+				mergedEmailSubject = mergedEmailSubject + SEPARATOR + emailSubject;
 			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
