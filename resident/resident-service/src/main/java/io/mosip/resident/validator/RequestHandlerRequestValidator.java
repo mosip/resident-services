@@ -1,14 +1,29 @@
 package io.mosip.resident.validator;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.CardType;
@@ -26,22 +41,6 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
-import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
 
 /**
  * The Class PacketGeneratorRequestValidator.
@@ -108,10 +107,6 @@ public class RequestHandlerRequestValidator {
 
 	/** The id. */
 	private Map<String, String> id = new HashMap<>();
-
-	/** The primary languagecode. */
-	@Value("${mosip.primary-language}")
-	private String primaryLanguagecode;
 
 	@Autowired
 	private TokenGenerator tokenGenerator;
@@ -189,10 +184,11 @@ public class RequestHandlerRequestValidator {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public boolean isValidCenter(String centerId) throws BaseCheckedException, IOException {
+		String langCode = getLanguageCode();
 		boolean isValidCenter = false;
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(centerId);
-		pathsegments.add(primaryLanguagecode);
+		pathsegments.add(langCode);
 		RegistrationCenterResponseDto rcpdto;
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		try {
@@ -230,6 +226,20 @@ public class RequestHandlerRequestValidator {
 		return isValidCenter;
 	}
 
+	private String getLanguageCode() {
+		String langCode=null;
+		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
+		if (!StringUtils.isEmpty(mandatoryLanguages)) {
+			String[] lanaguages = mandatoryLanguages.split(",");
+			langCode = lanaguages[0];
+		} else {
+			String optionalLanguages = env.getProperty("mosip.optional-languages");
+			String[] lanaguages = optionalLanguages.split(",");
+			langCode = lanaguages[0];
+		}
+		return langCode;
+	}
+
 	/**
 	 * Checks if is valid machine.
 	 *
@@ -242,10 +252,11 @@ public class RequestHandlerRequestValidator {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public boolean isValidMachine(String machine) throws BaseCheckedException, IOException {
+		String langCode = getLanguageCode();
 		boolean isValidMachine = false;
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(machine);
-		pathsegments.add(primaryLanguagecode);
+		pathsegments.add(langCode);
 		MachineResponseDto machinedto;
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		try {

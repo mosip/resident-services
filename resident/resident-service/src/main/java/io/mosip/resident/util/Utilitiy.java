@@ -3,16 +3,21 @@ package io.mosip.resident.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.assertj.core.util.Lists;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -20,9 +25,11 @@ import org.springframework.web.client.RestTemplate;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.JsonValue;
@@ -54,18 +61,12 @@ public class Utilitiy {
 	@Value("${resident.identityjson}")
 	private String getRegProcessorIdentityJson;
 
-	@Value("${mosip.primary-language}")
-	private String primaryLang;
-
-	@Value("${mosip.secondary-language}")
-	private String secondaryLang;
-
-	@Value("${mosip.notification.language-type}")
-	private String languageType;
-
 	@Autowired
 	@Qualifier("residentRestTemplate")
 	private RestTemplate residentRestTemplate;
+
+	@Autowired
+	private Environment env;
 
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
@@ -137,7 +138,8 @@ public class Utilitiy {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> getMailingAttributes(String id) throws ResidentServiceCheckedException {
+	public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges)
+			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 				"Utilitiy::getMailingAttributes()::entry");
 		Map<String, Object> attributes = new HashMap<>();
@@ -152,6 +154,20 @@ public class Utilitiy {
 			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
 			JSONObject mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 			List<String> mapperJsonKeys = new ArrayList<>(mapperIdentity.keySet());
+
+			String preferredLanguage = getPreferredLanguage(demographicIdentity);
+			if (StringUtils.isEmpty(preferredLanguage)) {
+				List<String> defaultTemplateLanguages = getDefaultTemplateLanguages();
+				if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
+					Set<String> dataCapturedLanguages = getDataCapturedLanguages(mapperIdentity, demographicIdentity);
+					templateLangauges.addAll(dataCapturedLanguages);
+				} else {
+					templateLangauges.addAll(defaultTemplateLanguages);
+				}
+			} else {
+				templateLangauges.add(preferredLanguage);
+			}
+
 			for (String key : mapperJsonKeys) {
 				LinkedHashMap<String, String> jsonObject = JsonUtil.getJSONValue(mapperIdentity, key);
 				String values = jsonObject.get(VALUE);
@@ -161,10 +177,8 @@ public class Utilitiy {
 						JSONArray node = JsonUtil.getJSONArray(demographicIdentity, value);
 						JsonValue[] jsonValues = JsonUtil.mapJsonNodeToJavaObject(JsonValue.class, node);
 						for (JsonValue jsonValue : jsonValues) {
-							if (jsonValue.getLanguage().equals(primaryLang))
-								attributes.put(value + "_" + primaryLang, jsonValue.getValue());
-							if (jsonValue.getLanguage().equals(secondaryLang))
-								attributes.put(value + "_" + secondaryLang, jsonValue.getValue());
+							if (templateLangauges.contains(jsonValue.getLanguage()))
+								attributes.put(value + "_" + jsonValue.getLanguage(), jsonValue.getValue());
 						}
 					} else if (object instanceof LinkedHashMap) {
 						JSONObject json = JsonUtil.getJSONObject(demographicIdentity, value);
@@ -184,6 +198,46 @@ public class Utilitiy {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 				"Utilitiy::getMailingAttributes()::exit");
 		return attributes;
+	}
+
+	private String getPreferredLanguage(JSONObject demographicIdentity) {
+		String preferredLang = null;
+		String preferredLangAttribute = env.getProperty("mosip.default.user-preferred-language-attribute");
+		if (!StringUtils.isEmpty(preferredLangAttribute)) {
+			Object object = demographicIdentity.get(preferredLangAttribute);
+			if(object!=null) {
+				preferredLang = String.valueOf(object);
+			}
+		}
+		return preferredLang;
+	}
+
+	private Set<String> getDataCapturedLanguages(JSONObject mapperIdentity, JSONObject demographicIdentity)
+			throws ReflectiveOperationException {
+		Set<String> dataCapturedLangauges = new HashSet<String>();
+		LinkedHashMap<String, String> jsonObject = JsonUtil.getJSONValue(mapperIdentity, MappingJsonConstants.NAME);
+		String values = jsonObject.get(VALUE);
+		for (String value : values.split(",")) {
+			Object object = demographicIdentity.get(value);
+			if (object instanceof ArrayList) {
+				JSONArray node = JsonUtil.getJSONArray(demographicIdentity, value);
+				JsonValue[] jsonValues = JsonUtil.mapJsonNodeToJavaObject(JsonValue.class, node);
+				for (JsonValue jsonValue : jsonValues) {
+					dataCapturedLangauges.add(jsonValue.getLanguage());
+				}
+			}
+		}
+		return dataCapturedLangauges;
+	}
+
+	private List<String> getDefaultTemplateLanguages() {
+		String defaultLanguages = env.getProperty("mosip.default.template-languages");
+		if (!StringUtils.isEmpty(defaultLanguages)) {
+			String[] lanaguages = defaultLanguages.split(",");
+			List<String> strList = Lists.newArrayList(lanaguages);
+			return strList;
+		}
+		return null;
 	}
 
 	public String getMappingJson() {

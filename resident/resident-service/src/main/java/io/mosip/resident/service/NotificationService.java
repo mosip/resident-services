@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -58,15 +60,6 @@ public class NotificationService {
 	@Autowired
 	private TemplateManager templateManager;
 
-	@Value("${mosip.primary-language}")
-	private String primaryLang;
-
-	@Value("${mosip.secondary-language}")
-	private String secondaryLang;
-
-	@Value("${mosip.notification.language-type}")
-	private String languageType;
-
 	@Value("${resident.notification.emails}")
 	private String notificationEmails;
 
@@ -110,17 +103,20 @@ public class NotificationService {
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId());
+		Set<String> templateLangauges = new HashSet<String>();
+		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges);
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
 		if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
-		smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode());
-		emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null);
+			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
+			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+					templateLangauges);
 	} else if (notificationType.equalsIgnoreCase("EMAIL")) {
-		emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null);
+			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+					templateLangauges);
 	} else if (notificationType.equalsIgnoreCase("SMS")) {
-		smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode());
+			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
 	}
 
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
@@ -218,7 +214,8 @@ public class NotificationService {
 	}
 
 	private boolean sendSMSNotification(Map<String, Object> mailingAttributes,
-			NotificationTemplateCode notificationTemplate) throws ResidentServiceCheckedException {
+			NotificationTemplateCode notificationTemplate, Set<String> templateLangauges)
+			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendSMSNotification()::entry");
 		String phone = (String) mailingAttributes.get("phone");
@@ -227,19 +224,19 @@ public class NotificationService {
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
 			return false;
 		}
-
-		String primaryLanguageMergeTemplate = templateMerge(getTemplate(primaryLang, notificationTemplate + SMS),
-				mailingAttributes);
-
-		if (languageType.equalsIgnoreCase(BOTH)) {
-			String secondaryLanguageMergeTemplate = templateMerge(
-					getTemplate(secondaryLang, notificationTemplate + SMS), mailingAttributes);
-			primaryLanguageMergeTemplate = primaryLanguageMergeTemplate + LINE_SEPARATOR
-					+ secondaryLanguageMergeTemplate;
+		String mergedTemplate = "";
+		for (String language : templateLangauges) {
+			String languageTemplate = templateMerge(getTemplate(language, notificationTemplate + SMS),
+					mailingAttributes);
+			if (mergedTemplate.isBlank()) {
+				mergedTemplate = languageTemplate;
+			}else {
+				mergedTemplate = mergedTemplate + LINE_SEPARATOR
+						+ languageTemplate;
+			}
 		}
-
 		SMSRequestDTO smsRequestDTO = new SMSRequestDTO();
-		smsRequestDTO.setMessage(primaryLanguageMergeTemplate);
+		smsRequestDTO.setMessage(mergedTemplate);
 		smsRequestDTO.setNumber(phone);
 		RequestWrapper<SMSRequestDTO> req = new RequestWrapper<>();
 		req.setRequest(smsRequestDTO);
@@ -303,7 +300,7 @@ public class NotificationService {
 	}
 
 	private boolean sendEmailNotification(Map<String, Object> mailingAttributes,
-			NotificationTemplateCode notificationTemplate, MultipartFile[] attachment)
+			NotificationTemplateCode notificationTemplate, MultipartFile[] attachment, Set<String> templateLangauges)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendEmailNotification()::entry");
@@ -313,14 +310,19 @@ public class NotificationService {
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
 			return false;
 		}
-		String emailSubject = getTemplate(primaryLang, notificationTemplate + EMAIL + SUBJECT);
-		String primaryLanguageMergeTemplate = templateMerge(getTemplate(primaryLang, notificationTemplate + EMAIL),
-				mailingAttributes);
-		if (languageType.equalsIgnoreCase(BOTH)) {
-			String secondaryLanguageMergeTemplate = templateMerge(
-					getTemplate(secondaryLang, notificationTemplate + EMAIL), mailingAttributes);
-			primaryLanguageMergeTemplate = primaryLanguageMergeTemplate + LINE_SEPARATOR
-					+ secondaryLanguageMergeTemplate;
+		String mergedEmailSubject = "";
+		String mergedTemplate = "";
+		for (String language : templateLangauges) {
+			String emailSubject = getTemplate(language, notificationTemplate + EMAIL + SUBJECT);
+			String languageTemplate = templateMerge(getTemplate(language, notificationTemplate + EMAIL),
+					mailingAttributes);
+			if (mergedTemplate.isBlank() || mergedEmailSubject.isBlank()) {
+				mergedTemplate = languageTemplate;
+				mergedEmailSubject = emailSubject;
+			} else {
+				mergedTemplate = mergedTemplate + LINE_SEPARATOR + languageTemplate;
+				mergedEmailSubject = mergedEmailSubject + LINE_SEPARATOR + emailSubject;
+			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
 		String[] mailTo = { mailingAttributes.get("email").toString() };
@@ -329,8 +331,8 @@ public class NotificationService {
 		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);
 
 		try {
-			builder.queryParam("mailSubject", emailSubject);
-			builder.queryParam("mailContent", primaryLanguageMergeTemplate);
+			builder.queryParam("mailSubject", mergedEmailSubject);
+			builder.queryParam("mailContent", mergedTemplate);
 			params.add("attachments", attachment);
 			ResponseWrapper<NotificationResponseDTO> response;
 

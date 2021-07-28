@@ -266,8 +266,6 @@ public class RegistrationConstants {
 
 	public static final String UIN_UPDATE_ISUINUPDATE = "isUINUpdate";
 	public static final String LOCAL_LANGUAGE = "LocalLanguage";
-	public static final String PRIMARY_LANGUAGE = "mosip.primary-language";
-	public static final String SECONDARY_LANGUAGE = "mosip.secondary-language";
 	public static final String LANGUAGE_ENGLISH = "english";
 	public static final String LANGUAGE_ARABIC = "arabic";
 
