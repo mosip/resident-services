@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -56,6 +58,9 @@ public class UtilityTest {
 	private Utilitiy utility;
 	private JSONObject identity;
 
+	@Mock
+	private Environment env;
+
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -74,9 +79,6 @@ public class UtilityTest {
 		Mockito.when(tokenGenerator.getToken()).thenReturn("abcdefghijklmn");
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "getRegProcessorIdentityJson", "json");
-		ReflectionTestUtils.setField(utility, "languageType", "BOTH");
-		ReflectionTestUtils.setField(utility, "primaryLang", "eng");
-		ReflectionTestUtils.setField(utility, "secondaryLang", "ara");
 
 	}
 
@@ -180,11 +182,9 @@ public class UtilityTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Utilitiy utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406");
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("girish.yarru@mindtree.com", attributes.get("email"));
-
-		ReflectionTestUtils.setField(utilitySpy, "languageType", "NA");
-		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406");
+		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("girish.yarru@mindtree.com", attributes1.get("email"));
 
 	}
@@ -197,11 +197,11 @@ public class UtilityTest {
 		String mappingJson = "";
 		Utilitiy utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406");
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("girish.yarru@mindtree.com", attributes.get("email"));
 
 		ReflectionTestUtils.setField(utilitySpy, "languageType", "NA");
-		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406");
+		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("girish.yarru@mindtree.com", attributes1.get("email"));
 
 	}
@@ -218,7 +218,7 @@ public class UtilityTest {
 				.retrieveIdrepoJson(Mockito.anyString());
 		PowerMockito.mockStatic(JsonUtil.class);
 		PowerMockito.when(JsonUtil.readValue(mappingJson, JSONObject.class)).thenThrow(new IOException());
-		utilitySpy.getMailingAttributes("3527812406");
+		utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 
 	}
 }
