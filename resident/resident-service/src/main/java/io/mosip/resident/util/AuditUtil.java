@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,7 @@ public class AuditUtil {
 	
 
 	@Autowired
+	@Qualifier("restTemplate")
 	RestTemplate restTemplate;
 	
 	@Value("${mosip.kernel.masterdata.audit-url}")
@@ -48,6 +50,9 @@ public class AuditUtil {
 
 	private String hostName = null;
 	
+	@Autowired
+	private TokenGenerator tokenGenerator;
+
 	public String getServerIp() {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
@@ -98,9 +103,11 @@ public class AuditUtil {
 		auditReuestWrapper.setRequest(auditRequestDto);
 		HttpEntity<RequestWrapper<AuditRequestDTO>> httpEntity = new HttpEntity<>(auditReuestWrapper);
 		ResponseEntity<String> response = null;
+
 		try {
 			response = restTemplate.exchange(auditUrl, HttpMethod.POST, httpEntity, String.class);
 			String responseBody = response.getBody();
+
 			getAuditDetailsFromResponse(responseBody);
 		} catch (Exception ex) {
 			ex.printStackTrace();

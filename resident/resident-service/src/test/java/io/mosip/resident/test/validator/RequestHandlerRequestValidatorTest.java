@@ -1,12 +1,35 @@
 package io.mosip.resident.test.validator;
 
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.io.IOException;
+
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.resident.constant.CardType;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.LogDescription;
+import io.mosip.resident.dto.MachineDto;
+import io.mosip.resident.dto.MachineResponseDto;
+import io.mosip.resident.dto.RegistrationCenterDto;
+import io.mosip.resident.dto.RegistrationCenterResponseDto;
+import io.mosip.resident.dto.RegistrationType;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.RequestHandlerValidationException;
@@ -14,26 +37,6 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @RunWith(SpringRunner.class)
 public class RequestHandlerRequestValidatorTest {
@@ -67,12 +70,10 @@ public class RequestHandlerRequestValidatorTest {
     private Environment env;
 
     private static final String ID = "110011";
-    private static final String PROPERTY = "property";
 
     @Before
     public void setup() throws ApisResourceAccessException, IOException {
-        ReflectionTestUtils.setField(requestHandlerRequestValidator, "primaryLanguagecode", "eng");
-        Mockito.when(env.getProperty(any())).thenReturn(PROPERTY);
+		Mockito.when(env.getProperty("mosip.mandatory-languages")).thenReturn("eng");
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class), any())).thenReturn(new ResponseWrapper<>());
         Mockito.when(mapper.writeValueAsString(any())).thenReturn("String");
     }
