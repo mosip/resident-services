@@ -81,6 +81,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String REREGISTER_MESSAGE = "FAILED - PLEASE VISIT THE NEAREST CENTER FOR DETAILS.";
 	private static final String RESEND_MESSAGE = "UNDER PROCESSING - PLEASE CHECK BACK AGAIN LATER.";
 	private static final String PROCESSING_MESSAGE = "UNDER PROCESSING - PLEASE CHECK BACK AGAIN LATER.";
+	private static final String WAITING_MESSAGE = "WAITING ON ADDITIONAL INFORMATION -FROM APPLICANT.";
 	private static final String PROOF_OF_ADDRESS = "poa";
 	private static final String PROOF_OF_DOB = "pob";
 	private static final String PROOF_OF_RELATIONSHIP = "por";
@@ -217,6 +218,10 @@ public class ResidentServiceImpl implements ResidentService {
 			return RESEND_MESSAGE;
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.PROCESSING.name()))
 			return PROCESSING_MESSAGE;
+		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.UIN_GENERATED.name()))
+			return RegistrationExternalStatusCode.PROCESSED.name();
+		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.AWAITING_INFORMATION.name()))
+			return WAITING_MESSAGE;
 		return PROCESSING_MESSAGE;
 
 	}

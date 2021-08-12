@@ -1,19 +1,16 @@
 package io.mosip.resident.test.handler;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.commons.packet.dto.PacketInfo;
-import io.mosip.commons.packet.exception.PacketCreatorException;
-import io.mosip.commons.packet.facade.PacketWriter;
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.SyncAndUploadService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.validator.RequestHandlerRequestValidator;
-import io.mosip.resident.util.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
@@ -27,20 +24,36 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.any;
+import io.mosip.commons.packet.dto.PacketInfo;
+import io.mosip.commons.packet.exception.PacketCreatorException;
+import io.mosip.commons.packet.facade.PacketWriter;
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.dto.ErrorDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.RegProcRePrintRequestDto;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.VidResDTO;
+import io.mosip.resident.dto.VidResponseDTO1;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.handler.service.SyncAndUploadService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.IdSchemaUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TokenGenerator;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -120,7 +133,7 @@ public class UinCardRePrintServiceTest {
         PacketInfo packetInfo = new PacketInfo();
         packetInfo.setId(rid);
         packetInfo.setSource("source");
-        Mockito.when(packetWriter.createPacket(any(), anyBoolean())).thenReturn(Lists.newArrayList(packetInfo));
+		Mockito.when(packetWriter.createPacket(any())).thenReturn(Lists.newArrayList(packetInfo));
 
         Mockito.when(tokenGenerator.getToken()).thenReturn("token");
         Mockito.when(mapper.writeValueAsString(any())).thenReturn("String");
