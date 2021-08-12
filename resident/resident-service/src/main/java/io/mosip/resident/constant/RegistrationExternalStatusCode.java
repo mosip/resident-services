@@ -1,5 +1,8 @@
 package io.mosip.resident.constant;
 
+/**
+ * The Enum RegistrationExternalStatusCode.
+ */
 public enum RegistrationExternalStatusCode {
 
 	/** The processing. */
@@ -18,6 +21,12 @@ public enum RegistrationExternalStatusCode {
 	REPROCESS_FAILED,
 
 	/** The upload pending. */
-	UPLOAD_PENDING
+	UPLOAD_PENDING,
+
+	/** The uin generated. */
+	UIN_GENERATED,
+
+	/** The awaiting information. */
+	AWAITING_INFORMATION
 
 }
