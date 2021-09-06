@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,13 @@ public class ResidentServiceRestClient {
 	@Autowired
 	Environment environment;
 
+	@PostConstruct
+	private void loadRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
+		residentRestTemplate = getResidentRestTemplate();
+		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "loadRestTemplate completed successfully");
+	}
+
 	/**
 	 * Gets the api.
 	 *
@@ -78,13 +86,12 @@ public class ResidentServiceRestClient {
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType, String token) throws ApisResourceAccessException {
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null, token), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Exception occured while accessing " + uri, e);
+			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
 		}
 
 	}
@@ -197,7 +204,6 @@ public class ResidentServiceRestClient {
 	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass, String token)
 			throws ApisResourceAccessException {
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType, token),
@@ -231,7 +237,6 @@ public class ResidentServiceRestClient {
 
 		T result = null;
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType, token),
@@ -274,7 +279,6 @@ public class ResidentServiceRestClient {
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 
