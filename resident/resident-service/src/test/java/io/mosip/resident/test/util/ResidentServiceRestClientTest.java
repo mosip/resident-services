@@ -189,10 +189,4 @@ public class ResidentServiceRestClientTest {
         client.putApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, MediaType.APPLICATION_JSON, "abcde");
     }
 
-    @Test
-    @Ignore
-    public void testgetRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-        when(environment.getActiveProfiles()).thenReturn(new String[10]);
-        assertEquals(residentServiceRestClient.getResidentRestTemplate().getRequestFactory().getClass(), HttpComponentsClientHttpRequestFactory.class);
-    }
 }
