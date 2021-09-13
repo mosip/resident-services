@@ -281,27 +281,6 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	@Deprecated
-	public RestTemplate getResidentRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), Arrays.asList(environment.getActiveProfiles()).toString());
-
-		/*TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-
-		SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
-				.build();
-
-		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-
-		requestFactory.setHttpClient(httpClient);
-		return new RestTemplate(requestFactory);*/
-		return residentRestTemplate;
-	}
-
 	/**
 	 * this method sets token to header of the request
 	 *
