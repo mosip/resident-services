@@ -145,10 +145,8 @@ public class Utilitiy {
         }
     }
 
-
     @SuppressWarnings("unchecked")
-    public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges)
-            throws ResidentServiceCheckedException {
+    public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges) throws ResidentServiceCheckedException {
         logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
                 "Utilitiy::getMailingAttributes()::entry");
         Map<String, Object> attributes = new HashMap<>();
