@@ -79,8 +79,8 @@ public class Utilities {
     @Value("${provider.packetwriter.resident}")
     private String provider;
 
-	@Autowired
-	private RestTemplate residentRestTemplate;
+    @Autowired
+    private RestTemplate residentRestTemplate;
 
     @Autowired
     private ObjectMapper objMapper;
