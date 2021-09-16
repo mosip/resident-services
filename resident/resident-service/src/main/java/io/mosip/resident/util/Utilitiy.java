@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
@@ -13,11 +14,11 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -61,9 +62,12 @@ public class Utilitiy {
     @Autowired
     private RestTemplate residentRestTemplate;
 
+    @Autowired
+    private Environment env;
+
     private static final String IDENTITY = "identity";
     private static final String VALUE = "value";
-    private static String regProcessorIdentityJson = StringUtils.EMPTY;
+    private static String regProcessorIdentityJson = "";
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {

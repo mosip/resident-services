@@ -5,6 +5,7 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
@@ -12,7 +13,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.VidCreationException;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -128,7 +128,7 @@ public class Utilities {
 
     private String mappingJsonString = null;
 
-    private static String regProcessorIdentityJson = StringUtils.EMPTY;
+    private static String regProcessorIdentityJson = "";
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
