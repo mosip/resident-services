@@ -42,7 +42,7 @@ public class Config {
 
 	@Bean
 	@Primary
-	public RestTemplate getRestTemplate() {
+	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
 
