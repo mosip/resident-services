@@ -17,6 +17,7 @@ import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -80,6 +81,7 @@ public class Utilities {
     private String provider;
 
     @Autowired
+    @Qualifier("restTemplate")
     private RestTemplate residentRestTemplate;
 
     @Autowired

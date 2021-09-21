@@ -41,6 +41,7 @@ public class ResidentServiceRestClient {
 	RestTemplateBuilder builder;
 
 	@Autowired
+    @Qualifier("restTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired
