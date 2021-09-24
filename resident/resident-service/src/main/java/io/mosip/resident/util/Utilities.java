@@ -106,7 +106,7 @@ public class Utilities {
      * The get reg processor identity json.
      */
     @Value("${resident.identityjson}")
-    private String getRegProcessorIdentityJson;
+    private String residentIdentityJson;
 
     /**
      * The id repo update.
@@ -134,7 +134,7 @@ public class Utilities {
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
-        regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + getRegProcessorIdentityJson, String.class);
+        regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
     }
@@ -184,7 +184,7 @@ public class Utilities {
                 "Utilities::getRegistrationProcessorMappingJson()::entry");
 
         mappingJsonString = (mappingJsonString != null && !mappingJsonString.isEmpty()) ?
-                mappingJsonString : getJson(configServerFileStorageURL, getRegProcessorIdentityJson);
+                mappingJsonString : getJson(configServerFileStorageURL, residentIdentityJson);
         ObjectMapper mapIdentityJsonStringToObject = new ObjectMapper();
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "",
                 "Utilities::getRegistrationProcessorMappingJson()::exit");
