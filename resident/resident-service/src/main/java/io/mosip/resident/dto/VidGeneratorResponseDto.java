@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-@ApiModel(description = "Model representing a Vid Reponse")
+@ApiModel(description = "Model representing a Vid Response")
 public class VidGeneratorResponseDto {
 	
 	private String vidStatus;
@@ -15,7 +15,7 @@ public class VidGeneratorResponseDto {
 	@JsonProperty("VID")
 	private String VID;
 	
-	private String restoredVid;
+	private VidGeneratorResponseDto restoredVid;
 	
 	
 	@JsonProperty("UIN")
