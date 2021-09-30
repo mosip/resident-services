@@ -334,15 +334,18 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				requestDto.getIndividualIdType(), "ResidentVidServiceImpl::vidDeactivator():: revoke Vid response :: "
 						+ JsonUtils.javaObjectToJsonString(response));
 
-		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+		if (response != null && response.getErrors() != null && !response.getErrors().isEmpty()) {
 			throw new VidRevocationException(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorMessage());
 
 		}
 
-		VidGeneratorResponseDto vidResponse = mapper.readValue(mapper.writeValueAsString(response.getResponse()),
-				VidGeneratorResponseDto.class);
+		if(response != null) {
+			VidGeneratorResponseDto vidResponse = mapper.readValue(mapper.writeValueAsString(response.getResponse()),
+					VidGeneratorResponseDto.class);
 
-		return vidResponse;
+			return vidResponse;
+		}
+		return new VidGeneratorResponseDto();
 
 	}
     
