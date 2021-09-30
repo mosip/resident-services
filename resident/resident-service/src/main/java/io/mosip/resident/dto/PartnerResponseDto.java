@@ -21,4 +21,6 @@ public class PartnerResponseDto {
 
 	private String partnerType;
 
+	private Boolean isActive;
+
 }
