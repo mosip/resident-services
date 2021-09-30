@@ -238,10 +238,10 @@ public class ResidentVidServiceTest {
 		
 		when(utilitiy.retrieveIdrepoJson(anyString())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
 	
-		//doReturn(objectMapper.writeValueAsString(dto)).when(mapper).writeValueAsString(any());
-		//doReturn(dto).when(mapper).readValue(anyString(), any(Class.class));
+		doReturn(objectMapper.writeValueAsString(dto)).when(mapper).writeValueAsString(any());
+		doReturn(dto).when(mapper).readValue(anyString(), any(Class.class));
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-		//when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.patchApi(any(), any(), any(), any(), any())).thenReturn(responseWrapper);
 
 		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid);
 
@@ -256,7 +256,7 @@ public class ResidentVidServiceTest {
         residentVidService.revokeVid(vidRevokeRequest, vid);
     }
     
-    @Test
+    @Test(expected = VidRevocationException.class)
     public void apiResourceAccessExceptionTest2() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
 
         String ERROR_CODE = "err";
@@ -272,10 +272,8 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-/*
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(),
+        when(residentServiceRestClient.patchApi(any(), any(), any(), any(),
                 any())).thenThrow(new ApisResourceAccessException());
-*/
 
         residentVidService.revokeVid(vidRevokeRequest,vid);
     }
