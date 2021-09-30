@@ -320,8 +320,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 						+ JsonUtils.javaObjectToJsonString(request));
 
 		try {
-			response = (ResponseWrapper) residentServiceRestClient.postApi(
-					env.getProperty(ApiName.IDAUTHREVOKEVID.name()), MediaType.APPLICATION_JSON, request,
+			response = (ResponseWrapper) residentServiceRestClient.patchApi(
+					env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + requestDto.getIndividualId(), MediaType.APPLICATION_JSON, request,
 					ResponseWrapper.class, tokenGenerator.getToken());
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
