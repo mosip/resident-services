@@ -165,7 +165,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		// using the requestSessionKey
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
 				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
-		authRequestDTO.setRequestHMAC(Base64.encodeBase64String(byteArray));
+		authRequestDTO.setRequestHMAC(Base64.encodeBase64URLSafeString(byteArray));
 		authRequestDTO.setThumbprint(thumbprint);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 				"internelOtpAuth()::INTERNALAUTH POST service call started with request data "
