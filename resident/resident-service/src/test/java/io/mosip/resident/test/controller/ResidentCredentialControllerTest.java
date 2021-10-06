@@ -39,6 +39,7 @@ import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -60,6 +61,9 @@ public class ResidentCredentialControllerTest {
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
+
+	@MockBean
+	private RestTemplate residentRestTemplate;
 
 	@InjectMocks
 	ResidentCredentialController residentCredentialController;

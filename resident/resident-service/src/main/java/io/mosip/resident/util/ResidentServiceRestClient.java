@@ -1,34 +1,17 @@
 package io.mosip.resident.util;
 
-import java.io.IOException;
-import java.net.URI;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.SSLContext;
-
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.TrustStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,11 +19,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.exception.ApisResourceAccessException;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The Class RestApiClient.
@@ -58,7 +41,7 @@ public class ResidentServiceRestClient {
 	RestTemplateBuilder builder;
 
 	@Autowired
-	@Qualifier("residentRestTemplate")
+    @Qualifier("restTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired
@@ -78,13 +61,12 @@ public class ResidentServiceRestClient {
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType, String token) throws ApisResourceAccessException {
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null, token), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Exception occured while accessing " + uri, e);
+			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
 		}
 
 	}
@@ -162,7 +144,7 @@ public class ResidentServiceRestClient {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				throw new ApisResourceAccessException("Exception occured while accessing ", e);
+				throw new ApisResourceAccessException("Exception occurred while accessing ", e);
 
 			}
 		}
@@ -197,7 +179,6 @@ public class ResidentServiceRestClient {
 	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass, String token)
 			throws ApisResourceAccessException {
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType, token),
@@ -208,7 +189,7 @@ public class ResidentServiceRestClient {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
 
-			throw new ApisResourceAccessException("Exception occured while accessing " + uri, e);
+			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
 		}
 	}
 
@@ -231,7 +212,6 @@ public class ResidentServiceRestClient {
 
 		T result = null;
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType, token),
@@ -242,7 +222,7 @@ public class ResidentServiceRestClient {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
 
-			throw new ApisResourceAccessException("Exception occured while accessing " + uri, e);
+			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
 		}
 		return result;
 	}
@@ -274,7 +254,6 @@ public class ResidentServiceRestClient {
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {
-			residentRestTemplate = getResidentRestTemplate();
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 
@@ -289,26 +268,6 @@ public class ResidentServiceRestClient {
 			throw new ApisResourceAccessException("Exception occured while accessing " + uri, e);
 		}
 		return result;
-	}
-
-	public RestTemplate getResidentRestTemplate() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), Arrays.asList(environment.getActiveProfiles()).toString());
-
-		TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-
-		SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy)
-				.build();
-
-		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-
-		requestFactory.setHttpClient(httpClient);
-		return new RestTemplate(requestFactory);
-
 	}
 
 	/**

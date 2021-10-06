@@ -161,7 +161,7 @@ public class ResidentUpdateService {
 						request.getRequestType().toString(), request.getCenterId(), request.getMachineId()));
 				packetDto.setAudits(utilities.generateAudit(packetDto.getId()));
 				packetDto.setOfflineMode(false);
-
+				packetDto.setRefId(request.getCenterId() + "_" + request.getMachineId());
 				List<PacketInfo> packetInfos = packetWriter.createPacket(packetDto);
 
 				if (CollectionUtils.isEmpty(packetInfos) || packetInfos.iterator().next().getId() == null)

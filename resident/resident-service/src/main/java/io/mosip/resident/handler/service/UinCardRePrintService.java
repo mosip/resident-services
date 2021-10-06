@@ -1,28 +1,6 @@
 package io.mosip.resident.handler.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.commons.packet.dto.PacketInfo;
 import io.mosip.commons.packet.dto.packet.PacketDto;
 import io.mosip.commons.packet.exception.PacketCreatorException;
@@ -38,29 +16,32 @@ import io.mosip.kernel.core.util.FileUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.PacketMetaInfoConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.FieldValue;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResponseWrapper;
-import io.mosip.resident.dto.VidRequestDto1;
-import io.mosip.resident.dto.VidResponseDTO1;
+import io.mosip.resident.constant.*;
+import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.IdSchemaUtil;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.*;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UinCardRePrintService {
@@ -206,6 +187,7 @@ public class UinCardRePrintService {
                         requestDto.getCenterId(), requestDto.getMachineId(), vid, requestDto.getCardType()));
                 packetDto.setAudits(utilities.generateAudit(packetDto.getId()));
 				packetDto.setOfflineMode(false);
+                packetDto.setRefId(requestDto.getCenterId() + "_" + requestDto.getMachineId());
 				List<PacketInfo> packetInfos = packetWriter.createPacket(packetDto);
 
                 if (CollectionUtils.isEmpty(packetInfos) || packetInfos.iterator().next().getId() == null) {
