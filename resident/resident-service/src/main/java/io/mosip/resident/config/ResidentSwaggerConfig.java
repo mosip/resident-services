@@ -1,107 +1,57 @@
 package io.mosip.resident.config;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
-@EnableSwagger2
 public class ResidentSwaggerConfig {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ResidentSwaggerConfig.class);
+	private static final Logger logger = LoggerFactory.getLogger(ResidentSwaggerConfig.class);
 
-	/**
-	 * Master service Version
-	 */
-	private static final String APPLICANT_TYPE_SERVICE_VERSION = "1.0";
-	/**
-	 * Application Title
-	 */
-	private static final String TITLE = "Applicant Type Service";
-	/**
-	 * Master Data Service
-	 */
-	private static final String DISCRIBTION = "Service to get Applicant type";
+	@Autowired
+	private OpenApiProperties openApiProperties;
 
-	@Value("${application.env.local:false}")
-	private Boolean localEnv;
-
-	@Value("${swagger.base-url:#{null}}")
-	private String swaggerBaseUrl;
-
-	@Value("${server.port:8099}")
-	private int serverPort;
-
-	String proto = "http";
-	String host = "localhost";
-	int port = -1;
-	String hostWithPort = "localhost:8099";
-
-	/**
-	 * Produces {@link ApiInfo}
-	 * 
-	 * @return {@link ApiInfo}
-	 */
-	private ApiInfo apiInfo() {
-		return new ApiInfoBuilder().title(TITLE).description(DISCRIBTION).version(APPLICANT_TYPE_SERVICE_VERSION)
-				.build();
-	}
-
-	/**
-	 * Produce Docket bean
-	 * 
-	 * @return Docket bean
-	 */
 	@Bean
-	public Docket api() {
-		boolean swaggerBaseUrlSet = false;
-		if (!localEnv && swaggerBaseUrl != null && !swaggerBaseUrl.isEmpty()) {
-			try {
-				proto = new URL(swaggerBaseUrl).getProtocol();
-				host = new URL(swaggerBaseUrl).getHost();
-				port = new URL(swaggerBaseUrl).getPort();
-				if (port == -1) {
-					hostWithPort = host;
-				} else {
-					hostWithPort = host + ":" + port;
-				}
-				swaggerBaseUrlSet = true;
-			} catch (MalformedURLException e) {
-				LOGGER.error("SwaggerUrlException: {}", e);
+	public OpenAPI openApi() {
+		String msg = "Swagger open api, ";
+		OpenAPI api = new OpenAPI()
+				.components(new Components());
+		if (null != openApiProperties.getInfo()) {
+			api.info(new Info()
+					.title(openApiProperties.getInfo().getTitle())
+					.version(openApiProperties.getInfo().getVersion())
+					.description(openApiProperties.getInfo().getDescription()));
+			if (null != openApiProperties.getInfo().getLicense()) {
+				api.getInfo().license(new License()
+						.name(openApiProperties.getInfo().getLicense().getName())
+						.url(openApiProperties.getInfo().getLicense().getUrl()));
+				logger.info(msg + "info license property is added");
+			} else {
+				logger.error(msg + "info license property is empty");
 			}
+			logger.info(msg + "info property is added");
+		} else {
+			logger.error(msg + "info property is empty");
 		}
 
-		Docket docket = new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
-				.select().apis(RequestHandlerSelectors.any()).paths(PathSelectors.regex("(?!/(error|actuator).*).*"))
-				.build();
-
-		if (swaggerBaseUrlSet) {
-			docket.protocols(protocols()).host(hostWithPort);
-			LOGGER.info("\nSwagger Base URL: " + proto + "://" + hostWithPort + "\n");
+		if (null != openApiProperties.getResidentServiceServer().getServers()) {
+			openApiProperties.getResidentServiceServer().getServers().forEach(server -> {
+				api.addServersItem(new Server().description(server.getDescription()).url(server.getUrl()));
+			});
+			logger.info(msg + "server property is added");
+		} else {
+			logger.error(msg + "server property is empty");
 		}
-
-		return docket;
+		return api;
 	}
 
-	private Set<String> protocols() {
-		Set<String> protocols = new HashSet<>();
-		protocols.add(proto);
-		return protocols;
-	}
 }
