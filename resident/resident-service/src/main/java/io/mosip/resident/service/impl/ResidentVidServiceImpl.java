@@ -226,7 +226,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-		String uin = null;
+        String uin = requestDto.getIndividualId();
 
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,requestDto.getTransactionID() ,"Request to revoke VID"));
@@ -247,13 +247,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 
 		try {
-			JSONObject jsonObject = utilitiy.retrieveIdrepoJson(vid);
-			uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
+            if (IdType.VID.name().equals(requestDto.getIndividualIdType())) {
+                JSONObject jsonObject = utilitiy.retrieveIdrepoJson(requestDto.getIndividualId());
+                uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
+            }
 		} catch (IdRepoAppException e) {
 			throw new DataNotFoundException(e.getErrorCode(),e.getMessage());
 		}
 
-		notificationRequestDto.setId(uin.toString());
+		notificationRequestDto.setId(uin);
 		
 		try {
 
