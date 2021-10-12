@@ -226,7 +226,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-		String uin = null;
+        String uin = requestDto.getIndividualId();
 
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,requestDto.getTransactionID() ,"Request to revoke VID"));
@@ -247,18 +247,20 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 
 		try {
-			JSONObject jsonObject = utilitiy.retrieveIdrepoJson(vid);
-			uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
+            if (IdType.VID.name().equals(requestDto.getIndividualIdType())) {
+                JSONObject jsonObject = utilitiy.retrieveIdrepoJson(requestDto.getIndividualId());
+                uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
+            }
 		} catch (IdRepoAppException e) {
 			throw new DataNotFoundException(e.getErrorCode(),e.getMessage());
 		}
 
-		notificationRequestDto.setId(uin.toString());
+		notificationRequestDto.setId(uin);
 		
 		try {
 
 			// revoke vid
-			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin);
+			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin, vid);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.DEACTIVATED_VID,requestDto.getTransactionID()));
 			// send notification
 			Map<String, Object> additionalAttributes = new HashMap<>();
@@ -300,7 +302,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return responseDto;
 	}
 
-	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, String uin)
+	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, String uin, String vid)
 			throws JsonProcessingException, IOException, ApisResourceAccessException, ResidentServiceCheckedException {
 		VidGeneratorRequestDto vidRequestDto = new VidGeneratorRequestDto();
 		RequestWrapper<VidGeneratorRequestDto> request = new RequestWrapper<>();
@@ -321,7 +323,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		try {
 			response = (ResponseWrapper) residentServiceRestClient.patchApi(
-					env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + requestDto.getIndividualId(), MediaType.APPLICATION_JSON, request,
+					env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + vid, MediaType.APPLICATION_JSON, request,
 					ResponseWrapper.class, tokenGenerator.getToken());
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
