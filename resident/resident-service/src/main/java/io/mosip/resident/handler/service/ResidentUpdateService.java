@@ -122,7 +122,7 @@ public class ResidentUpdateService {
 
 			try {
 				Map<String, String> idMap = new HashMap<>();
-				String demoJsonString = new String(CryptoUtil.decodeBase64(request.getIdentityJson()));
+				String demoJsonString = new String(CryptoUtil.decodePlainBase64(request.getIdentityJson()));
 				JSONObject demoJsonObject = JsonUtil.objectMapperReadValue(demoJsonString, JSONObject.class);
 				LinkedHashMap<String, String> fields = (LinkedHashMap<String, String>) demoJsonObject.get(IDENTITY);
 
@@ -220,7 +220,7 @@ public class ResidentUpdateService {
 		if (documentJson == null)
 			return;
 		Document docDetailsDto = new Document();
-		docDetailsDto.setDocument(CryptoUtil.decodeBase64(documentBytes));
+		docDetailsDto.setDocument(CryptoUtil.decodePlainBase64(documentBytes));
 		docDetailsDto.setFormat((String) JsonUtil.getJSONValue(documentJson, FORMAT));
 		docDetailsDto.setValue((String) JsonUtil.getJSONValue(documentJson, VALUE));
 		docDetailsDto.setType((String) JsonUtil.getJSONValue(documentJson, TYPE));
