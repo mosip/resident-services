@@ -60,7 +60,7 @@ public class EncryptorUtil {
 
     public String encrypt(byte[] data, String refId) {
         try {
-            String packetString = CryptoUtil.encodeBase64String(data);
+            String packetString = CryptoUtil.encodeToPlainBase64(data);
             CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
 			io.mosip.kernel.core.http.RequestWrapper<CryptomanagerRequestDto> request = new io.mosip.kernel.core.http.RequestWrapper<>();
             cryptomanagerRequestDto.setApplicationId(APPLICATION_ID);
@@ -71,8 +71,8 @@ public class EncryptorUtil {
             byte[] aad = new byte[CryptomanagerConstant.GCM_AAD_LENGTH];
             sRandom.nextBytes(nonce);
             sRandom.nextBytes(aad);
-            cryptomanagerRequestDto.setAad(CryptoUtil.encodeBase64String(aad));
-            cryptomanagerRequestDto.setSalt(CryptoUtil.encodeBase64String(nonce));
+            cryptomanagerRequestDto.setAad(CryptoUtil.encodeToPlainBase64(aad));
+            cryptomanagerRequestDto.setSalt(CryptoUtil.encodeToPlainBase64(nonce));
             cryptomanagerRequestDto.setTimeStamp(DateUtils.getUTCCurrentDateTime());
 			cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
             request.setId(DECRYPT_SERVICE_ID);
@@ -90,7 +90,7 @@ public class EncryptorUtil {
             }
 
             DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
-            return CryptoUtil.encodeBase64(mergeEncryptedData(CryptoUtil.decodeBase64(responseObject.getData()), nonce, aad));
+            return CryptoUtil.encodeToURLSafeBase64(mergeEncryptedData(CryptoUtil.decodeURLSafeBase64(responseObject.getData()), nonce, aad));
 
         } catch (IOException e) {
             throw new PacketDecryptionFailureException(IO_EXCEPTION, e);

@@ -598,7 +598,7 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setMachineId(machineId);
 			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
 			List<ResidentDocuments> documents = dto.getDocuments();
-			byte[] decodedDemoJson = CryptoUtil.decodeBase64(dto.getIdentityJson());
+			byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 			JSONObject demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
 			String mappingJson = utility.getMappingJson();
