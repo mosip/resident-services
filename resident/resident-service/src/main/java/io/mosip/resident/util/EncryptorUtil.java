@@ -90,7 +90,7 @@ public class EncryptorUtil {
             }
 
             DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
-            return CryptoUtil.encodeBase64(mergeEncryptedData(CryptoUtil.decodeBase64(responseObject.getData()), nonce, aad));
+            return CryptoUtil.encodeToURLSafeBase64(mergeEncryptedData(CryptoUtil.decodeURLSafeBase64(responseObject.getData()), nonce, aad));
 
         } catch (IOException e) {
             throw new PacketDecryptionFailureException(IO_EXCEPTION, e);
