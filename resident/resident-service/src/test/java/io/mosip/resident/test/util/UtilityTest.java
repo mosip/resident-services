@@ -78,7 +78,7 @@ public class UtilityTest {
                 any(), any(Class.class), any())).thenReturn(response);
 		Mockito.when(tokenGenerator.getToken()).thenReturn("abcdefghijklmn");
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
-		ReflectionTestUtils.setField(utility, "getRegProcessorIdentityJson", "json");
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
 
 	}
 

@@ -5,17 +5,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.RegistrationConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdRequestDto;
-import io.mosip.resident.dto.IdResponseDTO;
-import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.dto.RequestDto1;
-import io.mosip.resident.dto.VidResponseDTO1;
+import io.mosip.resident.constant.*;
+import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.VidCreationException;
@@ -31,15 +24,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The Class Utilities.
@@ -80,7 +69,7 @@ public class Utilities {
 	private String provider;
 
 	@Autowired
-	@Qualifier("residentRestTemplate")
+	@Qualifier("restTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired
@@ -101,7 +90,7 @@ public class Utilities {
 
 	/** The get reg processor identity json. */
 	@Value("${resident.identityjson}")
-	private String getRegProcessorIdentityJson;
+	private String residentIdentityJson;
 
 	/** The id repo update. */
 	@Value("${id.repo.update}")
@@ -119,7 +108,16 @@ public class Utilities {
 
 	private String mappingJsonString = null;
 
-	public JSONObject retrieveIdrepoJson(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
+    private static String regProcessorIdentityJson = "";
+
+    @PostConstruct
+    private void loadRegProcessorIdentityJson() {
+        regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
+        logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+                LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
+    }
+
+    public JSONObject retrieveIdrepoJson(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
 
 		if (uin != null) {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
@@ -164,7 +162,7 @@ public class Utilities {
 				"Utilities::getRegistrationProcessorMappingJson()::entry");
 
 		mappingJsonString = (mappingJsonString != null && !mappingJsonString.isEmpty()) ?
-				mappingJsonString : getJson(configServerFileStorageURL, getRegProcessorIdentityJson);
+				mappingJsonString : getJson(configServerFileStorageURL, residentIdentityJson);
 		ObjectMapper mapIdentityJsonStringToObject = new ObjectMapper();
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "",
 				"Utilities::getRegistrationProcessorMappingJson()::exit");
@@ -242,9 +240,12 @@ public class Utilities {
 		return false;
 	}
 
-	public String getJson(String configServerFileStorageURL, String uri) {
-		return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
-	}
+    public String getJson(String configServerFileStorageURL, String uri) {
+        if (StringUtils.isEmpty(regProcessorIdentityJson)) {
+            return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
+        }
+        return regProcessorIdentityJson;
+    }
 
 	public String retrieveIdrepoJsonStatus(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
 		String response = null;

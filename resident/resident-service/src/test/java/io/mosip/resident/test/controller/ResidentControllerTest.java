@@ -61,6 +61,7 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -87,6 +88,9 @@ public class ResidentControllerTest {
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
+
+	@MockBean
+	private RestTemplate residentRestTemplate;
 
 	@InjectMocks
     ResidentController residentController;
