@@ -48,6 +48,7 @@ import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -71,6 +72,9 @@ public class ResidentVidControllerTest {
 
 	@MockBean
 	private TokenGenerator tokenGenerator;
+
+	@MockBean
+	private RestTemplate residentRestTemplate;
 
 	@Mock
 	private Environment env;

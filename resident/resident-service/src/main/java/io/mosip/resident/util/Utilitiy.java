@@ -1,27 +1,5 @@
 package io.mosip.resident.util;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -37,9 +15,24 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.*;
 
 /**
- * 
  * @author Girish Yarru
  * @version 1.0
  */
@@ -59,10 +52,10 @@ public class Utilitiy {
 	private String configServerFileStorageURL;
 
 	@Value("${resident.identityjson}")
-	private String getRegProcessorIdentityJson;
+	private String residentIdentityJson;
 
 	@Autowired
-	@Qualifier("residentRestTemplate")
+	@Qualifier("restTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired
@@ -70,6 +63,14 @@ public class Utilitiy {
 
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
+	private static String regProcessorIdentityJson = "";
+
+    @PostConstruct
+    private void loadRegProcessorIdentityJson() {
+        regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
+        logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+                LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
+    }
 
 	@SuppressWarnings("unchecked")
 	public JSONObject retrieveIdrepoJson(String id) throws ResidentServiceCheckedException {
@@ -240,8 +241,11 @@ public class Utilitiy {
 		return null;
 	}
 
-	public String getMappingJson() {
-		return residentRestTemplate.getForObject(configServerFileStorageURL + getRegProcessorIdentityJson, String.class);
-	}
+    public String getMappingJson() {
+        if (StringUtils.isEmpty(regProcessorIdentityJson)) {
+            return residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
+        }
+        return regProcessorIdentityJson;
+    }
 
 }
