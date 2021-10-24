@@ -7,12 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 

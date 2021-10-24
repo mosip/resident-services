@@ -3,6 +3,7 @@ package io.mosip.resident.service.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections.map.HashedMap;
@@ -32,6 +33,7 @@ import io.mosip.resident.dto.CryptomanagerRequestDto;
 import io.mosip.resident.dto.CryptomanagerResponseDto;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.PartnerResponseDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
@@ -45,6 +47,8 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
@@ -57,7 +61,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Value("${crypto.PrependThumbprint.enable:true}")
 	private boolean isPrependThumbprintEnabled;
-
+	
 	@Value("${PARTNER_REFERENCE_Id}")
 	private String partnerReferenceId;
 
@@ -66,6 +70,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Autowired
 	private ObjectMapper mapper;
+
+	@Autowired
+	private AuditUtil audit;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialServiceImpl.class);
 	
@@ -90,9 +97,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
 		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
 		Map<String, Object> additionalAttributes = new HashedMap();
-		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name())  + dto.getIssuer();
+		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
 		try {
+
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 
 				    credentialReqestDto=prepareCredentialRequest(dto);
@@ -119,33 +127,42 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
 							additionalAttributes);
-			   } else {
-				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+
+				} else {
+					logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
+							additionalAttributes);
+					audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+				}
+
+			} catch (OtpValidationFailedException e) {
+				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 						additionalAttributes);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+						e.getErrorText(), e);
 			}
-		} catch (OtpValidationFailedException e) {
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-					e.getErrorText(), e);
-		}
+
 		catch (ResidentServiceCheckedException e) {
 
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (IOException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -186,9 +203,11 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			byte[] pdfBytes = CryptoUtil.decodeBase64(responseObject.getResponse().getData());
 			return pdfBytes;
 		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (IOException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -215,13 +234,16 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					additionalAttributes);
 
 		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch(IOException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
 		}
@@ -250,38 +272,39 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Override
 	public CredentialCancelRequestResponseDto cancelCredentialRequest(String requestId) {
-		ResponseWrapper<CredentialCancelRequestResponseDto> responseDto = null;
-		String response = null;
+		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<CredentialCancelRequestResponseDto>();
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialCancelRequestResponseDto credentialCancelRequestResponseDto=new CredentialCancelRequestResponseDto();
 		try {
 				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestId;
 				URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
-				response = residentServiceRestClient.getApi(credentailReqCancelUri, String.class,
+				response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class,
 						tokenGenerator.getToken());
-				if (response.contains("errors")) {
-					throw new ResidentCredentialServiceException(
-							ResidentErrorCode.CREDENTIAL_ISSUED_EXCEPTION.getErrorCode(),
-							ResidentErrorCode.CREDENTIAL_ISSUED_EXCEPTION.getErrorMessage());
-				} else {
-					credentialCancelRequestResponseDto = JsonUtil.readValue(response,
-						CredentialCancelRequestResponseDto.class);
+				if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+					throw new ResidentCredentialServiceException(response.getErrors().get(0).getErrorCode(),
+							response.getErrors().get(0).getMessage());
+				}
+				credentialCancelRequestResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(response.getResponse()),
+							CredentialCancelRequestResponseDto.class);
 				additionalAttributes.put("RID", credentialCancelRequestResponseDto.getRequestId());
 				sendNotification(credentialCancelRequestResponseDto.getId(),
 						NotificationTemplateCode.RS_CRE_CANCEL_SUCCESS, additionalAttributes);
-			}
+
 		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (IOException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} catch (ResidentServiceCheckedException e) {
-
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage());
 		}
+
 
 		return credentialCancelRequestResponseDto;
 	}
@@ -297,11 +320,32 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		 catch (IOException e) {
+				audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_EXCEPTION);
 				throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 			}
 		return credentialTypeResponse;
 	}
+
+	@Override
+	public ResponseWrapper<PartnerCredentialTypePolicyDto> getPolicyByCredentialType(String partnerId,
+			String credentialType)
+	{
+		ResponseWrapper<PartnerCredentialTypePolicyDto> response = new ResponseWrapper<PartnerCredentialTypePolicyDto>();
+		Map<String, String> pathsegments = new HashMap<>();
+		pathsegments.put("partnerId", partnerId);
+		pathsegments.put("credentialType", credentialType);
+		try {
+			response = residentServiceRestClient.getApi(ApiName.POLICY_REQ_URL, pathsegments,
+					ResponseWrapper.class, tokenGenerator.getToken());
+		} catch (Exception e) {
+			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+		return response;
+	}
+
 	public String generatePin() {
 		return RandomStringUtils.randomNumeric(6);
 	}
@@ -314,4 +358,23 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
+	/*
+	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
+	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
+	 * PartnerCredentialTypePolicyResponseDto policy = new
+	 * PartnerCredentialTypePolicyResponseDto();
+	 * policy.setCr_by(partnerCredentialTypePolicyDto.getCr_by());
+	 * policy.setCr_dtimes(partnerCredentialTypePolicyDto.getCr_dtimes());
+	 * policy.setCredentialType(partnerCredentialTypePolicyDto.getCredentialType());
+	 * policy.setIs_Active(partnerCredentialTypePolicyDto.getIs_Active());
+	 * policy.setPartnerId(partnerCredentialTypePolicyDto.getPartnerId());
+	 * policy.setPolicyDesc(partnerCredentialTypePolicyDto.getPolicyDesc());
+	 * policy.setPolicyId(policyId); policy.setPolicyName(policyName);
+	 * policy.setPolicyType(policyType); policy.setPublishDate(publishDate);
+	 * policy.setSchema(schema); policy.setStatus(status); policy.setUp_by(up_by);
+	 * policy.setUpd_dtimes(upd_dtimes); policy.setVersion(version);
+	 * policy.setValidTill(validTill);
+	 *
+	 * }
+	 */
 }

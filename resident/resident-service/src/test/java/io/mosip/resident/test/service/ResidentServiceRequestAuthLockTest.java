@@ -5,9 +5,6 @@ package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
 
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

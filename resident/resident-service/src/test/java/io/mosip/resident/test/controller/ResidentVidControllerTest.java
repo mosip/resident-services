@@ -53,7 +53,6 @@ import io.mosip.resident.util.TokenGenerator;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
-@Ignore
 public class ResidentVidControllerTest {
 
 	private static final String JSON_STRING_RESPONSE = "";
@@ -124,6 +123,7 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
+	@Ignore
 	public void vidCreationFailureTest() throws Exception {
 
 		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class)))
@@ -267,6 +267,7 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
+	@Ignore
 	public void vidRevokingFailureTest() throws Exception {
 
 		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))

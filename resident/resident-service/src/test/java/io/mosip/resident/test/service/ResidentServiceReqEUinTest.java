@@ -3,7 +3,6 @@ package io.mosip.resident.test.service;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-import io.mosip.resident.service.IdAuthService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

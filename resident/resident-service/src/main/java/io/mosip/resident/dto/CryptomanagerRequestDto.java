@@ -52,7 +52,7 @@ public class CryptomanagerRequestDto {
 	private Boolean prependThumbprint;
 
 	private String aad;
-
+	
 	private String salt;
 
 }

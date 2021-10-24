@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import javax.crypto.SecretKey;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
@@ -33,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
@@ -95,6 +98,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Autowired
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
+	
+	private String thumbprint=null;
 
 	@Override
 	public boolean validateOtp(String transactionID, String individualId, String otp)
@@ -103,7 +108,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		try {
 			response = internelOtpAuth(transactionID, individualId, otp);
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
-				| JsonProcessingException e) {
+				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
 			throw new OtpValidationFailedException(e.getMessage());
@@ -121,7 +126,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,
 			String otp) throws ApisResourceAccessException, InvalidKeySpecException, NoSuchAlgorithmException,
-			IOException, JsonProcessingException {
+			IOException, JsonProcessingException, CertificateEncodingException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 				"IdAuthServiceImpl::internelOtpAuth()::entry");
 		String dateTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
@@ -161,7 +166,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
 				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
 		authRequestDTO.setRequestHMAC(Base64.encodeBase64String(byteArray));
-
+		authRequestDTO.setThumbprint(thumbprint);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 				"internelOtpAuth()::INTERNALAUTH POST service call started with request data "
 						+ JsonUtils.javaObjectToJsonString(authRequestDTO));
@@ -186,7 +191,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	}
 
 	private byte[] encryptRSA(final byte[] sessionKey, String refId) throws ApisResourceAccessException,
-			InvalidKeySpecException, java.security.NoSuchAlgorithmException, IOException, JsonProcessingException {
+			InvalidKeySpecException, java.security.NoSuchAlgorithmException, IOException, JsonProcessingException, CertificateEncodingException {
 
 		// encrypt AES Session Key using RSA public key
 		ResponseWrapper<?> responseWrapper = null;
@@ -213,6 +218,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		publicKeyResponsedto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 				PublicKeyResponseDto.class);
 		X509Certificate req509 = (X509Certificate) convertToCertificate(publicKeyResponsedto.getCertificate());
+		thumbprint = CryptoUtil.encodeBase64(getCertificateThumbprint(req509));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), refId,
 				"IdAuthServiceImpl::encryptRSA():: ENCRYPTIONSERVICE GET service call ended with response data "
@@ -356,4 +362,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
 		}
 	}
+
+	private byte[] getCertificateThumbprint(java.security.cert.Certificate cert)
+			throws java.security.cert.CertificateEncodingException {
+
+        return DigestUtils.sha256(cert.getEncoded());
+	}
 }
+	
+

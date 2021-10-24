@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.mosip.resident.service.IdAuthService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
