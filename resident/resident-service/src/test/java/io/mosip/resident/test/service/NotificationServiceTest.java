@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -92,6 +91,7 @@ public class NotificationServiceTest {
 		mailingAttributes.put("email", "test@test.com");
 		Mockito.when(utility.getMailingAttributes(Mockito.any())).thenReturn(mailingAttributes);
 		ReflectionTestUtils.setField(notificationService, "languageType", "BOTH");
+		ReflectionTestUtils.setField(notificationService, "notificationType", "SMS|EMAIL");
 		ReflectionTestUtils.setField(notificationService, "primaryLang", "eng");
 		ReflectionTestUtils.setField(notificationService, "secondaryLang", "ara");
 		ReflectionTestUtils.setField(notificationService, "notificationEmails", "test@test.com|test1@test1.com");

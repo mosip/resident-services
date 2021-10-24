@@ -70,6 +70,9 @@ public class NotificationService {
 	@Value("${resident.notification.emails}")
 	private String notificationEmails;
 
+	@Value("${mosip.notificationtype}")
+	private String notificationType;
+
 	@Autowired
 	private Environment env;
 
@@ -105,14 +108,21 @@ public class NotificationService {
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::entry");
-		boolean smsStatus;
-		boolean emailStatus;
+		boolean smsStatus = false;
+		boolean emailStatus = false;
 		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId());
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
+		if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
 		smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode());
 		emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null);
+	} else if (notificationType.equalsIgnoreCase("EMAIL")) {
+		emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null);
+	} else if (notificationType.equalsIgnoreCase("SMS")) {
+		smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode());
+	}
+
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				IS_SMS_NOTIFICATION_SUCCESS + smsStatus);
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),

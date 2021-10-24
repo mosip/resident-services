@@ -118,9 +118,8 @@ public class IdAuthServiceTest {
 		assertTrue(isUpdated);
 	}
 
-
-	@Test
 	@Ignore
+	@Test
 	public void validateOtpSuccessTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
 		String transactionID = "12345";
 		String individualId = "individual";
@@ -193,8 +192,8 @@ public class IdAuthServiceTest {
 		idAuthService.validateOtp(transactionID, individualId, otp);
 	}
 
-	@Test(expected = OtpValidationFailedException.class)
 	@Ignore
+	@Test(expected = OtpValidationFailedException.class)
 	public void idAuthErrorsTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
 		String transactionID = "12345";
 		String individualId = "individual";

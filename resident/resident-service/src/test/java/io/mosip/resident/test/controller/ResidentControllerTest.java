@@ -19,7 +19,6 @@ import java.util.List;
 import javax.crypto.SecretKey;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -72,7 +71,6 @@ import io.mosip.resident.validator.RequestValidator;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
-@Ignore
 public class ResidentControllerTest {
 
 	@MockBean

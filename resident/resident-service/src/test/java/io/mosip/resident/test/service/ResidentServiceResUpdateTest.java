@@ -9,11 +9,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +45,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
-
-import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
