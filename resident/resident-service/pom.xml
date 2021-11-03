@@ -15,6 +15,7 @@
 	<properties>
 		<commons.packet.manager.version>1.1.5.3</commons.packet.manager.version>
 		<kernel.core.version>1.1.5.3</kernel.core.version>
+		<kernel.core.version.latest>1.1.5.5-SNAPSHOT</kernel.core.version.latest>
 		<kernel.idvalidator.uin.version>1.1.5.4</kernel.idvalidator.uin.version>
 		<kernel-keymanager-service.version>1.1.5.3</kernel-keymanager-service.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -47,7 +48,7 @@
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-core</artifactId>
-			<version>${kernel.core.version}</version>
+			<version>${kernel.core.version.latest}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
