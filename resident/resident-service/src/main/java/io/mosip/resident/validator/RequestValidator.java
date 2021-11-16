@@ -380,7 +380,8 @@ public class RequestValidator {
 			} else if (individualIdType.equalsIgnoreCase(IdType.VID.toString())) {
 				validation = vidValidator.validateId(individualId);
 			} else if (individualIdType.equalsIgnoreCase(IdType.RID.toString())) {
-				validation = ridValidator.validateId(individualId);
+				//	validation = ridValidator.validateId(individualId); //TODO Refer to https://mosip.atlassian.net/browse/MOSIP-18168 - RID Validation should be updated in the kernel validator. As of now, commenting only the validation part from resident service
+				validation = Boolean.TRUE;
 			}
 		} catch (InvalidIDException e) {
 			throw new InvalidInputException("individualId");
