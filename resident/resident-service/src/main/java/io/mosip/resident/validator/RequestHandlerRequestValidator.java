@@ -256,7 +256,7 @@ public class RequestHandlerRequestValidator {
 		boolean isValidMachine = false;
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(machine);
-		pathsegments.add(langCode);
+		//pathsegments.add(langCode);
 		MachineResponseDto machinedto;
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		try {
