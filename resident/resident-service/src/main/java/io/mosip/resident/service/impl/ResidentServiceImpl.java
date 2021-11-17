@@ -413,7 +413,7 @@ public class ResidentServiceImpl implements ResidentService {
 				Long unlockForSeconds = null;
 				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
 					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
-					unlockForSeconds = authUnLockRequestDTO.getUnlockForSeconds();
+					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
 				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
 						dto.getIndividualIdType(), dto.getAuthType(), authTypeStatus, unlockForSeconds);
