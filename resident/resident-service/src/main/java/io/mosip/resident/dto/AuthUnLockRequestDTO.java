@@ -11,7 +11,7 @@ public class AuthUnLockRequestDTO extends AuthLockOrUnLockRequestDto {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private Long unlockForSeconds;
+	private String unlockForSeconds;
 
 
 }
