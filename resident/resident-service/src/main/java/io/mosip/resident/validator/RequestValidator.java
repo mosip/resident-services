@@ -608,7 +608,13 @@ public class RequestValidator {
 		}
 		validateAuthType(requestDTO.getRequest().getAuthType(),
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		validateUnlockForSeconds(requestDTO.getRequest().getUnlockForSeconds(),
+		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
+					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
+			throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
+		}
+		long unlockSeconds = Long.parseLong(requestDTO.getRequest().getUnlockForSeconds());
+		validateUnlockForSeconds(unlockSeconds,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
 
 	}
