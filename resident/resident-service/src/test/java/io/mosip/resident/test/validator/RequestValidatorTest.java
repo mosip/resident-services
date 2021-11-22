@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -617,6 +618,7 @@ public class RequestValidatorTest {
 
 	}
 
+	@Ignore
 	@Test(expected = InvalidInputException.class)
 	public void testGetStatusValidIndividualId() throws Exception {
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(false);
