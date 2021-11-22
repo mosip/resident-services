@@ -77,11 +77,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String DATETIME_PATTERN = "mosip.utc-datetime-pattern";
 	private static final String STATUS_CHECK_ID = "mosip.resident.service.status.check.id";
 	private static final String STATUS_CHECEK_VERSION = "mosip.resident.service.status.check.version";
-	private static final String REJECTED_MESSAGE = "REJECTED - PLEASE VISIT THE NEAREST CENTER FOR DETAILS.";
-	private static final String REREGISTER_MESSAGE = "FAILED - PLEASE VISIT THE NEAREST CENTER FOR DETAILS.";
-	private static final String RESEND_MESSAGE = "UNDER PROCESSING - PLEASE CHECK BACK AGAIN LATER.";
-	private static final String PROCESSING_MESSAGE = "UNDER PROCESSING - PLEASE CHECK BACK AGAIN LATER.";
-	private static final String WAITING_MESSAGE = "WAITING FOR ADDITIONAL INFORMATION FROM APPLICANT - PLEASE VISIT THE NEAREST CENTER FOR DETAILS.";
+	private static final String PROCESSING_MESSAGE = "UNDER PROCESSING";
+	private static final String WAITING_MESSAGE = "WAITING FOR ADDITIONAL INFORMATION FROM APPLICANT";
 	private static final String PROOF_OF_ADDRESS = "poa";
 	private static final String PROOF_OF_DOB = "pob";
 	private static final String PROOF_OF_RELATIONSHIP = "por";
@@ -211,11 +208,11 @@ public class ResidentServiceImpl implements ResidentService {
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.PROCESSED.name()))
 			return statusCode.toUpperCase();
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.REJECTED.name()))
-			return REJECTED_MESSAGE;
+			return statusCode.toUpperCase();
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.REREGISTER.name()))
-			return REREGISTER_MESSAGE;
+			return statusCode.toUpperCase();
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.RESEND.name()))
-			return RESEND_MESSAGE;
+			return statusCode.toUpperCase();
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.PROCESSING.name()))
 			return PROCESSING_MESSAGE;
 		if (statusCode.equalsIgnoreCase(RegistrationExternalStatusCode.UIN_GENERATED.name()))
