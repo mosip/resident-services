@@ -121,8 +121,7 @@ public class RidStatusServiceTest {
 		
 		responseWrapper.setResponse(list);
 		RegStatusCheckResponseDTO result = residentService.getRidStatus(requestDTO);
-		assertEquals(result.getRidStatus(), "UNDER PROCESSING - PLEASE CHECK BACK AGAIN LATER.");
-
+		assertEquals(result.getRidStatus(), "UNDER PROCESSING");
 	}
 
 	@Test(expected = RIDInvalidException.class)
