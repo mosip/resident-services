@@ -76,6 +76,7 @@ public class ResidentController {
 		return response;
 	}
 
+	@Deprecated
 	@PostMapping(value = "/req/euin")
 	@Operation(summary = "reqEuin", description = "reqEuin", tags = { "resident-controller" })
 	@ApiResponses(value = {
@@ -99,6 +100,7 @@ public class ResidentController {
 				.body((Object) resource);
 	}
 
+	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/print-uin")
 	@Operation(summary = "reqPrintUin", description = "reqPrintUin", tags = { "resident-controller" })
