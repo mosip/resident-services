@@ -114,9 +114,6 @@ public class Utilitiy {
         ResidentErrorCode errorCode;
         errorCode = ResidentErrorCode.INVALID_ID;
         try {
-            logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-                    "Utilitiy::retrieveIdrepoJson()::id repo response for given id::"
-                            + JsonUtil.writeValueAsString(response));
             if (response == null)
                 throw new IdRepoAppException(errorCode.getErrorCode(), errorCode.getErrorMessage(),
                         "In valid response while requesting ID Repositary");
@@ -125,9 +122,8 @@ public class Utilitiy {
                 throw new IdRepoAppException(errorCode.getErrorCode(), errorCode.getErrorMessage(),
                         error.get(0).getMessage());
             }
-            String jsonResponse;
 
-            jsonResponse = JsonUtil.writeValueAsString(response.getResponse());
+           String jsonResponse = JsonUtil.writeValueAsString(response.getResponse());
             JSONObject json = JsonUtil.readValue(jsonResponse, JSONObject.class);
             logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
                     "Utilitiy::retrieveIdrepoJson()::exit");
