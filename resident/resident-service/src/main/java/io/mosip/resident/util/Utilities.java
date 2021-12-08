@@ -105,7 +105,7 @@ public class Utilities {
     /**
      * The get reg processor identity json.
      */
-    @Value("${resident.identityjson}")
+    @Value("${registration.processor.identityjson}")
     private String residentIdentityJson;
 
     /**
