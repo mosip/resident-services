@@ -51,7 +51,7 @@ public class Utilitiy {
 	@Value("${config.server.file.storage.uri}")
 	private String configServerFileStorageURL;
 
-	@Value("${resident.identityjson}")
+	@Value("${registration.processor.identityjson}")
 	private String residentIdentityJson;
 
 	@Autowired
