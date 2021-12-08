@@ -89,7 +89,7 @@ public class Utilities {
 	private String configServerFileStorageURL;
 
 	/** The get reg processor identity json. */
-	@Value("${registration.processor.identityjson}")
+	@Value("${registration-processor-identity.json}")
 	private String residentIdentityJson;
 
 	/** The id repo update. */
