@@ -45,9 +45,9 @@ CMD if [ "$is_glowroot_env" = "present" ]; then \
     rm -rf glowroot.zip ; \
 
     sed -i 's/<service_name>/resident-service/g' glowroot/glowroot.properties ; \
-    java -jar -javaagent:glowroot/glowroot.jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" resident-service.jar ; \
+    java -jar -javaagent:glowroot/glowroot.jar -Dlog4j2.formatMsgNoLookups=true -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" resident-service.jar ; \
     else \
-    java -jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" resident-service.jar ; \
+    java -jar -Dspring.cloud.config.label="${spring_config_label_env}" -Dlog4j2.formatMsgNoLookups=true -Dspring.profiles.active="${active_profile_env}" -Dspring.cloud.config.uri="${spring_config_url_env}" resident-service.jar ; \
     fi
 
 #CMD ["java","-Dspring.cloud.config.label=${spring_config_label_env}","-Dspring.profiles.active=${active_profile_env}","-Dspring.cloud.config.uri=${spring_config_url_env}","-jar","-javaagent:/home/Glowroot/glowroot.jar","resident-service.jar"]
