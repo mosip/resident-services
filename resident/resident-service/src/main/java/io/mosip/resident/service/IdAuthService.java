@@ -15,7 +15,7 @@ public interface IdAuthService {
 	public boolean validateOtp(String transactionID, String individualId, String otp)
 			throws OtpValidationFailedException;
 
-	public boolean authTypeStatusUpdate(String individualId, String individualIdType, List<String> authType,
+	public boolean authTypeStatusUpdate(String individualId, List<String> authType,
 			AuthTypeStatus authTypeStatus, Long unlockForSeconds) throws ApisResourceAccessException;
 	
 	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId,

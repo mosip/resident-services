@@ -206,11 +206,9 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(),
-				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+		String individualId = requestDTO.getRequest().getIndividualId();
+		if (StringUtils.isEmpty(individualId)
+				|| !validateIdvIdWithoutIdTypeForAuthStatusRequests(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("individualId");
@@ -593,7 +591,7 @@ public class RequestValidator {
 
 	}
 
-	public void validateIndividualIdType(String individualIdType, String typeofRequest) {
+	private void validateIndividualIdType(String individualIdType, String typeofRequest) {
 		if (StringUtils.isEmpty(individualIdType) || (!individualIdType.equalsIgnoreCase(IdType.UIN.name())
 				&& !individualIdType.equalsIgnoreCase(IdType.VID.name()))) {
 			audit.setAuditRequestDto(
@@ -612,11 +610,9 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(),
-				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+		String individualId = requestDTO.getRequest().getIndividualId();
+		if (StringUtils.isEmpty(individualId)
+				|| !validateIdvIdWithoutIdTypeForAuthStatusRequests(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("individualId");
@@ -653,6 +649,14 @@ public class RequestValidator {
 				throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
 			}
 
+		}
+	}
+
+	private boolean validateIdvIdWithoutIdTypeForAuthStatusRequests(String individualId) {
+		try {
+			return this.validateUin(individualId) || this.validateVid(individualId);
+		} catch (InvalidIDException e) {
+			return false;
 		}
 	}
 }
