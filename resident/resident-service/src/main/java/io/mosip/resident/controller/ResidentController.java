@@ -1,7 +1,6 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
-import java.util.Objects;
 
 import javax.validation.Valid;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -134,8 +132,6 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAauthLock(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		requestDTO.getRequest().setIndividualIdType(
-				getIdType(requestDTO.getRequest().getIndividualId(), requestDTO.getRequest().getIndividualIdType()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth lock API"));
 		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.LOCK);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK,requestDTO.getRequest().getTransactionID()));
@@ -157,8 +153,6 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAuthUnlock(
 			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
-		requestDTO.getRequest().setIndividualIdType(
-					getIdType(requestDTO.getRequest().getIndividualId(), requestDTO.getRequest().getIndividualIdType()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth unlock  API"));
 		validator.validateAuthUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK,requestDTO.getRequest().getTransactionID()));
@@ -208,17 +202,5 @@ public class ResidentController {
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return response;
-	}
-
-	private String getIdType(String individualId, String individualIdType) {
-		if (Objects.isNull(individualIdType)) {
-			if (validator.validateUin(individualId))
-				return IdType.UIN.name();
-			else if (validator.validateVid(individualId))
-				return IdType.VID.name();
-			else
-				return IdType.RID.name();
-		}
-		return individualIdType;
 	}
 }
