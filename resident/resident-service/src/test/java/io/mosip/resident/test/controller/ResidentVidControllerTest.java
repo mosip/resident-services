@@ -197,7 +197,6 @@ public class ResidentVidControllerTest {
 	public void invalidIndividualIdType() throws Exception {
 
 		ResidentVidRequestDto request = getRequest();
-		request.getRequest().setIndividualIdType(null);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
@@ -428,7 +427,6 @@ public class ResidentVidControllerTest {
 	private static ResidentVidRequestDto getRequest() {
 		VidRequestDto vidRequestDto = new VidRequestDto();
 		vidRequestDto.setIndividualId("9072037081");
-		vidRequestDto.setIndividualIdType(IdType.UIN.name());
 		vidRequestDto.setOtp("974436");
 		vidRequestDto.setTransactionID("1111122222");
 		vidRequestDto.setVidType("Temporary");

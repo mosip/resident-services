@@ -145,10 +145,8 @@ public class RequestValidator {
 
 		validateVidType(requestDto, "Request to generate VID");
 
-		validateIndividualIdType(requestDto.getRequest().getIndividualIdType(), "Request to generate VID");
 
-		if (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-				requestDto.getRequest().getIndividualIdType())) {
+		if (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request to generate VID"));
 
@@ -376,9 +374,9 @@ public class RequestValidator {
 		boolean validation = false;
 		try {
 			if (individualIdType.equalsIgnoreCase(IdType.UIN.toString())) {
-				validation = uinValidator.validateId(individualId);
+				validation = validateUin(individualId);
 			} else if (individualIdType.equalsIgnoreCase(IdType.VID.toString())) {
-				validation = vidValidator.validateId(individualId);
+				validation = validateVid(individualId);
 			} else if (individualIdType.equalsIgnoreCase(IdType.RID.toString())) {
 				//	validation = ridValidator.validateId(individualId); //TODO Refer to https://mosip.atlassian.net/browse/MOSIP-18168 - RID Validation should be updated in the kernel validator. As of now, commenting only the validation part from resident service
 				validation = Boolean.TRUE;
@@ -387,6 +385,22 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 		return validation;
+	}
+
+	public boolean validateVid(String individualId) {
+		try {
+			return vidValidator.validateId(individualId);
+		} catch (InvalidIDException e) {
+			return false;
+		}
+	}
+
+	public boolean validateUin(String individualId) {
+		try {
+			return uinValidator.validateId(individualId);
+		} catch (InvalidIDException e) {
+			return false;
+		}
 	}
 
 	public void validateVidRevokeRequest(RequestWrapper<VidRevokeRequestDTO> requestDto) {
