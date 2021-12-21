@@ -1,5 +1,18 @@
 package io.mosip.resident.validator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -7,18 +20,23 @@ import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.VidType;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentVidRequestDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import java.util.*;
 
 @Component
 public class RequestValidator {
@@ -413,14 +431,8 @@ public class RequestValidator {
 			throw new InvalidInputException("vidStatus");
 		}
 
-        if (StringUtils.isEmpty(requestDto.getRequest().getIndividualIdType())) {
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualIdType", "Request to revoke VID"));
-            throw new InvalidInputException("individualIdType");
-        }
-
 		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-						requestDto.getRequest().getIndividualIdType()))) {
+				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name()))) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
 			throw new InvalidInputException("individualId");
 		}
