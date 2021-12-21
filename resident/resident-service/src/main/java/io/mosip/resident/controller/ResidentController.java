@@ -156,7 +156,8 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseWrapper<ResponseDTO> reqAuthUnlock(
 			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
-			throws ResidentServiceCheckedException {requestDTO.getRequest().setIndividualIdType(
+			throws ResidentServiceCheckedException {
+		requestDTO.getRequest().setIndividualIdType(
 					getIdType(requestDTO.getRequest().getIndividualId(), requestDTO.getRequest().getIndividualIdType()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth unlock  API"));
 		validator.validateAuthUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
