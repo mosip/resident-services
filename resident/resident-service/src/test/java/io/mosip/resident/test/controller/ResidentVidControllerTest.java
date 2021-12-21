@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -48,7 +49,6 @@ import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
-import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -185,19 +185,6 @@ public class ResidentVidControllerTest {
 
 		ResidentVidRequestDto request = getRequest();
 		request.getRequest().setVidType(null);
-		Gson gson = new GsonBuilder().serializeNulls().create();
-		String json = gson.toJson(request);
-
-		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
-	}
-
-	@Test
-	@WithUserDetails("resident")
-	public void invalidIndividualIdType() throws Exception {
-
-		ResidentVidRequestDto request = getRequest();
-		request.getRequest().setIndividualIdType(null);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
@@ -428,7 +415,6 @@ public class ResidentVidControllerTest {
 	private static ResidentVidRequestDto getRequest() {
 		VidRequestDto vidRequestDto = new VidRequestDto();
 		vidRequestDto.setIndividualId("9072037081");
-		vidRequestDto.setIndividualIdType(IdType.UIN.name());
 		vidRequestDto.setOtp("974436");
 		vidRequestDto.setTransactionID("1111122222");
 		vidRequestDto.setVidType("Temporary");

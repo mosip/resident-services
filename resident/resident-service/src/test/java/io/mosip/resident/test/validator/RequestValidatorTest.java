@@ -206,7 +206,6 @@ public class RequestValidatorTest {
 	public void testValidIndividualType() throws Exception {
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setTransactionID("12345");
-		authLockRequestDto.setIndividualIdType(IdType.RID.name());
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
@@ -221,7 +220,6 @@ public class RequestValidatorTest {
 		Mockito.when(vidValidator.validateId(Mockito.any())).thenReturn(false);
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setTransactionID("12345");
-		authLockRequestDto.setIndividualIdType(IdType.VID.name());
 		authLockRequestDto.setIndividualId("12345");
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
@@ -275,7 +273,6 @@ public class RequestValidatorTest {
 	public void testValidAuthTypes() throws Exception {
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setTransactionID("12345");
-		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1232354");
 		authLockRequestDto.setIndividualId("12344567");
 		List<String> authTypes = new ArrayList<String>();
@@ -294,7 +291,6 @@ public class RequestValidatorTest {
 	public void testValidEmptyAuthTypes() throws Exception {
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setTransactionID("12345");
-		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("1232354");
 		authLockRequestDto.setIndividualId("12344567");
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
@@ -583,7 +579,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidTransactionId() throws Exception {
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
-		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setIndividualId("12344567");
 		authLockRequestDto.setOtp("12345");
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
@@ -847,7 +842,6 @@ public class RequestValidatorTest {
 		Mockito.when(vidValidator.validateId(Mockito.any())).thenReturn(false);
 		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
 		authUnLockRequestDto.setTransactionID("12345");
-		authUnLockRequestDto.setIndividualIdType(IdType.VID.name());
 		authUnLockRequestDto.setIndividualId("12345");
 		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
@@ -863,7 +857,6 @@ public class RequestValidatorTest {
 		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
 		authUnLockRequestDto.setTransactionID("12345");
 		authUnLockRequestDto.setIndividualId("12344567");
-		authUnLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authunlock");
@@ -876,7 +869,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidTransactionIdForAuthUnlockRequest() throws Exception {
 		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
-		authUnLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authUnLockRequestDto.setIndividualId("12344567");
 		authUnLockRequestDto.setOtp("12345");
 		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
@@ -892,7 +884,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidunlockForMinutesLessThanZeroForAuthUnlockRequest() throws Exception {
 		AuthUnLockRequestDTO authUnLockRequestDto1 = new AuthUnLockRequestDTO();
-		authUnLockRequestDto1.setIndividualIdType(IdType.UIN.name());
 		authUnLockRequestDto1.setIndividualId("12344567");
 		authUnLockRequestDto1.setOtp("12345");
 		authUnLockRequestDto1.setTransactionID("12345");

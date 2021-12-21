@@ -101,7 +101,6 @@ public class ResidentVidServiceTest {
         requestDto = new VidRequestDto();
         requestDto.setOtp("123");
         requestDto.setTransactionID("12345");
-        requestDto.setIndividualIdType(IdType.UIN.name());
         requestDto.setIndividualId("1234567890");
         requestDto.setVidType("Temporary");
 
