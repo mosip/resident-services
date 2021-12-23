@@ -30,9 +30,6 @@ public class OtpRequestDTO {
 	/** Variable to hold individualID */
 	private String individualId;
 
-	/** Variable to hold partnerID */
-	private String individualIdType;
-
 	private List<String> otpChannel;
 	
 	private Map<String, Object> metadata;
