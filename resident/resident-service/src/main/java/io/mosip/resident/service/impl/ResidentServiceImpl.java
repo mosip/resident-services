@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.kernel.core.util.JsonUtils;
+import io.mosip.resident.dto.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,30 +31,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RegistrationExternalStatusCode;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusRequestDTO;
-import io.mosip.resident.dto.RegistrationStatusResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.RIDInvalidException;
@@ -86,6 +64,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static final String DOCUMENT = "documents";
+	private static final String RESIDENT_MACHINE_PREFIX = "resident_machine_";
+	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 
@@ -106,6 +86,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
+
+	@Autowired
+	private ResidentServiceRestClient restClientService;
 
 	@Autowired
 	private UinCardRePrintService rePrintService;
@@ -588,6 +571,24 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
+
+			// 1. Get key from keymanager
+			SignKeyRequestDTO.SignKeyRequestDTOBuilder signKeyRequestDto = SignKeyRequestDTO.builder().request(SignKeyRequestDTO.SignRequest.builder().serverProfile(SERVER_PROFILE_SIGN_KEY).build());
+			try {
+				SignKeyResponseDTO signKeyResponseDTO = restClientService.postApi(env.getProperty(ApiName.TPMPUBLICKEY.name()), MediaType.APPLICATION_JSON, signKeyRequestDto, SignKeyResponseDTO.class, tokenGenerator.getToken());
+				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
+						"ResidentServiceImpl::reqUinUpdate():: TPMPUBLICKEY POST service call ended with response data "
+								+ JsonUtils.javaObjectToJsonString(signKeyResponseDTO));
+			} catch (Exception e) {
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
+						"ResidentServiceImpl::reqUinUpdate():: TPMPUBLICKEY POST service call"
+								+ ExceptionUtils.getStackTrace(e));
+				throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
+			}
+
+
+			// 2. Get all the machine with a prefix
+			//
 			ResidentUpdateDto regProcReqUpdateDto = new ResidentUpdateDto();
 			regProcReqUpdateDto.setIdValue(dto.getIndividualId());
 			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));

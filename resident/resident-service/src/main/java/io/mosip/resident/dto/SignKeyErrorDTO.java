@@ -1,0 +1,25 @@
+package io.mosip.resident.dto;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "status", "errorMessage", "errorCode" })
+public class SignKeyErrorDTO extends ErrorDTO {
+
+	public SignKeyErrorDTO(String errorcode, String message) {
+		super(errorcode, message);
+	}
+
+	private static final long serialVersionUID = -5261464773892046294L;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	/** The status. */
+	private String status;
+
+}
