@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -31,8 +30,6 @@ import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,12 +78,6 @@ public class ResidentCredentialServiceTest {
         residentCredentialRequestDto.setCredentialType("euin");
         residentCredentialRequestDto.setEncrypt(true);
         residentCredentialRequestDto.setEncryptionKey("abc123");
-
-        NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
-//        notificationResponseDTO.setMessage("Vid successfully generated");
-
-        when(tokenGenerator.getToken()).thenReturn("token");
-        when(notificationService.sendNotification(any(NotificationRequestDto.class))).thenReturn(notificationResponseDTO);
     }
 
     @Test
