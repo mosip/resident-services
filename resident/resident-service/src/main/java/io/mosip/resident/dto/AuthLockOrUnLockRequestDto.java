@@ -6,12 +6,8 @@ package io.mosip.resident.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import io.mosip.resident.constant.IdType;
 import lombok.Data;
 
 /**
@@ -29,7 +25,6 @@ public class AuthLockOrUnLockRequestDto implements Serializable {
 
 	private String transactionID;
 	private String individualId;
-    private String individualIdType;
     private String otp;
 	private List<String> authType;
 

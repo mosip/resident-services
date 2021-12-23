@@ -183,7 +183,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-                requestDto.getIndividualIdType(),
+        		IdType.UIN.name(),
                 "ResidentVidServiceImpl::vidGenerator():: post CREATEVID service call started with request data : "
                         + JsonUtils.javaObjectToJsonString(request));
 
@@ -193,13 +193,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
                             MediaType.APPLICATION_JSON, request, ResponseWrapper.class, tokenGenerator.getToken());
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-                    requestDto.getIndividualIdType(), ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode() + e.getMessage()
+                    IdType.UIN.name(), ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode() + e.getMessage()
                             + ExceptionUtils.getStackTrace(e));
             throw new ApisResourceAccessException("Unable to create vid : " + e.getMessage());
         }
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-                requestDto.getIndividualIdType(),
+        		IdType.UIN.name(),
                 "ResidentVidServiceImpl::vidGenerator():: create Vid response :: " + JsonUtils.javaObjectToJsonString(response));
 
         if (response.getErrors() != null && !response.getErrors().isEmpty()) {
