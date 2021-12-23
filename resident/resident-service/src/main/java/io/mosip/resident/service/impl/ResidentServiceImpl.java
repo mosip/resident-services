@@ -413,7 +413,7 @@ public class ResidentServiceImpl implements ResidentService {
 					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
 				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
-						dto.getIndividualIdType(), dto.getAuthType(), authTypeStatus, unlockForSeconds);
+						dto.getAuthType(), authTypeStatus, unlockForSeconds);
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
 				} else {
@@ -450,7 +450,6 @@ public class ResidentServiceImpl implements ResidentService {
 					e);
 		} finally {
 			NotificationTemplateCode templateCode;
-			EventEnum e;
 			if (authTypeStatus.equals(AuthTypeStatus.LOCK)) {
 				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
 						: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;

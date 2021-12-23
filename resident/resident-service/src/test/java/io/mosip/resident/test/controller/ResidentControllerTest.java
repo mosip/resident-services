@@ -118,7 +118,6 @@ public class ResidentControllerTest {
 
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("5734728510");
-		authLockRequestDto.setIndividualIdType(IdType.UIN.name());
 		authLockRequestDto.setOtp("111111");
 		authLockRequestDto.setTransactionID("1234567898");
 		List<String> authTypes = new ArrayList<>();

@@ -36,6 +36,12 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -76,6 +82,7 @@ public class ResidentController {
 		return response;
 	}
 
+	@Deprecated
 	@PostMapping(value = "/req/euin")
 	@Operation(summary = "reqEuin", description = "reqEuin", tags = { "resident-controller" })
 	@ApiResponses(value = {
@@ -99,6 +106,7 @@ public class ResidentController {
 				.body((Object) resource);
 	}
 
+	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/print-uin")
 	@Operation(summary = "reqPrintUin", description = "reqPrintUin", tags = { "resident-controller" })

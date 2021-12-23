@@ -1,5 +1,18 @@
 package io.mosip.resident.validator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -7,18 +20,23 @@ import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.VidType;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentVidRequestDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import java.util.*;
 
 @Component
 public class RequestValidator {
@@ -145,10 +163,8 @@ public class RequestValidator {
 
 		validateVidType(requestDto, "Request to generate VID");
 
-		validateIndividualIdType(requestDto.getRequest().getIndividualIdType(), "Request to generate VID");
 
-		if (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-				requestDto.getRequest().getIndividualIdType())) {
+		if (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request to generate VID"));
 
@@ -190,11 +206,9 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(),
-				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+		String individualId = requestDTO.getRequest().getIndividualId();
+		if (StringUtils.isEmpty(individualId)
+				|| !validateIdvIdWithoutIdTypeForAuthStatusRequests(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("individualId");
@@ -376,9 +390,9 @@ public class RequestValidator {
 		boolean validation = false;
 		try {
 			if (individualIdType.equalsIgnoreCase(IdType.UIN.toString())) {
-				validation = uinValidator.validateId(individualId);
+				validation = validateUin(individualId);
 			} else if (individualIdType.equalsIgnoreCase(IdType.VID.toString())) {
-				validation = vidValidator.validateId(individualId);
+				validation = validateVid(individualId);
 			} else if (individualIdType.equalsIgnoreCase(IdType.RID.toString())) {
 				//	validation = ridValidator.validateId(individualId); //TODO Refer to https://mosip.atlassian.net/browse/MOSIP-18168 - RID Validation should be updated in the kernel validator. As of now, commenting only the validation part from resident service
 				validation = Boolean.TRUE;
@@ -387,6 +401,22 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 		return validation;
+	}
+
+	public boolean validateVid(String individualId) {
+		try {
+			return vidValidator.validateId(individualId);
+		} catch (InvalidIDException e) {
+			return false;
+		}
+	}
+
+	public boolean validateUin(String individualId) {
+		try {
+			return uinValidator.validateId(individualId);
+		} catch (InvalidIDException e) {
+			return false;
+		}
 	}
 
 	public void validateVidRevokeRequest(RequestWrapper<VidRevokeRequestDTO> requestDto) {
@@ -399,14 +429,8 @@ public class RequestValidator {
 			throw new InvalidInputException("vidStatus");
 		}
 
-        if (StringUtils.isEmpty(requestDto.getRequest().getIndividualIdType())) {
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualIdType", "Request to revoke VID"));
-            throw new InvalidInputException("individualIdType");
-        }
-
 		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(),
-						requestDto.getRequest().getIndividualIdType()))) {
+				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name()))) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
 			throw new InvalidInputException("individualId");
 		}
@@ -567,7 +591,7 @@ public class RequestValidator {
 
 	}
 
-	public void validateIndividualIdType(String individualIdType, String typeofRequest) {
+	private void validateIndividualIdType(String individualIdType, String typeofRequest) {
 		if (StringUtils.isEmpty(individualIdType) || (!individualIdType.equalsIgnoreCase(IdType.UIN.name())
 				&& !individualIdType.equalsIgnoreCase(IdType.VID.name()))) {
 			audit.setAuditRequestDto(
@@ -586,11 +610,9 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(),
-				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| !validateIndividualId(requestDTO.getRequest().getIndividualId(),
-						requestDTO.getRequest().getIndividualIdType())) {
+		String individualId = requestDTO.getRequest().getIndividualId();
+		if (StringUtils.isEmpty(individualId)
+				|| !validateIdvIdWithoutIdTypeForAuthStatusRequests(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("individualId");
@@ -627,6 +649,14 @@ public class RequestValidator {
 				throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
 			}
 
+		}
+	}
+
+	private boolean validateIdvIdWithoutIdTypeForAuthStatusRequests(String individualId) {
+		try {
+			return this.validateUin(individualId) || this.validateVid(individualId);
+		} catch (InvalidIDException e) {
+			return false;
 		}
 	}
 }

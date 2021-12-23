@@ -101,7 +101,7 @@ public class IdAuthServiceTest {
 		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
-		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.LOCK,
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
 				null);
 		assertTrue(isUpdated);
 	}
@@ -112,7 +112,7 @@ public class IdAuthServiceTest {
 		when(restClient.postApi(any(), any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
-		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.LOCK,
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
 				null);
 		assertTrue(isUpdated);
 	}
@@ -268,7 +268,7 @@ public class IdAuthServiceTest {
 		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
-		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.UNLOCK,
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.UNLOCK,
 				null);
 		assertTrue(isUpdated);
 	}
@@ -280,7 +280,7 @@ public class IdAuthServiceTest {
 		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
-		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", "UIN", authTypes, AuthTypeStatus.UNLOCK,
+		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.UNLOCK,
 				2L);
 		assertTrue(isUpdated);
 	}
