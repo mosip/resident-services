@@ -20,7 +20,7 @@ public class SignKeyResponseDTO extends BaseRestResponseDTO {
     /**
      * The response.
      */
-    private List<SignResponseDTO> response;
+    private SignResponseDTO response;
 
     /**
      * The error.

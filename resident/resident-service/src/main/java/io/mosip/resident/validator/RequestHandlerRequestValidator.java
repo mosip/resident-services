@@ -184,7 +184,7 @@ public class RequestHandlerRequestValidator {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public boolean isValidCenter(String centerId) throws BaseCheckedException, IOException {
-		String langCode = getLanguageCode();
+		String langCode = utilities.getLanguageCode();
 		boolean isValidCenter = false;
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(centerId);
@@ -226,20 +226,6 @@ public class RequestHandlerRequestValidator {
 		return isValidCenter;
 	}
 
-	private String getLanguageCode() {
-		String langCode=null;
-		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
-		if (!StringUtils.isEmpty(mandatoryLanguages)) {
-			String[] lanaguages = mandatoryLanguages.split(",");
-			langCode = lanaguages[0];
-		} else {
-			String optionalLanguages = env.getProperty("mosip.optional-languages");
-			String[] lanaguages = optionalLanguages.split(",");
-			langCode = lanaguages[0];
-		}
-		return langCode;
-	}
-
 	/**
 	 * Checks if is valid machine.
 	 *
@@ -252,7 +238,6 @@ public class RequestHandlerRequestValidator {
 	 *             Signals that an I/O exception has occurred.
 	 */
 	public boolean isValidMachine(String machine) throws BaseCheckedException, IOException {
-		String langCode = getLanguageCode();
 		boolean isValidMachine = false;
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(machine);
