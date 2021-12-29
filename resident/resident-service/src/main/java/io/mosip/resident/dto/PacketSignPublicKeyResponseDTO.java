@@ -1,7 +1,6 @@
 package io.mosip.resident.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.List;
 import java.util.Map;
@@ -13,22 +12,25 @@ import java.util.Map;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SignKeyResponseDTO extends BaseRestResponseDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class PacketSignPublicKeyResponseDTO extends BaseRestResponseDTO {
 
     private Map<String, Object> metadata;
 
     /**
      * The response.
      */
-    private SignResponseDTO response;
+    private PacketSignPublicKeyResponse response;
 
     /**
      * The error.
      */
-    private List<SignKeyErrorDTO> errors;
+    private List<PacketSignPublicKeyErrorDTO> errors;
 
     @Data
-    public static class SignResponseDTO {
+    public static class PacketSignPublicKeyResponse {
         /**
          * Variable to hold public key
          */

@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @JsonPropertyOrder({"message", "errorCode"})
-public class SignKeyErrorDTO implements Serializable {
+public class PacketSignPublicKeyErrorDTO implements Serializable {
 
     private static final long serialVersionUID = -5261464773892046294L;
 
