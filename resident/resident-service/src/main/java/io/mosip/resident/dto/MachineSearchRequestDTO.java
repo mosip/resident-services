@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,25 +17,10 @@ import java.util.Map;
  */
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MachineSearchRequestDTO implements Serializable {
-
-    /**
-     * Variable to hold id
-     */
-    private String id;
-
-    /**
-     * Variable to hold version
-     */
-    private String version;
-
-    /**
-     * Variable to hold Request time
-     */
-    private String requesttime;
+public class MachineSearchRequestDTO extends BaseRestRequestDTO {
 
     private Map<String, Object> metadata;
 

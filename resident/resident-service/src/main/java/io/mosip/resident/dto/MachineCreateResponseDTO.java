@@ -1,9 +1,7 @@
 package io.mosip.resident.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,9 +14,10 @@ import java.util.Map;
  */
 
 @Data
-@Builder
-@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class MachineCreateResponseDTO extends BaseRestResponseDTO {
 
     private Map<String, Object> metadata;
