@@ -72,9 +72,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
-	private ResidentServiceRestClient restClientService;
-
-	@Autowired
 	private UinCardRePrintService rePrintService;
 
 	@Autowired
@@ -717,7 +714,7 @@ public class ResidentServiceImpl implements ResidentService {
 		SignKeyResponseDTO signKeyResponseDTO;
 		try {
 			HttpEntity<String> httpEntity = new HttpEntity<>(JsonUtils.javaObjectToJsonString(signKeyRequestDto));
-			signKeyResponseDTO = restClientService.postApi(env.getProperty(ApiName.TPMPUBLICKEY.name()), MediaType.APPLICATION_JSON, httpEntity, SignKeyResponseDTO.class, tokenGenerator.getToken());
+			signKeyResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.TPMPUBLICKEY.name()), MediaType.APPLICATION_JSON, httpEntity, SignKeyResponseDTO.class, tokenGenerator.getToken());
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
 					"ResidentServiceImpl::reqUinUpdate():: TPMPUBLICKEY POST service call ended with response data "
 							+ JsonUtils.javaObjectToJsonString(signKeyResponseDTO));
@@ -753,7 +750,7 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineSearchResponseDTO machineSearchResponseDTO;
 		try {
 			HttpEntity<String> httpEntity = new HttpEntity<>(JsonUtils.javaObjectToJsonString(machineSearchRequestDTO));
-			machineSearchResponseDTO = restClientService.postApi(env.getProperty(ApiName.MACHINESEARCH.name()), MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class, tokenGenerator.getToken());
+			machineSearchResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINESEARCH.name()), MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class, tokenGenerator.getToken());
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call ended with response data "
 							+ JsonUtils.javaObjectToJsonString(machineSearchResponseDTO));
@@ -792,7 +789,7 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineCreateResponseDTO machineCreateResponseDTO;
 		try {
 			HttpEntity<String> httpEntity = new HttpEntity<>(JsonUtils.javaObjectToJsonString(machineCreateRequestDTO));
-			machineCreateResponseDTO = restClientService.postApi(env.getProperty(ApiName.MACHINECREATE.name()), MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class, tokenGenerator.getToken());
+			machineCreateResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINECREATE.name()), MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class, tokenGenerator.getToken());
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINECREATE POST service call ended with response data "
 							+ JsonUtils.javaObjectToJsonString(machineCreateResponseDTO));
