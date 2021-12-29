@@ -110,7 +110,7 @@ public class ResidentUpdateService {
 		byte[] packetZipBytes = null;
 		audit.setAuditRequestDto(EventEnum.CREATE_PACKET);
 		PackerGeneratorFailureDto dto = new PackerGeneratorFailureDto();
-		if (validator.isValidCenter(request.getCenterId()) && validator.isValidMachine(request.getMachineId())
+		if (validator.isValidCenter(request.getCenterId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
 						? validator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.toString(),
 								request.getIdValue())

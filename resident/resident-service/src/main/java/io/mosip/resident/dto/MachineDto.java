@@ -1,61 +1,98 @@
 
 package io.mosip.resident.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Response dto for Machine Detail
- * 
- * @author Sowmya
- * 
  *
+ * @author Sowmya
  */
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MachineDto {
 
-	private String id;
-	/**
-	 * Field for machine name
-	 */
+    private String id;
 
-	private String name;
-	/**
-	 * Field for machine serial number
-	 */
+    /**
+     * Field for machine name
+     */
+    private String name;
 
-	private String serialNum;
-	/**
-	 * Field for machine mac address
-	 */
+    /**
+     * Field for machine serial number
+     */
+    private String serialNum;
 
-	private String macAddress;
-	/**
-	 * Field for machine IP address
-	 */
+    /**
+     * Field for machine mac address
+     */
+    private String macAddress;
 
-	private String ipAddress;
-	/**
-	 * Field for machine specification Id
-	 */
+    /**
+     * Field for machine IP address
+     */
+    private String ipAddress;
 
-	private String machineSpecId;
-	/**
-	 * Field for language code
-	 */
+    /**
+     * Field for machine specification Id
+     */
+    private String machineSpecId;
 
-	private String langCode;
-	/**
-	 * Field for is active
-	 */
+    /**
+     * Field for language code
+     */
+    private String langCode;
 
-	private Boolean isActive;
-	/**
-	 * Field for is validity of the Device
-	 */
+    /**
+     * Field for is active
+     */
+    private Boolean isActive;
 
-	private String validityDateTime;
-	
+    /**
+     * Field for is validity of the Device
+     */
+    private String validityDateTime;
 
+    /**
+     * Field for zone code
+     */
+    private String zoneCode;
+
+    /**
+     * Field for zone
+     */
+    private String zone;
+
+    /**
+     * Field for Machine Type Name
+     */
+    private String machineTypeName;
+
+    /**
+     * Field for Map Status
+     */
+    private String mapStatus;
+
+    /**
+     * Field for registration center id
+     */
+    private String regCenterId;
+
+    /**
+     * Field for public key
+     */
+    private String publicKey;
+
+    /**
+     * Field for sign public key
+     */
+    private String signPublicKey;
 
 }
