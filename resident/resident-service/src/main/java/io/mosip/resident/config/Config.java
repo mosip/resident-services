@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+
 import javax.servlet.Filter;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -71,5 +73,10 @@ public class Config {
 		VelocityEngine engine = new VelocityEngine(properties);
 		engine.init();
 		return new TemplateManagerImpl(engine);
+	}
+	
+	@Bean
+	public AfterburnerModule afterburnerModule() {
+	  return new AfterburnerModule();
 	}
 }
