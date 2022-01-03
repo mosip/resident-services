@@ -18,6 +18,9 @@ import org.json.simple.JSONObject;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
 import io.mosip.resident.dto.JsonValue;
 
@@ -31,7 +34,14 @@ public class JsonUtil {
 
 	private static final String LANGUAGE = "language";
 	private static final String VALUE = "value";
-	private static ObjectMapper objectMapper = new ObjectMapper();
+	private static ObjectMapper objectMapper;
+
+	static {
+		objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.registerModule(new AfterburnerModule());
+		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+	}
 
 	private JsonUtil() {
 
