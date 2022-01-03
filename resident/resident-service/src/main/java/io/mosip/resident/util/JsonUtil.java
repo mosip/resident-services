@@ -40,7 +40,6 @@ public class JsonUtil {
 		objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
 		objectMapper.registerModule(new AfterburnerModule());
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 	}
 
