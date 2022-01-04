@@ -14,8 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
@@ -33,7 +32,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RidStatusServiceTest {
@@ -47,9 +45,6 @@ public class RidStatusServiceTest {
 
 	@Mock
 	Environment env;
-
-	@Mock
-	TokenGenerator tokenGenerator;
 
 	@Mock
     NotificationService notificationService;
@@ -90,7 +85,7 @@ public class RidStatusServiceTest {
 		list.add(response);
 		responseWrapper.setResponse(list);
 
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(responseWrapper);
+		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
@@ -137,10 +132,10 @@ public class RidStatusServiceTest {
 
 		}
 		try {
-			Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(null);
+			Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(null);
 			residentService.getRidStatus(requestDTO);
 		} catch (RIDInvalidException e) {
-			Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any()))
+			Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any()))
 					.thenReturn(responseWrapper);
 		}
 		List<ErrorDTO> errors = new ArrayList<>();
@@ -162,7 +157,7 @@ public class RidStatusServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void apiResourceClientExceptionTest() throws ApisResourceAccessException, IOException {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any()))
+		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException("http client exp", clientExp));
 		residentService.getRidStatus(requestDTO);
 	}
@@ -170,23 +165,16 @@ public class RidStatusServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void apiResourceServerExceptionTest() throws ApisResourceAccessException, IOException {
 		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any()))
+		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException("http client exp", serverExp));
 		residentService.getRidStatus(requestDTO);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void apiResourceUnknownExceptionTest() throws ApisResourceAccessException, IOException {
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(), any()))
+		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException("http client exp", new RuntimeException()));
 		residentService.getRidStatus(requestDTO);
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void iOExceptionTest() throws IOException {
-		Mockito.when(tokenGenerator.getToken()).thenThrow(new IOException());
-		residentService.getRidStatus(requestDTO);
-
 	}
 
 }

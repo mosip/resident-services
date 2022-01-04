@@ -41,12 +41,6 @@ public class Config {
 	}
 
 	@Bean
-	@Primary
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
-
-	@Bean
 	public Filter getReqResFilter() {
 		return new ReqResFilter();
 	}

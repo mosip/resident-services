@@ -54,7 +54,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
 
 @Component
@@ -90,9 +89,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
     @Autowired
     private NotificationService notificationService;
-
-    @Autowired
-    private TokenGenerator tokenGenerator;
 
     @Autowired
     private IdAuthService idAuthService;
@@ -190,7 +186,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         try {
             response = (ResponseWrapper) residentServiceRestClient
                     .postApi(env.getProperty(ApiName.IDAUTHCREATEVID.name()),
-                            MediaType.APPLICATION_JSON, request, ResponseWrapper.class, tokenGenerator.getToken());
+                            MediaType.APPLICATION_JSON, request, ResponseWrapper.class);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
                     IdType.UIN.name(), ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode() + e.getMessage()
@@ -324,7 +320,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 			response = (ResponseWrapper) residentServiceRestClient.patchApi(
 					env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + vid, MediaType.APPLICATION_JSON, request,
-					ResponseWrapper.class, tokenGenerator.getToken());
+					ResponseWrapper.class);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					requestDto.getIndividualIdType(), ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()

@@ -70,9 +70,6 @@ public class UinCardRePrintServiceTest {
     private ResidentServiceRestClient restClientService;
 
     @Mock
-    private TokenGenerator tokenGenerator;
-
-    @Mock
     private SyncAndUploadService syncUploadEncryptionService;
 
     @Mock
@@ -135,10 +132,9 @@ public class UinCardRePrintServiceTest {
         packetInfo.setSource("source");
 		Mockito.when(packetWriter.createPacket(any())).thenReturn(Lists.newArrayList(packetInfo));
 
-        Mockito.when(tokenGenerator.getToken()).thenReturn("token");
         Mockito.when(mapper.writeValueAsString(any())).thenReturn("String");
         Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenReturn(ridJson);
-        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class), any())).thenReturn(new ResponseWrapper<>());
+        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class))).thenReturn(new ResponseWrapper<>());
 
         Mockito.when(env.getProperty(any())).thenReturn("property");
 
@@ -176,7 +172,7 @@ public class UinCardRePrintServiceTest {
     public void testApiResourceException() throws IOException, BaseCheckedException {
 
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
-                any(Class.class), any())).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
+                any(Class.class))).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
 
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);
     }
@@ -185,7 +181,7 @@ public class UinCardRePrintServiceTest {
     public void testPacketCreatorException() throws IOException, BaseCheckedException {
 
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
-                any(Class.class), any())).thenThrow(new PacketCreatorException("code", "message"));
+                any(Class.class))).thenThrow(new PacketCreatorException("code", "message"));
 
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);
     }
@@ -201,7 +197,7 @@ public class UinCardRePrintServiceTest {
         vidResDTO.setVid("2345");
         vidResponseDTO1.setResponse(vidResDTO);
 
-        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(vidResponseDTO1);
+        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class))).thenReturn(vidResponseDTO1);
         Mockito.when(utilities.getUinByVid(any())).thenReturn("12345");
 
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);
@@ -220,7 +216,7 @@ public class UinCardRePrintServiceTest {
         vidResDTO.setVid("2345");
         vidResponseDTO1.setResponse(vidResDTO);
 
-        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(vidResponseDTO1);
+        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class))).thenReturn(vidResponseDTO1);
         Mockito.when(utilities.getUinByVid(any())).thenReturn("12345");
 
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);
@@ -237,7 +233,7 @@ public class UinCardRePrintServiceTest {
         ErrorDTO errorDTO = new ErrorDTO("", "");
         vidResponseDTO1.setErrors(Lists.newArrayList(errorDTO));
 
-        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(vidResponseDTO1);
+        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class))).thenReturn(vidResponseDTO1);
         Mockito.when(utilities.getUinByVid(any())).thenReturn("12345");
 
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);

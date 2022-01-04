@@ -33,7 +33,7 @@ public class AuditUtil {
 	
 
 	@Autowired
-	@Qualifier("restTemplate")
+	@Qualifier("selfTokenRestTemplate")
 	RestTemplate restTemplate;
 	
 	@Value("${mosip.kernel.masterdata.audit-url}")

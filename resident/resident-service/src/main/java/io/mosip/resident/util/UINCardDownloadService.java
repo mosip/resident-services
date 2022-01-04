@@ -27,9 +27,6 @@ public class UINCardDownloadService {
     @Autowired
     private ResidentServiceRestClient residentServiceRestClient;
 
-    @Autowired
-    private TokenGenerator tokenGenerator;
-    
     private static final String PRINT_ID="mosip.registration.processor.print.id";
     private static final String PRINT_VERSION="mosip.registration.processor.application.version";
     private static final String ERRORS="errors";
@@ -47,7 +44,7 @@ public class UINCardDownloadService {
 		byte[]	response;
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),
-					null, request, byte[].class, tokenGenerator.getToken());
+					null, request, byte[].class);
 			if(response ==null) {
 				throw new ApisResourceAccessException();
 			}
