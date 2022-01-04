@@ -68,9 +68,6 @@ public class ResidentServiceResUpdateTest {
 	Environment env;
 
 	@Mock
-	private TokenGenerator tokenGenerator;
-
-	@Mock
     NotificationService notificationService;
 	@Mock
 	private Utilitiy utility;
@@ -115,8 +112,7 @@ public class ResidentServiceResUpdateTest {
 		response.setRegistrationId("10008100670001720191120095702");
 		response.setStatus("success");
 		responseWrapper.setResponse(response);
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(),
-				any())).thenReturn(responseWrapper);
+		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent");
 		notificationResponse.setStatus("success");

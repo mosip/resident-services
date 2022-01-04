@@ -63,9 +63,6 @@ public class ResidentServiceReqReprintTest {
 	Environment env;
 
 	@Mock
-	private TokenGenerator tokenGenerator;
-
-	@Mock
     NotificationService notificationService;
 	
 	@Mock
@@ -75,7 +72,6 @@ public class ResidentServiceReqReprintTest {
 
 	@Before
 	public void setUp() throws IOException, BaseCheckedException {
-		Mockito.when(tokenGenerator.getToken()).thenReturn("assagfdhsfiuhewqedsavckdsann");
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenReturn(true);
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
@@ -171,8 +167,7 @@ public class ResidentServiceReqReprintTest {
 		reprintResp.setRegistrationId("10008200070004620191203115734");
 		reprintResp.setStatus("success");
 		response.setResponse(reprintResp);
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any(),
-				any())).thenReturn(response);
+		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent to registered contact details");
 		notificationResponse.setStatus("success");

@@ -61,7 +61,6 @@ import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 @Component
 public class IdAuthServiceImpl implements IdAuthService {
@@ -85,9 +84,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Autowired
 	private KeyGenerator keyGenerator;
-
-	@Autowired
-	private TokenGenerator tokenGenerator;
 
 	@Autowired
 	private Environment environment;
@@ -174,7 +170,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		AuthResponseDTO response;
 		try {
 			response = (AuthResponseDTO) restClient.postApi(environment.getProperty(ApiName.INTERNALAUTH.name()),
-					MediaType.APPLICATION_JSON, authRequestDTO, AuthResponseDTO.class, tokenGenerator.getToken());
+					MediaType.APPLICATION_JSON, authRequestDTO, AuthResponseDTO.class);
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 					"IdAuthServiceImpl::internelOtpAuth()::INTERNALAUTH POST service call ended with response data "
@@ -207,8 +203,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		UriComponents uriComponent = builder.build(false).encode();
 
 		try {
-			responseWrapper = (ResponseWrapper<?>) restClient.getApi(uriComponent.toUri(), ResponseWrapper.class,
-					tokenGenerator.getToken());
+			responseWrapper = (ResponseWrapper<?>) restClient.getApi(uriComponent.toUri(), ResponseWrapper.class);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), refId,
 					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
@@ -271,8 +266,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		;
 		try {
 			response = restClient.postApi(environment.getProperty(ApiName.AUTHTYPESTATUSUPDATE.name()),
-					MediaType.APPLICATION_JSON, authTypeStatusRequestDto, AuthTypeStatusResponseDto.class,
-					tokenGenerator.getToken());
+					MediaType.APPLICATION_JSON, authTypeStatusRequestDto, AuthTypeStatusResponseDto.class);
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 					"IdAuthServiceImp::authLock():: AUTHLOCK POST service call ended with response data "
@@ -313,7 +307,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		}
 		try {
 			autnTxnResponseDto = (AutnTxnResponseDto) restClient.getApi(ApiName.INTERNALAUTHTRANSACTIONS, pathsegments,
-					queryParamName, queryParamValue, AutnTxnResponseDto.class, tokenGenerator.getToken());
+					queryParamName, queryParamValue, AutnTxnResponseDto.class);
 
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,

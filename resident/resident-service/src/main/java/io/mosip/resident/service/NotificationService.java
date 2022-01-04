@@ -45,7 +45,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 
@@ -71,9 +70,6 @@ public class NotificationService {
 
 	@Autowired
 	private ResidentServiceRestClient restClient;
-
-	@Autowired
-	private TokenGenerator tokenGenerator;
 
 	@Autowired
 	private Utilitiy utility;
@@ -154,7 +150,7 @@ public class NotificationService {
 		pathSegments.add(templatetypecode);
 		try {
 			ResponseWrapper<TemplateResponseDto> resp = (ResponseWrapper<TemplateResponseDto>) restClient.getApi(
-					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class, tokenGenerator.getToken());
+					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class);
 			if (resp == null || resp.getErrors() != null && !resp.getErrors().isEmpty()) {
 				audit.setAuditRequestDto(EventEnum.TEMPLATE_EXCEPTION);
 				throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorCode(),
@@ -244,7 +240,7 @@ public class NotificationService {
 		ResponseWrapper<NotificationResponseDTO> resp;
 		try {
 			resp = restClient.postApi(env.getProperty(ApiName.SMSNOTIFIER.name()), MediaType.APPLICATION_JSON, req,
-					ResponseWrapper.class, tokenGenerator.getToken());
+					ResponseWrapper.class);
 			if (nullCheckForResponse(resp)) {
 				throw new ResidentServiceException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
 						ResidentErrorCode.INVALID_API_RESPONSE.getErrorMessage() + " SMSNOTIFIER API"
@@ -338,7 +334,7 @@ public class NotificationService {
 			ResponseWrapper<NotificationResponseDTO> response;
 
 			response = restClient.postApi(builder.build().toUriString(), MediaType.MULTIPART_FORM_DATA, params,
-					ResponseWrapper.class, tokenGenerator.getToken());
+					ResponseWrapper.class);
 			if (nullCheckForResponse(response)) {
 				throw new ResidentServiceException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
 						ResidentErrorCode.INVALID_API_RESPONSE.getErrorMessage() + " EMAILNOTIFIER API"

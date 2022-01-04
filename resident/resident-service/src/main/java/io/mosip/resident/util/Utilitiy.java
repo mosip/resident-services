@@ -45,18 +45,15 @@ public class Utilitiy {
     @Autowired
     private ResidentServiceRestClient residentServiceRestClient;
 
-    @Autowired
-    private TokenGenerator tokenGenerator;
-
     @Value("${config.server.file.storage.uri}")
     private String configServerFileStorageURL;
 
     @Value("${registration.processor.identityjson}")
     private String residentIdentityJson;
 
-    @Autowired
-    @Qualifier("restTemplate")
-    private RestTemplate residentRestTemplate;
+	@Autowired
+	@Qualifier("selfTokenRestTemplate")
+	private RestTemplate residentRestTemplate;
 
     @Autowired
     private Environment env;
@@ -81,12 +78,8 @@ public class Utilitiy {
         ResponseWrapper<IdRepoResponseDto> response = null;
         try {
             response = (ResponseWrapper<IdRepoResponseDto>) residentServiceRestClient.getApi(
-                    ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class,
-                    tokenGenerator.getToken());
+                    ApiName.IDREPOGETIDBYUIN, pathsegments, "", null, ResponseWrapper.class);
 
-        } catch (IOException e) {
-            throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
-                    ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
         } catch (ApisResourceAccessException e) {
             if (e.getCause() instanceof HttpClientErrorException) {
                 HttpClientErrorException httpClientException = (HttpClientErrorException) e.getCause();

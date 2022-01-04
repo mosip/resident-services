@@ -46,19 +46,10 @@ public class SyncAndUploadServiceTest {
     private Environment env;
 
     @Mock
-    private IdSchemaUtil idSchemaUtil;
-
-    @Mock
-    private Utilities utilities;
-
-    @Mock
     private ResidentServiceRestClient restClientService;
 
     @Mock
     private EncryptorUtil encryptorUtil;
-
-    @Mock
-    private TokenGenerator tokenGenerator;
 
     @Mock
     Gson gson;
@@ -94,9 +85,8 @@ public class SyncAndUploadServiceTest {
         Mockito.when(gsonBuilder.create()).thenReturn(gson);
         //PowerMockito.whenNew(Gson.class).withNoArguments().thenReturn(gson);
         Mockito.when(env.getProperty(any())).thenReturn("property");
-        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(new String(""));
+        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class))).thenReturn(new String(""));
         Mockito.when(encryptorUtil.encrypt(any(), any())).thenReturn("encrypted request String");
-        Mockito.when(tokenGenerator.getToken()).thenReturn("sbfdsafuadfkbdsf");
 
         PacketReceiverSubResponseDTO packetReceiverSubResponseDTO = new PacketReceiverSubResponseDTO();
         packetReceiverSubResponseDTO.setStatus(status);
@@ -134,14 +124,7 @@ public class SyncAndUploadServiceTest {
 
     @Test(expected = BaseCheckedException.class)
     public void testApisResourceAccessException() throws BaseCheckedException {
-        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException("ApisResourceAccessException"));
-
-        PacketGeneratorResDto response = syncAndUploadService.uploadUinPacket(registartionId, creationTime, regType, packetZipBytes);
-    }
-
-    @Test(expected = BaseCheckedException.class)
-    public void testIOException() throws BaseCheckedException, IOException {
-        Mockito.when(tokenGenerator.getToken()).thenThrow(new IOException("io exception"));
+        Mockito.when(restClientService.postApi(any(), any(), any(), any(Class.class))).thenThrow(new ApisResourceAccessException("ApisResourceAccessException"));
 
         PacketGeneratorResDto response = syncAndUploadService.uploadUinPacket(registartionId, creationTime, regType, packetZipBytes);
     }
@@ -153,12 +136,4 @@ public class SyncAndUploadServiceTest {
 
         PacketGeneratorResDto response = syncAndUploadService.uploadUinPacket(registartionId, creationTime, regType, packetZipBytes);
     }
-
-    @Test(expected = BaseCheckedException.class)
-    public void testIOExceptionForPacketUpload() throws BaseCheckedException, IOException {
-        Mockito.when(tokenGenerator.getToken()).thenReturn("token").thenThrow(new IOException("io exception"));
-
-        PacketGeneratorResDto response = syncAndUploadService.uploadUinPacket(registartionId, creationTime, regType, packetZipBytes);
-    }
-
 }

@@ -11,8 +11,6 @@ import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.Filter;
 import java.nio.charset.StandardCharsets;
@@ -39,12 +37,6 @@ public class Config {
         corsBean.setOrder(1);
         return corsBean;
     }
-
-	@Bean
-	@Primary
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
 
     @Bean
     public Filter getReqResFilter() {

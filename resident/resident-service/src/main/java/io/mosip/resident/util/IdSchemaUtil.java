@@ -44,9 +44,6 @@ public class IdSchemaUtil {
     private Environment env;
 
     @Autowired
-    private TokenGenerator tokenGenerator;
-
-    @Autowired
     ResidentServiceRestClient residentServiceRestClient;
 
     public List<String> getDefaultFields(Double schemaVersion) throws JSONException, ApisResourceAccessException, IOException {
@@ -95,7 +92,7 @@ public class IdSchemaUtil {
             return idschema.get(version);
 
         String response = (String) residentServiceRestClient.getApi(ApiName.MIDSCHEMAURL, null,
-                Lists.newArrayList(SCHEMA_VERSION_QUERY_PARAM), Lists.newArrayList(version), String.class, tokenGenerator.getToken());
+                Lists.newArrayList(SCHEMA_VERSION_QUERY_PARAM), Lists.newArrayList(version), String.class);
 
         if (response == null)
             throw new ApisResourceAccessException("Could not fetch idschema with version : " + version);

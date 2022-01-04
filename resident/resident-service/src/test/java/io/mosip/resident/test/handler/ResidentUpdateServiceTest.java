@@ -66,9 +66,6 @@ public class ResidentUpdateServiceTest {
     private ResidentServiceRestClient restClientService;
 
     @Mock
-    private TokenGenerator tokenGenerator;
-
-    @Mock
     private SyncAndUploadService syncUploadEncryptionService;
 
     @Mock
@@ -127,10 +124,9 @@ public class ResidentUpdateServiceTest {
         packetInfo.setSource("source");
 		Mockito.when(packetWriter.createPacket(any())).thenReturn(Lists.newArrayList(packetInfo));
 
-        Mockito.when(tokenGenerator.getToken()).thenReturn("token");
         Mockito.when(mapper.writeValueAsString(any())).thenReturn("String");
         Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenReturn(ridJson);
-        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class), any())).thenReturn(new ResponseWrapper<>());
+        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class))).thenReturn(new ResponseWrapper<>());
 
         Mockito.when(env.getProperty(any())).thenReturn("property");
 
@@ -163,7 +159,7 @@ public class ResidentUpdateServiceTest {
     public void testApiResourceException() throws IOException, BaseCheckedException {
 
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
-                any(Class.class), any())).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
+                any(Class.class))).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
 
         PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto);
     }
@@ -172,7 +168,7 @@ public class ResidentUpdateServiceTest {
     public void testPacketCreatorException() throws IOException, BaseCheckedException {
 
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
-                any(Class.class), any())).thenThrow(new PacketCreatorException("code", "message"));
+                any(Class.class))).thenThrow(new PacketCreatorException("code", "message"));
 
         PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto);
     }
