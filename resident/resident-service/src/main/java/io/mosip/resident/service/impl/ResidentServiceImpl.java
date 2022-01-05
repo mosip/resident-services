@@ -4,7 +4,6 @@ import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.*;
@@ -66,9 +65,6 @@ public class ResidentServiceImpl implements ResidentService {
 	NotificationService notificationService;
 
 	@Autowired
-	private TokenGenerator tokenGenerator;
-
-	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
@@ -121,7 +117,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			responseWrapper = (RegistrationStatusResponseDTO) residentServiceRestClient.postApi(
 					env.getProperty(ApiName.REGISTRATIONSTATUSSEARCH.name()), MediaType.APPLICATION_JSON, dto,
-					RegistrationStatusResponseDTO.class, tokenGenerator.getToken());
+					RegistrationStatusResponseDTO.class);
 			if (responseWrapper == null) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(), "In valid response from Registration status API");
@@ -152,11 +148,6 @@ public class ResidentServiceImpl implements ResidentService {
 			response.setRidStatus(status);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_STATUS_RESPONSE, status));
 
-		} catch (IOException e) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithDynamicName(EventEnum.IO_EXCEPTION, "checking RID status"));
-			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithDynamicName(EventEnum.API_RESOURCE_UNACCESS, "checking RID status"));
@@ -707,7 +698,7 @@ public class ResidentServiceImpl implements ResidentService {
 		PacketSignPublicKeyResponseDTO signKeyResponseDTO;
 		try {
 			HttpEntity<PacketSignPublicKeyRequestDTO> httpEntity = new HttpEntity<>(signKeyRequestDto);
-			signKeyResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name()), MediaType.APPLICATION_JSON, httpEntity, PacketSignPublicKeyResponseDTO.class, tokenGenerator.getToken());
+			signKeyResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name()), MediaType.APPLICATION_JSON, httpEntity, PacketSignPublicKeyResponseDTO.class);
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
 					"ResidentServiceImpl::reqUinUpdate():: PACKETSIGNPUBLICKEY POST service call ended with response data "
 							+ signKeyResponseDTO.toString());
@@ -743,7 +734,7 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineSearchResponseDTO machineSearchResponseDTO;
 		try {
 			HttpEntity<MachineSearchRequestDTO> httpEntity = new HttpEntity<>(machineSearchRequestDTO);
-			machineSearchResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINESEARCH.name()), MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class, tokenGenerator.getToken());
+			machineSearchResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINESEARCH.name()), MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class);
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call ended with response data "
 							+ machineSearchResponseDTO.toString());
@@ -782,7 +773,7 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineCreateResponseDTO machineCreateResponseDTO;
 		try {
 			HttpEntity<MachineCreateRequestDTO> httpEntity = new HttpEntity<>(machineCreateRequestDTO);
-			machineCreateResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINECREATE.name()), MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class, tokenGenerator.getToken());
+			machineCreateResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINECREATE.name()), MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class);
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINECREATE POST service call ended with response data "
 							+ machineCreateResponseDTO.toString());

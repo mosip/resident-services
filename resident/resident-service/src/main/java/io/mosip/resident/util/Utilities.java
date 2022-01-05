@@ -69,7 +69,7 @@ public class Utilities {
 	private String provider;
 
 	@Autowired
-	@Qualifier("restTemplate")
+	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired
@@ -80,9 +80,6 @@ public class Utilities {
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
-
-	@Autowired
-	private TokenGenerator tokenGenerator;
 
 	/** The config server file storage URL. */
 	@Value("${config.server.file.storage.uri}")
@@ -127,7 +124,7 @@ public class Utilities {
 			IdResponseDTO1 idResponseDto;
 
 			idResponseDto = (IdResponseDTO1) residentServiceRestClient.getApi(ApiName.IDREPOGETIDBYUIN, pathSegments, "", "",
-					IdResponseDTO1.class, tokenGenerator.getToken());
+					IdResponseDTO1.class);
 			if (idResponseDto == null) {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
@@ -180,7 +177,7 @@ public class Utilities {
 				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
 
 		response = (VidResponseDTO1) residentServiceRestClient.getApi(ApiName.GETUINBYVID, pathSegments, "", "",
-				VidResponseDTO1.class, tokenGenerator.getToken());
+				VidResponseDTO1.class);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::getUinByVid():: RETRIEVEIUINBYVID GET service call ended successfully");
 
@@ -214,7 +211,7 @@ public class Utilities {
 			idRequestDTO.setVersion(vidVersion);
 
 			idResponse = (IdResponseDTO) residentServiceRestClient.patchApi(env.getProperty(ApiName.IDREPOSITORY.name()), MediaType.APPLICATION_JSON, idRequestDTO,
-					IdResponseDTO.class, tokenGenerator.getToken());
+					IdResponseDTO.class);
 
 			if (idResponse != null && idResponse.getResponse() != null) {
 
@@ -256,7 +253,7 @@ public class Utilities {
 			IdResponseDTO1 idResponseDto;
 
 			idResponseDto = (IdResponseDTO1) residentServiceRestClient.getApi(ApiName.IDREPOGETIDBYUIN, pathSegments, "", "",
-					IdResponseDTO1.class, tokenGenerator.getToken());
+					IdResponseDTO1.class);
 			if (idResponseDto == null) {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");

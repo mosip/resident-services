@@ -38,9 +38,6 @@ public class EncryptorUtil {
     @Autowired
     private ObjectMapper mapper;
 
-    @Autowired
-    private TokenGenerator tokenGenerator;
-
     @Value("${mosip.kernel.cryptomanager.request_version:v1}")
     private String APPLICATION_VERSION;
 
@@ -82,7 +79,7 @@ public class EncryptorUtil {
             request.setVersion(APPLICATION_VERSION);
 
             ResponseWrapper responseDto = restClientService
-                    .postApi(env.getProperty(ApiName.ENCRYPTURL.name()), MediaType.APPLICATION_JSON, request, ResponseWrapper.class, tokenGenerator.getToken());
+                    .postApi(env.getProperty(ApiName.ENCRYPTURL.name()), MediaType.APPLICATION_JSON, request, ResponseWrapper.class);
 
             if (responseDto != null && !CollectionUtils.isEmpty(responseDto.getErrors())) {
                 ServiceError error = (ServiceError) responseDto.getErrors().get(0);

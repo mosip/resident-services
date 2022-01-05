@@ -49,9 +49,6 @@ public class ResidentCredentialServiceTest {
     private NotificationService notificationService;
 
     @Mock
-    private TokenGenerator tokenGenerator;
-
-    @Mock
     private IdAuthService idAuthService;
 
     @Mock
@@ -104,8 +101,8 @@ public class ResidentCredentialServiceTest {
 
         String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + residentCredentialRequestDto.getIssuer();
         URI partnerUri = URI.create(partnerUrl);
-        when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class, tokenGenerator.getToken())).thenReturn(partnerResponseDtoResponseWrapper);
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(), any())).thenReturn(response);
+        when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
         ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.reqCredential(residentCredentialRequestDto);
         assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());

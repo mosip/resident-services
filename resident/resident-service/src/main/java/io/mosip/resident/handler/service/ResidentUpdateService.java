@@ -272,7 +272,7 @@ public class ResidentUpdateService {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					"", "PacketGeneratorServiceImpl::generateRegistrationId():: RIDgeneration Api call started");
 			responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.RIDGENERATION, pathsegments, "", "",
-					ResponseWrapper.class, tokenGenerator.getToken());
+					ResponseWrapper.class);
 			if (CollectionUtils.isEmpty(responseWrapper.getErrors())) {
 				ridJson = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()), JSONObject.class);
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),

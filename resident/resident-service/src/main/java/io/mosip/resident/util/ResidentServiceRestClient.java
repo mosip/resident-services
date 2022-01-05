@@ -19,11 +19,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The Class RestApiClient.
@@ -41,7 +40,7 @@ public class ResidentServiceRestClient {
 	RestTemplateBuilder builder;
 
 	@Autowired
-    @Qualifier("restTemplate")
+	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
 
 	@Autowired
@@ -52,16 +51,14 @@ public class ResidentServiceRestClient {
 	 *
 	 * @param <T>
 	 *            the generic type
-	 * @param token
-	 *            the token
 	 * @param responseType
 	 *            the response type
 	 * @return the api
 	 * @throws Exception
 	 */
-	public <T> T getApi(URI uri, Class<?> responseType, String token) throws ApisResourceAccessException {
+	public <T> T getApi(URI uri, Class<?> responseType) throws ApisResourceAccessException {
 		try {
-			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null, token), responseType)
+			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -72,7 +69,7 @@ public class ResidentServiceRestClient {
 	}
 
 	public Object getApi(ApiName apiName, List<String> pathsegments, String queryParamName, String queryParamValue,
-			Class<?> responseType, String token) throws ApisResourceAccessException {
+			Class<?> responseType) throws ApisResourceAccessException {
 
 		Object obj = null;
 		String apiHostIpPort = environment.getProperty(apiName.name());
@@ -100,7 +97,7 @@ public class ResidentServiceRestClient {
 			try {
 
 				uriComponents = builder.build(false).encode();
-				obj = getApi(uriComponents.toUri(), responseType, token);
+				obj = getApi(uriComponents.toUri(), responseType);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -114,7 +111,7 @@ public class ResidentServiceRestClient {
 
 
 	public Object getApi(ApiName apiName, List<String> pathsegments, List<String> queryParamName, List<Object> queryParamValue,
-						 Class<?> responseType, String token) throws ApisResourceAccessException {
+						 Class<?> responseType) throws ApisResourceAccessException {
 
 		Object obj = null;
 		String apiHostIpPort = environment.getProperty(apiName.name());
@@ -140,7 +137,7 @@ public class ResidentServiceRestClient {
 			try {
 
 				uriComponents = builder.build(false).encode();
-				obj = getApi(uriComponents.toUri(), responseType, token);
+				obj = getApi(uriComponents.toUri(), responseType);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -153,7 +150,7 @@ public class ResidentServiceRestClient {
 	}
 
 	@SuppressWarnings({ "unchecked", "null" })
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType, String token)
+	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType)
 			throws Exception {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());
@@ -165,7 +162,7 @@ public class ResidentServiceRestClient {
 
 			URI urlWithPath = builder.build(pathsegments);
 			try {
-				obj = getApi(urlWithPath, responseType, token);
+				obj = getApi(urlWithPath, responseType);
 
 			} catch (Exception e) {
 				throw new Exception(e);
@@ -176,12 +173,12 @@ public class ResidentServiceRestClient {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass, String token)
+	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType, token),
+			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 			return response;
 
@@ -207,14 +204,14 @@ public class ResidentServiceRestClient {
 	 * @return the t
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass, String token)
+	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 
 		T result = null;
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType, token),
+			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
 		} catch (Exception e) {
@@ -227,8 +224,8 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	public <T> T patchApi(String uri, Object requestType, Class<?> responseClass, String token) throws Exception {
-		return patchApi(uri, null, requestType, responseClass, token);
+	public <T> T patchApi(String uri, Object requestType, Class<?> responseClass) throws Exception {
+		return patchApi(uri, null, requestType, responseClass);
 	}
 
 	/**
@@ -248,7 +245,7 @@ public class ResidentServiceRestClient {
 	 *             the exception
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType, String token)
+	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType)
 			throws ApisResourceAccessException {
 
 		T result = null;
@@ -258,7 +255,7 @@ public class ResidentServiceRestClient {
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 
 			response = (ResponseEntity<T>) residentRestTemplate.exchange(uri, HttpMethod.PUT,
-					setRequestHeader(requestType.toString(), mediaType, token), responseClass);
+					setRequestHeader(requestType.toString(), mediaType), responseClass);
 			result = response.getBody();
 		} catch (Exception e) {
 
@@ -275,35 +272,29 @@ public class ResidentServiceRestClient {
 	 *
 	 * @param requestType
 	 * @param mediaType
-	 * @return
-	 * @throws IOException
+	 * @return HttpEntity<Object>
 	 */
 	@SuppressWarnings("unchecked")
-	private HttpEntity<Object> setRequestHeader(Object requestType, MediaType mediaType, String token)
-			throws IOException {
+	private HttpEntity<Object> setRequestHeader(Object requestType, MediaType mediaType) {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
-		headers.add("Cookie", token);
-		headers.add("Authorization", token);
+		headers.add("Authorization", "futureProof");
 		if (mediaType != null) {
 			headers.add("Content-Type", mediaType.toString());
-
 		}
 		if (requestType != null) {
 			try {
 				HttpEntity<Object> httpEntity = (HttpEntity<Object>) requestType;
 				HttpHeaders httpHeader = httpEntity.getHeaders();
-				Iterator<String> iterator = httpHeader.keySet().iterator();
-				while (iterator.hasNext()) {
-					String key = iterator.next();
-					if (!(headers.containsKey("Content-Type") && key == "Content-Type"))
+				for (String key : httpHeader.keySet()) {
+					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type")))
 						headers.add(key, httpHeader.get(key).get(0));
 				}
-				return new HttpEntity<Object>(httpEntity.getBody(), headers);
+				return new HttpEntity<>(httpEntity.getBody(), headers);
 			} catch (ClassCastException e) {
-				return new HttpEntity<Object>(requestType, headers);
+				return new HttpEntity<>(requestType, headers);
 			}
 		} else
-			return new HttpEntity<Object>(headers);
+			return new HttpEntity<>(headers);
 	}
 
 }

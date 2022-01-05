@@ -23,7 +23,6 @@ import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.CardType;
@@ -39,7 +38,6 @@ import io.mosip.resident.exception.RequestHandlerValidationException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
 
 /**
@@ -107,9 +105,6 @@ public class RequestHandlerRequestValidator {
 
 	/** The id. */
 	private Map<String, String> id = new HashMap<>();
-
-	@Autowired
-	private TokenGenerator tokenGenerator;
 
 	/** The rest client service. */
 	@Autowired
@@ -197,7 +192,7 @@ public class RequestHandlerRequestValidator {
 						LoggerFileConstant.REGISTRATIONID.toString(), "",
 						"PacketGeneratorServiceImpl::isValidCenter():: Centerdetails Api call started");
 				responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.CENTERDETAILS, pathsegments, "",
-						"", ResponseWrapper.class, tokenGenerator.getToken());
+						"", ResponseWrapper.class);
 				rcpdto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 						RegistrationCenterResponseDto.class);
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
@@ -250,7 +245,7 @@ public class RequestHandlerRequestValidator {
 						LoggerFileConstant.REGISTRATIONID.toString(), "",
 						"PacketGeneratorServiceImpl::isValidMachine():: MachineDetails Api call started");
 				responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.MACHINEDETAILS, pathsegments,
-						"", "", ResponseWrapper.class, tokenGenerator.getToken());
+						"", "", ResponseWrapper.class);
 				machinedto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 						MachineResponseDto.class);
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),

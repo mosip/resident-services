@@ -51,7 +51,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
@@ -80,9 +79,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private ResidentServiceRestClient residentServiceRestClient;
 	
 	@Autowired
-	private TokenGenerator tokenGenerator;
-
-	@Autowired
 	Environment env;
 
 	@Autowired
@@ -108,8 +104,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					requestDto.setRequest(credentialReqestDto);
 					requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
 					requestDto.setVersion("1.0");
-					parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class,
-							tokenGenerator.getToken());
+					parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
 					partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
 							PartnerResponseDto.class);
 					additionalAttributes.put("partnerName",
@@ -119,8 +114,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 					ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
 							env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
-							ResponseWrapper.class,
-							tokenGenerator.getToken());
+							ResponseWrapper.class);
 					residentCredentialResponseDto = JsonUtil.readValue(
 							JsonUtil.writeValueAsString(responseDto.getResponse()),
 							ResidentCredentialResponseDto.class);
@@ -179,13 +173,11 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
 			URI credentailStatusUri = URI.create(credentialUrl);
-			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class,
-					tokenGenerator.getToken());
+			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
 					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
 			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
-			String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class,
-					tokenGenerator.getToken());
+			String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class);
 			RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
 			CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
 			cryptomanagerRequestDto.setApplicationId(applicationId);
@@ -198,7 +190,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			request.setRequest(cryptomanagerRequestDto);
 			String response = residentServiceRestClient.postApi(
 					env.getProperty(ApiName.DECRYPT_API_URL.name()), MediaType.APPLICATION_JSON, request,
-					String.class, tokenGenerator.getToken());
+					String.class);
 			CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
 			byte[] pdfBytes = CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
 			return pdfBytes;
@@ -222,7 +214,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		try {
 			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
 			URI credentailStatusUri = URI.create(credentialUrl);
-			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class, tokenGenerator.getToken());
+			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusDto = JsonUtil
 						.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
 			credentialRequestStatusResponseDto.setId(credentialRequestStatusDto.getId());
@@ -278,8 +270,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		try {
 				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestId;
 				URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
-				response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class,
-						tokenGenerator.getToken());
+				response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class);
 				if (response.getErrors() != null && !response.getErrors().isEmpty()) {
 					throw new ResidentCredentialServiceException(response.getErrors().get(0).getErrorCode(),
 							response.getErrors().get(0).getMessage());
@@ -314,16 +305,11 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		CredentialTypeResponse credentialTypeResponse=new CredentialTypeResponse();
 		URI credentailTypesUri = URI.create(env.getProperty(ApiName.CREDENTIAL_TYPES_URL.name()));
 		try {
-			credentialTypeResponse=residentServiceRestClient.getApi(credentailTypesUri, CredentialTypeResponse.class, tokenGenerator.getToken());
+			credentialTypeResponse=residentServiceRestClient.getApi(credentailTypesUri, CredentialTypeResponse.class);
 		} catch (ApisResourceAccessException  e) {
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-		 catch (IOException e) {
-				audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_EXCEPTION);
-				throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-			}
 		return credentialTypeResponse;
 	}
 
@@ -337,7 +323,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		pathsegments.put("credentialType", credentialType);
 		try {
 			response = residentServiceRestClient.getApi(ApiName.POLICY_REQ_URL, pathsegments,
-					ResponseWrapper.class, tokenGenerator.getToken());
+					ResponseWrapper.class);
 		} catch (Exception e) {
 			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
