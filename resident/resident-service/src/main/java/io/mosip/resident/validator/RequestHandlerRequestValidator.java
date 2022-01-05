@@ -117,7 +117,7 @@ public class RequestHandlerRequestValidator {
 
 	/** The mapper. */
 	@Autowired
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper;
 
 	/** The uin validator impl. */
 	@Autowired
