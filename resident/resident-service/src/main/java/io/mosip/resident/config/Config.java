@@ -12,6 +12,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+
 import javax.servlet.Filter;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -64,4 +66,9 @@ public class Config {
         engine.init();
         return new TemplateManagerImpl(engine);
     }
+
+    @Bean
+  	public AfterburnerModule afterburnerModule() {
+  	  return new AfterburnerModule();
+  	}
 }
