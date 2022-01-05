@@ -163,10 +163,9 @@ public class Utilities {
 
 		mappingJsonString = (mappingJsonString != null && !mappingJsonString.isEmpty()) ?
 				mappingJsonString : getJson(configServerFileStorageURL, residentIdentityJson);
-		ObjectMapper mapIdentityJsonStringToObject = new ObjectMapper();
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "",
 				"Utilities::getRegistrationProcessorMappingJson()::exit");
-		return JsonUtil.getJSONObject(mapIdentityJsonStringToObject.readValue(mappingJsonString, JSONObject.class), MappingJsonConstants.IDENTITY);
+		return JsonUtil.getJSONObject(objMapper.readValue(mappingJsonString, JSONObject.class), MappingJsonConstants.IDENTITY);
 
 	}
 
