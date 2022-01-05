@@ -240,12 +240,10 @@ public class JsonUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T objectMapperReadValue(String jsonString, Class<?> clazz) throws IOException {
-		ObjectMapper objectMapper = new ObjectMapper();
 		return (T) objectMapper.readValue(jsonString, clazz);
 	}
 
 	public static String objectMapperObjectToJson(Object obj) throws IOException {
-		ObjectMapper objectMapper = new ObjectMapper();
 		return objectMapper.writeValueAsString(obj);
 	}
 
