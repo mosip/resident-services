@@ -1,75 +1,38 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.RegistrationExternalStatusCode;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusRequestDTO;
-import io.mosip.resident.dto.RegistrationStatusResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.RIDInvalidException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.constant.*;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.*;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.UINCardDownloadService;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.*;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -86,6 +49,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static final String DOCUMENT = "documents";
+	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 
@@ -116,11 +80,23 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private Utilitiy utility;
 
-	@Value("${resident.center.id}")
-	private String centerId;
+    @Autowired
+    private Utilities utilities;
+
+    @Value("${resident.center.id}")
+    private String centerId;
 
 	@Value("${resident.machine.id}")
 	private String machineId;
+
+	@Value("${resident.update-uin.machine-name-prefix}")
+	private String residentMachinePrefix;
+
+	@Value("${resident.update-uin.machine-spec-id}")
+	private String machineSpecId;
+
+	@Value("${resident.update-uin.machine-zone-code}")
+	private String zoneCode;
 
 	@Autowired
 	private AuditUtil audit;
@@ -587,6 +563,14 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
+
+            final String publicKey = getPublicKeyFromKeyManager();
+            MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix, publicKey);
+            String machineId = getMachineId(machineSearchResponseDTO, publicKey);
+            if (machineId == null) {
+               machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId, publicKey);
+            }
+
 			ResidentUpdateDto regProcReqUpdateDto = new ResidentUpdateDto();
 			regProcReqUpdateDto.setIdValue(dto.getIndividualId());
 			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));
@@ -718,4 +702,102 @@ public class ResidentServiceImpl implements ResidentService {
 		return null;
 	}
 
+	public String getPublicKeyFromKeyManager() throws ApisResourceAccessException {
+		PacketSignPublicKeyRequestDTO signKeyRequestDto = PacketSignPublicKeyRequestDTO.builder().request(PacketSignPublicKeyRequestDTO.PacketSignPublicKeyRequest.builder().serverProfile(SERVER_PROFILE_SIGN_KEY).build()).build();
+		PacketSignPublicKeyResponseDTO signKeyResponseDTO;
+		try {
+			HttpEntity<PacketSignPublicKeyRequestDTO> httpEntity = new HttpEntity<>(signKeyRequestDto);
+			signKeyResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name()), MediaType.APPLICATION_JSON, httpEntity, PacketSignPublicKeyResponseDTO.class, tokenGenerator.getToken());
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
+					"ResidentServiceImpl::reqUinUpdate():: PACKETSIGNPUBLICKEY POST service call ended with response data "
+							+ signKeyResponseDTO.toString());
+			if (signKeyResponseDTO.getErrors() != null && !signKeyResponseDTO.getErrors().isEmpty()) {
+				throw new ResidentServiceTPMSignKeyException(signKeyResponseDTO.getErrors().get(0).getErrorCode(), signKeyResponseDTO.getErrors().get(0).getMessage());
+			}
+			if (signKeyResponseDTO.getResponse() == null) {
+				throw new ResidentServiceTPMSignKeyException(PACKET_SIGNKEY_EXCEPTION.getErrorCode(), PACKET_SIGNKEY_EXCEPTION.getErrorMessage());
+			}
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
+					"ResidentServiceImpl::reqUinUpdate():: PACKETSIGNPUBLICKEY POST service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
+		}
+		return signKeyResponseDTO.getResponse().getPublicKey();
+	}
+
+	public MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey) throws ApisResourceAccessException {
+		MachineSearchRequestDTO.MachineSearchFilter searchFilterName = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("name").type("contains").value(residentMachinePrefix).build();
+		MachineSearchRequestDTO.MachineSearchFilter searchFilterPublicKey = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("signPublicKey").type("equals").value(publicKey).build();
+		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder().sortType("desc").sortField("createdDateTime").build();
+		MachineSearchRequestDTO machineSearchRequestDTO = MachineSearchRequestDTO.builder()
+				.version("1.0")
+				//.requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
+				.request(MachineSearchRequestDTO.MachineSearchRequest.builder()
+						.filters(List.of(searchFilterName, searchFilterPublicKey))
+						.sort(List.of(searchSort))
+						.pagination(MachineSearchRequestDTO.MachineSearchPagination.builder().pageStart(0).pageFetch(10).build())
+						.languageCode(utilities.getLanguageCode())
+						.build())
+				.build();
+		MachineSearchResponseDTO machineSearchResponseDTO;
+		try {
+			HttpEntity<MachineSearchRequestDTO> httpEntity = new HttpEntity<>(machineSearchRequestDTO);
+			machineSearchResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINESEARCH.name()), MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class, tokenGenerator.getToken());
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call ended with response data "
+							+ machineSearchResponseDTO.toString());
+			if (machineSearchResponseDTO.getErrors() != null && !machineSearchResponseDTO.getErrors().isEmpty()) {
+				throw new ResidentMachineServiceException(machineSearchResponseDTO.getErrors().get(0).getErrorCode(), machineSearchResponseDTO.getErrors().get(0).getMessage());
+			}
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not fetch machines from master data", e);
+		}
+		return machineSearchResponseDTO;
+	}
+
+	public String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
+		if (machineSearchResponseDTO.getResponse() != null) {
+			List<MachineDto> fetchedMachines = machineSearchResponseDTO.getResponse().getData();
+			if (fetchedMachines != null && !fetchedMachines.isEmpty()) {
+				List<MachineDto> machines = fetchedMachines.stream().filter(mac -> mac.getSignPublicKey().equals(publicKey)).collect(Collectors.toList());
+				if (!machines.isEmpty()) {
+					return machines.get(0).getId();
+				}
+			}
+		}
+		return null;
+	}
+
+	public String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode, String regCenterId, String publicKey) throws ApisResourceAccessException {
+		MachineCreateRequestDTO machineCreateRequestDTO = MachineCreateRequestDTO.builder()
+				//.requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
+				.request(MachineDto.builder().serialNum(null).macAddress(null).ipAddress("0.0.0.0").isActive(true)
+						.validityDateTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime().plusYears(3)))
+						.name(residentMachinePrefix + System.currentTimeMillis()).machineSpecId(machineSpecId).zoneCode(zoneCode).regCenterId(regCenterId).publicKey(publicKey).signPublicKey(publicKey).build())
+				.build();
+		MachineCreateResponseDTO machineCreateResponseDTO;
+		try {
+			HttpEntity<MachineCreateRequestDTO> httpEntity = new HttpEntity<>(machineCreateRequestDTO);
+			machineCreateResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINECREATE.name()), MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class, tokenGenerator.getToken());
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+					"ResidentServiceImpl::reqUinUpdate():: MACHINECREATE POST service call ended with response data "
+							+ machineCreateResponseDTO.toString());
+			if (machineCreateResponseDTO.getErrors() != null && !machineCreateResponseDTO.getErrors().isEmpty()) {
+				throw new ResidentMachineServiceException(machineCreateResponseDTO.getErrors().get(0).getErrorCode(), machineCreateResponseDTO.getErrors().get(0).getMessage());
+			}
+			if (machineCreateResponseDTO.getResponse() == null) {
+				throw new ResidentMachineServiceException(MACHINE_MASTER_CREATE_EXCEPTION.getErrorCode(), MACHINE_MASTER_CREATE_EXCEPTION.getErrorMessage());
+			}
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+					"ResidentServiceImpl::reqUinUpdate():: MACHINECREATE POST service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not create machine in master data", e);
+		}
+		return machineCreateResponseDTO.getResponse().getId();
+	}
 }

@@ -360,5 +360,17 @@ public class Utilities {
         return mapList;
     }
 
-
+	public String getLanguageCode() {
+		String langCode=null;
+		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
+		if (!StringUtils.isEmpty(mandatoryLanguages)) {
+			String[] lanaguages = mandatoryLanguages.split(",");
+			langCode = lanaguages[0];
+		} else {
+			String optionalLanguages = env.getProperty("mosip.optional-languages");
+			String[] lanaguages = optionalLanguages.split(",");
+			langCode = lanaguages[0];
+		}
+		return langCode;
+	}
 }

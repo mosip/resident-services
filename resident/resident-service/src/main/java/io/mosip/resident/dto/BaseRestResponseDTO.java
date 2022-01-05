@@ -1,6 +1,9 @@
 package io.mosip.resident.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 
@@ -9,6 +12,9 @@ import java.io.Serializable;
  * @author Rishabh Keshari
  */
 @Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BaseRestResponseDTO implements Serializable {
 	
 	private static final long serialVersionUID = 4246582347420843195L;
