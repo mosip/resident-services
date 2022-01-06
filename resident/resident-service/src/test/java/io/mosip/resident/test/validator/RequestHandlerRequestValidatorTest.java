@@ -44,9 +44,6 @@ public class RequestHandlerRequestValidatorTest {
     @InjectMocks
     private RequestHandlerRequestValidator requestHandlerRequestValidator;
 
-    @Mock
-    private TokenGenerator tokenGenerator;
-
     /** The rest client service. */
     @Mock
     private ResidentServiceRestClient restClientService;
@@ -74,7 +71,7 @@ public class RequestHandlerRequestValidatorTest {
     @Before
     public void setup() throws ApisResourceAccessException, IOException {
 		Mockito.when(env.getProperty("mosip.mandatory-languages")).thenReturn("eng");
-        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class), any())).thenReturn(new ResponseWrapper<>());
+        Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class))).thenReturn(new ResponseWrapper<>());
         Mockito.when(mapper.writeValueAsString(any())).thenReturn("String");
     }
 

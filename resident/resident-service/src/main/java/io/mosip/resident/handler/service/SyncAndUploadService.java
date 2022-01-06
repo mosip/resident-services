@@ -47,7 +47,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EncryptorUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 /**
  * The Class SyncUploadEncryptionServiceImpl.
@@ -83,9 +82,6 @@ public class SyncAndUploadService {
 	private int machineIdLength;
 	/** The gson. */
 	Gson gson = new GsonBuilder().serializeNulls().create();
-
-	@Autowired
-	private TokenGenerator tokenGenerator;
 
 	@Autowired
 	private Environment env;
@@ -138,8 +134,8 @@ public class SyncAndUploadService {
 				HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String, Object>>(
 						map, headers);
 
-				String result = (String) restClientService.postApi(env.getProperty(ApiName.PACKETRECEIVER.name()), MediaType.MULTIPART_FORM_DATA, requestEntity,
-						String.class, tokenGenerator.getToken());
+				String result = restClientService.postApi(env.getProperty(ApiName.PACKETRECEIVER.name()), MediaType.MULTIPART_FORM_DATA, requestEntity,
+						String.class);
 				if (result != null) {
 					packetReceiverResponseDTO = gson.fromJson(result, PacketReceiverResponseDTO.class);
 					logger.debug(LoggerFileConstant.SESSIONID.toString(),
@@ -177,17 +173,6 @@ public class SyncAndUploadService {
 
 			}
 
-		} catch (FileNotFoundException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-					registartionId,
-					ExceptionUtils.getStackTrace(e));
-			throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(), ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
-
-		} catch (IOException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-					registartionId,
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage() + ExceptionUtils.getStackTrace(e));
-			throw new BaseCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					registartionId, ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
@@ -266,17 +251,13 @@ public class SyncAndUploadService {
 
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(javaObjectToJsonString(requestObject).getBytes(), headers);
 			String response = (String) restClientService.postApi(env.getProperty(ApiName.SYNCSERVICE.name()), MediaType.APPLICATION_JSON, requestEntity,
-					String.class, tokenGenerator.getToken());
+					String.class);
 			regSyncResponseDTO = gson.fromJson(response, RegSyncResponseDTO.class);
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 					regId,
 					"SyncUploadEncryptionServiceImpl::packetSync()::Sync service call ended with response data : "
 							+ JsonUtils.javaObjectToJsonString(regSyncResponseDTO));
 
-		} catch (IOException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-					regId, ResidentErrorCode.IO_EXCEPTION.getErrorMessage() + ExceptionUtils.getStackTrace(e));
-			throw new BaseCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (JsonProcessingException e) {
 			throw new BaseCheckedException(ResidentErrorCode.INVLAID_KEY_EXCEPTION.getErrorCode(), ResidentErrorCode.INVLAID_KEY_EXCEPTION.getErrorMessage(), e);
 		} catch (NoSuchAlgorithmException e) {

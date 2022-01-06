@@ -11,8 +11,6 @@ import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
@@ -42,12 +40,6 @@ public class Config {
         return corsBean;
     }
 
-	@Bean
-	@Primary
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
-
     @Bean
     public Filter getReqResFilter() {
         return new ReqResFilter();
@@ -74,7 +66,7 @@ public class Config {
         engine.init();
         return new TemplateManagerImpl(engine);
     }
-    
+
     @Bean
   	public AfterburnerModule afterburnerModule() {
   	  return new AfterburnerModule();

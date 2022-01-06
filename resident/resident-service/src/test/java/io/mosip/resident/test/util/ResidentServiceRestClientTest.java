@@ -57,7 +57,7 @@ public class ResidentServiceRestClientTest {
     }
 
     @Test
-    public void testgetApi() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException, ApisResourceAccessException {
+    public void testgetApi() throws ApisResourceAccessException {
         AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
         autnTxnResponseDto.setId("ancd");
         ResponseEntity<AutnTxnResponseDto> obj = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
@@ -65,7 +65,7 @@ public class ResidentServiceRestClientTest {
         ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
         when(residentRestTemplate.exchange(any(URI.class), any(HttpMethod.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).thenReturn(obj);
 
-        assertTrue(client.getApi(uri, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+        assertTrue(client.getApi(uri, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -78,7 +78,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.exchange(any(URI.class), any(HttpMethod.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenThrow(new RestClientException(""));
 
-        client.getApi(uri, AutnTxnResponseDto.class, "abcde");
+        client.getApi(uri, AutnTxnResponseDto.class);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class ResidentServiceRestClientTest {
 
         when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
         ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-        doReturn(autnTxnResponseDto).when(client).getApi(any(), any(), any());
+        doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
         List<String> list = new ArrayList<>();
         list.add("individualIdType");
         list.add("UIN");
@@ -96,7 +96,7 @@ public class ResidentServiceRestClientTest {
         list.add("1234");
 
 
-        assertTrue(client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, "", null, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+        assertTrue(client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, "", null, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -106,14 +106,14 @@ public class ResidentServiceRestClientTest {
 
         when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
         ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-        doThrow(new ApisResourceAccessException()).when(client).getApi(any(), any(), any());
+        doThrow(new ApisResourceAccessException()).when(client).getApi(any(), any());
         List<String> list = new ArrayList<>();
         list.add("individualIdType");
         list.add("UIN");
         list.add("individualId");
         list.add("1234");
 
-        client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, "pageFetch,pageStart", "50,1", AutnTxnResponseDto.class, "abcde");
+        client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, "pageFetch,pageStart", "50,1", AutnTxnResponseDto.class);
     }
 
     @Test
@@ -125,7 +125,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.postForObject(any(String.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenReturn(autnTxnResponseDto);
 
-        assertTrue(client.postApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", MediaType.APPLICATION_JSON, autnTxnResponseDto, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+        assertTrue(client.postApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", MediaType.APPLICATION_JSON, autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -137,7 +137,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.postForObject(any(String.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenThrow(new RestClientException(""));
 
-        assertTrue(client.postApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", MediaType.APPLICATION_JSON, autnTxnResponseDto, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+        assertTrue(client.postApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", MediaType.APPLICATION_JSON, autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.patchForObject(any(String.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenReturn(autnTxnResponseDto);
 
-        assertTrue(client.patchApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+        assertTrue(client.patchApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -161,7 +161,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.patchForObject(any(String.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenThrow(new RestClientException(""));
 
-        assertTrue(client.patchApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, "abcde").toString().contains("ancd"));
+        assertTrue(client.patchApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.exchange(any(String.class), any(HttpMethod.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenReturn(obj);
 
-        assertTrue(client.putApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, MediaType.APPLICATION_JSON, "abcde").toString().contains("ancd"));
+        assertTrue(client.putApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, MediaType.APPLICATION_JSON).toString().contains("ancd"));
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -186,7 +186,7 @@ public class ResidentServiceRestClientTest {
         when(residentRestTemplate.exchange(any(String.class), any(HttpMethod.class), any(), Matchers.<Class<AutnTxnResponseDto>>any())).
                 thenThrow(new RestClientException(""));
 
-        client.putApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, MediaType.APPLICATION_JSON, "abcde");
+        client.putApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto, AutnTxnResponseDto.class, MediaType.APPLICATION_JSON);
     }
 
 }

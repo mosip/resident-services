@@ -65,9 +65,6 @@ public class NotificationServiceTest {
 	private ResidentServiceRestClient restClient;
 
 	@Mock
-	private TokenGenerator tokenGenerator;
-
-	@Mock
 	private TemplateManager templateManager;
 	
 	@Mock
@@ -102,7 +99,6 @@ public class NotificationServiceTest {
 		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
 		ReflectionTestUtils.setField(notificationService, "notificationType", "SMS|EMAIL");
 		ReflectionTestUtils.setField(notificationService, "notificationEmails", "test@test.com|test1@test1.com");
-		Mockito.when(tokenGenerator.getToken()).thenReturn("sbfdsafuadfkbdsf");
 		Mockito.when(env.getProperty(ApiName.EMAILNOTIFIER.name())).thenReturn("https://int.mosip.io/template/email");
 		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
@@ -121,7 +117,7 @@ public class NotificationServiceTest {
 		primaryTemplateResp.setTemplates(primaryTemplateList);
 		primaryLangResp.setResponse(primaryTemplateResp);
 		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenReturn(primaryLangResp);
+				Mockito.any(Class.class))).thenReturn(primaryLangResp);
 
 		String primaryTemplatetext = "Hi Test,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is 10008200070004420191203104356.";
 		InputStream primaryIs = new ByteArrayInputStream(primaryTemplatetext.getBytes(StandardCharsets.UTF_8));
@@ -131,8 +127,7 @@ public class NotificationServiceTest {
 		notificationResp.setMessage("Notification has been sent to provided contact details");
 		notificationResp.setStatus("success");
 		smsNotificationResponse.setResponse(notificationResp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenReturn(smsNotificationResponse);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 	}
@@ -168,8 +163,7 @@ public class NotificationServiceTest {
 		notificationResp.setMessage("Notification failure");
 		notificationResp.setStatus("failed");
 		smsNotificationResponse.setResponse(notificationResp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenReturn(smsNotificationResponse);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse);
 
 		notificationService.sendNotification(reqDto);
 
@@ -179,15 +173,9 @@ public class NotificationServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void getTemplateNullResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenReturn(null);
+				Mockito.any(Class.class))).thenReturn(null);
 		notificationService.sendNotification(reqDto);
 
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void tokenGenerationFailedException() throws IOException, ResidentServiceCheckedException {
-		Mockito.when(tokenGenerator.getToken()).thenThrow(new IOException());
-		notificationService.sendNotification(reqDto);
 	}
 
 	@Ignore
@@ -197,7 +185,7 @@ public class NotificationServiceTest {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", clientExp);
 		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
+				Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 
 	}
@@ -208,7 +196,7 @@ public class NotificationServiceTest {
 		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", serverExp);
 		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
+				Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
 
@@ -218,7 +206,7 @@ public class NotificationServiceTest {
 		RuntimeException runTimeExp = new RuntimeException();
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
 		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class), Mockito.any())).thenThrow(apiResourceAccessExp);
+				Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
 
@@ -233,8 +221,7 @@ public class NotificationServiceTest {
 	public void sendSMSClientException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", clientExp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenThrow(apiResourceAccessExp);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 
 	}
@@ -243,8 +230,7 @@ public class NotificationServiceTest {
 	public void sendSMSServerException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", serverExp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenThrow(apiResourceAccessExp);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
 
@@ -252,8 +238,7 @@ public class NotificationServiceTest {
 	public void sendSMSUnknownException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		RuntimeException runTimeExp = new RuntimeException();
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenThrow(apiResourceAccessExp);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 //		JsonUtil.objectMapperReadValue(JsonUtil.objectMapperObjectToJson(resp.getResponse()),
 //				TemplateResponseDto.class);
@@ -264,8 +249,7 @@ public class NotificationServiceTest {
 	public void sendEmailClientException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", clientExp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
 
@@ -273,8 +257,7 @@ public class NotificationServiceTest {
 	public void sendEmailServerException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", serverExp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
 
@@ -282,8 +265,7 @@ public class NotificationServiceTest {
 	public void sendEmailUnknownException() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		RuntimeException runTimeExp = new RuntimeException();
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
-		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class),
-				Mockito.any())).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
+		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
 	}
 

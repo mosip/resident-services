@@ -73,9 +73,6 @@ public class IdAuthServiceTest {
 	private KeyGenerator keyGenerator;
 
 	@Mock
-	private TokenGenerator tokenGenerator;
-
-	@Mock
 	private Environment environment;
 
 	@Mock
@@ -98,7 +95,7 @@ public class IdAuthServiceTest {
 	@Test
 	public void testAuthTypeStatusUpdateSuccess() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
-		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
+		when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
 		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
@@ -109,7 +106,7 @@ public class IdAuthServiceTest {
 	@Test(expected = ApisResourceAccessException.class)
 	public void testAuthTypeStatusUpdateFailure() throws ApisResourceAccessException, ResidentServiceCheckedException {
 
-		when(restClient.postApi(any(), any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(restClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
 		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
@@ -140,17 +137,14 @@ public class IdAuthServiceTest {
 
 		when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
 		when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-		when(tokenGenerator.getToken()).thenReturn("token");
-		when(restClient.getApi(any(), any(Class.class), any())).thenReturn(responseWrapper);
+		when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
 
 		doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
 		doReturn(responseDto).when(mapper).readValue(anyString(), any(Class.class));
 
 		when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
-		when(tokenGenerator.getToken()).thenReturn("token");
-
-		when(restClient.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(response);
+		when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
 
 		boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 
@@ -176,16 +170,14 @@ public class IdAuthServiceTest {
 
 		when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
 		when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-		when(tokenGenerator.getToken()).thenReturn("token");
-		when(restClient.getApi(any(), any(Class.class), any())).thenReturn(responseWrapper);
+		when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
 
 		doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
 		doReturn(responseDto).when(mapper).readValue(anyString(), any(Class.class));
 
 		when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
-		when(tokenGenerator.getToken()).thenReturn("token");
 
-		when(restClient.postApi(any(), any(), any(), any(Class.class), any()))
+		when(restClient.postApi(any(), any(), any(), any(Class.class)))
 				.thenThrow(new ApisResourceAccessException());
 
 		idAuthService.validateOtp(transactionID, individualId, otp);
@@ -213,17 +205,14 @@ public class IdAuthServiceTest {
 
 		when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
 		when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-		when(tokenGenerator.getToken()).thenReturn("token");
-		when(restClient.getApi(any(), any(Class.class), any())).thenReturn(responseWrapper);
+		when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
 
 		doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
 		doReturn(responseDto).when(mapper).readValue(anyString(), any(Class.class));
 
 		when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
-		when(tokenGenerator.getToken()).thenReturn("token");
-
-		when(restClient.postApi(any(), any(), any(), any(Class.class), any())).thenReturn(response);
+		when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
 
 		idAuthService.validateOtp(transactionID, individualId, otp);
 	}
@@ -242,7 +231,7 @@ public class IdAuthServiceTest {
 		Map<String, List<AutnTxnDto>> responsemap=new HashMap<>();
 		responsemap.put("authTransactions", Arrays.asList(autnTxnDto));
 		response.setResponse(responsemap);
-		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenReturn(response);
+		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class))).thenReturn(response);
 		assertEquals("OTP-AUTH", idAuthService.getAuthHistoryDetails("1234", "1", "1").get(0).getAuthModality());
 	}
 	
@@ -251,13 +240,13 @@ public class IdAuthServiceTest {
 		AutnTxnResponseDto response= new AutnTxnResponseDto();
 		AuthError error=new AuthError("e","e");
 		response.setErrors(Arrays.asList(error));
-		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenReturn(response);
+		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class))).thenReturn(response);
 		assertEquals(null, idAuthService.getAuthHistoryDetails("1234", "1", "1"));
 	}
 	
 	@Test(expected = ApisResourceAccessException.class)
 	public void testGetAuthHistoryDetailsFetchFailure() throws ApisResourceAccessException {
-		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class), any())).thenThrow(new ApisResourceAccessException() );
+		when(restClient.getApi(any(), any(),anyString(), any(), any(Class.class))).thenThrow(new ApisResourceAccessException() );
 		idAuthService.getAuthHistoryDetails("1234", "1", "10");
 	}
 
@@ -265,7 +254,7 @@ public class IdAuthServiceTest {
 	public void testAuthTypeStatusUpdateUnlockSuccess()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
-		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
+		when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
 		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.UNLOCK,
@@ -277,7 +266,7 @@ public class IdAuthServiceTest {
 	public void testAuthTypeStatusUpdateUnlockSuccessWithUnlockForSeconds()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
-		when(restClient.postApi(any(), any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
+		when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
 		List<String> authTypes = new ArrayList<>();
 		authTypes.add("bio-FIR");
 		boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.UNLOCK,

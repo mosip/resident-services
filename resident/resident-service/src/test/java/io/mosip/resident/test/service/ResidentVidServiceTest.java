@@ -73,9 +73,6 @@ public class ResidentVidServiceTest {
     private NotificationService notificationService;
 
     @Mock
-    private TokenGenerator tokenGenerator;
-
-    @Mock
     private IdAuthService idAuthService;
 
     @Mock
@@ -107,7 +104,6 @@ public class ResidentVidServiceTest {
         NotificationResponseDTO notificationResponseDTO = new NotificationResponseDTO();
         notificationResponseDTO.setMessage("Vid successfully generated");
 
-        when(tokenGenerator.getToken()).thenReturn("token");
         when(notificationService.sendNotification(any(NotificationRequestDto.class))).thenReturn(notificationResponseDTO);
    
         ClassLoader classLoader = getClass().getClassLoader();
@@ -143,8 +139,7 @@ public class ResidentVidServiceTest {
         doReturn(objectMapper.writeValueAsString(vidGeneratorResponseDto)).when(mapper).writeValueAsString(any());
         doReturn(vidGeneratorResponseDto).when(mapper).readValue(anyString(), any(Class.class));
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(),
-                any())).thenReturn(response);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
         ResponseWrapper<VidResponseDto> result = residentVidService.generateVid(requestDto);
 
@@ -173,8 +168,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(),
-                any())).thenReturn(response);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
         residentVidService.generateVid(requestDto);
     }
@@ -194,8 +188,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(),
-                any())).thenReturn(response);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
         residentVidService.generateVid(requestDto);
     }
@@ -215,8 +208,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(),
-                any())).thenThrow(new ApisResourceAccessException());
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
         residentVidService.generateVid(requestDto);
     }
@@ -240,7 +232,7 @@ public class ResidentVidServiceTest {
 		doReturn(objectMapper.writeValueAsString(dto)).when(mapper).writeValueAsString(any());
 		doReturn(dto).when(mapper).readValue(anyString(), any(Class.class));
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-		when(residentServiceRestClient.patchApi(any(), any(), any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 
 		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid);
 
@@ -271,8 +263,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-        when(residentServiceRestClient.patchApi(any(), any(), any(), any(),
-                any())).thenThrow(new ApisResourceAccessException());
+        when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
         residentVidService.revokeVid(vidRevokeRequest,vid);
     }

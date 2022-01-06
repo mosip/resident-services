@@ -71,9 +71,6 @@ public class UinCardRePrintService {
     private RequestHandlerRequestValidator validator;
 
     @Autowired
-    private TokenGenerator tokenGenerator;
-
-    @Autowired
     private PacketWriter packetWriter;
 
     /** The utilities. */
@@ -157,7 +154,7 @@ public class UinCardRePrintService {
                                     + JsonUtil.objectMapperObjectToJson(vidRequestDto));
 
                     response = restClientService.postApi(env.getProperty(ApiName.CREATEVID.name()), MediaType.APPLICATION_JSON, request,
-                            VidResponseDTO1.class, tokenGenerator.getToken());
+                            VidResponseDTO1.class);
 
                     logger.debug(LoggerFileConstant.SESSIONID.toString(),
                             LoggerFileConstant.REGISTRATIONID.toString(), "",
@@ -320,7 +317,7 @@ public class UinCardRePrintService {
             logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
                     "", "UinCardRePrintServiceImpl::generateRegistrationId():: RIDgeneration Api call started");
             responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.RIDGENERATION, pathsegments, "", "",
-                    ResponseWrapper.class, tokenGenerator.getToken());
+                    ResponseWrapper.class);
             if (CollectionUtils.isEmpty(responseWrapper.getErrors())) {
                 ridJson = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()), JSONObject.class);
                 logger.debug(LoggerFileConstant.SESSIONID.toString(),
