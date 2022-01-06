@@ -430,7 +430,7 @@ public class RequestValidator {
 		}
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
-				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name()))) {
+				|| (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.VID.name()))) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
 			throw new InvalidInputException("individualId");
 		}

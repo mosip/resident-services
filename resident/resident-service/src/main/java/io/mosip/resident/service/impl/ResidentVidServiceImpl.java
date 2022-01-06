@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.resident.exception.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +41,6 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.DataNotFoundException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.VidAlreadyPresentException;
-import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
@@ -219,10 +213,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	public ResponseWrapper<VidRevokeResponseDTO> revokeVid(VidRevokeRequestDTO requestDto, String vid)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 
+		if (!requestDto.getIndividualId().equals(vid)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
+			throw new InvalidInputException("individualId");
+		}
+
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
-        String uin = requestDto.getIndividualId();
 
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,requestDto.getTransactionID() ,"Request to revoke VID"));
@@ -241,14 +239,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			throw e;
 		}
 
-
+		String uin = null;
 		try {
-            if (IdType.VID.name().equals(requestDto.getIndividualIdType())) {
-                JSONObject jsonObject = utilitiy.retrieveIdrepoJson(requestDto.getIndividualId());
-                uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
-            }
+			JSONObject jsonObject = utilitiy.retrieveIdrepoJson(requestDto.getIndividualId());
+			uin = JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
 		} catch (IdRepoAppException e) {
-			throw new DataNotFoundException(e.getErrorCode(),e.getMessage());
+			throw new DataNotFoundException(e.getErrorCode(), e.getMessage());
 		}
 
 		notificationRequestDto.setId(uin);
