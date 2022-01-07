@@ -215,7 +215,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		if (!requestDto.getIndividualId().equals(vid)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
-			throw new InvalidInputException("individualId");
+			throw new InvalidInputException("The VID in the URL and body mismatched");
 		}
 
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
