@@ -58,9 +58,6 @@ public class AuditUtilTest {
     @Captor
     ArgumentCaptor<String> stringCaptor;
 
-    @Mock
-    private TokenGenerator tokenGenerator;
-
     private InetAddress host;
 
     private LocalDateTime localDateTime;
