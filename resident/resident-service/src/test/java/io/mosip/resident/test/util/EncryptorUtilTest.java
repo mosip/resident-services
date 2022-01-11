@@ -82,7 +82,7 @@ public class EncryptorUtilTest {
 
         byte[] bytes = "Encrypt String".getBytes();
         String refId = "CenterID_MachineID";
-        encryptorUtil.encrypt(bytes, refId);
+        String encryptedString = encryptorUtil.encrypt(bytes, refId);
 
         verify(env, times(1)).getProperty(Mockito.anyString());
         verify(restClientService, times(1)).postApi(stringCaptor.capture(), Mockito.any(), requestCaptor.capture(), Mockito.any(Class.class));
