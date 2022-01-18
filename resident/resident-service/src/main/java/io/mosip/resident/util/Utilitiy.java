@@ -178,9 +178,6 @@ public class Utilitiy {
 					}
 				}
 			}
-
-			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-					"Utilitiy::getMailingAttributes()::mailingAttributes::" + attributes);
 		} catch (IOException | ReflectiveOperationException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
