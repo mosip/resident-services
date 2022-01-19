@@ -111,6 +111,16 @@ public class RidStatusServiceTest {
 		responseWrapper.setResponse(list);
 		residentService.getRidStatus(requestDTO);
 
+		// UIN_GENERATED
+		response.setStatusCode("UIN_GENERATED");
+		responseWrapper.setResponse(list);
+		residentService.getRidStatus(requestDTO);
+
+		// AWAITING_INFORMATION
+		response.setStatusCode("AWAITING_INFORMATION");
+		responseWrapper.setResponse(list);
+		residentService.getRidStatus(requestDTO);
+
 		// PROCESSING
 		response.setStatusCode("PROCESSING");
 		
