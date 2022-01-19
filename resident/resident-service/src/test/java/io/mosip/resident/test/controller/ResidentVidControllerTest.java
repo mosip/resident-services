@@ -345,6 +345,7 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
+	@Ignore //Individual Id Type is optional now
 	public void invalidIndividualIdTypeRevokeTest() throws Exception {
 
 		RequestWrapper<VidRevokeRequestDTO> request = getRevokeRequest();
