@@ -119,7 +119,8 @@ public class RidStatusServiceTest {
 		// AWAITING_INFORMATION
 		response.setStatusCode("AWAITING_INFORMATION");
 		responseWrapper.setResponse(list);
-		residentService.getRidStatus(requestDTO);
+		RegStatusCheckResponseDTO wait = residentService.getRidStatus(requestDTO);
+		assertEquals(wait.getRidStatus(), "WAITING FOR ADDITIONAL INFORMATION FROM APPLICANT");
 
 		// PROCESSING
 		response.setStatusCode("PROCESSING");
