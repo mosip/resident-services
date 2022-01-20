@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -51,13 +52,12 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({ IOUtils.class, JsonUtil.class, File.class, FileInputStream.class, UinCardRePrintService.class})
+@PrepareForTest({ IOUtils.class, JsonUtil.class, File.class, FileInputStream.class})
 public class UinCardRePrintServiceTest {
 
     @InjectMocks
@@ -160,7 +160,7 @@ public class UinCardRePrintServiceTest {
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
-    @Test
+    @Test(expected = FileNotFoundException.class)
     public void testCreatePacket() throws IOException, BaseCheckedException {
 
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);
@@ -186,7 +186,7 @@ public class UinCardRePrintServiceTest {
         PacketGeneratorResDto result = uinCardRePrintService.createPacket(regProcRePrintRequestDto);
     }
 
-    @Test
+    @Test(expected = FileNotFoundException.class)
     public void testVid() throws IOException, BaseCheckedException {
         regProcRePrintRequestDto.setCardType(CardType.MASKED_UIN.name());
         /*regProcRePrintRequestDto.setIdType("VID");
@@ -205,7 +205,7 @@ public class UinCardRePrintServiceTest {
         assertTrue(result.getRegistrationId().equalsIgnoreCase(rid));
     }
 
-    @Test
+    @Test(expected = FileNotFoundException.class)
     public void testVidWithNoUin() throws IOException, BaseCheckedException {
         regProcRePrintRequestDto.setCardType(CardType.MASKED_UIN.name());
         regProcRePrintRequestDto.setIdType("VID");

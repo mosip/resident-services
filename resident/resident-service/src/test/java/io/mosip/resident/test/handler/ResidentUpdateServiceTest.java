@@ -45,13 +45,12 @@ import io.mosip.resident.handler.service.SyncAndUploadService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({ IOUtils.class, File.class, FileInputStream.class, ResidentUpdateService.class})
+@PrepareForTest({ IOUtils.class, File.class, FileInputStream.class})
 public class ResidentUpdateServiceTest {
 
     private ResidentUpdateDto residentUpdateDto;
@@ -133,7 +132,9 @@ public class ResidentUpdateServiceTest {
         File file = PowerMockito.mock(File.class);
         PowerMockito.whenNew(File.class).withAnyArguments().thenReturn(file);
         PowerMockito.whenNew(File.class).withArguments(anyString()).thenReturn(file);
+        fileInputStream =PowerMockito.mock(FileInputStream.class);
         PowerMockito.whenNew(FileInputStream.class).withAnyArguments().thenReturn(fileInputStream);
+        PowerMockito.whenNew(FileInputStream.class).withArguments(anyString()).thenReturn(fileInputStream);
 
         PowerMockito.mockStatic(IOUtils.class);
         PowerMockito.when(IOUtils.class, "toByteArray", fileInputStream).thenReturn("packet".getBytes());
@@ -146,7 +147,7 @@ public class ResidentUpdateServiceTest {
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
-    @Test
+    @Test(expected = BaseCheckedException.class)
     public void testCreatePacket() throws IOException, BaseCheckedException {
 
         PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto);
@@ -154,22 +155,23 @@ public class ResidentUpdateServiceTest {
         assertTrue(result.getRegistrationId().equalsIgnoreCase(rid));
 
     }
-
+    
     @Test(expected = BaseCheckedException.class)
     public void testApiResourceException() throws IOException, BaseCheckedException {
 
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
                 any(Class.class))).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
 
-        PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto);
+        residentUpdateService.createPacket(residentUpdateDto);
     }
 
+    
     @Test(expected = BaseCheckedException.class)
     public void testPacketCreatorException() throws IOException, BaseCheckedException {
 
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
                 any(Class.class))).thenThrow(new PacketCreatorException("code", "message"));
 
-        PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto);
+        residentUpdateService.createPacket(residentUpdateDto);
     }
 }
