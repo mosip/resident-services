@@ -158,6 +158,12 @@ public class ResidentServiceReqReprintTest {
 		residentServiceImpl.reqPrintUin(residentReqDto);
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void testBaseCheckedException() throws BaseCheckedException, IOException {
+		Mockito.when(rePrintService.createPacket(any())).thenThrow(new BaseCheckedException("erorcode", "badgateway", new RuntimeException()));
+		residentServiceImpl.reqPrintUin(residentReqDto);
+	}
+
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void notificationServiceException() throws ApisResourceAccessException, OtpValidationFailedException,
 			IOException, ResidentServiceCheckedException {
