@@ -175,9 +175,9 @@ public class UtilityTest {
 		Utilitiy utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-		assertEquals("girish.yarru@mindtree.com", attributes.get("email"));
+		assertEquals("user@mail.com", attributes.get("email"));
 		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-		assertEquals("girish.yarru@mindtree.com", attributes1.get("email"));
+		assertEquals("user@mail.com", attributes1.get("email"));
 
 	}
 	
@@ -190,11 +190,11 @@ public class UtilityTest {
 		Utilitiy utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-		assertEquals("girish.yarru@mindtree.com", attributes.get("email"));
+		assertEquals("user@mail.com", attributes.get("email"));
 
 		ReflectionTestUtils.setField(utilitySpy, "languageType", "NA");
 		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-		assertEquals("girish.yarru@mindtree.com", attributes1.get("email"));
+		assertEquals("user@mail.com", attributes1.get("email"));
 
 	}
 
