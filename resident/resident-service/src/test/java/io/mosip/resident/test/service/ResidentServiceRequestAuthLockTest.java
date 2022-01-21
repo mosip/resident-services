@@ -5,6 +5,8 @@ package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
 
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.dto.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +21,7 @@ import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -32,6 +32,9 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author M1022006
@@ -161,6 +164,22 @@ public class ResidentServiceRequestAuthLockTest {
 
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
 
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testReqAuthUnLockException() throws OtpValidationFailedException, ApisResourceAccessException, ResidentServiceCheckedException {
+		Mockito.when(idAuthService.validateOtp(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(true);
+
+		AuthUnLockRequestDTO authUnLockRequestDTO = new AuthUnLockRequestDTO();
+		authUnLockRequestDTO.setIndividualId("12344567");
+		authUnLockRequestDTO.setOtp("12345");
+		authUnLockRequestDTO.setTransactionID("12345");
+		authUnLockRequestDTO.setUnlockForSeconds(String.valueOf(-1L));
+
+		Mockito.lenient().when(idAuthService.authTypeStatusUpdate(authUnLockRequestDTO.getIndividualId(),
+				authUnLockRequestDTO.getAuthType(), AuthTypeStatus.UNLOCK, null))
+				.thenThrow(new ApisResourceAccessException());
+		residentService.reqAauthTypeStatusUpdate(authUnLockRequestDTO, AuthTypeStatus.UNLOCK);
 	}
 
 	@Test(expected = ResidentServiceException.class)
