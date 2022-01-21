@@ -114,7 +114,6 @@ public class RidStatusServiceTest {
 		// UIN_GENERATED
 		response.setStatusCode("UIN_GENERATED");
 		responseWrapper.setResponse(list);
-		residentService.getRidStatus(requestDTO);
 		RegStatusCheckResponseDTO uinGenerated = residentService.getRidStatus(requestDTO);
 		assertEquals(uinGenerated.getRidStatus(), "PROCESSED");
 
