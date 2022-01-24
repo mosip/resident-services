@@ -172,8 +172,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
 		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		try {
-
-			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+			UUID requestUUID = UUID.fromString(requestId);
+			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
@@ -200,11 +200,16 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IllegalArgumentException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
+					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
+
 	}
 
 	@Override
@@ -239,6 +244,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} 
 		catch (IllegalArgumentException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
 					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
 		} 
