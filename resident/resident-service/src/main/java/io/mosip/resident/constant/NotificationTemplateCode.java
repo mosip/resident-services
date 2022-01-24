@@ -20,9 +20,9 @@ public enum NotificationTemplateCode {
 	RS_CRE_REQ_FAILURE("RS_CRE_REQ_FAILURE"), RS_CRE_STATUS("RS_CRE_STATUS"),
 	RS_CRE_CANCEL_SUCCESS("RS_CRE_CANCEL_SUCCESS");
 	
-	public String templateCode;
+	private final String templateCode;
 
-	private NotificationTemplateCode(String templateCode) {
+	NotificationTemplateCode(String templateCode) {
 		this.templateCode = templateCode;
 	}
 
