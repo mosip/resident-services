@@ -342,8 +342,10 @@ public class Utilities {
 			langCode = lanaguages[0];
 		} else {
 			String optionalLanguages = env.getProperty("mosip.optional-languages");
-			String[] lanaguages = optionalLanguages.split(",");
-			langCode = lanaguages[0];
+			if (!StringUtils.isEmpty(optionalLanguages)) {
+				String[] lanaguages = optionalLanguages.split(",");
+				langCode = lanaguages[0];
+			}
 		}
 		return langCode;
 	}

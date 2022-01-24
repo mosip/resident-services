@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +33,8 @@ import io.mosip.resident.exception.ValidationException;
 
 @Component
 public class AuditUtil {
-	
+
+	private static final Logger logger = LoggerConfiguration.logConfig(AuditUtil.class);
 
 	@Autowired
 	@Qualifier("selfTokenRestTemplate")
@@ -110,7 +114,8 @@ public class AuditUtil {
 
 			getAuditDetailsFromResponse(responseBody);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ex.getMessage() + org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace(ex));
 		}
 		
 

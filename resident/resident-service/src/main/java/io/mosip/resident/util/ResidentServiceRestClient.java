@@ -100,7 +100,8 @@ public class ResidentServiceRestClient {
 				obj = getApi(uriComponents.toUri(), responseType);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+						LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
 				throw new ApisResourceAccessException("Exception occured while accessing ", e);
 
 			}
@@ -140,7 +141,8 @@ public class ResidentServiceRestClient {
 				obj = getApi(uriComponents.toUri(), responseType);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+						LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
 				throw new ApisResourceAccessException("Exception occurred while accessing ", e);
 
 			}

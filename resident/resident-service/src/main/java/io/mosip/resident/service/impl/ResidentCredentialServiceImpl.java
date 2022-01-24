@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -333,7 +334,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	public String generatePin() {
-		return RandomStringUtils.randomNumeric(6);
+		SecureRandom random = new SecureRandom();
+		int result = random.nextInt(1000000);
+		while (result < 100000) {
+			result = random.nextInt(1000000);
+		}
+		return String.valueOf(result);
 	}
 
 
