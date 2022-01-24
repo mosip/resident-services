@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
@@ -22,6 +23,7 @@ import java.util.Properties;
 
 
 @Configuration
+@EnableScheduling
 public class Config {
 	private String defaultEncoding = StandardCharsets.UTF_8.name();
 	/** The resource loader. */
