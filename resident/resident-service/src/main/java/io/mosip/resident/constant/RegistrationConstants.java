@@ -1529,66 +1529,6 @@ public class RegistrationConstants {
 	
 	public static final String SYSTEM="SYSTEM";
 
-	public static final Map<String, String> userOnBoardMap = new HashMap<String, String>() {
-
-		{
-			put("leftIndex", "LF_INDEX");
-			put("leftLittle", "LF_LITTLE");
-			put("leftMiddle", "LF_MIDDLE");
-			put("leftRing", "LF_RING");
-			put("leftThumb", "LF_THUMB");
-			put("rightIndex", "RF_INDEX");
-			put("rightLittle", "RF_LITTLE");
-			put("rightMiddle", "RF_MIDDLE");
-			put("rightRing", "RF_RING");
-			put("rightThumb", "RF_THUMB");
-			put("LeftEye", "L_IRIS");
-			put("RightEye", "R_IRIS");
-			put("LeftEye.png", "LEFT");
-			put("RightEye.png", "RIGHT");
-		}
-
-	};
-
-	public static final Map<String, String> uIToMDSExceptionMap = new HashMap<String, String>() {
-
-		{
-			put("leftIndex", "LF_INDEX");
-			put("leftLittle", "LF_LITTLE");
-			put("leftMiddle", "LF_MIDDLE");
-			put("leftRing", "LF_RING");
-			put("leftThumb", "LF_THUMB");
-			put("rightIndex", "RF_INDEX");
-			put("rightLittle", "RF_LITTLE");
-			put("rightMiddle", "RF_MIDDLE");
-			put("rightRing", "RF_RING");
-			put("rightThumb", "RF_THUMB");
-			put("leftEye", "L_IRIS");
-			put("rightEye", "R_IRIS");
-		}
-
-	};
-
-	public static final Map<String, String> userOnBoardBioFlag = new HashMap<String, String>() {
-
-		{
-			put("Left Index", "Left IndexFinger");
-			put("Left Little", "Left LittleFinger");
-			put("Left Middle", "Left MiddleFinger");
-			put("Left Ring", "Left RingFinger");
-			put("Left Thumb", "Left Thumb");
-			put("Right Index", "Right IndexFinger");
-			put("Right Little", "Right LittleFinger");
-			put("Right Middle", "Right MiddleFinger");
-			put("Right Ring", "Right RingFinger");
-			put("Right Thumb", "Right Thumb");
-			put("Left Iris", "Left");
-			put("Right Iris", "Right");
-
-		}
-
-	};
-
 	public static final String RESPONSE_SIGNATURE = "response-signature";
 	public static final String ON_BOARD_FACE = "FACE";
 	public static final String USER_ON_BOARD_IDA_AUTH = "mosip.registration.onboarduser_ida_auth";
@@ -1685,45 +1625,6 @@ public class RegistrationConstants {
 	public static final String indBiometrics = "individualBiometrics";
 
 	public static final String ID_SCHEMA_SYNC_SERVICE = "idschema_key";
-
-	public static final Map<String, String> regBioMap = new HashMap<String, String>() {
-
-		{
-			put("leftIndex", LeftIndex);
-			put("leftLittle", LeftLittle);
-			put("leftMiddle", LeftMiddle);
-			put("leftRing", LeftRing);
-			put("leftThumb", LeftThumb);
-			put("rightIndex", RightIndex);
-			put("rightLittle", RightLittle);
-			put("rightMiddle", RightMiddle);
-			put("rightRing", RightRing);
-			put("rightThumb", RightThumb);
-			put("leftEye", LEFT_EYE);
-			put("rightEye", RIGHT_EYE);
-
-		}
-
-	};
-
-	public static final Map<String, String> mdsToRegBioMap = new HashMap<String, String>() {
-
-		{
-			put("LF_INDEX", LeftIndex);
-			put("LF_LITTLE", LeftLittle);
-			put("LF_MIDDLE", LeftMiddle);
-			put("LF_RING", LeftRing);
-			put("LF_THUMB", LeftThumb);
-			put("RF_INDEX", RightIndex);
-			put("RF_LITTLE", RightLittle);
-			put("RF_MIDDLE", RightMiddle);
-			put("RF_RING", RightRing);
-			put("RF_THUMB", RightThumb);
-			put("L_IRIS", LEFT_EYE);
-			put("R_IRIS", RIGHT_EYE);
-		}
-
-	};
 
 	public static final String BIOMETRICS_TYPE = "biometricsType";
 	public static final String APPLICANT = "applicant";
