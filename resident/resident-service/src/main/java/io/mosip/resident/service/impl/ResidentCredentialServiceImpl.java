@@ -6,6 +6,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang.RandomStringUtils;
@@ -213,7 +214,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialRequestStatusResponseDto credentialRequestStatusResponseDto=new CredentialRequestStatusResponseDto();
 		try {
-			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+			UUID requestUUID = UUID.fromString(requestId);
+			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusDto = JsonUtil
@@ -235,7 +237,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (ResidentServiceCheckedException e) {
+		} 
+		catch (IllegalArgumentException e) {
+			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
+					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
+		} 
+		catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
