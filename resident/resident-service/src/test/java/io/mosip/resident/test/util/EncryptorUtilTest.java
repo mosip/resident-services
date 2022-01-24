@@ -25,7 +25,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -69,11 +70,14 @@ public class EncryptorUtilTest {
 
     @Test
     public void encryptTest() throws Exception {
+        String encryptedData = "ew0KCSJpZGVudGl0eSI6IHsNCgkJImRhdGVPZkJpcnRoIjogIjE5NzgvMDEvMDEiLA0KCQkiSURTY2hlbWFWZXJzaW9uIjogMC4xLA0KCQkiVUlOIjogIjkzNDIzNjEwMzgiDQoJfQ0KfQ";
         DecryptResponseDto decryptResponseDto = new DecryptResponseDto();
-        decryptResponseDto.setData("ew0KCSJpZGVudGl0eSI6IHsNCgkJImRhdGVPZkJpcnRoIjogIjE5NzgvMDEvMDEiLA0KCQkiSURTY2hlbWFWZXJzaW9uIjogMC4xLA0KCQkiVUlOIjogIjkzNDIzNjEwMzgiDQoJfQ0KfQ");
+        decryptResponseDto.setData(encryptedData);
         io.mosip.resident.dto.ResponseWrapper<DecryptResponseDto> responseWrapper = new io.mosip.resident.dto.ResponseWrapper<>();
         responseWrapper.setResponse(decryptResponseDto);
-        String encryptedJsonString = "{ data: ew0KCSJpZGVudGl0eSI6IHsNCgkJImRhdGVPZkJpcnRoIjogIjE5NzgvMDEvMDEiLA0KCQkiSURTY2hlbWFWZXJzaW9uIjogMC4xLA0KCQkiVUlOIjogIjkzNDIzNjEwMzgiDQoJfQ0KfQ }";
+        String encryptedJsonString = "{\n" +
+                "\"data\": " + encryptedData +
+                "\n}";
 
         when(env.getProperty(Mockito.anyString())).thenReturn(encryptAPIUrl);
         when(restClientService.postApi(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(responseWrapper);
@@ -82,7 +86,7 @@ public class EncryptorUtilTest {
 
         byte[] bytes = "Encrypt String".getBytes();
         String refId = "CenterID_MachineID";
-        String encryptedString = encryptorUtil.encrypt(bytes, refId);
+        encryptorUtil.encrypt(bytes, refId);
 
         verify(env, times(1)).getProperty(Mockito.anyString());
         verify(restClientService, times(1)).postApi(stringCaptor.capture(), Mockito.any(), requestCaptor.capture(), Mockito.any(Class.class));
