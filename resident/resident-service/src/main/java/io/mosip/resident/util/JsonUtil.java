@@ -49,8 +49,8 @@ public class JsonUtil {
 
 	/**
 	 * This method returns the Json Object as value from identity.json
-	 * object(JSONObject). jsonObject -> then identity demographic json object key
-	 * -> demographic json label name EX:- demographicIdentity : { "identity" : {
+	 * object(JSONObject). jsonObject - then identity demographic json object key
+	 * - demographic json label name EX:- demographicIdentity : { "identity" : {
 	 * "fullName" : [ { "language" : "eng", "value" : "Taleev Aalam" }, {
 	 * "language": "ara", "value" : "Taleev Aalam" } ] }
 	 *
@@ -70,8 +70,8 @@ public class JsonUtil {
 	}
 
 	/**
-	 * This method returns JSONArray from JSONObject. argument 'jsonObject' ->
-	 * demographic identity json as JSONObject. argument key -> label name of
+	 * This method returns JSONArray from JSONObject. argument 'jsonObject' -
+	 * demographic identity json as JSONObject. argument key - label name of
 	 * demographic identity json. Ex:- "identity" : { "fullName" : [ { "language" :
 	 * "eng", "value" : "Taleev Aalam" }, { "language" : "ara", "value" : "Taleev
 	 * Aalam" } ] }

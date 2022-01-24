@@ -9,7 +9,7 @@ public interface ResidentOtpService {
 	/**
 	 * Generate otp.
 	 *
-	 * @param otpRequest OtpRequestDTO request.
+	 * @param otpRequestDTO OtpRequestDTO request.
 	 * @return OtpResponseDTO object return.
 	 * @throws IdAuthenticationBusinessException exception
 	 */
