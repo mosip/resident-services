@@ -237,7 +237,7 @@ public class Utilities {
 	}
 
     public String getJson(String configServerFileStorageURL, String uri) {
-        if (StringUtils.isEmpty(regProcessorIdentityJson)) {
+        if (StringUtils.isBlank(regProcessorIdentityJson)) {
             return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
         }
         return regProcessorIdentityJson;
@@ -337,12 +337,12 @@ public class Utilities {
 	public String getLanguageCode() {
 		String langCode=null;
 		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
-		if (!StringUtils.isEmpty(mandatoryLanguages)) {
+		if (!StringUtils.isBlank(mandatoryLanguages)) {
 			String[] lanaguages = mandatoryLanguages.split(",");
 			langCode = lanaguages[0];
 		} else {
 			String optionalLanguages = env.getProperty("mosip.optional-languages");
-			if (!StringUtils.isEmpty(optionalLanguages)) {
+			if (!StringUtils.isBlank(optionalLanguages)) {
 				String[] lanaguages = optionalLanguages.split(",");
 				langCode = lanaguages[0];
 			}

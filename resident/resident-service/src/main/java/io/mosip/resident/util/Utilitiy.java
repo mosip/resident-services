@@ -146,7 +146,7 @@ public class Utilitiy {
 			List<String> mapperJsonKeys = new ArrayList<>(mapperIdentity.keySet());
 
 			String preferredLanguage = getPreferredLanguage(demographicIdentity);
-			if (StringUtils.isEmpty(preferredLanguage)) {
+			if (StringUtils.isBlank(preferredLanguage)) {
 				List<String> defaultTemplateLanguages = getDefaultTemplateLanguages();
 				if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
 					Set<String> dataCapturedLanguages = getDataCapturedLanguages(mapperIdentity, demographicIdentity);
@@ -190,7 +190,7 @@ public class Utilitiy {
 	private String getPreferredLanguage(JSONObject demographicIdentity) {
 		String preferredLang = null;
 		String preferredLangAttribute = env.getProperty("mosip.default.user-preferred-language-attribute");
-		if (!StringUtils.isEmpty(preferredLangAttribute)) {
+		if (!StringUtils.isBlank(preferredLangAttribute)) {
 			Object object = demographicIdentity.get(preferredLangAttribute);
 			if(object!=null) {
 				preferredLang = String.valueOf(object);
@@ -219,7 +219,7 @@ public class Utilitiy {
 
 	private List<String> getDefaultTemplateLanguages() {
 		String defaultLanguages = env.getProperty("mosip.default.template-languages");
-		if (!StringUtils.isEmpty(defaultLanguages)) {
+		if (!StringUtils.isBlank(defaultLanguages)) {
 			String[] lanaguages = defaultLanguages.split(",");
 			List<String> strList = Lists.newArrayList(lanaguages);
 			return strList;
@@ -228,7 +228,7 @@ public class Utilitiy {
 	}
 
     public String getMappingJson() {
-        if (StringUtils.isEmpty(regProcessorIdentityJson)) {
+        if (StringUtils.isBlank(regProcessorIdentityJson)) {
             return residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         }
         return regProcessorIdentityJson;
