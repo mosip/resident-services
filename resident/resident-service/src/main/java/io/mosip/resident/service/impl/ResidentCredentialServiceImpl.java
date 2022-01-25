@@ -370,7 +370,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Scheduled(fixedDelayString = "${mosip.resident.pingeneration.refresh.millisecs:1800000}",
 			initialDelayString = "${mosip.resident.pingeneration.refresh.delay-on-startup.millisecs:5000}")
-	private void instantiate() {
+	public void instantiate() {
 		logger.debug("Instantiating SecureRandom for credential pin generation............");
 		try {
 			random = SecureRandom.getInstance("SHA1PRNG");
