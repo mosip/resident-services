@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -74,7 +73,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Value("${mosip.resident.pin.max:999999}")
 	private int max;
 
-	@Value("${mosip.resident.pin.max:100000}")
+	@Value("${mosip.resident.pin.min:100000}")
 	private int min;
 
 	@Autowired
