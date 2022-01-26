@@ -1,0 +1,13 @@
+{
+  "id": "mosip.vid.read",
+  "version": "v1",
+  "responsetime": "2022-01-25T16:57:35.772Z",
+  "metadata": null,
+  "response": {
+    "vidStatus": null,
+    "restoredVid": null,
+    "UIN": "2076091831",
+    "VID": null
+  },
+  "errors": []
+}
