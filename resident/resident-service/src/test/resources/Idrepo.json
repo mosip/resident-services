@@ -1,0 +1,149 @@
+{
+  "id": "mosip.id.read",
+  "version": "v1",
+  "responsetime": "2022-01-25T15:30:10.829Z",
+  "metadata": null,
+  "response": {
+    "status": "ACTIVATED",
+    "identity": {
+      "residenceStatus": [
+        {
+          "language": "eng",
+          "value": "FR"
+        },
+        {
+          "language": "ara",
+          "value": "أجنبي"
+        }
+      ],
+      "IDSchemaVersion": 0.3,
+      "UIN": "2076091831",
+      "fullName": [
+        {
+          "language": "eng",
+          "value": "test1"
+        },
+        {
+          "language": "ara",
+          "value": "TestQA9_ara"
+        }
+      ],
+      "dateOfBirth": "1993/01/03",
+      "civilRegistryNumber": "123456",
+      "birthCertificateNumber": "34567891",
+      "flagidcs": [
+        {
+          "language": "eng",
+          "value": "non"
+        },
+        {
+          "language": "ara",
+          "value": "عدم"
+        }
+      ],
+      "listCountry": [
+        {
+          "language": "eng",
+          "value": "Egypt"
+        },
+        {
+          "language": "ara",
+          "value": "مصر"
+        }
+      ],
+      "placeOfBirth": [
+        {
+          "language": "eng",
+          "value": "Casa-Maarif"
+        },
+        {
+          "language": "ara",
+          "value": "كازا مريف"
+        }
+      ],
+      "flagb": [
+        {
+          "language": "eng",
+          "value": "Oui"
+        },
+        {
+          "language": "ara",
+          "value": "أوي"
+        }
+      ],
+      "referenceResidencyNumber": "212121223647",
+      "resOuPass": [
+        {
+          "language": "eng",
+          "value": "Passport"
+        },
+        {
+          "language": "ara",
+          "value": "جواز سفر"
+        }
+      ],
+      "passportNumber": "SA123456",
+      "gender": [
+        {
+          "language": "eng",
+          "value": "Male"
+        },
+        {
+          "language": "ara",
+          "value": "الذكر"
+        }
+      ],
+      "region": [
+        {
+          "language": "eng",
+          "value": "RSK"
+        }
+      ],
+      "province": [
+        {
+          "language": "eng",
+          "value": "Kenitra"
+        }
+      ],
+      "city": [
+        {
+          "language": "eng",
+          "value": "Kenitra"
+        }
+      ],
+      "postalCode": "14022",
+      "phone": "1234567890",
+      "preferredLang": "eng",
+      "email": "likhitha924@gmail.com",
+      "zone": [
+        {
+          "language": "eng",
+          "value": "QRHS"
+        }
+      ],
+      "proofOfIdentity": {
+        "format": "txt",
+        "type": "DOC001",
+        "value": "fileReferenceID"
+      },
+      "proofOfRelationship": {
+        "format": "pdf",
+        "type": "DOC001",
+        "value": "fileReferenceID"
+      },
+      "proofOfDateOfBirth": {
+        "format": "pdf",
+        "type": "passport",
+        "value": "fileReferenceID"
+      },
+      "individualBiometrics": {
+        "format": "cbeff",
+        "version": 1,
+        "value": "fileReferenceID"
+      }
+    },
+    "documents": [],
+    "verifiedAttributes": []
+  },
+  "errors": []
+}
