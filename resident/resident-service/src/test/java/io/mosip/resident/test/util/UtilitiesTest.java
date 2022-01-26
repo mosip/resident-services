@@ -2,7 +2,6 @@ package io.mosip.resident.test.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -38,7 +37,8 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -140,7 +140,7 @@ public class UtilitiesTest {
         vidResponseDTO1.setErrors(errorResponse);
         Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(vidResponseDTO1);
 
-        // UIN
+        // VID
         utilities.getUinByVid("6241572684701486");
     }
 
@@ -196,8 +196,6 @@ public class UtilitiesTest {
         responseDTO1.setStatus("Activated");
         responseDTO1.setIdentity(JsonUtil.getJSONObject(identity, "response").get("identity"));
         idResponseDTO1.setResponse(responseDTO1);
-
-        //     Mockito.when(residentRestTemplate.getForObject(anyString(), any(Class.class))).thenReturn(idResponseDTO1);
     }
 
     @Test
