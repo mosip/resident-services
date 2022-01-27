@@ -190,12 +190,6 @@ public class UtilitiesTest {
         JSONObject registrationProcessorMappingJson = utilities.getRegistrationProcessorMappingJson();
         assertEquals(registrationProcessorMappingJson, identityObject);
         verify(utilities, never()).getJson(anyString(), anyString());
-
-        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
-        ResponseDTO1 responseDTO1 = new ResponseDTO1();
-        responseDTO1.setStatus("Activated");
-        responseDTO1.setIdentity(JsonUtil.getJSONObject(identity, "response").get("identity"));
-        idResponseDTO1.setResponse(responseDTO1);
     }
 
     @Test
