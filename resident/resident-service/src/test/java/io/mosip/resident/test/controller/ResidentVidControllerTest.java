@@ -126,7 +126,6 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
-	@Ignore
 	public void vidCreationFailureTest() throws Exception {
 
 		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class)))
@@ -136,7 +135,7 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(getRequest());
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-406")));
+				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-418")));
 	}
 
 	@Test
@@ -257,7 +256,6 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
-	@Ignore
 	public void vidRevokingFailureTest() throws Exception {
 
 		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))
@@ -271,7 +269,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-407")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-418")));
 
 	}
 
