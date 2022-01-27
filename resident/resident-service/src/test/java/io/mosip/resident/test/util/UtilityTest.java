@@ -16,7 +16,6 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,7 +33,6 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.IdRepoResponseDto;
-import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -89,24 +87,15 @@ public class UtilityTest {
 	}
 
 	@Test
-	@Ignore
 	public void testRetrieveVidSuccess() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		List<String> pathsegments = new ArrayList<>();
-		pathsegments.add("5628965106742572");
-		VidGeneratorResponseDto vidResponse = new VidGeneratorResponseDto();
-		vidResponse.setUIN("3527812406");
-		vidResponse.setVidStatus("Active");
-		ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(vidResponse);
-
-		ResponseWrapper<IdRepoResponseDto> response1 = new ResponseWrapper<>();
+		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
 		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
-		response1.setResponse(idRepoResponseDto);
+		response.setResponse(idRepoResponseDto);
 
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
-				any(), any(Class.class))).thenReturn(response).thenReturn(response1);
+				any(), any(Class.class))).thenReturn(response);
 		JSONObject jsonUsingVID = utility.retrieveIdrepoJson("5628965106742572");
 		assertEquals(jsonUsingVID.get("UIN"), JsonUtil.getJSONObject(identity, "identity").get("UIN"));
 	}
@@ -140,12 +129,6 @@ public class UtilityTest {
                 any(), any(Class.class))).thenThrow(apiResourceAccessExp);
 		utility.retrieveIdrepoJson("3527812406");
 
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	@Ignore
-	public void tokenGeneratorException() throws ResidentServiceCheckedException {
-		utility.retrieveIdrepoJson("3527812406");
 	}
 
 	@Test(expected = IdRepoAppException.class)
