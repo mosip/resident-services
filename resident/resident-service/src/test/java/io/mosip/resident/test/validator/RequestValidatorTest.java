@@ -613,13 +613,12 @@ public class RequestValidatorTest {
 
 	}
 
-	@Ignore
 	@Test(expected = InvalidInputException.class)
 	public void testGetStatusValidIndividualId() throws Exception {
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(false);
 		RequestDTO requestDTO = new RequestDTO();
 		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
-		requestDTO.setIndividualIdType("RID");
+		requestDTO.setIndividualIdType("INVALID_RID");
 		requestDTO.setIndividualId("123456");
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
