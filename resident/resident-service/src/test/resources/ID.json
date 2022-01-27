@@ -1,6 +1,7 @@
 {
 	"status": "ACTIVATED",
 	"identity": {
+		"preferredLang": "eng",
 		"proofOfAddress": {
 			"value": "POA_Rental contract",
 			"type": "RNC",
