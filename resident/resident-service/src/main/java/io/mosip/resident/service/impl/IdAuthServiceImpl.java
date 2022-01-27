@@ -215,13 +215,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 		X509Certificate req509 = (X509Certificate) convertToCertificate(publicKeyResponsedto.getCertificate());
 		thumbprint = CryptoUtil.encodeBase64(getCertificateThumbprint(req509));
 
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), refId,
-				"IdAuthServiceImpl::encryptRSA():: ENCRYPTIONSERVICE GET service call ended with response data "
-						+ JsonUtils.javaObjectToJsonString(responseWrapper));
-
 		PublicKey publicKey = req509.getPublicKey();
 		return encryptor.asymmetricEncrypt(publicKey, sessionKey);
-
 	}
 
 	@Override

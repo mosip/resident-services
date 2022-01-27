@@ -6,6 +6,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
@@ -130,7 +131,6 @@ public class IdAuthServiceTest {
         idAuthService.validateOtp(transactionID, individualId, otp);
     }
 
-    @Ignore
     @Test
     public void validateOtpSuccessTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
         String transactionID = "12345";
@@ -196,7 +196,6 @@ public class IdAuthServiceTest {
             throws IOException, ApisResourceAccessException, OtpValidationFailedException {
         String transactionID = "12345";
         String individualId = "individual";
-        String individualIdType = IdType.UIN.name();
         String otp = "12345";
 
         String request = "request";
@@ -230,6 +229,16 @@ public class IdAuthServiceTest {
         ResponseWrapper<PublicKeyResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(responseDto);
 
+        ErrorDTO error = new ErrorDTO(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+        List<ErrorDTO> errorResponse = new ArrayList<>();
+        errorResponse.add(error);
+
+        IdAuthResponseDto authResponse = new IdAuthResponseDto();
+        authResponse.setAuthStatus(true);
+        AuthResponseDTO response = new AuthResponseDTO();
+        response.setResponse(authResponse);
+        response.setErrors(errorResponse);
+
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
         when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
@@ -237,6 +246,7 @@ public class IdAuthServiceTest {
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
         doReturn(responseDto).when(mapper).readValue(anyString(), any(Class.class));
+        when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
 
         idAuthService.validateOtp(transactionID, individualId, otp);
     }
