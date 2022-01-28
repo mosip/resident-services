@@ -1,39 +1,10 @@
 package io.mosip.resident.test.service;
 
-import static org.mockito.ArgumentMatchers.any;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.resident.constant.IdType;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.RegProcCommonResponseDto;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -44,8 +15,31 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
@@ -105,14 +99,7 @@ public class ResidentServiceResUpdateTest {
 
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
 				Mockito.anyString())).thenReturn(true);
-		ResponseWrapper<RegProcCommonResponseDto> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setId("mosip.resident.uin");
-		RegProcCommonResponseDto response = new RegProcCommonResponseDto();
-		response.setMessage("packet received");
-		response.setRegistrationId("10008100670001720191120095702");
-		response.setStatus("success");
-		responseWrapper.setResponse(response);
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent");
 		notificationResponse.setStatus("success");
@@ -124,11 +111,49 @@ public class ResidentServiceResUpdateTest {
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
-	@Test
-	@Ignore
-	public void reqUinUpdateSuccessTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		residentServiceImpl.reqUinUpdate(dto);
-	}
+    @Test(expected = ResidentServiceException.class)
+    public void reqUinUpdatePublicKeyManagerThrowsApiResourceExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
+        PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
+        PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse publicKeyResponse = new PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse();
+        publicKeyResponse.setPublicKey(publicKey);
+        responseDto.setId(null);
+        responseDto.setVersion(null);
+        responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
+        responseDto.setResponse(publicKeyResponse);
+        responseDto.setErrors(new ArrayList<>());
+        when(residentServiceRestClient.postApi(anyString(), any(), any(), any(Class.class))).thenReturn(responseDto);
+        residentServiceImpl.reqUinUpdate(dto);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void reqUinUpdateThrowsResidentServiceTPMSignKeyExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
+        PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
+        List<PacketSignPublicKeyErrorDTO> errorDTOS = new ArrayList<>();
+        PacketSignPublicKeyErrorDTO errorDTO = new PacketSignPublicKeyErrorDTO();
+        errorDTO.setErrorCode(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode());
+        errorDTO.setMessage(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+        errorDTOS.add(errorDTO);
+        responseDto.setId(null);
+        responseDto.setVersion(null);
+        responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
+        responseDto.setResponse(null);
+        responseDto.setErrors(errorDTOS);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(responseDto);
+        residentServiceImpl.reqUinUpdate(dto);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void reqUinUpdateThrowsResidentServiceTPMSignKeyExceptionWithNullResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
+        PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
+        responseDto.setId(null);
+        responseDto.setVersion(null);
+        responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
+        responseDto.setResponse(null);
+        responseDto.setErrors(new ArrayList<>());
+        when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(responseDto);
+        residentServiceImpl.reqUinUpdate(dto);
+    }
 
 	@Test(expected = ResidentServiceException.class)
 	public void validateOtpException()
@@ -138,7 +163,7 @@ public class ResidentServiceResUpdateTest {
 		residentServiceImpl.reqUinUpdate(dto);
 
 	}
-	
+
 	@Test(expected = ResidentServiceException.class)
 	public void JsonParsingException() throws ResidentServiceCheckedException {
 		Mockito.when(utility.getMappingJson()).thenReturn(null);
@@ -165,7 +190,7 @@ public class ResidentServiceResUpdateTest {
 		Mockito.when(residentUpdateService.createPacket(any())).thenThrow(new BaseCheckedException("erorcode", "badgateway", new RuntimeException()));
 		residentServiceImpl.reqUinUpdate(dto);
 	}
-	
+
 	@Test(expected = ResidentServiceException.class)
 	public void otpValidationFailedException() throws OtpValidationFailedException, ResidentServiceCheckedException {
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
