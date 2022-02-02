@@ -1,4 +1,6 @@
-## resident-services
+# Resident Services
 
-Contains files of resident-services of MOSIP.
+## Overview
+Refer [here](https://docs.mosip.io/1.2.0/modules/resident-services).
+
 
