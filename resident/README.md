@@ -9,4 +9,4 @@ For detailed documentation, please [read here](https://docs.mosip.io/1.2.0/modul
 API documentation is available [here](https://docs.mosip.io/1.2.0/api)
 
 ## License
-This project is licensed under the terms of [Mozilla Public License 2.0](https://github.com/mosip/registration/blob/1.2.0-rc2/LICENSE).
+This project is licensed under the terms of [Mozilla Public License 2.0](https://github.com/mosip/resident-services/blob/1.2.0-rc2/LICENSE).
