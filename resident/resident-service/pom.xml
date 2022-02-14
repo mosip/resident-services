@@ -7,15 +7,15 @@
 	<parent>
 		<groupId>io.mosip.resident</groupId>
 		<artifactId>resident-parent</artifactId>
-		<version>1.2.0-SNAPSHOT</version>
+		<version>1.2.0</version>
 	</parent>
 	<artifactId>resident-service</artifactId>
 	<name>resident-service</name>
-	<version>1.2.0-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<properties>
-		<commons.packet.manager.version>1.2.0-SNAPSHOT</commons.packet.manager.version>
-		<kernel.core.version>1.2.0-SNAPSHOT</kernel.core.version>
-		<kernel-keymanager-service.version>1.2.0-SNAPSHOT</kernel-keymanager-service.version>
+		<commons.packet.manager.version>1.2.0</commons.packet.manager.version>
+		<kernel.core.version>1.2.0</kernel.core.version>
+		<kernel-keymanager-service.version>1.2.0</kernel-keymanager-service.version>
 		<springdoc.version>1.5.10</springdoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -155,6 +155,11 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 			<version>4.1.72.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-auth-adapter</artifactId>
+			<version>1.2.0-rc2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 		<build>

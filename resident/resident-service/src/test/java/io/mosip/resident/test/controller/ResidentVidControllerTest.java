@@ -355,7 +355,6 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk());
-//				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test

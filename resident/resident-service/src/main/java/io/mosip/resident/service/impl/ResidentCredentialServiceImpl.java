@@ -2,18 +2,20 @@ package io.mosip.resident.service.impl;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -68,6 +70,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Value("${APPLICATION_Id}")
 	private String applicationId;
 
+	@Value("${mosip.resident.pin.max:999999}")
+	private int max;
+
+	@Value("${mosip.resident.pin.min:100000}")
+	private int min;
+
 	@Autowired
 	private ObjectMapper mapper;
 
@@ -84,6 +92,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Autowired
 	NotificationService notificationService;
+
+	private SecureRandom random;
 	
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
@@ -171,8 +181,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
 		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		try {
-
-			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+			UUID requestUUID = UUID.fromString(requestId);
+			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
@@ -193,17 +203,21 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					env.getProperty(ApiName.DECRYPT_API_URL.name()), MediaType.APPLICATION_JSON, request,
 					String.class);
 			CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
-			byte[] pdfBytes = CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
-			return pdfBytes;
+			return CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IllegalArgumentException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
+					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
+
 	}
 
 	@Override
@@ -213,7 +227,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialRequestStatusResponseDto credentialRequestStatusResponseDto=new CredentialRequestStatusResponseDto();
 		try {
-			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+			UUID requestUUID = UUID.fromString(requestId);
+			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto =residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusDto = JsonUtil
@@ -235,7 +250,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (ResidentServiceCheckedException e) {
+		} 
+		catch (IllegalArgumentException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
+					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
+		} 
+		catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
@@ -269,7 +290,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		Map<String, Object> additionalAttributes = new HashedMap();
 		CredentialCancelRequestResponseDto credentialCancelRequestResponseDto=new CredentialCancelRequestResponseDto();
 		try {
-				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestId;
+				UUID requestUUID = UUID.fromString(requestId);
+				String credentialReqCancelUrl = env.getProperty(ApiName.CREDENTIAL_CANCELREQ_URL.name()) + requestUUID;
 				URI credentailReqCancelUri = URI.create(credentialReqCancelUrl);
 				response = residentServiceRestClient.getApi(credentailReqCancelUri, ResponseWrapper.class);
 				if (response.getErrors() != null && !response.getErrors().isEmpty()) {
@@ -287,6 +309,11 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
+		catch (IllegalArgumentException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
+					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
+		} 
 		catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
@@ -334,14 +361,23 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	public String generatePin() {
-		SecureRandom random = new SecureRandom();
-		int result = random.nextInt(1000000);
-		while (result < 100000) {
-			result = random.nextInt(1000000);
-		}
-		return String.valueOf(result);
+		if (random == null)
+			instantiate();
+		int randomInteger = random.nextInt(max - min) + min;
+		return String.valueOf(randomInteger);
 	}
 
+
+	@Scheduled(fixedDelayString = "${mosip.resident.pingeneration.refresh.millisecs:1800000}",
+			initialDelayString = "${mosip.resident.pingeneration.refresh.delay-on-startup.millisecs:5000}")
+	public void instantiate() {
+		logger.debug("Instantiating SecureRandom for credential pin generation............");
+		try {
+			random = SecureRandom.getInstance("SHA1PRNG");
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Could not instantiate SecureRandom for pin generation", e);
+		}
+	} 
 
 	private NotificationResponseDTO sendNotification(String id,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
