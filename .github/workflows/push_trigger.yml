@@ -4,12 +4,13 @@ name: Maven Package upon a push
 on:
   push:
     branches:
+      - '!release-branch'
+      - release-1*
       - master
       - 1.*
       - develop
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -20,6 +21,7 @@ jobs:
         java-version: 11
         server-id: ossrh # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
+        
     - name: Setup branch and env
       run: |
           # Strip git ref prefix from version
@@ -48,10 +50,10 @@ jobs:
     - name: Build with Maven
       run: |
         cd resident
-        mvn -B package --file pom.xml -s $GITHUB_WORKSPACE/settings.xml
-    
+        mvn -B package --file pom.xml -s $GITHUB_WORKSPACE/settings.xml    
       env:
         GPG_TTY: $(tty)
+        
     - name: Ready the springboot artifacts
       run: find -name '*.jar' -executable -type f  -exec zip release.zip {} +
 
@@ -60,19 +62,27 @@ jobs:
       with:
         name: release
         path: ./release.zip
-  
+
+    - name: Analyze with SonarCloud
+      run: |
+        cd resident
+        mvn -B -Dgpg.skip verify sonar:sonar -Dsonar.projectKey=mosip_${{ github.event.repository.name }} -Dsonar.organization=${{ secrets.ORG_KEY }} -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        
     - uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
         fields: repo,message,commit,workflow,job # selectable (default: repo,message)
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEVOPS_WEBHOOK }} # required
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
       if: failure() # Pick up events even if the job fails or is canceled.
 
-  publish_to_nexus:
 
+  publish_to_nexus:
+    if: "!contains(github.ref, 'master')"
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
@@ -112,33 +122,33 @@ jobs:
 
     - name: Publish the maven package
       run: |
-        cd resident && mvn deploy -DskipTests -DaltDeploymentRepository=ossrh::default::${{ secrets.RELEASE_URL }} -s $GITHUB_WORKSPACE/settings.xml -f pom.xml
+        cd resident && mvn deploy  -DaltDeploymentRepository=ossrh::default::${{ secrets.OSSRH_SNAPSHOT_URL }} -s $GITHUB_WORKSPACE/settings.xml -f pom.xml
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         GPG_TTY: $(tty)
+        
     - uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
         fields: repo,message,commit,workflow,job # selectable (default: repo,message)
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEVOPS_WEBHOOK }} # required
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
       if: failure() # Pick up events even if the job fails or is canceled.
 
   docker-resident-service:
     needs: build
-
     runs-on: ubuntu-latest
     env:
       NAMESPACE: ${{ secrets.dev_namespace_docker_hub }}
       SERVICE_NAME: resident-service
       SERVICE_LOCATION: resident/resident-service
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v1
         with:
           name: release
           path: ./
+          
       - name: Setup branch and version
         run: |
           # Strip git ref prefix from version
@@ -154,14 +164,11 @@ jobs:
       - name: Unzip and extract the resident-service
         run: unzip -uj "release.zip" "${{ env.SERVICE_LOCATION }}/target/*" -d "./${{ env.SERVICE_LOCATION }}/target"
       
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"      
-      
       - name: Build image
         run: |
           cd "./${{env.SERVICE_LOCATION}}"
-          docker build . --build-arg SOURCE=mosip --build-arg COMMIT_HASH=$(git rev-parse HEAD) --build-arg COMMIT_ID=$(git rev-parse --short HEAD) --build-arg BUILD_TIME=${{steps.date.outputs.date}} --file Dockerfile --tag ${{ env.SERVICE_NAME }}
+          docker build . --file Dockerfile --tag ${{ env.SERVICE_NAME }}
+          
       - name: Log into registry
         run: echo "${{ secrets.release_docker_hub }}" | docker login -u ${{ secrets.actor_docker_hub }} --password-stdin
         
@@ -172,17 +179,22 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
           echo "push version ${{steps.getPomVersion.outputs.info}}"
-          VERSION=$BRANCH_NAME
+          if [[ $BRANCH_NAME == master ]]; then
+            VERSION=latest
+          else
+            VERSION=$BRANCH_NAME
+          fi
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
           docker tag $SERVICE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+          
       - uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,message,commit,workflow,job # selectable (default: repo,message)
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_DEVOPS_WEBHOOK }} # required
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} # required
         if: failure() # Pick up events even if the job fails or is canceled.
         
   sonar_analysis:
