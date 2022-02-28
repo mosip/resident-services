@@ -151,14 +151,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						e.getErrorText(), e);
 			}
-
-		catch (ResidentServiceCheckedException e) {
-
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
 		catch (ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
@@ -386,23 +378,5 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
-	/*
-	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
-	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
-	 * PartnerCredentialTypePolicyResponseDto policy = new
-	 * PartnerCredentialTypePolicyResponseDto();
-	 * policy.setCr_by(partnerCredentialTypePolicyDto.getCr_by());
-	 * policy.setCr_dtimes(partnerCredentialTypePolicyDto.getCr_dtimes());
-	 * policy.setCredentialType(partnerCredentialTypePolicyDto.getCredentialType());
-	 * policy.setIs_Active(partnerCredentialTypePolicyDto.getIs_Active());
-	 * policy.setPartnerId(partnerCredentialTypePolicyDto.getPartnerId());
-	 * policy.setPolicyDesc(partnerCredentialTypePolicyDto.getPolicyDesc());
-	 * policy.setPolicyId(policyId); policy.setPolicyName(policyName);
-	 * policy.setPolicyType(policyType); policy.setPublishDate(publishDate);
-	 * policy.setSchema(schema); policy.setStatus(status); policy.setUp_by(up_by);
-	 * policy.setUpd_dtimes(upd_dtimes); policy.setVersion(version);
-	 * policy.setValidTill(validTill);
-	 *
-	 * }
-	 */
+
 }
