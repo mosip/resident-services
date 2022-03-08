@@ -79,6 +79,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Value("${mosipbox.public.url:null}")
 	private String domainUrl;
 
+	@Value("${mosip.ida.env:Staging}")
+	private String idaEnv;
+
 	@Autowired
 	ObjectMapper mapper;
 
@@ -132,7 +135,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		authRequestDTO.setRequestTime(dateTime);
 		authRequestDTO.setTransactionID(transactionID);
-		authRequestDTO.setEnv(domainUrl);
+		authRequestDTO.setEnv(idaEnv);
 		authRequestDTO.setDomainUri(domainUrl);
 
 		AuthTypeDTO authType = new AuthTypeDTO();
