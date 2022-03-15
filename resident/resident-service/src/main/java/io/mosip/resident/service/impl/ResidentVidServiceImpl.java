@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,7 +165,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
         responseDto.setId(id);
         responseDto.setVersion(version);
-        responseDto.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+        responseDto.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
 
         return responseDto;
     }
@@ -180,7 +181,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         request.setId(vidCreateId);
         request.setVersion(version);
         request.setRequest(vidRequestDto);
-        request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+        request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
                 requestDto.getIndividualIdType(),
@@ -295,7 +296,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		responseDto.setId(revokeVidId);
 		responseDto.setVersion(version);
-		responseDto.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+		responseDto.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
 
 		return responseDto;
 	}
@@ -312,7 +313,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		request.setId(vidRevokeId);
 		request.setVersion(version);
 		request.setRequest(vidRequestDto);
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 				requestDto.getIndividualIdType(),

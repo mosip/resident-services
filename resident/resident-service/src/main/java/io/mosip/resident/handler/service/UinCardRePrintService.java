@@ -3,6 +3,7 @@ package io.mosip.resident.handler.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -165,7 +166,7 @@ public class UinCardRePrintService {
                     vidRequestDto.setVidType(env.getProperty(VID_TYPE));
                     request.setId(env.getProperty(VID_CREATE_ID));
                     request.setRequest(vidRequestDto);
-                    request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+                    request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
                     request.setVersion(env.getProperty(REG_PROC_APPLICATION_VERSION));
 
                     logger.debug(LoggerFileConstant.SESSIONID.toString(),
