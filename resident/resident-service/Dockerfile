@@ -67,7 +67,9 @@ ENV work_dir=/home/${container_user}
 
 ARG loader_path=${work_dir}/additional_jars/
 
-RUN mkdir -p ${loader_path}
+ARG object_path=${work_dir}/object-store/
+
+RUN mkdir -p ${loader_path} ${object_path}
 
 ENV loader_path_env=${loader_path}
 
