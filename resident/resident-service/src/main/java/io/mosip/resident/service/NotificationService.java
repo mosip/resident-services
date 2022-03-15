@@ -323,7 +323,7 @@ public class NotificationService {
 					+ secondaryLanguageMergeTemplate;
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String[] mailTo = { mailingAttributes.get("email").toString() };
+		String[] mailTo = { String.valueOf(mailingAttributes.get("email")) };
 		String[] mailCc = notificationEmails.split("\\|");
 
 		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);

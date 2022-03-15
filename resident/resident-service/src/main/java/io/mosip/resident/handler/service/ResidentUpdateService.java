@@ -1,6 +1,28 @@
 package io.mosip.resident.handler.service;
+import static io.mosip.resident.constant.RegistrationConstants.RID_DATE_FORMAT;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.commons.packet.dto.Document;
 import io.mosip.commons.packet.dto.PacketInfo;
 import io.mosip.commons.packet.dto.packet.PacketDto;
@@ -12,6 +34,7 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.FileUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
@@ -28,7 +51,6 @@ import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.validator.RequestHandlerRequestValidator;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.IdSchemaUtil;
@@ -36,25 +58,7 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
-import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @Component
 public class ResidentUpdateService {
@@ -173,19 +177,14 @@ public class ResidentUpdateService {
 				packetZipBytes = IOUtils.toByteArray(fis);
 
 				String rid = packetDto.getId();
-				String packetCreatedDateTime = rid.substring(rid.length() - 14);
-				String formattedDate = packetCreatedDateTime.substring(0, 8) + "T"
-						+ packetCreatedDateTime.substring(packetCreatedDateTime.length() - 6);
-				LocalDateTime ldt = LocalDateTime.parse(formattedDate,
-						DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
-				String creationTime = ldt.toString() + ".000Z";
+				String creationTimeISO = utilities.getISOTimeForRID(rid);
 
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(),
 						"ResidentUpdateServiceImpl::createPacket()::packet created and sent for sync service");
 
 				PacketGeneratorResDto packerGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
-						packetDto.getId(), creationTime, request.getRequestType().toString(),
+						packetDto.getId(), creationTimeISO, request.getRequestType().toString(),
 						packetZipBytes);
 
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),

@@ -1,6 +1,26 @@
 package io.mosip.resident.handler.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.commons.packet.dto.PacketInfo;
 import io.mosip.commons.packet.dto.packet.PacketDto;
 import io.mosip.commons.packet.exception.PacketCreatorException;
@@ -31,7 +51,6 @@ import io.mosip.resident.dto.VidRequestDto1;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.validator.RequestHandlerRequestValidator;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.IdSchemaUtil;
@@ -39,26 +58,7 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @Service
 public class UinCardRePrintService {
@@ -218,15 +218,10 @@ public class UinCardRePrintService {
 
                 packetZipBytes = IOUtils.toByteArray(fis);
                 String rid = packetDto.getId();
-                String packetCreatedDateTime = rid.substring(rid.length() - 14);
-                String formattedDate = packetCreatedDateTime.substring(0, 8) + "T"
-                        + packetCreatedDateTime.substring(packetCreatedDateTime.length() - 6);
-                LocalDateTime ldt = LocalDateTime.parse(formattedDate,
-                        DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
-                String creationTime = ldt.toString() + ".000Z";
+				String creationTimeISO = utilities.getISOTimeForRID(rid);
 
                 packetGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
-                        packetDto.getId(), creationTime, regType, packetZipBytes);
+                        packetDto.getId(), creationTimeISO, regType, packetZipBytes);
 
             }
             return packetGeneratorResDto;

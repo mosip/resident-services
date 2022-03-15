@@ -24,9 +24,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+
+import static io.mosip.resident.constant.RegistrationConstants.RID_DATE_FORMAT;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -357,6 +362,14 @@ public class Utilities {
 
         return mapList;
     }
+    
+    public String getISOTimeForRID(String rid) {
+		String packetCreatedDateTime = rid.substring(rid.length() - 14);
+		LocalDateTime ldt = LocalDateTime.parse(packetCreatedDateTime,
+				DateTimeFormatter.ofPattern(RID_DATE_FORMAT));
+		String creationTimeISO = DateUtils.formatToISOString(ldt);
+		return creationTimeISO;
+	}
 
 
 }
