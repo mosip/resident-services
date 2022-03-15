@@ -81,7 +81,6 @@ public class NotificationService {
 	private AuditUtil audit;
 
 	private static final String LINE_SEPARATOR = new  StringBuilder().append('\n').append('\n').append('\n').toString();
-	private static final String BOTH = "both";
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
 	private static final String SUBJECT = "_SUB";
@@ -322,7 +321,7 @@ public class NotificationService {
 			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String[] mailTo = { mailingAttributes.get("email").toString() };
+		String[] mailTo = { String.valueOf(mailingAttributes.get("email")) };
 		String[] mailCc = notificationEmails.split("\\|");
 
 		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);

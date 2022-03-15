@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -33,6 +32,7 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.FileUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
@@ -175,13 +175,7 @@ public class ResidentUpdateService {
 
 				packetZipBytes = IOUtils.toByteArray(fis);
 
-				String rid = packetDto.getId();
-				String packetCreatedDateTime = rid.substring(rid.length() - 14);
-				String formattedDate = packetCreatedDateTime.substring(0, 8) + "T"
-						+ packetCreatedDateTime.substring(packetCreatedDateTime.length() - 6);
-				LocalDateTime ldt = LocalDateTime.parse(formattedDate,
-						DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
-				String creationTime = ldt.toString() + ".000Z";
+				String creationTime = DateUtils.formatToISOString(LocalDateTime.now());
 
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(),
