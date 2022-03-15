@@ -1,6 +1,27 @@
 package io.mosip.resident.handler.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.commons.packet.dto.PacketInfo;
 import io.mosip.commons.packet.dto.packet.PacketDto;
 import io.mosip.commons.packet.exception.PacketCreatorException;
@@ -16,32 +37,28 @@ import io.mosip.kernel.core.util.FileUtils;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.PacketMetaInfoConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.FieldValue;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.RegProcRePrintRequestDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.VidRequestDto1;
+import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.util.*;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.IdSchemaUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class UinCardRePrintService {
@@ -112,7 +129,6 @@ public class UinCardRePrintService {
      * @throws BaseCheckedException the reg base checked exception
      * @throws IOException             Signals that an I/O exception has occurred.
      */
-    @SuppressWarnings("unchecked")
     public PacketGeneratorResDto createPacket(RegProcRePrintRequestDto requestDto)
             throws BaseCheckedException, IOException {
         String uin = null;
@@ -145,7 +161,7 @@ public class UinCardRePrintService {
                     vidRequestDto.setVidType(env.getProperty(VID_TYPE));
                     request.setId(env.getProperty(VID_CREATE_ID));
                     request.setRequest(vidRequestDto);
-                    request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+                    request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
                     request.setVersion(env.getProperty(REG_PROC_APPLICATION_VERSION));
 
                     logger.debug(LoggerFileConstant.SESSIONID.toString(),
@@ -198,13 +214,7 @@ public class UinCardRePrintService {
                 FileInputStream fis = new FileInputStream(file);
 
                 packetZipBytes = IOUtils.toByteArray(fis);
-                String rid = packetDto.getId();
-                String packetCreatedDateTime = rid.substring(rid.length() - 14);
-                String formattedDate = packetCreatedDateTime.substring(0, 8) + "T"
-                        + packetCreatedDateTime.substring(packetCreatedDateTime.length() - 6);
-                LocalDateTime ldt = LocalDateTime.parse(formattedDate,
-                        DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"));
-                String creationTime = ldt.toString() + ".000Z";
+				String creationTime = DateUtils.formatToISOString(LocalDateTime.now());
 
                 packetGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
                         packetDto.getId(), creationTime, regType, packetZipBytes);

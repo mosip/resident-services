@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -207,7 +208,7 @@ public class Utilities {
 			idRequestDTO.setId(idRepoUpdate);
 			idRequestDTO.setRequest(requestDto);
 			idRequestDTO.setMetadata(null);
-			idRequestDTO.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+			idRequestDTO.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 			idRequestDTO.setVersion(vidVersion);
 
 			idResponse = (IdResponseDTO) residentServiceRestClient.patchApi(env.getProperty(ApiName.IDREPOSITORY.name()), MediaType.APPLICATION_JSON, idRequestDTO,
@@ -311,11 +312,12 @@ public class Utilities {
 
 		Map<String, String> auditDtos = new HashMap<>();
 		auditDtos.put("uuid", UUID.randomUUID().toString());
-		auditDtos.put("createdAt", DateUtils.getUTCCurrentDateTimeString());
+		String timestamp = DateUtils.formatToISOString(LocalDateTime.now());
+		auditDtos.put("createdAt", timestamp);
 		auditDtos.put("eventId", "RPR_405");
 		auditDtos.put("eventName", "packet uploaded");
 		auditDtos.put("eventType", "USER");
-		auditDtos.put("actionTimeStamp", DateUtils.getUTCCurrentDateTimeString());
+		auditDtos.put("actionTimeStamp", timestamp);
 		auditDtos.put("hostName", hostName);
 		auditDtos.put("hostIp", hostIP);
 		auditDtos.put("applicationId", env.getProperty(RegistrationConstants.APP_NAME));

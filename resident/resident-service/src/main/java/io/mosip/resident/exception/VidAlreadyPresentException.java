@@ -2,11 +2,14 @@ package io.mosip.resident.exception;
 
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 
-import java.io.Serializable;
-
 public class VidAlreadyPresentException extends BaseUncheckedException {
 
-    public VidAlreadyPresentException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 5320581589143112542L;
+
+	public VidAlreadyPresentException() {
         super();
     }
 

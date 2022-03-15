@@ -113,7 +113,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				    credentialReqestDto=prepareCredentialRequest(dto);
 					requestDto.setId("mosip.credential.request.service.id");
 					requestDto.setRequest(credentialReqestDto);
-					requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+					requestDto.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 					requestDto.setVersion("1.0");
 					parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
 					partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),

@@ -1,5 +1,6 @@
 package io.mosip.resident.exception;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,7 @@ public class ResidentVidExceptionHandler {
 		}
 		response.setId(setId(httpServletRequest.getRequestURI()));
 		response.setVersion(env.getProperty(RESIDENT_VID_VERSION));
-		response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+		response.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
 		response.setResponse(null);
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
