@@ -193,7 +193,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			cryptomanagerRequestDto.setReferenceId(partnerReferenceId);
 			cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
 			LocalDateTime localdatetime = LocalDateTime.now();
-			request.setRequesttime(localdatetime.toString());
+			request.setRequesttime(DateUtils.formatToISOString(localdatetime));
 			cryptomanagerRequestDto.setTimeStamp(localdatetime);
 			request.setRequest(cryptomanagerRequestDto);
 			String response = residentServiceRestClient.postApi(

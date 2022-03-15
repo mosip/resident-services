@@ -455,7 +455,7 @@ public class RegistrationConstants {
 	// Integration
 	public static final String AGENCY_CODE = "2018";
 	public static final String STATION_NUMBER = "78213";
-	public static final String RID_DATE_FORMAT = "ddMMyyyyHHmmss";
+	public static final String RID_DATE_FORMAT = "yyyyMMddHHmmss";
 	public static final String DATE_FORMAT_REG = "dd-MM-yyyy";
 
 	// Logger - Constants
@@ -1789,7 +1789,6 @@ public class RegistrationConstants {
 	public static final  String APPLICATIONNAME="Resident portal";
 	
 	public static final  String APPLICATIONID="10011";
-	
 	
 
 }
