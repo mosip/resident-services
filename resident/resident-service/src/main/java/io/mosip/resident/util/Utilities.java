@@ -11,6 +11,7 @@ import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import lombok.Data;
 import org.assertj.core.util.Lists;
@@ -350,5 +351,27 @@ public class Utilities {
 			}
 		}
 		return langCode;
+	}
+	
+	    
+    public String getPhoneAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
+    }
+    
+    public String getEmailAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
+    }
+
+	private String getIdMappingAttributeForKey(String attributeKey) throws ResidentServiceCheckedException {
+		try {
+			JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
+			String phoneAttribute = JsonUtil.getJSONValue(
+			        JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
+			        MappingJsonConstants.VALUE);
+			return phoneAttribute;
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
 	}
 }

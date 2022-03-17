@@ -58,6 +58,10 @@ public class NotificationServiceTest {
 
 	@Mock
 	private Utilitiy utility;
+	
+	@Mock
+	private Utilities utilities;
+	
 	@Mock
 	private Environment env;
 
@@ -98,6 +102,8 @@ public class NotificationServiceTest {
 		// templateLangauges);
 		ReflectionTestUtils.setField(notificationService, "notificationType", "SMS|EMAIL");
 		ReflectionTestUtils.setField(notificationService, "notificationEmails", "test@test.com|test1@test1.com");
+		Mockito.when(utilities.getPhoneAttribute()).thenReturn("phone");
+		Mockito.when(utilities.getEmailAttribute()).thenReturn("email");
 		Mockito.when(env.getProperty(ApiName.EMAILNOTIFIER.name())).thenReturn("https://int.mosip.io/template/email");
 		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
