@@ -9,15 +9,17 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.mosip.resident.dto.JsonValue;
 
@@ -32,6 +34,11 @@ public class JsonUtil {
 	private static final String LANGUAGE = "language";
 	private static final String VALUE = "value";
 	private static ObjectMapper objectMapper = new ObjectMapper();
+	
+	static {
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.registerModule(new AfterburnerModule());
+	}
 
 	private JsonUtil() {
 

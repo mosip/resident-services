@@ -19,6 +19,8 @@
 		<kernel.idvalidator.uin.version>1.1.5.4</kernel.idvalidator.uin.version>
 		<kernel-keymanager-service.version>1.1.5.3</kernel-keymanager-service.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<fasterxml.jackson.module.jsr310.version>2.12.0</fasterxml.jackson.module.jsr310.version>
+		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -150,6 +152,16 @@
 			<groupId>io.mosip.commons</groupId>
 			<artifactId>commons-packet-manager</artifactId>
 			<version>${commons.packet.manager.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${fasterxml.jackson.module.jsr310.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-afterburner</artifactId>
+			<version>${fasterxml.jackson.module.afterburner.version}</version>
 		</dependency>
 	</dependencies>
 		<build>

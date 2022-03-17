@@ -46,6 +46,7 @@ import io.mosip.resident.dto.RequestDto1;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import lombok.Data;
 
@@ -385,6 +386,27 @@ public class Utilities {
 				DateTimeFormatter.ofPattern(RID_DATE_FORMAT));
 		String creationTimeISO = DateUtils.formatToISOString(ldt);
 		return creationTimeISO;
+	}
+    
+    public String getPhoneAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
+    }
+    
+    public String getEmailAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
+    }
+
+	private String getIdMappingAttributeForKey(String attributeKey) throws ResidentServiceCheckedException {
+		try {
+			JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
+			String phoneAttribute = JsonUtil.getJSONValue(
+			        JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
+			        MappingJsonConstants.VALUE);
+			return phoneAttribute;
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
 	}
 
 
