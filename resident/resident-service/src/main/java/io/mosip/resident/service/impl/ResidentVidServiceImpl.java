@@ -259,7 +259,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 
 			// revoke vid
-			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin);
+			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin, vid);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.DEACTIVATED_VID,requestDto.getTransactionID()));
 			// send notification
 			Map<String, Object> additionalAttributes = new HashMap<>();
@@ -301,7 +301,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return responseDto;
 	}
 
-	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, String uin)
+	private VidGeneratorResponseDto vidDeactivator(VidRevokeRequestDTO requestDto, String uin, String vid)
 			throws JsonProcessingException, IOException, ApisResourceAccessException, ResidentServiceCheckedException {
 		VidGeneratorRequestDto vidRequestDto = new VidGeneratorRequestDto();
 		RequestWrapper<VidGeneratorRequestDto> request = new RequestWrapper<>();
@@ -309,7 +309,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		vidRequestDto.setUIN(uin);
 		vidRequestDto.setVidStatus(requestDto.getVidStatus());
-		vidRequestDto.setVidType(VidType.PERPETUAL.name());
 		request.setId(vidRevokeId);
 		request.setVersion(version);
 		request.setRequest(vidRequestDto);
