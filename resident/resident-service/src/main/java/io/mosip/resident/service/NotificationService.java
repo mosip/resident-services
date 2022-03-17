@@ -44,6 +44,7 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TokenGenerator;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 
@@ -84,6 +85,9 @@ public class NotificationService {
 
 	@Autowired
 	private Utilitiy utility;
+	
+	@Autowired
+	private Utilities utilities;
 
 	@Autowired
 	private RequestValidator requestValidator;
@@ -221,7 +225,7 @@ public class NotificationService {
 			NotificationTemplateCode notificationTemplate) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendSMSNotification()::entry");
-		String phone = (String) mailingAttributes.get("phone");
+		String phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
 		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
@@ -307,7 +311,7 @@ public class NotificationService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendEmailNotification()::entry");
-		String email = String.valueOf(mailingAttributes.get("email"));
+		String email = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
 		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
