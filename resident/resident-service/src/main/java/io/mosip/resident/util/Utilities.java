@@ -1,18 +1,18 @@
 package io.mosip.resident.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.ExceptionUtils;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.VidCreationException;
-import lombok.Data;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.annotation.PostConstruct;
+
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,12 +24,29 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.time.LocalDateTime;
-import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.exception.ExceptionUtils;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.RegistrationConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdRequestDto;
+import io.mosip.resident.dto.IdResponseDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.RequestDto1;
+import io.mosip.resident.dto.VidResponseDTO1;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidCreationException;
+import lombok.Data;
 
 /**
  * The Class Utilities.
@@ -350,5 +367,27 @@ public class Utilities {
 			}
 		}
 		return langCode;
+	}
+	
+	    
+    public String getPhoneAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.PHONE);
+    }
+    
+    public String getEmailAttribute() throws ResidentServiceCheckedException {
+    	return getIdMappingAttributeForKey(MappingJsonConstants.EMAIL);
+    }
+
+	private String getIdMappingAttributeForKey(String attributeKey) throws ResidentServiceCheckedException {
+		try {
+			JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
+			String phoneAttribute = JsonUtil.getJSONValue(
+			        JsonUtil.getJSONObject(regProcessorIdentityJson, attributeKey),
+			        MappingJsonConstants.VALUE);
+			return phoneAttribute;
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
 	}
 }
