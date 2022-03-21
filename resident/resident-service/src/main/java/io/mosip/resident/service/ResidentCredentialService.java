@@ -23,4 +23,5 @@ public interface ResidentCredentialService {
 
 	public ResponseWrapper<PartnerCredentialTypePolicyDto> getPolicyByCredentialType(String partnerId,
 			String credentialType);
+
 }
