@@ -45,7 +45,7 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 
@@ -58,6 +58,10 @@ public class NotificationServiceTest {
 
 	@Mock
 	private Utilitiy utility;
+	
+	@Mock
+	private Utilities utilities;
+	
 	@Mock
 	private Environment env;
 
@@ -98,6 +102,8 @@ public class NotificationServiceTest {
 		// templateLangauges);
 		ReflectionTestUtils.setField(notificationService, "notificationType", "SMS|EMAIL");
 		ReflectionTestUtils.setField(notificationService, "notificationEmails", "test@test.com|test1@test1.com");
+		Mockito.when(utilities.getPhoneAttribute()).thenReturn("phone");
+		Mockito.when(utilities.getEmailAttribute()).thenReturn("email");
 		Mockito.when(env.getProperty(ApiName.EMAILNOTIFIER.name())).thenReturn("https://int.mosip.io/template/email");
 		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);

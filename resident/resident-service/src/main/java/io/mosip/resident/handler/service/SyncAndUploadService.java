@@ -2,9 +2,6 @@ package io.mosip.resident.handler.service;
 
 import static io.mosip.kernel.core.util.JsonUtils.javaObjectToJsonString;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -202,11 +199,9 @@ public class SyncAndUploadService {
 	 * @return the reg sync response DTO
 	 * @throws ApisResourceAccessException
 	 */
-	@SuppressWarnings("unchecked")
 	private RegSyncResponseDTO packetSync(String regId, String regType, byte[] enryptedUinZipFile, String creationTime)
 			throws BaseCheckedException {
 		RegSyncResponseDTO regSyncResponseDTO = null;
-		InputStream inputStream;
 		try {
 			RegistrationSyncRequestDTO registrationSyncRequestDTO = new RegistrationSyncRequestDTO();
 			List<SyncRegistrationDto> syncDtoList = new ArrayList<>();

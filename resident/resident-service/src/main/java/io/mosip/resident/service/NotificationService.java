@@ -45,6 +45,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 
@@ -73,6 +74,9 @@ public class NotificationService {
 
 	@Autowired
 	private Utilitiy utility;
+	
+	@Autowired
+	private Utilities utilities;
 
 	@Autowired
 	private RequestValidator requestValidator;
@@ -81,7 +85,6 @@ public class NotificationService {
 	private AuditUtil audit;
 
 	private static final String LINE_SEPARATOR = new  StringBuilder().append('\n').append('\n').append('\n').toString();
-	private static final String BOTH = "both";
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
 	private static final String SUBJECT = "_SUB";
@@ -215,7 +218,7 @@ public class NotificationService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendSMSNotification()::entry");
-		String phone = (String) mailingAttributes.get("phone");
+		String phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
 		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
@@ -301,7 +304,7 @@ public class NotificationService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendEmailNotification()::entry");
-		String email = String.valueOf(mailingAttributes.get("email"));
+		String email = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
 		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
@@ -322,7 +325,7 @@ public class NotificationService {
 			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String[] mailTo = { mailingAttributes.get("email").toString() };
+		String[] mailTo = { String.valueOf(mailingAttributes.get("email")) };
 		String[] mailCc = notificationEmails.split("\\|");
 
 		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);
