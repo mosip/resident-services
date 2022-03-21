@@ -10,6 +10,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +202,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		builder.queryParam("applicationId", "IDA");
 		builder.queryParam("referenceId", refId);
-		builder.queryParam("timeStamp", DateUtils.getUTCCurrentDateTimeString());
+		builder.queryParam("timeStamp", DateUtils.formatToISOString(LocalDateTime.now()));
 
 		UriComponents uriComponent = builder.build(false).encode();
 
@@ -232,7 +233,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authTypeStatusRequestDto.setId(authTypeStatusId);
 		authTypeStatusRequestDto.setIndividualId(individualId);
 		authTypeStatusRequestDto.setVersion(internalAuthVersion);
-		authTypeStatusRequestDto.setRequestTime(DateUtils.getUTCCurrentDateTimeString());
+		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(LocalDateTime.now()));
 		List<AuthTypeStatus> authTypes = new ArrayList<>();
 		for (String type : authType) {
 

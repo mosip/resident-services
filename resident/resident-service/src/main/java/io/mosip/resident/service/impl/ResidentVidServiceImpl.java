@@ -1,13 +1,12 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.resident.exception.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateEnum;
-import io.mosip.resident.constant.VidType;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -41,6 +39,15 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.DataNotFoundException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidAlreadyPresentException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
@@ -154,7 +161,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
         responseDto.setId(id);
         responseDto.setVersion(version);
-        responseDto.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+        responseDto.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
 
         return responseDto;
     }
@@ -170,7 +177,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         request.setId(vidCreateId);
         request.setVersion(version);
         request.setRequest(vidRequestDto);
-        request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+        request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
         		IdType.UIN.name(),
@@ -289,7 +296,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		responseDto.setId(revokeVidId);
 		responseDto.setVersion(version);
-		responseDto.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+		responseDto.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
 
 		return responseDto;
 	}
@@ -302,11 +309,10 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		vidRequestDto.setUIN(uin);
 		vidRequestDto.setVidStatus(requestDto.getVidStatus());
-		vidRequestDto.setVidType(VidType.PERPETUAL.name());
 		request.setId(vidRevokeId);
 		request.setVersion(version);
 		request.setRequest(vidRequestDto);
-		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 				requestDto.getIndividualIdType(),
