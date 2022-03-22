@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
-import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
@@ -23,7 +22,6 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
-import io.mosip.resident.constant.VidType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
@@ -46,9 +44,6 @@ public class RequestValidator {
 
 	@Autowired
 	private VidValidator<String> vidValidator;
-
-	@Autowired
-	private RidValidator<String> ridValidator;
 
 	@Autowired
 	private AuditUtil audit;
@@ -161,9 +156,6 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateVidType(requestDto, "Request to generate VID");
-
-
 		if (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request to generate VID"));
@@ -183,16 +175,6 @@ public class RequestValidator {
 					"Request to generate VID"));
 
 			throw new InvalidInputException("transactionId");
-		}
-	}
-
-	public void validateVidType(ResidentVidRequestDto requestDto, String msg) {
-		if (StringUtils.isEmpty(requestDto.getRequest().getVidType())
-				|| (!requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.PERPETUAL.name())
-						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name()))) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "vidType", msg));
-
-			throw new InvalidInputException("vidType");
 		}
 	}
 
