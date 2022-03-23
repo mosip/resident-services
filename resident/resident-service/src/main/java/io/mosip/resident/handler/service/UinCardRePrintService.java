@@ -161,7 +161,7 @@ public class UinCardRePrintService {
                     vidRequestDto.setVidType(env.getProperty(VID_TYPE));
                     request.setId(env.getProperty(VID_CREATE_ID));
                     request.setRequest(vidRequestDto);
-                    request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+                    request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
                     request.setVersion(env.getProperty(REG_PROC_APPLICATION_VERSION));
 
                     logger.debug(LoggerFileConstant.SESSIONID.toString(),
@@ -214,7 +214,7 @@ public class UinCardRePrintService {
                 FileInputStream fis = new FileInputStream(file);
 
                 packetZipBytes = IOUtils.toByteArray(fis);
-				String creationTime = DateUtils.formatToISOString(LocalDateTime.now());
+				String creationTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
 
                 packetGeneratorResDto = syncUploadEncryptionService.uploadUinPacket(
                         packetDto.getId(), creationTime, regType, packetZipBytes);
