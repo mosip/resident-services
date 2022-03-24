@@ -225,7 +225,7 @@ public class Utilities {
 			idRequestDTO.setId(idRepoUpdate);
 			idRequestDTO.setRequest(requestDto);
 			idRequestDTO.setMetadata(null);
-			idRequestDTO.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+			idRequestDTO.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 			idRequestDTO.setVersion(vidVersion);
 
 			idResponse = (IdResponseDTO) residentServiceRestClient.patchApi(env.getProperty(ApiName.IDREPOSITORY.name()), MediaType.APPLICATION_JSON, idRequestDTO,
@@ -329,7 +329,7 @@ public class Utilities {
 
 		Map<String, String> auditDtos = new HashMap<>();
 		auditDtos.put("uuid", UUID.randomUUID().toString());
-		String timestamp = DateUtils.formatToISOString(LocalDateTime.now());
+		String timestamp = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
 		auditDtos.put("createdAt", timestamp);
 		auditDtos.put("eventId", "RPR_405");
 		auditDtos.put("eventName", "packet uploaded");

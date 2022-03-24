@@ -179,19 +179,6 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
-	public void invalidVidType() throws Exception {
-
-		ResidentVidRequestDto request = getRequest();
-		request.getRequest().setVidType(null);
-		Gson gson = new GsonBuilder().serializeNulls().create();
-		String json = gson.toJson(request);
-
-		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
-	}
-
-	@Test
-	@WithUserDetails("resident")
 	public void invalidIndividualId() throws Exception {
 
 		ResidentVidRequestDto request = getRequest();

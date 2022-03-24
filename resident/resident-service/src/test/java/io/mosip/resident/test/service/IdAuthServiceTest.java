@@ -3,6 +3,7 @@ package io.mosip.resident.test.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.IdType;
@@ -285,7 +286,7 @@ public class IdAuthServiceTest {
         autnTxnDto.setAuthtypeCode("OTP-AUTH");
         autnTxnDto.setEntityName("ida_app_user");
         autnTxnDto.setReferenceIdType("UIN");
-        autnTxnDto.setRequestdatetime(LocalDateTime.now());
+        autnTxnDto.setRequestdatetime(DateUtils.getUTCCurrentDateTime());
         autnTxnDto.setStatusCode("N");
         autnTxnDto.setStatusComment("OTP Authentication Failed");
         autnTxnDto.setTransactionID("1111122222");

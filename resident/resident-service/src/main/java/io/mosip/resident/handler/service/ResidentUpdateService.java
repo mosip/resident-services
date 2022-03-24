@@ -175,7 +175,7 @@ public class ResidentUpdateService {
 
 				packetZipBytes = IOUtils.toByteArray(fis);
 
-				String creationTime = DateUtils.formatToISOString(LocalDateTime.now());
+				String creationTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
 
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), packetDto.getId(),
