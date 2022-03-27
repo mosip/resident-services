@@ -693,7 +693,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return null;
 	}
 
-	public String getPublicKeyFromKeyManager() throws ApisResourceAccessException {
+	private String getPublicKeyFromKeyManager() throws ApisResourceAccessException {
 		PacketSignPublicKeyRequestDTO signKeyRequestDto = PacketSignPublicKeyRequestDTO.builder().request(PacketSignPublicKeyRequestDTO.PacketSignPublicKeyRequest.builder().serverProfile(SERVER_PROFILE_SIGN_KEY).build()).build();
 		PacketSignPublicKeyResponseDTO signKeyResponseDTO;
 		try {
@@ -717,7 +717,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return signKeyResponseDTO.getResponse().getPublicKey();
 	}
 
-	public MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey) throws ApisResourceAccessException {
+	private MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey) throws ApisResourceAccessException {
 		MachineSearchRequestDTO.MachineSearchFilter searchFilterName = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("name").type("contains").value(residentMachinePrefix).build();
 		MachineSearchRequestDTO.MachineSearchFilter searchFilterPublicKey = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("signPublicKey").type("equals").value(publicKey).build();
 		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder().sortType("desc").sortField("createdDateTime").build();
@@ -750,7 +750,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return machineSearchResponseDTO;
 	}
 
-	public String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
+	private String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
 		if (machineSearchResponseDTO.getResponse() != null) {
 			List<MachineDto> fetchedMachines = machineSearchResponseDTO.getResponse().getData();
 			if (fetchedMachines != null && !fetchedMachines.isEmpty()) {
@@ -763,7 +763,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return null;
 	}
 
-	public String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode, String regCenterId, String publicKey) throws ApisResourceAccessException {
+	private String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode, String regCenterId, String publicKey) throws ApisResourceAccessException {
 		MachineCreateRequestDTO machineCreateRequestDTO = MachineCreateRequestDTO.builder()
 				//.requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
 				.request(MachineDto.builder().serialNum(null).macAddress(null).ipAddress("0.0.0.0").isActive(true)
