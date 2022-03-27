@@ -1,6 +1,7 @@
 package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.exception.FileNotFoundException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
@@ -313,5 +314,42 @@ public class ResidentServiceResUpdateTest {
 				Mockito.anyString())).thenThrow(new OtpValidationFailedException());
 		residentServiceImpl.reqUinUpdate(dto);
 
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithUIN() throws ResidentServiceCheckedException, 
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+		dto.setIndividualId("3527812407");
+		try {
+			residentServiceImpl.reqUinUpdate(dto);
+		} catch(ResidentServiceException e) {
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
+				((ResidentServiceCheckedException)e.getCause()).getErrorCode());
+		}
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithVIDSuccess() throws ResidentServiceCheckedException, 
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812406");
+		dto.setIndividualIdType("VID");
+		dto.setIndividualId("4447812406");
+		residentServiceImpl.reqUinUpdate(dto);
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithVIDFailure() throws ResidentServiceCheckedException, 
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+
+		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812407");
+		dto.setIndividualIdType("VID");
+		dto.setIndividualId("4447812406");
+		try {
+			residentServiceImpl.reqUinUpdate(dto);
+		} catch(ResidentServiceException e) {
+			e.printStackTrace();
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
+				((ResidentServiceCheckedException)e.getCause()).getErrorCode());
+		}
 	}
 }

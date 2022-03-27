@@ -49,6 +49,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String VALUE = "value";
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
+	private static final String UIN = "uin";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 
@@ -581,6 +582,8 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage());
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
+			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), 
+				mappingJsonObject, demographicIdentity);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
 			String poaMapping = getDocumentName(mappingDocument, PROOF_OF_ADDRESS);
 			String poiMapping = getDocumentName(mappingDocument, PROOF_OF_IDENTITY);
@@ -790,5 +793,32 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ApisResourceAccessException("Could not create machine in master data", e);
 		}
 		return machineCreateResponseDTO.getResponse().getId();
+	}
+
+	private void validateAuthIndividualIdWithUIN(String individualId, String individualIdType, 
+			JSONObject mappingJsonObject, JSONObject demographicIdentity) 
+				throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+		String uin = "";
+		if(ResidentIndividialIDType.UIN.toString().equals(individualIdType))
+			uin = individualId;
+		else if(ResidentIndividialIDType.VID.toString().equals(individualIdType)) {
+			uin = utilities.getUinByVid(individualId);
+		} else {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), 
+				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Individual id type is invalid");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
+				ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+		}
+		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
+		String uinMapping = getDocumentName(identityMappingJsonObject, UIN);
+		String identityJsonUIN = JsonUtil.getJSONValue(demographicIdentity, uinMapping);
+		if(!identityJsonUIN.equals(uin)) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), 
+				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Validation failed");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+				ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorMessage());
+		}
 	}
 }
