@@ -42,7 +42,9 @@ public enum ResidentErrorCode {
 	OTP_GENERATION_EXCEPTION("RES-SER-425", "while generating otp error is occured"),
 	POLICY_EXCEPTION("RES-SER-426", "while retrieving policy details error is occured"),
 	PACKET_SIGNKEY_EXCEPTION("RES-SER-430", "Public sign key is not available from key manager"),
-	MACHINE_MASTER_CREATE_EXCEPTION("RES-SER-431", "Machine is not created in master data");
+	MACHINE_MASTER_CREATE_EXCEPTION("RES-SER-431", "Machine is not created in master data"),
+	INDIVIDUAL_ID_TYPE_INVALID("RES-SER-432", "Individual Id type is invalid"),
+	INDIVIDUAL_ID_UIN_MISMATCH("RES-SER-433", "Individual Id in request and identity json UIN is not matching");
 	private final String errorCode;
 	private final String errorMessage;
 
