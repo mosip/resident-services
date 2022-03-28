@@ -11,6 +11,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
@@ -324,7 +325,7 @@ public class ResidentServiceResUpdateTest {
 			residentServiceImpl.reqUinUpdate(dto);
 		} catch(ResidentServiceException e) {
 			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
-				((ResidentServiceCheckedException)e.getCause()).getErrorCode());
+				((ValidationFailedException)e.getCause()).getErrorCode());
 		}
 	}
 
@@ -349,7 +350,7 @@ public class ResidentServiceResUpdateTest {
 		} catch(ResidentServiceException e) {
 			e.printStackTrace();
 			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
-				((ResidentServiceCheckedException)e.getCause()).getErrorCode());
+				((ValidationFailedException)e.getCause()).getErrorCode());
 		}
 	}
 }

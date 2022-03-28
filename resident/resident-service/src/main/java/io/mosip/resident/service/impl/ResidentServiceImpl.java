@@ -620,6 +620,15 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
 					e);
 
+		} catch (ValidationFailedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATION_FAILED_EXCEPTION,
+					e.getMessage() + " Transaction id: " + dto.getTransactionID(), "Request for UIN update"));
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
+
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+					dto.getTransactionID(), "Request for UIN update"));
+			throw new ResidentServiceException(e.getErrorCode(), e.getMessage(), e);
+
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_RESOURCE_UNACCESS,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -797,7 +806,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private void validateAuthIndividualIdWithUIN(String individualId, String individualIdType, 
 			JSONObject mappingJsonObject, JSONObject demographicIdentity) 
-				throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+				throws ApisResourceAccessException, ValidationFailedException, IOException {
 		String uin = "";
 		if(ResidentIndividialIDType.UIN.toString().equals(individualIdType))
 			uin = individualId;
@@ -807,7 +816,7 @@ public class ResidentServiceImpl implements ResidentService {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), 
 				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Individual id type is invalid");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
+			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
 				ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
 		}
 		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
@@ -817,7 +826,7 @@ public class ResidentServiceImpl implements ResidentService {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), 
 				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Validation failed");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
 				ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorMessage());
 		}
 	}
