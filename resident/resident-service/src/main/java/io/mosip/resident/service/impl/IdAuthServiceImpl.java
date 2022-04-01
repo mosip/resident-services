@@ -202,7 +202,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		builder.queryParam("applicationId", "IDA");
 		builder.queryParam("referenceId", refId);
-		builder.queryParam("timeStamp", DateUtils.formatToISOString(LocalDateTime.now()));
+		builder.queryParam("timeStamp", DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		UriComponents uriComponent = builder.build(false).encode();
 
@@ -233,7 +233,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authTypeStatusRequestDto.setId(authTypeStatusId);
 		authTypeStatusRequestDto.setIndividualId(individualId);
 		authTypeStatusRequestDto.setVersion(internalAuthVersion);
-		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(LocalDateTime.now()));
+		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 		List<AuthTypeStatus> authTypes = new ArrayList<>();
 		for (String type : authType) {
 

@@ -113,7 +113,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				    credentialReqestDto=prepareCredentialRequest(dto);
 					requestDto.setId("mosip.credential.request.service.id");
 					requestDto.setRequest(credentialReqestDto);
-					requestDto.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+					requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 					requestDto.setVersion("1.0");
 					parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
 					partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
@@ -195,7 +195,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			cryptomanagerRequestDto.setData(encryptedData);
 			cryptomanagerRequestDto.setReferenceId(partnerReferenceId);
 			cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
-			LocalDateTime localdatetime = LocalDateTime.now();
+			LocalDateTime localdatetime = DateUtils.getUTCCurrentDateTime();
 			request.setRequesttime(DateUtils.formatToISOString(localdatetime));
 			cryptomanagerRequestDto.setTimeStamp(localdatetime);
 			request.setRequest(cryptomanagerRequestDto);

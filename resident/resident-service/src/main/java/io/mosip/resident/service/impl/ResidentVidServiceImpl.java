@@ -161,7 +161,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
         responseDto.setId(id);
         responseDto.setVersion(version);
-        responseDto.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
+        responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
         return responseDto;
     }
@@ -177,7 +177,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
         request.setId(vidCreateId);
         request.setVersion(version);
         request.setRequest(vidRequestDto);
-        request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+        request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
         		IdType.UIN.name(),
@@ -296,7 +296,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 		responseDto.setId(revokeVidId);
 		responseDto.setVersion(version);
-		responseDto.setResponsetime(DateUtils.formatToISOString(LocalDateTime.now()));
+		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		return responseDto;
 	}
@@ -312,7 +312,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		request.setId(vidRevokeId);
 		request.setVersion(version);
 		request.setRequest(vidRequestDto);
-		request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 				requestDto.getIndividualIdType(),

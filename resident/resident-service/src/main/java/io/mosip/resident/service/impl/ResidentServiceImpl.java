@@ -49,6 +49,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String VALUE = "value";
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
+	private static final String UIN = "uin";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 
@@ -581,6 +582,8 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage());
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
+			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), 
+				mappingJsonObject, demographicIdentity);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
 			String poaMapping = getDocumentName(mappingDocument, PROOF_OF_ADDRESS);
 			String poiMapping = getDocumentName(mappingDocument, PROOF_OF_IDENTITY);
@@ -616,6 +619,15 @@ public class ResidentServiceImpl implements ResidentService {
 					dto.getTransactionID(), "Request for UIN update"));
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
 					e);
+
+		} catch (ValidationFailedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATION_FAILED_EXCEPTION,
+					e.getMessage() + " Transaction id: " + dto.getTransactionID(), "Request for UIN update"));
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
+
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+					dto.getTransactionID(), "Request for UIN update"));
+			throw new ResidentServiceException(e.getErrorCode(), e.getMessage(), e);
 
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_RESOURCE_UNACCESS,
@@ -693,7 +705,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return null;
 	}
 
-	public String getPublicKeyFromKeyManager() throws ApisResourceAccessException {
+	private String getPublicKeyFromKeyManager() throws ApisResourceAccessException {
 		PacketSignPublicKeyRequestDTO signKeyRequestDto = PacketSignPublicKeyRequestDTO.builder().request(PacketSignPublicKeyRequestDTO.PacketSignPublicKeyRequest.builder().serverProfile(SERVER_PROFILE_SIGN_KEY).build()).build();
 		PacketSignPublicKeyResponseDTO signKeyResponseDTO;
 		try {
@@ -717,7 +729,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return signKeyResponseDTO.getResponse().getPublicKey();
 	}
 
-	public MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey) throws ApisResourceAccessException {
+	private MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey) throws ApisResourceAccessException {
 		MachineSearchRequestDTO.MachineSearchFilter searchFilterName = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("name").type("contains").value(residentMachinePrefix).build();
 		MachineSearchRequestDTO.MachineSearchFilter searchFilterPublicKey = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("signPublicKey").type("equals").value(publicKey).build();
 		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder().sortType("desc").sortField("createdDateTime").build();
@@ -750,7 +762,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return machineSearchResponseDTO;
 	}
 
-	public String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
+	private String getMachineId(MachineSearchResponseDTO machineSearchResponseDTO, final String publicKey) {
 		if (machineSearchResponseDTO.getResponse() != null) {
 			List<MachineDto> fetchedMachines = machineSearchResponseDTO.getResponse().getData();
 			if (fetchedMachines != null && !fetchedMachines.isEmpty()) {
@@ -763,7 +775,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return null;
 	}
 
-	public String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode, String regCenterId, String publicKey) throws ApisResourceAccessException {
+	private String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode, String regCenterId, String publicKey) throws ApisResourceAccessException {
 		MachineCreateRequestDTO machineCreateRequestDTO = MachineCreateRequestDTO.builder()
 				//.requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
 				.request(MachineDto.builder().serialNum(null).macAddress(null).ipAddress("0.0.0.0").isActive(true)
@@ -790,5 +802,32 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ApisResourceAccessException("Could not create machine in master data", e);
 		}
 		return machineCreateResponseDTO.getResponse().getId();
+	}
+
+	private void validateAuthIndividualIdWithUIN(String individualId, String individualIdType, 
+			JSONObject mappingJsonObject, JSONObject demographicIdentity) 
+				throws ApisResourceAccessException, ValidationFailedException, IOException {
+		String uin = "";
+		if(ResidentIndividialIDType.UIN.toString().equals(individualIdType))
+			uin = individualId;
+		else if(ResidentIndividialIDType.VID.toString().equals(individualIdType)) {
+			uin = utilities.getUinByVid(individualId);
+		} else {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), 
+				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Individual id type is invalid");
+			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
+				ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+		}
+		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
+		String uinMapping = getDocumentName(identityMappingJsonObject, UIN);
+		String identityJsonUIN = JsonUtil.getJSONValue(demographicIdentity, uinMapping);
+		if(!identityJsonUIN.equals(uin)) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), 
+				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Validation failed");
+			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+				ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorMessage());
+		}
 	}
 }

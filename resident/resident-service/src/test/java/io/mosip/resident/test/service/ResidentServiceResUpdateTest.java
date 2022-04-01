@@ -1,6 +1,7 @@
 package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.exception.FileNotFoundException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
@@ -10,6 +11,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
@@ -27,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -79,6 +82,8 @@ public class ResidentServiceResUpdateTest {
 
 	ResidentUpdateRequestDto dto;
 
+	PacketGeneratorResDto updateDto;
+
 	@Before
 	public void setUp() throws BaseCheckedException, IOException {
 
@@ -91,7 +96,7 @@ public class ResidentServiceResUpdateTest {
 		documents.add(document);
 		dto.setDocuments(documents);
 		dto.setIdentityJson(
-				"ew0KICAiaWRlbnRpdHkiIDogew0KICAgICJkYXRlT2ZCaXJ0aCIgOiAiMTk5NS8wOC8wOCIsDQogICAgImFnZSIgOiAyNywNCiAgICAicGhvbmUiIDogIjk3ODY1NDMyMTAiLA0KICAgICJlbWFpbCIgOiAiZ2lyaXNoLnlhcnJ1QG1pbmR0cmVlLmNvbSIsDQogICAgInByb29mT2ZBZGRyZXNzIiA6IHsNCiAgICAgICJ2YWx1ZSIgOiAiUE9BX0NlcnRpZmljYXRlIG9mIHJlc2lkZW5jZSIsDQogICAgICAidHlwZSIgOiAiQ09SIiwNCiAgICAgICJmb3JtYXQiIDogImpwZyINCiAgICB9LA0KCSJVSU4iOiAzNTI3ODEyNDA2LA0KICAgICJJRFNjaGVtYVZlcnNpb24iIDogMS4wDQogIH0NCn0");
+				"ewogICJpZGVudGl0eSIgOiB7CiAgICAiZGF0ZU9mQmlydGgiIDogIjE5OTUvMDgvMDgiLAogICAgImFnZSIgOiAyNywKICAgICJwaG9uZSIgOiAiOTc4NjU0MzIxMCIsCiAgICAiZW1haWwiIDogImdpcmlzaC55YXJydUBtaW5kdHJlZS5jb20iLAogICAgInByb29mT2ZBZGRyZXNzIiA6IHsKICAgICAgInZhbHVlIiA6ICJQT0FfQ2VydGlmaWNhdGUgb2YgcmVzaWRlbmNlIiwKICAgICAgInR5cGUiIDogIkNPUiIsCiAgICAgICJmb3JtYXQiIDogImpwZyIKICAgIH0sCgkiVUlOIjogIjM1Mjc4MTI0MDYiLAogICAgIklEU2NoZW1hVmVyc2lvbiIgOiAxLjAKICB9Cn0=");
 		dto.setIndividualId("3527812406");
 		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setTransactionID("12345");
@@ -113,12 +118,24 @@ public class ResidentServiceResUpdateTest {
 		notificationResponse.setStatus("success");
 		Mockito.when(notificationService.sendNotification(any())).thenReturn(notificationResponse);
 
+		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
+		List<MachineDto> machineDtos = new ArrayList<>();
+		MachineDto machineDto = new MachineDto();
+		machineDto.setMachineSpecId("1001");
+		machineDto.setIsActive(false);
+		machineDto.setId("10147");
+		machineDto.setName("resident_machine_1640777004542");
+		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		machineDto.setPublicKey(publicKey);
+		machineDto.setSignPublicKey(publicKey);
+		machineDtos.add(machineDto);
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder().fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
+		machineSearchResponseDTO.setId("null");
+		machineSearchResponseDTO.setVersion("1.0");
+		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
+		machineSearchResponseDTO.setResponse(response);
 
-	}
-
-    @Test(expected = ResidentServiceException.class)
-    public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsApiResourceExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
         PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
         PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse publicKeyResponse = new PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse();
         publicKeyResponse.setPublicKey(publicKey);
@@ -127,7 +144,26 @@ public class ResidentServiceResUpdateTest {
         responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
         responseDto.setResponse(publicKeyResponse);
         responseDto.setErrors(new ArrayList<>());
-        when(residentServiceRestClient.postApi(anyString(), any(), any(), any(Class.class))).thenReturn(responseDto);
+
+		updateDto = new PacketGeneratorResDto();
+		updateDto.setRegistrationId("10008100670001720191120095702");
+		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
+
+		Mockito.when(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name())).thenReturn("PACKETSIGNPUBLICKEY");
+		Mockito.when(env.getProperty(ApiName.MACHINESEARCH.name())).thenReturn("MACHINESEARCH");
+
+		Mockito.when(residentServiceRestClient.postApi(eq("PACKETSIGNPUBLICKEY"), any(MediaType.class), 
+			any(HttpEntity.class), eq(PacketSignPublicKeyResponseDTO.class))).thenReturn(responseDto);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
+			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+
+		when(utilities.getLanguageCode()).thenReturn("eng");
+	}
+
+    @Test(expected = ResidentServiceException.class)
+    public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsApiResourceExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(residentServiceRestClient.postApi(eq("PACKETSIGNPUBLICKEY"), any(MediaType.class), 
+			any(HttpEntity.class), eq(PacketSignPublicKeyResponseDTO.class))).thenThrow(new ApisResourceAccessException());
         residentServiceImpl.reqUinUpdate(dto);
     }
 
@@ -159,21 +195,15 @@ public class ResidentServiceResUpdateTest {
     }
 
 	@Test(expected = ResidentServiceException.class)
-	public void reqUinUpdateSearchMachineInMasterServiceThrowsApisResourceAccessExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
-		ResidentServiceImpl residentServiceImplSpy = spy(residentServiceImpl);
-		Mockito.doReturn(publicKey).when(residentServiceImplSpy).getPublicKeyFromKeyManager();
-		when(utilities.getLanguageCode()).thenReturn("eng");
-		residentServiceImplSpy.reqUinUpdate(dto);
+	public void reqUinUpdateSearchMachineInMasterServiceThrowsApisResourceAccessExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException, OtpValidationFailedException {
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
+			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenThrow(new ApisResourceAccessException());
+		residentServiceImpl.reqUinUpdate(dto);
+
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void reqUinUpdateSearchMachineInMasterServiceThrowsResidentMachineServiceExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
-		ResidentServiceImpl residentServiceImplSpy = spy(residentServiceImpl);
-		Mockito.doReturn(publicKey).when(residentServiceImplSpy).getPublicKeyFromKeyManager();
-		when(utilities.getLanguageCode()).thenReturn("eng");
-
 		List<MachineErrorDTO> errorDTOS = new ArrayList<>();
 		MachineErrorDTO errorDTO = new MachineErrorDTO();
 		errorDTO.setErrorCode(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode());
@@ -185,50 +215,20 @@ public class ResidentServiceResUpdateTest {
         machineSearchResponseDTO.setVersion("1.0");
         machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
         machineSearchResponseDTO.setErrors(errorDTOS);
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(machineSearchResponseDTO);
-		residentServiceImplSpy.reqUinUpdate(dto);
+        when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
+			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+		residentServiceImpl.reqUinUpdate(dto);
 	}
 
 	@Test
 	public void reqUinUpdateGetMachineIdTest() throws BaseCheckedException, IOException {
-		ResidentServiceImpl residentServiceImplSpy = spy(residentServiceImpl);
-		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
-		Mockito.doReturn(publicKey).when(residentServiceImplSpy).getPublicKeyFromKeyManager();
-		when(utilities.getLanguageCode()).thenReturn("eng");
-
-		List<MachineDto> machineDtos = new ArrayList<>();
-		MachineDto machineDto = new MachineDto();
-		machineDto.setMachineSpecId("1001");
-		machineDto.setIsActive(false);
-		machineDto.setId("10147");
-		machineDto.setName("resident_machine_1640777004542");
-		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
-		machineDto.setPublicKey(publicKey);
-		machineDto.setSignPublicKey(publicKey);
-		machineDtos.add(machineDto);
-		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder().fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
-		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
-		machineSearchResponseDTO.setId("null");
-		machineSearchResponseDTO.setVersion("1.0");
-		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
-		machineSearchResponseDTO.setResponse(response);
-		Mockito.doReturn(machineSearchResponseDTO).when(residentServiceImplSpy).searchMachineInMasterService(any(), any());
-
-		PacketGeneratorResDto updateDto = new PacketGeneratorResDto();
-		updateDto.setRegistrationId("10008100670001720191120095702");
-		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-
-		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImplSpy.reqUinUpdate(dto);
+		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
 		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
 	}
 
 	@Test
 	public void reqUinUpdateGetMachineIdIsNullTest() throws BaseCheckedException, IOException {
-		ResidentServiceImpl residentServiceImplSpy = spy(residentServiceImpl);
 		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
-		Mockito.doReturn(publicKey).when(residentServiceImplSpy).getPublicKeyFromKeyManager();
-		when(utilities.getLanguageCode()).thenReturn("eng");
 
 		List<MachineDto> machineDtos = new ArrayList<>();
 		MachineDto machineDto = new MachineDto();
@@ -245,7 +245,8 @@ public class ResidentServiceResUpdateTest {
 		machineSearchResponseDTO.setVersion("1.0");
 		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
 		machineSearchResponseDTO.setResponse(response);
-		Mockito.doReturn(machineSearchResponseDTO).when(residentServiceImplSpy).searchMachineInMasterService(any(), any());
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
+			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
 
 		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
 		MachineDto newMachineDTO = new MachineDto();
@@ -257,61 +258,19 @@ public class ResidentServiceResUpdateTest {
 		newMachineDTO.setPublicKey(publicKey);
 		newMachineDTO.setSignPublicKey(publicKey);
 		machineCreateResponseDTO.setResponse(newMachineDTO);
-		when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(machineCreateResponseDTO);
-
-		PacketGeneratorResDto updateDto = new PacketGeneratorResDto();
-		updateDto.setRegistrationId("10008100670001720191120095702");
-		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-
-		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImplSpy.reqUinUpdate(dto);
+		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), 
+			any(HttpEntity.class), eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
+		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
 		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
+		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
 	}
 
 	@Test
 	public void reqUinUpdateGetMachineIdReturnsTest() throws BaseCheckedException, IOException {
-		ResidentServiceImpl residentServiceImplSpy = spy(residentServiceImpl);
-		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
-		Mockito.doReturn(publicKey).when(residentServiceImplSpy).getPublicKeyFromKeyManager();
-		when(utilities.getLanguageCode()).thenReturn("eng");
-
-		List<MachineDto> machineDtos = new ArrayList<>();
-		MachineDto machineDto = new MachineDto();
-		machineDto.setMachineSpecId("1001");
-		machineDto.setIsActive(false);
-		machineDto.setId("10147");
-		machineDto.setName("resident_machine_1640777004542");
-		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
-		machineDto.setSignPublicKey(publicKey);
-		machineDtos.add(machineDto);
-		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder().fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
-		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
-		machineSearchResponseDTO.setId("null");
-		machineSearchResponseDTO.setVersion("1.0");
-		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
-		machineSearchResponseDTO.setResponse(response);
-		Mockito.doReturn(machineSearchResponseDTO).when(residentServiceImplSpy).searchMachineInMasterService(any(), any());
-
-		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
-		MachineDto newMachineDTO = new MachineDto();
-		newMachineDTO.setMachineSpecId("1001");
-		newMachineDTO.setIsActive(false);
-		newMachineDTO.setId("10147");
-		newMachineDTO.setName("resident_machine_1640777004542");
-		newMachineDTO.setValidityDateTime("2024-12-29T11:23:24.541Z");
-		newMachineDTO.setPublicKey(publicKey);
-		newMachineDTO.setSignPublicKey(publicKey);
-		machineCreateResponseDTO.setResponse(newMachineDTO);
-		when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(machineCreateResponseDTO);
-
-		PacketGeneratorResDto updateDto = new PacketGeneratorResDto();
-		updateDto.setRegistrationId("10008100670001720191120095702");
-		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-
-		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImplSpy.reqUinUpdate(dto);
+		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
 		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
-		verify(residentServiceImplSpy, never()).createNewMachineInMasterService(any(), any(), any(),any(), any());
+		verify(residentServiceRestClient, atLeast(2)).postApi(any(), any(), any(), any(Class.class));
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -356,5 +315,42 @@ public class ResidentServiceResUpdateTest {
 				Mockito.anyString())).thenThrow(new OtpValidationFailedException());
 		residentServiceImpl.reqUinUpdate(dto);
 
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithUIN() throws ResidentServiceCheckedException, 
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+		dto.setIndividualId("3527812407");
+		try {
+			residentServiceImpl.reqUinUpdate(dto);
+		} catch(ResidentServiceException e) {
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
+				((ValidationFailedException)e.getCause()).getErrorCode());
+		}
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithVIDSuccess() throws ResidentServiceCheckedException, 
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812406");
+		dto.setIndividualIdType("VID");
+		dto.setIndividualId("4447812406");
+		residentServiceImpl.reqUinUpdate(dto);
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithVIDFailure() throws ResidentServiceCheckedException, 
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+
+		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812407");
+		dto.setIndividualIdType("VID");
+		dto.setIndividualId("4447812406");
+		try {
+			residentServiceImpl.reqUinUpdate(dto);
+		} catch(ResidentServiceException e) {
+			e.printStackTrace();
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
+				((ValidationFailedException)e.getCause()).getErrorCode());
+		}
 	}
 }
