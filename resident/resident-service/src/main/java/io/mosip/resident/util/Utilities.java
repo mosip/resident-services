@@ -256,15 +256,15 @@ public class Utilities {
 		return source;
 	}
 
-	private void addSchemaVersion(JSONObject identityObject) throws IOException {
-
-		JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
-		String schemaVersion = JsonUtil.getJSONValue(
-				regProcessorIdentityJson, MappingJsonConstants.IDSCHEMA_VERSION);
-
-		identityObject.put(schemaVersion, Float.valueOf(idschemaVersion));
-
-	}
+//	private void addSchemaVersion(JSONObject identityObject) throws IOException {
+//
+//		JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
+//		String schemaVersion = JsonUtil.getJSONValue(
+//				regProcessorIdentityJson, MappingJsonConstants.IDSCHEMA_VERSION);
+//
+//		identityObject.put(schemaVersion, Float.valueOf(idschemaVersion));
+//
+//	}
 
 	public List<Map<String, String>> generateAudit(String rid) {
 		// Getting Host IP Address and Name
