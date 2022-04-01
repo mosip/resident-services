@@ -156,7 +156,6 @@ public class UinCardRePrintServiceTest {
         resDto.setStatus("PROCESSING");
         Mockito.when(syncUploadEncryptionService.uploadUinPacket(any(), any(), any(), any())).thenReturn(resDto);
         Mockito.when(utilities.getRegistrationProcessorMappingJson()).thenReturn(jsonObject);
-        Mockito.when(utilities.linkRegIdWrtUin(any(), any())).thenReturn(true);
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 

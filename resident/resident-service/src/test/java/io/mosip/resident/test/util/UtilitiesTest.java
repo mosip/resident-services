@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 public class UtilitiesTest {
 
     @InjectMocks
-    @Spy
+//    @Spy
     private Utilities utilities = new Utilities();
 
     @Mock
@@ -200,69 +200,6 @@ public class UtilitiesTest {
         // VID
         utilities.getUinByVid("6241572684701486");
     }
-    
-    @Test
-    public void testLinkRegIdWrtUinIf() throws ApisResourceAccessException, IOException{
-    	ResponseDTO dto=new ResponseDTO();
-    	dto.setMessage("response msg");
-    	dto.setStatus("response status");
-    	IdResponseDTO idResponse = new IdResponseDTO();
-    	idResponse.setId("id-1");
-    	idResponse.setVersion("version-1");
-    	idResponse.setResponse(dto);
-    	RequestDto1 requestDto = new RequestDto1();
-    	JSONObject identityObject = new JSONObject();
-    	identityObject.put("UIN", "3527812406");
-    	
-//    	when(utilities.getRegistrationProcessorMappingJson()).thenReturn(identityObject);
-    	
-    	JSONObject jsonStringObject = JsonUtil.getJSONObject(identity, "response");
-        Mockito.when(objMapper.readValue(anyString(), any(Class.class))).thenReturn(jsonStringObject);
-
-        String identityString = JsonUtil.writeValueAsString(jsonStringObject);
-        ReflectionTestUtils.setField(utilities, "mappingJsonString", identityString);
-
-        Object identityObject1 = jsonStringObject.get("identity");
-    	
-//        JSONObject registrationProcessorMappingJson = utilities.getRegistrationProcessorMappingJson();
-//        
-//        when(JsonUtil.getJSONValue(jsonStringObject, MappingJsonConstants.VALUE)).thenReturn("schema-version");
-//        identityObject.put("schema-version", Float.valueOf("0.1"));
-//    	
-    	requestDto.setRegistrationId("reg-id");
-		requestDto.setIdentity(identityObject);
-		
-		IdRequestDto idRequestDTO = new IdRequestDto();
-		idRequestDTO.setId("mosip.id.update");
-		idRequestDTO.setRequest(requestDto);
-		idRequestDTO.setMetadata(null);
-		idRequestDTO.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
-		idRequestDTO.setVersion("v1");
-		
-		when(residentServiceRestClient.patchApi(anyString(), any(), any(), any())).thenReturn(idResponse);
-    	
-    	boolean result=utilities.linkRegIdWrtUin("reg-id", "3527812406");
-//    	verify(utilities, never()).getRegistrationProcessorMappingJson();
-//    	verify(utilities, never()).getJson(anyString(), anyString());
-//    	assertTrue(result);
-
-////    	Mockito.verify(utilities, times(1)).addSchemaVersion(identityObject);
-    }
-    
-//    @Test
-//    public void testLinkRegIdWrtUinNestedElse() throws ApisResourceAccessException, IOException {
-//    	IdResponseDTO idResponse = null;
-//    	
-//    	when(residentServiceRestClient.patchApi(anyString(), any(), any(), any())).thenReturn(idResponse);
-//    	boolean result=utilities.linkRegIdWrtUin("reg-id", "3527812406");
-//    	assertFalse(result);
-//    }
-    
-    @Test
-    public void testLinkRegIdWrtUinElse() throws ApisResourceAccessException, IOException {
-    	boolean result=utilities.linkRegIdWrtUin("reg-id", null);
-    	assertFalse(result);
-    }
 
 
     @Test
@@ -310,14 +247,6 @@ public class UtilitiesTest {
         // UIN
         utilities.retrieveIdrepoJsonStatus("3527812406");
     }
-
-//    @Test
-//    public void testAddSchemaVersion() throws IOException{
-//    	when(utilities.getRegistrationProcessorMappingJson()).thenReturn(new JSONObject());
-//    	String str="data here";
-//    	when(JsonUtil.getJSONValue(any(),any())).thenReturn(str);
-//    	utilities.addSchemaVersion(new JSONObject());
-//    }
     
     @Test
     public void testGenerateAudit() {
