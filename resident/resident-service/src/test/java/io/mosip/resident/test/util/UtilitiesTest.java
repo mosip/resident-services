@@ -36,9 +36,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -97,6 +99,18 @@ public class UtilitiesTest {
         JSONObject identityJsonObj = utilities.retrieveIdrepoJson("3527812406");
         assertEquals(identityJsonObj.get("UIN"), uin.get("UIN"));
     }
+    
+    @Test
+    public void testRetrieveIdrepoJsonIfFalse() throws ApisResourceAccessException, IOException {
+        // UIN
+        JSONObject identityJsonObj = utilities.retrieveIdrepoJson(null);
+    }
+    
+    @Test
+    public void testRetrieveIdrepoJsonIfFalse2() throws ApisResourceAccessException, IOException {
+        // UIN
+        JSONObject identityJsonObj = utilities.retrieveIdrepoJson("anything");
+    }
 
     @Test(expected = IdRepoAppException.class)
     public void testRetrieveIdrepoJsonThrowIdRepoAppException() throws ApisResourceAccessException, IOException {
@@ -109,72 +123,6 @@ public class UtilitiesTest {
 
         // UIN
         utilities.retrieveIdrepoJson("3527812406");
-    }
-
-    @Test
-    public void testGetUinByVid() throws ApisResourceAccessException, IOException {
-        JSONObject response = JsonUtil.getJSONObject(identityVID, "response");
-        VidResDTO vidResDTO = new VidResDTO();
-        vidResDTO.setVidStatus((String) response.get("vidStatus"));
-        vidResDTO.setRestoredVid((VidResDTO) response.get("restoredVid"));
-        vidResDTO.setUin((String) response.get("UIN"));
-        vidResDTO.setVid((String) response.get("VID"));
-        VidResponseDTO1 vidResponseDTO1 = new VidResponseDTO1();
-        vidResponseDTO1.setResponse(vidResDTO);
-        vidResponseDTO1.setErrors(new ArrayList<>());
-
-        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(vidResponseDTO1);
-
-        // VID
-        String uin = utilities.getUinByVid("6241572684701486");
-        assertEquals(uin, response.get("UIN"));
-    }
-
-
-    @Test(expected = VidCreationException.class)
-    public void testGetUinByVidThrowVidCreationException() throws ApisResourceAccessException, IOException {
-        ErrorDTO error = new ErrorDTO(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-        List<ErrorDTO> errorResponse = new ArrayList<>();
-        errorResponse.add(error);
-        VidResponseDTO1 vidResponseDTO1 = new VidResponseDTO1();
-        vidResponseDTO1.setErrors(errorResponse);
-        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(vidResponseDTO1);
-
-        // VID
-        utilities.getUinByVid("6241572684701486");
-    }
-
-
-    @Test
-    public void testRetrieveIdrepoJsonStatus() throws ApisResourceAccessException, IOException {
-        JSONObject response = JsonUtil.getJSONObject(identity, "response");
-        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
-        ResponseDTO1 responseDTO1 = new ResponseDTO1();
-        responseDTO1.setStatus((String) response.get("status"));
-        responseDTO1.setIdentity(response.get("identity"));
-        idResponseDTO1.setResponse(responseDTO1);
-
-        String identityString = JsonUtil.writeValueAsString(response.get("identity"));
-        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(idResponseDTO1);
-        Mockito.when(objMapper.writeValueAsString(any())).thenReturn(identityString);
-
-        // Status
-        String status = utilities.retrieveIdrepoJsonStatus("3527812406");
-        assertEquals(status, response.get("status"));
-    }
-
-
-    @Test(expected = IdRepoAppException.class)
-    public void testRetrieveIdrepoJsonStatusThrowIdRepoAppException() throws ApisResourceAccessException, IOException {
-        ServiceError error = new ServiceError(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-        List<ServiceError> errorResponse = new ArrayList<>();
-        errorResponse.add(error);
-        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
-        idResponseDTO1.setErrors(errorResponse);
-        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(idResponseDTO1);
-
-        // UIN
-        utilities.retrieveIdrepoJsonStatus("3527812406");
     }
 
     @Test
@@ -216,5 +164,111 @@ public class UtilitiesTest {
         Object identityObject = jsonStringObject.get("identity");
         JSONObject registrationProcessorMappingJson = utilities.getRegistrationProcessorMappingJson();
         assertEquals(registrationProcessorMappingJson, identityObject);
+    }
+    
+    @Test
+    public void testGetUinByVid() throws ApisResourceAccessException, IOException {
+        JSONObject response = JsonUtil.getJSONObject(identityVID, "response");
+        VidResDTO vidResDTO = new VidResDTO();
+        vidResDTO.setVidStatus((String) response.get("vidStatus"));
+        vidResDTO.setRestoredVid((VidResDTO) response.get("restoredVid"));
+        vidResDTO.setUin((String) response.get("UIN"));
+        vidResDTO.setVid((String) response.get("VID"));
+        VidResponseDTO1 vidResponseDTO1 = new VidResponseDTO1();
+        vidResponseDTO1.setResponse(vidResDTO);
+        vidResponseDTO1.setErrors(new ArrayList<>());
+
+        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(vidResponseDTO1);
+
+        // VID
+        String uin = utilities.getUinByVid("6241572684701486");
+        assertEquals(uin, response.get("UIN"));
+    }
+
+    @Test(expected = VidCreationException.class)
+    public void testGetUinByVidThrowVidCreationException() throws ApisResourceAccessException, IOException {
+        ErrorDTO error = new ErrorDTO(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+        List<ErrorDTO> errorResponse = new ArrayList<>();
+        errorResponse.add(error);
+        VidResponseDTO1 vidResponseDTO1 = new VidResponseDTO1();
+        vidResponseDTO1.setErrors(errorResponse);
+        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(vidResponseDTO1);
+
+        // VID
+        utilities.getUinByVid("6241572684701486");
+    }
+
+    @Test
+    public void testRetrieveIdrepoJsonStatus() throws ApisResourceAccessException, IOException {
+        JSONObject response = JsonUtil.getJSONObject(identity, "response");
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        ResponseDTO1 responseDTO1 = new ResponseDTO1();
+        responseDTO1.setStatus((String) response.get("status"));
+        responseDTO1.setIdentity(response.get("identity"));
+        idResponseDTO1.setResponse(responseDTO1);
+
+        String identityString = JsonUtil.writeValueAsString(response.get("identity"));
+        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(idResponseDTO1);
+        Mockito.when(objMapper.writeValueAsString(any())).thenReturn(identityString);
+
+        // Status
+        String status = utilities.retrieveIdrepoJsonStatus("3527812406");
+        assertEquals(status, response.get("status"));
+    }
+    
+    @Test
+    public void testRetrieveIdrepoJsonStatusNestedIf() throws ApisResourceAccessException, IOException {
+        
+        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(null);
+        
+        // Status
+        String status = utilities.retrieveIdrepoJsonStatus("3527812406");
+    }
+    
+    @Test
+    public void testRetrieveIdrepoJsonStatusWithUinNull() throws ApisResourceAccessException, IOException{
+    	utilities.retrieveIdrepoJsonStatus(null);
+    }
+
+    @Test(expected = IdRepoAppException.class)
+    public void testRetrieveIdrepoJsonStatusThrowIdRepoAppException() throws ApisResourceAccessException, IOException {
+        ServiceError error = new ServiceError(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+        List<ServiceError> errorResponse = new ArrayList<>();
+        errorResponse.add(error);
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        idResponseDTO1.setErrors(errorResponse);
+        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(idResponseDTO1);
+
+        // UIN
+        utilities.retrieveIdrepoJsonStatus("3527812406");
+    }
+    
+    @Test
+    public void testGenerateAudit() {
+    	List<Map<String, String>> mapList=utilities.generateAudit("12345");
+    	assertEquals("12345", mapList.get(0).get("id"));
+    }
+    
+    @Test
+    public void testGetLanguageCode() {
+    	when(env.getProperty(any())).thenReturn("mandatory languages");
+    	
+    	String result=utilities.getLanguageCode();
+    	assertNotNull(result);
+    }
+    
+    @Test
+    public void testGetLanguageCodeElse() {
+    	when(env.getProperty(any())).thenReturn("");
+    	
+    	utilities.getLanguageCode();
+    }
+    
+    @Test
+    public void testGetLanguageCodeNestedIf() {
+    	when(env.getProperty("mosip.optional-languages")).thenReturn("optional-languages");
+    	
+    	String result=utilities.getLanguageCode();
+    	assertNotNull(result);
     }
 }

@@ -27,7 +27,9 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -111,6 +113,73 @@ public class ResidentServiceRestClientTest {
         list.add("1234");
 
         client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, "pageFetch,pageStart", "50,1", AutnTxnResponseDto.class);
+    }
+    
+    @Test
+    public void testGetApiListQuery() throws ApisResourceAccessException{
+    	AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
+        autnTxnResponseDto.setId("ancd");
+        
+        when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
+        ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
+        doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
+        List<String> list = new ArrayList<>();
+        list.add("individualIdType");
+        list.add("UIN");
+        list.add("individualId");
+        list.add("1234");
+        
+        List<String> queryParamName=new ArrayList<String>();
+        queryParamName.add("queryName");
+        queryParamName.add("paramName");
+        
+        List<Object> queryParamValue=new ArrayList<>();
+        queryParamValue.add("queryValue");
+        queryParamValue.add("paramValue");
+        
+        assertTrue(client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, queryParamName, queryParamValue, AutnTxnResponseDto.class).toString().contains("ancd"));
+    }
+    
+    @Test(expected = ApisResourceAccessException.class)
+    public void testGetApiListQueryException() throws ApisResourceAccessException{
+    	AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
+        autnTxnResponseDto.setId("ancd");
+        
+        when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
+        ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
+        doThrow(new ApisResourceAccessException()).when(client).getApi(any(), any());
+        List<String> list = new ArrayList<>();
+        list.add("individualIdType");
+        list.add("UIN");
+        list.add("individualId");
+        list.add("1234");
+        
+        List<String> queryParamName=new ArrayList<String>();
+        queryParamName.add("queryName");
+        queryParamName.add("paramName");
+        
+        List<Object> queryParamValue=new ArrayList<>();
+        queryParamValue.add("queryValue");
+        queryParamValue.add("paramValue");
+        
+        client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, list, queryParamName, queryParamValue, AutnTxnResponseDto.class);
+    }
+    
+    @Test
+    public void testGetApiGenericT() throws Exception{
+    	AutnTxnResponseDto autnTxnResponseDto=new AutnTxnResponseDto();
+    	autnTxnResponseDto.setId("ancd");
+    	
+    	when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
+    	ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
+        doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
+        Map<String, String> pathsegments=new HashMap<String, String>();
+        pathsegments.put("individualIdType","mapType");
+        pathsegments.put("UIN","mapType");
+        pathsegments.put("individualId","mapType");
+        pathsegments.put("1234","mapType");
+        
+        assertTrue(client.getApi(ApiName.INTERNALAUTHTRANSACTIONS, pathsegments, AutnTxnResponseDto.class).toString().contains("ancd"));
     }
 
     @Test
