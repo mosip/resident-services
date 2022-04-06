@@ -208,52 +208,6 @@ public class Utilities {
 		return uin;
 	}
 
-	public boolean linkRegIdWrtUin(String registrationID, String uin) throws ApisResourceAccessException, IOException {
-
-		IdResponseDTO idResponse = null;
-		RequestDto1 requestDto = new RequestDto1();
-		if (uin != null) {
-
-			JSONObject identityObject = new JSONObject();
-			identityObject.put(UIN, uin);
-			addSchemaVersion(identityObject);
-
-			requestDto.setRegistrationId(registrationID);
-			requestDto.setIdentity(identityObject);
-
-			IdRequestDto idRequestDTO = new IdRequestDto();
-			idRequestDTO.setId(idRepoUpdate);
-			idRequestDTO.setRequest(requestDto);
-			idRequestDTO.setMetadata(null);
-			idRequestDTO.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-			idRequestDTO.setVersion(vidVersion);
-
-			idResponse = (IdResponseDTO) residentServiceRestClient.patchApi(env.getProperty(ApiName.IDREPOSITORY.name()), MediaType.APPLICATION_JSON, idRequestDTO,
-					IdResponseDTO.class);
-
-			if (idResponse != null && idResponse.getResponse() != null) {
-
-				logger.info(LoggerFileConstant.SESSIONID.toString(),
-						LoggerFileConstant.REGISTRATIONID.toString(), registrationID, " UIN Linked with the RegID");
-
-				return true;
-			} else {
-
-				logger.error(LoggerFileConstant.SESSIONID.toString(),
-						LoggerFileConstant.REGISTRATIONID.toString(), registrationID,
-						" UIN not Linked with the RegID ");
-				return false;
-			}
-
-		} else {
-
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-					registrationID, " UIN is null ");
-		}
-
-		return false;
-	}
-
     public String getJson(String configServerFileStorageURL, String uri) {
         if (StringUtils.isBlank(regProcessorIdentityJson)) {
             return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
@@ -299,17 +253,6 @@ public class Utilities {
 		Optional<String> optional = strList.stream().filter(s -> s.contains(sourceStr)).findAny();
 		String source = optional.isPresent() ? optional.get().replace(sourceStr + ":", "") : null;
 		return source;
-	}
-
-	private void addSchemaVersion(JSONObject identityObject) throws IOException {
-
-		JSONObject regProcessorIdentityJson = getRegistrationProcessorMappingJson();
-		String schemaVersion = JsonUtil.getJSONValue(
-				JsonUtil.getJSONObject(regProcessorIdentityJson, MappingJsonConstants.IDSCHEMA_VERSION),
-				MappingJsonConstants.VALUE);
-
-		identityObject.put(schemaVersion, Float.valueOf(idschemaVersion));
-
 	}
 
 	public List<Map<String, String>> generateAudit(String rid) {
