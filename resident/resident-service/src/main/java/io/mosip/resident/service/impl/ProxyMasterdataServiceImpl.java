@@ -18,6 +18,11 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
+/**
+ * Resident proxy masterdata service implementation class.
+ * 
+ * @author Ritik Jain
+ */
 @Component
 public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
