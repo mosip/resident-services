@@ -30,7 +30,9 @@ import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
 
 @RestControllerAdvice
@@ -41,6 +43,8 @@ public class ApiExceptionHandler {
 
 	@Autowired
 	Environment env;
+
+	private static final Logger logger = LoggerConfiguration.logConfig(ApiExceptionHandler.class);
 
 	private static final String CHECK_STATUS = "resident.checkstatus.id";
 	private static final String EUIN = "resident.euin.id";
@@ -58,6 +62,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlDataServiceException(
 			HttpServletRequest httpServletRequest, final ResidentServiceException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -65,6 +70,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlDataServiceException(
 			HttpServletRequest httpServletRequest, final ResidentCredentialServiceException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -72,6 +78,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlDataNotFoundException(
 			HttpServletRequest httpServletRequest, final DataNotFoundException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -79,6 +86,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
 			final RequestException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -102,6 +110,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
 			final InvalidInputException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -109,6 +118,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
 			final IdRepoAppException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -116,6 +126,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
 			final OtpValidationFailedException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -123,6 +134,7 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
 			final TokenGenerationFailedException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
@@ -132,7 +144,8 @@ public class ApiExceptionHandler {
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		final List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
 		fieldErrors.forEach(x -> {
-			ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), x.getField() + ": " + x.getDefaultMessage());
+			ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+					x.getField() + ": " + x.getDefaultMessage());
 			errorResponse.getErrors().add(error);
 		});
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
@@ -154,7 +167,23 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), exception.getMessage());
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(exception);
+		logStackTrace(exception);
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+	}
+
+	@ExceptionHandler(ApisResourceAccessException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> getApiResourceStackTraceHandler(
+			final HttpServletRequest httpServletRequest, final ApisResourceAccessException e) throws IOException {
+		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
+		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
+		errorResponse.getErrors().add(error);
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+	}
+
+	private static void logStackTrace(Exception e) {
+		logger.error(ExceptionUtils.getStackTrace(e));
 	}
 
 	private ResponseWrapper<ServiceError> setErrors(HttpServletRequest httpServletRequest) throws IOException {
