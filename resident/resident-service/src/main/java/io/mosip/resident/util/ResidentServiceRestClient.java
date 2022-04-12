@@ -153,7 +153,7 @@ public class ResidentServiceRestClient {
 
 	@SuppressWarnings({ "unchecked", "null" })
 	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType)
-			throws Exception {
+			throws ApisResourceAccessException {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());
 		Object obj = null;
@@ -167,7 +167,9 @@ public class ResidentServiceRestClient {
 				obj = getApi(urlWithPath, responseType);
 
 			} catch (Exception e) {
-				throw new Exception(e);
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+						LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
+				throw new ApisResourceAccessException("Exception occurred while accessing ", e);
 			}
 
 		}
