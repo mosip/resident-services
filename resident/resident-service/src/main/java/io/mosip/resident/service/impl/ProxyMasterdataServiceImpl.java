@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -39,13 +40,14 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Override
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode():: entry");
+		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("langCode", langCode);
 		try {
-			String validDocumentGetUrl = env.getProperty(ApiName.VALID_DOCUMENT_BY_LANGCODE_URL.name()) + langCode;
-			URI validDocumentGetUri = URI.create(validDocumentGetUrl);
-			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(validDocumentGetUri,
+			responseWrapper = residentServiceRestClient.getApi(ApiName.VALID_DOCUMENT_BY_LANGCODE_URL, pathsegments,
 					ResponseWrapper.class);
+
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
@@ -57,7 +59,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode():: exit");
+		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode()::exit");
 		return responseWrapper;
 	}
 
