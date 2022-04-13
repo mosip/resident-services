@@ -256,8 +256,8 @@ public class ResidentCredentialServiceTest {
     }
     
     @Test(expected = ResidentCredentialServiceException.class)
-    public void testGetPolicyByCredentialTypeWithAPIResourceException() throws Exception {
-        when(residentServiceRestClient.getApi(any(), any(),any())).thenThrow(Exception.class);
+    public void testGetPolicyByCredentialTypeWithAPIResourceException() throws ApisResourceAccessException {
+        when(residentServiceRestClient.getApi(any(), any(),any())).thenThrow(ApisResourceAccessException.class);
         residentCredentialService.getPolicyByCredentialType("2", "credential-type");
     }
     
