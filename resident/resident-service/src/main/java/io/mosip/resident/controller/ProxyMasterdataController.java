@@ -68,7 +68,7 @@ public class ProxyMasterdataController {
 	/**
 	 * Get location hierarchy levels by language code.
 	 * 
-	 * @param langcode
+	 * @param langCode
 	 * @return ResponseWrapper<?> object
 	 * @throws ResidentServiceCheckedException
 	 */
@@ -81,13 +81,42 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(@PathVariable("langcode") String langcode)
+	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(@PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL);
-		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langcode);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::exit");
+		return responseWrapper;
+	}
+
+	/**
+	 * Get immediate children by location code and language code.
+	 * 
+	 * @param locationCode
+	 * @param langCode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/locations/immediatechildren/{locationcode}/{langcode}")
+	@Operation(summary = "getImmediateChildrenByLocCodeAndLangCode", description = "getImmediateChildrenByLocCodeAndLangCode", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getImmediateChildrenByLocCodeAndLangCode(
+			@PathVariable("locationcode") String locationCode, @PathVariable("langcode") String langCode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getImmediateChildrenByLocCodeAndLangCode()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getImmediateChildrenByLocCodeAndLangCode(locationCode, langCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_SUCCESS);
+		logger.debug("ProxyMasterdataController::getImmediateChildrenByLocCodeAndLangCode()::exit");
 		return responseWrapper;
 	}
 
