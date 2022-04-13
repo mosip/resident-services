@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
@@ -26,6 +27,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Ritik Jain
  */
 @RestController
+@RequestMapping("/proxy/masterdata")
 @Tag(name = "proxy-masterdata-controller", description = "Proxy Masterdata Controller")
 public class ProxyMasterdataController {
 
@@ -45,7 +47,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/validdocuments/{langCode}")
+	@GetMapping("/validdocuments/{langCode}")
 	@Operation(summary = "getValidDocumentByLangCode", description = "getValidDocumentByLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
