@@ -63,4 +63,30 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		return responseWrapper;
 	}
 
+	@Override
+	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(String langcode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevelByLangCode()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("langcode", langcode);
+		try {
+			responseWrapper = residentServiceRestClient.getApi(ApiName.LOCATION_HIERARCHY_LEVEL_BY_LANGCODE_URL,
+					pathsegments, ResponseWrapper.class);
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
+			logger.error("Error occured in accessing location hierarchy levels %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevelByLangCode()::exit");
+		return responseWrapper;
+	}
+
 }

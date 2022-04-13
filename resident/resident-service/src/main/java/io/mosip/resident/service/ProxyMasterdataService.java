@@ -22,4 +22,14 @@ public interface ProxyMasterdataService {
 	 */
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
 
+	/**
+	 * Get location hierarchy levels by language code.
+	 * 
+	 * @param langcode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(String langcode)
+			throws ResidentServiceCheckedException;
+
 }

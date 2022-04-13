@@ -246,7 +246,16 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_VALID_DOCUMENT_EXCEPTION("RES-SER-145", RegistrationConstants.SYSTEM, "get valid documents",
 			"get valid documents by lang code is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LOCATION_HIERARCHY_LEVEL("RES-SER-146", RegistrationConstants.SYSTEM, "get location hierarchy levels",
+			"get location hierarchy level by lang code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LOCATION_HIERARCHY_LEVEL_SUCCESS("RES-SER-147", RegistrationConstants.SYSTEM, "get location hierarchy levels",
+			"get location hierarchy level by lang code is success", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION("RES-SER-148", RegistrationConstants.SYSTEM, "get location hierarchy levels",
+			"get location hierarchy level by lang code is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
 

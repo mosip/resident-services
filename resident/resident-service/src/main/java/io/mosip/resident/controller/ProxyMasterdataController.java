@@ -65,4 +65,30 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get location hierarchy levels by language code.
+	 * 
+	 * @param langcode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/locationHierarchyLevels/{langcode}")
+	@Operation(summary = "getLocationHierarchyLevelByLangCode", description = "getLocationHierarchyLevelByLangCode", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(@PathVariable("langcode") String langcode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langcode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
+		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::exit");
+		return responseWrapper;
+	}
+
 }
