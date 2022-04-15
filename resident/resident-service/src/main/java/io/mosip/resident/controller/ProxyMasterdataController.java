@@ -120,4 +120,32 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get location details by location code and language code.
+	 * 
+	 * @param locationCode
+	 * @param langCode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/locations/info/{locationcode}/{langcode}")
+	@Operation(summary = "getLocationDetailsByLocCodeAndLangCode", description = "getLocationDetailsByLocCodeAndLangCode", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(@PathVariable("locationcode") String locationCode,
+			@PathVariable("langcode") String langCode) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getLocationDetailsByLocCodeAndLangCode()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode(locationCode,
+				langCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_SUCCESS);
+		logger.debug("ProxyMasterdataController::getLocationDetailsByLocCodeAndLangCode()::exit");
+		return responseWrapper;
+	}
+
 }

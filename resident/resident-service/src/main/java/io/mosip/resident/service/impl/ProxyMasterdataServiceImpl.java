@@ -116,4 +116,31 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		return responseWrapper;
 	}
 
+	@Override
+	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(String locationCode, String langCode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getLocationDetailsByLocCodeAndLangCode()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("locationcode", locationCode);
+		pathsegments.put("langcode", langCode);
+		try {
+			responseWrapper = residentServiceRestClient.getApi(ApiName.LOCATION_INFO_BY_LOCCODE_AND_LANGCODE_URL,
+					pathsegments, ResponseWrapper.class);
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_EXCEPTION);
+			logger.error("Error occured in accessing location details %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getLocationDetailsByLocCodeAndLangCode()::exit");
+		return responseWrapper;
+	}
+
 }

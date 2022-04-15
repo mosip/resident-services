@@ -43,4 +43,15 @@ public interface ProxyMasterdataService {
 	public ResponseWrapper<?> getImmediateChildrenByLocCodeAndLangCode(String locationCode, String langCode)
 			throws ResidentServiceCheckedException;
 
+	/**
+	 * Get location details by location code and language code.
+	 * 
+	 * @param locationCode
+	 * @param langCode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(String locationCode, String langCode)
+			throws ResidentServiceCheckedException;
+
 }

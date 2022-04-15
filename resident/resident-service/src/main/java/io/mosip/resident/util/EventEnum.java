@@ -264,6 +264,15 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_IMMEDIATE_CHILDREN_EXCEPTION("RES-SER-151", RegistrationConstants.SYSTEM, "get immediate children",
 			"get immediate children by location code and lang code is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LOCATION_DETAILS("RES-SER-152", RegistrationConstants.SYSTEM, "get location details",
+			"get location details by location code and lang code", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LOCATION_DETAILS_SUCCESS("RES-SER-153", RegistrationConstants.SYSTEM, "get location details",
+			"get location details by location code and lang code is succeed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LOCATION_DETAILS_EXCEPTION("RES-SER-154", RegistrationConstants.SYSTEM, "get location details",
+			"get location details by location code and lang code is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
