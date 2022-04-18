@@ -148,4 +148,35 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get coordinate specific registration centers
+	 * 
+	 * @param langCode
+	 * @param longitude
+	 * @param latitude
+	 * @param proximityDistance
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}")
+	@Operation(summary = "getCoordinateSpecificRegistrationCenters", description = "getCoordinateSpecificRegistrationCenters", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(@PathVariable("langcode") String langCode,
+			@PathVariable("longitude") String longitude, @PathVariable("latitude") String latitude,
+			@PathVariable("proximitydistance") String proximityDistance) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getCoordinateSpecificRegistrationCenters()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
+				longitude, latitude, proximityDistance);
+		auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_SUCCESS);
+		logger.debug("ProxyMasterdataController::getCoordinateSpecificRegistrationCenters()::exit");
+		return responseWrapper;
+	}
+
 }

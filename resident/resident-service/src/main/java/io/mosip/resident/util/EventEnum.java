@@ -273,7 +273,19 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_LOCATION_DETAILS_EXCEPTION("RES-SER-154", RegistrationConstants.SYSTEM, "get location details",
 			"get location details by location code and lang code is failed", "RES-SER", "Residence service", "NO_ID",
-			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_COORDINATE_SPECIFIC_REG_CENTERS("RES-SER-155", RegistrationConstants.SYSTEM,
+			"get coordinate specific registration centers", "get coordinate specific registration centers", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_COORDINATE_SPECIFIC_REG_CENTERS_SUCCESS("RES-SER-156", RegistrationConstants.SYSTEM,
+			"get coordinate specific registration centers", "get coordinate specific registration centers is succeed",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION("RES-SER-157", RegistrationConstants.SYSTEM,
+			"get coordinate specific registration centers", "get coordinate specific registration centers is failed",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
 
