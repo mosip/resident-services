@@ -285,7 +285,16 @@ public enum EventEnum {
 	GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION("RES-SER-157", RegistrationConstants.SYSTEM,
 			"get coordinate specific registration centers", "get coordinate specific registration centers is failed",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
-			RegistrationConstants.APPLICATIONNAME);
+			RegistrationConstants.APPLICATIONNAME),
+	GET_APPLICANT_VALID_DOCUMENT("RES-SER-158", RegistrationConstants.SYSTEM, "get applicant valid documents",
+			"get applicant valid documents", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_APPLICANT_VALID_DOCUMENT_SUCCESS("RES-SER-159", RegistrationConstants.SYSTEM, "get applicant valid documents",
+			"get applicant valid documents is succeed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_APPLICANT_VALID_DOCUMENT_EXCEPTION("RES-SER-160", RegistrationConstants.SYSTEM, "get applicant valid documents",
+			"get applicant valid documents is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
 

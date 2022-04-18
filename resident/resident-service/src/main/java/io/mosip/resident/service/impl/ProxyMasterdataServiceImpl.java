@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -169,6 +170,33 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getCoordinateSpecificRegistrationCenters()::exit");
+		return responseWrapper;
+	}
+
+	@Override
+	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, String languages)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getApplicantValidDocument()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegements = new HashMap<String, String>();
+		pathsegements.put("applicantId", applicantId);
+		try {
+			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(
+					ApiName.APPLICANT_VALID_DOCUMENT_URL, pathsegements, List.of("languages"), List.of(languages),
+					ResponseWrapper.class);
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT_EXCEPTION);
+			logger.error("Error occured in accessing applicant valid document %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getApplicantValidDocument()::exit");
 		return responseWrapper;
 	}
 

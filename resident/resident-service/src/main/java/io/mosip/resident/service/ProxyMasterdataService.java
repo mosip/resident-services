@@ -67,4 +67,15 @@ public interface ProxyMasterdataService {
 	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, String longitude,
 			String latitude, String proximityDistance) throws ResidentServiceCheckedException;
 
+	/**
+	 * Get applicant valid document.
+	 * 
+	 * @param applicantId
+	 * @param languages
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, String languages)
+			throws ResidentServiceCheckedException;
+
 }
