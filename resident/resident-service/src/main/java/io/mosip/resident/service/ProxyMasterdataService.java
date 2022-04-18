@@ -90,4 +90,21 @@ public interface ProxyMasterdataService {
 	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, String hierarchyLevel,
 			String name) throws ResidentServiceCheckedException;
 
+	/**
+	 * Get registration centers by hierarchy level and text-paginated.
+	 * 
+	 * @param langCode
+	 * @param hierarchyLevel
+	 * @param name
+	 * @param pageNumber
+	 * @param pageSize
+	 * @param orderBy
+	 * @param sortBy
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
+			String hierarchyLevel, String name, String pageNumber, String pageSize, String orderBy, String sortBy)
+			throws ResidentServiceCheckedException;
+
 }

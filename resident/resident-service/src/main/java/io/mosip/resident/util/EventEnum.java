@@ -306,6 +306,16 @@ public enum EventEnum {
 	GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION("RES-SER-163", RegistrationConstants.SYSTEM,
 			"get registration centers for location code", "get registration centers for location code is failed",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTERS_PAGINATED("RES-SER-164", RegistrationConstants.SYSTEM, "get registration centers paginated",
+			"get registration centers paginated", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTERS_PAGINATED_SUCCESS("RES-SER-165", RegistrationConstants.SYSTEM, "get registration centers paginated",
+			"get registration centers paginated is succeed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTERS_PAGINATED_EXCEPTION("RES-SER-166", RegistrationConstants.SYSTEM,
+			"get registration centers paginated", "get registration centers paginated is failed", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
