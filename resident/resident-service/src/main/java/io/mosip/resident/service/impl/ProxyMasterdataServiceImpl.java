@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -224,6 +225,50 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCentersByHierarchyLevel()::exit");
+		return responseWrapper;
+	}
+
+	@Override
+	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
+			String hierarchyLevel, String name, String pageNumber, String pageSize, String orderBy, String sortBy)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCenterByHierarchyLevelAndTextPaginated()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+
+		Map<String, String> pathsegements = new HashMap<String, String>();
+		pathsegements.put("langcode", langCode);
+		pathsegements.put("hierarchylevel", hierarchyLevel);
+		pathsegements.put("name", name);
+
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("pageNumber");
+		queryParamName.add("pageSize");
+		queryParamName.add("orderBy");
+		queryParamName.add("sortBy");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(pageNumber);
+		queryParamValue.add(pageSize);
+		queryParamValue.add(orderBy);
+		queryParamValue.add(sortBy);
+
+		try {
+			responseWrapper = residentServiceRestClient.getApi(
+					ApiName.REGISTRATION_CENTER_BY_LOCATION_TYPE_AND_SEARCH_TEXT_PAGINATED_URL, pathsegements,
+					queryParamName, queryParamValue, ResponseWrapper.class);
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
+			logger.error("Error occured in accessing registration centers paginated %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCenterByHierarchyLevelAndTextPaginated()::exit");
 		return responseWrapper;
 	}
 

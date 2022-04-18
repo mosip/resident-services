@@ -237,4 +237,41 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get registration centers by hierarchy level and text-paginated.
+	 * 
+	 * @param langCode
+	 * @param hierarchyLevel
+	 * @param name
+	 * @param pageNumber
+	 * @param pageSize
+	 * @param orderBy
+	 * @param sortBy
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
+	@Operation(summary = "getRegistrationCenterByHierarchyLevelAndTextPaginated", description = "getRegistrationCenterByHierarchyLevelAndTextPaginated", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(
+			@PathVariable("langcode") String langCode, @PathVariable("hierarchylevel") String hierarchyLevel,
+			@PathVariable("name") String name, @RequestParam("pageNumber") String pageNumber,
+			@RequestParam("pageSize") String pageSize, @RequestParam("orderBy") String orderBy,
+			@RequestParam("sortBy") String sortBy) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getRegistrationCenterByHierarchyLevelAndTextPaginated()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getRegistrationCenterByHierarchyLevelAndTextPaginated(langCode, hierarchyLevel, name, pageNumber,
+						pageSize, orderBy, sortBy);
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_SUCCESS);
+		logger.debug("ProxyMasterdataController::getRegistrationCenterByHierarchyLevelAndTextPaginated()::exit");
+		return responseWrapper;
+	}
+
 }
