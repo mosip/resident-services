@@ -49,10 +49,8 @@ public class ResidentServiceRestClient {
 	/**
 	 * Gets the api.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param responseType
-	 *            the response type
+	 * @param <T>          the generic type
+	 * @param responseType the response type
 	 * @return the api
 	 * @throws Exception
 	 */
@@ -110,9 +108,8 @@ public class ResidentServiceRestClient {
 		return obj;
 	}
 
-
-	public Object getApi(ApiName apiName, List<String> pathsegments, List<String> queryParamName, List<Object> queryParamValue,
-						 Class<?> responseType) throws ApisResourceAccessException {
+	public Object getApi(ApiName apiName, List<String> pathsegments, List<String> queryParamName,
+			List<Object> queryParamValue, Class<?> responseType) throws ApisResourceAccessException {
 
 		Object obj = null;
 		String apiHostIpPort = environment.getProperty(apiName.name());
@@ -151,9 +148,14 @@ public class ResidentServiceRestClient {
 		return obj;
 	}
 
-	@SuppressWarnings({ "unchecked", "null" })
 	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType)
 			throws ApisResourceAccessException {
+		return getApi(apiName, pathsegments, null, null, responseType);
+	}
+
+	@SuppressWarnings({ "unchecked", "null" })
+	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, List<String> queryParamName,
+			List<Object> queryParamValue, Class<?> responseType) throws ApisResourceAccessException {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());
 		Object obj = null;
@@ -161,7 +163,13 @@ public class ResidentServiceRestClient {
 		if (apiHostIpPort != null) {
 
 			builder = UriComponentsBuilder.fromUriString(apiHostIpPort);
+			if (!((queryParamName == null) || (("").equals(queryParamName)))) {
 
+				for (int i = 0; i < queryParamName.size(); i++) {
+					builder.queryParam(queryParamName.get(i), queryParamValue.get(i));
+				}
+
+			}
 			URI urlWithPath = builder.build(pathsegments);
 			try {
 				obj = getApi(urlWithPath, responseType);
@@ -197,14 +205,10 @@ public class ResidentServiceRestClient {
 	/**
 	 * Patch api.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param uri
-	 *            the uri
-	 * @param requestType
-	 *            the request type
-	 * @param responseClass
-	 *            the response class
+	 * @param <T>           the generic type
+	 * @param uri           the uri
+	 * @param requestType   the request type
+	 * @param responseClass the response class
 	 * @return the t
 	 */
 	@SuppressWarnings("unchecked")
@@ -235,18 +239,13 @@ public class ResidentServiceRestClient {
 	/**
 	 * Put api.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param uri
-	 *            the uri
-	 * @param requestType
-	 *            the request type
-	 * @param responseClass
-	 *            the response class
+	 * @param <T>           the generic type
+	 * @param uri           the uri
+	 * @param requestType   the request type
+	 * @param responseClass the response class
 	 * @param mediaType
 	 * @return the t
-	 * @throws Exception
-	 *             the exception
+	 * @throws Exception the exception
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType)

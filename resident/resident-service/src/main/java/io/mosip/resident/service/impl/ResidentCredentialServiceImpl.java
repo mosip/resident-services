@@ -352,10 +352,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		try {
 			response = residentServiceRestClient.getApi(ApiName.POLICY_REQ_URL, pathsegments,
 					ResponseWrapper.class);
-		} catch (Exception e) {
+		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		return response;
 	}
