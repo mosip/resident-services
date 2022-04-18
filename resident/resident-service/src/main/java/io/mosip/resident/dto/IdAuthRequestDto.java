@@ -3,8 +3,10 @@ package io.mosip.resident.dto;
 import lombok.Data;
 
 @Data
-public class IdAuthResponseDto {
+public class IdAuthRequestDto {
 
-	private boolean authStatus;
 	private String transactionID;
+	private String individualId;
+	private String otp;
+
 }
