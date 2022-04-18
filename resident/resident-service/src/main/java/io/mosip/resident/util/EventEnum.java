@@ -294,7 +294,19 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_APPLICANT_VALID_DOCUMENT_EXCEPTION("RES-SER-160", RegistrationConstants.SYSTEM, "get applicant valid documents",
 			"get applicant valid documents is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTERS_FOR_LOCATION_CODE("RES-SER-161", RegistrationConstants.SYSTEM,
+			"get registration centers for location code", "get registration centers for location code", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS("RES-SER-162", RegistrationConstants.SYSTEM,
+			"get registration centers for location code", "get registration centers for location code is succeed",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION("RES-SER-163", RegistrationConstants.SYSTEM,
+			"get registration centers for location code", "get registration centers for location code is failed",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
 

@@ -78,4 +78,16 @@ public interface ProxyMasterdataService {
 	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, String languages)
 			throws ResidentServiceCheckedException;
 
+	/**
+	 * Get registration centers by hierarchy level.
+	 * 
+	 * @param langCode
+	 * @param hierarchyLevel
+	 * @param name
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, String hierarchyLevel,
+			String name) throws ResidentServiceCheckedException;
+
 }

@@ -207,4 +207,34 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get registration centers by hierarchy level.
+	 * 
+	 * @param langCode
+	 * @param hierarchyLevel
+	 * @param name
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/registrationcenters/{langcode}/{hierarchylevel}/names")
+	@Operation(summary = "getRegistrationCentersByHierarchyLevel", description = "getRegistrationCentersByHierarchyLevel", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(@PathVariable("langcode") String langCode,
+			@PathVariable("hierarchylevel") String hierarchyLevel, @RequestParam("name") String name)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode,
+				hierarchyLevel, name);
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS);
+		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::exit");
+		return responseWrapper;
+	}
+
 }
