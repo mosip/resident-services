@@ -125,7 +125,7 @@ public class ResidentServiceRestClient {
 				}
 			}
 
-			if (!((queryParamName == null) || (("").equals(queryParamName)))) {
+			if (!((queryParamName == null) || (queryParamName.isEmpty()))) {
 
 				for (int i = 0; i < queryParamName.size(); i++) {
 					builder.queryParam(queryParamName.get(i), queryParamValue.get(i));
@@ -163,7 +163,7 @@ public class ResidentServiceRestClient {
 		if (apiHostIpPort != null) {
 
 			builder = UriComponentsBuilder.fromUriString(apiHostIpPort);
-			if (!((queryParamName == null) || (("").equals(queryParamName)))) {
+			if (!((queryParamName == null) || (queryParamName.isEmpty()))){
 
 				for (int i = 0; i < queryParamName.size(); i++) {
 					builder.queryParam(queryParamName.get(i), queryParamValue.get(i));
