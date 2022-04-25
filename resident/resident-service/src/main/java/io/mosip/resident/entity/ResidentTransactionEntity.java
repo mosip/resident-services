@@ -12,6 +12,14 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+/**
+ * This entity class defines the database table details for resident_transaction table.
+ *
+ * @author Kamesh Shekhar Prasad
+ * @since 1.2.0.1
+ *
+ */
+
 @Data
 @Table(name = "resident_transaction", schema = "resident")
 @Entity
