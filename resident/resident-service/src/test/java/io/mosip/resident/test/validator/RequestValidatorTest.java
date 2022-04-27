@@ -4,10 +4,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.velocity.util.ArrayListWrapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +30,7 @@ import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.RIDOtpRequestDTO;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
@@ -56,6 +59,8 @@ public class RequestValidatorTest {
 
 	String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+	private RIDOtpRequestDTO ridOtpRequestDTO;
+
 	@Before
 	public void setup() {
 		Mockito.when(uinValidator.validateId(Mockito.any())).thenReturn(true);
@@ -74,12 +79,22 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "uinUpdateId", "mosip.resident.updateuin");
 		ReflectionTestUtils.setField(requestValidator, "authTypes", "bio-FIR,bio-IIR");
 		ReflectionTestUtils.setField(requestValidator, "version", "v1");
+		ReflectionTestUtils.setField(requestValidator, "ridOtpId", "mosip.resident.ridotp");
+		ReflectionTestUtils.setField(requestValidator, "ridOtpVersion", "v1");
 		ReflectionTestUtils.setField(requestValidator, "map", map);
 
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
 
+		ridOtpRequestDTO = new RIDOtpRequestDTO();
+		ridOtpRequestDTO.setRequestTime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		ridOtpRequestDTO.setId("mosip.resident.ridotp");
+		ridOtpRequestDTO.setVersion("v1");
+		ridOtpRequestDTO.setIndividualId("123456789");
+		ridOtpRequestDTO.setOtpChannel(Arrays.asList("EMAIL"));
+		ridOtpRequestDTO.setMetadata(new HashMap<>());
+		ridOtpRequestDTO.setTransactionID("123456");
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -827,5 +842,58 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.authhistory");
 		requestValidator.validateAuthHistoryRequest(requestWrapper);
 
+	}
+
+	@Test
+	public void testRIDOtpRequestValidationSuccess() throws Exception {
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithNullRequestTime() throws Exception {
+		ridOtpRequestDTO.setRequestTime(null);
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithInvalidRequestTime() throws Exception {
+		ridOtpRequestDTO.setRequestTime("Fri Apr 22 15:41:35 IST 2022");
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithNullId() throws Exception {
+		ridOtpRequestDTO.setId(null);
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithInvalidId() throws Exception {
+		ridOtpRequestDTO.setId("abcd");
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithNullVersion() throws Exception {
+		ridOtpRequestDTO.setVersion(null);
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithInvalidVersion() throws Exception {
+		ridOtpRequestDTO.setVersion("abcd");
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithNullIndividualId() throws Exception {
+		ridOtpRequestDTO.setIndividualId(null);
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testRIDOtpRequestValidationWithEmptyIndividualId() throws Exception {
+		ridOtpRequestDTO.setIndividualId("");
+		requestValidator.validateRIDOtpRequest(ridOtpRequestDTO);
 	}
 }
