@@ -129,7 +129,13 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_POLICY_EXCEPTION("RES-SER-141", RegistrationConstants.SYSTEM, "request for policy",
 			"request for policy is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_OTP_GEN("RES-SER-142", RegistrationConstants.SYSTEM, "generating RID otp", "Request for generating otp using RID", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	RID_OTP_GEN_SUCCESS("RES-SER-143", RegistrationConstants.SYSTEM, "generating RID otp", "RID otp generation is success",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME);
 	
 	private final String eventId;
 
