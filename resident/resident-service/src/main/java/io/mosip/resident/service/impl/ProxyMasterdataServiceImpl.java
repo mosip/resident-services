@@ -272,4 +272,31 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		return responseWrapper;
 	}
 
+	@Override
+	public ResponseWrapper<?> getRegistrationCenterWorkingDays(String registrationCenterID, String langCode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCenterWorkingDays()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegements = new HashMap<String, String>();
+		pathsegements.put("registrationCenterID", registrationCenterID);
+		pathsegements.put("langCode", langCode);
+		try {
+			responseWrapper = residentServiceRestClient.getApi(ApiName.WORKING_DAYS_BY_REGISTRATION_ID, pathsegements,
+					ResponseWrapper.class);
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
+			logger.error("Error occured in accessing registration center working days %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCenterWorkingDays()::exit");
+		return responseWrapper;
+	}
+
 }

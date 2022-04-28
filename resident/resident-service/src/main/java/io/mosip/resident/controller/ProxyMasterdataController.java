@@ -274,4 +274,33 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get registration center working days by registration center ID.
+	 * 
+	 * @param registrationCenterID
+	 * @param langCode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/workingdays/{registrationCenterID}/{langCode}")
+	@Operation(summary = "getRegistrationCenterWorkingDays", description = "getRegistrationCenterWorkingDays", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getRegistrationCenterWorkingDays(
+			@PathVariable("registrationCenterID") String registrationCenterID,
+			@PathVariable("langCode") String langCode) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getRegistrationCenterWorkingDays()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getRegistrationCenterWorkingDays(registrationCenterID, langCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_SUCCESS);
+		logger.debug("ProxyMasterdataController::getRegistrationCenterWorkingDays()::exit");
+		return responseWrapper;
+	}
+
 }
