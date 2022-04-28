@@ -21,24 +21,37 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/**
+ * Audit log proxy.
+ *
+ * @author Loganathan.S
+ */
 @RestController
 @RequestMapping("/proxy/audit")
 @Tag(name = "proxy-audit-controller", description = "Proxy Audit Controller")
 public class ProxyAuditController {
 	
+	/** The audit util. */
 	@Autowired
 	private AuditUtil auditUtil;
 	
+	/**
+	 * Audit log.
+	 *
+	 * @param auditRequestDto the audit request dto
+	 * @return the response entity
+	 * @throws ResidentServiceCheckedException the resident service checked exception
+	 */
 	@ResponseFilter
 	@GetMapping("/log")
-	@Operation(summary = "getImmediateChildrenByLocCodeAndLangCode", description = "getImmediateChildrenByLocCodeAndLangCode", tags = {
-			"proxy-masterdata-controller" })
+	@Operation(summary = "auditLog", description = "audit log", tags = {
+			"proxy-audit-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> getImmediateChildrenByLocCodeAndLangCode(
+	public ResponseEntity<?> auditLog(
 			@RequestBody AuditRequestDTO auditRequestDto)
 			throws ResidentServiceCheckedException {
 		auditUtil.callAuditManager(auditRequestDto);
