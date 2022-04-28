@@ -22,6 +22,11 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
 
+/**
+ * Resident identity service implementation class.
+ * 
+ * @author Ritik Jain
+ */
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
