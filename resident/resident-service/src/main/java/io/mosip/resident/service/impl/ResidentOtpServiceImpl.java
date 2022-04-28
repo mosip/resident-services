@@ -5,10 +5,12 @@ import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
@@ -22,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
@@ -39,7 +40,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	private AuditUtil audit;
 
 	@Autowired
-	private IdRepoServiceImpl idRepoServiceImpl;
+	private IdentityServiceImpl identityServiceImpl;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -54,20 +55,20 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 			ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 
-			Map<String, String> identity = idRepoServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
-			logger.info("Identity details : " + identity);
+			IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
+
 			logger.info("otp request dto "+otpRequestDTO.getIndividualId());
-			String uin = identity.get("UIN");
-			String email = identity.get("email");
-			String phoneNumber = identity.get("phone");
+			String uin = identityDTO.getUIN();
+			String email = identityDTO.getEmail();
+			String phone = identityDTO.getPhone();
 
 			String idaToken= getIdaToken(uin);
 			logger.info("idaToken : " + idaToken);
 			String id = "null";
 			if(email != null) {
 				id= email+idaToken;
-			} else if(phoneNumber != null) {
-				id= phoneNumber+idaToken;
+			} else if(phone != null) {
+				id= phone+idaToken;
 			}
 
 			byte[] idBytes = id.getBytes();
@@ -89,7 +90,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 			residentTransactionRepository.save(residentTransactionEntity);
 
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
+		} catch (ApisResourceAccessException | NoSuchAlgorithmException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);

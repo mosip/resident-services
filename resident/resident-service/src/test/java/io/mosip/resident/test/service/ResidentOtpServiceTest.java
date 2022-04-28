@@ -7,7 +7,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
-import io.mosip.resident.service.impl.IdRepoServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentOtpServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -43,7 +43,7 @@ public class ResidentOtpServiceTest {
     private ResidentOtpService residentOtpService = new ResidentOtpServiceImpl();
 
     @Mock
-    private IdRepoServiceImpl idRepoService;
+    private IdentityServiceImpl identityServiceImpl;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
