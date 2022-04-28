@@ -1,7 +1,6 @@
 package io.mosip.resident.service.impl;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.HMACUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
@@ -56,14 +55,15 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 
 			Map<String, String> identity = idRepoServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
-
+			logger.info("Identity details : " + identity);
+			logger.info("otp request dto "+otpRequestDTO.getIndividualId());
 			String uin = identity.get("UIN");
 			String email = identity.get("email");
 			String phoneNumber = identity.get("phone");
 
 			String idaToken= getIdaToken(uin);
-
-			String id = null;
+			logger.info("idaToken : " + idaToken);
+			String id = "null";
 			if(email != null) {
 				id= email+idaToken;
 			} else if(phoneNumber != null) {
@@ -98,7 +98,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	}
 
 	private String getIdaToken(String uin) {
-		return "1234";
+		return uin;
 	}
 
 
