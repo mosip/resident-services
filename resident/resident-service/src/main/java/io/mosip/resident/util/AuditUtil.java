@@ -79,6 +79,7 @@ public class AuditUtil {
 		hostName = getServerName();
 	}
 	
+	//TODO rename to sendAuditRequest
 	public  void setAuditRequestDto(EventEnum eventEnum) {
 		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
@@ -101,7 +102,7 @@ public class AuditUtil {
 		callAuditManager(auditRequestDto);
 	}
 	
-	private void callAuditManager(AuditRequestDTO auditRequestDto) {
+	public void callAuditManager(AuditRequestDTO auditRequestDto) {
 
 		RequestWrapper<AuditRequestDTO> auditReuestWrapper = new RequestWrapper<>();
 		auditReuestWrapper.setRequest(auditRequestDto);
