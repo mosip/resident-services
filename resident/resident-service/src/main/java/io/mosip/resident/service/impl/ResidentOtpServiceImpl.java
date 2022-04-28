@@ -52,50 +52,61 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			responseDto = residentServiceRestClient.postApi(
 					env.getProperty(ApiName.OTP_GEN_URL.name()), MediaType.APPLICATION_JSON, otpRequestDTO,
 					OtpResponseDTO.class);
-
-			ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-
-			IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
-
-			logger.info("otp request dto "+otpRequestDTO.getIndividualId());
-			String uin = identityDTO.getUIN();
-			String email = identityDTO.getEmail();
-			String phone = identityDTO.getPhone();
-
-			String idaToken= getIdaToken(uin);
-			logger.info("idaToken : " + idaToken);
-			String id = "null";
-			if(email != null) {
-				id= email+idaToken;
-			} else if(phone != null) {
-				id= phone+idaToken;
-			}
-
-			byte[] idBytes = id.getBytes();
-			String hash = HMACUtils2.digestAsPlainText(idBytes);
-			residentTransactionEntity.setAid(hash);
-			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
-			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-			residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
-			residentTransactionEntity.setRequestTypeCode("OTP");
-			residentTransactionEntity.setRequestSummary("OTP Generated");
-			residentTransactionEntity.setStatusCode("OTP_REQUESTED");
-			residentTransactionEntity.setStatusComment("OTP_REQUESTED");
-			residentTransactionEntity.setLangCode("eng");
-			residentTransactionEntity.setRefIdType("UIN");
-			residentTransactionEntity.setRefId(uin);
-			residentTransactionEntity.setTokenId("");
-			residentTransactionEntity.setCrBy("mosip");
-			residentTransactionEntity.setCrDtimes(LocalDateTime.now());
-
-			residentTransactionRepository.save(residentTransactionEntity);
-
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException | ResidentServiceCheckedException e) {
+			insertData(otpRequestDTO);
+		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
+		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
+		} catch (NoSuchAlgorithmException e) {
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		}
 		return responseDto;
+	}
+
+	@Override
+	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+
+		IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
+
+		logger.info("otp request dto "+otpRequestDTO.getIndividualId());
+		String uin = identityDTO.getUIN();
+		String email = identityDTO.getEmail();
+		String phone = identityDTO.getPhone();
+
+		String idaToken= getIdaToken(uin);
+		logger.info("idaToken : " + idaToken);
+		String id = "null";
+		if(email != null) {
+			id= email+idaToken;
+		} else if(phone != null) {
+			id= phone+idaToken;
+		}
+
+		byte[] idBytes = id.getBytes();
+		String hash = HMACUtils2.digestAsPlainText(idBytes);
+		residentTransactionEntity.setAid(hash);
+		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
+		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
+		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
+		residentTransactionEntity.setRequestTypeCode("OTP");
+		residentTransactionEntity.setRequestSummary("OTP Generated");
+		residentTransactionEntity.setStatusCode("OTP_REQUESTED");
+		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
+		residentTransactionEntity.setLangCode("eng");
+		residentTransactionEntity.setRefIdType("UIN");
+		residentTransactionEntity.setRefId(uin);
+		residentTransactionEntity.setTokenId("");
+		residentTransactionEntity.setCrBy("mosip");
+		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+
+		residentTransactionRepository.save(residentTransactionEntity);
 	}
 
 	private String getIdaToken(String uin) {
