@@ -317,22 +317,32 @@ public enum EventEnum {
 			"get registration centers paginated", "get registration centers paginated is failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-	
-	GET_CONFIGURATION_PROPERTIES("RES-SER-167", RegistrationConstants.SYSTEM,
-			"get resident configuration properties", "get resident configuration properties", "RES-SER",
-			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
-			RegistrationConstants.APPLICATIONNAME),
+
+	GET_CONFIGURATION_PROPERTIES("RES-SER-167", RegistrationConstants.SYSTEM, "get resident configuration properties",
+			"get resident configuration properties", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_CONFIGURATION_PROPERTIES_SUCCESS("RES-SER-168", RegistrationConstants.SYSTEM,
 			"get resident configuration properties", "get resident configuration properties is succeeded", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-	
+
 	GET_CONFIGURATION_PROPERTIES_EXCEPTION("RES-SER-169", RegistrationConstants.SYSTEM,
 			"get resident configuration properties", "get resident configuration properties is failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+
+	GET_REG_CENTER_WORKING_DAYS("RES-SER-170", RegistrationConstants.SYSTEM, "get registration center working days",
+			"get registration center working days", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTER_WORKING_DAYS_SUCCESS("RES-SER-171", RegistrationConstants.SYSTEM,
+			"get registration center working days", "get registration center working days is succeeded", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_REG_CENTER_WORKING_DAYS_EXCEPTION("RES-SER-172", RegistrationConstants.SYSTEM,
+			"get registration center working days", "get registration center working days is failed", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME)
-	
-	
+
 	;
 
 	private final String eventId;
