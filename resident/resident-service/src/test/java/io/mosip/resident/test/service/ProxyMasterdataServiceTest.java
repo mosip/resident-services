@@ -20,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -311,6 +312,36 @@ public class ProxyMasterdataServiceTest {
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated("eng", "5", "14110", "0", "10",
 				"desc", "createdDateTime");
+	}
+
+	@Test
+	public void testGetRegistrationCenterWorkingDays()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getRegistrationCenterWorkingDays("10002", "eng");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRegistrationCenterWorkingDaysIf()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		ServiceError error = new ServiceError();
+		error.setErrorCode("101");
+		error.setMessage("errors");
+
+		List<ServiceError> errorList = new ArrayList<ServiceError>();
+		errorList.add(error);
+
+		responseWrapper.setErrors(errorList);
+		proxyMasterdataService.getRegistrationCenterWorkingDays("10002", "eng");
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRegistrationCenterWorkingDaysWithApisResourceAccessException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		proxyMasterdataService.getRegistrationCenterWorkingDays("10002", "eng");
 	}
 
 }
