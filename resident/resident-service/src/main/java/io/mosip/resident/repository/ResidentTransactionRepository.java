@@ -9,4 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 1.2.0.1
  */
 public interface ResidentTransactionRepository extends JpaRepository<ResidentTransactionEntity, String> {
+    public ResidentTransactionEntity findByRequestTrnId(String requestTrnId);
 }

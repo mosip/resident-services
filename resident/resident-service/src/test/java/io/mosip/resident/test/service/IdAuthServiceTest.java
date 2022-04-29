@@ -13,6 +13,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -69,6 +70,9 @@ public class IdAuthServiceTest {
 
     @InjectMocks
     private IdAuthService idAuthService = new IdAuthServiceImpl();
+
+    @Mock
+    private ResidentTransactionRepository residentTransactionRepository;
 
     @Before
     public void setup() {
