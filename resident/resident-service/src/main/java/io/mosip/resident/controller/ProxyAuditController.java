@@ -1,7 +1,5 @@
 package io.mosip.resident.controller;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
