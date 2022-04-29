@@ -58,10 +58,14 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		} catch (ResidentServiceCheckedException e) {
+			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		} catch (NoSuchAlgorithmException e) {
+			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
