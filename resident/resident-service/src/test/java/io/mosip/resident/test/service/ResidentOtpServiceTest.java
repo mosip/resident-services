@@ -60,7 +60,8 @@ public class ResidentOtpServiceTest {
         when(residentServiceRestClient.postApi(anyString(), any(), any(), any(Class.class))).thenReturn(otpResponseDTO);
 
         OtpRequestDTO otpRequestDTO = new OtpRequestDTO();
-        otpRequestDTO.setIndividualId("123456789");
+        otpRequestDTO.setIndividualId("8251649601");
+
         residentOtpService.generateOtp(otpRequestDTO);
 
         verify(residentServiceRestClient, times(1)).postApi(anyString(), any(), any(), any(Class.class));
