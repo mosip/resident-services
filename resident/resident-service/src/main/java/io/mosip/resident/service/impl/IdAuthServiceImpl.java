@@ -19,6 +19,8 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -95,6 +97,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Autowired
 	private ResidentServiceRestClient restClient;
 
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -107,6 +111,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		AuthResponseDTO response = null;
 		try {
 			response = internelOtpAuth(transactionID, individualId, otp);
+			updateResidentTransaction(transactionID, individualId);
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
@@ -122,6 +127,17 @@ public class IdAuthServiceImpl implements IdAuthService {
 		}
 
 		return response.getResponse().isAuthStatus();
+	}
+
+	private void updateResidentTransaction(String transactionID, String individualId) {
+		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findByRequestTrnId(transactionID);
+		if (residentTransactionEntity != null) {
+			residentTransactionEntity.setRequestTypeCode("OTP_VERIFIED");
+			residentTransactionEntity.setRequestSummary("OTP verified successfully");
+			residentTransactionEntity.setStatusCode("OTP_VERIFIED");
+			residentTransactionEntity.setStatusComment("OTP verified successfully");
+			residentTransactionRepository.save(residentTransactionEntity);
+		}
 	}
 
 	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,
