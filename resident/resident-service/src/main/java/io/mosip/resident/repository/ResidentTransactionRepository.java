@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ResidentTransactionRepository extends JpaRepository<ResidentTransactionEntity, String> {
     public ResidentTransactionEntity findByRequestTrnId(String requestTrnId);
+    public ResidentTransactionEntity findByAid(String aid);
 }
