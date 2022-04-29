@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -47,6 +49,12 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private Utilitiy utility;
+	
+	@Autowired
+	private TokenIDGenerator tokenIDGenerator;
+	
+	@Value("${ida.online-verification-partner-id}")
+	private String onlineVerificationPartnerId;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 
@@ -93,6 +101,14 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getMappingAttribute(JSONObject identityJson, String name) {
 		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
 		return JsonUtil.getJSONValue(docJson, VALUE);
+	}
+	
+	public String getIDAToken(String uin) {
+		return getIDAToken(uin, onlineVerificationPartnerId);
+	}
+	
+	public String getIDAToken(String uin, String olvPartnerId) {
+		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
 	}
 
 }

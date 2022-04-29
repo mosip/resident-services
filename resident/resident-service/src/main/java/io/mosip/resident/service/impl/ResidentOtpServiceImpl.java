@@ -79,24 +79,18 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
 
-		logger.info("otp request dto "+otpRequestDTO.getIndividualId());
-		String uin = "";
-		String email = "";
-		String phone = "";
+		String uin = identityDTO.getUIN();
+		String email = identityDTO.getEmail();
+		String phone = identityDTO.getPhone();
 
-		if (identityDTO != null) {
-			uin = identityDTO.getUIN();
-			email = identityDTO.getEmail();
-			phone = identityDTO.getPhone();
-		}
-
-		String idaToken= getIdaToken(uin);
-		logger.info("idaToken : " + idaToken);
-		String id = "null";
+		String idaToken= identityServiceImpl.getIDAToken(uin);
+		String id;
 		if(email != null) {
 			id= email+idaToken;
 		} else if(phone != null) {
 			id= phone+idaToken;
+		} else {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
 		}
 
 		byte[] idBytes = id.getBytes();
@@ -118,10 +112,5 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
-
-	private String getIdaToken(String uin) {
-		return uin;
-	}
-
 
 }

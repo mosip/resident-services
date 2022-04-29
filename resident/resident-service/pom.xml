@@ -15,6 +15,7 @@
 	<properties>
 		<commons.packet.manager.version>1.2.0.1-SNAPSHOT</commons.packet.manager.version>
 		<kernel.core.version>1.2.0.1-SNAPSHOT</kernel.core.version>
+		<id-repository-core.version>1.2.0.1-SNAPSHOT</id-repository-core.version>
 		<kernel-keymanager-service.version>1.2.0.1-SNAPSHOT</kernel-keymanager-service.version>
 		<springdoc.version>1.5.10</springdoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -168,6 +169,27 @@
 			<artifactId>jackson-module-afterburner</artifactId>
 			<version>${fasterxml.jackson.module.afterburner.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.mosip.idrepository</groupId>
+			<artifactId>id-repository-core</artifactId>
+			<version>${id-repository-core.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>
+						spring-boot-starter-security
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-test</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-auth-adapter</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>	
 	</dependencies>
 		<build>
 		<plugins>
