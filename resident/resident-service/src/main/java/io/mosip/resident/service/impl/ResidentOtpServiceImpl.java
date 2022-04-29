@@ -80,9 +80,15 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
 
 		logger.info("otp request dto "+otpRequestDTO.getIndividualId());
-		String uin = identityDTO.getUIN();
-		String email = identityDTO.getEmail();
-		String phone = identityDTO.getPhone();
+		String uin = "";
+		String email = "";
+		String phone = "";
+
+		if (identityDTO != null) {
+			uin = identityDTO.getUIN();
+			email = identityDTO.getEmail();
+			phone = identityDTO.getPhone();
+		}
 
 		String idaToken= getIdaToken(uin);
 		logger.info("idaToken : " + idaToken);
