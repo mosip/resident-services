@@ -35,7 +35,7 @@ public class VerificationController {
     private static final Logger logger = LoggerConfiguration.logConfig(VerificationController.class);
 
     @ResponseFilter
-    @GetMapping("/channel/verification-status")
+    @GetMapping(value = "/channel/verification-status/{channel}/{individualId}")
     @Operation(summary = "get channel verification status", description = "get channel verification status")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
