@@ -33,10 +33,9 @@ public class VerificationServiceImpl implements VerificationService {
     private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
     @Override
-    public ResponseWrapper<VerificationResponseDTO> checkChannelVerificationStatus(String channel, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+    public VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
         logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::Start");
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
-        ResponseWrapper<VerificationResponseDTO> responseWrapper = new ResponseWrapper<>();
         boolean verificationStatus = false;
         IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 
@@ -71,7 +70,7 @@ public class VerificationServiceImpl implements VerificationService {
         verificationResponseDTO.setVersion("v1");
         verificationResponseDTO.setResponseTime(DateTime.now().toString());
 
-        return responseWrapper;
+        return verificationResponseDTO;
     }
 }
 
