@@ -90,7 +90,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			phone = identityDTO.getPhone();
 		}
 
-		String idaToken= getIdaToken(uin);
+		String idaToken= identityServiceImpl.getIdaToken(uin);
 		logger.info("idaToken : " + idaToken);
 		String id = "null";
 		if(email != null) {
@@ -118,10 +118,4 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
-
-	private String getIdaToken(String uin) {
-		return uin;
-	}
-
-
 }
