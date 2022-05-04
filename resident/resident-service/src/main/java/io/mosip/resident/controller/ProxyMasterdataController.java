@@ -303,4 +303,33 @@ public class ProxyMasterdataController {
 		return responseWrapper;
 	}
 
+	/**
+	 * Get latest ID schema.
+	 * 
+	 * @param schemaVersion
+	 * @param domain
+	 * @param type
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@GetMapping("/idschema/latest")
+	@Operation(summary = "getLatestIdSchema", description = "getLatestIdSchema", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getLatestIdSchema(@RequestParam("schemaVersion") String schemaVersion,
+			@RequestParam("domain") String domain, @RequestParam("type") String type)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getLatestIdSchema()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLatestIdSchema(schemaVersion, domain, type);
+		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_SUCCESS);
+		logger.debug("ProxyMasterdataController::getLatestIdSchema()::exit");
+		return responseWrapper;
+	}
+
 }
