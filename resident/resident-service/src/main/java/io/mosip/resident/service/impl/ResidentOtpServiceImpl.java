@@ -83,15 +83,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		String email = identityDTO.getEmail();
 		String phone = identityDTO.getPhone();
 
-		String idaToken= identityServiceImpl.getIDAToken(uin);
-		String id;
-		if(email != null) {
-			id= email+idaToken;
-		} else if(phone != null) {
-			id= phone+idaToken;
-		} else {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
-		}
+		String id = getIdForResidentTransaction(uin, email, phone);
 
 		byte[] idBytes = id.getBytes();
 		String hash = HMACUtils2.digestAsPlainText(idBytes);
@@ -111,6 +103,19 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 
 		residentTransactionRepository.save(residentTransactionEntity);
+	}
+
+	private String getIdForResidentTransaction(String uin, String email, String phone) throws ResidentServiceCheckedException {
+		String idaToken= identityServiceImpl.getIDAToken(uin);
+		String id;
+		if(email != null) {
+			id= email+idaToken;
+		} else if(phone != null) {
+			id= phone+idaToken;
+		} else {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
+		}
+		return id;
 	}
 
 }
