@@ -341,7 +341,17 @@ public enum EventEnum {
 	GET_REG_CENTER_WORKING_DAYS_EXCEPTION("RES-SER-172", RegistrationConstants.SYSTEM,
 			"get registration center working days", "get registration center working days is failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
-			RegistrationConstants.APPLICATIONNAME)
+			RegistrationConstants.APPLICATIONNAME),
+
+	GET_LATEST_ID_SCHEMA("RES-SER-173", RegistrationConstants.SYSTEM, "get latest id schema", "get latest id schema",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	GET_LATEST_ID_SCHEMA_SUCCESS("RES-SER-174", RegistrationConstants.SYSTEM, "get latest id schema",
+			"get latest id schema is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_LATEST_ID_SCHEMA_EXCEPTION("RES-SER-175", RegistrationConstants.SYSTEM, "get latest id schema",
+			"get latest id schema is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
 
 	;
 

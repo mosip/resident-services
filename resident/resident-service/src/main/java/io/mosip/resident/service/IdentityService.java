@@ -22,4 +22,5 @@ public interface IdentityService {
 	 */
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
 
+	public String getIdaToken(String uin);
 }

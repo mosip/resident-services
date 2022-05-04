@@ -344,4 +344,35 @@ public class ProxyMasterdataServiceTest {
 		proxyMasterdataService.getRegistrationCenterWorkingDays("10002", "eng");
 	}
 
+	@Test
+	public void testGetLatestIdSchema() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetLatestIdSchemaIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		ServiceError error = new ServiceError();
+		error.setErrorCode("101");
+		error.setMessage("errors");
+
+		List<ServiceError> errorList = new ArrayList<ServiceError>();
+		errorList.add(error);
+
+		responseWrapper.setErrors(errorList);
+		proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetLatestIdSchemaWithApisResourceAccessException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+				.thenThrow(new ApisResourceAccessException());
+		proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
+	}
+
 }

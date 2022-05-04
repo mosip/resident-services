@@ -85,6 +85,11 @@ public class IdentityServiceImpl implements IdentityService {
 		return identityDTO;
 	}
 
+	@Override
+	public String getIdaToken(String uin) {
+		return uin;
+	}
+
 	private String getMappingValue(Map<?, ?> identity, String mappingName)
 			throws ResidentServiceCheckedException, IOException {
 		String mappingJson = utility.getMappingJson();
