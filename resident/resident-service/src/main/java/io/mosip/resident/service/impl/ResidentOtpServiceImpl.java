@@ -28,6 +28,9 @@ import java.time.LocalDateTime;
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
 
+	public static final String EMAIL_CHANNEL = "EMAIL";
+	public static final String PHONE_CHANNEL = "PHONE";
+
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
@@ -97,10 +100,13 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		String idaToken= identityServiceImpl.getIdaToken(uin);
 		logger.info("idaToken : " + idaToken);
 		String id = "null";
-		if(email != null) {
+		if(email != null && channelExistis(otpRequestDTO, EMAIL_CHANNEL) ) {
 			id= email+idaToken;
-		} else if(phone != null) {
+		} else if(phone != null && channelExistis(otpRequestDTO, PHONE_CHANNEL) ) {
 			id= phone+idaToken;
+		} else {
+			throw new ResidentServiceException(ResidentErrorCode.CHANNEL_IS_NOT_VALID.getErrorCode(),
+					ResidentErrorCode.CHANNEL_IS_NOT_VALID.getErrorMessage());
 		}
 
 		byte[] idBytes = id.getBytes();
@@ -121,6 +127,10 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 
 		residentTransactionRepository.save(residentTransactionEntity);
+	}
+
+	private boolean channelExistis(OtpRequestDTO otpRequestDTO, String channelType) {
+		return otpRequestDTO.getOtpChannel().stream().anyMatch(channel -> channel.equalsIgnoreCase(channelType));
 	}
 
 	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {

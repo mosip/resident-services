@@ -10,7 +10,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +18,6 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.repository.ResidentTransactionRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -59,9 +56,11 @@ import io.mosip.resident.dto.AutnTxnDto;
 import io.mosip.resident.dto.AutnTxnResponseDto;
 import io.mosip.resident.dto.OtpAuthRequestDTO;
 import io.mosip.resident.dto.PublicKeyResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
@@ -130,7 +129,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	}
 
 	private void updateResidentTransaction(boolean verified,String transactionID, String individualId) throws NoSuchAlgorithmException {
-		List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRequestTrnIdAndRefIdOrderByCrDtimes(transactionID, getRefIdHash(individualId));
+		List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(transactionID, getRefIdHash(individualId));
 		if (residentTransactionEntity != null && !residentTransactionEntity.isEmpty()) {
 			ResidentTransactionEntity residentTransaction = residentTransactionEntity.get(0);
 			if (residentTransaction != null) {
