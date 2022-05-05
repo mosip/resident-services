@@ -190,6 +190,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>	
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-dataaccess-hibernate</artifactId>
+			<version>${kernel.core.version}</version>
+		</dependency>
 	</dependencies>
 		<build>
 		<plugins>
