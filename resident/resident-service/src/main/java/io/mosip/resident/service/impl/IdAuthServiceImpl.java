@@ -111,7 +111,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		AuthResponseDTO response = null;
 		try {
 			response = internelOtpAuth(transactionID, individualId, otp);
-			updateResidentTransaction(transactionID, individualId);
+			updateResidentTransaction(response.getResponse().isAuthStatus(), transactionID, individualId);
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
@@ -129,15 +129,25 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return response.getResponse().isAuthStatus();
 	}
 
-	private void updateResidentTransaction(String transactionID, String individualId) {
-		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findByRequestTrnId(transactionID);
-		if (residentTransactionEntity != null) {
-			residentTransactionEntity.setRequestTypeCode("OTP_VERIFIED");
-			residentTransactionEntity.setRequestSummary("OTP verified successfully");
-			residentTransactionEntity.setStatusCode("OTP_VERIFIED");
-			residentTransactionEntity.setStatusComment("OTP verified successfully");
-			residentTransactionRepository.save(residentTransactionEntity);
+	private void updateResidentTransaction(boolean verified,String transactionID, String individualId) throws NoSuchAlgorithmException {
+		List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRequestTrnIdAndRefIdOrderByCrDtimes(transactionID, getRefIdHash(individualId));
+		if (residentTransactionEntity != null && !residentTransactionEntity.isEmpty()) {
+			ResidentTransactionEntity residentTransaction = residentTransactionEntity.get(0);
+			if (residentTransaction != null) {
+				if(residentTransaction.getStatusCode().equalsIgnoreCase("OTP_REQUESTED")) {
+					residentTransaction.setRequestTypeCode(verified ? "OTP_VERIFIED" : "OTP_VERIFICATION_FAILED");
+					residentTransaction.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
+					residentTransaction.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
+					residentTransaction.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
+					residentTransactionRepository.save(residentTransaction);
+				}
+			}
 		}
+
+	}
+
+	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
+		return HMACUtils2.digestAsPlainText(individualId.getBytes());
 	}
 
 	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,
