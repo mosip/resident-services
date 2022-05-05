@@ -39,7 +39,7 @@ public class ResidentTransactionEntity {
     @Column(name = "response_dtime")
     private LocalDateTime responseDtime;
 
-    @Column(name = "request_trn_id", unique = true)
+    @Column(name = "request_trn_id")
     private String requestTrnId;
 
     @NotNull
