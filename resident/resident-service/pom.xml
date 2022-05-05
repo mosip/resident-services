@@ -173,6 +173,11 @@
 			<artifactId>jackson-module-afterburner</artifactId>
 			<version>${fasterxml.jackson.module.afterburner.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-dataaccess-hibernate</artifactId>
+			<version>${kernel.core.version}</version>
+		</dependency>
 	</dependencies>
 		<build>
 		<plugins>

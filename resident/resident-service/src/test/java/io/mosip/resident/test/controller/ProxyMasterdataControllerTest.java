@@ -144,4 +144,22 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test
+	public void testGetRegistrationCenterWorkingDays() throws Exception {
+		Mockito.when(proxyMasterdataService.getRegistrationCenterWorkingDays(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/workingdays/registrationCenterID/langCode"))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	public void testGetLatestIdSchema() throws Exception {
+		Mockito.when(
+				proxyMasterdataService.getLatestIdSchema(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(responseWrapper);
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=0&domain=domain&type=type"))
+				.andExpect(status().isOk());
+	}
+
 }

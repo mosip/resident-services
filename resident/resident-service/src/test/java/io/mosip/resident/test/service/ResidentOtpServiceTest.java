@@ -5,7 +5,9 @@ import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentOtpServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -40,6 +42,12 @@ public class ResidentOtpServiceTest {
     @InjectMocks
     private ResidentOtpService residentOtpService = new ResidentOtpServiceImpl();
 
+    @Mock
+    private IdentityServiceImpl identityServiceImpl;
+
+    @Mock
+    private ResidentTransactionRepository residentTransactionRepository;
+
     @Before
     public void setup() {
     }
@@ -52,6 +60,8 @@ public class ResidentOtpServiceTest {
         when(residentServiceRestClient.postApi(anyString(), any(), any(), any(Class.class))).thenReturn(otpResponseDTO);
 
         OtpRequestDTO otpRequestDTO = new OtpRequestDTO();
+        otpRequestDTO.setIndividualId("8251649601");
+
         residentOtpService.generateOtp(otpRequestDTO);
 
         verify(residentServiceRestClient, times(1)).postApi(anyString(), any(), any(), any(Class.class));

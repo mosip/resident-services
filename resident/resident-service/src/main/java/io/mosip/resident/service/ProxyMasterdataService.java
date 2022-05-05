@@ -107,4 +107,27 @@ public interface ProxyMasterdataService {
 			String hierarchyLevel, String name, String pageNumber, String pageSize, String orderBy, String sortBy)
 			throws ResidentServiceCheckedException;
 
+	/**
+	 * Get registration center working days by registration center ID.
+	 * 
+	 * @param registrationCenterID
+	 * @param langCode
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getRegistrationCenterWorkingDays(String registrationCenterID, String langCode)
+			throws ResidentServiceCheckedException;
+
+	/**
+	 * Get latest ID schema.
+	 * 
+	 * @param schemaVersion
+	 * @param domain
+	 * @param type
+	 * @return ResponseWrapper<?> object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getLatestIdSchema(String schemaVersion, String domain, String type)
+			throws ResidentServiceCheckedException;
+
 }

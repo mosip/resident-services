@@ -1,5 +1,6 @@
 package io.mosip.resident.test.config;
 
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -55,5 +56,8 @@ public class ResidentServiceConfigTest {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
+
+	@MockBean
+	private ResidentTransactionRepository residentTransactionRepository;
 
 }

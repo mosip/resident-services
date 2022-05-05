@@ -33,7 +33,8 @@ CREATE TABLE resident.resident_transaction(
     upd_dtimes timestamp,
     is_deleted boolean NOT NULL DEFAULT false,
     del_dtimes timestamp,
-    CONSTRAINT pk_restrn_aid PRIMARY KEY (aid)
+    CONSTRAINT pk_restrn_aid PRIMARY KEY (aid),
+    CONSTRAINT resident_transaction_request_trn_id_key UNIQUE (request_trn_id)
 );
 
 COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
