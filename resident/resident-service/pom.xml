@@ -102,6 +102,11 @@
 			<version>${kernel.core.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-virusscanner-clamav</artifactId>
+			<version>1.2.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>${h2.version}</version>
