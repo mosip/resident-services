@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
@@ -111,7 +112,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		URI partnerUri = URI.create(partnerUrl);
 		try {
 			if(StringUtils.isBlank(dto.getIndividualId())) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(), INDIVIDUAL_ID));
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
 			}
 
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
@@ -152,7 +153,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 			} catch (OtpValidationFailedException e) {
 				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
+				trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 						additionalAttributes);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						e.getErrorText(), e);
@@ -384,6 +385,21 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			logger.error("Could not instantiate SecureRandom for pin generation", e);
 		}
 	} 
+	
+	private NotificationResponseDTO trySendNotification(String id,
+			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
+			throws ResidentServiceCheckedException {
+		try {
+			return sendNotification(id, templateTypeCode, additionalAttributes);
+		} catch (Exception e1) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode()
+							+ ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e1));
+		}
+		return null;
+	}
 
 	private NotificationResponseDTO sendNotification(String id,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
