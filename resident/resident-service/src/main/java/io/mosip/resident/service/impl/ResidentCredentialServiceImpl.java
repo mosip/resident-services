@@ -111,7 +111,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		URI partnerUri = URI.create(partnerUrl);
 		try {
 			if(StringUtils.isBlank(dto.getIndividualId())) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), String.format(ResidentErrorCode.INVALID_INPUT.getErrorMessage(), INDIVIDUAL_ID));
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
 			}
 
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
