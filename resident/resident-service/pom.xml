@@ -13,9 +13,10 @@
 	<name>resident-service</name>
 	<version>1.2.1-SNAPSHOT</version>
 	<properties>
-		<commons.packet.manager.version>1.2.0.1-SNAPSHOT</commons.packet.manager.version>
-		<kernel.core.version>1.2.0.1-SNAPSHOT</kernel.core.version>
-		<kernel-keymanager-service.version>1.2.0.1-SNAPSHOT</kernel-keymanager-service.version>
+		<commons.packet.manager.version>1.2.1-SNAPSHOT</commons.packet.manager.version>
+		<kernel.core.version>1.2.1-SNAPSHOT</kernel.core.version>
+		<kernel.authcodeflowproxy.api.version>1.2.1-SNAPSHOT</kernel.authcodeflowproxy.api.version>
+		<kernel-keymanager-service.version>1.2.1-SNAPSHOT</kernel-keymanager-service.version>
 		<springdoc.version>1.5.10</springdoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fasterxml.jackson.module.jsr310.version>2.12.0</fasterxml.jackson.module.jsr310.version>
@@ -172,6 +173,17 @@
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-dataaccess-hibernate</artifactId>
 			<version>${kernel.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-authcodeflowproxy-api</artifactId>
+			<version>${kernel.authcodeflowproxy.api.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 		<build>
