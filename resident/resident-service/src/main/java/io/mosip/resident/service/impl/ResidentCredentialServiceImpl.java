@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -152,7 +153,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 			} catch (OtpValidationFailedException e) {
 				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
+				trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 						additionalAttributes);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						e.getErrorText(), e);
@@ -384,6 +385,21 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			logger.error("Could not instantiate SecureRandom for pin generation", e);
 		}
 	} 
+	
+	private NotificationResponseDTO trySendNotification(String id,
+			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
+			throws ResidentServiceCheckedException {
+		try {
+			return sendNotification(id, templateTypeCode, additionalAttributes);
+		} catch (Exception e1) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode()
+							+ ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e1));
+		}
+		return null;
+	}
 
 	private NotificationResponseDTO sendNotification(String id,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
