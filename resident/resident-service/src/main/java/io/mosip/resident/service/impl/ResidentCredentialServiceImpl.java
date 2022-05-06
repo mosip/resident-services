@@ -10,12 +10,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
- import org.springframework.scheduling.annotation.Scheduled;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,6 +58,8 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
+
+	private static final String INDIVIDUAL_ID = "individualId";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -103,10 +106,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResponseWrapper<PartnerResponseDto> parResponseDto = new ResponseWrapper<PartnerResponseDto>();
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
 		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
-		Map<String, Object> additionalAttributes = new HashedMap();
+		Map<String, Object> additionalAttributes = new HashMap<>();
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
 		try {
+			if(StringUtils.isBlank(dto.getIndividualId())) {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
+			}
 
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 
