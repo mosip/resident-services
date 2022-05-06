@@ -174,17 +174,6 @@
 			<artifactId>kernel-dataaccess-hibernate</artifactId>
 			<version>${kernel.core.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>io.mosip.kernel</groupId>
-			<artifactId>kernel-authcodeflowproxy-api</artifactId>
-			<version>${kernel.authcodeflowproxy.api.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>io.mosip.kernel</groupId>
-					<artifactId>kernel-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 	</dependencies>
 		<build>
 		<plugins>
