@@ -40,7 +40,9 @@ public enum ResidentErrorCode {
 			"Exception while creating packet."),
 	INVALID_ID("RES-SER-29", "Invalid id"),
 	OTP_GENERATION_EXCEPTION("RES-SER-425", "while generating otp error is occured"),
-	POLICY_EXCEPTION("RES-SER-426", "while retrieving policy details error is occured");
+	POLICY_EXCEPTION("RES-SER-426", "while retrieving policy details error is occured"),
+	DIGITAL_CARD_RID_NOT_FOUND("RES-SER-427",
+			"Digital card not found for the RID, please try after few days"),;
 	private final String errorCode;
 	private final String errorMessage;
 

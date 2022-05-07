@@ -4,6 +4,7 @@ import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.CredentialTypeResponse;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.RIDDigitalCardRequestDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResponseWrapper;
@@ -23,4 +24,6 @@ public interface ResidentCredentialService {
 
 	public ResponseWrapper<PartnerCredentialTypePolicyDto> getPolicyByCredentialType(String partnerId,
 			String credentialType);
+
+	public byte[] getRIDDigitalCard(RIDDigitalCardRequestDto request);
 }

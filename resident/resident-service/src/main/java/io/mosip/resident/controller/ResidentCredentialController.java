@@ -21,6 +21,7 @@ import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.CredentialTypeResponse;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.RIDDigitalCardRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
@@ -103,6 +104,20 @@ public class ResidentCredentialController {
 				.getPolicyByCredentialType(partnerId, credentialType);
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	@ResponseFilter
+	@PostMapping(value = "/req/rid-digital-card")
+	public ResponseEntity<Object> getRIDDigitalCard(
+			@RequestBody RequestWrapper<RIDDigitalCardRequestDto> requestDTO) {
+		audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
+		byte[] pdfBytes = residentCredentialService.getRIDDigitalCard(requestDTO.getRequest());
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + 
+					requestDTO.getRequest().getIndividualId() + ".pdf\"")
+				.body((Object) resource);
 	}
 
 }

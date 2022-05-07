@@ -135,7 +135,16 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONNAME),
 	RID_OTP_GEN_SUCCESS("RES-SER-143", RegistrationConstants.SYSTEM, "generating RID otp", "RID otp generation is success",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
-			RegistrationConstants.APPLICATIONNAME);
+			RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ("RES-SER-144", RegistrationConstants.SYSTEM, "RID digital card request", 
+			"Request for downloading digital card based on RID", "RES-SER", "Residence service", "NO_ID", 
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-145", RegistrationConstants.SYSTEM, "RID digital card request",
+			"Downloading digital card based on RID success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-146", RegistrationConstants.SYSTEM, "RID digital card request",
+			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),;
 	
 	private final String eventId;
 
