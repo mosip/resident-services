@@ -72,7 +72,7 @@ public class DocumentController {
 					.readValue(request, new TypeReference<RequestWrapper<DocumentRequestDTO>>() {
 					}).getRequest();
 			validator.validateRequest(docRequest);
-//			validator.scanForViruses(file);
+			validator.scanForViruses(file);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
