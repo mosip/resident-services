@@ -17,7 +17,7 @@ public interface ResidentOtpService {
 	 * @throws IdAuthenticationBusinessException exception
 	 */
 
-	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO);
+	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException;
 
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException;
 }
