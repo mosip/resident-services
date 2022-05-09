@@ -56,6 +56,8 @@ public class ResidentServiceRestClient {
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType) throws ApisResourceAccessException {
 		try {
+			uri = new URI("https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(uri.toString(), "//"), "/"));
+			System.err.println(uri.toString());
 			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null), responseType)
 					.getBody();
 		} catch (Exception e) {
@@ -71,6 +73,8 @@ public class ResidentServiceRestClient {
 
 		Object obj = null;
 		String apiHostIpPort = environment.getProperty(apiName.name());
+		apiHostIpPort = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(apiHostIpPort, "//"), "/");
+		System.err.println(apiHostIpPort);
 		UriComponentsBuilder builder = null;
 		UriComponents uriComponents = null;
 		if (apiHostIpPort != null) {
@@ -113,6 +117,8 @@ public class ResidentServiceRestClient {
 
 		Object obj = null;
 		String apiHostIpPort = environment.getProperty(apiName.name());
+		apiHostIpPort = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(apiHostIpPort, "//"), "/");
+		System.err.println(apiHostIpPort);
 		UriComponentsBuilder builder = null;
 		UriComponents uriComponents = null;
 		if (apiHostIpPort != null) {
@@ -158,6 +164,8 @@ public class ResidentServiceRestClient {
 			List<Object> queryParamValue, Class<?> responseType) throws ApisResourceAccessException {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());
+		apiHostIpPort = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(apiHostIpPort, "//"), "/");
+		System.err.println(apiHostIpPort);
 		Object obj = null;
 		UriComponentsBuilder builder = null;
 		if (apiHostIpPort != null) {
@@ -188,6 +196,8 @@ public class ResidentServiceRestClient {
 	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		try {
+			uri = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(uri, "//"), "/");
+			System.err.println(uri);
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType),
@@ -214,7 +224,8 @@ public class ResidentServiceRestClient {
 	@SuppressWarnings("unchecked")
 	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
-
+		uri = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(uri, "//"), "/");
+		System.err.println(uri);
 		T result = null;
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -250,7 +261,8 @@ public class ResidentServiceRestClient {
 	@SuppressWarnings("unchecked")
 	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType)
 			throws ApisResourceAccessException {
-
+		uri = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(uri, "//"), "/");
+		System.err.println(uri);
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {

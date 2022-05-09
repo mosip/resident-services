@@ -178,6 +178,17 @@
 			<artifactId>kernel-dataaccess-hibernate</artifactId>
 			<version>${kernel.core.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.mosip.commons</groupId>
+			<artifactId>khazana</artifactId>
+			<version>${kernel.core.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-keymanager-service</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 		<build>
 		<plugins>

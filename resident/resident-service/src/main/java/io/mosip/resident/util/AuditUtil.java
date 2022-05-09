@@ -7,9 +7,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.LoggerFileConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +24,11 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ValidationException;
 
@@ -110,6 +111,8 @@ public class AuditUtil {
 		ResponseEntity<String> response = null;
 
 		try {
+			auditUrl = "https://dev.mosip.net/" + StringUtils.substringAfter(StringUtils.substringAfter(auditUrl, "//"), "/");
+			System.err.println(auditUrl);
 			response = restTemplate.exchange(auditUrl, HttpMethod.POST, httpEntity, String.class);
 			String responseBody = response.getBody();
 

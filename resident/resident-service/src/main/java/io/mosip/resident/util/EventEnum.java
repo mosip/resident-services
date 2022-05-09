@@ -351,7 +351,25 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_LATEST_ID_SCHEMA_EXCEPTION("RES-SER-175", RegistrationConstants.SYSTEM, "get latest id schema",
 			"get latest id schema is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	UPLOAD_DOCUMENT("RES-SER-176", RegistrationConstants.SYSTEM, "Request document upload",
+			"Requesting document upload api for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	UPLOAD_DOCUMENT_SUCCESS("RES-SER-177", RegistrationConstants.SYSTEM, "Document upload success",
+			"document upload success for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	UPLOAD_DOCUMENT_FAILED("RES-SER-178", RegistrationConstants.SYSTEM, "Document upload failed",
+			"document upload failed for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENTS_METADATA("RES-SER-179", RegistrationConstants.SYSTEM, "Request get documents",
+			"Requesting get documents api for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENTS_METADATA_SUCCESS("RES-SER-180", RegistrationConstants.SYSTEM, "Get documents success",
+			"get documents success for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENTS_METADATA_FAILED("RES-SER-181", RegistrationConstants.SYSTEM, "Get documents failed",
+			"Get documents failed for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
 	;
 
