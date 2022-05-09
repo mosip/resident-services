@@ -49,8 +49,9 @@ public enum ResidentErrorCode {
 	FAILED_TO_UPLOAD_DOC("RES-SER-434", "Failed to upload document"),
 	FAILED_TO_RETRIEVE_DOC("RES-SER-435", "Failed to retrieve document(s) from object store"),
 	ENCRYPT_DECRYPT_ERROR("RES-SER-436", "Failed to encrypt/decrypt data"),
-	VIRUS_SCAN_FAILED("RES-SER-437", "Virus scanning failed for attached document");
-
+	VIRUS_SCAN_FAILED("RES-SER-437", "Virus scanning failed for attached document"),
+	CHANNEL_IS_NOT_VALID("RES-SER-438", "Invalid OTP Channel");
+  
 	private final String errorCode;
 	private final String errorMessage;
 
