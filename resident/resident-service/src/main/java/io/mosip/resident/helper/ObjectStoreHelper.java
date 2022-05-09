@@ -214,6 +214,12 @@ public class ObjectStoreHelper {
 			ResponseWrapper<Map<String, Object>> responseWrapper = restClient.postApi(
 					toEncrypt ? encryptUri : decryptUri, MediaType.APPLICATION_JSON_UTF8, requestWrapper,
 					ResponseWrapper.class);
+			if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage());
+				throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
+						ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage());
+			}
 			return JsonUtil.convertValue(responseWrapper.getResponse(), CryptomanagerResponseDto.class).getData();
 		} catch (ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
