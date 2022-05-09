@@ -155,7 +155,7 @@ public class ObjectStoreHelper {
 	}
 
 	/**
-	 * > This function gets the metadata of the object in the object store
+	 * This function gets the metadata of the object in the object store
 	 * 
 	 * @param objectName The name of the object to get metadata for.
 	 * @return A map of metadata for the object.
@@ -171,15 +171,37 @@ public class ObjectStoreHelper {
 		}
 	}
 
+	/**
+	 * It takes an input stream, converts it to a string, and then decrypts it
+	 * 
+	 * @param data The data to be encrypted or decrypted.
+	 * @return The decrypted data.
+	 */
 	private String decryptData(InputStream data) throws IOException {
 		return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false);
 	}
 
+	/**
+	 * It takes an input stream, converts it to a byte array, encrypts the byte
+	 * array, converts the
+	 * encrypted byte array to a string, and then converts the string to an input
+	 * stream
+	 * 
+	 * @param data The data to be encrypted.
+	 * @return A ByteArrayInputStream
+	 */
 	private InputStream encryptData(InputStream data) throws IOException {
 		return new ByteArrayInputStream(
 				(encryptDecryptData(CryptoUtil.encodeToURLSafeBase64(IOUtils.toByteArray(data)), true).getBytes()));
 	}
 
+	/**
+	 * It encrypts and decrypts the data.
+	 * 
+	 * @param data      The data to be encrypted or decrypted.
+	 * @param toEncrypt true if you want to encrypt, false if you want to decrypt
+	 * @return ResponseWrapper<Map<String, Object>>
+	 */
 	private String encryptDecryptData(String data, boolean toEncrypt) {
 		try {
 			CryptomanagerRequestDto request = new CryptomanagerRequestDto();

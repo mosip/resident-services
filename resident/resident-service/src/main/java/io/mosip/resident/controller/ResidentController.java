@@ -223,6 +223,12 @@ public class ResidentController {
 		return response;
 	}
 
+	/**
+	 * This function is used to update the UIN of a resident
+	 * 
+	 * @param requestDTO The request object that is passed to the API.
+	 * @return ResponseWrapper<ResidentUpdateResponseDTO>
+	 */
 	@ResponseFilter
 	@PatchMapping(value = "/req/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
@@ -249,7 +255,13 @@ public class ResidentController {
 				requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
-	
+
+	/**
+	 * > It returns the type of the ID passed to it
+	 * 
+	 * @param id The ID of the resident.
+	 * @return The method is returning the type of ID.
+	 */
 	private String getIdType(String id) {
 		if (validator.validateUin(id))
 			return "UIN";

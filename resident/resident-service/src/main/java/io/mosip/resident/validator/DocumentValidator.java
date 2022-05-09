@@ -26,6 +26,11 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.exception.ResidentServiceException;
 
+/**
+ * It validates the request and scans the file for viruses
+ * 
+ * @author Manoj SP
+ */
 @Component
 public class DocumentValidator implements Validator {
 
@@ -33,7 +38,7 @@ public class DocumentValidator implements Validator {
 
 	@Autowired(required = false)
 	private VirusScanner<Boolean, InputStream> virusScanner;
-	
+
 	@Autowired
 	private Environment env;
 
@@ -47,6 +52,11 @@ public class DocumentValidator implements Validator {
 
 	}
 
+	/**
+	 * This function validates the input parameters of a DocumentRequestDTO object
+	 * 
+	 * @param docRequest The request object that is passed to the service.
+	 */
 	public void validateRequest(DocumentRequestDTO docRequest) {
 		Objects.requireNonNull(docRequest, String.format(INVALID_INPUT.getErrorMessage() + "request"));
 		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getDocCatCode(), null),
@@ -57,6 +67,11 @@ public class DocumentValidator implements Validator {
 				String.format(INVALID_INPUT.getErrorMessage() + "request/langCode"));
 	}
 
+	/**
+	 * It scans the file for viruses
+	 * 
+	 * @param file The file to be scanned.
+	 */
 	public void scanForViruses(MultipartFile file) {
 		if (env.getProperty(ResidentConstants.VIRUS_SCANNER_ENABLED, Boolean.class, true)) {
 			try {
