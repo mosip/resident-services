@@ -3,9 +3,10 @@ package io.mosip.resident;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = { "io.mosip.resident.*", "io.mosip.kernel.core.*", "io.mosip.kernel.dataaccess.hibernate.*",
-		"io.mosip.kernel.crypto.jce.*", "io.mosip.commons.packet.*", "io.mosip.kernel.keygenerator.bouncycastle.*",
-		"${mosip.auth.adapter.impl.basepackage}" })
+@SpringBootApplication(scanBasePackages = { "io.mosip.resident.*", "io.mosip.kernel.core.*",
+		"io.mosip.kernel.dataaccess.hibernate.*", "io.mosip.kernel.crypto.jce.*", "io.mosip.commons.packet.*",
+		"io.mosip.kernel.keygenerator.bouncycastle.*", "${mosip.auth.adapter.impl.basepackage}",
+		"io.mosip.kernel.virusscanner.*", "io.mosip.commons.khazana.*" })
 public class ResidentBootApplication {
 
 	public static void main(String[] args) {
