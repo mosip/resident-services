@@ -1,5 +1,7 @@
 package io.mosip.resident.service;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import io.mosip.resident.dto.IdentityDTO;
@@ -23,4 +25,6 @@ public interface IdentityService {
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
 
 	public String getIdaToken(String uin);
+
+	Map<?, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
 }

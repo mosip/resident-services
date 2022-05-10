@@ -3,6 +3,7 @@ package io.mosip.resident.service.impl;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -13,6 +14,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -30,6 +34,8 @@ import io.mosip.resident.handler.service.ResidentConfigService;
 @Component
 public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
+	private static final String IDENTITY = "identity";
+
 	/** The Constant logger. */
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentConfigServiceImpl.class);
 	
@@ -45,6 +51,13 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	/** The resident ui schema json file. */
 	@Value("${resident-ui-schema-file-source}")
 	private Resource residentUiSchemaJsonFile;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
+
+	private String uiSchema;
+
+	private List<String> uiSchemaFilteredInputAttributes;
 	
 	/**
 	 * Gets the properties.
@@ -76,7 +89,10 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 */
 	@Override
 	public String getUISchema() {
-		return readResourceContent(residentUiSchemaJsonFile);
+		if(uiSchema == null) {
+			uiSchema = readResourceContent(residentUiSchemaJsonFile);
+		}
+		return uiSchema;
 	}
 
 	/**
@@ -92,6 +108,32 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			logger.error(e.getMessage());
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
 		}
+	}
+	
+	@Override
+	public List<String> getUiSchemaFilteredInputAttributes() throws JsonParseException, JsonMappingException, IOException {
+		if(uiSchemaFilteredInputAttributes == null) {
+			uiSchemaFilteredInputAttributes = doGetUiSchemaFilteredInputAttributes();
+		}
+		return null;
+		
+	}
+	
+	private List<String> doGetUiSchemaFilteredInputAttributes() throws JsonParseException, JsonMappingException, IOException {
+		String uiSchema = getUISchema();
+		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
+		Object identityObj = schemaMap.get(IDENTITY);
+		if(identityObj instanceof List) {
+			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
+			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
+						.filter(map -> Boolean.valueOf(String.valueOf(map.get("inputRequired"))))
+						.filter(map -> !"fileupload".equals(map.get("controlType")))
+						.map(map -> (String)map.get("id"))
+						.collect(Collectors.toList());
+			return uiSchemaFilteredInputAttributesList;
+		}
+		return null;
+		
 	}
 
 }
