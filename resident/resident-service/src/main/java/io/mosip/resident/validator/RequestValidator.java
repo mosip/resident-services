@@ -126,7 +126,7 @@ public class RequestValidator {
 
 	}
 
-	public void validateVidCreateRequest(ResidentVidRequestDto requestDto) {
+	public void validateVidCreateRequest(ResidentVidRequestDto requestDto, boolean otpValidationRequired) {
 
 		try {
 			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
@@ -163,7 +163,7 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getOtp())) {
+		if (otpValidationRequired && StringUtils.isEmpty(requestDto.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to generate VID"));
 
@@ -401,7 +401,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateVidRevokeRequest(RequestWrapper<VidRevokeRequestDTO> requestDto) {
+	public void validateVidRevokeRequest(RequestWrapper<VidRevokeRequestDTO> requestDto, boolean isOtpValidationRequired) {
 
 		validateRequestWrapper(requestDto,"Request to revoke VID");
 
@@ -417,7 +417,7 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getOtp())) {
+		if (isOtpValidationRequired && StringUtils.isEmpty(requestDto.getRequest().getOtp())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to revoke VID"));
 			throw new InvalidInputException("otp");
 		}
