@@ -59,6 +59,7 @@ import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -83,6 +84,9 @@ public class ResidentControllerTest {
 
 	@MockBean
 	private RequestValidator validator;
+	
+	@MockBean
+	private ResidentVidService vidService;
 	
 	@Mock
 	private AuditUtil audit;

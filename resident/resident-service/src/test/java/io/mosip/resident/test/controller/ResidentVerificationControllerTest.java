@@ -3,6 +3,7 @@ package io.mosip.resident.test.controller;
 import io.mosip.resident.controller.VerificationController;
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -45,6 +46,9 @@ public class ResidentVerificationControllerTest {
 
     @MockBean
     private IdAuthService idAuthService;
+	
+	@MockBean
+	private ResidentVidService vidService;
 
     @MockBean
     private VerificationServiceImpl verificationServiceImpl;

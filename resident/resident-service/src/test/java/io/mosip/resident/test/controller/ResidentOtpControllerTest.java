@@ -13,6 +13,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -71,6 +72,9 @@ public class ResidentOtpControllerTest {
 
     @MockBean
     private IdAuthService idAuthService;
+	
+	@MockBean
+	private ResidentVidService vidService;
 
     @MockBean
     private NotificationService notificationService;
