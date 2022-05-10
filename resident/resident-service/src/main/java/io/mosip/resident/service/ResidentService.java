@@ -20,5 +20,5 @@ public interface ResidentService {
 	
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 
-    ResponseDTO reqAauthTypeLockUnlockStatusUpdate(AuthTypeLockOrUnLockRequestDto request, AuthTypeStatus lock) throws ResidentServiceCheckedException;
+    ResponseDTO reqAauthTypeLockUnlockStatusUpdate(AuthLockOrUnLockRequestDto request, AuthTypeStatus lock) throws ResidentServiceCheckedException;
 }

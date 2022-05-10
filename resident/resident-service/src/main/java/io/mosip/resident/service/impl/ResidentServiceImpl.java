@@ -686,7 +686,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseDTO reqAauthTypeLockUnlockStatusUpdate(AuthTypeLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
+	public ResponseDTO reqAauthTypeLockUnlockStatusUpdate(AuthLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "Request for auth type lock or unlock status update");
@@ -701,7 +701,7 @@ public class ResidentServiceImpl implements ResidentService {
 						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
 				Long unlockForSeconds = null;
 				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
-					AuthTypeUnLockRequestDTO authUnLockRequestDTO=(AuthTypeUnLockRequestDTO) dto;
+					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
 					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
 				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
