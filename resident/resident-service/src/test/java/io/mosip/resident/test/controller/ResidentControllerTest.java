@@ -167,6 +167,32 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
+	public void testReqAuthTypeLock() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		responseDto.setStatus("success");
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		this.mockMvc
+				.perform(post("/req/auth-type-lock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
+	}
+
+	@Test
+	@WithUserDetails("resident")
+	public void testReqAuthTypeLockBadRequest() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		MvcResult result = this.mockMvc
+				.perform(post("/req/auth-type-lock").contentType(MediaType.APPLICATION_JSON).content(""))
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
+	}
+
+	@Test
+	@WithUserDetails("resident")
 	public void testRequestAuthLockBadRequest() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
