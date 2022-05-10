@@ -685,6 +685,74 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseDto;
 	}
 
+	@Override
+	public ResponseDTO reqAauthTypeLockUnlockStatusUpdate(AuthTypeLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
+			throws ResidentServiceCheckedException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
+
+		ResponseDTO response = new ResponseDTO();
+		boolean isTransactionSuccessful = false;
+		try {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
+					"Request for auth " + authTypeStatus.toString().toLowerCase()));
+
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
+						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+				Long unlockForSeconds = null;
+				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
+					AuthTypeUnLockRequestDTO authUnLockRequestDTO=(AuthTypeUnLockRequestDTO) dto;
+					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
+				}
+				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
+						dto.getAuthType(), authTypeStatus, unlockForSeconds);
+				if (isAuthTypeStatusUpdated) {
+					isTransactionSuccessful = true;
+				} else {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
+							dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
+							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+				}
+
+
+		} catch (ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
+							+ ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
+					dto.getTransactionID(), "Request for auth" + authTypeStatus.toString().toLowerCase()));
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
+		} finally {
+			NotificationTemplateCode templateCode;
+			if (authTypeStatus.equals(AuthTypeStatus.LOCK)) {
+				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
+						: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
+			} else {
+				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_UNLOCK_AUTH_SUCCESS
+						: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
+			}
+
+			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(), templateCode,
+					null);
+			if (isTransactionSuccessful)
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
+						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+			else
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+			if (notificationResponseDTO != null) {
+				response.setMessage(notificationResponseDTO.getMessage());
+			}
+		}
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: exit");
+		return response;
+	}
+
 	// get name of document
 	private String getDocumentName(JSONObject identityJson, String name) {
 		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
