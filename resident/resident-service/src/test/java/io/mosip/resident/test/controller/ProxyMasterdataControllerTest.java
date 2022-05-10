@@ -29,6 +29,7 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.ProxyMasterdataController;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -51,6 +52,9 @@ public class ProxyMasterdataControllerTest {
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
+	@MockBean
+	private ResidentVidService vidService;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
