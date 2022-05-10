@@ -2,28 +2,21 @@ package io.mosip.resident.dto;
 
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import io.mosip.resident.constant.IdType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResidentUpdateRequestDto {
-
-	private String transactionID;
-
-	private String individualId;
+public class ResidentUpdateRequestDto extends ResidentDemographicUpdateRequestDTO {
 
 	private String individualIdType;
 
 	private String otp;
 
-	private String identityJson;
 	private List<ResidentDocuments> documents;
 
 }
