@@ -689,7 +689,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResponseDTO reqAauthTypeLockUnlockStatusUpdate(AuthTypeLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
+				LoggerFileConstant.APPLICATIONID.toString(), "Request for auth type lock or unlock status update");
 
 		ResponseDTO response = new ResponseDTO();
 		boolean isTransactionSuccessful = false;
@@ -749,7 +749,7 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: exit");
+				LoggerFileConstant.APPLICATIONID.toString(), "Request for auth type lock or unlock status update");
 		return response;
 	}
 

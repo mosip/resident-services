@@ -163,7 +163,6 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<AuthTypeLockOrUnLockRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type lock API"));
-		//validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.LOCK);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeLockUnlockStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.LOCK));
