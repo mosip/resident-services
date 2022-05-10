@@ -12,6 +12,8 @@ import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -92,6 +94,13 @@ public class RequestValidator {
 
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusID;
+
+	@Value("${resident.rid-otp.id}")
+	private String ridOtpId;
+
+	@Value("${resident.rid-otp.version}")
+	private String ridOtpVersion;
+
 
 	private Map<RequestIdType, String> map;
 
@@ -572,6 +581,44 @@ public class RequestValidator {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individual type", typeofRequest));
 			throw new InvalidInputException("individualIdType");
+		}
+	}
+
+	public void validateRIDOtpRequest(RIDOtpRequestDTO requestDto) {
+		try {
+			DateUtils.parseToLocalDateTime(requestDto.getRequestTime());
+		} catch (Exception e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", 
+						"Request to RID OTP"));
+			throw new InvalidInputException("requesttime");
+		}
+		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(ridOtpId)) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Request to RID OTP"));
+			throw new InvalidInputException("id");
+		}
+		if (StringUtils.isEmpty(requestDto.getVersion()) || 
+				!requestDto.getVersion().equalsIgnoreCase(ridOtpVersion)) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "version", "Request to RID OTP"));
+			throw new InvalidInputException("version");
+		}
+		if (StringUtils.isEmpty(requestDto.getIndividualId())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+				"Request to RID OTP"));
+			throw new InvalidInputException("individualId");
+		}
+		if (CollectionUtils.isEmpty(requestDto.getOtpChannel())) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp channel", 
+						"Request to RID OTP"));
+			throw new InvalidInputException("otpChannel");
+		}
+		if (StringUtils.isEmpty(requestDto.getTransactionID())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionId",
+				"Request to RID OTP"));
+			throw new InvalidInputException("transactionId");
 		}
 	}
 }

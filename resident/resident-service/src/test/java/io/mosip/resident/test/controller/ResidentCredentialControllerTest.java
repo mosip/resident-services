@@ -23,6 +23,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.google.gson.Gson;
@@ -33,6 +34,8 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.resident.controller.ResidentCredentialController;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.RIDDigitalCardRequestDto;
+import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.service.ResidentCredentialService;
@@ -85,6 +88,8 @@ public class ResidentCredentialControllerTest {
 
 	byte[] pdfbytes;
 
+	String ridDigitalCardRequestJson;
+
 	@Before
 	public void setup() throws Exception {
 		credentialReqStatusResponse = new CredentialRequestStatusResponseDto();
@@ -96,6 +101,13 @@ public class ResidentCredentialControllerTest {
 		credentialRequestDto.setIndividualId("123456");
 		reqJson = gson.toJson(credentialRequestDto);
 		pdfbytes = "uin".getBytes();
+		RIDDigitalCardRequestDto ridDigitalCardRequestDto = new RIDDigitalCardRequestDto();
+		ridDigitalCardRequestDto.setIndividualId("10001090900001020220414054750");
+		ridDigitalCardRequestDto.setOtp("123456");
+		ridDigitalCardRequestDto.setTransactionID("123456789");
+		RequestWrapper<RIDDigitalCardRequestDto> ridDigitalCardRequestDtoWrapper = new RequestWrapper<>();
+		ridDigitalCardRequestDtoWrapper.setRequest(ridDigitalCardRequestDto);
+		ridDigitalCardRequestJson = gson.toJson(ridDigitalCardRequestDtoWrapper);
 	}
 
 	@Test
@@ -146,6 +158,18 @@ public class ResidentCredentialControllerTest {
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/credential/types").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
+
+	}
+
+	@Test
+	public void testGetRIDDigitalCardSuccess() throws Exception {
+
+		Mockito.when(residentCredentialService.getRIDDigitalCard(Mockito.any())).thenReturn(pdfbytes);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/req/rid-digital-card")
+				.contentType(MediaType.APPLICATION_JSON_VALUE).content(ridDigitalCardRequestJson.getBytes()))
+				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content()
+				.contentType(MediaType.APPLICATION_PDF_VALUE));
 
 	}
 
