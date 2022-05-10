@@ -99,7 +99,7 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<Object> generateVidWithoutOTP(@RequestBody(required = true) ResidentVidRequestDto requestDto)
+	public ResponseEntity<Object> generateVidV2(@RequestBody(required = true) ResidentVidRequestDto requestDto)
 			throws ResidentServiceCheckedException, OtpValidationFailedException {
 		requestDto.getRequest().setOtp(null);
 		return generateVid(requestDto, false);
@@ -140,7 +140,7 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "400", description = "Unable to revoke VID", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<Object> revokeVidWithoutOTP(
+	public ResponseEntity<Object> revokeVidV2(
 			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTO> requestDto, @PathVariable String vid)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		requestDto.getRequest().setOtp(null);
