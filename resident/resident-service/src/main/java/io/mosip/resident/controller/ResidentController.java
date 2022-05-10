@@ -165,7 +165,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type lock API"));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
-		response.setResponse(residentService.reqAauthTypeLockUnlockStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.LOCK));
+		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.LOCK));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS,requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
