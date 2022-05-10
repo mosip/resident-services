@@ -854,10 +854,8 @@ public class ResidentServiceImpl implements ResidentService {
 		MachineSearchResponseDTO machineSearchResponseDTO;
 		try {
 			HttpEntity<MachineSearchRequestDTO> httpEntity = new HttpEntity<>(machineSearchRequestDTO);
-			machineSearchResponseDTO = residentServiceRestClient.postApi("https://dev.mosip.net/v1/masterdata/machines/search",
-					MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class);
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
-					residentMachinePrefix,
+			machineSearchResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINESEARCH.name()), MediaType.APPLICATION_JSON, httpEntity, MachineSearchResponseDTO.class);
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call ended with response data "
 							+ machineSearchResponseDTO.toString());
 			if (machineSearchResponseDTO.getErrors() != null && !machineSearchResponseDTO.getErrors().isEmpty()) {

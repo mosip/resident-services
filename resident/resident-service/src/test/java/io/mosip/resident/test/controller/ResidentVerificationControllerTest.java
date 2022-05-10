@@ -2,6 +2,8 @@ package io.mosip.resident.test.controller;
 
 import io.mosip.resident.controller.VerificationController;
 import io.mosip.resident.dto.VerificationResponseDTO;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
@@ -49,6 +51,12 @@ public class ResidentVerificationControllerTest {
 	
 	@MockBean
 	private ResidentVidService vidService;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
     @MockBean
     private VerificationServiceImpl verificationServiceImpl;

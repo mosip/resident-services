@@ -28,6 +28,8 @@ import org.springframework.web.client.RestTemplate;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.ProxyMasterdataController;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -61,6 +63,12 @@ public class ProxyMasterdataControllerTest {
 
 	@InjectMocks
 	private ProxyMasterdataController proxyMasterdataController;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
 	@Autowired
 	private MockMvc mockMvc;
