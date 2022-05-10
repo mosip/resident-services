@@ -4,6 +4,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 
 /**
  * The Interface ResidentConfigService.
+ * 
  * @author Loganathan.S
  */
 public interface ResidentConfigService {
@@ -14,5 +15,12 @@ public interface ResidentConfigService {
 	 * @return the properties
 	 */
 	ResponseWrapper<?> getUIProperties();
+
+	/**
+	 * Gets the UI schema.
+	 *
+	 * @return the UI schema
+	 */
+	String getUISchema();
 
 }
