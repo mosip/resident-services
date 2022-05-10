@@ -79,7 +79,7 @@ public class ResidentVerificationControllerTest {
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
         Mockito.when(verificationService.checkChannelVerificationStatus(Mockito.any(),Mockito.any())).thenReturn(verificationResponseDTO);
-        mockMvc.perform(MockMvcRequestBuilders.get("/channel/verification-status/{channel}/{individualId}", "self", "123456789")).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/channel/verification-status/?channel=EMAIL&individualId=8251649601")).andExpect(status().isOk());
     }
 
 }
