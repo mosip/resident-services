@@ -764,6 +764,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorCode(),
 					ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorMessage(), e);
 		}
+	}
 
   @Override
 	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
