@@ -34,6 +34,14 @@ import io.mosip.resident.handler.service.ResidentConfigService;
 @Component
 public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
+	private static final String ID = "id";
+
+	private static final String CONTROL_TYPE = "controlType";
+
+	private static final String FILEUPLOAD = "fileupload";
+
+	private static final String INPUT_REQUIRED = "inputRequired";
+
 	private static final String IDENTITY = "identity";
 
 	/** The Constant logger. */
@@ -115,7 +123,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		if(uiSchemaFilteredInputAttributes == null) {
 			uiSchemaFilteredInputAttributes = doGetUiSchemaFilteredInputAttributes();
 		}
-		return null;
+		return uiSchemaFilteredInputAttributes;
 		
 	}
 	
@@ -126,9 +134,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		if(identityObj instanceof List) {
 			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
-						.filter(map -> Boolean.valueOf(String.valueOf(map.get("inputRequired"))))
-						.filter(map -> !"fileupload".equals(map.get("controlType")))
-						.map(map -> (String)map.get("id"))
+						.filter(map -> Boolean.valueOf(String.valueOf(map.get(INPUT_REQUIRED))))
+						.filter(map -> !FILEUPLOAD.equals(map.get(CONTROL_TYPE)))
+						.map(map -> (String)map.get(ID))
 						.collect(Collectors.toList());
 			return uiSchemaFilteredInputAttributesList;
 		}

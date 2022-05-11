@@ -61,14 +61,14 @@ public class ProxyMasterdataServiceTest {
 
 	@Test
 	public void testGetValidDocumentByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getValidDocumentByLangCode("eng");
 		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetValidDocumentByLangCodeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -85,14 +85,14 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetValidDocumentByLangCodeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(residentServiceRestClient.getApi((ApiName)(ApiName)any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getValidDocumentByLangCode("eng");
 	}
 
 	@Test
 	public void testGetLocationHierarchyLevelByLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)(ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getLocationHierarchyLevelByLangCode("eng");
 		assertNotNull(result);
 	}
@@ -100,7 +100,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetLocationHierarchyLevelByLangCodeIf()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)(ApiName)any(), any(), any())).thenReturn(responseWrapper);
 
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -117,14 +117,14 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetLocationHierarchyLevelByLangCodeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getLocationHierarchyLevelByLangCode("eng");
 	}
 
 	@Test
 	public void testGetImmediateChildrenByLocCodeAndLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getImmediateChildrenByLocCodeAndLangCode("MOR", "eng");
 		assertNotNull(result);
 	}
@@ -132,7 +132,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetImmediateChildrenByLocCodeAndLangCodeIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -149,14 +149,14 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetImmediateChildrenByLocCodeAndLangCodeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getImmediateChildrenByLocCodeAndLangCode("MOR", "eng");
 	}
 
 	@Test
 	public void testGetLocationDetailsByLocCodeAndLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode("MOR", "eng");
 		assertNotNull(result);
 	}
@@ -164,7 +164,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetLocationDetailsByLocCodeAndLangCodeIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
@@ -179,14 +179,14 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetLocationDetailsByLocCodeAndLangCodeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode("MOR", "eng");
 	}
 
 	@Test
 	public void testGetCoordinateSpecificRegistrationCenters()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getCoordinateSpecificRegistrationCenters("eng", "-6.516428",
 				"34.287879", "2000");
 		assertNotNull(result);
@@ -195,7 +195,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetCoordinateSpecificRegistrationCentersIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
@@ -210,13 +210,13 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetCoordinateSpecificRegistrationCentersWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getCoordinateSpecificRegistrationCenters("eng", "-6.516428", "34.287879", "2000");
 	}
 
 	@Test
 	public void testGetApplicantValidDocument() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getApplicantValidDocument("002", "eng");
 		assertNotNull(result);
@@ -224,7 +224,7 @@ public class ProxyMasterdataServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetApplicantValidDocumentIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -240,7 +240,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetApplicantValidDocumentWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getApplicantValidDocument("002", "eng");
 	}
@@ -248,7 +248,7 @@ public class ProxyMasterdataServiceTest {
 	@Test
 	public void testGetRegistrationCentersByHierarchyLevel()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getRegistrationCentersByHierarchyLevel("ang", "5", "14110");
 		assertNotNull(result);
@@ -257,7 +257,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRegistrationCentersByHierarchyLevelIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -273,7 +273,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRegistrationCentersByHierarchyLevelWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getRegistrationCentersByHierarchyLevel("ang", "5", "14110");
 	}
@@ -281,7 +281,7 @@ public class ProxyMasterdataServiceTest {
 	@Test
 	public void testGetRegistrationCenterByHierarchyLevelAndTextPaginated()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated("eng",
 				"5", "14110", "0", "10", "desc", "createdDateTime");
@@ -291,7 +291,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRegistrationCenterByHierarchyLevelAndTextPaginatedIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -308,7 +308,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRegistrationCenterByHierarchyLevelAndTextPaginatedWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated("eng", "5", "14110", "0", "10",
 				"desc", "createdDateTime");
@@ -317,7 +317,7 @@ public class ProxyMasterdataServiceTest {
 	@Test
 	public void testGetRegistrationCenterWorkingDays()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getRegistrationCenterWorkingDays("10002", "eng");
 		assertNotNull(result);
 	}
@@ -325,7 +325,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRegistrationCenterWorkingDaysIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
@@ -340,13 +340,13 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRegistrationCenterWorkingDaysWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), any(), any())).thenThrow(new ApisResourceAccessException());
+		when(residentServiceRestClient.getApi((ApiName)any(), any(), any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getRegistrationCenterWorkingDays("10002", "eng");
 	}
 
 	@Test
 	public void testGetLatestIdSchema() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (List<String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ResponseWrapper<?> result = proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
 		assertNotNull(result);
@@ -354,7 +354,7 @@ public class ProxyMasterdataServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetLatestIdSchemaIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (List<String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -370,7 +370,7 @@ public class ProxyMasterdataServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetLatestIdSchemaWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName)any(), (List<String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
 	}

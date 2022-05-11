@@ -29,6 +29,10 @@ public class ResidentServiceException extends BaseUncheckedException {
 	public ResidentServiceException(ResidentErrorCode err) {
 		this(err.getErrorCode(), err.getErrorMessage());
 	}
+	
+	public ResidentServiceException(ResidentErrorCode err, String... args) {
+		this(err.getErrorCode(), String.format(err.getErrorMessage(), args));
+	}
 
 	/**
 	 * Constructor the initialize Handler exception.
