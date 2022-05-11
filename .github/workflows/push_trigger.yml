@@ -10,6 +10,7 @@ on:
       - 1.*
       - develop
       - develop-1.2.1
+      - DSD-991
 jobs:
   build:
     runs-on: ubuntu-latest
