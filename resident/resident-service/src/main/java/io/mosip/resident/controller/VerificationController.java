@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.NoSuchAlgorithmException;
@@ -32,15 +32,15 @@ public class VerificationController {
 
     private static final Logger logger = LoggerConfiguration.logConfig(VerificationController.class);
 
-    @GetMapping(value = "/channel/verification-status/{channel}/{individualId}")
+    @GetMapping(value = "/channel/verification-status/")
     @Operation(summary = "get channel verification status", description = "get channel verification status")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-    public VerificationResponseDTO getChannelVerificationStatus(@PathVariable("channel") String channel,
-                                                                                 @PathVariable("individualId") String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+    public VerificationResponseDTO getChannelVerificationStatus(@RequestParam("channel") String channel,
+                                                                                 @RequestParam("individualId") String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
         logger.info("getChannelVerificationStatus method started");
         VerificationResponseDTO verificationResponseDTO = verificationServiceImpl.checkChannelVerificationStatus(channel, individualId);
         return verificationResponseDTO;

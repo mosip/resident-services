@@ -58,7 +58,10 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -83,6 +86,15 @@ public class ResidentControllerTest {
 
 	@MockBean
 	private RequestValidator validator;
+	
+	@MockBean
+	private ResidentVidService vidService;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 	
 	@Mock
 	private AuditUtil audit;
@@ -159,6 +171,32 @@ public class ResidentControllerTest {
 		this.mockMvc
 				.perform(post("/req/auth-lock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
+	}
+
+	@Test
+	@WithUserDetails("resident")
+	public void testReqAuthTypeLock() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		responseDto.setStatus("success");
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		this.mockMvc
+				.perform(post("/req/auth-type-lock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
+	}
+
+	@Test
+	@WithUserDetails("resident")
+	public void testReqAuthTypeLockBadRequest() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		MvcResult result = this.mockMvc
+				.perform(post("/req/auth-type-lock").contentType(MediaType.APPLICATION_JSON).content(""))
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
 	@Test
