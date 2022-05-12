@@ -300,7 +300,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getLatestIdSchema(String schemaVersion, String domain, String type)
+	public ResponseWrapper<?> getLatestIdSchema(double schemaVersion, String domain, String type)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getLatestIdSchema()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
