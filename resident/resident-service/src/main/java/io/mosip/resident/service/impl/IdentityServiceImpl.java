@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -65,10 +64,6 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 	
-	@Autowired
-	@Qualifier("restClientWithPlainRestTemplate")
-	private ResidentServiceRestClient plainResidentServiceRestClient;
-
 	@Autowired
 	private AuditUtil auditUtil;
 
@@ -196,7 +191,7 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, Object> responseMap;
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
-			responseMap = (Map<String, Object>) plainResidentServiceRestClient.getApi(uriComponent.toUri(), Map.class, headers);
+			responseMap = (Map<String, Object>) residentServiceRestClient.getApi(uriComponent.toUri(), Map.class, headers);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
 					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
