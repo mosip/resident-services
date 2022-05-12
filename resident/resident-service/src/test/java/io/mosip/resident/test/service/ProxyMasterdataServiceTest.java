@@ -348,7 +348,7 @@ public class ProxyMasterdataServiceTest {
 	public void testGetLatestIdSchema() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName)any(), (List<String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
+		ResponseWrapper<?> result = proxyMasterdataService.getLatestIdSchema(0, "domain", "type");
 		assertNotNull(result);
 	}
 
@@ -364,7 +364,7 @@ public class ProxyMasterdataServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
+		proxyMasterdataService.getLatestIdSchema(0, "domain", "type");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -372,7 +372,7 @@ public class ProxyMasterdataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName)any(), (List<String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		proxyMasterdataService.getLatestIdSchema("0", "domain", "type");
+		proxyMasterdataService.getLatestIdSchema(0, "domain", "type");
 	}
 
 }
