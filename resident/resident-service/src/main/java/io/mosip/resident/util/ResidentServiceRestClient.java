@@ -50,7 +50,7 @@ public class ResidentServiceRestClient {
 
 	@Autowired
 	Environment environment;
-
+	
 	/**
 	 * Gets the api.
 	 *
@@ -60,8 +60,20 @@ public class ResidentServiceRestClient {
 	 * @throws Exception
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType) throws ApisResourceAccessException {
+		return getApi(uri, responseType, null);
+	}
+
+	/**
+	 * Gets the api.
+	 *
+	 * @param <T>          the generic type
+	 * @param responseType the response type
+	 * @return the api
+	 * @throws Exception
+	 */
+	public <T> T getApi(URI uri, Class<?> responseType, MultiValueMap<String, String> headerMap) throws ApisResourceAccessException {
 		try {
-			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null), responseType)
+			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, headerMap == null ? setRequestHeader(null, null) : new HttpEntity<T>(headerMap), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

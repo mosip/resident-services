@@ -83,7 +83,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Value("${mosip.ida.env:Staging}")
 	private String idaEnv;
-
+	
 	@Autowired
 	ObjectMapper mapper;
 
