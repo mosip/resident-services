@@ -167,10 +167,10 @@ public class ProxyMasterdataControllerTest {
 	@Test
 	public void testGetLatestIdSchema() throws Exception {
 		Mockito.when(
-				proxyMasterdataService.getLatestIdSchema(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				proxyMasterdataService.getLatestIdSchema(Mockito.anyDouble(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
 		mockMvc.perform(
-				MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=0&domain=domain&type=type"))
+				MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=&domain=&type="))
 				.andExpect(status().isOk());
 	}
 
