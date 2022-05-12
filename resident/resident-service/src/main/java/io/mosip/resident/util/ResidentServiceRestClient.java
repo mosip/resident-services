@@ -230,7 +230,6 @@ public class ResidentServiceRestClient {
 	@SuppressWarnings("unchecked")
 	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
-
 		T result = null;
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -266,7 +265,6 @@ public class ResidentServiceRestClient {
 	@SuppressWarnings("unchecked")
 	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType)
 			throws ApisResourceAccessException {
-
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {

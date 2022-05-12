@@ -8,6 +8,8 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.ResidentCredentialController;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -70,6 +72,12 @@ public class ResidentCredentialControllerTest {
 	
 	@MockBean
 	private ResidentVidService vidService;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
     @MockBean
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
