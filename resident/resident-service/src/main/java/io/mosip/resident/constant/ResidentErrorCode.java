@@ -45,7 +45,7 @@ public enum ResidentErrorCode {
 	FAILED_TO_RETRIEVE_DOC("RES-SER-435", "Failed to retrieve document(s) from object store"),
 	ENCRYPT_DECRYPT_ERROR("RES-SER-436", "Failed to encrypt/decrypt data"),
 	VIRUS_SCAN_FAILED("RES-SER-437", "Virus scanning failed for attached document"),
-	CHANNEL_IS_NOT_VALID("RES-SER-438", "Invalid OTP Channel")
+	CHANNEL_IS_NOT_VALID("RES-SER-438", "Invalid OTP Channel"),
 
 	CLAIM_NOT_AVAILABLE("RES-SER-439", "Claim not available: %s"),
 	;
