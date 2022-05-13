@@ -15,6 +15,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -321,8 +322,10 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getLatestIdSchema(@RequestParam("schemaVersion") String schemaVersion,
-			@RequestParam("domain") String domain, @RequestParam("type") String type)
+	public ResponseWrapper<?> getLatestIdSchema(
+			@RequestParam(name = "schemaVersion", defaultValue = "0", required = false) @ApiParam(value = "schema version", defaultValue = "0") double schemaVersion,
+			@RequestParam(name = "domain", required = false) @ApiParam(value = "domain of the ui spec") String domain,
+			@RequestParam(name = "type", required = false) @ApiParam(value = "type of the ui spec. Supported comma separted values") String type)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getLatestIdSchema()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA);

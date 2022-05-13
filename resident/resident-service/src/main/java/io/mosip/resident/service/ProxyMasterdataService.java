@@ -127,7 +127,7 @@ public interface ProxyMasterdataService {
 	 * @return ResponseWrapper<?> object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public ResponseWrapper<?> getLatestIdSchema(String schemaVersion, String domain, String type)
+	public ResponseWrapper<?> getLatestIdSchema(double schemaVersion, String domain, String type)
 			throws ResidentServiceCheckedException;
 
 }
