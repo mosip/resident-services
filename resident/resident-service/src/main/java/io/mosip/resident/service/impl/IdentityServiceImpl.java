@@ -151,7 +151,11 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public AuthUserDetails getAuthUserDetails() {
-		return (AuthUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(principal instanceof AuthUserDetails) {
+			return (AuthUserDetails) principal;
+		}
+		return null;
 	}
 
 	public Map<String, String> getResidentIdentity() throws ApisResourceAccessException {
