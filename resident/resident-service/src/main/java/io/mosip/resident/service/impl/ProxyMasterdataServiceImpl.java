@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -13,6 +14,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -146,11 +148,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, String longitude,
-			String latitude, String proximityDistance) throws ResidentServiceCheckedException {
+	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, double longitude,
+			double latitude, int proximityDistance) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getCoordinateSpecificRegistrationCenters()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> pathsegements = new HashMap<String, String>();
+		Map<String, Object> pathsegements = new HashMap<String, Object>();
 		pathsegements.put("langcode", langCode);
 		pathsegements.put("longitude", longitude);
 		pathsegements.put("latitude", latitude);
@@ -175,15 +177,22 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, String languages)
+	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, List<String> languages)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getApplicantValidDocument()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		Map<String, String> pathsegements = new HashMap<String, String>();
 		pathsegements.put("applicantId", applicantId);
+
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("languages");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(languages.stream().collect(Collectors.joining(",")));
+
 		try {
 			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(
-					ApiName.APPLICANT_VALID_DOCUMENT_URL, pathsegements, List.of("languages"), List.of(languages),
+					ApiName.APPLICANT_VALID_DOCUMENT_URL, pathsegements, queryParamName, queryParamValue,
 					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
@@ -202,16 +211,23 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, String hierarchyLevel,
-			String name) throws ResidentServiceCheckedException {
+	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
+			List<String> name) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> pathsegements = new HashMap<String, String>();
+		Map<String, Object> pathsegements = new HashMap<String, Object>();
 		pathsegements.put("langcode", langCode);
 		pathsegements.put("hierarchylevel", hierarchyLevel);
+
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("name");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(name.stream().collect(Collectors.joining(",")));
+
 		try {
 			responseWrapper = residentServiceRestClient.getApi(ApiName.REGISTRATION_CENTER_FOR_LOCATION_CODE_URL,
-					pathsegements, List.of("name"), List.of(name), ResponseWrapper.class);
+					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
@@ -230,12 +246,12 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Override
 	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
-			String hierarchyLevel, String name, String pageNumber, String pageSize, String orderBy, String sortBy)
+			Short hierarchyLevel, String name, int pageNumber, int pageSize, OrderEnum orderBy, String sortBy)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCenterByHierarchyLevelAndTextPaginated()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 
-		Map<String, String> pathsegements = new HashMap<String, String>();
+		Map<String, Object> pathsegements = new HashMap<String, Object>();
 		pathsegements.put("langcode", langCode);
 		pathsegements.put("hierarchylevel", hierarchyLevel);
 		pathsegements.put("name", name);

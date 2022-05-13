@@ -165,13 +165,13 @@ public class ResidentServiceRestClient {
 		return obj;
 	}
 
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType)
+	public <T> T getApi(ApiName apiName, Map<String, ?> pathsegments, Class<?> responseType)
 			throws ApisResourceAccessException {
 		return getApi(apiName, pathsegments, null, null, responseType);
 	}
 
 	@SuppressWarnings({ "unchecked", "null" })
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, List<String> queryParamName,
+	public <T> T getApi(ApiName apiName, Map<String, ?> pathsegments, List<String> queryParamName,
 			List<Object> queryParamValue, Class<?> responseType) throws ApisResourceAccessException {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());
