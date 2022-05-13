@@ -53,7 +53,7 @@ public class WebSubUpdateAuthTypeController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
-    //@PreAuthenticateContentAndVerifyIntent(secret = "abc123", callback = "http://localhost:8099/resident/v1/callback/authTypeCallback/AUTH_TYPE_STATUS_UPDATE_ACK", topic = "AUTH_TYPE_STATUS_UPDATE_ACK")
+    @PreAuthenticateContentAndVerifyIntent(secret = "abc123", callback = "/resident/v1/callback/authTypeCallback/AUTH_TYPE_STATUS_UPDATE_ACK", topic = "AUTH_TYPE_STATUS_UPDATE_ACK")
     public void authTypeCallback(@RequestBody EventModel eventModel, @PathVariable("partnerId") String partnerId) {
         logger.info("WebSubUpdateAuthTypeController");
         webSubUpdateAuthTypeService.updateAuthTypeStatus("1234","1234");
