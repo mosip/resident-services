@@ -370,6 +370,18 @@ public enum EventEnum {
 	GET_DOCUMENTS_METADATA_FAILED("RES-SER-181", RegistrationConstants.SYSTEM, "Get documents failed",
 			"Get documents failed for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	AUTH_TYPE_CALL_BACK("RES-SER-182", RegistrationConstants.SYSTEM, "Request auth type call back url",
+			"Requesting auth type call back url for transaction id %s", "RES-SER", "Residence service", "%s",
+			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	AUTH_TYPE_CALL_BACK_SUCCESS("RES-SER-183", RegistrationConstants.SYSTEM, "Auth type call back success",
+			"auth type call back success for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	AUTH_TYPE_CALL_BACK_FAILURE("RES-SER-184", RegistrationConstants.SYSTEM, "Auth type call back failure",
+			"auth type call back failure for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	UPDATE_AUTH_TYPE_STATUS("RES-SER-185", RegistrationConstants.SYSTEM, "Request update auth type status",
+			"Requesting update auth type status for transaction id %s", "RES-SER", "Residence service", "%s",
+			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
 	;
 
