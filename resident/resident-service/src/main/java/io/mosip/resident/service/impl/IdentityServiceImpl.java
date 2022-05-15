@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,12 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String PHOTO = "individualBiometrics";
 
 	@Autowired
-	private ResidentServiceRestClient residentServiceRestClient;
+	@Qualifier("restClientWithSelfTOkenRestTemplate")
+	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
+	
+	@Autowired
+	@Qualifier("restClientWithPlainRestTemplate")
+	private ResidentServiceRestClient restClientWithPlainRestTemplate;
 	
 	@Autowired
 	private AuditUtil auditUtil;
@@ -110,7 +116,7 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
 		try {
-			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_URL,
+			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
 					pathsegments, ResponseWrapper.class);
 			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
@@ -195,7 +201,7 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, Object> responseMap;
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
-			responseMap = (Map<String, Object>) residentServiceRestClient.getApi(uriComponent.toUri(), Map.class, headers);
+			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
 					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"

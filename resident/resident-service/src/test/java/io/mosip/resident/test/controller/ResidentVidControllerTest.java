@@ -42,6 +42,7 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
@@ -49,6 +50,7 @@ import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -68,11 +70,15 @@ public class ResidentVidControllerTest {
 
 	@MockBean
 	private IdAuthServiceImpl idAuthService;
+	
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
 
 	@MockBean
 	private ResidentServiceImpl residentService;
 
 	@MockBean
+	@Qualifier("restClientWithPlainRestTemplate")
 	private ResidentServiceRestClient residentServiceRestClient;
 	
 	@MockBean
@@ -95,9 +101,10 @@ public class ResidentVidControllerTest {
 	private AuditUtil audit;
 
 	@Before
-	public void setup() {
+	public void setup() throws ApisResourceAccessException {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(null);
 	}
 
 	@Test
@@ -197,7 +204,8 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
