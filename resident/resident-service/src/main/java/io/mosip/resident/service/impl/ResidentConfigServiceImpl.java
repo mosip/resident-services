@@ -24,6 +24,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 
@@ -59,6 +60,12 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	/** The resident ui schema json file. */
 	@Value("${resident-ui-schema-file-source}")
 	private Resource residentUiSchemaJsonFile;
+	
+	/** The identity mapping json file. */
+	@Value("${identity-mapping-file-source}")
+	private Resource identityMappingJsonFile;
+	
+	private String identityMapping;
 	
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -142,6 +149,14 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		}
 		return null;
 		
+	}
+
+	@Override
+	public String getIdentityMapping() throws ResidentServiceCheckedException {
+		if(identityMapping==null) {
+			identityMapping=readResourceContent(identityMappingJsonFile);
+		}
+		return identityMapping;
 	}
 
 }

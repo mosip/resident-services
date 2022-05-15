@@ -1,8 +1,11 @@
 package io.mosip.resident.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -64,8 +67,8 @@ public interface ProxyMasterdataService {
 	 * @return ResponseWrapper<?> object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, String longitude,
-			String latitude, String proximityDistance) throws ResidentServiceCheckedException;
+	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, double longitude,
+			double latitude, int proximityDistance) throws ResidentServiceCheckedException;
 
 	/**
 	 * Get applicant valid document.
@@ -75,7 +78,7 @@ public interface ProxyMasterdataService {
 	 * @return ResponseWrapper<?> object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, String languages)
+	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, List<String> languages)
 			throws ResidentServiceCheckedException;
 
 	/**
@@ -87,8 +90,8 @@ public interface ProxyMasterdataService {
 	 * @return ResponseWrapper<?> object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, String hierarchyLevel,
-			String name) throws ResidentServiceCheckedException;
+	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
+			List<String> name) throws ResidentServiceCheckedException;
 
 	/**
 	 * Get registration centers by hierarchy level and text-paginated.
@@ -104,7 +107,7 @@ public interface ProxyMasterdataService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
-			String hierarchyLevel, String name, String pageNumber, String pageSize, String orderBy, String sortBy)
+			Short hierarchyLevel, String name, int pageNumber, int pageSize, OrderEnum orderBy, String sortBy)
 			throws ResidentServiceCheckedException;
 
 	/**
