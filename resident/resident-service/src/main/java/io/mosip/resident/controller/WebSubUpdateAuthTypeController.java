@@ -55,7 +55,7 @@ public class WebSubUpdateAuthTypeController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
-    @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.secret}", callback = "${resident.callback.relative.url}", topic = "${resident.websub.topic}")
+    @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authtype-status.secret}", callback = "${resident.websub.callback.authtype-status.relative.url}", topic = "${resident.websub.authtype-status.topic}")
     public void authTypeCallback(@RequestBody EventModel eventModel, @PathVariable("partnerId") String partnerId) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
