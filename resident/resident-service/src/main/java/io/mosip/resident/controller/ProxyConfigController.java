@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
 /**
  * The Class ProxyConfigController.
  * 
@@ -30,14 +29,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/proxy/config")
 @Tag(name = "proxy-config-controller", description = "Proxy Config Controller")
 public class ProxyConfigController {
-	
+
 	/** The Constant logger. */
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyConfigController.class);
 
 	/** The audit util. */
 	@Autowired
 	private AuditUtil auditUtil;
-	
+
 	@Autowired
 	private ResidentConfigService residentConfigService;
 
@@ -45,7 +44,8 @@ public class ProxyConfigController {
 	 * Gets the resident properties.
 	 *
 	 * @return the resident properties
-	 * @throws ResidentServiceCheckedException the resident service checked exception
+	 * @throws ResidentServiceCheckedException the resident service checked
+	 *                                         exception
 	 */
 	@ResponseFilter
 	@GetMapping("/ui-properties")
@@ -56,8 +56,7 @@ public class ProxyConfigController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getResidentProperties()
-			throws ResidentServiceCheckedException {
+	public ResponseWrapper<?> getResidentProperties() throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getResidentProperties()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
 		ResponseWrapper<?> propertiesResponse = residentConfigService.getUIProperties();
@@ -65,7 +64,7 @@ public class ProxyConfigController {
 		logger.debug("ProxyConfigController::getResidentProperties()::exit");
 		return propertiesResponse;
 	}
-	
+
 	@GetMapping("/ui-schema")
 	@Operation(summary = "getResidentUISchema", description = "Get the Resident-UI Schema", tags = {
 			"proxy-config-controller" })
@@ -74,8 +73,7 @@ public class ProxyConfigController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public String getResidentUISchema()
-			throws ResidentServiceCheckedException {
+	public String getResidentUISchema() throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getResidentUISchema()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
 		String propertiesResponse = residentConfigService.getUISchema();
@@ -83,4 +81,22 @@ public class ProxyConfigController {
 		logger.debug("ProxyConfigController::getResidentUISchema()::exit");
 		return propertiesResponse;
 	}
+
+	@GetMapping("/identity-mapping")
+	@Operation(summary = "getIdentityMapping", description = "Get the identity-mapping", tags = {
+			"proxy-config-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public String getIdentityMapping() throws ResidentServiceCheckedException {
+		logger.debug("ProxyConfigController::getIdentityMapping()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
+		String propertiesResponse=residentConfigService.getIdentityMapping();
+		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
+		logger.debug("ProxyConfigController::getIdentityMapping()::exit");
+		return propertiesResponse;
+	}
+
 }

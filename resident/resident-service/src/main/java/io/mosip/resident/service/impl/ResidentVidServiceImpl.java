@@ -243,13 +243,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	@Override
 	public ResponseWrapper<VidRevokeResponseDTO> revokeVid(VidRevokeRequestDTO requestDto, String vid)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
-
-		if (!requestDto.getIndividualId().equals(vid)) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
-			throw new InvalidInputException("The VID in the URL and body mismatched");
-		}
-
+		//FIXME check if VID belongs to the same person who logged in
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();

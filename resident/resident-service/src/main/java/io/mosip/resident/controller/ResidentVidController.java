@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +24,11 @@ import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
@@ -58,6 +61,9 @@ public class ResidentVidController {
 	@Autowired
 	private AuditUtil auditUtil;
 
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
+	
 	@GetMapping(path = "/vid/policy")
 	@Operation(summary = "Retrieve VID policy", description = "Retrieve VID policy", tags = { "Resident Service" })
 	@ApiResponses(value = {
@@ -86,10 +92,11 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> generateVid(@RequestBody(required = true) ResidentVidRequestDto requestDto)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		return generateVid(requestDto, true);
 	}
 
+	@PreAuthorize("hasAnyRole(@authorizedRoles.getPostgeneratevid())")
 	@PostMapping(path = "/generate-vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "generateVid", description = "generateVid", tags = { "Resident Service" })
 	@ApiResponses(value = {
@@ -100,21 +107,26 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> generateVidV2(@RequestBody(required = true) ResidentVidRequestDto requestDto)
-			throws ResidentServiceCheckedException, OtpValidationFailedException {
+			throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
 		requestDto.getRequest().setOtp(null);
 		return generateVid(requestDto, false);
 	}
 
 	private ResponseEntity<Object> generateVid(ResidentVidRequestDto requestDto, boolean isOtpValidationRequired)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to generate VID"));
+		String residentIndividualId = requestDto.getRequest() == null? null : requestDto.getRequest().getIndividualId();
+		if(residentIndividualId == null && requestDto.getRequest() != null) {
+			residentIndividualId = getResidentIndividualId();
+			requestDto.getRequest().setIndividualId(residentIndividualId);
+		}
 		validator.validateVidCreateRequest(requestDto, isOtpValidationRequired);
 		auditUtil.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, requestDto.getRequest().getIndividualId()));
+				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, residentIndividualId));
 		ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest());
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
-				requestDto.getRequest().getIndividualId()));
+				residentIndividualId));
 		return ResponseEntity.ok().body(vidResponseDto);
 	}
 
@@ -128,10 +140,11 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> revokeVid(
 			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTO> requestDto, @PathVariable String vid)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		return revokeVid(requestDto, vid, true);
 	}
 
+	@PreAuthorize("hasAnyRole(@authorizedRoles.getPatchrevokevid())")
 	@PatchMapping(path = "/revoke-vid/{vid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Revoke VID", description = "Revoke VID", tags = { "Resident Service" })
 	@ApiResponses(value = {
@@ -142,22 +155,32 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> revokeVidV2(
 			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTO> requestDto, @PathVariable String vid)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		requestDto.getRequest().setOtp(null);
 		return revokeVid(requestDto, vid, false);
 	}
 
 	private ResponseEntity<Object> revokeVid(RequestWrapper<VidRevokeRequestDTO> requestDto, String vid,
-			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException {
+			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to revoke VID"));
+		String residentIndividualId = requestDto.getRequest() == null? null : requestDto.getRequest().getIndividualId();
+		if(residentIndividualId == null && requestDto.getRequest() != null) {
+			residentIndividualId = getResidentIndividualId();
+			requestDto.getRequest().setIndividualId(residentIndividualId);
+		}
 		validator.validateVidRevokeRequest(requestDto, isOtpValidationRequired);
 		auditUtil.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, requestDto.getRequest().getIndividualId()));
+				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
 		ResponseWrapper<VidRevokeResponseDTO> vidResponseDto = residentVidService.revokeVid(requestDto.getRequest(),
 				vid);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
-				requestDto.getRequest().getIndividualId()));
+				residentIndividualId));
 		return ResponseEntity.ok().body(vidResponseDto);
+	}
+	
+	
+	private String getResidentIndividualId() throws ApisResourceAccessException {
+		return identityServiceImpl.getResidentIndvidualId();
 	}
 }

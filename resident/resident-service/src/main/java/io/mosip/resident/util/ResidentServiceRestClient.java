@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -34,7 +33,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
  *
  * @author Monobikash Das
  */
-@Component
 public class ResidentServiceRestClient {
 
 	/** The logger. */
@@ -44,12 +42,20 @@ public class ResidentServiceRestClient {
 	@Autowired
 	RestTemplateBuilder builder;
 
-	@Autowired
-	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
 
 	@Autowired
 	Environment environment;
+	
+	public ResidentServiceRestClient() {
+		this(new RestTemplate());
+	}
+	
+	
+	public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
+		this.residentRestTemplate = residentRestTemplate;
+	}
 
 	/**
 	 * Gets the api.
@@ -60,8 +66,20 @@ public class ResidentServiceRestClient {
 	 * @throws Exception
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType) throws ApisResourceAccessException {
+		return getApi(uri, responseType, null);
+	}
+
+	/**
+	 * Gets the api.
+	 *
+	 * @param <T>          the generic type
+	 * @param responseType the response type
+	 * @return the api
+	 * @throws Exception
+	 */
+	public <T> T getApi(URI uri, Class<?> responseType, MultiValueMap<String, String> headerMap) throws ApisResourceAccessException {
 		try {
-			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null), responseType)
+			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, headerMap == null ? setRequestHeader(null, null) : new HttpEntity<T>(headerMap), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -153,13 +171,13 @@ public class ResidentServiceRestClient {
 		return obj;
 	}
 
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType)
+	public <T> T getApi(ApiName apiName, Map<String, ?> pathsegments, Class<?> responseType)
 			throws ApisResourceAccessException {
 		return getApi(apiName, pathsegments, null, null, responseType);
 	}
 
 	@SuppressWarnings({ "unchecked", "null" })
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, List<String> queryParamName,
+	public <T> T getApi(ApiName apiName, Map<String, ?> pathsegments, List<String> queryParamName,
 			List<Object> queryParamValue, Class<?> responseType) throws ApisResourceAccessException {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());

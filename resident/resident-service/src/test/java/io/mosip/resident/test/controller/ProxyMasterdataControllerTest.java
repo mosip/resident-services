@@ -54,7 +54,7 @@ public class ProxyMasterdataControllerTest {
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
-	
+
 	@MockBean
 	private ResidentVidService vidService;
 
@@ -63,10 +63,10 @@ public class ProxyMasterdataControllerTest {
 
 	@InjectMocks
 	private ProxyMasterdataController proxyMasterdataController;
-	
+
 	@MockBean
 	private DocumentService docService;
-	
+
 	@MockBean
 	private ObjectStoreHelper objectStore;
 
@@ -122,15 +122,15 @@ public class ProxyMasterdataControllerTest {
 	@Test
 	public void testGetCoordinateSpecificRegistrationCenters() throws Exception {
 		Mockito.when(proxyMasterdataService.getCoordinateSpecificRegistrationCenters(Mockito.anyString(),
-				Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(responseWrapper);
-		mockMvc.perform(MockMvcRequestBuilders.get(
-				"/proxy/masterdata/getcoordinatespecificregistrationcenters/langcode/longitude/latitude/proximitydistance"))
+				Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/proxy/masterdata/getcoordinatespecificregistrationcenters/langcode/33.4/43.5/200"))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void testGetApplicantValidDocument() throws Exception {
-		Mockito.when(proxyMasterdataService.getApplicantValidDocument(Mockito.anyString(), Mockito.anyString()))
+		Mockito.when(proxyMasterdataService.getApplicantValidDocument(Mockito.anyString(), Mockito.anyList()))
 				.thenReturn(responseWrapper);
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/proxy/masterdata/applicanttype/applicantId/languages?languages=eng"))
@@ -140,19 +140,18 @@ public class ProxyMasterdataControllerTest {
 	@Test
 	public void testGetRegistrationCentersByHierarchyLevel() throws Exception {
 		Mockito.when(proxyMasterdataService.getRegistrationCentersByHierarchyLevel(Mockito.anyString(),
-				Mockito.anyString(), Mockito.anyString())).thenReturn(responseWrapper);
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/proxy/masterdata/registrationcenters/langcode/hierarchylevel/names?name=14110"))
+				Mockito.anyShort(), Mockito.anyList())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/registrationcenters/langcode/5/names?name=14110"))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	public void testGetRegistrationCenterByHierarchyLevelAndTextPaginated() throws Exception {
 		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
-				Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(),
 				Mockito.anyString())).thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get(
-				"/proxy/masterdata/registrationcenters/page/langcode/hierarchylevel/name?pageNumber=0&pageSize=10&orderBy=desc&sortBy=createdDateTime"))
+				"/proxy/masterdata/registrationcenters/page/langcode/5/name?pageNumber=0&pageSize=10&orderBy=desc&sortBy=createdDateTime"))
 				.andExpect(status().isOk());
 	}
 
@@ -167,10 +166,9 @@ public class ProxyMasterdataControllerTest {
 	@Test
 	public void testGetLatestIdSchema() throws Exception {
 		Mockito.when(
-				proxyMasterdataService.getLatestIdSchema(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				proxyMasterdataService.getLatestIdSchema(Mockito.anyDouble(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=0&domain=domain&type=type"))
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=&domain=&type="))
 				.andExpect(status().isOk());
 	}
 

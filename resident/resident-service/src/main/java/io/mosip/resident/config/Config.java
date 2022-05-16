@@ -1,13 +1,16 @@
 package io.mosip.resident.config;
 
-import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
-import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
-import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+
+import javax.servlet.Filter;
+
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +20,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
-import javax.servlet.Filter;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
+import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 
 @Configuration
@@ -74,5 +78,16 @@ public class Config {
 	@Bean
 	public AfterburnerModule afterburnerModule() {
 	  return new AfterburnerModule();
+	}
+	
+	@Bean("restClientWithSelfTOkenRestTemplate")
+	@Primary
+	public ResidentServiceRestClient selfTokenRestClient(@Qualifier("selfTokenRestTemplate")RestTemplate residentRestTemplate) {
+		return new ResidentServiceRestClient(residentRestTemplate);
+	}
+	
+	@Bean("restClientWithPlainRestTemplate")
+	public ResidentServiceRestClient plainRestClient() {
+		return new ResidentServiceRestClient(new RestTemplate());
 	}
 }
