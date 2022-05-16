@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -34,7 +33,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
  *
  * @author Monobikash Das
  */
-@Component
 public class ResidentServiceRestClient {
 
 	/** The logger. */
@@ -44,13 +42,21 @@ public class ResidentServiceRestClient {
 	@Autowired
 	RestTemplateBuilder builder;
 
-	@Autowired
-	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
 
 	@Autowired
 	Environment environment;
 	
+	public ResidentServiceRestClient() {
+		this(new RestTemplate());
+	}
+	
+	
+	public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
+		this.residentRestTemplate = residentRestTemplate;
+	}
+
 	/**
 	 * Gets the api.
 	 *

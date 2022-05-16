@@ -18,6 +18,11 @@ public class AuthorizedRolesDto {
   //Idrepo controller
 	
 	private List<String> getinputattributevalues;
+	
+	private List<String> patchrevokevid;
+	
+	private List<String> postgeneratevid;
+	
 
 
 }
