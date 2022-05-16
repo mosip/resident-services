@@ -9,7 +9,6 @@ on:
       - master
       - 1.*
       - develop
-      - develop-1.2.1
 jobs:
   build:
     runs-on: ubuntu-latest
