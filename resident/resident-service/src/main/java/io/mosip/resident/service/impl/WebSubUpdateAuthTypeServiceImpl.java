@@ -43,7 +43,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
 
-    @Value("${resident.websub.topic}")
+    @Value("${resident.websub.authtype-status.topic}")
     private String topic;
 
     @Value("${websub.publish.url}")
@@ -52,10 +52,10 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
     @Value("${websub.hub.url}")
     private String hubUrl;
 
-    @Value("${resident.websub.secret}")
+    @Value("${resident.websub.authtype-status.secret}")
     private String secret;
 
-    @Value("${resident.callback.url}")
+    @Value("${resident.websub.callback.authtype-status.url}")
     private String callbackUrl;
 
     @Autowired
