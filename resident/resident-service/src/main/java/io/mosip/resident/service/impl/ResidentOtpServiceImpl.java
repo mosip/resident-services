@@ -28,6 +28,9 @@ import java.time.LocalDateTime;
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
 
+	public static final String EMAIL_CHANNEL = "EMAIL";
+	public static final String PHONE_CHANNEL = "PHONE";
+
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
@@ -46,13 +49,17 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Override
-	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) {
+	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
 		OtpResponseDTO responseDto = null;
 		try {
 			responseDto = residentServiceRestClient.postApi(
 					env.getProperty(ApiName.OTP_GEN_URL.name()), MediaType.APPLICATION_JSON, otpRequestDTO,
 					OtpResponseDTO.class);
-			insertData(otpRequestDTO);
+			if((responseDto.getErrors() ==null || responseDto.getErrors().isEmpty() )&& responseDto.getResponse()!= null) {
+				{
+					insertData(otpRequestDTO);
+				}
+			}
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
@@ -97,7 +104,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
 		residentTransactionEntity.setLangCode("eng");
 		residentTransactionEntity.setRefIdType("UIN");
-		residentTransactionEntity.setRefId(uin);
+		residentTransactionEntity.setRefId(getRefIdHash(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setTokenId("");
 		residentTransactionEntity.setCrBy("mosip");
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
@@ -118,4 +125,11 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		return id;
 	}
 
+	private boolean channelExistis(OtpRequestDTO otpRequestDTO, String channelType) {
+		return otpRequestDTO.getOtpChannel().stream().anyMatch(channel -> channel.equalsIgnoreCase(channelType));
+	}
+
+	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
+		return HMACUtils2.digestAsPlainText(individualId.getBytes());
+	}
 }

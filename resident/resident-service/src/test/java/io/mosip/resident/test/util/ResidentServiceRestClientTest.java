@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -38,8 +39,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ResidentServiceRestClientTest {
 
-	@InjectMocks
-	ResidentServiceRestClient residentServiceRestClient;
 
 	@Mock
 	RestTemplateBuilder builder;
@@ -49,9 +48,14 @@ public class ResidentServiceRestClientTest {
 
 	@Mock
 	RestTemplate residentRestTemplate;
+	
+	@InjectMocks
+	ResidentServiceRestClient residentServiceRestClient;
 
 	@Before
 	public void setup() {
+		ReflectionTestUtils.setField(residentServiceRestClient, "builder", builder);
+		ReflectionTestUtils.setField(residentServiceRestClient, "environment", environment);
 	}
 
 	@Test

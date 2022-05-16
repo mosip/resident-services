@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -634,7 +633,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 
@@ -647,7 +646,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 
@@ -662,7 +661,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 
@@ -678,7 +677,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 
@@ -693,7 +692,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 
@@ -711,7 +710,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 
@@ -721,7 +720,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
 
 	}
 

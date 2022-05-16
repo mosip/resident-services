@@ -1,5 +1,8 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
+
 import java.security.NoSuchAlgorithmException;
 
 import org.joda.time.DateTime;
@@ -15,6 +18,7 @@ import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.dto.VerificationStatusDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.util.AuditUtil;

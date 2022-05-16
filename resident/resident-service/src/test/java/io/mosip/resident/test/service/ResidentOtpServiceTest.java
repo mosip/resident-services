@@ -4,6 +4,7 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
@@ -20,6 +21,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.security.NoSuchAlgorithmException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,7 +56,7 @@ public class ResidentOtpServiceTest {
     }
 
     @Test
-    public void testGenerateOtp() throws ApisResourceAccessException {
+    public void testGenerateOtp() throws ApisResourceAccessException, ResidentServiceCheckedException, NoSuchAlgorithmException {
         String otpAPIUrl = "https://dev2.mosip.net/idauthentication/v1/internal/otp";
         OtpResponseDTO otpResponseDTO = new OtpResponseDTO();
         when(env.getProperty(ApiName.OTP_GEN_URL.name())).thenReturn(otpAPIUrl);
@@ -69,7 +72,7 @@ public class ResidentOtpServiceTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testGenerateOtpThrowsResidentServiceException() throws ApisResourceAccessException {
+    public void testGenerateOtpThrowsResidentServiceException() throws ApisResourceAccessException, ResidentServiceCheckedException, NoSuchAlgorithmException {
         String otpAPIUrl = "https://dev2.mosip.net/idauthentication/v1/internal/otp";
         when(env.getProperty(ApiName.OTP_GEN_URL.name())).thenReturn(otpAPIUrl);
         when(residentServiceRestClient.postApi(anyString(), any(), any(), any(Class.class))).thenThrow(new ApisResourceAccessException());

@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
@@ -22,12 +23,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.DateUtils;
@@ -53,7 +57,6 @@ import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilitiy;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -285,5 +288,25 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
         residentVidService.revokeVid(vidRevokeRequest,vid);
+    }
+    
+    @Test
+    public void testGetVidPolicy() throws ResidentServiceCheckedException, JsonParseException, JsonMappingException, IOException {
+    	ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", "https://dev.mosip.net");
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	ObjectNode policy = objectMapper.readValue(this.getClass().getClassLoader().getResource("vid_policy.json"),
+				ObjectNode.class);
+    	when(mapper.readValue(Mockito.any(URL.class), Mockito.any(Class.class))).thenReturn(policy);
+    	assertEquals(policy.toString(), residentVidService.getVidPolicy());
+    }
+    
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetVidPolicyFailed() throws ResidentServiceCheckedException, JsonParseException, JsonMappingException, IOException {
+    	ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", "https://dev.mosip.net");
+    	ObjectMapper objectMapper = new ObjectMapper();
+    	ObjectNode policy = objectMapper.readValue(this.getClass().getClassLoader().getResource("vid_policy.json"),
+				ObjectNode.class);
+    	when(mapper.readValue(Mockito.any(URL.class), Mockito.any(Class.class))).thenThrow(new IOException());
+    	residentVidService.getVidPolicy();
     }
 }

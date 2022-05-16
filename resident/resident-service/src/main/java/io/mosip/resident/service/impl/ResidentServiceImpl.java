@@ -1,20 +1,17 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.*;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.*;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +23,71 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.RegistrationExternalStatusCode;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.MachineCreateRequestDTO;
+import io.mosip.resident.dto.MachineCreateResponseDTO;
+import io.mosip.resident.dto.MachineDto;
+import io.mosip.resident.dto.MachineSearchRequestDTO;
+import io.mosip.resident.dto.MachineSearchResponseDTO;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
+import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
+import io.mosip.resident.dto.RegProcRePrintRequestDto;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusRequestDTO;
+import io.mosip.resident.dto.RegistrationStatusResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentIndividialIDType;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentUpdateDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.RIDInvalidException;
+import io.mosip.resident.exception.ResidentMachineServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
+import io.mosip.resident.exception.ValidationFailedException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.UINCardDownloadService;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utilitiy;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -77,11 +133,11 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private Utilitiy utility;
 
-    @Autowired
-    private Utilities utilities;
+	@Autowired
+	private Utilities utilities;
 
-    @Value("${resident.center.id}")
-    private String centerId;
+	@Value("${resident.center.id}")
+	private String centerId;
 
 	@Value("${resident.machine.id}")
 	private String machineId;
@@ -97,6 +153,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private AuditUtil audit;
+
+	@Autowired
+	private DocumentService docService;
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -248,7 +307,7 @@ public class ResidentServiceImpl implements ResidentService {
 							+ ExceptionUtils.getStackTrace(e));
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request EUIN"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
+			trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_DOW_UIN_FAILURE, null);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request EUIN"));
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
@@ -303,7 +362,7 @@ public class ResidentServiceImpl implements ResidentService {
 		} catch (OtpValidationFailedException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for print UIN"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
+			trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_RPR_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for print UIN"));
@@ -377,7 +436,7 @@ public class ResidentServiceImpl implements ResidentService {
 						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
 				Long unlockForSeconds = null;
 				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
-					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
+					AuthUnLockRequestDTO authUnLockRequestDTO = (AuthUnLockRequestDTO) dto;
 					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
 				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
@@ -496,7 +555,7 @@ public class ResidentServiceImpl implements ResidentService {
 							+ ExceptionUtils.getStackTrace(e));
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for auth history"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
+			trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_AUTH_HIST_FAILURE, null);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for auth history"));
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
@@ -537,31 +596,50 @@ public class ResidentServiceImpl implements ResidentService {
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
+	
+	private NotificationResponseDTO trySendNotification(String id, NotificationTemplateCode templateTypeCode,
+			Map<String, Object> additionalAttributes) {		
+		try {
+			return sendNotification(id, templateTypeCode, additionalAttributes);
+		} catch (Exception e1) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode()
+							+ ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e1));
+		}
+		return null;
+	}
 
 	@Override
-	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
+	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto)
+			throws ResidentServiceCheckedException {
 		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
-					"Request for UIN update"));
-			if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
+			if (Objects.nonNull(dto.getOtp())) {
+				if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,
+							dto.getTransactionID(), "Request for UIN update"));
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
+							dto.getTransactionID(), "Request for UIN update"));
+					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+							dto.getTransactionID(), "Request for UIN update"));
+					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+				}
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request for UIN update"));
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
-						dto.getTransactionID(), "Request for UIN update"));
-				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 			}
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-					dto.getTransactionID(), "Request for UIN update"));
 
-            final String publicKey = getPublicKeyFromKeyManager();
-            MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix, publicKey);
-            String machineId = getMachineId(machineSearchResponseDTO, publicKey);
-            if (machineId == null) {
-               machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId, publicKey);
-            }
+			final String publicKey = getPublicKeyFromKeyManager();
+			MachineSearchResponseDTO machineSearchResponseDTO = searchMachineInMasterService(residentMachinePrefix,
+					publicKey);
+			String machineId = getMachineId(machineSearchResponseDTO, publicKey);
+			if (machineId == null) {
+				machineId = createNewMachineInMasterService(residentMachinePrefix, machineSpecId, zoneCode, centerId,
+						publicKey);
+			}
 
 			ResidentUpdateDto regProcReqUpdateDto = new ResidentUpdateDto();
 			regProcReqUpdateDto.setIdValue(dto.getIndividualId());
@@ -569,7 +647,6 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setCenterId(centerId);
 			regProcReqUpdateDto.setMachineId(machineId);
 			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
-			List<ResidentDocuments> documents = dto.getDocuments();
 			byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 			JSONObject demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
@@ -582,9 +659,10 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage());
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
-			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), 
-				mappingJsonObject, demographicIdentity);
+			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(),
+					mappingJsonObject, demographicIdentity);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
+			List<ResidentDocuments> documents = getResidentDocuments(dto, mappingDocument);
 			String poaMapping = getDocumentName(mappingDocument, PROOF_OF_ADDRESS);
 			String poiMapping = getDocumentName(mappingDocument, PROOF_OF_IDENTITY);
 			String porMapping = getDocumentName(mappingDocument, PROOF_OF_RELATIONSHIP);
@@ -670,6 +748,91 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		return responseDto;
 	}
+  
+	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument) {
+		if (Objects.nonNull(dto.getDocuments())) {
+			return dto.getDocuments();
+		}
+		try {
+			Map<DocumentResponseDTO, String> documentsWithMetadata = docService
+					.getDocumentsWithMetadata(dto.getTransactionID());
+			return documentsWithMetadata.entrySet().stream()
+					.map(doc -> new ResidentDocuments(getDocumentName(mappingDocument, doc.getKey().getDocCatCode()),
+							doc.getValue()))
+					.collect(Collectors.toList());
+		} catch (ResidentServiceCheckedException e) {
+			throw new ResidentServiceException(ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorCode(),
+					ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorMessage(), e);
+		}
+	}
+
+  @Override
+	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
+			throws ResidentServiceCheckedException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
+
+		ResponseDTO response = new ResponseDTO();
+		boolean isTransactionSuccessful = false;
+		try {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
+					"Request for auth " + authTypeStatus.toString().toLowerCase()));
+
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
+						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+				Long unlockForSeconds = null;
+				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
+					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
+					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
+				}
+				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
+						dto.getAuthType(), authTypeStatus, unlockForSeconds);
+				if (isAuthTypeStatusUpdated) {
+					isTransactionSuccessful = true;
+				} else {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
+							dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
+							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+				}
+
+
+		} catch (ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
+							+ ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
+					dto.getTransactionID(), "Request for auth" + authTypeStatus.toString().toLowerCase()));
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
+		} finally {
+			NotificationTemplateCode templateCode;
+			if (authTypeStatus.equals(AuthTypeStatus.LOCK)) {
+				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
+						: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
+			} else {
+				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_UNLOCK_AUTH_SUCCESS
+						: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
+			}
+
+			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(), templateCode,
+					null);
+			if (isTransactionSuccessful)
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
+						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+			else
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+			if (notificationResponseDTO != null) {
+				response.setMessage(notificationResponseDTO.getMessage());
+			}
+		}
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: exit");
+		return response;
+	}
 
 	// get name of document
 	private String getDocumentName(JSONObject identityJson, String name) {
@@ -706,22 +869,30 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String getPublicKeyFromKeyManager() throws ApisResourceAccessException {
-		PacketSignPublicKeyRequestDTO signKeyRequestDto = PacketSignPublicKeyRequestDTO.builder().request(PacketSignPublicKeyRequestDTO.PacketSignPublicKeyRequest.builder().serverProfile(SERVER_PROFILE_SIGN_KEY).build()).build();
+		PacketSignPublicKeyRequestDTO signKeyRequestDto = PacketSignPublicKeyRequestDTO.builder()
+				.request(PacketSignPublicKeyRequestDTO.PacketSignPublicKeyRequest.builder()
+						.serverProfile(SERVER_PROFILE_SIGN_KEY).build())
+				.build();
 		PacketSignPublicKeyResponseDTO signKeyResponseDTO;
 		try {
 			HttpEntity<PacketSignPublicKeyRequestDTO> httpEntity = new HttpEntity<>(signKeyRequestDto);
-			signKeyResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name()), MediaType.APPLICATION_JSON, httpEntity, PacketSignPublicKeyResponseDTO.class);
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
+			signKeyResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name()),
+					MediaType.APPLICATION_JSON, httpEntity, PacketSignPublicKeyResponseDTO.class);
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
+					SERVER_PROFILE_SIGN_KEY,
 					"ResidentServiceImpl::reqUinUpdate():: PACKETSIGNPUBLICKEY POST service call ended with response data "
 							+ signKeyResponseDTO.toString());
 			if (signKeyResponseDTO.getErrors() != null && !signKeyResponseDTO.getErrors().isEmpty()) {
-				throw new ResidentServiceTPMSignKeyException(signKeyResponseDTO.getErrors().get(0).getErrorCode(), signKeyResponseDTO.getErrors().get(0).getMessage());
+				throw new ResidentServiceTPMSignKeyException(signKeyResponseDTO.getErrors().get(0).getErrorCode(),
+						signKeyResponseDTO.getErrors().get(0).getMessage());
 			}
 			if (signKeyResponseDTO.getResponse() == null) {
-				throw new ResidentServiceTPMSignKeyException(PACKET_SIGNKEY_EXCEPTION.getErrorCode(), PACKET_SIGNKEY_EXCEPTION.getErrorMessage());
+				throw new ResidentServiceTPMSignKeyException(PACKET_SIGNKEY_EXCEPTION.getErrorCode(),
+						PACKET_SIGNKEY_EXCEPTION.getErrorMessage());
 			}
 		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), SERVER_PROFILE_SIGN_KEY,
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
+					SERVER_PROFILE_SIGN_KEY,
 					"ResidentServiceImpl::reqUinUpdate():: PACKETSIGNPUBLICKEY POST service call"
 							+ ExceptionUtils.getStackTrace(e));
 			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
@@ -729,17 +900,22 @@ public class ResidentServiceImpl implements ResidentService {
 		return signKeyResponseDTO.getResponse().getPublicKey();
 	}
 
-	private MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey) throws ApisResourceAccessException {
-		MachineSearchRequestDTO.MachineSearchFilter searchFilterName = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("name").type("contains").value(residentMachinePrefix).build();
-		MachineSearchRequestDTO.MachineSearchFilter searchFilterPublicKey = MachineSearchRequestDTO.MachineSearchFilter.builder().columnName("signPublicKey").type("equals").value(publicKey).build();
-		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder().sortType("desc").sortField("createdDateTime").build();
+	private MachineSearchResponseDTO searchMachineInMasterService(String residentMachinePrefix, String publicKey)
+			throws ApisResourceAccessException {
+		MachineSearchRequestDTO.MachineSearchFilter searchFilterName = MachineSearchRequestDTO.MachineSearchFilter
+				.builder().columnName("name").type("contains").value(residentMachinePrefix).build();
+		MachineSearchRequestDTO.MachineSearchFilter searchFilterPublicKey = MachineSearchRequestDTO.MachineSearchFilter
+				.builder().columnName("signPublicKey").type("equals").value(publicKey).build();
+		MachineSearchRequestDTO.MachineSearchSort searchSort = MachineSearchRequestDTO.MachineSearchSort.builder()
+				.sortType("desc").sortField("createdDateTime").build();
 		MachineSearchRequestDTO machineSearchRequestDTO = MachineSearchRequestDTO.builder()
 				.version("1.0")
-				//.requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
+				// .requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
 				.request(MachineSearchRequestDTO.MachineSearchRequest.builder()
 						.filters(List.of(searchFilterName, searchFilterPublicKey))
 						.sort(List.of(searchSort))
-						.pagination(MachineSearchRequestDTO.MachineSearchPagination.builder().pageStart(0).pageFetch(10).build())
+						.pagination(MachineSearchRequestDTO.MachineSearchPagination.builder().pageStart(0).pageFetch(10)
+								.build())
 						.languageCode(utilities.getLanguageCode())
 						.build())
 				.build();
@@ -751,10 +927,12 @@ public class ResidentServiceImpl implements ResidentService {
 					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call ended with response data "
 							+ machineSearchResponseDTO.toString());
 			if (machineSearchResponseDTO.getErrors() != null && !machineSearchResponseDTO.getErrors().isEmpty()) {
-				throw new ResidentMachineServiceException(machineSearchResponseDTO.getErrors().get(0).getErrorCode(), machineSearchResponseDTO.getErrors().get(0).getMessage());
+				throw new ResidentMachineServiceException(machineSearchResponseDTO.getErrors().get(0).getErrorCode(),
+						machineSearchResponseDTO.getErrors().get(0).getMessage());
 			}
 		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
+					residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINESEARCH POST service call"
 							+ ExceptionUtils.getStackTrace(e));
 			throw new ApisResourceAccessException("Could not fetch machines from master data", e);
@@ -766,7 +944,8 @@ public class ResidentServiceImpl implements ResidentService {
 		if (machineSearchResponseDTO.getResponse() != null) {
 			List<MachineDto> fetchedMachines = machineSearchResponseDTO.getResponse().getData();
 			if (fetchedMachines != null && !fetchedMachines.isEmpty()) {
-				List<MachineDto> machines = fetchedMachines.stream().filter(mac -> mac.getSignPublicKey().equals(publicKey)).collect(Collectors.toList());
+				List<MachineDto> machines = fetchedMachines.stream()
+						.filter(mac -> mac.getSignPublicKey().equals(publicKey)).collect(Collectors.toList());
 				if (!machines.isEmpty()) {
 					return machines.get(0).getId();
 				}
@@ -775,28 +954,36 @@ public class ResidentServiceImpl implements ResidentService {
 		return null;
 	}
 
-	private String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode, String regCenterId, String publicKey) throws ApisResourceAccessException {
+	private String createNewMachineInMasterService(String residentMachinePrefix, String machineSpecId, String zoneCode,
+			String regCenterId, String publicKey) throws ApisResourceAccessException {
 		MachineCreateRequestDTO machineCreateRequestDTO = MachineCreateRequestDTO.builder()
-				//.requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
+				// .requesttime(DateUtils.getUTCCurrentDateTimeString()) //TODO fix this
 				.request(MachineDto.builder().serialNum(null).macAddress(null).ipAddress("0.0.0.0").isActive(true)
 						.validityDateTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime().plusYears(3)))
-						.name(residentMachinePrefix + System.currentTimeMillis()).machineSpecId(machineSpecId).zoneCode(zoneCode).regCenterId(regCenterId).publicKey(publicKey).signPublicKey(publicKey).build())
+						.name(residentMachinePrefix + System.currentTimeMillis()).machineSpecId(machineSpecId)
+						.zoneCode(zoneCode).regCenterId(regCenterId).publicKey(publicKey).signPublicKey(publicKey)
+						.build())
 				.build();
 		MachineCreateResponseDTO machineCreateResponseDTO;
 		try {
 			HttpEntity<MachineCreateRequestDTO> httpEntity = new HttpEntity<>(machineCreateRequestDTO);
-			machineCreateResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINECREATE.name()), MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class);
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+			machineCreateResponseDTO = residentServiceRestClient.postApi(env.getProperty(ApiName.MACHINECREATE.name()),
+					MediaType.APPLICATION_JSON, httpEntity, MachineCreateResponseDTO.class);
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
+					residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINECREATE POST service call ended with response data "
 							+ machineCreateResponseDTO.toString());
 			if (machineCreateResponseDTO.getErrors() != null && !machineCreateResponseDTO.getErrors().isEmpty()) {
-				throw new ResidentMachineServiceException(machineCreateResponseDTO.getErrors().get(0).getErrorCode(), machineCreateResponseDTO.getErrors().get(0).getMessage());
+				throw new ResidentMachineServiceException(machineCreateResponseDTO.getErrors().get(0).getErrorCode(),
+						machineCreateResponseDTO.getErrors().get(0).getMessage());
 			}
 			if (machineCreateResponseDTO.getResponse() == null) {
-				throw new ResidentMachineServiceException(MACHINE_MASTER_CREATE_EXCEPTION.getErrorCode(), MACHINE_MASTER_CREATE_EXCEPTION.getErrorMessage());
+				throw new ResidentMachineServiceException(MACHINE_MASTER_CREATE_EXCEPTION.getErrorCode(),
+						MACHINE_MASTER_CREATE_EXCEPTION.getErrorMessage());
 			}
 		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), residentMachinePrefix,
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(),
+					residentMachinePrefix,
 					"ResidentServiceImpl::reqUinUpdate():: MACHINECREATE POST service call"
 							+ ExceptionUtils.getStackTrace(e));
 			throw new ApisResourceAccessException("Could not create machine in master data", e);
@@ -804,30 +991,30 @@ public class ResidentServiceImpl implements ResidentService {
 		return machineCreateResponseDTO.getResponse().getId();
 	}
 
-	private void validateAuthIndividualIdWithUIN(String individualId, String individualIdType, 
-			JSONObject mappingJsonObject, JSONObject demographicIdentity) 
-				throws ApisResourceAccessException, ValidationFailedException, IOException {
+	private void validateAuthIndividualIdWithUIN(String individualId, String individualIdType,
+			JSONObject mappingJsonObject, JSONObject demographicIdentity)
+			throws ApisResourceAccessException, ValidationFailedException, IOException {
 		String uin = "";
-		if(ResidentIndividialIDType.UIN.toString().equals(individualIdType))
+		if (ResidentIndividialIDType.UIN.toString().equals(individualIdType))
 			uin = individualId;
-		else if(ResidentIndividialIDType.VID.toString().equals(individualIdType)) {
+		else if (ResidentIndividialIDType.VID.toString().equals(individualIdType)) {
 			uin = utilities.getUinByVid(individualId);
 		} else {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), 
-				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Individual id type is invalid");
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Individual id type is invalid");
 			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
-				ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+					ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
 		}
 		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 		String uinMapping = getDocumentName(identityMappingJsonObject, UIN);
 		String identityJsonUIN = JsonUtil.getJSONValue(demographicIdentity, uinMapping);
-		if(!identityJsonUIN.equals(uin)) {
+		if (!identityJsonUIN.equals(uin)) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), 
-				"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Validation failed");
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Validation failed");
 			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
-				ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorMessage());
+					ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorMessage());
 		}
 	}
 }

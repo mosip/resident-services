@@ -9,10 +9,13 @@ import io.mosip.resident.controller.ResidentOtpController;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -71,6 +74,15 @@ public class ResidentOtpControllerTest {
 
     @MockBean
     private IdAuthService idAuthService;
+	
+	@MockBean
+	private ResidentVidService vidService;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
     @MockBean
     private NotificationService notificationService;

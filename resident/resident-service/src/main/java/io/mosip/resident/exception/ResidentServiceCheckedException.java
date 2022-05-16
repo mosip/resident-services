@@ -14,8 +14,8 @@ public class ResidentServiceCheckedException extends BaseCheckedException {
 		super();
 	}
 	
-	public ResidentServiceCheckedException(ResidentErrorCode errCode) {
-		this(errCode.getErrorCode(), errCode.getErrorMessage());
+	public ResidentServiceCheckedException(ResidentErrorCode error) {
+		this(error.getErrorCode(), error.getErrorMessage());
 	}
 
 	public ResidentServiceCheckedException(String errorCode, String errorMessage) {

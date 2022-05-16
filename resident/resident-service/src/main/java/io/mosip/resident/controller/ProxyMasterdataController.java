@@ -1,5 +1,7 @@
 package io.mosip.resident.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,10 +13,12 @@ import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -169,8 +173,8 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(@PathVariable("langcode") String langCode,
-			@PathVariable("longitude") String longitude, @PathVariable("latitude") String latitude,
-			@PathVariable("proximitydistance") String proximityDistance) throws ResidentServiceCheckedException {
+			@PathVariable("longitude") double longitude, @PathVariable("latitude") double latitude,
+			@PathVariable("proximitydistance") int proximityDistance) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getCoordinateSpecificRegistrationCenters()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS);
 		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
@@ -198,7 +202,7 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getApplicantValidDocument(@PathVariable("applicantId") String applicantId,
-			@RequestParam("languages") String languages) throws ResidentServiceCheckedException {
+			@RequestParam("languages") List<String> languages) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getApplicantValidDocument()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT);
 		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getApplicantValidDocument(applicantId, languages);
@@ -226,7 +230,7 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(@PathVariable("langcode") String langCode,
-			@PathVariable("hierarchylevel") String hierarchyLevel, @RequestParam("name") String name)
+			@PathVariable("hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);
@@ -260,10 +264,13 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(
-			@PathVariable("langcode") String langCode, @PathVariable("hierarchylevel") String hierarchyLevel,
-			@PathVariable("name") String name, @RequestParam("pageNumber") String pageNumber,
-			@RequestParam("pageSize") String pageSize, @RequestParam("orderBy") String orderBy,
-			@RequestParam("sortBy") String sortBy) throws ResidentServiceCheckedException {
+			@PathVariable("langcode") String langCode, @PathVariable("hierarchylevel") Short hierarchyLevel,
+			@PathVariable("name") String name,
+			@RequestParam(name = "pageNumber", defaultValue = "0") @ApiParam(value = "page no for the requested data", defaultValue = "0") int pageNumber,
+			@RequestParam(name = "pageSize", defaultValue = "10") @ApiParam(value = "page size for the requested data", defaultValue = "10") int pageSize,
+			@RequestParam(name = "sortBy", defaultValue = "createdDateTime") @ApiParam(value = "sort the requested data based on param value", defaultValue = "createdDateTime") String sortBy,
+			@RequestParam(name = "orderBy", defaultValue = "desc") @ApiParam(value = "order the requested data based on param", defaultValue = "desc") OrderEnum orderBy)
+			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getRegistrationCenterByHierarchyLevelAndTextPaginated()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED);
 		ResponseWrapper<?> responseWrapper = proxyMasterdataService
@@ -321,8 +328,10 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getLatestIdSchema(@RequestParam("schemaVersion") String schemaVersion,
-			@RequestParam("domain") String domain, @RequestParam("type") String type)
+	public ResponseWrapper<?> getLatestIdSchema(
+			@RequestParam(name = "schemaVersion", defaultValue = "0", required = false) @ApiParam(value = "schema version", defaultValue = "0") double schemaVersion,
+			@RequestParam(name = "domain", required = false) @ApiParam(value = "domain of the ui spec") String domain,
+			@RequestParam(name = "type", required = false) @ApiParam(value = "type of the ui spec. Supported comma separted values") String type)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getLatestIdSchema()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA);

@@ -8,7 +8,7 @@ import io.mosip.idrepository.core.util.TokenIDGenerator;
 
 @SpringBootApplication(scanBasePackages = { "io.mosip.resident.*", "io.mosip.kernel.core.*", "io.mosip.kernel.dataaccess.hibernate.*",
 		"io.mosip.kernel.crypto.jce.*", "io.mosip.commons.packet.*", "io.mosip.kernel.keygenerator.bouncycastle.*",
-		"${mosip.auth.adapter.impl.basepackage}" })
+		"${mosip.auth.adapter.impl.basepackage}", "io.mosip.kernel.virusscanner.*", "io.mosip.commons.khazana.*" })
 @Import({TokenIDGenerator.class})
 public class ResidentBootApplication {
 

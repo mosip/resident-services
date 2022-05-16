@@ -10,15 +10,17 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
- import org.springframework.scheduling.annotation.Scheduled;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
@@ -57,6 +59,8 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
+
+	private static final String INDIVIDUAL_ID = "individualId";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -103,10 +107,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResponseWrapper<PartnerResponseDto> parResponseDto = new ResponseWrapper<PartnerResponseDto>();
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
 		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
-		Map<String, Object> additionalAttributes = new HashedMap();
+		Map<String, Object> additionalAttributes = new HashMap<>();
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
 		try {
+			if(StringUtils.isBlank(dto.getIndividualId())) {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
+			}
 
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 
@@ -146,7 +153,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 			} catch (OtpValidationFailedException e) {
 				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
+				trySendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE,
 						additionalAttributes);
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 						e.getErrorText(), e);
@@ -378,6 +385,21 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			logger.error("Could not instantiate SecureRandom for pin generation", e);
 		}
 	} 
+	
+	private NotificationResponseDTO trySendNotification(String id,
+			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
+			throws ResidentServiceCheckedException {
+		try {
+			return sendNotification(id, templateTypeCode, additionalAttributes);
+		} catch (Exception e1) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode()
+							+ ResidentErrorCode.NOTIFICATION_FAILURE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e1));
+		}
+		return null;
+	}
 
 	private NotificationResponseDTO sendNotification(String id,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)

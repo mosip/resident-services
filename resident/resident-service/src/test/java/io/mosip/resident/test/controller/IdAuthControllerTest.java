@@ -27,7 +27,10 @@ import com.google.gson.GsonBuilder;
 import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.dto.IdAuthRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -50,12 +53,21 @@ public class IdAuthControllerTest {
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
+	@MockBean
+	private ResidentVidService vidService;
 
 	@InjectMocks
 	private IdAuthController idAuthController;
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
 	Gson gson = new GsonBuilder().serializeNulls().create();
 

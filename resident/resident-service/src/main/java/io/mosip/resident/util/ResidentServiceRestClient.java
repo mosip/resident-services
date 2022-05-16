@@ -1,17 +1,20 @@
 package io.mosip.resident.util;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.exception.ApisResourceAccessException;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,17 +22,17 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.exception.ApisResourceAccessException;
 
 /**
  * The Class RestApiClient.
  *
  * @author Monobikash Das
  */
-@Component
 public class ResidentServiceRestClient {
 
 	/** The logger. */
@@ -39,12 +42,20 @@ public class ResidentServiceRestClient {
 	@Autowired
 	RestTemplateBuilder builder;
 
-	@Autowired
-	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
 
 	@Autowired
 	Environment environment;
+	
+	public ResidentServiceRestClient() {
+		this(new RestTemplate());
+	}
+	
+	
+	public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
+		this.residentRestTemplate = residentRestTemplate;
+	}
 
 	/**
 	 * Gets the api.
@@ -55,8 +66,20 @@ public class ResidentServiceRestClient {
 	 * @throws Exception
 	 */
 	public <T> T getApi(URI uri, Class<?> responseType) throws ApisResourceAccessException {
+		return getApi(uri, responseType, null);
+	}
+
+	/**
+	 * Gets the api.
+	 *
+	 * @param <T>          the generic type
+	 * @param responseType the response type
+	 * @return the api
+	 * @throws Exception
+	 */
+	public <T> T getApi(URI uri, Class<?> responseType, MultiValueMap<String, String> headerMap) throws ApisResourceAccessException {
 		try {
-			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, setRequestHeader(null, null), responseType)
+			return (T) residentRestTemplate.exchange(uri, HttpMethod.GET, headerMap == null ? setRequestHeader(null, null) : new HttpEntity<T>(headerMap), responseType)
 					.getBody();
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -148,13 +171,13 @@ public class ResidentServiceRestClient {
 		return obj;
 	}
 
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, Class<?> responseType)
+	public <T> T getApi(ApiName apiName, Map<String, ?> pathsegments, Class<?> responseType)
 			throws ApisResourceAccessException {
 		return getApi(apiName, pathsegments, null, null, responseType);
 	}
 
 	@SuppressWarnings({ "unchecked", "null" })
-	public <T> T getApi(ApiName apiName, Map<String, String> pathsegments, List<String> queryParamName,
+	public <T> T getApi(ApiName apiName, Map<String, ?> pathsegments, List<String> queryParamName,
 			List<Object> queryParamValue, Class<?> responseType) throws ApisResourceAccessException {
 
 		String apiHostIpPort = environment.getProperty(apiName.name());
@@ -214,7 +237,6 @@ public class ResidentServiceRestClient {
 	@SuppressWarnings("unchecked")
 	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
-
 		T result = null;
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -250,7 +272,6 @@ public class ResidentServiceRestClient {
 	@SuppressWarnings("unchecked")
 	public <T> T putApi(String uri, Object requestType, Class<?> responseClass, MediaType mediaType)
 			throws ApisResourceAccessException {
-
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {
