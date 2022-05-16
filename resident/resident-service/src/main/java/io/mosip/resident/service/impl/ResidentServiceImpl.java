@@ -24,6 +24,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
@@ -1015,6 +1016,22 @@ public class ResidentServiceImpl implements ResidentService {
 					"ResidentServiceImpl::validateAuthIndividualIdWithUIN():: Validation failed");
 			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
 					ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorMessage());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException {
+		try {
+			ResponseWrapper<Object> response = (ResponseWrapper<Object>) residentServiceRestClient.getApi(
+					ApiName.AUTHTYPESTATUSUPDATE, List.of(individualId), List.of(), List.of(), ResponseWrapper.class);
+			if (Objects.nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED);
+			}
+			return response;
+		} catch (ApisResourceAccessException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
 }

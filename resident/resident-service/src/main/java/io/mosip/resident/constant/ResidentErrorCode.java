@@ -48,6 +48,8 @@ public enum ResidentErrorCode {
 	CHANNEL_IS_NOT_VALID("RES-SER-438", "Invalid OTP Channel"),
 
 	CLAIM_NOT_AVAILABLE("RES-SER-439", "Claim not available: %s"),
+
+	AUTH_LOCK_STATUS_FAILED("RES-SER-440", "Failed to retrieve auth lock status"),
 	;
 	private final String errorCode;
 	private final String errorMessage;
