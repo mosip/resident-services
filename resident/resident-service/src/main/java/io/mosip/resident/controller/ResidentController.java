@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -9,16 +10,20 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -274,6 +279,26 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		return response;
+	}
+	
+	@GetMapping(path = "/auth-lock-status/{individualId}")
+	public ResponseWrapper<Object> getAuthLockStatus(@PathVariable(name = "individualId") String individualId) {
+		audit.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
+		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		try {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));
+			responseWrapper = residentService.getAuthLockStatus(individualId);
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS_SUCCESS, individualId));
+			return responseWrapper;
+		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS_FAILED, individualId));
+			responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorCode(),
+					ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
+		}
+		return responseWrapper;
 	}
 
 	/**
