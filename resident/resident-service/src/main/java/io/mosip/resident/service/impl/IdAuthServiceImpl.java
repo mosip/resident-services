@@ -10,7 +10,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +56,11 @@ import io.mosip.resident.dto.AutnTxnDto;
 import io.mosip.resident.dto.AutnTxnResponseDto;
 import io.mosip.resident.dto.OtpAuthRequestDTO;
 import io.mosip.resident.dto.PublicKeyResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
@@ -82,7 +83,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Value("${mosip.ida.env:Staging}")
 	private String idaEnv;
-
+	
 	@Autowired
 	ObjectMapper mapper;
 
@@ -95,6 +96,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Autowired
 	private ResidentServiceRestClient restClient;
 
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -107,6 +110,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		AuthResponseDTO response = null;
 		try {
 			response = internelOtpAuth(transactionID, individualId, otp);
+			updateResidentTransaction(response.getResponse().isAuthStatus(), transactionID, individualId);
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
@@ -122,6 +126,27 @@ public class IdAuthServiceImpl implements IdAuthService {
 		}
 
 		return response.getResponse().isAuthStatus();
+	}
+
+	private void updateResidentTransaction(boolean verified,String transactionID, String individualId) throws NoSuchAlgorithmException {
+		List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(transactionID, getRefIdHash(individualId));
+		if (residentTransactionEntity != null && !residentTransactionEntity.isEmpty()) {
+			ResidentTransactionEntity residentTransaction = residentTransactionEntity.get(0);
+			if (residentTransaction != null) {
+				if(residentTransaction.getStatusCode().equalsIgnoreCase("OTP_REQUESTED")) {
+					residentTransaction.setRequestTypeCode(verified ? "OTP_VERIFIED" : "OTP_VERIFICATION_FAILED");
+					residentTransaction.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
+					residentTransaction.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
+					residentTransaction.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
+					residentTransactionRepository.save(residentTransaction);
+				}
+			}
+		}
+
+	}
+
+	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
+		return HMACUtils2.digestAsPlainText(individualId.getBytes());
 	}
 
 	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,

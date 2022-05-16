@@ -7,9 +7,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.LoggerFileConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +24,10 @@ import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ValidationException;
 
@@ -79,6 +79,7 @@ public class AuditUtil {
 		hostName = getServerName();
 	}
 	
+	//TODO rename to sendAuditRequest
 	public  void setAuditRequestDto(EventEnum eventEnum) {
 		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
@@ -101,7 +102,7 @@ public class AuditUtil {
 		callAuditManager(auditRequestDto);
 	}
 	
-	private void callAuditManager(AuditRequestDTO auditRequestDto) {
+	public void callAuditManager(AuditRequestDTO auditRequestDto) {
 
 		RequestWrapper<AuditRequestDTO> auditReuestWrapper = new RequestWrapper<>();
 		auditReuestWrapper.setRequest(auditRequestDto);

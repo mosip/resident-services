@@ -245,7 +245,7 @@ public class ResidentCredentialServiceTest {
     	responseWrapper.setResponse(credentialTypePolicyDto);
     	//responseWrapper.setErrors(null);
 		
-		when(residentServiceRestClient.getApi(any(), any(),any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName)any(), any(),any())).thenReturn(responseWrapper);
 		
 		ResponseWrapper<PartnerCredentialTypePolicyDto> response=residentCredentialService.getPolicyByCredentialType("1", "credentialType");
 		assertEquals(response.getResponse(),credentialTypePolicyDto);
@@ -256,8 +256,8 @@ public class ResidentCredentialServiceTest {
     }
     
     @Test(expected = ResidentCredentialServiceException.class)
-    public void testGetPolicyByCredentialTypeWithAPIResourceException() throws Exception {
-        when(residentServiceRestClient.getApi(any(), any(),any())).thenThrow(Exception.class);
+    public void testGetPolicyByCredentialTypeWithAPIResourceException() throws ApisResourceAccessException {
+        when(residentServiceRestClient.getApi((ApiName)any(), any(),any())).thenThrow(ApisResourceAccessException.class);
         residentCredentialService.getPolicyByCredentialType("2", "credential-type");
     }
     

@@ -1,12 +1,14 @@
 package io.mosip.resident.test.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,16 +42,20 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -64,12 +70,22 @@ public class ResidentVidControllerTest {
 
 	@MockBean
 	private IdAuthServiceImpl idAuthService;
+	
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
 
 	@MockBean
 	private ResidentServiceImpl residentService;
 
 	@MockBean
+	@Qualifier("restClientWithPlainRestTemplate")
 	private ResidentServiceRestClient residentServiceRestClient;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
@@ -85,9 +101,10 @@ public class ResidentVidControllerTest {
 	private AuditUtil audit;
 
 	@Before
-	public void setup() {
+	public void setup() throws ApisResourceAccessException {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(null);
 	}
 
 	@Test
@@ -187,7 +204,8 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -237,7 +255,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk());
-				//.andExpect(jsonPath("$.response.message", is("Successful")));
+		// .andExpect(jsonPath("$.response.message", is("Successful")));
 
 	}
 
@@ -425,6 +443,22 @@ public class ResidentVidControllerTest {
 		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRevokeRequestDTO);
 		return request;
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetVidPolicy() throws Exception {
+		when(residentVidService.getVidPolicy()).thenReturn("policy");
+		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print())
+				.andExpect(jsonPath("$.response", is("policy")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetVidPolicyFailed() throws Exception {
+		when(residentVidService.getVidPolicy()).thenThrow(new ResidentServiceCheckedException());
+		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print())
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-426")));
 	}
 
 }

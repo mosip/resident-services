@@ -15,11 +15,15 @@
 	<properties>
 		<commons.packet.manager.version>1.2.0.1-SNAPSHOT</commons.packet.manager.version>
 		<kernel.core.version>1.2.0.1-SNAPSHOT</kernel.core.version>
+		<id-repository-core.version>1.2.0.1-SNAPSHOT</id-repository-core.version>
 		<kernel-keymanager-service.version>1.2.0.1-SNAPSHOT</kernel-keymanager-service.version>
+		<kernel.authcodeflowproxy.api.version>1.2.1-SNAPSHOT</kernel.authcodeflowproxy.api.version>
+
 		<springdoc.version>1.5.10</springdoc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fasterxml.jackson.module.jsr310.version>2.12.0</fasterxml.jackson.module.jsr310.version>
 		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
+		<kernel.khazana.version>1.2.0.1-SNAPSHOT</kernel.khazana.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -102,6 +106,11 @@
 			<version>${kernel.core.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-virusscanner-clamav</artifactId>
+			<version>${kernel.core.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>${h2.version}</version>
@@ -168,8 +177,56 @@
 			<artifactId>jackson-module-afterburner</artifactId>
 			<version>${fasterxml.jackson.module.afterburner.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.mosip.idrepository</groupId>
+			<artifactId>id-repository-core</artifactId>
+			<version>${id-repository-core.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>
+						spring-boot-starter-security
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-test</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-auth-adapter</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>	
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-dataaccess-hibernate</artifactId>
+			<version>${kernel.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-authcodeflowproxy-api</artifactId>
+			<version>${kernel.authcodeflowproxy.api.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.commons</groupId>
+			<artifactId>khazana</artifactId>
+			<version>${kernel.khazana.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-keymanager-service</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
-		<build>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
