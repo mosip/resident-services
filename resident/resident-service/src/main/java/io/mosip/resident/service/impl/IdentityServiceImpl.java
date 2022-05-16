@@ -23,6 +23,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -75,6 +76,12 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private Utilitiy utility;
+	
+	@Autowired
+	private TokenIDGenerator tokenIDGenerator;
+	
+	@Value("${ida.online-verification-partner-id}")
+	private String onlineVerificationPartnerId;
 
 	@Autowired
 	private ResidentConfigService residentConfigService;
@@ -133,11 +140,6 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 
-	@Override
-	public String getIdaToken(String uin) {
-		return uin;
-	}
-
 	private String getMappingValue(Map<?, ?> identity, String mappingName)
 			throws ResidentServiceCheckedException, IOException {
 		String mappingJson = utility.getMappingJson();
@@ -154,6 +156,14 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getMappingAttribute(JSONObject identityJson, String name) {
 		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
 		return JsonUtil.getJSONValue(docJson, VALUE);
+	}
+	
+	public String getIDAToken(String uin) {
+		return getIDAToken(uin, onlineVerificationPartnerId);
+	}
+	
+	public String getIDAToken(String uin, String olvPartnerId) {
+		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
 	}
 
 	public AuthUserDetails getAuthUserDetails() {

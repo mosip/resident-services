@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Header;

@@ -53,16 +53,9 @@ public class VerificationServiceImpl implements VerificationService {
             email = identityDTO.getEmail();
             phone = identityDTO.getPhone();
         }
-        String idaToken = identityServiceImpl.getIdaToken(uin);
-        String id;
-        if(email != null && channel.equalsIgnoreCase(EMAIL_CHANNEL) ) {
-			id= email+idaToken;
-		} else if(phone != null && channel.equalsIgnoreCase(PHONE_CHANNEL) ) {
-			id= phone+idaToken;
-		} else {
-			throw new ResidentServiceException(ResidentErrorCode.CHANNEL_IS_NOT_VALID.getErrorCode(),
-					ResidentErrorCode.CHANNEL_IS_NOT_VALID.getErrorMessage());
-		}
+        
+        String id = getIdForResidentTransaction(uin, email, phone);
+		
         byte[] idBytes = id.getBytes();
         String hash = HMACUtils2.digestAsPlainText(idBytes);
         ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findByAid(hash);
@@ -80,5 +73,18 @@ public class VerificationServiceImpl implements VerificationService {
 
         return verificationResponseDTO;
     }
+
+	private String getIdForResidentTransaction(String uin, String email, String phone) throws ResidentServiceCheckedException {
+		String idaToken= identityServiceImpl.getIDAToken(uin);
+		String id;
+		if(email != null) {
+			id= email+idaToken;
+		} else if(phone != null) {
+			id= phone+idaToken;
+		} else {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
+		}
+		return id;
+	}
 }
 
