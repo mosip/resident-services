@@ -102,8 +102,7 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
-			Map<?, ?> response = (Map<?, ?>) getIdentityAttributes(id);
-			Map<?, ?> identity = (Map<?, ?>) response.get(IDENTITY);
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id);
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
