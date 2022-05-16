@@ -50,7 +50,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentResponseDTO uploadDocument(String transactionId, MultipartFile file, DocumentRequestDTO request)
 			throws ResidentServiceCheckedException {
 		try {
-			String docId = UUIDUtils.getUUID(UUIDUtils.NAMESPACE_OID, transactionId + DateUtils.getUTCCurrentDateTime()).toString();
+			String docId = UUIDUtils.getUUID(UUIDUtils.NAMESPACE_OID, transactionId + request.getDocCatCode()).toString();
 			String objectNameWithPath = transactionId + "/" + docId;
 			Map<String, Object> metadata = Map.of("doccatcode", request.getDocCatCode(), "doctypcode",
 					request.getDocTypCode(), "langcode", request.getLangCode(), "docname", file.getOriginalFilename(),
