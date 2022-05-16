@@ -45,7 +45,7 @@ public class WebSubUpdateAuthTypeController {
     @Autowired
     private AuditUtil auditUtil;
 
-    @PostMapping(value = "/callback/authTypeCallback/{partnerId}/", consumes = "application/json")
+    @PostMapping(value = "/callback/authTypeCallback/{partnerId}", consumes = "application/json")
     @Operation(summary = "WebSubUpdateAuthTypeController", description = "WebSubUpdateAuthTypeController",
             tags = {"WebSubUpdateAuthTypeController"})
     @ApiResponses(value = {
