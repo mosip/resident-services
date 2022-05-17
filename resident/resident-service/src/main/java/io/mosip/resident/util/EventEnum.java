@@ -370,6 +370,15 @@ public enum EventEnum {
 	GET_DOCUMENTS_METADATA_FAILED("RES-SER-181", RegistrationConstants.SYSTEM, "Get documents failed",
 			"Get documents failed for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_AUTH_LOCK_STATUS("RES-SER-182", RegistrationConstants.SYSTEM, "Request auth lock status",
+			"Requesting auth lock status for individual id %s", "RES-SER", "Residence service", "%s", "Individual id",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_AUTH_LOCK_STATUS_SUCCESS("RES-SER-183", RegistrationConstants.SYSTEM, "Request auth lock status",
+			"Requesting auth lock status api for individual id %s is success", "RES-SER", "Residence service", "%s",
+			"Individual id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_AUTH_LOCK_STATUS_FAILED("RES-SER-184", RegistrationConstants.SYSTEM, "Request auth lock status",
+			"Requesting auth lock status api for individual id %s failed", "RES-SER", "Residence service", "%s",
+			"Individual id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
 	;
 

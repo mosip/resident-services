@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
@@ -31,4 +32,6 @@ public interface ResidentService {
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 
 	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDto request, AuthTypeStatus lock) throws ResidentServiceCheckedException;
+
+	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 }
