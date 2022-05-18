@@ -77,7 +77,7 @@ public class ResidentController {
 	public ResponseWrapper<RegStatusCheckResponseDTO> getRidStatus(
 			@Valid @RequestBody RequestWrapper<RequestDTO> requestDTO) throws ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API"));
-		validator.validateRequestDTO(requestDTO);
+		validator.validateRidCheckStatusRequestDTO(requestDTO);
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.RID_STATUS);
 		response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));

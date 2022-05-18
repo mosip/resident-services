@@ -534,7 +534,7 @@ public class RequestValidator {
 
 	}
 
-	public void validateRequestDTO(RequestWrapper<RequestDTO> requestDTO) {
+	public void validateRidCheckStatusRequestDTO(RequestWrapper<RequestDTO> requestDTO) {
 		validateRequest(requestDTO, RequestIdType.CHECK_STATUS);
 
 		if (requestDTO.getRequest() == null) {
@@ -548,8 +548,7 @@ public class RequestValidator {
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individual type", "get RID status"));
 			throw new InvalidInputException("individualIdType");
 		}
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individual Id", "get RID status"));
 			throw new InvalidInputException("individualId");
