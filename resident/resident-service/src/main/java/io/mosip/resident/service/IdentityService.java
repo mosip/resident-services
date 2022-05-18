@@ -24,7 +24,9 @@ public interface IdentityService {
 	 */
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
 
-	public String getIdaToken(String uin);
+	public String getIDAToken(String uin);
+	
+	public String getIDAToken(String uin, String olvPartnerId);
 
 	Map<?, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
 }

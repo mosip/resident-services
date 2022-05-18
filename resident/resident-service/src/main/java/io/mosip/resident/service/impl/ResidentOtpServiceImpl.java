@@ -86,28 +86,11 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
 
-		logger.info("otp request dto "+otpRequestDTO.getIndividualId());
-		String uin = "";
-		String email = "";
-		String phone = "";
+		String uin = identityDTO.getUIN();
+		String email = identityDTO.getEmail();
+		String phone = identityDTO.getPhone();
 
-		if (identityDTO != null) {
-			uin = identityDTO.getUIN();
-			email = identityDTO.getEmail();
-			phone = identityDTO.getPhone();
-		}
-
-		String idaToken= identityServiceImpl.getIdaToken(uin);
-		logger.info("idaToken : " + idaToken);
-		String id = "null";
-		if(email != null && channelExistis(otpRequestDTO, EMAIL_CHANNEL) ) {
-			id= email+idaToken;
-		} else if(phone != null && channelExistis(otpRequestDTO, PHONE_CHANNEL) ) {
-			id= phone+idaToken;
-		} else {
-			throw new ResidentServiceException(ResidentErrorCode.CHANNEL_IS_NOT_VALID.getErrorCode(),
-					ResidentErrorCode.CHANNEL_IS_NOT_VALID.getErrorMessage());
-		}
+		String id = getIdForResidentTransaction(uin, email, phone);
 
 		byte[] idBytes = id.getBytes();
 		String hash = HMACUtils2.digestAsPlainText(idBytes);
@@ -127,6 +110,19 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 
 		residentTransactionRepository.save(residentTransactionEntity);
+	}
+
+	private String getIdForResidentTransaction(String uin, String email, String phone) throws ResidentServiceCheckedException {
+		String idaToken= identityServiceImpl.getIDAToken(uin);
+		String id;
+		if(email != null) {
+			id= email+idaToken;
+		} else if(phone != null) {
+			id= phone+idaToken;
+		} else {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
+		}
+		return id;
 	}
 
 	private boolean channelExistis(OtpRequestDTO otpRequestDTO, String channelType) {

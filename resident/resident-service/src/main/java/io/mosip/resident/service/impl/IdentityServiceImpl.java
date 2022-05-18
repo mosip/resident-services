@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -62,13 +64,24 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String PHOTO = "individualBiometrics";
 
 	@Autowired
-	private ResidentServiceRestClient residentServiceRestClient;
+	@Qualifier("restClientWithSelfTOkenRestTemplate")
+	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
+	
+	@Autowired
+	@Qualifier("restClientWithPlainRestTemplate")
+	private ResidentServiceRestClient restClientWithPlainRestTemplate;
 	
 	@Autowired
 	private AuditUtil auditUtil;
 
 	@Autowired
 	private Utilitiy utility;
+	
+	@Autowired
+	private TokenIDGenerator tokenIDGenerator;
+	
+	@Value("${ida.online-verification-partner-id}")
+	private String onlineVerificationPartnerId;
 
 	@Autowired
 	private ResidentConfigService residentConfigService;
@@ -89,8 +102,7 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
-			Map<?, ?> response = (Map<?, ?>) getIdentityAttributes(id);
-			Map<?, ?> identity = (Map<?, ?>) response.get(IDENTITY);
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id);
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -110,7 +122,7 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
 		try {
-			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_URL,
+			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
 					pathsegments, ResponseWrapper.class);
 			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
@@ -125,11 +137,6 @@ public class IdentityServiceImpl implements IdentityService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-	}
-
-	@Override
-	public String getIdaToken(String uin) {
-		return uin;
 	}
 
 	private String getMappingValue(Map<?, ?> identity, String mappingName)
@@ -149,9 +156,21 @@ public class IdentityServiceImpl implements IdentityService {
 		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
 		return JsonUtil.getJSONValue(docJson, VALUE);
 	}
+	
+	public String getIDAToken(String uin) {
+		return getIDAToken(uin, onlineVerificationPartnerId);
+	}
+	
+	public String getIDAToken(String uin, String olvPartnerId) {
+		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
+	}
 
 	public AuthUserDetails getAuthUserDetails() {
-		return (AuthUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if(principal instanceof AuthUserDetails) {
+			return (AuthUserDetails) principal;
+		}
+		return null;
 	}
 
 	public Map<String, String> getResidentIdentity() throws ApisResourceAccessException {
@@ -191,7 +210,7 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, Object> responseMap;
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
-			responseMap = (Map<String, Object>) residentServiceRestClient.getApi(uriComponent.toUri(), Map.class, headers);
+			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
 					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
