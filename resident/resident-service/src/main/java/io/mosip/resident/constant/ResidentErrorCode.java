@@ -50,8 +50,8 @@ public enum ResidentErrorCode {
 	CLAIM_NOT_AVAILABLE("RES-SER-439", "Claim not available: %s"),
 	NO_CHANNEL_IN_IDENTITY("RES-SER-440", "Identity data does not contain email/phone."),
 
-
-	AUTH_LOCK_STATUS_FAILED("RES-SER-441", "Failed to retrieve auth lock status")
+	AUTH_LOCK_STATUS_FAILED("RES-SER-441", "Failed to retrieve auth lock status"),
+	PARTNER_SERVICE_EXCEPTION("RES-SER-442", "Exception while calling partner service"),
 	;
 	private final String errorCode;
 	private final String errorMessage;

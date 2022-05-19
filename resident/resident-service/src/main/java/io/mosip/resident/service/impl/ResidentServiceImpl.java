@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.service.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,10 +79,6 @@ import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
 import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
@@ -121,6 +118,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	NotificationService notificationService;
+
+//	@Autowired
+//	PartnerService partnerService;
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -772,6 +772,8 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
+
+		//partnerService.getPartnerDetails("Online_Verification_Partner");
 
 		ResponseDTO response = new ResponseDTO();
 		boolean isTransactionSuccessful = false;
