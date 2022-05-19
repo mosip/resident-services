@@ -119,8 +119,8 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	NotificationService notificationService;
 
-//	@Autowired
-//	PartnerService partnerService;
+	@Autowired
+	PartnerService partnerService;
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -773,7 +773,7 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
 
-		//partnerService.getPartnerDetails("Online_Verification_Partner");
+		partnerService.getPartnerDetails("Online_Verification_Partner");
 
 		ResponseDTO response = new ResponseDTO();
 		boolean isTransactionSuccessful = false;
