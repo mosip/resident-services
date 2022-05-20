@@ -1,18 +1,21 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.*;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.*;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
+import io.mosip.resident.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,68 +27,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.RegistrationExternalStatusCode;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.MachineCreateRequestDTO;
-import io.mosip.resident.dto.MachineCreateResponseDTO;
-import io.mosip.resident.dto.MachineDto;
-import io.mosip.resident.dto.MachineSearchRequestDTO;
-import io.mosip.resident.dto.MachineSearchResponseDTO;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
-import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusRequestDTO;
-import io.mosip.resident.dto.RegistrationStatusResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.RIDInvalidException;
-import io.mosip.resident.exception.ResidentMachineServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
-import io.mosip.resident.exception.ValidationFailedException;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UINCardDownloadService;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -127,6 +76,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private UinCardRePrintService rePrintService;
+
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
 	Environment env;
@@ -772,9 +724,6 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
-
-		partnerService.getPartnerDetails("Online_Verification_Partner");
-
 		ResponseDTO response = new ResponseDTO();
 		boolean isTransactionSuccessful = false;
 		try {
@@ -792,6 +741,7 @@ public class ResidentServiceImpl implements ResidentService {
 						dto.getAuthType(), authTypeStatus, unlockForSeconds);
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
+					insertAuthStatusInDb(isTransactionSuccessful, dto);
 				} else {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
 							dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
@@ -800,7 +750,7 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 
 
-		} catch (ApisResourceAccessException e) {
+		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
@@ -835,6 +785,31 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: exit");
 		return response;
+	}
+
+
+	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthLockOrUnLockRequestDto dto) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+
+		ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");
+		System.out.println("partnerIds"+partnerIds);
+
+		for(String partner: partnerIds) {
+			residentTransactionEntity.setAid(dto.getIndividualId()+partner);
+			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
+			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
+			residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
+			residentTransactionEntity.setRequestTypeCode("NEW_AUTH");
+			residentTransactionEntity.setRequestSummary(dto.getAuthType().toString());
+			residentTransactionEntity.setStatusCode("NEW");
+			residentTransactionEntity.setStatusComment(isAuthSuccess ? "Success" : "Failure");
+			residentTransactionEntity.setLangCode("eng");
+			residentTransactionEntity.setRefIdType("");
+			residentTransactionEntity.setTokenId("");
+			residentTransactionEntity.setCrBy("RESIDENT");
+			residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+			residentTransactionRepository.save(residentTransactionEntity);
+		}
 	}
 
 	// get name of document

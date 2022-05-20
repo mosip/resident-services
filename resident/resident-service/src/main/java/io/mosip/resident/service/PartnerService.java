@@ -1,6 +1,5 @@
 package io.mosip.resident.service;
 
-import io.mosip.resident.dto.RetrievePartnerDetailsResponse;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.springframework.stereotype.Service;
 
