@@ -27,6 +27,8 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 
 /**
  * The Class ResidentConfigServiceImpl.
@@ -56,6 +58,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Autowired
 	private Environment env;
 
+	/** The audit util. */
+	@Autowired
+	private AuditUtil auditUtil;
 	
 	/** The resident ui schema json file. */
 	@Value("${resident-ui-schema-file-source}")
@@ -121,6 +126,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			return IOUtils.readInputStreamToString(resFile.getInputStream(), StandardCharsets.UTF_8);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
+			auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
 		}
 	}
