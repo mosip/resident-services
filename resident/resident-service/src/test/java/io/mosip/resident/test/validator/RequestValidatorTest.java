@@ -595,7 +595,7 @@ public class RequestValidatorTest {
 		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateRequestDTO(requestWrapper);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
 
 	}
 
@@ -608,7 +608,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.checkstatus");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateRequestDTO(requestWrapper);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
 
 	}
 
@@ -623,7 +623,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.checkstatus");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateRequestDTO(requestWrapper);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
 
 	}
 
