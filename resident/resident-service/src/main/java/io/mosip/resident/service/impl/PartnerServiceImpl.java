@@ -1,9 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.RetrievePartnerDetailsResponse;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -13,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -31,27 +29,25 @@ public class PartnerServiceImpl implements PartnerService {
     @Qualifier("restClientWithSelfTOkenRestTemplate")
     private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
-    @Autowired
-    private ObjectMapper mapper;
-
     @Override
-    public RetrievePartnerDetailsResponse getPartnerDetails(String partnerId) throws ResidentServiceCheckedException {
-
-        try{
-            if(partnerId!= null){
-                Map<String, String> pathsegments = new HashMap<String, String>();
-               URI uri = URI.create(partnerServiceUrl);
-               ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(uri, ResponseWrapper.class);
-                System.out.println("responseWrapper"+responseWrapper);
-                Map<String, ?> partnerResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-                System.out.println("partnerResponse"+partnerResponse);
-                Map<String, ?> identity = (Map<String, ?>) partnerResponse.get("partners");
-                         return null;
+    public ArrayList<String> getPartnerDetails(String partnerId) throws ResidentServiceCheckedException {
+        ArrayList<String> partnerIds = new ArrayList<>();
+        try {
+            if (partnerId != null) {
+                URI uri = URI.create(partnerServiceUrl);
+                ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(uri, ResponseWrapper.class);
+                Map<String, Object> partnerResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
+               ArrayList<Object> partners = (ArrayList<Object>) partnerResponse.get("partners");
+                for (Object partner : partners) {
+                    Map<String, Object> individualPartner = new LinkedHashMap<>((Map<String, Object>) partner);
+                    partnerIds.add(individualPartner.get("partnerID").toString());
+                }
             }
         } catch (Exception e) {
             throw new ResidentServiceCheckedException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorMessage(), e);
         }
-        return null;
+        System.out.println("partnerIds" + partnerIds);
+        return partnerIds;
     }
 }
