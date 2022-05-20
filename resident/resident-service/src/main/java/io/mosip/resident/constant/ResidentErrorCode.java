@@ -48,10 +48,15 @@ public enum ResidentErrorCode {
 	CHANNEL_IS_NOT_VALID("RES-SER-438", "Invalid OTP Channel"),
 
 	CLAIM_NOT_AVAILABLE("RES-SER-439", "Claim not available: %s"),
+
 	NO_CHANNEL_IN_IDENTITY("RES-SER-440", "Identity data does not contain email/phone."),
 
 
-	AUTH_LOCK_STATUS_FAILED("RES-SER-441", "Failed to retrieve auth lock status")
+	AUTH_LOCK_STATUS_FAILED("RES-SER-441", "Failed to retrieve auth lock status"),
+
+	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-440", "Callback url is not available for auth type: %s"),
+	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-441", "Failed to update auth type for resident websub"),
+
 	;
 	private final String errorCode;
 	private final String errorMessage;
