@@ -3,6 +3,7 @@ package io.mosip.resident.service.impl;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +34,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateEnum;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -46,7 +48,6 @@ import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.DataNotFoundException;
 import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidAlreadyPresentException;
@@ -63,6 +64,8 @@ import io.mosip.resident.util.Utilitiy;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
+
+	private static final String HASH_ATTRIBUTES = "hashAttributes";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentVidServiceImpl.class);
 
@@ -106,6 +109,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Autowired
 	private AuditUtil audit;
+	
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
 
 	private String vidPolicy;
 
@@ -401,6 +407,34 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 		}
 		return vidPolicy;
+	}
+
+	@Override
+	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		IdentityDTO identityDTO = identityServiceImpl.getIdentity(residentIndividualId);
+		String uin = identityDTO.getUIN();
+		ResponseWrapper response;
+		
+		try {
+			response = (ResponseWrapper) residentServiceRestClient.getApi(
+					env.getProperty(ApiName.RETRIEVE_VIDS.name()) + uin, ResponseWrapper.class);
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
+					residentIndividualId, ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
+							+ e.getMessage() + ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Unable to retrieve VID : " + e.getMessage());
+		}
+		
+		List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
+				.map(map -> new LinkedHashMap<String, Object>(map))
+				.map(lhm -> {
+					lhm.remove(HASH_ATTRIBUTES);
+					return lhm;
+				}).collect(Collectors.toList());
+		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
+		res.setResponse(filteredList);
+		return res;
+		
 	}
 
 }

@@ -202,7 +202,7 @@ public class ResidentCredentialServiceTest {
         credentialTypeResponse.setCredentialTypes(types);
 
         when(env.getProperty(ApiName.CREDENTIAL_TYPES_URL.name())).thenReturn("https://mosip.net/v1/credentialservice/types");
-        when(residentServiceRestClient.getApi(any(), any())).thenReturn(credentialTypeResponse);
+        when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(credentialTypeResponse);
         CredentialTypeResponse credentialTypes = residentCredentialService.getCredentialTypes();
         assertEquals(credentialTypes.getCredentialTypes().size(), 1);
         assertEquals(credentialTypes.getCredentialTypes().get(0).getDescription(), "Secure Digital QR Code");
@@ -213,7 +213,7 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testGetCredentialTypesWithAPIResourceException() throws ApisResourceAccessException {
         when(env.getProperty(ApiName.CREDENTIAL_TYPES_URL.name())).thenReturn("https://mosip.net/v1/credentialservice/types");
-        when(residentServiceRestClient.getApi(any(), any())).thenThrow(ApisResourceAccessException.class);
+        when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(ApisResourceAccessException.class);
         residentCredentialService.getCredentialTypes();
     }
     
@@ -275,7 +275,7 @@ public class ResidentCredentialServiceTest {
     	responseWrapper.setResponse(credentialRequestStatusDto);
     	
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenReturn(responseWrapper);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(responseWrapper);
     	
     	
     	CredentialRequestStatusResponseDto response=residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
@@ -287,14 +287,14 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testGetStatusWithApisResourceAccessException() throws ApisResourceAccessException, ResidentServiceCheckedException {
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(ApisResourceAccessException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(ApisResourceAccessException.class);
     	residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
     
     @Test(expected = ResidentCredentialServiceException.class)
     public void testGetStatusWithIllegalArgumentException() throws IllegalArgumentException, ApisResourceAccessException, ResidentServiceCheckedException {
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(IllegalArgumentException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(IllegalArgumentException.class);
     	residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
     
@@ -373,7 +373,7 @@ public class ResidentCredentialServiceTest {
     	response.setResponse(credentialCancelRequestResponseDto);
     	
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenReturn(response);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(response);
     	
     	CredentialCancelRequestResponseDto responseDto=residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
     	assertEquals("ID-1", responseDto.getId());
@@ -393,7 +393,7 @@ public class ResidentCredentialServiceTest {
     	response.setResponse(credentialCancelRequestResponseDto);
     	
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenReturn(response);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(response);
     	
     	ServiceError error=new ServiceError();
     	error.setErrorCode("invalid-101");
@@ -408,7 +408,7 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testCancelCredentialRequestWithApisResourceAccessException() throws Exception{
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(ApisResourceAccessException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(ApisResourceAccessException.class);
     	
     	residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
@@ -416,7 +416,7 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testCancelCredentialRequestWithIllegalArgumentException() throws Exception{
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(IllegalArgumentException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(IllegalArgumentException.class);
     	
     	residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
