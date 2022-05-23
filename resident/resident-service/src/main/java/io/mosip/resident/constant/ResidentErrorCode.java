@@ -52,10 +52,12 @@ public enum ResidentErrorCode {
 	NO_CHANNEL_IN_IDENTITY("RES-SER-440", "Identity data does not contain email/phone."),
 
 
-	AUTH_LOCK_STATUS_FAILED("RES-SER-441", "Failed to retrieve auth lock status"),
+	PARTNER_SERVICE_EXCEPTION("RES-SER-441", "Exception while calling partner service"),
+  AUTH_LOCK_STATUS_FAILED("RES-SER-442", "Failed to retrieve auth lock status"),
 
-	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-440", "Callback url is not available for auth type: %s"),
-	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-441", "Failed to update auth type for resident websub"),
+	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-443", "Callback url is not available for auth type: %s"),
+	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type for resident websub"),
+
 
 	;
 	private final String errorCode;

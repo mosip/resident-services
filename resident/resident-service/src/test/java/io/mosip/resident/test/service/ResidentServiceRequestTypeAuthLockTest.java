@@ -14,6 +14,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
@@ -24,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -55,6 +57,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 
 	@Mock
 	private AuditUtil audit;
+
+	@Mock
+	PartnerServiceImpl partnerServiceImpl;
 
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
