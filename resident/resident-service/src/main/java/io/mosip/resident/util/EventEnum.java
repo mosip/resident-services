@@ -353,8 +353,8 @@ public enum EventEnum {
 			"get latest id schema is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	UPLOAD_DOCUMENT("RES-SER-176", RegistrationConstants.SYSTEM, "Request document upload",
-			"Requesting document upload api for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+			"Requesting document upload api for transaction id %s", "RES-SER", "Residence service", "%s",
+			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	UPLOAD_DOCUMENT_SUCCESS("RES-SER-177", RegistrationConstants.SYSTEM, "Document upload success",
 			"document upload success for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -362,8 +362,8 @@ public enum EventEnum {
 			"document upload failed for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_DOCUMENTS_METADATA("RES-SER-179", RegistrationConstants.SYSTEM, "Request get documents",
-			"Requesting get documents api for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+			"Requesting get documents api for transaction id %s", "RES-SER", "Residence service", "%s",
+			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_DOCUMENTS_METADATA_SUCCESS("RES-SER-180", RegistrationConstants.SYSTEM, "Get documents success",
 			"get documents success for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -381,7 +381,6 @@ public enum EventEnum {
 			"Requesting auth lock status api for individual id %s failed", "RES-SER", "Residence service", "%s",
 			"Individual id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
-
 	AUTH_TYPE_CALL_BACK("RES-SER-182", RegistrationConstants.SYSTEM, "Request auth type call back url",
 			"Requesting auth type call back url for transaction id %s", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -395,6 +394,15 @@ public enum EventEnum {
 			"Requesting update auth type status for transaction id %s", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
+	GET_PARTNERS_BY_PARTNER_TYPE("RES-SER-186", RegistrationConstants.SYSTEM, "get partners by partner type",
+			"get partners by partner type", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_PARTNERS_BY_PARTNER_TYPE_SUCCESS("RES-SER-187", RegistrationConstants.SYSTEM, "get partners by partner type",
+			"get partners by partner type is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION("RES-SER-188", RegistrationConstants.SYSTEM, "get partners by partner type",
+			"get partners by partner type is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
 
 	;
 
