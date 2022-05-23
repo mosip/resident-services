@@ -58,15 +58,11 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         taskScheduler.schedule(() -> {
             //Invoke topic registrations. This is done only once.
             //Note: With authenticated websub, only register topics which are only published by IDA
-            tryRegisterTopicEvent(topic);
+            //tryRegisterTopicEvent(topic);
             //Init topic subscriptions
             initSubsriptions();
         }, new Date(System.currentTimeMillis() + taskSubsctiptionDelay));
 
-    }
-
-    private void registerTopics() {
-        logger.info( "registerTopics", "BaseWebSubInitializer", "Register Topics");
     }
 
     protected void tryRegisterTopicEvent(String eventTopic) {
