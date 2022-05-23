@@ -202,6 +202,29 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
+	@PostMapping(value = "/req/auth-type-unlock")
+	@Operation(summary = "reqAuthTypeUnlock", description = "reqAuthTypeUnlock", tags = { "resident-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<ResponseDTO> reqAuthTypeUnlock(
+			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
+			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth type unlock  API"));
+		audit.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK, requestDTO.getRequest().getTransactionID()));
+		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
+		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest(), AuthTypeStatus.UNLOCK));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK_SUCCESS,
+				requestDTO.getRequest().getTransactionID()));
+		return response;
+	}
+
+	@ResponseFilter
 	@PostMapping(value = "/req/auth-history")
 	@Operation(summary = "reqAuthHistory", description = "reqAuthHistory", tags = { "resident-controller" })
 	@ApiResponses(value = {
