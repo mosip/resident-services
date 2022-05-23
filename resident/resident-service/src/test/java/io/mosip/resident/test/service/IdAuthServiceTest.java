@@ -1,25 +1,28 @@
 package io.mosip.resident.test.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.CertificateException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
 import org.assertj.core.util.Lists;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,19 +32,31 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.LocalDateTime;
-import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AuthError;
+import io.mosip.resident.dto.AuthResponseDTO;
+import io.mosip.resident.dto.AuthTypeStatusResponseDto;
+import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.AutnTxnResponseDto;
+import io.mosip.resident.dto.ErrorDTO;
+import io.mosip.resident.dto.IdAuthResponseDto;
+import io.mosip.resident.dto.PublicKeyResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CertificateException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -127,7 +142,7 @@ public class IdAuthServiceTest {
 
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-        when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
         when(environment.getProperty(anyString())).thenReturn("dummy url");
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
@@ -181,7 +196,7 @@ public class IdAuthServiceTest {
 
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-        when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
         when(environment.getProperty(anyString())).thenReturn("dummy url");
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
@@ -246,7 +261,7 @@ public class IdAuthServiceTest {
 
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-        when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
         when(environment.getProperty(anyString())).thenReturn("dummy url");
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());

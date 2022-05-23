@@ -52,6 +52,7 @@ public class IdentityController {
 	public ResponseWrapper<Object> getInputAttributeValues()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("IdentityController::getResidentUISchema()::entry");
+		//FIXME correct the audit enum
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
 		String id = getIdFromUser();
 		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id);

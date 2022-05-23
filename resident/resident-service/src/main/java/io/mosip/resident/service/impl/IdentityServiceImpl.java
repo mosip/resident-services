@@ -50,12 +50,12 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
+	private static final String UIN = "UIN";
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final String AUTHORIZATION = "Authorization";
 	private static final String IDA_TOKEN = "ida_token";
 	private static final String INDIVIDUAL_ID = "individual_id";
 	private static final String IDENTITY = "identity";
-	private static final String UIN = "uin";
 	private static final String VALUE = "value";
 	private static final String EMAIL = "email";
 	private static final String PHONE = "phone";
@@ -102,7 +102,7 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id);
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, true);
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -115,9 +115,14 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::exit");
 		return identityDTO;
 	}
-
+	
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException {
+		return getIdentityAttributes(id, false);
+	}
+
+	@Override
+	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -127,10 +132,13 @@ public class IdentityServiceImpl implements IdentityService {
 			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
 
-			Map<String, ?> response = residentConfigService.getUiSchemaFilteredInputAttributes().stream()
+			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes().stream()
 					.filter(attrib -> identity.containsKey(attrib))
-					.collect(Collectors.toMap(Function.identity(), identity::get));
+					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentity()::exit");
+			if(includeUin) {
+				response.put(UIN, identity.get(UIN));
+			}
 			return response;
 		} catch (ApisResourceAccessException | IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
@@ -154,7 +162,10 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private String getMappingAttribute(JSONObject identityJson, String name) {
 		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
-		return JsonUtil.getJSONValue(docJson, VALUE);
+		if(docJson != null) {
+			return JsonUtil.getJSONValue(docJson, VALUE);
+		}
+		return name;
 	}
 	
 	public String getIDAToken(String uin) {

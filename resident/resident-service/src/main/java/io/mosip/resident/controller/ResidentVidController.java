@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -27,6 +28,7 @@ import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -182,5 +184,24 @@ public class ResidentVidController {
 	
 	private String getResidentIndividualId() throws ApisResourceAccessException {
 		return identityServiceImpl.getResidentIndvidualId();
+	}
+	
+	@PreAuthorize("hasAnyRole(@authorizedRoles.getGetvids())")
+	@GetMapping(path = "/vids", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "retrieveVids", description = "retrieveVids", tags = { "vid-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
+	public ResponseWrapper<?> retrieveVids() throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
+		logger.debug("ResidentVidController::retrieveVids()::entry");
+		//FIXME correct the audit enum
+		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
+		String residentIndividualId = getResidentIndividualId();
+		ResponseWrapper<List<Map<String, ?>>> retrieveVids = residentVidService.retrieveVids(residentIndividualId);
+		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
+		logger.debug("ResidentVidController::retrieveVids()::exit");
+		return retrieveVids;
 	}
 }

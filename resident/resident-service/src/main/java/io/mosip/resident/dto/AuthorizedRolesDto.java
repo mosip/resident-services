@@ -23,6 +23,8 @@ public class AuthorizedRolesDto {
 	
 	private List<String> postgeneratevid;
 	
+	private List<String> getvids;
+	
 
 
 }

@@ -56,6 +56,13 @@ public class ResidentServiceRestClient {
 	public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
 		this.residentRestTemplate = residentRestTemplate;
 	}
+	
+	public <T> T getApi(String uriStr, Class<?> responseType) throws ApisResourceAccessException {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uriStr);
+		UriComponents uriComponent = builder.build(false).encode();
+		URI uri = uriComponent.toUri();
+		return getApi(uri, responseType);
+	}
 
 	/**
 	 * Gets the api.

@@ -94,7 +94,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
+		doReturn(autnTxnResponseDto).when(client).getApi((URI)any(), any());
 		List<String> list = new ArrayList<>();
 		list.add("individualIdType");
 		list.add("UIN");
@@ -113,7 +113,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doThrow(new ApisResourceAccessException()).when(client).getApi(any(), any());
+		doThrow(new ApisResourceAccessException()).when(client).getApi((URI)any(), any());
 		List<String> list = new ArrayList<>();
 		list.add("individualIdType");
 		list.add("UIN");
@@ -130,7 +130,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
+		doReturn(autnTxnResponseDto).when(client).getApi((URI)any(), any());
 		List<String> list = new ArrayList<>();
 		list.add("individualIdType");
 		list.add("UIN");
@@ -156,7 +156,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doThrow(new ApisResourceAccessException()).when(client).getApi(any(), any());
+		doThrow(new ApisResourceAccessException()).when(client).getApi((URI)any(), any());
 		List<String> list = new ArrayList<>();
 		list.add("individualIdType");
 		list.add("UIN");
@@ -182,7 +182,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
+		doReturn(autnTxnResponseDto).when(client).getApi((URI)any(), any());
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("individualIdType", "mapType");
 		pathsegments.put("UIN", "mapType");
@@ -200,7 +200,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doReturn(autnTxnResponseDto).when(client).getApi(any(), any());
+		doReturn(autnTxnResponseDto).when(client).getApi((URI)any(), any());
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("individualIdType", "mapType");
 		pathsegments.put("UIN", "mapType");
@@ -226,7 +226,7 @@ public class ResidentServiceRestClientTest {
 
 		when(environment.getProperty(any(String.class))).thenReturn("https://int.mosip.io/");
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		doThrow(new ApisResourceAccessException()).when(client).getApi(any(), any());
+		doThrow(new ApisResourceAccessException()).when(client).getApi((URI)any(), any());
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("individualIdType", "mapType");
 		pathsegments.put("UIN", "mapType");
