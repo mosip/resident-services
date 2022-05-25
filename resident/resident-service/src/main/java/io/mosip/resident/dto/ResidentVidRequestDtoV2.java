@@ -9,8 +9,8 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-public class ResidentVidRequestDto extends BaseRequestDTO {
+public class ResidentVidRequestDtoV2 extends BaseRequestDTO {
 
-    private VidRequestDto request;
+    private BaseVidRequestDto request;
     
 }

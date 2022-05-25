@@ -112,12 +112,12 @@ public class NotificationService {
 			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
 			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
 					templateLangauges);
-	} else if (notificationType.equalsIgnoreCase("EMAIL")) {
-			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
-					templateLangauges);
-	} else if (notificationType.equalsIgnoreCase("SMS")) {
-			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
-	}
+		} else if (notificationType.equalsIgnoreCase("EMAIL")) {
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+						templateLangauges);
+		} else if (notificationType.equalsIgnoreCase("SMS")) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
+		}
 
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				IS_SMS_NOTIFICATION_SUCCESS + smsStatus);
