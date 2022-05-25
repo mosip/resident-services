@@ -9,10 +9,12 @@
 -- --------------------------------------------------------------------------------------------------
 -- April-2022			Manoj SP	            Creation of otp_transaction table.
 -- April-2022           Kamesh Shekhar Prasad   Creation of resident_transaction table.
+-- May-2022             Kamesh Shekhar Prasad   Creation of auth_transaction table.
 -----------------------------------------------------------------------------------------------------
 
 \c mosip_resident
 
 \ir ddl/otp_transaction.sql
 \ir ddl/resident_transaction.sql
+\ir ddl/auth_transaction.sql
 -----------------------------------------------------------------------------------------------------

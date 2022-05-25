@@ -9,9 +9,11 @@
 -- --------------------------------------------------------------------------------------------------
 -- April-2022			Manoj SP	            Added otp_transaction table creation scripts with comments.
 -- April-2022           Kamesh Shekhar Prasad   Added resident_transaction table creation scripts with comments.
+-- May-2022				Kamesh Shekhar Prasad   Added auth_transaction table creation scripts with comments.
 -----------------------------------------------------------------------------------------------------
 \c mosip_resident sysadmin
 
 DROP TABLE IF EXISTS resident.otp_transaction;
 DROP TABLE IF EXISTS resident.resident_transaction;
+DROP TABLE IF EXISTS resident.auth_transaction;
 -----------------------------------------------------------------------------------------------------
