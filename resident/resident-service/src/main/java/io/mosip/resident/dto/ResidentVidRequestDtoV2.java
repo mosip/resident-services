@@ -9,12 +9,12 @@ import lombok.Setter;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-public class ResidentVidRequestDto extends BaseRequestDTO implements IVidRequestDto<VidRequestDto> {
+public class ResidentVidRequestDtoV2 extends BaseRequestDTO implements IVidRequestDto<VidRequestDtoV2> {
 
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 3674725539147720447L;
-	private VidRequestDto request;
+	private static final long serialVersionUID = 1864072225994404946L;
+	private VidRequestDtoV2 request;
     
 }

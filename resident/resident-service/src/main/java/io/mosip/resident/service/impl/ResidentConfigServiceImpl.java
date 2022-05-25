@@ -17,18 +17,15 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.util.IOUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utilitiy;
 
 /**
  * The Class ResidentConfigServiceImpl.
@@ -110,27 +107,11 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Override
 	public String getUISchema() {
 		if(uiSchema == null) {
-			uiSchema = readResourceContent(residentUiSchemaJsonFile);
+			uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFile);
 		}
 		return uiSchema;
 	}
 
-	/**
-	 * Read resource content.
-	 *
-	 * @param resFile the res file
-	 * @return the string
-	 */
-	private String readResourceContent(Resource resFile) {
-		try {
-			return IOUtils.readInputStreamToString(resFile.getInputStream(), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-			auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_EXCEPTION);
-			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
-		}
-	}
-	
 	@Override
 	public List<String> getUiSchemaFilteredInputAttributes() throws JsonParseException, JsonMappingException, IOException {
 		if(uiSchemaFilteredInputAttributes == null) {
@@ -160,7 +141,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Override
 	public String getIdentityMapping() throws ResidentServiceCheckedException {
 		if(identityMapping==null) {
-			identityMapping=readResourceContent(identityMappingJsonFile);
+			identityMapping=Utilitiy.readResourceContent(identityMappingJsonFile);
 		}
 		return identityMapping;
 	}

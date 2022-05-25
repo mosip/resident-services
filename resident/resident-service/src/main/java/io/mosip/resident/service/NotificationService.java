@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -56,6 +57,8 @@ import io.mosip.resident.validator.RequestValidator;
  */
 @Component
 public class NotificationService {
+	private static final String EMAIL_CHANNEL = "email";
+	private static final String PHONE_CHANNEL = "phone";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
 	@Autowired
 	private TemplateManager templateManager;
@@ -91,14 +94,21 @@ public class NotificationService {
 	private static final String SMS_EMAIL_SUCCESS = "Notification has been sent to the provided contact detail(s)";
 	private static final String SMS_SUCCESS = "Notification has been sent to the provided contact phone number";
 	private static final String EMAIL_SUCCESS = "Notification has been sent to the provided email ";
+	private static final String SMS_EMAIL_SUCCESS_WITH_PHONENUM_EMAILID = "Notification has been sent to the provided email %s and phone number %s";
+	private static final String SMS_SUCCESS_WITH_PHONENUM = "Notification has been sent to the provided phone number %s";
+	private static final String EMAIL_SUCCESS_WITH_EMAILID = "Notification has been sent to the provided email %s";
 	private static final String SMS_EMAIL_FAILED = "Invalid phone number and email";
 	private static final String IS_SMS_NOTIFICATION_SUCCESS = "NotificationService::sendSMSNotification()::isSuccess?::";
 	private static final String IS_EMAIL_NOTIFICATION_SUCCESS = "NotificationService::sendEmailNotification()::isSuccess?::";
 	private static final String TEMPLATE_CODE = "Template Code";
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
-
+	
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
+		return sendNotification(dto, null, null, null);
+	}
+
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
@@ -108,16 +118,30 @@ public class NotificationService {
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
-		if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
-			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
-			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
-					templateLangauges);
-	} else if (notificationType.equalsIgnoreCase("EMAIL")) {
-			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
-					templateLangauges);
-	} else if (notificationType.equalsIgnoreCase("SMS")) {
-			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
-	}
+		if(channels == null || channels.isEmpty()) {
+			if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+						templateLangauges);
+			} else if (notificationType.equalsIgnoreCase("EMAIL")) {
+					emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+							templateLangauges);
+			} else if (notificationType.equalsIgnoreCase("SMS")) {
+					smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
+			}
+		} else {
+			List<String> channelsLowerCase = channels.stream().map(String::toLowerCase).collect(Collectors.toList());
+			if (channelsLowerCase.contains(PHONE_CHANNEL) && channelsLowerCase.contains(EMAIL_CHANNEL)) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+						templateLangauges);
+			} else if (channelsLowerCase.contains(PHONE_CHANNEL)) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
+			} else if (channelsLowerCase.contains(EMAIL_CHANNEL)) {
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
+						templateLangauges);
+			}
+		}
 
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				IS_SMS_NOTIFICATION_SUCCESS + smsStatus);
@@ -125,12 +149,24 @@ public class NotificationService {
 				IS_EMAIL_NOTIFICATION_SUCCESS + emailStatus);
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		if (smsStatus && emailStatus) {
-			notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
+			if(email == null || phone == null) {
+				notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
+			} else {
+				notificationResponse.setMessage(String.format(SMS_EMAIL_SUCCESS_WITH_PHONENUM_EMAILID, utility.maskPhone(phone), utility.maskEmail(email)));
+			}
 			notificationResponse.setStatus(SUCCESS);
 		} else if (smsStatus) {
-			notificationResponse.setMessage(SMS_SUCCESS);
+			if(phone == null) {
+				notificationResponse.setMessage(SMS_SUCCESS);
+			} else {
+				notificationResponse.setMessage(String.format(SMS_SUCCESS_WITH_PHONENUM, utility.maskPhone(phone)));
+			}
 		} else if (emailStatus) {
-			notificationResponse.setMessage(EMAIL_SUCCESS);
+			if(email == null) {
+				notificationResponse.setMessage(EMAIL_SUCCESS);
+			} else {
+				notificationResponse.setMessage(String.format(EMAIL_SUCCESS_WITH_EMAILID,  utility.maskEmail(email)));
+			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);
 			throw new ResidentServiceException(ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode(),
@@ -325,7 +361,7 @@ public class NotificationService {
 			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String[] mailTo = { String.valueOf(mailingAttributes.get("email")) };
+		String[] mailTo = { String.valueOf(mailingAttributes.get(utilities.getEmailAttribute())) };
 		String[] mailCc = notificationEmails.split("\\|");
 
 		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);

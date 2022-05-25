@@ -118,7 +118,6 @@ public class ResidentVidServiceTest {
 		vidRevokeRequest = new VidRevokeRequestDTO();
 
 		vidRevokeRequest.setIndividualId("2038096257310540");
-		vidRevokeRequest.setIndividualIdType(IdType.VID.name());
 		vidRevokeRequest.setOtp("974436");
 		vidRevokeRequest.setTransactionID("1111122222");
 		vidRevokeRequest.setVidStatus("REVOKE");
@@ -144,7 +143,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResponseWrapper<VidResponseDto> result = residentVidService.generateVid(requestDto);
+        ResponseWrapper<VidResponseDto> result = residentVidService.generateVid(requestDto, vid);
 
         assertTrue("Expected Vid should be 12345", result.getResponse().getVid().equalsIgnoreCase(vid));
     }
@@ -153,7 +152,7 @@ public class ResidentVidServiceTest {
     public void otpValidationFailedTest() throws ResidentServiceCheckedException, OtpValidationFailedException {
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
 
     @Test(expected = VidAlreadyPresentException.class)
@@ -173,7 +172,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
 
     @Test(expected = VidCreationException.class)
@@ -193,7 +192,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
 
     @Test(expected = VidCreationException.class)
@@ -213,7 +212,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
     
     @Test
@@ -237,7 +236,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 
-		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid);
+		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
 
 		assertEquals("Vid successfully generated", result2.getResponse().getMessage().toString());
 	}
@@ -247,7 +246,7 @@ public class ResidentVidServiceTest {
     	String vid = "2038096257310540";
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
 
-        residentVidService.revokeVid(vidRevokeRequest, vid);
+        residentVidService.revokeVid(vidRevokeRequest, vid, "12345");
     }
     
     @Test(expected = VidRevocationException.class)
@@ -268,7 +267,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
-        residentVidService.revokeVid(vidRevokeRequest,vid);
+        residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
     
     @Test(expected = VidRevocationException.class)
@@ -287,7 +286,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-        residentVidService.revokeVid(vidRevokeRequest,vid);
+        residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
     
     @Test
