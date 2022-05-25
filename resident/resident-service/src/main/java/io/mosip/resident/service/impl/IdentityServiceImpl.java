@@ -1,6 +1,8 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -62,6 +65,9 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String DATE_OF_BIRTH = "dob";
 	private static final String NAME = "name";
 	private static final String PHOTO = "individualBiometrics";
+	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
+    private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
+    private static final String LANGUAGE = "language";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -94,11 +100,19 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${mosip.resident.identity.claim.ida-token}")
 	private String idaTokenClaim;
+	
+	@Value("${resident.dateofbirth.pattern}")
+	private String dateFormat;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
+	
+	@Override
+    public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
+    	return getIdentity(id,null);
+    }
 
 	@Override
-	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException {
+	public IdentityDTO getIdentity(String id,String langCode) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
@@ -106,6 +120,11 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
+			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
+			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
+			LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
+			identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
+			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
@@ -123,7 +142,7 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
-		logger.debug("IdentityServiceImpl::getIdentity()::entry");
+		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
 		try {
@@ -135,7 +154,7 @@ public class IdentityServiceImpl implements IdentityService {
 			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes().stream()
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
-			logger.debug("IdentityServiceImpl::getIdentity()::exit");
+			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
 			}
@@ -146,8 +165,13 @@ public class IdentityServiceImpl implements IdentityService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-
+	
 	private String getMappingValue(Map<?, ?> identity, String mappingName)
+            throws ResidentServiceCheckedException, IOException {
+        return getMappingValue(identity, mappingName, null);
+    }
+
+	private String getMappingValue(Map<?, ?> identity, String mappingName, String langCode)
 			throws ResidentServiceCheckedException, IOException {
 		String mappingJson = utility.getMappingJson();
 		if (mappingJson == null || mappingJson.trim().isEmpty()) {
@@ -156,9 +180,30 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
 		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
-		String mappingAttribute = getMappingAttribute(identityMappingJsonObject, mappingName);
-		return (String) identity.get(mappingAttribute);
+		String mappingAttributes = getMappingAttribute(identityMappingJsonObject, mappingName);
+		return Stream.of(mappingAttributes.split(MAPPING_ATTRIBUTE_SEPARATOR))
+                .map(mappingAttribute -> identity.get(mappingAttribute))
+                .map(attributeValue -> {
+                    if(attributeValue instanceof String) {
+                        return (String) attributeValue;
+                    } else if(attributeValue instanceof List){
+                        if(langCode == null) {
+                            return null;
+                        } else {
+                            return getValueForLang((List<Map<String,Object>>)attributeValue, langCode);
+                        }
+                    }
+                    return null;
+                }).collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));
 	}
+	
+	private String getValueForLang(List<Map<String, Object>> attributeValue, String langCode) {
+        return attributeValue.stream()
+                    .filter(map -> map.get(LANGUAGE) instanceof String && ((String)map.get(LANGUAGE)).equalsIgnoreCase(langCode))
+                    .map(map -> (String)map.get(VALUE))
+                    .findAny()
+                    .orElse(null);
+    }
 
 	private String getMappingAttribute(JSONObject identityJson, String name) {
 		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
