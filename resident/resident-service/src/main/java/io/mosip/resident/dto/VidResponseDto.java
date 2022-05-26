@@ -6,6 +6,10 @@ import java.io.Serializable;
 @Data
 public class VidResponseDto implements Serializable {
 
-    private String vid;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6756239366488227369L;
+	private String vid;
     private String message;
 }

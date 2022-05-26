@@ -1,5 +1,37 @@
 package io.mosip.resident.util;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.mvel2.MVEL;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import com.nimbusds.jose.util.IOUtils;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -15,22 +47,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
 
 /**
  * @author Girish Yarru
@@ -61,6 +77,16 @@ public class Utilitiy {
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static String regProcessorIdentityJson = "";
+	
+	@Autowired(required = true)
+	@Qualifier("varres")
+	private VariableResolverFactory functionFactory;
+
+	@Value("${resident.email.mask.function}")
+	private String emailMaskFunction;
+	
+	@Value("${resident.phone.mask.function}")
+	private String phoneMaskFunction;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -233,5 +259,41 @@ public class Utilitiy {
         }
         return regProcessorIdentityJson;
     }
+    
+    /**
+	 * Read resource content.
+	 *
+	 * @param resFile the res file
+	 * @return the string
+	 */
+	public static String readResourceContent(Resource resFile) {
+		try {
+			return IOUtils.readInputStreamToString(resFile.getInputStream(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
+		}
+	}
+	
+
+	public String maskData(Object object, String maskingFunctionName) {
+		Map context = new HashMap();
+		context.put("value", String.valueOf(object));
+		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
+		myVarFactory.setNextFactory(functionFactory);
+		Serializable serializable = MVEL.compileExpression(maskingFunctionName + "(value);");
+		String formattedObject = MVEL.executeExpression(serializable, context, myVarFactory, String.class);
+		return formattedObject;
+	}
+	
+	public String maskEmail(String email) {
+		return maskData(email, emailMaskFunction);
+	}
+
+	public String maskPhone(String phone) {
+		return maskData(phone, phoneMaskFunction);
+	}
+
+
 
 }

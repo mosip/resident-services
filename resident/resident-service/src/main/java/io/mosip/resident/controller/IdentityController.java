@@ -40,7 +40,9 @@ public class IdentityController {
 	private IdentityServiceImpl idServiceImpl;
 	
 	@ResponseFilter
-	@PreAuthorize("hasAnyRole(@authorizedRoles.getGetinputattributevalues())")
+	@PreAuthorize("T(io.mosip.resident.dto.AuthorizedScopesDto).hasAllScopes("
+    		+ "@authorizedScopes.getGetinputattributevalues()"
+    		+ ")")
 	@GetMapping("/input-attributes/values")
 	@Operation(summary = "getInputAttributeValues", description = "Get the Resident-UI Schema", tags = {
 			"proxy-config-controller" })
