@@ -352,7 +352,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			throws JsonProcessingException, IOException, ApisResourceAccessException, ResidentServiceCheckedException {
 		VidGeneratorRequestDto vidRequestDto = new VidGeneratorRequestDto();
 		RequestWrapper<VidGeneratorRequestDto> request = new RequestWrapper<>();
-		ResponseWrapper<VidGeneratorResponseDto> response = null;
+		ResponseWrapper<?> response = null;
 
 		vidRequestDto.setUIN(uin);
 		vidRequestDto.setVidStatus(requestDto.getVidStatus());
@@ -381,13 +381,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				"", "ResidentVidServiceImpl::vidDeactivator():: revoke Vid response :: "
 						+ JsonUtils.javaObjectToJsonString(response));
 
-		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+		if (response == null || response.getErrors() != null && !response.getErrors().isEmpty()) {
 			throw new VidRevocationException(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorMessage());
 
 		}
 
-		VidGeneratorResponseDto vidResponse = mapper.readValue(mapper.writeValueAsString(response.getResponse()),
-				VidGeneratorResponseDto.class);
+		VidGeneratorResponseDto vidResponse = mapper.convertValue(response.getResponse(), VidGeneratorResponseDto.class);
 
 		return vidResponse;
 
