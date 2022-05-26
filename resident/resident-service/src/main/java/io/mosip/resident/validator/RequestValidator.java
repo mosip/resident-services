@@ -25,12 +25,15 @@ import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BaseVidRequestDto;
+import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.IVidRequestDto;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentVidRequestDto;
+import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.util.AuditUtil;
@@ -73,6 +76,9 @@ public class RequestValidator {
 
 	@Value("${resident.vid.version}")
 	private String version;
+	
+	@Value("${resident.revokevid.version}")
+	private String revokeVidVersion;
 
 	@Value("${resident.authlock.id}")
 	public void setAuthLockId(String authLockId) {
@@ -126,7 +132,7 @@ public class RequestValidator {
 
 	}
 
-	public void validateVidCreateRequest(ResidentVidRequestDto requestDto, boolean otpValidationRequired) {
+	public void validateVidCreateRequest(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
 
 		try {
 			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
@@ -156,7 +162,6 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 		
-		String individualId = requestDto.getRequest().getIndividualId();
 		if (StringUtils.isEmpty(individualId)
 				|| !validateIndividualIdvIdWithoutIdType(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
@@ -164,11 +169,14 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 
-		if (otpValidationRequired && StringUtils.isEmpty(requestDto.getRequest().getOtp())) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to generate VID"));
-
-			throw new InvalidInputException("otp");
+		BaseVidRequestDto vidRequestDto = requestDto.getRequest();
+		if(vidRequestDto instanceof VidRequestDto) {
+			if (otpValidationRequired && StringUtils.isEmpty(((VidRequestDto)vidRequestDto).getOtp())) {
+				audit.setAuditRequestDto(
+						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to generate VID"));
+	
+				throw new InvalidInputException("otp");
+			}
 		}
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getTransactionID())) {
@@ -384,9 +392,9 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateVidRevokeRequest(RequestWrapper<VidRevokeRequestDTO> requestDto, boolean isOtpValidationRequired) {
+	public void validateVidRevokeRequest(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, boolean isOtpValidationRequired, String individualId) {
 
-		validateRequestWrapper(requestDto,"Request to revoke VID");
+		validateRevokeVidRequestWrapper(requestDto,"Request to revoke VID");
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getVidStatus())
 				|| !requestDto.getRequest().getVidStatus().equalsIgnoreCase("REVOKED")) {
@@ -394,15 +402,18 @@ public class RequestValidator {
 			throw new InvalidInputException("vidStatus");
 		}
 
-		if (StringUtils.isEmpty(requestDto.getRequest().getIndividualId())
-				|| (!validateIndividualIdvIdWithoutIdType(requestDto.getRequest().getIndividualId()))) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
-			throw new InvalidInputException("individualId");
-		}
-
-		if (isOtpValidationRequired && StringUtils.isEmpty(requestDto.getRequest().getOtp())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to revoke VID"));
-			throw new InvalidInputException("otp");
+		if(requestDto.getRequest() instanceof VidRevokeRequestDTO) {
+			VidRevokeRequestDTO vidRevokeRequestDTO = (VidRevokeRequestDTO) requestDto.getRequest();
+			if (StringUtils.isEmpty(vidRevokeRequestDTO.getIndividualId())
+					|| (!validateIndividualIdvIdWithoutIdType(vidRevokeRequestDTO.getIndividualId()))) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
+				throw new InvalidInputException("individualId");
+			}
+	
+			if (isOtpValidationRequired && StringUtils.isEmpty(vidRevokeRequestDTO.getOtp())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to revoke VID"));
+				throw new InvalidInputException("otp");
+			}
 		}
 
 		if (StringUtils.isEmpty(requestDto.getRequest().getTransactionID())) {
@@ -411,7 +422,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateRequestWrapper(RequestWrapper<?> request,String msg) {
+	public void validateRevokeVidRequestWrapper(RequestWrapper<?> request,String msg) {
 
 		if (StringUtils.isEmpty(request.getId()) || !request.getId().equalsIgnoreCase(revokeVidId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", msg));
@@ -424,7 +435,7 @@ public class RequestValidator {
 			throw new InvalidInputException("requesttime");
 		}
 
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equalsIgnoreCase(version)) {
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equalsIgnoreCase(revokeVidVersion)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "version", msg));
 			throw new InvalidInputException("version");
 		}
