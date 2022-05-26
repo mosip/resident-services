@@ -50,4 +50,6 @@ public interface AutnTxnRepository extends BaseRepository<AutnTxn, Integer> {
 	
 	Long countByEntityIdAndRequestDTtimesAfter(String entityId, LocalDateTime afterRequestTime);
 
+	public AutnTxn findById(String id);
+
 }

@@ -14,7 +14,7 @@
 -- object: resident.auth_transaction | type: TABLE --
 -- DROP TABLE IF EXISTS resident.auth_transaction CASCADE;
 CREATE TABLE resident.auth_transaction(
-	id character varying(36) NOT NULL,
+	id character varying(64) NOT NULL,
 	request_dtimes timestamp NOT NULL,
 	response_dtimes timestamp NOT NULL,
 	request_trn_id character varying(64),
