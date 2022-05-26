@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
@@ -53,6 +54,7 @@ import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
@@ -90,9 +92,14 @@ public class ResidentVidServiceTest {
     private VidRequestDto requestDto;
     
     private VidRevokeRequestDTO vidRevokeRequest;
+    
+    @Mock
+    private IdentityServiceImpl identityServiceImpl;
 
     @InjectMocks
-    private ResidentVidService residentVidService = new ResidentVidServiceImpl();
+    private ResidentVidServiceImpl residentVidService;
+    
+    
     private JSONObject identity;
     
     @Before
@@ -108,7 +115,12 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMessage("Vid successfully generated");
 
         when(notificationService.sendNotification(any(NotificationRequestDto.class))).thenReturn(notificationResponseDTO);
-   
+        IdentityDTO identityValue = new IdentityDTO();
+        identityValue.setEmail("aaa@bbb.com");
+        identityValue.setPhone("987654321");
+        identityValue.setUIN("1234567890");
+		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+        
         ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("ID.json").getFile());
 		InputStream is = new FileInputStream(idJson);
@@ -118,7 +130,6 @@ public class ResidentVidServiceTest {
 		vidRevokeRequest = new VidRevokeRequestDTO();
 
 		vidRevokeRequest.setIndividualId("2038096257310540");
-		vidRevokeRequest.setIndividualIdType(IdType.VID.name());
 		vidRevokeRequest.setOtp("974436");
 		vidRevokeRequest.setTransactionID("1111122222");
 		vidRevokeRequest.setVidStatus("REVOKE");
@@ -144,7 +155,7 @@ public class ResidentVidServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResponseWrapper<VidResponseDto> result = residentVidService.generateVid(requestDto);
+        ResponseWrapper<VidResponseDto> result = residentVidService.generateVid(requestDto, vid);
 
         assertTrue("Expected Vid should be 12345", result.getResponse().getVid().equalsIgnoreCase(vid));
     }
@@ -153,7 +164,7 @@ public class ResidentVidServiceTest {
     public void otpValidationFailedTest() throws ResidentServiceCheckedException, OtpValidationFailedException {
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
 
     @Test(expected = VidAlreadyPresentException.class)
@@ -173,7 +184,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
 
     @Test(expected = VidCreationException.class)
@@ -193,7 +204,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
 
     @Test(expected = VidCreationException.class)
@@ -213,7 +224,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
-        residentVidService.generateVid(requestDto);
+        residentVidService.generateVid(requestDto, "12345");
     }
     
     @Test
@@ -230,14 +241,11 @@ public class ResidentVidServiceTest {
 		responseWrapper.setVersion("v1");
 		responseWrapper.setResponsetime(DateUtils.getCurrentDateTimeString());
 		
-		when(utilitiy.retrieveIdrepoJson(anyString())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
-	
-		doReturn(objectMapper.writeValueAsString(dto)).when(mapper).writeValueAsString(any());
-		doReturn(dto).when(mapper).readValue(anyString(), any(Class.class));
+		doReturn(dto).when(mapper).convertValue(any(), any(Class.class));
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 
-		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid);
+		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
 
 		assertEquals("Vid successfully generated", result2.getResponse().getMessage().toString());
 	}
@@ -247,7 +255,7 @@ public class ResidentVidServiceTest {
     	String vid = "2038096257310540";
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
 
-        residentVidService.revokeVid(vidRevokeRequest, vid);
+        residentVidService.revokeVid(vidRevokeRequest, vid, "12345");
     }
     
     @Test(expected = VidRevocationException.class)
@@ -261,14 +269,13 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
-		when(utilitiy.retrieveIdrepoJson(anyString())).thenReturn(JsonUtil.getJSONObject(identity, "identity"));
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
-        residentVidService.revokeVid(vidRevokeRequest,vid);
+        residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
     
     @Test(expected = VidRevocationException.class)
@@ -282,12 +289,11 @@ public class ResidentVidServiceTest {
         ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
-		when(utilitiy.retrieveIdrepoJson(anyString())).thenThrow(VidRevocationException.class);
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
-        residentVidService.revokeVid(vidRevokeRequest,vid);
+        residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
     
     @Test
