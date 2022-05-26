@@ -7,7 +7,11 @@ import lombok.Data;
 @Data
 public class BaseVidRequestDto implements Serializable {
 
-    private String transactionID;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -8904379407961043321L;
+	private String transactionID;
     private String vidType;
 
 }

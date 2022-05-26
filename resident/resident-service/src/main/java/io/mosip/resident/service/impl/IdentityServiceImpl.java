@@ -129,6 +129,10 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
 					pathsegments, ResponseWrapper.class);
+			if(responseWrapper.getErrors() != null && responseWrapper.getErrors().size() > 0) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());
+			}
 			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
 
