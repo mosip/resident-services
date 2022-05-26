@@ -47,7 +47,6 @@ public class PartnerServiceImpl implements PartnerService {
             throw new ResidentServiceCheckedException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorMessage(), e);
         }
-        System.out.println("partnerIds" + partnerIds);
         return partnerIds;
     }
 }
