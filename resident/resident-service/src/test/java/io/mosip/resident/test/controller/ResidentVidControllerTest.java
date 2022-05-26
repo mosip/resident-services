@@ -34,7 +34,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentVidRequestDto;
 import io.mosip.resident.dto.ResponseWrapper;
@@ -118,7 +117,7 @@ public class ResidentVidControllerTest {
 		ResponseWrapper<VidResponseDto> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(dto);
 
-		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class))).thenReturn(responseWrapper);
+		Mockito.when(residentVidService.generateVid(Mockito.any(), Mockito.anyString())).thenReturn(responseWrapper);
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(getRequest());
@@ -131,7 +130,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("resident")
 	public void otpValidationFailureTest() throws Exception {
 
-		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class)))
+		Mockito.when(residentVidService.generateVid(Mockito.any(), Mockito.anyString()))
 				.thenThrow(new OtpValidationFailedException());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -145,7 +144,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("resident")
 	public void vidCreationFailureTest() throws Exception {
 
-		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class)))
+		Mockito.when(residentVidService.generateVid(Mockito.any(), Mockito.anyString()))
 				.thenThrow(new VidCreationException());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -244,7 +243,7 @@ public class ResidentVidControllerTest {
 		ResponseWrapper<VidRevokeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(dto);
 
-		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))
+		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -263,7 +262,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("resident")
 	public void vidRevokingFailureTest() throws Exception {
 
-		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))
+		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new VidRevocationException());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -351,7 +350,6 @@ public class ResidentVidControllerTest {
 	public void invalidIndividualIdTypeRevokeTest() throws Exception {
 
 		RequestWrapper<VidRevokeRequestDTO> request = getRevokeRequest();
-		request.getRequest().setIndividualIdType(null);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
@@ -432,7 +430,6 @@ public class ResidentVidControllerTest {
 	private static RequestWrapper<VidRevokeRequestDTO> getRevokeRequest() {
 		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
 		vidRevokeRequestDTO.setIndividualId("2038096257310540");
-		vidRevokeRequestDTO.setIndividualIdType(IdType.VID.name());
 		vidRevokeRequestDTO.setOtp("974436");
 		vidRevokeRequestDTO.setTransactionID("1111122222");
 		vidRevokeRequestDTO.setVidStatus("REVOKED");
