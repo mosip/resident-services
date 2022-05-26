@@ -99,7 +99,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setLangCode("eng");
             autnTxn.setCrBy("RESIDENT");
             autnTxn.setCrDTimes(LocalDateTime.now());
-            autnTxn.setToken("");
+            autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
             autnTxn.setOlvPartnerId(partnerId);
             autnTxnRepository.save(autnTxn);
         } catch (Exception e) {
