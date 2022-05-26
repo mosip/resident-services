@@ -94,9 +94,6 @@ public class NotificationService {
 	private static final String SMS_EMAIL_SUCCESS = "Notification has been sent to the provided contact detail(s)";
 	private static final String SMS_SUCCESS = "Notification has been sent to the provided contact phone number";
 	private static final String EMAIL_SUCCESS = "Notification has been sent to the provided email ";
-	private static final String SMS_EMAIL_SUCCESS_WITH_PHONENUM_EMAILID = "Notification has been sent to the provided email %s and phone number %s";
-	private static final String SMS_SUCCESS_WITH_PHONENUM = "Notification has been sent to the provided phone number %s";
-	private static final String EMAIL_SUCCESS_WITH_EMAILID = "Notification has been sent to the provided email %s";
 	private static final String SMS_EMAIL_FAILED = "Invalid phone number and email";
 	private static final String IS_SMS_NOTIFICATION_SUCCESS = "NotificationService::sendSMSNotification()::isSuccess?::";
 	private static final String IS_EMAIL_NOTIFICATION_SUCCESS = "NotificationService::sendEmailNotification()::isSuccess?::";
@@ -149,23 +146,21 @@ public class NotificationService {
 				IS_EMAIL_NOTIFICATION_SUCCESS + emailStatus);
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		if (smsStatus && emailStatus) {
-			if(email == null || phone == null) {
-				notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
-			} else {
-				notificationResponse.setMessage(String.format(SMS_EMAIL_SUCCESS_WITH_PHONENUM_EMAILID, utility.maskPhone(phone), utility.maskEmail(email)));
+			notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
+			if(email != null && phone != null) {
+				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
+				notificationResponse.setMaskedEmail(utility.maskEmail(email));
 			}
 			notificationResponse.setStatus(SUCCESS);
-		} else if (smsStatus) {
-			if(phone == null) {
-				notificationResponse.setMessage(SMS_SUCCESS);
-			} else {
-				notificationResponse.setMessage(String.format(SMS_SUCCESS_WITH_PHONENUM, utility.maskPhone(phone)));
-			}
+		} else if (smsStatus) {	
+			notificationResponse.setMessage(SMS_SUCCESS);
+			if(phone != null) {
+				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
+			} 
 		} else if (emailStatus) {
-			if(email == null) {
-				notificationResponse.setMessage(EMAIL_SUCCESS);
-			} else {
-				notificationResponse.setMessage(String.format(EMAIL_SUCCESS_WITH_EMAILID,  utility.maskEmail(email)));
+			notificationResponse.setMessage(EMAIL_SUCCESS);
+			if(email != null) {
+				notificationResponse.setMaskedEmail(utility.maskEmail(email));
 			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);

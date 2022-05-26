@@ -286,11 +286,11 @@ public class Utilitiy {
 		return formattedObject;
 	}
 	
-	public Object maskEmail(String email) {
+	public String maskEmail(String email) {
 		return maskData(email, emailMaskFunction);
 	}
 
-	public Object maskPhone(String phone) {
+	public String maskPhone(String phone) {
 		return maskData(phone, phoneMaskFunction);
 	}
 

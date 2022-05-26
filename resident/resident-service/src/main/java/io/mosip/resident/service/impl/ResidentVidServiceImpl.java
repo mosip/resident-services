@@ -45,6 +45,8 @@ import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidResponseDto;
+import io.mosip.resident.dto.VidResponseDtoV2;
+import io.mosip.resident.dto.VidResponseDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -170,7 +172,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					requestDto.getTransactionID(), "Request to generate VID"));
 			// create response dto
-			VidResponseDto vidResponseDto = new VidResponseDto();
+			VidResponseDto vidResponseDto;
+			if(notificationResponseDTO.getMaskedEmail() != null || notificationResponseDTO.getMaskedPhone() != null) {
+				VidResponseDtoV2 vidResponseDtov2 = new VidResponseDtoV2();
+				vidResponseDto = vidResponseDtov2;
+				vidResponseDtov2.setMaskedEmail(notificationResponseDTO.getMaskedEmail());
+				vidResponseDtov2.setMaskedPhone(notificationResponseDTO.getMaskedPhone());
+			} else {
+				vidResponseDto = new VidResponseDto();
+			}
 			vidResponseDto.setVid(vidResponse.getVID());
 			vidResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidResponseDto);
