@@ -249,6 +249,8 @@ public class ResidentController {
 		return response;
 	}
 
+
+
 	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/update-uin")

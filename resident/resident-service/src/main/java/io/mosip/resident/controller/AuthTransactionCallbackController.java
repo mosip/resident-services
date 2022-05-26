@@ -80,41 +80,4 @@ public class AuthTransactionCallbackController {
             }
         }
     }
-
-    @PostMapping(value = "/callback/authTransactionDummy/{partnerId}", consumes = "application/json")
-    @Operation(summary = "AuthTransactionDummyCallbackController", description = "AuthTransactionDummyCallbackController",
-            tags = {"AuthTransactionCallbackController"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
-    @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authTransaction-dummy-status.secret}", callback = "${resident.websub.callback.authTransaction-dummy-status.relative.url}", topic = "${resident.websub.authTransaction-dummy-status.topic}")
-    public void authTypeCallbackDummy(@RequestBody EventModel eventModel, @PathVariable("partnerId") String partnerId) {
-
-        logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-
-        if(eventModel.getEvent() != null && eventModel.getEvent().getData() != null) {
-            logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-            try {
-                logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
-                authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel, partnerId);
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
-            } catch (ResidentServiceCheckedException e) {
-                logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(),
-                        ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
-                                + ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
-                                + ExceptionUtils.getStackTrace(e));
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_FAILURE);
-                throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
-                        ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
-            }
-        }
-    }
 }

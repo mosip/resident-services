@@ -53,15 +53,6 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     @Value("${resident.websub.callback.authtype-status.url}")
     private String callbackUrl;
 
-    @Value("${resident.websub.authTransaction-dummy-status.secret}")
-    private String authTransactionDummyStatusSecret;
-
-    @Value("${resident.websub.authTransaction-dummy-status.topic}")
-    private String authTransactionDummyStatusTopic;
-
-    @Value("${resident.websub.callback.authTransaction-dummy-status.url}")
-    private String authTransactionDummyStatusCallbackUrlFull;
-
     @Value("${resident.websub.callback.authTransaction-status.url}")
     private String callbackAuthTransactionUrl;
 
@@ -89,7 +80,6 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     private void authTransactionSubscription() {
         try{
             subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
-            subscribe(authTransactionDummyStatusTopic, authTransactionDummyStatusCallbackUrlFull, authTransactionDummyStatusSecret, hubUrl);
         }
         catch (Exception e){
             logger.error( "authTransactionSubscription", "BaseWebSubInitializer", "Exception while subscribing to topic: " + e.getMessage());
