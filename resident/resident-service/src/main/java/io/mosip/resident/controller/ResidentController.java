@@ -134,6 +134,7 @@ public class ResidentController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-lock")
 	@Operation(summary = "reqAauthLock", description = "reqAauthLock", tags = { "resident-controller" })
@@ -157,6 +158,7 @@ public class ResidentController {
 		return response;
 	}
 
+	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-unlock")
 	@Operation(summary = "reqAuthUnlock", description = "reqAuthUnlock", tags = { "resident-controller" })
