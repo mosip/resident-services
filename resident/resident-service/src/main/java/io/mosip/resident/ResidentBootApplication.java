@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.authcodeflowproxy.api.service.validator.ScopeValidator;
+import io.mosip.kernel.authcodeflowproxy.api.service.validator.ValidateTokenHelper;
 
 @SpringBootApplication(scanBasePackages = { 
 		"io.mosip.resident.*", 
@@ -17,7 +19,7 @@ import io.mosip.idrepository.core.util.TokenIDGenerator;
 		"io.mosip.kernel.virusscanner.*", 
 		"io.mosip.commons.khazana.*",
 		"io.mosip.idrepository.core.util.*"})
-@Import({TokenIDGenerator.class})
+@Import({TokenIDGenerator.class, ScopeValidator.class, ValidateTokenHelper.class})
 public class ResidentBootApplication {
 
 	public static void main(String[] args) {
