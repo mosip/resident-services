@@ -34,6 +34,11 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 
     private static final Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallBackServiceImpl.class);
     private static final String OLV_PARTNER_ID = "olv_partner_id";
+    private static final String COMPLETED = "COMPLETED";
+    private static final String FAILED = "FAILED";
+    private static final String OTP = "OTP";
+    private static final String ENG = "eng";
+    private static final String RESIDENT = "RESIDENT";
 
     @Autowired
     private AuditUtil auditUtil;
@@ -52,12 +57,12 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
         try {
             logger.info( "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
 
-            insertInResidentTransactionTable(eventModel, "COMPLETED");
+            insertInResidentTransactionTable(eventModel, COMPLETED);
 
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::exception");
-            insertInResidentTransactionTable(eventModel, "FAILED");
+            insertInResidentTransactionTable(eventModel, FAILED);
             throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
                     ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
         }
@@ -94,11 +99,11 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setRequestDTtimes(LocalDateTime.now());
             autnTxn.setResponseDTimes(LocalDateTime.now());
             autnTxn.setRequestTrnId(eventModel.getEvent().getTransactionId());
-            autnTxn.setAuthTypeCode("OTP");
+            autnTxn.setAuthTypeCode(OTP);
             autnTxn.setStatusCode(status);
             autnTxn.setStatusComment(status);
-            autnTxn.setLangCode("eng");
-            autnTxn.setCrBy("RESIDENT");
+            autnTxn.setLangCode(ENG);
+            autnTxn.setCrBy(RESIDENT);
             autnTxn.setCrDTimes(LocalDateTime.now());
             autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
             autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
@@ -118,7 +123,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setResponseDTimes(LocalDateTime.now());
             autnTxn1.setStatusCode(status);
             autnTxn1.setStatusComment(status);
-            autnTxn1.setUpdBy("RESIDENT");
+            autnTxn1.setUpdBy(RESIDENT);
             autnTxn1.setUpdDTimes(LocalDateTime.now());
             autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
             autnTxnRepository.save(autnTxn1);
