@@ -23,6 +23,8 @@ public interface IdentityService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
+	
+	public IdentityDTO getIdentity(String id, String langCode) throws ResidentServiceCheckedException;
 
 	public String getIDAToken(String uin);
 	
