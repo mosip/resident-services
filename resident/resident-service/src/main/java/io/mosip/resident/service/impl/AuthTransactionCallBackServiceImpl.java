@@ -100,7 +100,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setCrBy("RESIDENT");
             autnTxn.setCrDTimes(LocalDateTime.now());
             autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
-            autnTxn.setOlvPartnerId(eventModel.getEvent().getId());
+            autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get("olv_partner_id"));
             autnTxnRepository.save(autnTxn);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -119,7 +119,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setStatusComment(status);
             autnTxn1.setUpdBy("RESIDENT");
             autnTxn1.setUpdDTimes(LocalDateTime.now());
-            autnTxn1.setOlvPartnerId(eventModel.getEvent().getId());
+            autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get("olv_partner_id"));
             autnTxnRepository.save(autnTxn1);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
