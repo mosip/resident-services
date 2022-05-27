@@ -23,7 +23,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +42,7 @@ public class AuthTransactionCallbackController {
     @Autowired
     private AuditUtil auditUtil;
 
-    @PostMapping(value = "/callback/authTransaction/{partnerId}", consumes = "application/json")
+    @PostMapping(value = "/callback/authTransaction", consumes = "application/json")
     @Operation(summary = "AuthTransactionCallbackController", description = "AuthTransactionCallbackController",
             tags = {"AuthTransactionCallbackController"})
     @ApiResponses(value = {
@@ -54,7 +53,7 @@ public class AuthTransactionCallbackController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authTransaction-status.secret}", callback = "${resident.websub.callback.authTransaction-status.relative.url}", topic = "${resident.websub.authTransaction-status.topic}")
-    public void authTypeCallback(@RequestBody EventModel eventModel, @PathVariable("partnerId") String partnerId) {
+    public void authTypeCallback(@RequestBody EventModel eventModel) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
@@ -66,7 +65,7 @@ public class AuthTransactionCallbackController {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
-                authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel, partnerId);
+                authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
             } catch (ResidentServiceCheckedException e) {
                 logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

@@ -45,7 +45,7 @@ public class WebSubUpdateAuthTypeController {
     @Autowired
     private AuditUtil auditUtil;
 
-    @PostMapping(value = "/callback/authTypeCallback/{partnerId}", consumes = "application/json")
+    @PostMapping(value = "/callback/authTypeCallback", consumes = "application/json")
     @Operation(summary = "WebSubUpdateAuthTypeController", description = "WebSubUpdateAuthTypeController",
             tags = {"WebSubUpdateAuthTypeController"})
     @ApiResponses(value = {
@@ -56,7 +56,7 @@ public class WebSubUpdateAuthTypeController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authtype-status.secret}", callback = "${resident.websub.callback.authtype-status.relative.url}", topic = "${resident.websub.authtype-status.topic}")
-    public void authTypeCallback(@RequestBody EventModel eventModel, @PathVariable("partnerId") String partnerId) {
+    public void authTypeCallback(@RequestBody EventModel eventModel) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
@@ -68,7 +68,7 @@ public class WebSubUpdateAuthTypeController {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
-                webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel, partnerId);
+                webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
             } catch (ResidentServiceCheckedException e) {
                 logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

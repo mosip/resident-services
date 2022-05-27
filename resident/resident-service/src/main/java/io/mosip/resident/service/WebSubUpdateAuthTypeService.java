@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface WebSubUpdateAuthTypeService {
-    public void updateAuthTypeStatus(EventModel eventModel, String partnerId) throws ResidentServiceCheckedException;
+    public void updateAuthTypeStatus(EventModel eventModel) throws ResidentServiceCheckedException;
 }

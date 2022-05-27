@@ -44,38 +44,38 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     private IdentityServiceImpl identityService;
 
     @Override
-    public void updateAuthTransactionCallBackService(EventModel eventModel, String partnerId) throws ResidentServiceCheckedException {
+    public void updateAuthTransactionCallBackService(EventModel eventModel) throws ResidentServiceCheckedException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::entry");
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try {
-            logger.info(partnerId, "", "", "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
+            logger.info( "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
 
-            insertInResidentTransactionTable(eventModel, partnerId, "COMPLETED");
+            insertInResidentTransactionTable(eventModel, "COMPLETED");
 
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::exception");
-            insertInResidentTransactionTable(eventModel, partnerId, "FAILED");
+            insertInResidentTransactionTable(eventModel, "FAILED");
             throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
                     ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
         }
     }
 
-    private void insertInResidentTransactionTable(EventModel eventModel, String partnerId, String status) {
+    private void insertInResidentTransactionTable(EventModel eventModel, String status) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
 
         try {
             AutnTxn autnTxn = new AutnTxn();
-            String id = eventModel.getEvent().getId()+partnerId;
+            String id = eventModel.getEvent().getId();
             String hash = HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8));
             AutnTxn autnTxn1 = autnTxnRepository.findById(hash);
             if (autnTxn1 != null) {
-                updateAuthTxnTable(autnTxn1, eventModel, partnerId, status);
+                updateAuthTxnTable(autnTxn1, eventModel, status);
             } else {
-                insertAuthTxnTable(autnTxn, eventModel, partnerId, status, hash);
+                insertAuthTxnTable(autnTxn, eventModel, status, hash);
             }
 
         } catch (Exception e) {
@@ -85,14 +85,14 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 
     }
 
-    private void insertAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String partnerId, String status, String hash) {
+    private void insertAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String status, String hash) {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertAuthTxnTable()::entry");
         try {
             autnTxn.setId(hash);
             autnTxn.setRequestDTtimes(LocalDateTime.now());
             autnTxn.setResponseDTimes(LocalDateTime.now());
-            autnTxn.setRequestTrnId(eventModel.getEvent().getId());
+            autnTxn.setRequestTrnId(eventModel.getEvent().getTransactionId());
             autnTxn.setAuthTypeCode("OTP");
             autnTxn.setStatusCode(status);
             autnTxn.setStatusComment(status);
@@ -100,7 +100,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setCrBy("RESIDENT");
             autnTxn.setCrDTimes(LocalDateTime.now());
             autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
-            autnTxn.setOlvPartnerId(partnerId);
+            autnTxn.setOlvPartnerId(eventModel.getEvent().getId());
             autnTxnRepository.save(autnTxn);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -110,7 +110,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 
     }
 
-    private void updateAuthTxnTable(AutnTxn autnTxn1, EventModel eventModel, String partnerId, String status) {
+    private void updateAuthTxnTable(AutnTxn autnTxn1, EventModel eventModel, String status) {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTxnTable()::entry");
         try {
@@ -119,7 +119,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setStatusComment(status);
             autnTxn1.setUpdBy("RESIDENT");
             autnTxn1.setUpdDTimes(LocalDateTime.now());
-            autnTxn1.setOlvPartnerId(partnerId);
+            autnTxn1.setOlvPartnerId(eventModel.getEvent().getId());
             autnTxnRepository.save(autnTxn1);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
