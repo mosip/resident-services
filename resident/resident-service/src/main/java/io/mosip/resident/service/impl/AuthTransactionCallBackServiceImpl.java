@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBackService {
 
     private static final Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallBackServiceImpl.class);
+    private static final String OLV_PARTNER_ID = "olv_partner_id";
 
     @Autowired
     private AuditUtil auditUtil;
@@ -100,7 +101,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setCrBy("RESIDENT");
             autnTxn.setCrDTimes(LocalDateTime.now());
             autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
-            autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get("olv_partner_id"));
+            autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
             autnTxnRepository.save(autnTxn);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -119,7 +120,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setStatusComment(status);
             autnTxn1.setUpdBy("RESIDENT");
             autnTxn1.setUpdDTimes(LocalDateTime.now());
-            autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get("olv_partner_id"));
+            autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
             autnTxnRepository.save(autnTxn1);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
