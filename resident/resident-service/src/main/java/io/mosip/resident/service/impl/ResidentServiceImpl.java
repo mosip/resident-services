@@ -1049,7 +1049,7 @@ public class ResidentServiceImpl implements ResidentService {
 					pageFetch = DEFAULT_PAGE_COUNT;
 				}
 			}
-			PageRequest pageRequest = PageRequest.of(pageStart, pageFetch);
+			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
 			if(validator.validateUin(individualId)) {
 				logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
