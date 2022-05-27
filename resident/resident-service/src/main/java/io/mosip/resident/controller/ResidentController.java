@@ -254,7 +254,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
 		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
 		try{
-			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch);
+			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId));
 			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
 			authTxnMap.put("authTransactions", AuthTxn);
 			autnTxnResponseDto.setResponse(authTxnMap);

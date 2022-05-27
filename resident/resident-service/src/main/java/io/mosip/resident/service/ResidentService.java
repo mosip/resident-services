@@ -27,5 +27,5 @@ public interface ResidentService {
 
 	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
-	List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException;
+	List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException;
 }

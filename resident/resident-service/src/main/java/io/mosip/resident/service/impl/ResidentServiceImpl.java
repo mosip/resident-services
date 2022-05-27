@@ -1031,7 +1031,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException {
+	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException {
 		try{
 
 			boolean fetchAllRecords = false;
@@ -1050,12 +1050,12 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}
 			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
-			if(validator.validateUin(individualId)) {
+			if(idType.equalsIgnoreCase("UIN")) {
 				logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
 						"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
 				return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest));
-			}else if(validator.validateVid(individualId)) {
+			}else if(idType.equalsIgnoreCase("VID")) {
 				logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),
 						"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
@@ -1104,15 +1104,17 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private List<AutnTxnDto> convertAutnTxnListToAuthTxnDto(List<AutnTxn> autnTxnList) {
 		List<AutnTxnDto> autnTxnDtos = new ArrayList<>();
-		for(AutnTxn autnTxn: autnTxnList) {
-			AutnTxnDto autnTxnDto = new AutnTxnDto();
-			autnTxnDto.setAuthtypeCode(autnTxn.getAuthTypeCode());
-			autnTxnDto.setEntityName(autnTxn.getEntityName());
-			autnTxnDto.setRequestdatetime(autnTxn.getRequestDTtimes());
-			autnTxnDto.setStatusCode(autnTxn.getStatusCode());
-			autnTxnDto.setTransactionID(autnTxn.getAuthTknId());
-			autnTxnDto.setStatusComment(autnTxn.getStatusComment());
-			autnTxnDtos.add(autnTxnDto);
+		if(autnTxnList != null){
+			for(AutnTxn autnTxn: autnTxnList) {
+				AutnTxnDto autnTxnDto = new AutnTxnDto();
+				autnTxnDto.setAuthtypeCode(autnTxn.getAuthTypeCode());
+				autnTxnDto.setEntityName(autnTxn.getEntityName());
+				autnTxnDto.setRequestdatetime(autnTxn.getRequestDTtimes());
+				autnTxnDto.setStatusCode(autnTxn.getStatusCode());
+				autnTxnDto.setTransactionID(autnTxn.getAuthTknId());
+				autnTxnDto.setStatusComment(autnTxn.getStatusComment());
+				autnTxnDtos.add(autnTxnDto);
+			}
 		}
 		return autnTxnDtos;
 	}
