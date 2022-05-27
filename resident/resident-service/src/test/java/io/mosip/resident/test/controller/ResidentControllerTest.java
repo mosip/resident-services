@@ -278,6 +278,20 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
+	public void testRequestAuthTypeUnLockSuccess() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		responseDto.setStatus("success");
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		this.mockMvc
+				.perform(
+						post("/req/auth-type-unlock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
 	public void testRequestAuthUnLockBadRequest() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
