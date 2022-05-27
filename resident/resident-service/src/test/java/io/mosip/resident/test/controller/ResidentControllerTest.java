@@ -305,6 +305,19 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
+	public void testRequestAuthTypeUnLockBadRequest() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		MvcResult result = this.mockMvc
+				.perform(post("/req/auth-type-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
 	public void testRequestAuthHistorySuccess() throws Exception {
 		authHistoryRequest = new RequestWrapper<AuthHistoryRequestDTO>();
 		AuthHistoryRequestDTO hisdto = new AuthHistoryRequestDTO();
