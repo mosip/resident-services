@@ -1095,13 +1095,15 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest) throws ResidentServiceCheckedException {
 		List<AutnTxn> autnTxnList = null;
+		List<List<AutnTxn>> autnTxnLists = new ArrayList<>();
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
 		for(String partnerId:partnerIds) {
 			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
 			if(idaToken!=null) {
-				return autnTxnRepository.findByToken(idaToken, pageRequest);
+				autnTxnLists.add(autnTxnRepository.findByToken(idaToken, pageRequest));
 			}
 		}
+		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
 		return autnTxnList;
 	}
 
