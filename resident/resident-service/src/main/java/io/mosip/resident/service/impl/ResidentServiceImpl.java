@@ -1050,24 +1050,26 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}
 			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
-			if(idType.equalsIgnoreCase("UIN")) {
-				logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
-				return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest));
-			}else if(idType.equalsIgnoreCase("VID")) {
-				logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
+			if (idType != null) {
+				if (idType.equalsIgnoreCase("UIN")) {
+					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest));
+				} else if (idType.equalsIgnoreCase("VID")) {
+					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
 
-				String uin = utilities.getUinByVid(individualId);
-				return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest));
-			} else{
-				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						"ResidentServiceImpl::getAuthTxnDetails():: Individual id is invalid");
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
-						ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+					String uin = utilities.getUinByVid(individualId);
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest));
+				} else {
+					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is invalid");
+					throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
+							ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+				}
 			}
 		}catch (ResidentServiceCheckedException e){
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -1088,6 +1090,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
+		return new ArrayList<>(0);
 	}
 
 	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest) throws ResidentServiceCheckedException {
@@ -1096,7 +1099,7 @@ public class ResidentServiceImpl implements ResidentService {
 		for(String partnerId:partnerIds) {
 			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
 			if(idaToken!=null) {
-				autnTxnList=autnTxnRepository.findByToken(idaToken, pageRequest);
+				return autnTxnRepository.findByToken(idaToken, pageRequest);
 			}
 		}
 		return autnTxnList;

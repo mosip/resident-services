@@ -126,6 +126,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setUpdBy(RESIDENT);
             autnTxn1.setUpdDTimes(LocalDateTime.now());
             autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
+            autnTxn1.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
             autnTxnRepository.save(autnTxn1);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
