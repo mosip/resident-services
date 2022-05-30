@@ -22,6 +22,8 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
@@ -36,6 +38,7 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 
@@ -643,4 +646,16 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
     }
+
+	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
+		
+		if(reqDto.getRequest() == null) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "request");
+		}
+		
+		if(reqDto.getRequest().getAid() == null) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "request/aid");
+		}
+		
+	}
 }

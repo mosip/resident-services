@@ -1,26 +1,12 @@
 package io.mosip.resident.test.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.ResidentCredentialController;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.validator.RequestValidator;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import javax.crypto.SecretKey;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,24 +19,32 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
-import javax.validation.Valid;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.resident.controller.ResidentCredentialController;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)

@@ -4,6 +4,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 import java.util.List;
@@ -28,4 +29,9 @@ public interface ResidentService {
 	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
 	List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException;
+
+	RegStatusCheckResponseDTO getRidStatus(String rid);
+
+	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
+			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 }

@@ -29,8 +29,8 @@ import io.mosip.resident.dto.IdAuthRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -45,7 +45,7 @@ import io.mosip.resident.util.AuditUtil;
 public class IdAuthControllerTest {
 
 	@MockBean
-	private IdAuthService idAuthService;
+	private IdAuthServiceImpl idAuthService;
 
 	@Mock
 	private AuditUtil auditUtil;

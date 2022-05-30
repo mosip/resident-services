@@ -1,6 +1,28 @@
 package io.mosip.resident.controller;
 
+import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -9,8 +31,26 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.AutnTxnResponseDto;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
@@ -24,20 +64,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -364,4 +390,28 @@ public class ResidentController {
 			return "VID";
 		return "RID";
 	}
+	
+	@ResponseFilter
+	@PostMapping("/aid/status")
+	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = {
+			"resident-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<AidStatusResponseDTO> checkAidStatus(@RequestBody RequestWrapper<AidStatusRequestDTO> reqDto)
+			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
+		logger.debug("ResidentController::getAidStatus()::entry");
+		validator.validateAidStatusRequestDto(reqDto);
+		audit.setAuditRequestDto(EventEnum.AID_STATUS);
+		AidStatusResponseDTO resp = residentService.getAidStatus(reqDto.getRequest());
+		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
+		logger.debug("ResidentController::getAidStatus()::exit");
+		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(resp);
+		return responseWrapper;
+	}
+	
+	
 }
