@@ -10,6 +10,6 @@ public class IdentityDTO {
 	private String phone;
 	private String yearOfBirth;
 	private String fullName;
-//	private Map<String, Object> individualBiometrics;
+	private String face;
 
 }
