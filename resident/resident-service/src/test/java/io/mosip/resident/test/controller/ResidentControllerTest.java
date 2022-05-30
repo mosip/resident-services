@@ -65,6 +65,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -278,6 +279,20 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
+	public void testRequestAuthTypeUnLockSuccess() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		responseDto.setStatus("success");
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		this.mockMvc
+				.perform(
+						post("/req/auth-type-unlock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
 	public void testRequestAuthUnLockBadRequest() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
@@ -287,6 +302,28 @@ public class ResidentControllerTest {
 				.perform(post("/req/auth-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
 		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testRequestAuthTypeUnLockBadRequest() throws Exception {
+		ResponseDTO responseDto = new ResponseDTO();
+		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any(), Mockito.any());
+
+		MvcResult result = this.mockMvc
+				.perform(post("/req/auth-type-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
+				.andExpect(status().isOk()).andReturn();
+		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testRequestGetAuthTxnDetailsSuccess() throws Exception {
+		Mockito.when(residentService.getAuthTxnDetails(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		mockMvc.perform(MockMvcRequestBuilders.get("/authTransactions/individualId/8251649601")
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
 	}
 
 	@Test

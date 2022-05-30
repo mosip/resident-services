@@ -16,6 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import io.mosip.resident.constant.ResidentConstants;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Component
@@ -52,17 +53,37 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     @Value("${resident.websub.callback.authtype-status.url}")
     private String callbackUrl;
 
+    @Value("${resident.websub.callback.authTransaction-status.url}")
+    private String callbackAuthTransactionUrl;
+
+    @Value("${resident.websub.authTransaction-status.topic}")
+    private String authTransactionTopic;
+
+    @Value("${resident.websub.authTransaction-status.secret}")
+    private String authTransactionSecret;
+
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info( "onApplicationEvent", "BaseWebSubInitializer", "Application is ready");
         taskScheduler.schedule(() -> {
             //Invoke topic registrations. This is done only once.
             //Note: With authenticated websub, only register topics which are only published by IDA
-            //tryRegisterTopicEvent(topic);
+            tryRegisterTopicEvent(topic);
+            tryRegisterTopicEvent(authTransactionTopic);
             //Init topic subscriptions
             initSubsriptions();
+            authTransactionSubscription();
         }, new Date(System.currentTimeMillis() + taskSubsctiptionDelay));
 
+    }
+
+    private void authTransactionSubscription() {
+        try{
+            subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
+        }
+        catch (Exception e){
+            logger.error( "authTransactionSubscription", "BaseWebSubInitializer", "Exception while subscribing to topic: " + e.getMessage());
+        }
     }
 
     protected void tryRegisterTopicEvent(String eventTopic) {
@@ -79,6 +100,21 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     }
 
     protected void initSubsriptions() {
+        try {
+            logger.debug("subscribe", "",
+                    "Trying to subscribe to topic: " + topic + " callback-url: "
+                            + callbackUrl);
+            subscribe(topic, callbackUrl, secret, hubUrl);
+            logger.info("subscribe", "",
+                    "Subscribed to topic: " + topic);
+        } catch (Exception e) {
+            logger.info("subscribe", e.getClass().toString(),
+                    "Error subscribing topic: " + topic + "\n" + e.getMessage());
+            throw e;
+        }
+    }
+
+    private void subscribe(String topic, String callbackUrl, String secret, String hubUrl) {
         try {
             SubscriptionChangeRequest subscriptionRequest = new SubscriptionChangeRequest();
             logger.debug("subscribe", "",

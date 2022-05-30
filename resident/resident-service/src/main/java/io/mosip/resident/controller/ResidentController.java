@@ -1,45 +1,18 @@
 package io.mosip.resident.controller;
 
-import java.io.ByteArrayInputStream;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -51,6 +24,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -64,6 +51,8 @@ public class ResidentController {
 
 	@Autowired
 	private AuditUtil audit;
+
+	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
 	@ResponseFilter
 	@PostMapping(value = "/rid/check-status")
@@ -134,6 +123,7 @@ public class ResidentController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
+	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-lock")
 	@Operation(summary = "reqAauthLock", description = "reqAauthLock", tags = { "resident-controller" })
@@ -157,6 +147,7 @@ public class ResidentController {
 		return response;
 	}
 
+	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-unlock")
 	@Operation(summary = "reqAuthUnlock", description = "reqAuthUnlock", tags = { "resident-controller" })
@@ -244,6 +235,42 @@ public class ResidentController {
 		response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
+		return response;
+	}
+
+	@GetMapping(path="/authTransactions/individualId/{ID}")
+	@Operation(summary = "getAuthTransactionsByIndividualId", description = "getAuthTransactionsByIndividualId", tags = { "resident-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseEntity<AutnTxnResponseDto> getAuthTxnDetails(@PathVariable("ID") String individualId,
+																@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) throws ResidentServiceCheckedException {
+		ResponseEntity<AutnTxnResponseDto> response = null;
+		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
+		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
+		try{
+			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId));
+			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
+			authTxnMap.put("authTransactions", AuthTxn);
+			autnTxnResponseDto.setResponse(authTxnMap);
+			autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+			response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
+		} catch (ResidentServiceCheckedException e){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE, individualId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorCode(), e.getMessage());
+			audit.setAuditRequestDto(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE);
+			throw new ResidentServiceException(ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorCode(),
+					ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorMessage(), e);
+		}
+
 		return response;
 	}
 

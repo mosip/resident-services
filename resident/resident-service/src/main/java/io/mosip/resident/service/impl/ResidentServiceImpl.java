@@ -9,18 +9,22 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
+import io.mosip.resident.entity.AutnTxn;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.*;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -55,6 +59,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UIN = "uin";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
+	private static final Integer DEFAULT_PAGE_START = 1;
+	private static final Integer DEFAULT_PAGE_COUNT = 10;
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -72,6 +78,9 @@ public class ResidentServiceImpl implements ResidentService {
 	PartnerService partnerService;
 
 	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
+
+	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
@@ -81,10 +90,16 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
+	private AutnTxnRepository autnTxnRepository;
+
+	@Autowired
 	Environment env;
 
 	@Autowired
 	private Utilitiy utility;
+
+	@Autowired
+	private RequestValidator validator;
 
 	@Autowired
 	private Utilities utilities;
@@ -109,6 +124,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private DocumentService docService;
+
+	@Autowired
+	private PartnerServiceImpl partnerServiceImpl;
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -1010,5 +1028,99 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	@Override
+	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException {
+		try{
+
+			boolean fetchAllRecords = false;
+			if(pageStart == null) {
+				if(pageFetch == null) {
+					//If both Page start and page fetch values are null return all records
+					fetchAllRecords = true;
+					pageStart = DEFAULT_PAGE_START;
+					pageFetch = DEFAULT_PAGE_COUNT;
+				} else {
+					pageStart = DEFAULT_PAGE_START;
+				}
+			} else {
+				if(pageFetch == null) {
+					pageFetch = DEFAULT_PAGE_COUNT;
+				}
+			}
+			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
+			if (idType != null) {
+				if (idType.equalsIgnoreCase("UIN")) {
+					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest));
+				} else if (idType.equalsIgnoreCase("VID")) {
+					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
+
+					String uin = utilities.getUinByVid(individualId);
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest));
+				} else {
+					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is invalid");
+					throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
+							ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+				}
+			}
+		}catch (ResidentServiceCheckedException e){
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getAuthTxnDetails():: Individual id is invalid");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
+					ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
+		} catch (ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getAuthTxnDetails():: ApisResourceAccessException");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getAuthTxnDetails():: IOException");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+		return new ArrayList<>(0);
+	}
+
+	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest) throws ResidentServiceCheckedException {
+		List<AutnTxn> autnTxnList = null;
+		List<List<AutnTxn>> autnTxnLists = new ArrayList<>();
+		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
+		for(String partnerId:partnerIds) {
+			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
+			if(idaToken!=null) {
+				autnTxnLists.add(autnTxnRepository.findByToken(idaToken, pageRequest));
+			}
+		}
+		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
+		return autnTxnList;
+	}
+
+	private List<AutnTxnDto> convertAutnTxnListToAuthTxnDto(List<AutnTxn> autnTxnList) {
+		List<AutnTxnDto> autnTxnDtos = new ArrayList<>();
+		if(autnTxnList != null){
+			for(AutnTxn autnTxn: autnTxnList) {
+				AutnTxnDto autnTxnDto = new AutnTxnDto();
+				autnTxnDto.setAuthtypeCode(autnTxn.getAuthTypeCode());
+				autnTxnDto.setEntityName(autnTxn.getEntityName());
+				autnTxnDto.setRequestdatetime(autnTxn.getRequestDTtimes());
+				autnTxnDto.setStatusCode(autnTxn.getStatusCode());
+				autnTxnDto.setTransactionID(autnTxn.getAuthTknId());
+				autnTxnDto.setStatusComment(autnTxn.getStatusComment());
+				autnTxnDtos.add(autnTxnDto);
+			}
+		}
+		return autnTxnDtos;
 	}
 }

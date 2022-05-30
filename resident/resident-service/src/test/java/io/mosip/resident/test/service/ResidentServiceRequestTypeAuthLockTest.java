@@ -13,6 +13,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -60,6 +61,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 
 	@Mock
 	PartnerServiceImpl partnerServiceImpl;
+
+	@Mock
+	PartnerService partnerService;
 
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();

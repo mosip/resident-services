@@ -82,6 +82,6 @@ public class WebSubUpdateAuthTypeServiceTest {
         e1.setPublishedOn(String.valueOf(LocalDateTime.now()));
         e1.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
 
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel, "1234567567891");
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
     }
 }

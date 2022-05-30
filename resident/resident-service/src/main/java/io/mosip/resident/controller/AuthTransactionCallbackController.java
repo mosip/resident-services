@@ -12,7 +12,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.WebSubUpdateAuthTypeService;
+import io.mosip.resident.service.AuthTransactionCallBackService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,31 +23,28 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name="WebSubUpdateAuthTypeController", description="WebSubUpdateAuthTypeController")
-public class WebSubUpdateAuthTypeController {
+@Tag(name="AuthTransactionCallbackController", description="AuthTransactionCallbackController")
+public class AuthTransactionCallbackController {
 
-    private static Logger logger = LoggerConfiguration.logConfig(WebSubUpdateAuthTypeController.class);
+    private static Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallbackController.class);
 
     @Autowired
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-
-
     @Autowired
-    private WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
+    private AuthTransactionCallBackService authTransactionCallBackService;
 
     @Autowired
     private AuditUtil auditUtil;
 
-    @PostMapping(value = "/callback/authTypeCallback", consumes = "application/json")
-    @Operation(summary = "WebSubUpdateAuthTypeController", description = "WebSubUpdateAuthTypeController",
-            tags = {"WebSubUpdateAuthTypeController"})
+    @PostMapping(value = "/callback/authTransaction", consumes = "application/json")
+    @Operation(summary = "AuthTransactionCallbackController", description = "AuthTransactionCallbackController",
+            tags = {"AuthTransactionCallbackController"})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -55,20 +52,20 @@ public class WebSubUpdateAuthTypeController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
-    @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authtype-status.secret}", callback = "${resident.websub.callback.authtype-status.relative.url}", topic = "${resident.websub.authtype-status.topic}")
+    @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authTransaction-status.secret}", callback = "${resident.websub.callback.authTransaction-status.relative.url}", topic = "${resident.websub.authTransaction-status.topic}")
     public void authTypeCallback(@RequestBody EventModel eventModel) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
+                LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
 
         if(eventModel.getEvent() != null && eventModel.getEvent().getData() != null) {
             logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
+                    LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
             try {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
+                        LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
-                webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+                authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
             } catch (ResidentServiceCheckedException e) {
                 logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
