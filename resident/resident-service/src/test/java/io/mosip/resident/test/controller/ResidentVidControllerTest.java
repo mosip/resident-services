@@ -63,8 +63,6 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentVidControllerTest {
 
-	private static final String JSON_STRING_RESPONSE = "";
-
 	@MockBean
 	private ResidentVidServiceImpl residentVidService;
 
@@ -459,6 +457,51 @@ public class ResidentVidControllerTest {
 		when(residentVidService.getVidPolicy()).thenThrow(new ResidentServiceCheckedException());
 		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print())
 				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-426")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void vidCreationV2SuccessTest() throws Exception {
+
+		VidResponseDto dto = new VidResponseDto();
+		dto.setVid("12345");
+		dto.setMessage("Successful");
+
+		ResponseWrapper<VidResponseDto> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(dto);
+
+		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class))).thenReturn(responseWrapper);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(getRequest());
+
+		this.mockMvc.perform(post("/generate-vid").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void vidRevokingV2SuccessTest() throws Exception {
+
+		VidRevokeResponseDTO dto = new VidRevokeResponseDTO();
+		dto.setMessage("Successful");
+
+		ResponseWrapper<VidRevokeResponseDTO> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(dto);
+
+		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))
+				.thenReturn(responseWrapper);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(getRevokeRequest());
+
+		RequestBuilder builder = MockMvcRequestBuilders.patch("/revoke-vid/{vid}", "2038096257310540").content(json)
+				.contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
+				.characterEncoding("UTF-8");
+
+		this.mockMvc.perform(builder).andExpect(status().isOk());
+		// .andExpect(jsonPath("$.response.message", is("Successful")));
+
 	}
 
 }
