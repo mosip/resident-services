@@ -20,7 +20,7 @@ public interface ProxyMasterdataService {
 	 * Get valid documents by language code.
 	 * 
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
@@ -29,7 +29,7 @@ public interface ProxyMasterdataService {
 	 * Get location hierarchy levels by language code.
 	 * 
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(String langCode)
@@ -40,7 +40,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param locationCode
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getImmediateChildrenByLocCodeAndLangCode(String locationCode, String langCode)
@@ -51,7 +51,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param locationCode
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(String locationCode, String langCode)
@@ -64,7 +64,7 @@ public interface ProxyMasterdataService {
 	 * @param longitude
 	 * @param latitude
 	 * @param proximityDistance
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, double longitude,
@@ -75,7 +75,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param applicantId
 	 * @param languages
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, List<String> languages)
@@ -87,7 +87,7 @@ public interface ProxyMasterdataService {
 	 * @param langCode
 	 * @param hierarchyLevel
 	 * @param name
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
@@ -103,7 +103,7 @@ public interface ProxyMasterdataService {
 	 * @param pageSize
 	 * @param orderBy
 	 * @param sortBy
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
@@ -115,7 +115,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param registrationCenterID
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCenterWorkingDays(String registrationCenterID, String langCode)
@@ -127,7 +127,7 @@ public interface ProxyMasterdataService {
 	 * @param schemaVersion
 	 * @param domain
 	 * @param type
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getLatestIdSchema(double schemaVersion, String domain, String type)
