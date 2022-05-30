@@ -202,11 +202,10 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseWrapper<?> retrieveVids() throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
 		logger.debug("ResidentVidController::retrieveVids()::entry");
-		//FIXME correct the audit enum
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
+		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS);
 		String residentIndividualId = getResidentIndividualId();
 		ResponseWrapper<List<Map<String, ?>>> retrieveVids = residentVidService.retrieveVids(residentIndividualId);
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
+		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS_SUCCESS);
 		logger.debug("ResidentVidController::retrieveVids()::exit");
 		return retrieveVids;
 	}

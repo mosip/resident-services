@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -71,6 +72,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentVidServiceImpl.class);
 
 	private static final String VID_ALREADY_EXISTS_ERROR_CODE = "IDR-VID-003";
+	
+	private static final String VID = "vid";
+	private static final String VID_TYPE = "vidType";
 
 	@Value("${resident.vid.id}")
 	private String id;
@@ -115,6 +119,10 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private IdentityServiceImpl identityServiceImpl;
 
 	private String vidPolicy;
+	
+
+	@Value("${perpatual.vid-type:PERPETUAL}")
+	private String perpatualVidType;
 	
 	@Override
 	public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto,
@@ -452,6 +460,19 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		res.setResponse(filteredList);
 		return res;
 		
+	}
+	
+	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVids(uin);
+		List<Map<String, ?>> vids = vidResp.getResponse();
+		if(vids != null && !vids.isEmpty()) {
+			return vids.stream()
+				.filter(map -> map.containsKey(VID_TYPE) && 
+							perpatualVidType.equalsIgnoreCase(String.valueOf(map.get(VID_TYPE))))
+				.map(map -> String.valueOf( map.get(VID)))
+				.findAny();
+		}
+		return Optional.empty();
 	}
 	
 }

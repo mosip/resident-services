@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -114,6 +116,12 @@ public class IdentityServiceImpl implements IdentityService {
 	@Value("${resident.documents.category}")
 	private String individualDocs;
 
+	@Autowired
+	private ResidentVidService residentVidService;
+	
+	@Value("${resident.flag.use-vid-only:false}")
+	private boolean useVidOnly;
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
 	@Override
@@ -164,6 +172,11 @@ public class IdentityServiceImpl implements IdentityService {
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException {
 		return getIdentityAttributes(id, null, false);
+	}
+	
+	@Override
+	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
+		return getIdentityAttributes(id, null, includeUin);
 	}
 
 	@Override
@@ -336,5 +349,24 @@ public class IdentityServiceImpl implements IdentityService {
 	public String getResidentIdaToken() throws ApisResourceAccessException {
 		return  getClaimValue(IDA_TOKEN);
 	}
+
+	String getIndividualIdForAid(String aid)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			IdentityDTO identity = getIdentity(aid);
+			String uin = identity.getUIN();
+			String individualId;
+			if(useVidOnly) {
+				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
+				if(perpVid.isPresent()) {
+					individualId = perpVid.get();
+				} else {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.PERPETUAL_VID_NOT_AVALIABLE);
+				}
+			} else {
+				individualId = uin;
+			}
+			return individualId;
+	}
+
 
 }

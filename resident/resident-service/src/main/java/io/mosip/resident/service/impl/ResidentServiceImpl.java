@@ -1,24 +1,19 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.entity.AutnTxn;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.*;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.repository.AutnTxnRepository;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.*;
-import io.mosip.resident.util.*;
-import io.mosip.resident.validator.RequestValidator;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +26,85 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.RegistrationExternalStatusCode;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.MachineCreateRequestDTO;
+import io.mosip.resident.dto.MachineCreateResponseDTO;
+import io.mosip.resident.dto.MachineDto;
+import io.mosip.resident.dto.MachineSearchRequestDTO;
+import io.mosip.resident.dto.MachineSearchResponseDTO;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
+import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
+import io.mosip.resident.dto.RegProcRePrintRequestDto;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusRequestDTO;
+import io.mosip.resident.dto.RegistrationStatusResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentIndividialIDType;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentUpdateDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.entity.AutnTxn;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.RIDInvalidException;
+import io.mosip.resident.exception.ResidentMachineServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
+import io.mosip.resident.exception.ValidationFailedException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.repository.AutnTxnRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.PartnerService;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.UINCardDownloadService;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utilitiy;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
 
+	private static final String PROCESSED = "PROCESSED";
 	private static final String DATETIME_PATTERN = "mosip.utc-datetime-pattern";
 	private static final String STATUS_CHECK_ID = "mosip.resident.service.status.check.id";
 	private static final String STATUS_CHECEK_VERSION = "mosip.resident.service.status.check.version";
@@ -99,9 +161,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private Utilitiy utility;
 
 	@Autowired
-	private RequestValidator validator;
-
-	@Autowired
 	private Utilities utilities;
 
 	@Value("${resident.center.id}")
@@ -126,10 +185,18 @@ public class ResidentServiceImpl implements ResidentService {
 	private DocumentService docService;
 
 	@Autowired
-	private PartnerServiceImpl partnerServiceImpl;
-
+	private PartnerService partnerServiceImpl;
+	
+	@Autowired
+	private IdAuthService idAuthServiceImpl;
+	
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
+		return getRidStatus(request.getIndividualId());
+	}
+
+	@Override
+	public RegStatusCheckResponseDTO getRidStatus(String ridValue) {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getRidStatus():: entry");
 
@@ -137,7 +204,7 @@ public class ResidentServiceImpl implements ResidentService {
 		RegistrationStatusResponseDTO responseWrapper = null;
 		RegistrationStatusRequestDTO dto = new RegistrationStatusRequestDTO();
 		List<RegistrationStatusSubRequestDto> rids = new ArrayList<>();
-		RegistrationStatusSubRequestDto rid = new RegistrationStatusSubRequestDto(request.getIndividualId());
+		RegistrationStatusSubRequestDto rid = new RegistrationStatusSubRequestDto(ridValue);
 
 		rids.add(rid);
 		dto.setRequest(rids);
@@ -1127,5 +1194,29 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 		}
 		return autnTxnDtos;
+	}
+	
+	@Override
+	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
+		try {
+			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getAid());
+			boolean otpValid = idAuthServiceImpl.validateOtp(reqDto.getTransactionID(), individualId, reqDto.getOtp());
+			if(otpValid) {
+				AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
+				aidStatusResponseDTO.setIndividualId(individualId);
+				aidStatusResponseDTO.setAidStatus(PROCESSED);
+				aidStatusResponseDTO.setTransactionID(reqDto.getTransactionID());
+				return aidStatusResponseDTO;
+			}
+			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getAidStatus()::" + e.getClass().getSimpleName()+" :" + e.getMessage());
+			RegStatusCheckResponseDTO ridStatus = getRidStatus(reqDto.getAid());
+			AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
+			aidStatusResponseDTO.setAidStatus(ridStatus.getRidStatus());
+			return aidStatusResponseDTO;
+		}
 	}
 }

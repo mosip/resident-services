@@ -31,6 +31,8 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -48,6 +50,7 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
@@ -422,4 +425,28 @@ public class ResidentController {
 			return "VID";
 		return "RID";
 	}
+	
+	@ResponseFilter
+	@PostMapping("/aid/status")
+	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = {
+			"resident-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<AidStatusResponseDTO> checkAidStatus(@RequestBody RequestWrapper<AidStatusRequestDTO> reqDto)
+			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
+		logger.debug("ResidentController::getAidStatus()::entry");
+		validator.validateAidStatusRequestDto(reqDto);
+		audit.setAuditRequestDto(EventEnum.AID_STATUS);
+		AidStatusResponseDTO resp = residentService.getAidStatus(reqDto.getRequest());
+		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
+		logger.debug("ResidentController::getAidStatus()::exit");
+		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(resp);
+		return responseWrapper;
+	}
+	
+	
 }

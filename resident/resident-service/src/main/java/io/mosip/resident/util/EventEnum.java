@@ -410,6 +410,53 @@ public enum EventEnum {
 			"Requesting auth transaction details for transaction id %s failed", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
+
+	GET_VIDS("RES-SER-191", RegistrationConstants.SYSTEM, "get vids",
+			"get vids", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_VIDS_SUCCESS("RES-SER-192", RegistrationConstants.SYSTEM,
+			"get vids", "get vids is succeeded", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+
+	GET_VIDS_EXCEPTION("RES-SER-193", RegistrationConstants.SYSTEM,
+			"get vids", "get vids is failed", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	
+	OTP_AID_GEN("RES-SER-194", RegistrationConstants.SYSTEM, "generating otp for aid", "Request for generating otp for aid", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	OTP_AID_GEN_SUCCESS("RES-SER-195", RegistrationConstants.SYSTEM, "generating otpfor aid", "otp generation for aid is success",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	OTP_AID_GEN_EXCEPTION("RES-SER-196", RegistrationConstants.SYSTEM, "generating otp for aid", "otp generation for aid is failed",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	
+	GET_INPUT_ATTRIBUTES("RES-SER-197", RegistrationConstants.SYSTEM, "get input attributes",
+			"get input attributes", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_INPUT_ATTRIBUTES_SUCCESS("RES-SER-198", RegistrationConstants.SYSTEM,
+			"get input attributes", "get input attributes is succeeded", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+
+	GET_INPUT_ATTRIBUTES_EXCEPTION("RES-SER-199", RegistrationConstants.SYSTEM,
+			"get input attributes", "get input attributes is failed", "RES-SER",
+			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	
+	AID_STATUS("RES-SER-210", RegistrationConstants.SYSTEM, "Checking RID status", "Request for checking RID status",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	AID_STATUS_RESPONSE("RES-SER-211", RegistrationConstants.SYSTEM, "Checking RID status", "RID status is %s",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
+	AID_STATUS_SUCCESS("RES-SER-212", RegistrationConstants.SYSTEM, "Checking RID status",
+			"Request for checking RID status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	;
 
 	private final String eventId;
