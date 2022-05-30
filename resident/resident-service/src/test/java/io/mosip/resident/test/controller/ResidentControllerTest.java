@@ -43,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.mosip.kernel.authcodeflowproxy.api.service.validator.ScopeValidator;
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.util.DateUtils;
@@ -106,6 +107,9 @@ public class ResidentControllerTest {
 	private DocumentService docService;
 	
 	@MockBean
+	private ScopeValidator scopeValidator;
+	
+	@MockBean
 	private ObjectStoreHelper objectStore;
 	
 	@Mock
@@ -159,7 +163,7 @@ public class ResidentControllerTest {
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("5734728510");
-
+		when(scopeValidator.hasAllScopes(Mockito.anyList())).thenReturn(true);
 	}
 
 	@Test
