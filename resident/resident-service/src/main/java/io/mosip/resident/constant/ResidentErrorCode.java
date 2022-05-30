@@ -61,7 +61,8 @@ public enum ResidentErrorCode {
 	RESIDENT_AUTH_TXN_DETAILS_FAILURE("RES-SER-445", "Failed to retrieve auth transaction details"),
 	INVALID_PAGE_START_VALUE("RES-SER-446", "Invalid page start value"),
 	INVALID_PAGE_FETCH_VALUE("RES-SER-447", "Invalid page fetch value"),
-	BIOMETRIC_MISSING("RES-SER-445", "Biometric data is not available in database")
+	BIOMETRIC_MISSING("RES-SER-445", "Biometric data is not available in database"),
+	EMPTY_COLLECTION_FOUND("RES-SER-446","Collection is empty")
 
 	;
 	private final String errorCode;

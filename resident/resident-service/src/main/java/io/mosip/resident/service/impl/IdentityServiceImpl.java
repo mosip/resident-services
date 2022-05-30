@@ -113,9 +113,6 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.documents.category}")
 	private String individualDocs;
-	
-	@Value("${resident.individualbiometric.face.key}")
-	private String faceValue;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -144,12 +141,16 @@ public class IdentityServiceImpl implements IdentityService {
 			Map<String, String> bdbBasedOnType;
 			try {
 				bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
+				if(bdbBasedOnType.isEmpty()) {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
+							ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
+				}
+				identityDTO.setFace(bdbBasedOnType.values().iterator().next());
 			} catch (Exception e) {
 				logger.error("Error occured in accessing biometric data %s", e.getMessage());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
 						ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
 			}
-			identityDTO.setFace(bdbBasedOnType.get(faceValue));
 
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
