@@ -7,6 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,10 +62,12 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -95,6 +98,9 @@ public class ResidentControllerTest {
 	
 	@MockBean
 	private IdAuthServiceImpl idAuthServiceImpl;
+	
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
 	
 	@MockBean
 	private DocumentService docService;
@@ -132,7 +138,7 @@ public class ResidentControllerTest {
 
 
 	@Before
-	public void setUp() {
+	public void setUp() throws ApisResourceAccessException {
 		MockitoAnnotations.initMocks(this);
 		authLockRequest = new RequestWrapper<AuthLockOrUnLockRequestDto>();
 
@@ -151,6 +157,8 @@ public class ResidentControllerTest {
 		authLockRequestToJson = gson.toJson(authLockRequest);
 		euinRequestToJson = gson.toJson(euinRequest);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("5734728510");
 
 	}
 
