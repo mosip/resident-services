@@ -1,16 +1,16 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.websub.model.Event;
-import io.mosip.kernel.core.websub.model.EventModel;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.websub.spi.PublisherClient;
 import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.WebSubUpdateAuthTypeServiceImpl;
+import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import org.junit.Before;
@@ -28,12 +28,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
+import java.net.URI;
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
-public class WebSubUpdateAuthTypeServiceTest {
+public class PartnerServiceImplTest {
 
     @Mock
     private ResidentServiceRestClient residentServiceRestClient;
@@ -45,13 +48,13 @@ public class WebSubUpdateAuthTypeServiceTest {
     private AuditUtil audit;
 
     @InjectMocks
-    private WebSubUpdateAuthTypeServiceImpl webSubUpdateAuthTypeService;
+    private PartnerServiceImpl partnerService;
 
     @Mock
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
-    private ResidentTransactionRepository residentTransactionRepository;
+    private AutnTxnRepository autnTxnRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,28 +65,25 @@ public class WebSubUpdateAuthTypeServiceTest {
     @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
+    private ResponseWrapper<?> responseWrapper;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(partnerService).build();
+        responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setVersion("v1");
+        responseWrapper.setId("1");
     }
 
     @Test
-    public void testWebSubUpdateAuthTypeService() throws ResidentServiceCheckedException {
+    public void testPartnerService() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        String partnerId = "Online_Verification_Partner";
+        ArrayList<String> partnerIds = new ArrayList<>();
+        URI uri = URI.create("http://localhost:8080/v1/partner/");
+        responseWrapper = residentServiceRestClient.getApi(uri, ResponseWrapper.class);
 
-        EventModel eventModel = new EventModel();
-        EventModel e1=new EventModel();
-        Event event=new Event();
-        event.setTransactionId("1234");
-        event.setId("1234");
-
-        e1.setEvent(event);
-        e1.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
-        e1.setPublishedOn(String.valueOf(LocalDateTime.now()));
-        e1.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-
-
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(e1);
+        partnerService.getPartnerDetails(partnerId);
+        assertEquals(0, partnerIds.size());
     }
 }

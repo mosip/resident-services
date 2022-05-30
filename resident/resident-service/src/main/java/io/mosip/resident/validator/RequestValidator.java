@@ -635,4 +635,12 @@ public class RequestValidator {
 			return false;
 		}
 	}
+
+    public void validateAuthTxnDetailsRequest(String individualId, Integer pageStart, Integer pageFetch) {
+		if (StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request auth txn details API"));
+			throw new InvalidInputException("individualId");
+		}
+    }
 }

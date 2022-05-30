@@ -402,7 +402,13 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION("RES-SER-188", RegistrationConstants.SYSTEM, "get partners by partner type",
 			"get partners by partner type is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_AUTH_TXN_DETAILS("RES-SER-189", RegistrationConstants.SYSTEM, "Request auth transaction details",
+			"Requesting auth transaction details for transaction id %s", "RES-SER", "Residence service", "%s",
+			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_AUTH_TXN_DETAILS_FAILURE("RES-SER-190", RegistrationConstants.SYSTEM, "Request auth transaction details",
+			"Requesting auth transaction details for transaction id %s failed", "RES-SER", "Residence service", "%s",
+			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
 	;
 

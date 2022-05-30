@@ -2,8 +2,8 @@ package io.mosip.resident.test.controller;
 
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
+import io.mosip.resident.controller.AuthTransactionCallbackController;
 import io.mosip.resident.controller.VerificationController;
-import io.mosip.resident.controller.WebSubUpdateAuthTypeController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.*;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 
 /**
  * Web-Sub Update Controller Test
- * Note: This class is used to test the Web-Sub Update Controller
+ * Note: This class is used to test the Auth transaction callback controller
  * @author Kamesh Shekhar Prasad
  */
 
@@ -40,7 +40,7 @@ import java.time.LocalDateTime;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
-public class WebSubUpdateAuthTypeControllerTest {
+public class AuthTransactionCallbackControllerTest {
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")
@@ -50,10 +50,10 @@ public class WebSubUpdateAuthTypeControllerTest {
     private AuditUtil audit;
 
     @InjectMocks
-    WebSubUpdateAuthTypeController webSubUpdateAuthTypeController;
+    AuthTransactionCallbackController authTransactionCallbackController;
 
     @MockBean
-    WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
+    private AuthTransactionCallBackService authTransactionCallBackService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -83,7 +83,7 @@ public class WebSubUpdateAuthTypeControllerTest {
     public void setup() throws Exception {
 
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(authTransactionCallbackController).build();
     }
 
     @Test
@@ -98,9 +98,9 @@ public class WebSubUpdateAuthTypeControllerTest {
         e1.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         e1.setPublishedOn(String.valueOf(LocalDateTime.now()));
         e1.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        webSubUpdateAuthTypeController.authTypeCallback(eventModel);
+        authTransactionCallbackController.authTypeCallback(eventModel);
 
-        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback/{partnerId}", "1234567891"))
+        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction", "1234567891"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(eventModel.toString()))
                 .andReturn();
