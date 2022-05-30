@@ -224,7 +224,6 @@ public class ResidentController {
 		return response;
 	}
 
-	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
