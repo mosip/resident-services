@@ -23,4 +23,18 @@ public class AuthorizedScopesDto {
 	
 	private List<String> getvids;
 	
+	private List<String> getAuthTransactions;
+	
+	private List<String> postAuthTypeLock;
+	
+	private List<String> postAuthTypeUnlock;
+	
+	private List<String> getAuthLockStatus;
+	
+	private List<String> patchUpdateUin;
+	
+	private List<String> postUploadDocuments;
+	
+	private List<String> getUploadedDocuments;
+	
 }

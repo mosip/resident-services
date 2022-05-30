@@ -13,9 +13,9 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +54,7 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
@@ -78,6 +79,9 @@ public class ResidentController {
 	@Autowired
 	private AuditUtil audit;
 
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
 	@ResponseFilter
@@ -198,19 +202,27 @@ public class ResidentController {
 		return response;
 	}
 
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getPostAuthTypeLock()"
+		+ ")")
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-type-lock")
-	@Operation(summary = "reqAauthTypeLock", description = "reqAauthTypeLock", tags = { "resident-controller" })
+	@Operation(summary = "reqAauthTypeLockV2", description = "reqAauthTypeLockV2", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public ResponseWrapper<ResponseDTO> reqAauthTypeLock(
+	public ResponseWrapper<ResponseDTO> reqAauthTypeLockV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type lock API"));
+		String individualId = identityServiceImpl.getResidentIndvidualId();
+		if(requestDTO.getRequest() != null) {
+			requestDTO.getRequest().setIndividualId(individualId);
+		}
+		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.LOCK);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK,requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest(), AuthTypeStatus.LOCK));
@@ -218,20 +230,28 @@ public class ResidentController {
 		return response;
 	}
 
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getPostAuthTypeUnlock()"
+		+ ")")
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-type-unlock")
-	@Operation(summary = "reqAuthTypeUnlock", description = "reqAuthTypeUnlock", tags = { "resident-controller" })
+	@Operation(summary = "reqAuthTypeUnlockV2", description = "reqAuthTypeUnlockV2", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResponseDTO> reqAuthTypeUnlock(
+	public ResponseWrapper<ResponseDTO> reqAuthTypeUnlockV2(
 			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth type unlock  API"));
+		String individualId = identityServiceImpl.getResidentIndvidualId();
+		if(requestDTO.getRequest() != null) {
+			requestDTO.getRequest().setIndividualId(individualId);
+		}
+		validator.validateAuthUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK, requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
@@ -264,7 +284,10 @@ public class ResidentController {
 		return response;
 	}
 
-	@GetMapping(path="/authTransactions/individualId/{ID}")
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetAuthTransactions()"
+		+ ")")
+	@GetMapping(path="/authTransactions")
 	@Operation(summary = "getAuthTransactionsByIndividualId", description = "getAuthTransactionsByIndividualId", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -272,12 +295,12 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<AutnTxnResponseDto> getAuthTxnDetails(@PathVariable("ID") String individualId,
-																@RequestParam(name = "pageStart", required = false) Integer pageStart,
-																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) throws ResidentServiceCheckedException {
+	public ResponseEntity<AutnTxnResponseDto> getAuthTxnDetails(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseEntity<AutnTxnResponseDto> response = null;
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
+		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
 		try{
 			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId));
@@ -329,7 +352,11 @@ public class ResidentController {
 	 * 
 	 * @param requestDTO The request object that is passed to the API.
 	 * @return ResponseWrapper<ResidentUpdateResponseDTO>
+	 * @throws ApisResourceAccessException 
 	 */
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getPatchUpdateUin()"
+		+ ")")
 	@ResponseFilter
 	@PatchMapping(value = "/req/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
@@ -341,11 +368,15 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<ResidentUpdateResponseDTO> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update Uin API"));
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
+		String individualId = identityServiceImpl.getResidentIndvidualId();
+		if(requestDTO.getRequest() != null) {
+			requestDTO.getRequest().setIndividualId(individualId);
+		}
 		requestWrapper.getRequest().setIndividualIdType(getIdType(requestWrapper.getRequest().getIndividualId()));
 		validator.validateUpdateRequest(requestWrapper, true);
 		ResponseWrapper<ResidentUpdateResponseDTO> response = new ResponseWrapper<>();
@@ -357,11 +388,15 @@ public class ResidentController {
 		return response;
 	}
 	
-	@GetMapping(path = "/auth-lock-status/{individualId}")
-	public ResponseWrapper<Object> getAuthLockStatus(@PathVariable(name = "individualId") String individualId) {
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetAuthLockStatus()"
+		+ ")")
+	@GetMapping(path = "/auth-lock-status")
+	public ResponseWrapper<Object> getAuthLockStatus() throws ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		String individualId = identityServiceImpl.getResidentIndvidualId();
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));
 			responseWrapper = residentService.getAuthLockStatus(individualId);

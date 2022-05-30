@@ -1,4 +1,4 @@
-package io.mosip.resident.controller;
+package io.mosip.resident.service.impl;
 
 import java.io.IOException;
 import java.util.List;
