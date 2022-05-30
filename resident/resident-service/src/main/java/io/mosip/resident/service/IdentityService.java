@@ -23,14 +23,14 @@ public interface IdentityService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
-	
-	public IdentityDTO getIdentity(String id, String langCode) throws ResidentServiceCheckedException;
+
+	public IdentityDTO getIdentity(String id, String type, String langCode) throws ResidentServiceCheckedException;
 
 	public String getIDAToken(String uin);
-	
+
 	public String getIDAToken(String uin, String olvPartnerId);
 
 	Map<?, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
 
-	Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException;
+	Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin) throws ResidentServiceCheckedException;
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,9 +28,12 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.biometrics.constant.BiometricType;
+import io.mosip.kernel.biometrics.spi.CbeffUtil;
 import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
@@ -64,10 +68,10 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String PHONE = "phone";
 	private static final String DATE_OF_BIRTH = "dob";
 	private static final String NAME = "name";
-	private static final String PHOTO = "individualBiometrics";
 	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
+    private static final String DOCUMENTS = "documents";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -82,6 +86,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private Utilitiy utility;
+	
+	@Autowired
+	private CbeffUtil cbeffUtil;
 	
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
@@ -103,20 +110,26 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
+	
+	@Value("${resident.documents.category}")
+	private String individualDocs;
+	
+	@Value("${resident.individualbiometric.face.key}")
+	private String faceValue;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
-    	return getIdentity(id,null);
+    	return getIdentity(id,null,null);
     }
 
 	@Override
-	public IdentityDTO getIdentity(String id,String langCode) throws ResidentServiceCheckedException {
+	public IdentityDTO getIdentity(String id, String type, String langCode) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, true);
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true);
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -125,6 +138,18 @@ public class IdentityServiceImpl implements IdentityService {
 			LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 			identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
+
+			String encodedDocValue=getMappingValue(identity, individualDocs);
+			byte[] decodedDoc=CryptoUtil.decodeURLSafeBase64(encodedDocValue);
+			Map<String, String> bdbBasedOnType;
+			try {
+				bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
+			} catch (Exception e) {
+				logger.error("Error occured in accessing biometric data %s", e.getMessage());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
+						ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
+			}
+			identityDTO.setFace(bdbBasedOnType.get(faceValue));
 
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
@@ -137,23 +162,32 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, false);
+		return getIdentityAttributes(id, null, false);
 	}
 
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
+	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
+		
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("type");
+		
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(type);
+		
 		try {
 			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
-					pathsegments, ResponseWrapper.class);
+					pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
 			if(responseWrapper.getErrors() != null && responseWrapper.getErrors().size() > 0) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());
 			}
 			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
+			List<Map<String,String>> documents=(List<Map<String, String>>) identityResponse.get(DOCUMENTS);
+			Map<String,String> individualBio=getIndividualBiometrics(documents);
 
 			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes().stream()
 					.filter(attrib -> identity.containsKey(attrib))
@@ -161,6 +195,7 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
+				response.put(individualDocs, individualBio);
 			}
 			return response;
 		} catch (ApisResourceAccessException | IOException e) {
@@ -170,6 +205,13 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 	
+	private Map<String, String> getIndividualBiometrics(List<Map<String, String>> documents) {
+		return documents.stream()
+				.filter(map -> map.get("category") instanceof String && ((String)map.get("category")).equalsIgnoreCase(individualDocs))
+				.findAny()
+				.orElse(null);
+	}
+
 	private String getMappingValue(Map<?, ?> identity, String mappingName)
             throws ResidentServiceCheckedException, IOException {
         return getMappingValue(identity, mappingName, null);
@@ -196,6 +238,8 @@ public class IdentityServiceImpl implements IdentityService {
                         } else {
                             return getValueForLang((List<Map<String,Object>>)attributeValue, langCode);
                         }
+                    } else if(attributeValue instanceof Map) {
+                    	return ((String)((Map) attributeValue).get(VALUE));
                     }
                     return null;
                 }).collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));

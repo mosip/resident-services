@@ -57,6 +57,8 @@ public enum ResidentErrorCode {
 
 	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-443", "Callback url is not available for auth type: %s"),
 	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type for resident websub"),
+	
+	BIOMETRIC_MISSING("RES-SER-445", "Biometric data is not available in database")
 
 
 	;
