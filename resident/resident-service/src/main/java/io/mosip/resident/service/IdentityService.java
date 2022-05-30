@@ -20,24 +20,52 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 public interface IdentityService {
 
 	/**
-	 * Get ID-Repo identity data by ID.
+	 * Get identity data by id.
 	 * 
 	 * @param id
 	 * @return IdentityDTO object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
-	
-	public IdentityDTO getIdentity(String id, String langCode) throws ResidentServiceCheckedException;
+
+	/**
+	 * Get identity data by id, type & langCode.
+	 * 
+	 * @param id
+	 * @param type
+	 * @param langCode
+	 * @return IdentityDTO object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public IdentityDTO getIdentity(String id, String type, String langCode) throws ResidentServiceCheckedException;
 
 	public String getIDAToken(String uin);
-	
-	public String getIDAToken(String uin, String olvPartnerId);
 
-	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
+	public String getIDAToken(String uin, String olvPartnerId);
 
 	Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException;
 
+	/**
+	 * Get ID-Repo api data by id.
+	 * 
+	 * @param id
+	 * @return Map
+	 * @throws ResidentServiceCheckedException
+	 */
+	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
+
+	/**
+	 * Get ID-Repo api data by id, type & includeUin.
+	 * 
+	 * @param id
+	 * @param type
+	 * @param includeUin
+	 * @return Map
+	 * @throws ResidentServiceCheckedException
+	 */
+	Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin)
+			throws ResidentServiceCheckedException;
+			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;
 
 }

@@ -48,7 +48,7 @@ public class ProxyMasterdataController {
 	 * Get valid documents by language code.
 	 * 
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -74,7 +74,7 @@ public class ProxyMasterdataController {
 	 * Get location hierarchy levels by language code.
 	 * 
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -101,7 +101,7 @@ public class ProxyMasterdataController {
 	 * 
 	 * @param locationCode
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -130,7 +130,7 @@ public class ProxyMasterdataController {
 	 * 
 	 * @param locationCode
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -160,7 +160,7 @@ public class ProxyMasterdataController {
 	 * @param longitude
 	 * @param latitude
 	 * @param proximityDistance
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -189,7 +189,7 @@ public class ProxyMasterdataController {
 	 * 
 	 * @param applicantId
 	 * @param languages
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -217,7 +217,7 @@ public class ProxyMasterdataController {
 	 * @param langCode
 	 * @param hierarchyLevel
 	 * @param name
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -251,7 +251,7 @@ public class ProxyMasterdataController {
 	 * @param pageSize
 	 * @param orderBy
 	 * @param sortBy
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -286,7 +286,7 @@ public class ProxyMasterdataController {
 	 * 
 	 * @param registrationCenterID
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
@@ -316,7 +316,7 @@ public class ProxyMasterdataController {
 	 * @param schemaVersion
 	 * @param domain
 	 * @param type
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
