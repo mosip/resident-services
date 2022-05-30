@@ -14,7 +14,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +37,7 @@ public class IdentityController {
 	private AuditUtil auditUtil;
 	
 	@Autowired
-	private IdentityServiceImpl idServiceImpl;
+	private IdentityService idServiceImpl;
 	
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes("
@@ -45,7 +45,7 @@ public class IdentityController {
     			+ ")")
 	@GetMapping("/input-attributes/values")
 	@Operation(summary = "getInputAttributeValues", description = "Get the Resident-UI Schema", tags = {
-			"proxy-config-controller" })
+			"identity-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
@@ -53,13 +53,12 @@ public class IdentityController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<Object> getInputAttributeValues()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		logger.debug("IdentityController::getResidentUISchema()::entry");
-		//FIXME correct the audit enum
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
+		logger.debug("IdentityController::getInputAttributeValues()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES);
 		String id = getIdFromUser();
 		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id);
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
-		logger.debug("IdentityController::getResidentUISchema()::exit");
+		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
+		logger.debug("IdentityController::getInputAttributeValues()::exit");
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(propertiesResponse);
 		return responseWrapper;
@@ -68,5 +67,6 @@ public class IdentityController {
 	private String getIdFromUser() throws ApisResourceAccessException {
 		return idServiceImpl.getResidentIndvidualId();
 	}
+	
 
 }

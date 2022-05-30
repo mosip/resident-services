@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
@@ -34,12 +35,18 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AidOtpRequestDTO;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -103,7 +110,14 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
+	
 
+	@Autowired
+	private ResidentVidService residentVidService;
+	
+	@Value("${resident.flag.use-vid-only:false}")
+	private boolean useVidOnly;
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
 	@Override
@@ -290,6 +304,24 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	public String getResidentIdaToken() throws ApisResourceAccessException {
 		return  getClaimValue(IDA_TOKEN);
+	}
+
+	String getIndividualIdForAid(String aid)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			IdentityDTO identity = getIdentity(aid);
+			String uin = identity.getUIN();
+			String individualId;
+			if(useVidOnly) {
+				Optional<String> perpVid = residentVidService.getPerpatualVid(uin);
+				if(perpVid.isPresent()) {
+					individualId = perpVid.get();
+				} else {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.PERPETUAL_VID_NOT_AVALIABLE);
+				}
+			} else {
+				individualId = uin;
+			}
+			return individualId;
 	}
 
 }

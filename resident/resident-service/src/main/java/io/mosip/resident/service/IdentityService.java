@@ -4,7 +4,11 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -30,7 +34,10 @@ public interface IdentityService {
 	
 	public String getIDAToken(String uin, String olvPartnerId);
 
-	Map<?, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
+	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
 
 	Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException;
+
+	public String getResidentIndvidualId() throws ApisResourceAccessException;
+
 }

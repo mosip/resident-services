@@ -60,6 +60,10 @@ public enum ResidentErrorCode {
 	RESIDENT_AUTH_TXN_DETAILS_FAILURE("RES-SER-445", "Failed to retrieve auth transaction details"),
 	INVALID_PAGE_START_VALUE("RES-SER-446", "Invalid page start value"),
 	INVALID_PAGE_FETCH_VALUE("RES-SER-447", "Invalid page fetch value"),
+	PERPETUAL_VID_NOT_AVALIABLE("RES-SER-448", "Perpatual VID not available"),
+	AID_STATUS_IS_NOT_READY("RES-SER-449", "AID is not ready")
+
+
 	;
 	private final String errorCode;
 	private final String errorMessage;

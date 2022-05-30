@@ -36,6 +36,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,13 +62,12 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -80,7 +81,7 @@ import org.springframework.web.client.RestTemplate;
 public class ResidentControllerTest {
 
 	@MockBean
-	private ResidentService residentService;
+	private ResidentServiceImpl residentService;
 
 	@Mock
 	CbeffImpl cbeff;
@@ -90,6 +91,9 @@ public class ResidentControllerTest {
 	
 	@MockBean
 	private ResidentVidService vidService;
+	
+	@MockBean
+	private IdAuthServiceImpl idAuthServiceImpl;
 	
 	@MockBean
 	private DocumentService docService;
@@ -154,7 +158,7 @@ public class ResidentControllerTest {
 	public void testGetRidStatusSuccess() throws Exception {
 		RegStatusCheckResponseDTO dto = new RegStatusCheckResponseDTO();
 		dto.setRidStatus("PROCESSED");
-		Mockito.doReturn(dto).when(residentService).getRidStatus(Mockito.any());
+		Mockito.doReturn(dto).when(residentService).getRidStatus(Mockito.anyString());
 		this.mockMvc
 				.perform(post("/rid/check-status").contentType(MediaType.APPLICATION_JSON)
 						.content(authLockRequestToJson))

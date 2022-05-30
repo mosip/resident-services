@@ -2,6 +2,7 @@ package io.mosip.resident.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -24,5 +25,7 @@ public interface ResidentVidService {
 	public String getVidPolicy() throws ResidentServiceCheckedException;
 
 	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(String residentIndividualId) throws ResidentServiceCheckedException, ApisResourceAccessException;
+
+	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }
