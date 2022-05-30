@@ -102,7 +102,9 @@ public class ResidentVidController {
 		return generateVid(requestDto, true);
 	}
 
-	@PreAuthorize("hasAnyRole(@authorizedRoles.getPostgeneratevid())")
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getPostgeneratevid()"
+		+ ")")
 	@PostMapping(path = "/generate-vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "generateVid", description = "generateVid", tags = { "Resident Service" })
 	@ApiResponses(value = {
@@ -148,7 +150,9 @@ public class ResidentVidController {
 		return revokeVid(requestDto, vid, true);
 	}
 
-	@PreAuthorize("hasAnyRole(@authorizedRoles.getPatchrevokevid())")
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getPatchrevokevid()"
+		+ ")")
 	@PatchMapping(path = "/revoke-vid/{vid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Revoke VID", description = "Revoke VID", tags = { "Resident Service" })
 	@ApiResponses(value = {
@@ -186,7 +190,9 @@ public class ResidentVidController {
 		return identityServiceImpl.getResidentIndvidualId();
 	}
 	
-	@PreAuthorize("hasAnyRole(@authorizedRoles.getGetvids())")
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetvids()"
+		+ ")")
 	@GetMapping(path = "/vids", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "retrieveVids", description = "retrieveVids", tags = { "vid-controller" })
 	@ApiResponses(value = {
