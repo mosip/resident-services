@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * Web-Sub Update Controller Test
@@ -89,18 +90,21 @@ public class WebSubUpdateAuthTypeControllerTest {
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
 
-        EventModel eventModel = new EventModel();
-        EventModel e1=new EventModel();
+        EventModel eventModel=new EventModel();
         Event event=new Event();
         event.setTransactionId("1234");
+        event.setId("8251649601");
+        Map<String, Object> partnerIdMap = new java.util.HashMap<>();
+        partnerIdMap.put("olv_partner_id", "mpartner-default-auth");
+        event.setData(partnerIdMap);
 
-        e1.setEvent(event);
-        e1.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
-        e1.setPublishedOn(String.valueOf(LocalDateTime.now()));
-        e1.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
+        eventModel.setEvent(event);
+        eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
+        eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
+        eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
         webSubUpdateAuthTypeController.authTypeCallback(eventModel);
 
-        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback/{partnerId}", "1234567891"))
+        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(eventModel.toString()))
                 .andReturn();
