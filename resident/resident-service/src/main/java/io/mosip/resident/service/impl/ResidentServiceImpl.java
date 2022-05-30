@@ -1049,6 +1049,11 @@ public class ResidentServiceImpl implements ResidentService {
 					pageFetch = DEFAULT_PAGE_COUNT;
 				}
 			}
+			if(pageStart < 0) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
+			} else if(pageFetch < 0) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
+			}
 			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
 			if (idType != null) {
 				if (idType.equalsIgnoreCase("UIN")) {

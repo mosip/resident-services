@@ -1,10 +1,12 @@
 package io.mosip.resident.test.service;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.websub.spi.PublisherClient;
 import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -25,9 +27,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import static org.junit.Assert.assertEquals;
 
+import java.net.URI;
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -61,17 +65,23 @@ public class PartnerServiceImplTest {
     @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
+    private ResponseWrapper<?> responseWrapper;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(partnerService).build();
+        responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setVersion("v1");
+        responseWrapper.setId("1");
     }
 
     @Test
-    public void testPartnerService() throws ResidentServiceCheckedException {
+    public void testPartnerService() throws ResidentServiceCheckedException, ApisResourceAccessException {
         String partnerId = "Online_Verification_Partner";
         ArrayList<String> partnerIds = new ArrayList<>();
+        URI uri = URI.create("http://localhost:8080/v1/partner/");
+        responseWrapper = residentServiceRestClient.getApi(uri, ResponseWrapper.class);
 
         partnerService.getPartnerDetails(partnerId);
         assertEquals(0, partnerIds.size());

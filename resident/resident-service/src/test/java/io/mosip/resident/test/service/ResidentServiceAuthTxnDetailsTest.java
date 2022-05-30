@@ -1,12 +1,12 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AutnTxnDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +33,9 @@ public class ResidentServiceAuthTxnDetailsTest {
 
     @Mock
     private RequestValidator validator;
+
+    @Mock
+    private Utilities utilities;
 
     @Mock
     private PartnerServiceImpl partnerServiceImpl;
@@ -62,9 +65,20 @@ public class ResidentServiceAuthTxnDetailsTest {
 
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, null, pageSize, "UIN").size());
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, null, null, "UIN").size());
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, 1, null, "UIN").size());
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails("5936486578", 1, null, "VID").size());
     }
 
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetTxnDetailsResidentServiceCheckedException() throws ResidentServiceCheckedException {
+        String individualId = "8251649601";
+        Integer pageStart = 1;
+        Integer pageSize = 1;
 
-
-
+        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, "UIN")).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, -1, pageSize, "UIN")).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, "UIN")).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, null)).thenThrow(ResidentServiceCheckedException.class);
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, "UIN").size());
+    }
 }
