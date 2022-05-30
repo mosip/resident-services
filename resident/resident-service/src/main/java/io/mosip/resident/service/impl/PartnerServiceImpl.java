@@ -33,7 +33,7 @@ public class PartnerServiceImpl implements PartnerService {
     public ArrayList<String> getPartnerDetails(String partnerId) throws ResidentServiceCheckedException {
         ArrayList<String> partnerIds = new ArrayList<>();
         try {
-            if (partnerId != null) {
+            if (partnerId != null && partnerServiceUrl != null) {
                 URI uri = URI.create(partnerServiceUrl);
                 ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(uri, ResponseWrapper.class);
                 Map<String, Object> partnerResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
