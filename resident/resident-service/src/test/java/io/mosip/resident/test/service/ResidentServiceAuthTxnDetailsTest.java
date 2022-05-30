@@ -67,6 +67,7 @@ public class ResidentServiceAuthTxnDetailsTest {
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, null, null, "UIN").size());
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, 1, null, "UIN").size());
         assertEquals(0, residentServiceImpl.getAuthTxnDetails("5936486578", 1, null, "VID").size());
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails("5936416578", 1, null, "VID").size());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
@@ -79,6 +80,8 @@ public class ResidentServiceAuthTxnDetailsTest {
         Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, -1, pageSize, "UIN")).thenThrow(ResidentServiceCheckedException.class);
         Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, "UIN")).thenThrow(ResidentServiceCheckedException.class);
         Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, null)).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, 1, "invalid")).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getAuthTxnDetails("8251649601", pageStart, 1, "VID")).thenThrow(ResidentServiceCheckedException.class);
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, "UIN").size());
     }
 }
