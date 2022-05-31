@@ -31,6 +31,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -183,6 +184,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private DocumentService docService;
+	
+	@Autowired
+	private ResidentTransactionRepository txnRepo;
 
 	@Autowired
 	private PartnerService partnerServiceImpl;
@@ -725,7 +729,7 @@ public class ResidentServiceImpl implements ResidentService {
 			responseDto.setRegistrationId(response.getRegistrationId());
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
-
+			updateResidentTransaction(dto, response);
 		} catch (OtpValidationFailedException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -774,7 +778,7 @@ public class ResidentServiceImpl implements ResidentService {
 					dto.getTransactionID(), "Request for UIN update"));
 			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (BaseCheckedException e) {
+		} catch (BaseCheckedException | NoSuchAlgorithmException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.BASE_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -785,6 +789,25 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 		}
 		return responseDto;
+	}
+
+	private void updateResidentTransaction(ResidentUpdateRequestDto dto, PacketGeneratorResDto response)
+			throws NoSuchAlgorithmException {
+		ResidentTransactionEntity txn = new ResidentTransactionEntity();
+		txn.setAid(HMACUtils2.digestAsPlainText(response.getRegistrationId().getBytes()));
+		txn.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
+		txn.setResponseDtime(DateUtils.getUTCCurrentDateTime());
+		txn.setRequestTrnId(dto.getTransactionID());
+		txn.setRequestTypeCode("UIN_UPDATED");
+		txn.setRequestSummary("Uin updated successfully");
+		txn.setStatusCode("UIN_UPDATED");
+		txn.setStatusComment("Uin updated successfully");
+		txn.setLangCode("");
+		txn.setRefIdType("INDIVIDUAL_ID");
+		txn.setRefId(HMACUtils2.digestAsPlainText(dto.getIndividualId().getBytes()));
+		txn.setCrBy("mosip");
+		txn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+		txnRepo.save(txn);
 	}
   
 	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument) {
