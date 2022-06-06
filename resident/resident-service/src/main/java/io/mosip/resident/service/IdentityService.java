@@ -26,10 +26,10 @@ public interface IdentityService {
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
 
 	/**
-	 * Get identity data by id, type & langCode.
+	 * Get identity data by id, fetchFace and langCode.
 	 * 
 	 * @param id
-	 * @param type
+	 * @param fetchFace
 	 * @param langCode
 	 * @return IdentityDTO object
 	 * @throws ResidentServiceCheckedException
@@ -52,7 +52,7 @@ public interface IdentityService {
 	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
 
 	/**
-	 * Get ID-Repo api data by id, type & includeUin.
+	 * Get ID-Repo api data by id, type and includeUin.
 	 * 
 	 * @param id
 	 * @param type
