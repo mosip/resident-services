@@ -105,8 +105,8 @@ public class Config {
 	}
 	
 	@Bean("restClientWithPlainRestTemplate")
-	public ResidentServiceRestClient plainRestClient() {
-		return new ResidentServiceRestClient(new RestTemplate());
+	public ResidentServiceRestClient plainRestClient(@Qualifier("restTemplate")RestTemplate restTemplate) {
+		return new ResidentServiceRestClient(restTemplate);
 	}
 
 	@Bean
