@@ -413,7 +413,7 @@ public class ResidentController {
 	}
 
 	/**
-	 * > It returns the type of the ID passed to it
+	 *  It returns the type of the ID passed to it
 	 * 
 	 * @param id The ID of the resident.
 	 * @return The method is returning the type of ID.
