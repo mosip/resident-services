@@ -66,6 +66,8 @@ public enum ResidentErrorCode {
 
 	BIOMETRIC_MISSING("RES-SER-450", "Biometric data is not available in database"),
 	EMPTY_COLLECTION_FOUND("RES-SER-451","Collection is empty"),
+	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
+
 
 	;
 	private final String errorCode;
