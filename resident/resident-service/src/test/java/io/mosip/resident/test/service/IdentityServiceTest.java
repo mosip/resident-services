@@ -85,12 +85,26 @@ public class IdentityServiceTest {
 		identityMap.put("phone", "9395910872");
 		identityMap.put("dateOfBirth", "1970/11/16");
 
-		List<Map> nameList = new ArrayList();
-		Map nameMap = new LinkedHashMap();
-		nameMap.put("language", "eng");
-		nameMap.put("value", "Manoj_eng");
-		nameList.add(nameMap);
-		identityMap.put("firstName", nameList);
+		List<Map> fNameList = new ArrayList();
+		Map fNameMap = new LinkedHashMap();
+		fNameMap.put("language", "eng");
+		fNameMap.put("value", "Rahul");
+		fNameList.add(fNameMap);
+		identityMap.put("firstName", fNameList);
+
+		List<Map> mNameList = new ArrayList();
+		Map mNameMap = new LinkedHashMap();
+		mNameMap.put("language", "eng");
+		mNameMap.put("value", "Kumar");
+		mNameList.add(mNameMap);
+		identityMap.put("middleName", mNameList);
+
+		List<Map> lNameList = new ArrayList();
+		Map lNameMap = new LinkedHashMap();
+		lNameMap.put("language", "eng");
+		lNameMap.put("value", "Singh");
+		lNameList.add(lNameMap);
+		identityMap.put("lastName", lNameList);
 
 		responseMap = new LinkedHashMap();
 		responseMap.put("identity", identityMap);
@@ -117,7 +131,7 @@ public class IdentityServiceTest {
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
 		when(residentConfigService.getUiSchemaFilteredInputAttributes())
-				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName"));
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
@@ -125,10 +139,29 @@ public class IdentityServiceTest {
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
-		IdentityDTO result = identityService.getIdentity("6", "bio", "eng");
+		IdentityDTO result = identityService.getIdentity("6", true, "eng");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
-//		assertEquals("Manoj_eng", result.getFullName());
+		assertEquals("Rahul Singh Kumar", result.getFullName());
+	}
+	
+	@Test
+	public void testGetMappingValueNull() throws Exception {
+		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+				.thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth"));
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		when(utility.getMappingJson()).thenReturn(mappingJson);
+		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
+		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
+		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		assertNotNull(result);
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test
@@ -137,33 +170,32 @@ public class IdentityServiceTest {
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
 		when(residentConfigService.getUiSchemaFilteredInputAttributes())
-				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName"));
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
 		IdentityDTO result = identityService.getIdentity("6");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetIdentityNestedTryCatch() throws Exception {
+	public void testExtractFaceBdb() throws Exception {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
 		when(residentConfigService.getUiSchemaFilteredInputAttributes())
-				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "fullName"));
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		IdentityDTO result = identityService.getIdentity("6");
+		identityService.getIdentity("6", true, "eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
