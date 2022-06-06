@@ -220,7 +220,7 @@ public class IdentityServiceImpl implements IdentityService {
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
 			}
-			if(!individualBio.isEmpty()) {
+			if(individualBio != null && !individualBio.isEmpty()) {
 				response.put(individualDocs, individualBio);
 			}
 			return response;
