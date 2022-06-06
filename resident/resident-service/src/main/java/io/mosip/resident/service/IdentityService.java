@@ -4,11 +4,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -37,7 +34,7 @@ public interface IdentityService {
 	 * @return IdentityDTO object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public IdentityDTO getIdentity(String id, String type, String langCode) throws ResidentServiceCheckedException;
+	public IdentityDTO getIdentity(String id, boolean fetchFace, String langCode) throws ResidentServiceCheckedException;
 
 	public String getIDAToken(String uin);
 
