@@ -219,6 +219,8 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
+			}
+			if(!individualBio.isEmpty()) {
 				response.put(individualDocs, individualBio);
 			}
 			return response;
