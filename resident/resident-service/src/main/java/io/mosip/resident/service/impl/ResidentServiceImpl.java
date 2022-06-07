@@ -882,7 +882,10 @@ public class ResidentServiceImpl implements ResidentService {
 		System.out.println("partnerIds"+partnerIds);
 
 		for(String partner: partnerIds) {
-			residentTransactionEntity.setAid(individualId+partner);
+			String id= individualId+partner;
+			byte[] idBytes = id.getBytes();
+			String hash = HMACUtils2.digestAsPlainText(idBytes);
+			residentTransactionEntity.setAid(hash);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 			residentTransactionEntity.setRequestTypeCode("NEW_AUTH");
