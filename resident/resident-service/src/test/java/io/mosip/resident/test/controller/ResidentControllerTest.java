@@ -202,7 +202,7 @@ public class ResidentControllerTest {
 		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
 
 		this.mockMvc
-				.perform(post("/req/auth-type-lock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
+				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
 	}
 
@@ -214,7 +214,7 @@ public class ResidentControllerTest {
 		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2( Mockito.any());
 
 		MvcResult result = this.mockMvc
-				.perform(post("/req/auth-type-lock").contentType(MediaType.APPLICATION_JSON).content(""))
+				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
 		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}

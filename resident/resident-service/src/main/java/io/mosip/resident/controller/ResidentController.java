@@ -189,7 +189,7 @@ public class ResidentController {
 			+ "@authorizedScopes.getPostAuthTypeLock()"
 		+ ")")
 	@ResponseFilter
-	@PostMapping(value = "/req/auth-type-lock")
+	@PostMapping(value = "/req/auth-type-status")
 	@Operation(summary = "reqAauthTypeLockV2", description = "reqAauthTypeLockV2", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
