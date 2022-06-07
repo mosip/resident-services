@@ -198,11 +198,11 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseWrapper<ResponseDTO> reqAauthTypeLockV2(
-			@Valid @RequestBody RequestWrapper<AuthTypeStatusDto> requestDTO)
+			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type lock API"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
-		validator.validateAuthLockOrUnlockRequestV2(requestDTO,individualId);
+		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest()));

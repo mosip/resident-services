@@ -177,33 +177,59 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthTypeStatusDto> requestDto, String individualId) {
+	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDto) {
 		if (requestDto.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
 		}
-		if (requestDto.getRequest().getUnlockForSeconds() == null || !isNumeric(requestDto.getRequest().getUnlockForSeconds())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
-					"Request to generate VID"));
-			throw new InvalidInputException("unlockForSeconds");
-		}
-		validateAuthType(List.of(requestDto.getRequest().getAuthType().split(",")),
-				"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(individualId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API"));
+		if(requestDto.getRequest().getIndividualId() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("individualId");
 		}
-		if (requestDto.getRequest().getUin() == null || !validateIndividualIdvIdWithoutIdType(requestDto.getRequest().getUin())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "uin",
-					"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API"));
-			throw new InvalidInputException("uin");
+		String individualId = requestDto.getRequest().getIndividualId();
+		if (!validateIndividualIdvIdWithoutIdType(individualId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request to generate VID"));
+			throw new InvalidInputException("individualId");
 		}
-		if (requestDto.getRequest().getAuthType() == null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType",
-					"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API"));
+		validateAuthTypeV2(requestDto.getRequest().getAuthType());
+	}
+
+	private void validateAuthTypeV2(List<AuthTypeStatusDto> authType) {
+		if (authType == null || authType.isEmpty()) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("authType");
 		}
+		String[] authTypesArray = authTypes.split(",");
+		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
+		for (AuthTypeStatusDto authTypeStatusDto : authType) {
+			if (StringUtils.isEmpty(authTypeStatusDto.getAuthType())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType",
+						"Request to generate VID"));
+				throw new InvalidInputException("authType");
+			}
+			if (authTypeStatusDto.getUnlockForSeconds() == null) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
+						"Request to generate VID"));
+				throw new InvalidInputException("unlockForSeconds");
+			}
+			if(!isLong(authTypeStatusDto.getUnlockForSeconds())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
+						"Request to generate VID"));
+				throw new InvalidInputException("unlockForSeconds");
+			}
+			List<String> authTypes = Arrays.asList(authTypeStatusDto.getAuthType().split(","));
+			validateAuthType(authTypes,
+					"Request auth " + authTypes.toString().toLowerCase() + " API");
+
+		}
+	}
+
+	private boolean isLong(Long unlockForSeconds) {
+		if(unlockForSeconds == null) {
+			return false;
+		}
+		return unlockForSeconds.longValue() > 0;
 	}
 
 	public void validateAuthLockOrUnlockRequest(RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO,

@@ -24,7 +24,7 @@ public interface ResidentService {
 	
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 
-	ResponseDTO reqAauthTypeStatusUpdateV2(AuthTypeStatusDto request) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 

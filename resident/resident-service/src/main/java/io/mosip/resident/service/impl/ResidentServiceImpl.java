@@ -797,7 +797,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthTypeStatusDto authTypeStatusDto)
+	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
@@ -807,49 +807,35 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK,
 					"Request for Auth Type Lock"));
-
-
-			// if property is vid only then we need to check the vid get uin by vid
-			String uin = authTypeStatusDto.getUin();
+			String individualId1 = authLockOrUnLockRequestDtoV2.getIndividualId();
 			if (vidOnly) {
-				uin = utilities.getUinByVid(individualId);
+				individualId1 = utilities.getUinByVid(individualId);
 			}
 			String ResidentToken = identityServiceImpl.getResidentIdaToken();
-			String idaToken = identityServiceImpl.getIDAToken(uin);
+			String idaToken = identityServiceImpl.getIDAToken(individualId1);
 			if(ResidentToken!=null && idaToken!=null){
-				if (!identityServiceImpl.getResidentIdaToken().equalsIgnoreCase(identityServiceImpl.getIDAToken(uin))) {
+				if (!identityServiceImpl.getResidentIdaToken().equalsIgnoreCase(identityServiceImpl.getIDAToken(individualId1))) {
 					throw new ResidentServiceCheckedException(
 							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorCode(),
 							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorMessage());
 				}
 			}
 
-			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant = null;
-			if (authTypeStatusDto.getLocked()) {
-				authTypeStatusConstant = AuthTypeStatus.LOCK;
-			} else {
-				authTypeStatusConstant = AuthTypeStatus.UNLOCK;
+			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthType()) {
+				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId,
+						List.of(authTypeStatusDto.getAuthType().split(",")), 
+						authTypeStatusDto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK, authTypeStatusDto.getUnlockForSeconds());
+
+				if (isAuthTypeStatusUpdated) {
+					isTransactionSuccessful = true;
+					insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
+				} else {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
+							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthType() + " lock failed"));
+					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
+							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+				}
 			}
-			Long unlockTime = null;
-			if (authTypeStatusDto.getUnlockForSeconds() != null) {
-				unlockTime = Long.parseLong(authTypeStatusDto.getUnlockForSeconds());
-			}
-
-			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId,
-					List.of(authTypeStatusDto.getAuthType().split(",")), authTypeStatusConstant,
-					unlockTime);
-
-			if (isAuthTypeStatusUpdated) {
-				isTransactionSuccessful = true;
-				insertAuthStatusInDb(isTransactionSuccessful, authTypeStatusDto, individualId);
-			} else {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
-						, "Request for auth " + authTypeStatusDto.getAuthType() + " lock failed"));
-				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
-						ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
-			}
-
-
 		} catch (ApisResourceAccessException | NoSuchAlgorithmException | IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
@@ -857,27 +843,28 @@ public class ResidentServiceImpl implements ResidentService {
 							+ ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
-					"Request for auth" + authTypeStatusDto.getAuthType() + " lock failed"));
+					"Request for auth" + authLockOrUnLockRequestDtoV2.getAuthType() + " lock failed"));
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
 		} finally {
-			NotificationTemplateCode templateCode;
-			if (authTypeStatusDto.getLocked()) {
-				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
-						: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
-			} else {
-				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_UNLOCK_AUTH_SUCCESS
-						: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
+			NotificationTemplateCode templateCode = null;
+			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthType()) {
+				if (authTypeStatusDto.getLocked()) {
+					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
+							: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
+				} else {
+					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_UNLOCK_AUTH_SUCCESS
+							: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
+				}
 			}
-
 			NotificationResponseDTO notificationResponseDTO = sendNotification(individualId, templateCode,
 					null);
 			if (isTransactionSuccessful)
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
-						"Request for auth " + authTypeStatusDto.getAuthType() + " lock success"));
+						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthType() + " lock success"));
 			else
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
-						"Request for auth " + authTypeStatusDto.getAuthType() + " lock failed"));
+						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthType() + " lock failed"));
 			if (notificationResponseDTO != null) {
 				response.setMessage(notificationResponseDTO.getMessage());
 			}
@@ -888,7 +875,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 
-	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthTypeStatusDto dto, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthLockOrUnLockRequestDtoV2 dto, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 
 		ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");

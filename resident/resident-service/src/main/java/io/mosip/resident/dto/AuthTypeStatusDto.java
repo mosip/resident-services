@@ -7,9 +7,7 @@ public class AuthTypeStatusDto {
 
 	private String authType;
 	private boolean locked;
-	private String unlockForSeconds;
-	public String uin;
-
+	private Long unlockForSeconds;
 	public boolean getLocked() {
 		return locked;
 	}
