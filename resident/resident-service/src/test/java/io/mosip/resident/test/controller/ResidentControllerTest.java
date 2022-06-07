@@ -343,7 +343,7 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testRequestGetAuthTxnDetailsSuccess() throws Exception {
-		Mockito.when(residentService.getAuthTxnDetails(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		Mockito.when(residentService.getAuthTxnDetails(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
 		mockMvc.perform(MockMvcRequestBuilders.get("/authTransactions")
 						.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());

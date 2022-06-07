@@ -296,14 +296,17 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<AutnTxnResponseDto> getAuthTxnDetails(@RequestParam(name = "pageStart", required = false) Integer pageStart,
-																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) throws ResidentServiceCheckedException, ApisResourceAccessException {
+																@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+																@RequestParam(name = "fromDateTime", required = false) LocalDateTime fromDateTime,
+																@RequestParam(name = "toDateTime", required = false) LocalDateTime toDateTime)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseEntity<AutnTxnResponseDto> response = null;
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
 		try{
-			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId));
+			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
 			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
 			authTxnMap.put("authTransactions", AuthTxn);
 			autnTxnResponseDto.setResponse(authTxnMap);

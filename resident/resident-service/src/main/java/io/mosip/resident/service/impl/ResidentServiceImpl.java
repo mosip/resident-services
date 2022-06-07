@@ -1121,7 +1121,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException {
+	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
 		try{
 
 			boolean fetchAllRecords = false;
@@ -1150,14 +1150,14 @@ public class ResidentServiceImpl implements ResidentService {
 					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
 							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
-					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest));
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest, fromDateTime, toDateTime));
 				} else if (idType.equalsIgnoreCase("VID")) {
 					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
 							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
 
 					String uin = utilities.getUinByVid(individualId);
-					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest));
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest, fromDateTime, toDateTime));
 				} else {
 					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
@@ -1188,14 +1188,15 @@ public class ResidentServiceImpl implements ResidentService {
 		return new ArrayList<>(0);
 	}
 
-	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest) throws ResidentServiceCheckedException {
+	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest
+			, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
 		List<AutnTxn> autnTxnList = null;
 		List<List<AutnTxn>> autnTxnLists = new ArrayList<>();
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
 		for(String partnerId:partnerIds) {
 			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
 			if(idaToken!=null) {
-				autnTxnLists.add(autnTxnRepository.findByToken(idaToken, pageRequest));
+				autnTxnLists.add(autnTxnRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest));
 			}
 		}
 		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
