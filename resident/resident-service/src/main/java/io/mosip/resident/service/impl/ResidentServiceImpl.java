@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.dto.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,41 +41,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RegistrationExternalStatusCode;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.AutnTxnDto;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.MachineCreateRequestDTO;
-import io.mosip.resident.dto.MachineCreateResponseDTO;
-import io.mosip.resident.dto.MachineDto;
-import io.mosip.resident.dto.MachineSearchRequestDTO;
-import io.mosip.resident.dto.MachineSearchResponseDTO;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
-import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusRequestDTO;
-import io.mosip.resident.dto.RegistrationStatusResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.entity.AutnTxn;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -178,6 +144,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${resident.update-uin.machine-zone-code}")
 	private String zoneCode;
+
+	@Value("${mosip.vid.only:true}")
+	private boolean vidOnly;
 
 	@Autowired
 	private AuditUtil audit;
@@ -827,50 +796,73 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 	}
 
-  @Override
-	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDto dto, AuthTypeStatus authTypeStatus)
-			throws ResidentServiceCheckedException {
+	@Override
+	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthTypeStatusDto authTypeStatusDto)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
 		ResponseDTO response = new ResponseDTO();
+		String individualId = identityServiceImpl.getResidentIndvidualId();
 		boolean isTransactionSuccessful = false;
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
-					"Request for auth " + authTypeStatus.toString().toLowerCase()));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK,
+					"Request for Auth Type Lock"));
 
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
-				Long unlockForSeconds = null;
-				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
-					AuthUnLockRequestDTO authUnLockRequestDTO=(AuthUnLockRequestDTO) dto;
-					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
+
+			// if property is vid only then we need to check the vid get uin by vid
+			String uin = authTypeStatusDto.getUin();
+			if (vidOnly) {
+				uin = utilities.getUinByVid(individualId);
+			}
+			String ResidentToken = identityServiceImpl.getResidentIdaToken();
+			String idaToken = identityServiceImpl.getIDAToken(uin);
+			if(ResidentToken!=null && idaToken!=null){
+				if (!identityServiceImpl.getResidentIdaToken().equalsIgnoreCase(identityServiceImpl.getIDAToken(uin))) {
+					throw new ResidentServiceCheckedException(
+							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorCode(),
+							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorMessage());
 				}
-				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
-						dto.getAuthType(), authTypeStatus, unlockForSeconds);
-				if (isAuthTypeStatusUpdated) {
-					isTransactionSuccessful = true;
-					insertAuthStatusInDb(isTransactionSuccessful, dto);
-				} else {
-					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
-							dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
-					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
-							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
-				}
+			}
+
+			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant = null;
+			if (authTypeStatusDto.getLocked()) {
+				authTypeStatusConstant = AuthTypeStatus.LOCK;
+			} else {
+				authTypeStatusConstant = AuthTypeStatus.UNLOCK;
+			}
+			Long unlockTime = null;
+			if (authTypeStatusDto.getUnlockForSeconds() != null) {
+				unlockTime = Long.parseLong(authTypeStatusDto.getUnlockForSeconds());
+			}
+
+			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId,
+					List.of(authTypeStatusDto.getAuthType().split(",")), authTypeStatusConstant,
+					unlockTime);
+
+			if (isAuthTypeStatusUpdated) {
+				isTransactionSuccessful = true;
+				insertAuthStatusInDb(isTransactionSuccessful, authTypeStatusDto, individualId);
+			} else {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
+						, "Request for auth " + authTypeStatusDto.getAuthType() + " lock failed"));
+				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
+						ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+			}
 
 
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
+		} catch (ApisResourceAccessException | NoSuchAlgorithmException | IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
 							+ ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
-					dto.getTransactionID(), "Request for auth" + authTypeStatus.toString().toLowerCase()));
+					"Request for auth" + authTypeStatusDto.getAuthType() + " lock failed"));
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
 		} finally {
 			NotificationTemplateCode templateCode;
-			if (authTypeStatus.equals(AuthTypeStatus.LOCK)) {
+			if (authTypeStatusDto.getLocked()) {
 				templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
 						: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
 			} else {
@@ -878,14 +870,14 @@ public class ResidentServiceImpl implements ResidentService {
 						: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
 			}
 
-			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(), templateCode,
+			NotificationResponseDTO notificationResponseDTO = sendNotification(individualId, templateCode,
 					null);
 			if (isTransactionSuccessful)
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
-						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+						"Request for auth " + authTypeStatusDto.getAuthType() + " lock success"));
 			else
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
-						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
+						"Request for auth " + authTypeStatusDto.getAuthType() + " lock failed"));
 			if (notificationResponseDTO != null) {
 				response.setMessage(notificationResponseDTO.getMessage());
 			}
@@ -896,17 +888,16 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 
-	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthLockOrUnLockRequestDto dto) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthTypeStatusDto dto, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 
 		ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");
 		System.out.println("partnerIds"+partnerIds);
 
 		for(String partner: partnerIds) {
-			residentTransactionEntity.setAid(dto.getIndividualId()+partner);
+			residentTransactionEntity.setAid(individualId+partner);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-			residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
 			residentTransactionEntity.setRequestTypeCode("NEW_AUTH");
 			residentTransactionEntity.setRequestSummary(dto.getAuthType().toString());
 			residentTransactionEntity.setStatusCode("NEW");

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.resident.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,20 +24,6 @@ import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.BaseVidRequestDto;
-import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.IVidRequestDto;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.VidRequestDto;
-import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
@@ -187,6 +174,35 @@ public class RequestValidator {
 					"Request to generate VID"));
 
 			throw new InvalidInputException("transactionId");
+		}
+	}
+
+	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthTypeStatusDto> requestDto, String individualId) {
+		if (requestDto.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("request");
+		}
+		if (requestDto.getRequest().getUnlockForSeconds() == null || !isNumeric(requestDto.getRequest().getUnlockForSeconds())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
+					"Request to generate VID"));
+			throw new InvalidInputException("unlockForSeconds");
+		}
+		validateAuthType(List.of(requestDto.getRequest().getAuthType().split(",")),
+				"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API");
+		if (StringUtils.isEmpty(individualId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API"));
+			throw new InvalidInputException("individualId");
+		}
+		if (requestDto.getRequest().getUin() == null || !validateIndividualIdvIdWithoutIdType(requestDto.getRequest().getUin())) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "uin",
+					"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API"));
+			throw new InvalidInputException("uin");
+		}
+		if (requestDto.getRequest().getAuthType() == null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType",
+					"Request auth " + requestDto.getRequest().getAuthType().toString().toLowerCase() + " API"));
+			throw new InvalidInputException("authType");
 		}
 	}
 

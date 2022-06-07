@@ -66,6 +66,7 @@ public enum ResidentErrorCode {
 
 	BIOMETRIC_MISSING("RES-SER-450", "Biometric data is not available in database"),
 	EMPTY_COLLECTION_FOUND("RES-SER-451","Collection is empty"),
+	AUTH_TYPE_LOCK_FAILURE("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 
 	;
 	private final String errorCode;
