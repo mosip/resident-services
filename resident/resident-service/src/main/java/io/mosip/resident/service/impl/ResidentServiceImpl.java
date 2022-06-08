@@ -1,20 +1,24 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
+import io.mosip.resident.entity.AutnTxn;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.*;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.repository.AutnTxnRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.*;
+import io.mosip.resident.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,46 +31,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils2;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.RegistrationExternalStatusCode;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.entity.AutnTxn;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.RIDInvalidException;
-import io.mosip.resident.exception.ResidentMachineServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
-import io.mosip.resident.exception.ValidationFailedException;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.repository.AutnTxnRepository;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.PartnerService;
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UINCardDownloadService;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -807,14 +779,17 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK,
 					"Request for Auth Type Lock"));
-			String individualId1 = authLockOrUnLockRequestDtoV2.getIndividualId();
+			String individualIdFromRequest = authLockOrUnLockRequestDtoV2.getIndividualId();
+			String uin;
 			if (vidOnly) {
-				individualId1 = utilities.getUinByVid(individualId);
+				uin =  utilities.getUinByVid(individualIdFromRequest);
+			} else{
+				uin = individualIdFromRequest;
 			}
-			String ResidentToken = identityServiceImpl.getResidentIdaToken();
-			String idaToken = identityServiceImpl.getIDAToken(individualId1);
-			if(ResidentToken!=null && idaToken!=null){
-				if (!identityServiceImpl.getResidentIdaToken().equalsIgnoreCase(identityServiceImpl.getIDAToken(individualId1))) {
+			String residentToken = identityServiceImpl.getResidentIdaToken();
+			String idaToken = identityServiceImpl.getIDAToken(uin);
+			if(residentToken!=null && idaToken!=null){
+				if (!residentToken.equalsIgnoreCase(idaToken)) {
 					throw new ResidentServiceCheckedException(
 							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorCode(),
 							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorMessage());
@@ -888,8 +863,8 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntity.setAid(hash);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-			residentTransactionEntity.setRequestTypeCode("NEW_AUTH");
-			residentTransactionEntity.setRequestSummary(dto.getAuthType().toString());
+			residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.AUTH_TYPE_LOCK_OR_UNLOCK.toString());
+			residentTransactionEntity.setRequestSummary(ResidentTransactionType.AUTH_TYPE_LOCK_OR_UNLOCK.toString());
 			residentTransactionEntity.setStatusCode("NEW");
 			residentTransactionEntity.setStatusComment(isAuthSuccess ? "Success" : "Failure");
 			residentTransactionEntity.setLangCode("eng");
@@ -1102,7 +1077,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException {
+	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
 		try{
 
 			boolean fetchAllRecords = false;
@@ -1131,14 +1106,14 @@ public class ResidentServiceImpl implements ResidentService {
 					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
 							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
-					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest));
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest, fromDateTime, toDateTime));
 				} else if (idType.equalsIgnoreCase("VID")) {
 					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
 							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
 
 					String uin = utilities.getUinByVid(individualId);
-					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest));
+					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest, fromDateTime, toDateTime));
 				} else {
 					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
@@ -1169,14 +1144,20 @@ public class ResidentServiceImpl implements ResidentService {
 		return new ArrayList<>(0);
 	}
 
-	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest) throws ResidentServiceCheckedException {
+	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest
+			, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
 		List<AutnTxn> autnTxnList = null;
 		List<List<AutnTxn>> autnTxnLists = new ArrayList<>();
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
 		for(String partnerId:partnerIds) {
 			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
 			if(idaToken!=null) {
-				autnTxnLists.add(autnTxnRepository.findByToken(idaToken, pageRequest));
+				if(fromDateTime != null && toDateTime != null) {
+					autnTxnLists.add(autnTxnRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest));
+				} else {
+					autnTxnLists.add(autnTxnRepository.findByTokenWithoutTime(idaToken, pageRequest));
+				}
+
 			}
 		}
 		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
