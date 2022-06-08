@@ -35,6 +35,10 @@ public interface AutnTxnRepository extends BaseRepository<AutnTxn, Integer> {
 	public List<AutnTxn> findByToken(@Param("token") String token, @Param("fromDateTime") LocalDateTime fromDateTime
 			, @Param("toDateTime") LocalDateTime toDateTime,Pageable pagaeable);
 
+	@Query(value = "Select new AutnTxn( requestTrnId, requestDTtimes, authTypeCode, statusCode, statusComment, refId, refIdType, entityName, requestSignature, responseSignature ) " +
+			"from AutnTxn where token=:token ORDER BY crDTimes DESC")
+	public List<AutnTxn> findByTokenWithoutTime(@Param("token") String token, Pageable pagaeable);
+
 	/**
 	 * Obtain the number of count of request_dTtimes for particular UIN(uniqueId)
 	 * with within the otpRequestDTime and oneMinuteBeforeTime.

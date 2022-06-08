@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import io.mosip.resident.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -246,8 +247,10 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<AutnTxnResponseDto> getAuthTxnDetails(@RequestParam(name = "pageStart", required = false) Integer pageStart,
 																@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-																@RequestParam(name = "fromDateTime", required = false) LocalDateTime fromDateTime,
-																@RequestParam(name = "toDateTime", required = false) LocalDateTime toDateTime)
+																@RequestParam(name = "fromDateTime", required = false)
+																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
+																@RequestParam(name = "toDateTime", required = false)
+																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseEntity<AutnTxnResponseDto> response = null;
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();

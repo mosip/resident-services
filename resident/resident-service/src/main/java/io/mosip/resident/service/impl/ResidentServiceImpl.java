@@ -1152,7 +1152,12 @@ public class ResidentServiceImpl implements ResidentService {
 		for(String partnerId:partnerIds) {
 			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
 			if(idaToken!=null) {
-				autnTxnLists.add(autnTxnRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest));
+				if(fromDateTime != null && toDateTime != null) {
+					autnTxnLists.add(autnTxnRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest));
+				} else {
+					autnTxnLists.add(autnTxnRepository.findByTokenWithoutTime(idaToken, pageRequest));
+				}
+
 			}
 		}
 		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
