@@ -411,9 +411,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
 			}
 			URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
-			String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class,
+			String data = residentServiceRestClient.getApi(dataShareUri, String.class,
 						tokenGenerator.getToken());
-			return decryptDatashareData(encryptedData);
+			return CryptoUtil.decodeURLSafeBase64(data);
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(
@@ -457,24 +457,5 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		DigitalCardStatusResponseDto digitalCardStatusResponseDto = JsonUtil.readValue(
 			JsonUtil.writeValueAsString(responseDto.getResponse()), DigitalCardStatusResponseDto.class);
 		return digitalCardStatusResponseDto;
-	}
-
-	private byte[] decryptDatashareData(String encryptedData) 
-			throws ApisResourceAccessException, IOException {
-		RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
-		CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
-		cryptomanagerRequestDto.setApplicationId(applicationId);
-		cryptomanagerRequestDto.setData(encryptedData);
-		cryptomanagerRequestDto.setReferenceId(partnerReferenceId);
-		cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
-		LocalDateTime localdatetime = LocalDateTime.now();
-		request.setRequesttime(DateUtils.formatToISOString(localdatetime));
-		cryptomanagerRequestDto.setTimeStamp(localdatetime);
-		request.setRequest(cryptomanagerRequestDto);
-		String response = residentServiceRestClient.postApi(
-				env.getProperty(ApiName.DECRYPT_API_URL.name()), MediaType.APPLICATION_JSON, request,
-				String.class, tokenGenerator.getToken());
-		CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
-		return CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
 	}
 }

@@ -108,11 +108,7 @@ public class ResidentCredentialServiceTest {
 		when(residentServiceRestClient.getApi(any(), eq(ResponseWrapper.class), any()))
 			.thenReturn(digitalCardStatusResponseWrapper);
 		when(residentServiceRestClient.getApi(any(), eq(String.class), any()))
-			.thenReturn("abcdef");
-		when(residentServiceRestClient.postApi(any(), any(), any(), eq(String.class), any()))
-			.thenReturn("abcd");
-		when(mapper.readValue(anyString(), eq(CryptomanagerResponseDto.class)))
-			.thenReturn(cryptomanagerResponseDto);
+			.thenReturn("YWJjZGVm");
 		RIDDigitalCardRequestDto ridDigitalCardRequestDto = new RIDDigitalCardRequestDto();
 		ridDigitalCardRequestDto.setIndividualId("10001090900001020220414054750");
 		ridDigitalCardRequestDto.setOtp("123456");
