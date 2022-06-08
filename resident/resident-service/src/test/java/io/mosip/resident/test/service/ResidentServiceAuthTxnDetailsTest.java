@@ -110,4 +110,17 @@ public class ResidentServiceAuthTxnDetailsTest {
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, "UIN",
                 LocalDateTime.now(), LocalDateTime.now()).size());
     }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetTxnDetailsIdTypeInvalidResidentServiceCheckedException() throws ResidentServiceCheckedException {
+        String individualId = "8251649601";
+        Integer pageStart = 1;
+
+        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, 3, "invalid",
+                LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
+
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, "invalid",
+                LocalDateTime.now(), LocalDateTime.now()).size());
+    }
+
 }
