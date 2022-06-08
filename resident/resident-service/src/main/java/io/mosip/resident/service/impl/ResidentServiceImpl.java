@@ -888,8 +888,6 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntity.setAid(hash);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-
-			residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
 			residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.AUTH_TYPE_LOCK_OR_UNLOCK.toString());
 
 			residentTransactionEntity.setRequestTypeCode("NEW_AUTH");
