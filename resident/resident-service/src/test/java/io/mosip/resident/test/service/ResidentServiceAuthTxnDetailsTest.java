@@ -87,15 +87,24 @@ public class ResidentServiceAuthTxnDetailsTest {
                 LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
         Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, -1, pageSize, "UIN",
                 LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
-        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, "UIN",
-                LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
+
         Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, -1, null,
                 LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
-        Mockito.when(residentServiceImpl.getAuthTxnDetails(individualId, pageStart, 1, "invalid",
-                LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
+
         Mockito.when(residentServiceImpl.getAuthTxnDetails("8251649601", pageStart, 1, "VID",
                 LocalDateTime.now(), LocalDateTime.now())).thenThrow(ResidentServiceCheckedException.class);
         assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, "UIN",
+                LocalDateTime.now(), LocalDateTime.now()).size());
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetTxnDetailsApisResourceAccessException() throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+        String individualId = "8251649601";
+        Integer pageStart = 1;
+
+        Mockito.when(utilities.getUinByVid(individualId)).thenThrow(new ApisResourceAccessException());
+
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, 1, "VID",
                 LocalDateTime.now(), LocalDateTime.now()).size());
     }
 
