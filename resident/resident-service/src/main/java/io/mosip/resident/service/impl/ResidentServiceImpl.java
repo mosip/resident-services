@@ -809,7 +809,7 @@ public class ResidentServiceImpl implements ResidentService {
 					"Request for Auth Type Lock"));
 			String individualId1 = authLockOrUnLockRequestDtoV2.getIndividualId();
 			if (vidOnly) {
-				individualId1 = utilities.getUinByVid(individualId);
+				individualId1 = utilities.getUinByVid(individualId1);
 			}
 			String ResidentToken = identityServiceImpl.getResidentIdaToken();
 			String idaToken = identityServiceImpl.getIDAToken(individualId1);
