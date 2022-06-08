@@ -70,6 +70,9 @@ public enum ResidentErrorCode {
 	AUTH_TYPE_LOCK_FAILURE("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
+	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
+	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
+
 
 
 

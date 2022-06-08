@@ -251,7 +251,7 @@ public class ResidentVidServiceTest {
 	}
     
     @Test(expected = OtpValidationFailedException.class)
-    public void otpValidationFailedTest1() throws ResidentServiceCheckedException, OtpValidationFailedException {
+    public void otpValidationFailedTest1() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
     	String vid = "2038096257310540";
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
 

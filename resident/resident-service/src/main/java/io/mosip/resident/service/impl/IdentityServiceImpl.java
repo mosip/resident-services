@@ -287,6 +287,17 @@ public class IdentityServiceImpl implements IdentityService {
 		return name;
 	}
 	
+	@Override
+	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
+		IdentityDTO identityDTO = getIdentity(idvid);
+		return identityDTO.getUIN();
+	}
+	
+	@Override
+	public String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException {
+		return getIDAToken(getUinForIndividualId(idvid));
+	}
+	
 	public String getIDAToken(String uin) {
 		return getIDAToken(uin, onlineVerificationPartnerId);
 	}

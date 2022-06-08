@@ -28,6 +28,7 @@ import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -162,7 +163,7 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> revokeVidV2(
-			@RequestBody(required = true) RequestWrapper<BaseVidRevokeRequestDTO> requestDto, @PathVariable String vid)
+			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTOV2> requestDto, @PathVariable String vid)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		return revokeVid(requestDto, vid, false);
 	}

@@ -20,7 +20,7 @@ public interface ResidentVidService {
 
     public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto, String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException;
 
-    public ResponseWrapper<VidRevokeResponseDTO> revokeVid(BaseVidRevokeRequestDTO requestDto,String vid, String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException;
+    public ResponseWrapper<VidRevokeResponseDTO> revokeVid(BaseVidRevokeRequestDTO requestDto,String vid, String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException;
 
 	public String getVidPolicy() throws ResidentServiceCheckedException;
 
