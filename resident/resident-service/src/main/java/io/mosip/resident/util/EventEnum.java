@@ -456,6 +456,9 @@ public enum EventEnum {
 	AID_STATUS_SUCCESS("RES-SER-212", RegistrationConstants.SYSTEM, "Checking RID status",
 			"Request for checking RID status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_AUTH_TYPE_LOCK("RES-SER-213", RegistrationConstants.SYSTEM, "Request auth type lock",
+			"Requesting auth type lock is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	;
 

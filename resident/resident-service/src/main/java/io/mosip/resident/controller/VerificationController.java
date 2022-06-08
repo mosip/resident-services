@@ -6,6 +6,7 @@ import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,6 +31,9 @@ public class VerificationController {
     @Autowired
     private VerificationServiceImpl verificationServiceImpl;
 
+    @Autowired
+    private RequestValidator validator;
+
     private static final Logger logger = LoggerConfiguration.logConfig(VerificationController.class);
 
     @GetMapping(value = "/channel/verification-status/")
@@ -42,6 +46,7 @@ public class VerificationController {
     public VerificationResponseDTO getChannelVerificationStatus(@RequestParam("channel") String channel,
                                                                                  @RequestParam("individualId") String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
         logger.info("getChannelVerificationStatus method started");
+        validator.validateChannelVerificationStatus(channel, individualId);
         VerificationResponseDTO verificationResponseDTO = verificationServiceImpl.checkChannelVerificationStatus(channel, individualId);
         return verificationResponseDTO;
     }
