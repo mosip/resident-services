@@ -341,6 +341,8 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
 			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
+		} catch (ApisResourceAccessException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
 					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"

@@ -20,6 +20,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -188,6 +189,10 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(ApisResourceAccessException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> getApiResourceStackTraceHandler(
 			final HttpServletRequest httpServletRequest, final ApisResourceAccessException e) throws IOException {
+		if(e.getCause() instanceof HttpClientErrorException 
+				&& ((HttpClientErrorException)e.getCause()).getRawStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
+			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
+		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
 		errorResponse.getErrors().add(error);
