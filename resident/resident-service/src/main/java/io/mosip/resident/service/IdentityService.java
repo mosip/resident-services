@@ -65,4 +65,8 @@ public interface IdentityService {
 			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;
 
+	String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException;
+
+	String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException;
+
 }

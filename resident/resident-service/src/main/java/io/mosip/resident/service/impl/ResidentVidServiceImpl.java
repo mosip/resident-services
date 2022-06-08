@@ -47,8 +47,8 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidResponseDtoV2;
-import io.mosip.resident.dto.VidResponseDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -278,11 +278,10 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Override
 	public ResponseWrapper<VidRevokeResponseDTO> revokeVid(BaseVidRevokeRequestDTO requestDto, String vid, String indivudalId)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
-		//FIXME check if VID belongs to the same person who logged in
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
-
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
+		
 		if(requestDto instanceof VidRevokeRequestDTO) {
 			VidRevokeRequestDTO vidRevokeRequestDTO = (VidRevokeRequestDTO) requestDto;
 			if (Objects.nonNull(vidRevokeRequestDTO.getOtp())) {
@@ -308,11 +307,27 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 		}
+		
+		
+		
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(indivudalId);
 		String uin = identityDTO.getUIN();
 
 		notificationRequestDto.setId(uin);
-
+		
+		if(requestDto instanceof VidRevokeRequestDTOV2) {
+			String idaTokenForIndividualId = identityServiceImpl.getResidentIdaToken();
+			String idaTokenForVid = identityServiceImpl.getIDATokenForIndividualId(vid);
+			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION);
+			}
+		} else {
+			String uinForVid = identityServiceImpl.getUinForIndividualId(vid);
+			if(uinForVid == null || !uinForVid.equalsIgnoreCase(uin)) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_INDIVITUAL);
+			}
+		}
+		
 		try {
 
 			// revoke vid

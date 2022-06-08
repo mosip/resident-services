@@ -244,6 +244,7 @@ public class ResidentVidServiceTest {
 		doReturn(dto).when(mapper).convertValue(any(), any(Class.class));
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        when(identityServiceImpl.getUinForIndividualId(vid)).thenReturn("1234567890");
 
 		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
 
@@ -251,7 +252,7 @@ public class ResidentVidServiceTest {
 	}
     
     @Test(expected = OtpValidationFailedException.class)
-    public void otpValidationFailedTest1() throws ResidentServiceCheckedException, OtpValidationFailedException {
+    public void otpValidationFailedTest1() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
     	String vid = "2038096257310540";
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
 
@@ -275,6 +276,7 @@ public class ResidentVidServiceTest {
 
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
+        when(identityServiceImpl.getUinForIndividualId(vid)).thenReturn("1234567890");
         residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
     
@@ -292,6 +294,7 @@ public class ResidentVidServiceTest {
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
+        when(identityServiceImpl.getUinForIndividualId(vid)).thenReturn("1234567890");
 
         residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
