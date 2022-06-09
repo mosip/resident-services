@@ -740,6 +740,7 @@ public class ResidentServiceImpl implements ResidentService {
 		txn.setResponseDtime(DateUtils.getUTCCurrentDateTime());
 		txn.setRequestTrnId(dto.getTransactionID());
 		txn.setRequestTypeCode("UIN_UPDATED");
+		txn.setAuthTypeCode(ResidentTransactionType.DATA_UPDATE_REQUEST.toString());
 		txn.setRequestSummary("Uin updated successfully");
 		txn.setStatusCode("UIN_UPDATED");
 		txn.setStatusComment("Uin updated successfully");
@@ -863,8 +864,9 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntity.setAid(hash);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-			residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.AUTH_TYPE_LOCK_OR_UNLOCK.toString());
-			residentTransactionEntity.setRequestSummary(ResidentTransactionType.AUTH_TYPE_LOCK_OR_UNLOCK.toString());
+			residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
+			residentTransactionEntity.setRequestSummary(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
+			residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
 			residentTransactionEntity.setStatusCode("NEW");
 			residentTransactionEntity.setStatusComment(isAuthSuccess ? "Success" : "Failure");
 			residentTransactionEntity.setLangCode("eng");
@@ -872,6 +874,7 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntity.setTokenId("");
 			residentTransactionEntity.setCrBy("RESIDENT");
 			residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+			residentTransactionEntity.setOlvPartnerId(partner);
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 	}

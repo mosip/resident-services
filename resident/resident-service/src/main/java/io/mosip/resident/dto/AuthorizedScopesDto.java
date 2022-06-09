@@ -25,7 +25,7 @@ public class AuthorizedScopesDto {
 	
 	private List<String> getAuthTransactions;
 	
-	private List<String> postAuthTypeLock;
+	private List<String> postAuthTypeStatus;
 	
 	private List<String> postAuthTypeUnlock;
 	
@@ -36,5 +36,7 @@ public class AuthorizedScopesDto {
 	private List<String> postUploadDocuments;
 	
 	private List<String> getUploadedDocuments;
+
+	private List<String> getServiceAuthHistoryRoles;
 	
 }

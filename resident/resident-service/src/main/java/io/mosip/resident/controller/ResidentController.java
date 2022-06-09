@@ -16,12 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -187,11 +183,11 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getPostAuthTypeLock()"
+			+ "@authorizedScopes.getPostAuthTypeStatus()"
 		+ ")")
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-type-status")
-	@Operation(summary = "reqAauthTypeLockV2", description = "reqAauthTypeLockV2", tags = { "resident-controller" })
+	@Operation(summary = "reqAuthTypeStatus", description = "reqAuthTypeStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
@@ -201,7 +197,7 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAauthTypeLockV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type lock API"));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type status API"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
@@ -232,6 +228,34 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		return response;
+	}
+
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetServiceAuthHistoryRoles()"
+			+ ")")
+	@GetMapping(path="/getServiceHistory")
+	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseEntity<?> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+											   @RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+											   @RequestParam(name = "fromDateTime", required = false)
+												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
+											   @RequestParam(name = "toDateTime", required = false)
+												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+											   @RequestParam(name = "serviceType", required = true) ResidentTransactionType serviceType) {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
+
+		return null;
+	}
+
+	@InitBinder
+	public void initBinder(WebDataBinder dataBinder) {
+		dataBinder.registerCustomEditor(ResidentTransactionType.class, new ResidentTransactionTypeEnumConverter());
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("

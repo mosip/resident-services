@@ -6,6 +6,7 @@ import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.entity.AutnTxn;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.AutnTxnRepository;
@@ -88,7 +89,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setRequestDTtimes(LocalDateTime.now());
             autnTxn.setResponseDTimes(LocalDateTime.now());
             autnTxn.setRequestTrnId(eventModel.getEvent().getTransactionId());
-            autnTxn.setAuthTypeCode(OTP);
+            autnTxn.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
             autnTxn.setStatusCode(status);
             autnTxn.setStatusComment(status);
             autnTxn.setLangCode(ENG);
@@ -116,6 +117,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setUpdDTimes(LocalDateTime.now());
             autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
             autnTxn1.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
+            autnTxn1.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
             autnTxnRepository.save(autnTxn1);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

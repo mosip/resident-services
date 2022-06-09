@@ -11,6 +11,7 @@ import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -110,6 +111,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             residentTransactionEntity.setTokenId("");
             residentTransactionEntity.setCrBy("mosip");
             residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+            residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
 
             residentTransactionRepository.save(residentTransactionEntity);
         }

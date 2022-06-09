@@ -100,4 +100,55 @@ public class ResidentTransactionEntity {
     @Column(name = "del_dtimes")
     private LocalDateTime delDtimes;
 
+    @NotNull
+    @Column(name = "auth_type_code")
+    private String authTypeCode;
+
+    @Column(name = "static_tkn_id")
+    private String authTknId;
+
+    @Column(name = "request_signature")
+    private String requestSignature;
+
+    @Column(name = "response_signature")
+    private String responseSignature;
+
+    @Column(name = "olv_partner_id")
+    private String olvPartnerId;
+
+    /**
+     * The constructor used in retrieval of the specific fields.
+     * @param requestTrnId
+     * @param requestDTtimes
+     * @param authTypeCode
+     * @param statusCode
+     * @param statusComment
+     * @param refId
+     * @param entityName
+     */
+    public ResidentTransactionEntity(String requestTrnId, LocalDateTime requestDTtimes, String authTypeCode, String statusCode,
+                   String statusComment, String refId, String refIdType, String entityName, String requestSignature,
+                   String responseSignature) {
+        this.requestTrnId = requestTrnId;
+        this.requestDtimes = requestDTtimes;
+        this.authTypeCode = authTypeCode;
+        this.statusCode = statusCode;
+        this.statusComment = statusComment;
+        this.refId = refId;
+        this.refIdType = refIdType;
+        this.requestedEntityName = entityName;
+        this.requestSignature = requestSignature;
+        this.responseSignature = responseSignature;
+    }
+
+    /**
+     * The constructor used in retrieval of the specific fields.
+     *
+     */
+    public ResidentTransactionEntity(String token, String refIdType, String entityId) {
+        this.tokenId = token;
+        this.refIdType = refIdType;
+        this.requestedEntityId = entityId;
+    }
+
 }

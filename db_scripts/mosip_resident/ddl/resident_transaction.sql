@@ -33,6 +33,11 @@ CREATE TABLE resident.resident_transaction(
     upd_dtimes timestamp,
     is_deleted boolean NOT NULL DEFAULT false,
     del_dtimes timestamp,
+    auth_type_code character varying(128),
+    static_tkn_id character varying(64),
+    request_signature character varying,
+    response_signature character varying,
+    olv_partner_id character varying(36),
     CONSTRAINT pk_restrn_aid PRIMARY KEY (aid)
 );
 
@@ -58,5 +63,10 @@ COMMENT ON COLUMN resident.resident_transaction.upd_by IS 'The user who updated 
 COMMENT ON COLUMN resident.resident_transaction.upd_dtimes IS 'The time when the record is updated';
 COMMENT ON COLUMN resident.resident_transaction.is_deleted IS 'The flag to identify if the record is deleted or not';
 COMMENT ON COLUMN resident.resident_transaction.del_dtimes IS 'The time when the record is deleted';
+COMMENT ON COLUMN resident.resident_transaction.auth_type_code IS 'The type of the authentication';
+COMMENT ON COLUMN resident.resident_transaction.static_tkn_id IS 'The static token id';
+COMMENT ON COLUMN resident.resident_transaction.request_signature IS 'The signature of the request';
+COMMENT ON COLUMN resident.resident_transaction.response_signature IS 'The signature of the response';
+COMMENT ON COLUMN resident.resident_transaction.olv_partner_id IS 'The partner id';
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
