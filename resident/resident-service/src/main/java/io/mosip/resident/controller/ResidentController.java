@@ -241,16 +241,16 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+	public ResponseEntity<List<ServiceHistoryResponseDto>> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
 											   @RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 											   @RequestParam(name = "fromDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
 											   @RequestParam(name = "toDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
-											   @RequestParam(name = "serviceType", required = true) ResidentTransactionType serviceType) {
+											   @RequestParam(name = "serviceType", required = true) ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-
-		return null;
+		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType);
+		return new ResponseEntity<>(residentServiceServiceHistory, HttpStatus.OK);
 	}
 
 	@InitBinder

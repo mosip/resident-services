@@ -59,6 +59,9 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
     private String callbackUrl;
 
     @Autowired
+    private IdentityServiceImpl identityServiceImpl;
+
+    @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Override
@@ -108,7 +111,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             residentTransactionEntity.setStatusCode(status);
             residentTransactionEntity.setStatusComment(status);
             residentTransactionEntity.setLangCode("eng");
-            residentTransactionEntity.setTokenId("");
+            residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
             residentTransactionEntity.setCrBy("mosip");
             residentTransactionEntity.setCrDtimes(LocalDateTime.now());
             residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());

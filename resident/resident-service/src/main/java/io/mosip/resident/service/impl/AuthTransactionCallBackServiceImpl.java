@@ -95,7 +95,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn.setLangCode(ENG);
             autnTxn.setCrBy(RESIDENT);
             autnTxn.setCrDTimes(LocalDateTime.now());
-            autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
+            autnTxn.setToken(identityService.getIDAToken(identityService.getResidentIndvidualId()));
             autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
             autnTxnRepository.save(autnTxn);
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
             autnTxn1.setUpdBy(RESIDENT);
             autnTxn1.setUpdDTimes(LocalDateTime.now());
             autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
-            autnTxn1.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
+            autnTxn1.setToken(identityService.getIDAToken(identityService.getResidentIndvidualId()));
             autnTxn1.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
             autnTxnRepository.save(autnTxn1);
         } catch (Exception e) {

@@ -851,7 +851,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 
-	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthLockOrUnLockRequestDtoV2 dto, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthLockOrUnLockRequestDtoV2 dto, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 
 		ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");
@@ -871,7 +871,7 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntity.setStatusComment(isAuthSuccess ? "Success" : "Failure");
 			residentTransactionEntity.setLangCode("eng");
 			residentTransactionEntity.setRefIdType("");
-			residentTransactionEntity.setTokenId("");
+			residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
 			residentTransactionEntity.setCrBy("RESIDENT");
 			residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 			residentTransactionEntity.setOlvPartnerId(partner);
@@ -1080,6 +1080,58 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
+	public List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+
+		boolean fetchAllRecords = false;
+		if(pageStart == null) {
+			if(pageFetch == null) {
+				//If both Page start and page fetch values are null return all records
+				fetchAllRecords = true;
+				pageStart = DEFAULT_PAGE_START;
+				pageFetch = DEFAULT_PAGE_COUNT;
+			} else {
+				pageStart = DEFAULT_PAGE_START;
+			}
+		} else {
+			if(pageFetch == null) {
+				pageFetch = DEFAULT_PAGE_COUNT;
+			}
+		}
+		if(pageStart < 0) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
+		} else if(pageFetch < 0) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
+		}
+		PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
+		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType);
+		return serviceHistoryResponseDtoList;
+	}
+	//346697314566835424394775924659202696   8251649601
+	//283868278700041902640181469046808308
+
+	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		List<ServiceHistoryResponseDto> autnTxnList = new ArrayList<>();
+		List<List<ServiceHistoryResponseDto>> autnTxnLists = new ArrayList<>();
+		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
+		for(String partnerId:partnerIds) {
+			System.out.println(identityServiceImpl.getResidentIndvidualId());
+			String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId());
+			if(idaToken!=null) {
+				//if(fromDateTime != null && toDateTime != null) {
+					//autnTxnLists.add(
+				List<ResidentTransactionEntity> residentTransactionEntityList =residentTransactionRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest);
+				System.out.println("residentTransactionEntityList"+residentTransactionEntityList.size());
+				//} else {
+					//autnTxnLists.add(residentTransactionRepository.findByTokenWithoutTime(idaToken, pageRequest));
+				//}
+
+			}
+		}
+		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
+		return autnTxnList;
+	}
+
+	@Override
 	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
 		try{
 
@@ -1207,4 +1259,5 @@ public class ResidentServiceImpl implements ResidentService {
 			return aidStatusResponseDTO;
 		}
 	}
+
 }
