@@ -9,7 +9,6 @@ import io.mosip.resident.service.impl.BaseWebSubInitializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,11 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doThrow;
-
-import org.junit.After;
-import org.junit.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -55,7 +49,6 @@ public class BaseWebSubInitializerTest {
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
         taskScheduler.setPoolSize(5);
         taskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
-
     }
 
     @After
@@ -94,8 +87,8 @@ public class BaseWebSubInitializerTest {
         ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "Topic");
     }
 
-    @Test(expected = Exception.class)
-    public void testTryRegisterTopicEvent() throws Exception {
+    @Test
+    public void testinitSubsriptions() throws Exception {
         BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
         baseWebSubInitializer.initSubsriptions();
         ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "initSubsriptions");
