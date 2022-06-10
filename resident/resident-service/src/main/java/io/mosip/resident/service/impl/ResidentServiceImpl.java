@@ -1103,23 +1103,32 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 		}
 		PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
-		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType);
+		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType, pageStart-1, pageFetch);
 		return serviceHistoryResponseDtoList;
 	}
 	//346697314566835424394775924659202696   8251649601
 	//283868278700041902640181469046808308
 
-	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType, Integer pageStart, Integer pageSize) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<ServiceHistoryResponseDto> autnTxnList = new ArrayList<>();
 		List<List<ServiceHistoryResponseDto>> autnTxnLists = new ArrayList<>();
+		List<ResidentTransactionType> residentTransactionTypeList = new ArrayList<>();
+		residentTransactionTypeList.add(ResidentTransactionType.AUTHENTICATION_REQUEST);
+		residentTransactionTypeList.add(ResidentTransactionType.ID_MANAGEMENT_REQUEST);
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
 		for(String partnerId:partnerIds) {
 			System.out.println(identityServiceImpl.getResidentIndvidualId());
 			String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId());
+			String sortType= "desc";
 			if(idaToken!=null) {
 				//if(fromDateTime != null && toDateTime != null) {
 					//autnTxnLists.add(
-				List<ResidentTransactionEntity> residentTransactionEntityList =residentTransactionRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest);
+				List<ResidentTransactionEntity> residentTransactionEntityList =residentTransactionRepository.
+						findByToken(idaToken, fromDateTime, toDateTime, pageRequest);
+
+				List<ResidentTransactionEntity> residentTransactionEntities = residentTransactionRepository.
+						findByTokenId( idaToken,  fromDateTime,  toDateTime, residentTransactionTypeList.get(0).toString()
+								, residentTransactionTypeList.get(1).toString(),  sortType ,  String.valueOf(pageSize),  String.valueOf(pageStart));
 				System.out.println("residentTransactionEntityList"+residentTransactionEntityList.size());
 				//} else {
 					//autnTxnLists.add(residentTransactionRepository.findByTokenWithoutTime(idaToken, pageRequest));

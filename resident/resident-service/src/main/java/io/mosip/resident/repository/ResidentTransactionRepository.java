@@ -23,10 +23,16 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
     public List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
     public ResidentTransactionEntity findByAid(String aid);
 
-//    @Query(value = "Select new ResidentTransactionEntity( requestTrnId, requestDtimes, authTypeCode, statusCode, statusComment, refId, refIdType, entityName, requestSignature, responseSignature ) " +
-//            "from ResidentTransactionEntity where tokenId=:tokenId AND crDTimes>= :fromDateTime AND crDTimes<= :toDateTime  ORDER BY crDTimes DESC")
-    @Query(value = "select * from resident_transaction where token_id = ?1 ", nativeQuery = true)
+     @Query(value = "select * from resident_transaction where token_id = ?1 ", nativeQuery = true)
     List<ResidentTransactionEntity> findByToken( String tokenId,
                                                  LocalDateTime fromDateTime,
                                                  LocalDateTime toDateTime, Pageable pagaeable);
+
+     @Query(value = "SELECT request_trn_id, status_comment, cr_dtimes, status_code FROM resident.resident_transaction where token_id=?1 " +
+             "AND cr_dtimes>= ?2 AND cr_dtimes<= ?3" +
+             "    AND auth_type_code= ?4 OR auth_type_code = ?5" +
+             "    ORDER BY cr_dtimes ?6 LIMIT ?7" +
+             "OFFSET ?8", nativeQuery = true)
+    List<ResidentTransactionEntity> findByTokenId(String tokenId, LocalDateTime fromDateTime, LocalDateTime toDateTime, String authTypeCode
+     , String authTypeCodeSecond, String sortType , String pageSize, String pageStart);
 }
