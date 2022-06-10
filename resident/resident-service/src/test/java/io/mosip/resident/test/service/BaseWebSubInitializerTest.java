@@ -9,17 +9,20 @@ import io.mosip.resident.service.impl.BaseWebSubInitializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -32,7 +35,7 @@ public class BaseWebSubInitializerTest {
     @Mock
     private PublisherClient<String, Object, HttpHeaders> publisher;
 
-    @Mock
+    @MockBean
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
     @Mock
@@ -84,5 +87,18 @@ public class BaseWebSubInitializerTest {
         ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "authTransactionSubscription");
     }
 
+    @Test
+    public void testTryRegisterTopicEvents() throws Exception {
+        BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+        baseWebSubInitializer.tryRegisterTopicEvent("Topic");
+        ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "Topic");
+    }
+
+    @Test(expected = Exception.class)
+    public void testTryRegisterTopicEvent() throws Exception {
+        BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+        baseWebSubInitializer.initSubsriptions();
+        ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "initSubsriptions");
+    }
 
 }

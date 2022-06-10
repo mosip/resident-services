@@ -86,7 +86,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         }
     }
 
-    protected void tryRegisterTopicEvent(String eventTopic) {
+    public void tryRegisterTopicEvent(String eventTopic) {
         try {
             logger.debug(this.getClass().getCanonicalName(), "tryRegisterTopicEvent", "",
                     "Trying to register topic: " + eventTopic);
@@ -99,7 +99,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         }
     }
 
-    protected void initSubsriptions() {
+    public void initSubsriptions() {
         try {
             logger.debug("subscribe", "",
                     "Trying to subscribe to topic: " + topic + " callback-url: "
@@ -114,7 +114,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         }
     }
 
-    private void subscribe(String topic, String callbackUrl, String secret, String hubUrl) {
+    public void subscribe(String topic, String callbackUrl, String secret, String hubUrl) {
         try {
             SubscriptionChangeRequest subscriptionRequest = new SubscriptionChangeRequest();
             logger.debug("subscribe", "",
@@ -124,7 +124,9 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
             subscriptionRequest.setSecret(secret);
             subscriptionRequest.setTopic(topic);
             subscriptionRequest.setHubURL(hubUrl);
-            subscribe.subscribe(subscriptionRequest);
+            if(subscribe!=null){
+                subscribe.subscribe(subscriptionRequest);
+            }
             logger.info("subscribe", "",
                     "Subscribed to topic: " + topic);
         } catch (Exception e) {
