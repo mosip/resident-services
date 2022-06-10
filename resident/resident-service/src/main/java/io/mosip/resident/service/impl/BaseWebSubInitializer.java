@@ -77,7 +77,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     }
 
-    private void authTransactionSubscription() {
+    public void authTransactionSubscription() {
         try{
             subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
         }
