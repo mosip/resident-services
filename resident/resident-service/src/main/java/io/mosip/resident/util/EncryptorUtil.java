@@ -85,7 +85,9 @@ public class EncryptorUtil {
                 ServiceError error = (ServiceError) responseDto.getErrors().get(0);
                 throw new PacketDecryptionFailureException(error.getMessage());
             }
-
+            if(responseDto != null || responseDto.getResponse() != null) {
+                DecryptResponseDto decryptResponseDto = mapper.convertValue(responseDto.getResponse(), DecryptResponseDto.class);
+            }
             DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
             return CryptoUtil.encodeToURLSafeBase64(mergeEncryptedData(CryptoUtil.decodeURLSafeBase64(responseObject.getData()), nonce, aad));
 

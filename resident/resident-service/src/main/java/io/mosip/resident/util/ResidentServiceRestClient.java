@@ -248,6 +248,9 @@ public class ResidentServiceRestClient {
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
+			if(uri==null){
+				throw new ApisResourceAccessException("URI is null");
+			}
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
@@ -317,8 +320,13 @@ public class ResidentServiceRestClient {
 				HttpEntity<Object> httpEntity = (HttpEntity<Object>) requestType;
 				HttpHeaders httpHeader = httpEntity.getHeaders();
 				for (String key : httpHeader.keySet()) {
-					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type")))
-						headers.add(key, httpHeader.get(key).get(0));
+					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type"))){
+						if(httpHeader.isEmpty() || httpHeader.get(key) == null || httpHeader.get(key).isEmpty()
+						|| (httpHeader.get(key) != null && httpHeader.get(key).size() == 0) ||
+						httpHeader != null){
+							headers.add(key, httpHeader.get(key).get(0));
+						}
+					}
 				}
 				return new HttpEntity<>(httpEntity.getBody(), headers);
 			} catch (ClassCastException e) {
