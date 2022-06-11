@@ -20,17 +20,20 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import io.mosip.kernel.authcodeflowproxy.api.exception.AuthRestException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -163,6 +166,9 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(value = { Exception.class, RuntimeException.class })
 	public ResponseEntity<ResponseWrapper<ServiceError>> defaultErrorHandler(HttpServletRequest httpServletRequest,
 			Exception exception) throws IOException {
+		if(exception instanceof AuthRestException) {
+			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
+		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), exception.getMessage());
 		errorResponse.getErrors().add(error);
@@ -171,9 +177,22 @@ public class ApiExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}
 
+	private ResponseWrapper<ServiceError> getAuthFailedResponse() {
+		ResponseWrapper<ServiceError> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+		responseWrapper
+				.setErrors(List.of(new ServiceError(ResidentErrorCode.UNAUTHORIZED.getErrorCode(),
+						ResidentErrorCode.UNAUTHORIZED.getErrorMessage())));
+		return responseWrapper;
+	}
+
 	@ExceptionHandler(ApisResourceAccessException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> getApiResourceStackTraceHandler(
 			final HttpServletRequest httpServletRequest, final ApisResourceAccessException e) throws IOException {
+		if(e.getCause() instanceof HttpClientErrorException 
+				&& ((HttpClientErrorException)e.getCause()).getRawStatusCode() == HttpStatus.UNAUTHORIZED.value()) {
+			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
+		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
 		errorResponse.getErrors().add(error);

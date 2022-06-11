@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -60,6 +59,8 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
+	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
+	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
 	private static final String BEARER_PREFIX = "Bearer ";
 	private static final String AUTHORIZATION = "Authorization";
@@ -127,14 +128,15 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
-    	return getIdentity(id,null,null);
+    	return getIdentity(id, false, null);
     }
 
 	@Override
-	public IdentityDTO getIdentity(String id, String type, String langCode) throws ResidentServiceCheckedException {
+	public IdentityDTO getIdentity(String id, boolean fetchFace, String langCode) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
+			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
 			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true);
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
@@ -145,23 +147,10 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
-			String encodedDocValue=getMappingValue(identity, individualDocs);
-			if (Objects.nonNull(encodedDocValue) && !encodedDocValue.contentEquals("null")) {
-				byte[] decodedDoc=CryptoUtil.decodeURLSafeBase64(encodedDocValue);
-				Map<String, String> bdbBasedOnType;
-				try {
-					bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
-					if(bdbBasedOnType.isEmpty()) {
-						throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
-								ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
-					}
-					identityDTO.setFace(bdbBasedOnType.values().iterator().next());
-				} catch (Exception e) {
-					logger.error("Error occured in accessing biometric data %s", e.getMessage());
-					throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
-							ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
-				}
+			if(fetchFace) {
+				extractFaceBdb(identityDTO, identity);
 			}
+
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
@@ -169,6 +158,25 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		logger.debug("IdentityServiceImpl::getIdentity()::exit");
 		return identityDTO;
+	}
+
+	private void extractFaceBdb(IdentityDTO identityDTO, Map<?, ?> identity)
+			throws ResidentServiceCheckedException, IOException {
+		String encodedDocValue=getMappingValue(identity, individualDocs);
+		byte[] decodedDoc=CryptoUtil.decodeURLSafeBase64(encodedDocValue);
+		Map<String, String> bdbBasedOnType;
+		try {
+			bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
+			if(bdbBasedOnType.isEmpty()) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
+						ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
+			}
+			identityDTO.setFace(bdbBasedOnType.values().iterator().next());
+		} catch (Exception e) {
+			logger.error("Error occured in accessing biometric data %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
+					ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
+		}
 	}
 	
 	@Override
@@ -211,6 +219,8 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
+			}
+			if(individualBio != null && !individualBio.isEmpty()) {
 				response.put(individualDocs, individualBio);
 			}
 			return response;
@@ -277,6 +287,17 @@ public class IdentityServiceImpl implements IdentityService {
 		return name;
 	}
 	
+	@Override
+	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
+		IdentityDTO identityDTO = getIdentity(idvid);
+		return identityDTO.getUIN();
+	}
+	
+	@Override
+	public String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException {
+		return getIDAToken(getUinForIndividualId(idvid));
+	}
+	
 	public String getIDAToken(String uin) {
 		return getIDAToken(uin, onlineVerificationPartnerId);
 	}
@@ -331,6 +352,8 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
 			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
+		} catch (ApisResourceAccessException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
 					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"

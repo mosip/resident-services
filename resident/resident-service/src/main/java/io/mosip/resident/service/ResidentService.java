@@ -7,6 +7,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ResidentService {
@@ -24,11 +25,12 @@ public interface ResidentService {
 	
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 
-	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDto request, AuthTypeStatus lock) throws ResidentServiceCheckedException;
+	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
-	List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType) throws ResidentServiceCheckedException;
+	List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType
+	, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException;
 
 	RegStatusCheckResponseDTO getRidStatus(String rid);
 

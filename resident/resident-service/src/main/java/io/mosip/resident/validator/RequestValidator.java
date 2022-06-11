@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.resident.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,24 +24,12 @@ import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.BaseVidRequestDto;
-import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.IVidRequestDto;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.VidRequestDto;
-import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
 @Component
 public class RequestValidator {
@@ -188,6 +177,61 @@ public class RequestValidator {
 
 			throw new InvalidInputException("transactionId");
 		}
+	}
+
+	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDto) {
+		if (requestDto.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("request");
+		}
+		if(requestDto.getRequest().getIndividualId() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("individualId");
+		}
+		String individualId = requestDto.getRequest().getIndividualId();
+		if (!validateIndividualIdvIdWithoutIdType(individualId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request to generate VID"));
+			throw new InvalidInputException("individualId");
+		}
+		validateAuthTypeV2(requestDto.getRequest().getAuthType());
+	}
+
+	private void validateAuthTypeV2(List<AuthTypeStatusDto> authType) {
+		if (authType == null || authType.isEmpty()) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("authType");
+		}
+		String[] authTypesArray = authTypes.split(",");
+		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
+		for (AuthTypeStatusDto authTypeStatusDto : authType) {
+			if (StringUtils.isEmpty(authTypeStatusDto.getAuthType())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType",
+						"Request to generate VID"));
+				throw new InvalidInputException("authType");
+			}
+			if (authTypeStatusDto.getUnlockForSeconds() == null) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
+						"Request to generate VID"));
+				throw new InvalidInputException("unlockForSeconds");
+			}
+			if(!isLong(authTypeStatusDto.getUnlockForSeconds())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
+						"Request to generate VID"));
+				throw new InvalidInputException("unlockForSeconds");
+			}
+			List<String> authTypes = Arrays.asList(authTypeStatusDto.getAuthType().split(","));
+			validateAuthType(authTypes,
+					"Request auth " + authTypes.toString().toLowerCase() + " API");
+
+		}
+	}
+
+	private boolean isLong(Long unlockForSeconds) {
+		if(unlockForSeconds == null) {
+			return false;
+		}
+		return unlockForSeconds.longValue() > 0;
 	}
 
 	public void validateAuthLockOrUnlockRequest(RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO,
@@ -658,4 +702,18 @@ public class RequestValidator {
 		}
 		
 	}
+
+    public void validateChannelVerificationStatus(String channel, String individualId) {
+		if (StringUtils.isEmpty(channel) || !channel.equalsIgnoreCase(PHONE_CHANNEL)
+				&& !channel.equalsIgnoreCase(EMAIL_CHANNEL) ) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "channel", "Request channel verification API"));
+			throw new InvalidInputException("channel");
+		}
+		if (StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
+			throw new InvalidInputException("individualId");
+		}
+    }
 }

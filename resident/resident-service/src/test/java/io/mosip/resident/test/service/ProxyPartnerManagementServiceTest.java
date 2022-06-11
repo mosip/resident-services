@@ -62,9 +62,19 @@ public class ProxyPartnerManagementServiceTest {
 				.getPartnersByPartnerType(Optional.of("Device_Provider"));
 		assertNotNull(result);
 	}
+	
+	@Test
+	public void testGetPartnersByPartnerTypeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyPartnerManagementService
+				.getPartnersByPartnerType(Optional.empty());
+		assertNotNull(result);
+	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetPartnersByPartnerTypeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public void testGetPartnersByPartnerTypeNestedIf()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
@@ -76,6 +86,18 @@ public class ProxyPartnerManagementServiceTest {
 
 		responseWrapper.setErrors(errorList);
 		proxyPartnerManagementService.getPartnersByPartnerType(Optional.of("Device_Provider"));
+	}
+
+	@Test
+	public void testGetPartnersByPartnerTypeNestedElse()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+
+		responseWrapper.setErrors(null);
+		ResponseWrapper<?> result = proxyPartnerManagementService
+				.getPartnersByPartnerType(Optional.of("Device_Provider"));
+		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)

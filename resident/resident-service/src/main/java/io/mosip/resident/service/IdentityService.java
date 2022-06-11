@@ -4,11 +4,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -29,15 +26,15 @@ public interface IdentityService {
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
 
 	/**
-	 * Get identity data by id, type & langCode.
+	 * Get identity data by id, fetchFace and langCode.
 	 * 
 	 * @param id
-	 * @param type
+	 * @param fetchFace
 	 * @param langCode
 	 * @return IdentityDTO object
 	 * @throws ResidentServiceCheckedException
 	 */
-	public IdentityDTO getIdentity(String id, String type, String langCode) throws ResidentServiceCheckedException;
+	public IdentityDTO getIdentity(String id, boolean fetchFace, String langCode) throws ResidentServiceCheckedException;
 
 	public String getIDAToken(String uin);
 
@@ -55,7 +52,7 @@ public interface IdentityService {
 	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
 
 	/**
-	 * Get ID-Repo api data by id, type & includeUin.
+	 * Get ID-Repo api data by id, type and includeUin.
 	 * 
 	 * @param id
 	 * @param type
@@ -67,5 +64,9 @@ public interface IdentityService {
 			throws ResidentServiceCheckedException;
 			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;
+
+	String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException;
+
+	String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException;
 
 }

@@ -47,7 +47,9 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 		queryParamName.add("partnerType");
 
 		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(partnerType.get());
+		if(partnerType.isPresent()) {
+			queryParamValue.add(partnerType.get());
+		}
 
 		try {
 			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.PARTNER_API_URL,

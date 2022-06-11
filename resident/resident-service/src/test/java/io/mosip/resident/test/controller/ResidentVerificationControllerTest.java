@@ -10,6 +10,7 @@ import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,6 +61,9 @@ public class ResidentVerificationControllerTest {
 
     @MockBean
     private VerificationServiceImpl verificationServiceImpl;
+
+    @MockBean
+    private RequestValidator requestValidator;
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")
