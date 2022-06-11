@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -145,21 +146,22 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
 			String encodedDocValue=getMappingValue(identity, individualDocs);
-			byte[] decodedDoc=CryptoUtil.decodeURLSafeBase64(encodedDocValue);
-			Map<String, String> bdbBasedOnType;
-			try {
-				bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
-				if(bdbBasedOnType.isEmpty()) {
-					throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
-							ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
+			if (Objects.nonNull(encodedDocValue) && !encodedDocValue.contentEquals("null")) {
+				byte[] decodedDoc=CryptoUtil.decodeURLSafeBase64(encodedDocValue);
+				Map<String, String> bdbBasedOnType;
+				try {
+					bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
+					if(bdbBasedOnType.isEmpty()) {
+						throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
+								ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
+					}
+					identityDTO.setFace(bdbBasedOnType.values().iterator().next());
+				} catch (Exception e) {
+					logger.error("Error occured in accessing biometric data %s", e.getMessage());
+					throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
+							ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
 				}
-				identityDTO.setFace(bdbBasedOnType.values().iterator().next());
-			} catch (Exception e) {
-				logger.error("Error occured in accessing biometric data %s", e.getMessage());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
-						ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
 			}
-
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
