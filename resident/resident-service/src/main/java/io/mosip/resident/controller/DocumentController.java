@@ -1,8 +1,12 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
+
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -72,6 +76,8 @@ public class DocumentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
+			Objects.requireNonNull(StringUtils.defaultIfBlank(request, null),
+					String.format(INVALID_INPUT.getErrorMessage() + "request"));
 			DocumentRequestDTO docRequest = JsonUtil
 					.readValue(new String(CryptoUtil.decodeURLSafeBase64(request)), new TypeReference<RequestWrapper<DocumentRequestDTO>>() {
 					}).getRequest();
@@ -89,7 +95,7 @@ public class DocumentController {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
