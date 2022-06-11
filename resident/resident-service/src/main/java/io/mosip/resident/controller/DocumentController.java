@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +20,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -73,7 +73,7 @@ public class DocumentController {
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			DocumentRequestDTO docRequest = JsonUtil
-					.readValue(request, new TypeReference<RequestWrapper<DocumentRequestDTO>>() {
+					.readValue(new String(CryptoUtil.decodeURLSafeBase64(request)), new TypeReference<RequestWrapper<DocumentRequestDTO>>() {
 					}).getRequest();
 			validator.validateRequest(docRequest);
 			validator.scanForViruses(file);
@@ -111,7 +111,7 @@ public class DocumentController {
 		+ ")")
 	@GetMapping(path = "/documents/{transaction-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<List<DocumentResponseDTO>> getDocumentsByTransactionId(
-			@RequestParam("transaction-id") String transactionId) {
+			@PathVariable("transaction-id") String transactionId) {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get documents API"));
 		ResponseWrapper<List<DocumentResponseDTO>> responseWrapper = new ResponseWrapper<>();
 		try {
