@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -241,21 +240,25 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<List<ServiceHistoryResponseDto>> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+	public ResponseEntity<ServiceTypeRespenseDto> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
 											   @RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 											   @RequestParam(name = "fromDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
 											   @RequestParam(name = "toDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
-											   @RequestParam(name = "serviceType", required = true) ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+											   @RequestParam(name = "sortType", required = false) String sortType,
+											   @RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType);
-		return new ResponseEntity<>(residentServiceServiceHistory, HttpStatus.OK);
-	}
-
-	@InitBinder
-	public void initBinder(WebDataBinder dataBinder) {
-		dataBinder.registerCustomEditor(ResidentTransactionType.class, new ResidentTransactionTypeEnumConverter());
+		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType);
+		validator.validateServiceHistoryRequest(pageStart, pageFetch, fromDateTime, toDateTime, sortType, serviceType);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
+				"getServiceHistory"));
+		ServiceTypeRespenseDto serviceTypeRespenseDto = new ServiceTypeRespenseDto();
+		Map<String, List<ServiceHistoryResponseDto>> serviceTypeMap = new HashMap<>();
+		serviceTypeMap.put("serviceType", residentServiceServiceHistory);
+		serviceTypeRespenseDto.setResponse(serviceTypeMap);
+		serviceTypeRespenseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+		return new ResponseEntity<>(serviceTypeRespenseDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("

@@ -145,10 +145,11 @@ public class ResidentTransactionEntity {
      * The constructor used in retrieval of the specific fields.
      *
      */
-    public ResidentTransactionEntity(String token, String refIdType, String entityId) {
-        this.tokenId = token;
-        this.refIdType = refIdType;
-        this.requestedEntityId = entityId;
+    public ResidentTransactionEntity(String requestTrnId, String statusComment ,LocalDateTime crDtimes, String statusCode) {
+        this.requestTrnId = requestTrnId;
+        this.statusComment = statusComment;
+        this.crDtimes = crDtimes;
+        this.statusCode = statusCode;
     }
 
 }

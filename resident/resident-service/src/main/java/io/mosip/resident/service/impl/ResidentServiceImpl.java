@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -855,7 +856,6 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 
 		ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");
-		System.out.println("partnerIds"+partnerIds);
 
 		for(String partner: partnerIds) {
 			String id= individualId+partner;
@@ -1080,13 +1080,12 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime,
+															 LocalDateTime toDateTime, String serviceType, String sortType) throws ResidentServiceCheckedException, ApisResourceAccessException {
 
-		boolean fetchAllRecords = false;
 		if(pageStart == null) {
 			if(pageFetch == null) {
 				//If both Page start and page fetch values are null return all records
-				fetchAllRecords = true;
 				pageStart = DEFAULT_PAGE_START;
 				pageFetch = DEFAULT_PAGE_COUNT;
 			} else {
@@ -1102,53 +1101,63 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if(pageFetch < 0) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 		}
-		PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
-		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType, pageStart-1, pageFetch);
+		PageRequest pageRequest = null;
+		if(sortType == null) {
+			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.ASC, "crDtimes"));
+		} else if(sortType.equalsIgnoreCase(SortType.ASC.toString())) {
+			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.ASC, "crDtimes"));
+		} else if(sortType.equalsIgnoreCase(SortType.DESC.toString())) {
+			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.DESC, "crDtimes"));
+		}
+		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType);
 		return serviceHistoryResponseDtoList;
 	}
-	//346697314566835424394775924659202696   8251649601
-	//283868278700041902640181469046808308
 
-	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType, Integer pageStart, Integer pageSize) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		List<ServiceHistoryResponseDto> autnTxnList = new ArrayList<>();
-		List<List<ServiceHistoryResponseDto>> autnTxnLists = new ArrayList<>();
-		List<ResidentTransactionType> residentTransactionTypeList = new ArrayList<>();
-		residentTransactionTypeList.add(ResidentTransactionType.AUTHENTICATION_REQUEST);
-		residentTransactionTypeList.add(ResidentTransactionType.ID_MANAGEMENT_REQUEST);
+	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		List<String> residentTransactionTypeList = new ArrayList<>();
+		if(serviceType == null) {
+			residentTransactionTypeList.addAll(Arrays.asList(ResidentTransactionType.values()).stream().map(Enum::name).collect(Collectors.toList()));
+		} else {
+			residentTransactionTypeList.addAll(List.of(serviceType.split(",")).stream().map(String::toUpperCase).collect(Collectors.toList()));
+		}
+		List<List<ResidentTransactionEntity>> residentTransactionEntityLists = new ArrayList<>();
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
 		for(String partnerId:partnerIds) {
-			System.out.println(identityServiceImpl.getResidentIndvidualId());
-			String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId());
-			String sortType= "desc";
+			String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId(), partnerId);
 			if(idaToken!=null) {
-				//if(fromDateTime != null && toDateTime != null) {
-					//autnTxnLists.add(
-				List<ResidentTransactionEntity> residentTransactionEntityList =residentTransactionRepository.
-						findByToken(idaToken, fromDateTime, toDateTime, pageRequest);
-
-				List<ResidentTransactionEntity> residentTransactionEntities = residentTransactionRepository.
-						findByTokenId( idaToken,  fromDateTime,  toDateTime, residentTransactionTypeList.get(0).toString()
-								, residentTransactionTypeList.get(1).toString(),  sortType ,  String.valueOf(pageSize),  String.valueOf(pageStart));
-				System.out.println("residentTransactionEntityList"+residentTransactionEntityList.size());
-				//} else {
-					//autnTxnLists.add(residentTransactionRepository.findByTokenWithoutTime(idaToken, pageRequest));
-				//}
-
+				if(fromDateTime != null && toDateTime != null) {
+					residentTransactionEntityLists.add( residentTransactionRepository.
+							findByToken(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
+									, pageRequest));
+				} else {
+					residentTransactionEntityLists.add(residentTransactionRepository.findByTokenWithoutDate(idaToken, residentTransactionTypeList, pageRequest));
+				}
 			}
 		}
-		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
-		return autnTxnList;
+		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionEntityLists.stream().flatMap(List::stream).collect(Collectors.toList());
+		return convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList);
+	}
+
+	private List<ServiceHistoryResponseDto> convertResidentEntityListToServiceHistoryDto(List<ResidentTransactionEntity> residentTransactionEntityList) {
+		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
+		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
+			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+			serviceHistoryResponseDto.setApplicationId(residentTransactionEntity.getRequestTrnId());
+			serviceHistoryResponseDto.setAdditionalInformation(residentTransactionEntity.getStatusComment());
+			serviceHistoryResponseDto.setStatus(residentTransactionEntity.getStatusCode());
+			serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
+			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
+		}
+		return serviceHistoryResponseDtoList;
 	}
 
 	@Override
 	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
 		try{
 
-			boolean fetchAllRecords = false;
 			if(pageStart == null) {
 				if(pageFetch == null) {
 					//If both Page start and page fetch values are null return all records
-					fetchAllRecords = true;
 					pageStart = DEFAULT_PAGE_START;
 					pageFetch = DEFAULT_PAGE_COUNT;
 				} else {

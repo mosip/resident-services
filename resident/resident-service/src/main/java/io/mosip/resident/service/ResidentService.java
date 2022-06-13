@@ -37,5 +37,5 @@ public interface ResidentService {
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
-    List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, ResidentTransactionType serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException;
+    List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType) throws ResidentServiceCheckedException, ApisResourceAccessException;
 }
