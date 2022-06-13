@@ -744,15 +744,22 @@ public class RequestValidator {
 	}
 
 	private void validateServiceType(String serviceType, String request_service_history_api) {
-		if (StringUtils.isEmpty(serviceType) ||
-				!serviceType.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())
-				&& !serviceType.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())
-				&& !serviceType.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
-				&& !serviceType.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())
-				&& !serviceType.equalsIgnoreCase(ResidentTransactionType.DATA_SHARE_REQUEST.toString())){
+		if (StringUtils.isEmpty(serviceType)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
 					request_service_history_api));
 			throw new InvalidInputException("serviceType");
+		}
+		List<String> serviceTypes = List.of(serviceType.split(","));
+		for(String service : serviceTypes) {
+			if(!service.equalsIgnoreCase(ResidentTransactionType.DATA_SHARE_REQUEST.toString())
+					&& !service.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())
+					&& !service.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())
+					&& !service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
+					&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
+						request_service_history_api));
+				throw new InvalidInputException("serviceType");
+			}
 		}
 	}
 }
