@@ -17,7 +17,7 @@ public class ServiceTypeRespenseDto {
     /** The error List */
     private List<AuthError> errors;
 
-    /** List to hold AutnTxnDto */
+    /** List to hold ServiceType */
     private Map<String, List<ServiceHistoryResponseDto>> response;
     /** The id. */
 
