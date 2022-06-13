@@ -4,6 +4,12 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * This class is used to store the service history response.
+ *
+ * @author Kamesh Shekhar Prasad
+ **/
+
 @Data
 @Getter
 @Setter

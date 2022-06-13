@@ -193,7 +193,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public ResponseWrapper<ResponseDTO> reqAauthTypeLockV2(
+	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type status API"));
@@ -240,25 +240,25 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ServiceTypeRespenseDto> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
-											   @RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-											   @RequestParam(name = "fromDateTime", required = false)
+	public ResponseEntity<ServiceTypeResponseDto> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																	@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+																	@RequestParam(name = "fromDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-											   @RequestParam(name = "toDateTime", required = false)
+																	@RequestParam(name = "toDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
-											   @RequestParam(name = "sortType", required = false) String sortType,
-											   @RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+																	@RequestParam(name = "sortType", required = false) String sortType,
+																	@RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType);
 		validator.validateServiceHistoryRequest(pageStart, pageFetch, fromDateTime, toDateTime, sortType, serviceType);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
 				"getServiceHistory"));
-		ServiceTypeRespenseDto serviceTypeRespenseDto = new ServiceTypeRespenseDto();
+		ServiceTypeResponseDto serviceTypeResponseDto = new ServiceTypeResponseDto();
 		Map<String, List<ServiceHistoryResponseDto>> serviceTypeMap = new HashMap<>();
 		serviceTypeMap.put("serviceType", residentServiceServiceHistory);
-		serviceTypeRespenseDto.setResponse(serviceTypeMap);
-		serviceTypeRespenseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
-		return new ResponseEntity<>(serviceTypeRespenseDto, HttpStatus.OK);
+		serviceTypeResponseDto.setResponse(serviceTypeMap);
+		serviceTypeResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+		return new ResponseEntity<>(serviceTypeResponseDto, HttpStatus.OK);
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("

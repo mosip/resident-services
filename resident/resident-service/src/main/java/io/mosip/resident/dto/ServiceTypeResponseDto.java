@@ -5,8 +5,12 @@ import lombok.Data;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Data
-public class ServiceTypeRespenseDto {
+public class ServiceTypeResponseDto {
 
     /** Variable To hold id */
     private String id;
