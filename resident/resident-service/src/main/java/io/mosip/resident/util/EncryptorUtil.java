@@ -80,17 +80,15 @@ public class EncryptorUtil {
 
             ResponseWrapper responseDto = restClientService
                     .postApi(env.getProperty(ApiName.ENCRYPTURL.name()), MediaType.APPLICATION_JSON, request, ResponseWrapper.class);
-
             if (responseDto != null && !CollectionUtils.isEmpty(responseDto.getErrors())) {
                 ServiceError error = (ServiceError) responseDto.getErrors().get(0);
                 throw new PacketDecryptionFailureException(error.getMessage());
             }
-            if(responseDto != null || responseDto.getResponse() != null) {
-                DecryptResponseDto decryptResponseDto = mapper.convertValue(responseDto.getResponse(), DecryptResponseDto.class);
+            if(responseDto != null && responseDto.getResponse() != null) {
+                DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
+                return CryptoUtil.encodeToURLSafeBase64(mergeEncryptedData(CryptoUtil.decodeURLSafeBase64(responseObject.getData()), nonce, aad));
             }
-            DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
-            return CryptoUtil.encodeToURLSafeBase64(mergeEncryptedData(CryptoUtil.decodeURLSafeBase64(responseObject.getData()), nonce, aad));
-
+            return new PacketDecryptionFailureException("Packet encryption failed").getMessage();
         } catch (IOException e) {
             throw new PacketDecryptionFailureException(IO_EXCEPTION, e);
         } catch (DateTimeParseException e) {
