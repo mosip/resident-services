@@ -25,6 +25,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.CryptomanagerRequestDto;
 import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.exception.PacketEncryptionFailureException;
 
 /**
  * The Class EncryptorUtil.
@@ -88,7 +89,7 @@ public class EncryptorUtil {
                 DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
                 return CryptoUtil.encodeToURLSafeBase64(mergeEncryptedData(CryptoUtil.decodeURLSafeBase64(responseObject.getData()), nonce, aad));
             }
-            throw new PacketDecryptionFailureException("Packet encryption failed");
+            throw new PacketEncryptionFailureException("Packet encryption failed");
         } catch (IOException e) {
             throw new PacketDecryptionFailureException(IO_EXCEPTION, e);
         } catch (DateTimeParseException e) {

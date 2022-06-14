@@ -72,7 +72,7 @@ public enum ResidentErrorCode {
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
 	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
-
+	PACKET_ENCRYPTION_FAILURE_EXCEPTION("RES-SER-455", "Packet encryption failed"),
 
 
 
