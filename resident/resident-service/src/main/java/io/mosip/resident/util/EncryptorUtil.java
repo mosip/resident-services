@@ -83,7 +83,7 @@ public class EncryptorUtil {
                     .postApi(env.getProperty(ApiName.ENCRYPTURL.name()), MediaType.APPLICATION_JSON, request, ResponseWrapper.class);
             if (responseDto != null && !CollectionUtils.isEmpty(responseDto.getErrors())) {
                 ServiceError error = (ServiceError) responseDto.getErrors().get(0);
-                throw new PacketDecryptionFailureException(error.getMessage());
+                throw new PacketEncryptionFailureException(error.getMessage());
             }
             if(responseDto != null && responseDto.getResponse() != null) {
                 DecryptResponseDto responseObject = mapper.readValue(mapper.writeValueAsString(responseDto.getResponse()), DecryptResponseDto.class);
