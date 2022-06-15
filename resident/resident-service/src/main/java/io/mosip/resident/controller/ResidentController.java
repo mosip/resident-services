@@ -234,6 +234,9 @@ public class ResidentController {
 		return response;
 	}
 
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetCredentialRequestStatus()"
+			+ ")")
 	@GetMapping(path="/getCredentialRequestStatus")
 	@Operation(summary = "getCredentialRequestStatus", description = "getCredentialRequestStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {

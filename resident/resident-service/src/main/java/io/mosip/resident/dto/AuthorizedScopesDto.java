@@ -24,7 +24,9 @@ public class AuthorizedScopesDto {
 	private List<String> getvids;
 	
 	private List<String> getAuthTransactions;
-	
+
+	private List<String> getCredentialRequestStatus;
+
 	private List<String> postAuthTypeLock;
 	
 	private List<String> postAuthTypeUnlock;
