@@ -72,9 +72,10 @@ public enum ResidentErrorCode {
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
 	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
-
-
-
+	RID_NOT_FOUND("RES-SER-455", "RID not found"),
+	AID_NOT_FOUND("RES-SER-456", "AID not found"),
+	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-457", "Credential request id not found"),
+	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-458", "Credential request not found"),
 
 	;
 	private final String errorCode;

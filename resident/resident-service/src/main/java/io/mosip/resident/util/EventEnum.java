@@ -459,10 +459,16 @@ public enum EventEnum {
 	REQ_AUTH_TYPE_LOCK("RES-SER-213", RegistrationConstants.SYSTEM, "Request auth type lock",
 			"Requesting auth type lock is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	
+	REQ_CREDENTIAL_REQUEST_STATUS("RES-SER-214", RegistrationConstants.SYSTEM, "Request credential request status",
+			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_CREDENTIAL_REQUEST_STATUS_SUCCESS("RES-SER-215", RegistrationConstants.SYSTEM, "Request credential request status",
+			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	;
 
-	private final String eventId;
+
+    private final String eventId;
 
 	private final String type;
 

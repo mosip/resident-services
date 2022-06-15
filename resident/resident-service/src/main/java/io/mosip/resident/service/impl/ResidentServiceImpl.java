@@ -94,6 +94,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private AutnTxnRepository autnTxnRepository;
 
 	@Autowired
+	private ResidentCredentialService residentCredentialService;
+
+	@Autowired
 	Environment env;
 
 	@Autowired
@@ -1203,5 +1206,63 @@ public class ResidentServiceImpl implements ResidentService {
 			aidStatusResponseDTO.setAidStatus(ridStatus.getRidStatus());
 			return aidStatusResponseDTO;
 		}
+	}
+
+	@Override
+	public String getCredentialRequestStatus(String aid, String idType) throws ResidentServiceCheckedException {
+
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getCredentialRequestStatus()::Start");
+		String individualId = null;
+		try{
+			if(idType.equalsIgnoreCase(IdType.RID.name())){
+				IdentityDTO identityDTO = identityServiceImpl.getIdentity(aid);
+				if(identityDTO == null){
+					throw new ResidentServiceCheckedException(ResidentErrorCode.RID_NOT_FOUND);
+				}
+				individualId = identityDTO.getUIN();
+			 }else if(idType.equalsIgnoreCase(IdType.UIN.name())){
+				individualId = aid;
+			 }else if(idType.equalsIgnoreCase(IdType.VID.name())){
+				individualId = utilities.getUinByVid(aid);
+			}
+			else{
+				individualId = identityServiceImpl.getIndividualIdForAid(aid);
+			}
+			if(individualId == null){
+				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
+			}
+			// for uin get credential request id
+			String credentialRequestId =getCredentialRequestId(individualId);
+			CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = residentCredentialService.getStatus(credentialRequestId);
+			if(credentialRequestStatusResponseDto == null){
+				throw new ResidentServiceCheckedException(ResidentErrorCode.CREDENTIAL_REQUEST_NOT_FOUND);
+			}
+			return credentialRequestStatusResponseDto.getStatusCode();
+
+		} catch (ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getCredentialRequestStatus():: ApisResourceAccessException");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getCredentialRequestStatus():: IOException");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+
+	}
+
+	private String getCredentialRequestId(String individualId) throws ResidentServiceCheckedException {
+		ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
+		credentialRequestDto.setIndividualId(individualId);
+		ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.reqCredential(credentialRequestDto);
+		if(credentialResponseDto == null || credentialResponseDto.getRequestId() == null){
+			throw new ResidentServiceCheckedException(ResidentErrorCode.CREDENTIAL_REQUEST_ID_NOT_FOUND);
+		}
+		return credentialResponseDto.getRequestId();
 	}
 }
