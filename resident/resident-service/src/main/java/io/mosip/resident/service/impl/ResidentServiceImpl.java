@@ -1122,15 +1122,17 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		List<List<ResidentTransactionEntity>> residentTransactionEntityLists = new ArrayList<>();
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
-		for(String partnerId:partnerIds) {
-			String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId(), partnerId);
-			if(idaToken!=null) {
-				if(fromDateTime != null && toDateTime != null) {
-					residentTransactionEntityLists.add( residentTransactionRepository.
-							findByToken(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
-									, pageRequest));
-				} else {
-					residentTransactionEntityLists.add(residentTransactionRepository.findByTokenWithoutDate(idaToken, residentTransactionTypeList, pageRequest));
+		if(partnerIds != null) {
+			for (String partnerId : partnerIds) {
+				String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId(), partnerId);
+				if (idaToken != null) {
+					if (fromDateTime != null && toDateTime != null) {
+						residentTransactionEntityLists.add(residentTransactionRepository.
+								findByToken(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
+										, pageRequest));
+					} else {
+						residentTransactionEntityLists.add(residentTransactionRepository.findByTokenWithoutDate(idaToken, residentTransactionTypeList, pageRequest));
+					}
 				}
 			}
 		}
