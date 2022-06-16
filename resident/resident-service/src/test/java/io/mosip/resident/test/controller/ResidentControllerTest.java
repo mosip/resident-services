@@ -55,7 +55,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -395,5 +397,13 @@ public class ResidentControllerTest {
 		String requestAsString = gson.toJson(requestWrapper);
 		this.mockMvc.perform(post("/aid/status").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetCredentialRequestStatusSuccess() throws Exception {
+		residentController.getCredentialRequestStatus("17");
+		when(residentService.getCredentialRequestStatus("17")).thenReturn("PROCESSED");
+		this.mockMvc.perform(get("/getCredentialRequestStatus?aid=17")).andExpect(status().isOk());
 	}
 }
