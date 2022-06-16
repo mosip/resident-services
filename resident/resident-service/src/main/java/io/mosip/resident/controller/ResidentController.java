@@ -254,7 +254,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_CREDENTIAL_REQUEST_STATUS,
 				aid));
 		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setStatus(residentService.getCredentialRequestStatus(aid, getIdType(aid)));
+		responseDTO.setStatus(residentService.getCredentialRequestStatus(aid));
 		responseDTO.setMessage("Credential Request Status got Successfully");
 		response.setResponse(responseDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_CREDENTIAL_REQUEST_STATUS_SUCCESS,
