@@ -1224,13 +1224,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if(individualId == null){
 				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
 			}
+			AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+			aidStatusRequestDTO.setAid(aid);
+			AidStatusResponseDTO aidStatusResponseDTO = getAidStatus(aidStatusRequestDTO, true);
 
+			return aidStatusResponseDTO.getAidStatus();
 
-			CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = new CredentialRequestStatusResponseDto();
-
-			return credentialRequestStatusResponseDto.getStatusCode();
-
-		} catch (ApisResourceAccessException e) {
+		} catch (ApisResourceAccessException | OtpValidationFailedException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"ResidentServiceImpl::getCredentialRequestStatus():: ApisResourceAccessException");
@@ -1238,6 +1238,29 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 
+	}
+
+	@Override
+	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
+		try {
+			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getAid());
+			if (performOtpValidation) {
+					AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
+					aidStatusResponseDTO.setIndividualId(individualId);
+					aidStatusResponseDTO.setAidStatus(PROCESSED);
+					aidStatusResponseDTO.setTransactionID(reqDto.getTransactionID());
+					return aidStatusResponseDTO;
+			}
+			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getAidStatus()::" + e.getClass().getSimpleName()+" :" + e.getMessage());
+			RegStatusCheckResponseDTO ridStatus = getRidStatus(reqDto.getAid());
+			AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
+			aidStatusResponseDTO.setAidStatus(ridStatus.getRidStatus());
+			return aidStatusResponseDTO;
+		}
 	}
 
 }
