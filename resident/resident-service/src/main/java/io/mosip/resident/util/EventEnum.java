@@ -462,7 +462,12 @@ public enum EventEnum {
 	GET_SERVICE_HISTORY("RES-SER-214", RegistrationConstants.SYSTEM, "get service history",
 			"get service history", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	
+	REQ_SERVICE_REQUEST_UPDATE("RES-SER-215", RegistrationConstants.SYSTEM, "Request service request update",
+			"Requesting service request update is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	REQ_SERVICE_REQUEST_UPDATE_SUCCESS("RES-SER-216", RegistrationConstants.SYSTEM, "Request service request update Success",
+			"Requesting service request update is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	;
 
 	private final String eventId;

@@ -152,4 +152,8 @@ public class ResidentTransactionEntity {
         this.statusCode = statusCode;
     }
 
+    public ResidentTransactionEntity(String aid) {
+        this.aid = aid;
+    }
+
 }

@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -135,7 +136,10 @@ public class ResidentServiceImpl implements ResidentService {
 	
 	@Autowired
 	private IdAuthService idAuthServiceImpl;
-	
+
+	@Autowired
+	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
+
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
 		return getRidStatus(request.getIndividualId());
@@ -1111,6 +1115,53 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType);
 		return serviceHistoryResponseDtoList;
+	}
+
+	@Override
+	public List<CredentialRequestStatusResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) {
+		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::entry");
+		ResponseDTO responseDTO = new ResponseDTO();
+		List<CredentialRequestStatusResponseDto> credentialRequestStatusResponseDtoList = new ArrayList<>();
+
+		try{
+			if(pageStart == null) {
+				if(pageFetch == null) {
+					pageStart = DEFAULT_PAGE_START;
+					pageFetch = DEFAULT_PAGE_COUNT;
+				} else {
+					pageStart = DEFAULT_PAGE_START;
+				}
+			} else {
+				if(pageFetch == null) {
+					pageFetch = DEFAULT_PAGE_COUNT;
+				}
+			}
+			if(pageStart < 0) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
+			} else if(pageFetch < 0) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
+			}
+			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
+			String idaToken = identityServiceImpl.getResidentIdaToken();
+			List<ResidentTransactionEntity> residentTransactionEntities = residentTransactionRepository.findRequestIdByToken(idaToken, ResidentTransactionType.SERVICE_REQUEST.toString(),pageRequest);
+			if(residentTransactionEntities != null) {
+				for(ResidentTransactionEntity residentTransactionEntity: residentTransactionEntities) {
+					String requestId = residentTransactionEntity.getAid();
+					CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = residentCredentialServiceImpl.getStatus(requestId);
+					if(credentialRequestStatusResponseDto !=null) {
+						credentialRequestStatusResponseDtoList.add(credentialRequestStatusResponseDto);
+					}
+
+				}
+			}
+		}
+		catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::Exception");
+
+		}
+		return credentialRequestStatusResponseDtoList;
 	}
 
 	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {

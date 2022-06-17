@@ -36,4 +36,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
     List<ResidentTransactionEntity> findByTokenWithoutDate(@Param("tokenId") String tokenId,
                                                            @Param("residentTransactionType") List<String> residentTransactionType,
                                                            Pageable pagaeable);
+
+    @Query(value = "Select new ResidentTransactionEntity(aid) " +
+            "from ResidentTransactionEntity where tokenId=:tokenId "  +
+            " AND authTypeCode =:residentTransactionType" )
+    List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType") String residentTransactionType,
+                                                         Pageable pagaeable);
+
 }
