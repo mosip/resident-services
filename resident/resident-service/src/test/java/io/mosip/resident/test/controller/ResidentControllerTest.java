@@ -404,6 +404,6 @@ public class ResidentControllerTest {
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
 		residentController.getCredentialRequestStatus("17");
 		when(residentService.getCredentialRequestStatus("17")).thenReturn("PROCESSED");
-		this.mockMvc.perform(get("/getCredentialRequestStatus?aid=17")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/check-status/aid/?AID=17")).andExpect(status().isOk());
 	}
 }

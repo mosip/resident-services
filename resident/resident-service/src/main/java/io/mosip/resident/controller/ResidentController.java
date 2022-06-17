@@ -237,7 +237,7 @@ public class ResidentController {
 	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetCredentialRequestStatus()"
 			+ ")")
-	@GetMapping(path="/getCredentialRequestStatus")
+	@GetMapping(path="/check-status/aid")
 	@Operation(summary = "getCredentialRequestStatus", description = "getCredentialRequestStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -246,19 +246,19 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<ResponseDTO> getCredentialRequestStatus(
-			@RequestParam(name = "aid") String aid) throws ResidentServiceCheckedException {
+			@RequestParam(name = "AID") String AID) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getCredentialRequestStatus"));
 		logger.debug("getCredentialRequestStatus controller entry");
-		validator.validateCredentialRequestStatusRequest(aid);
+		validator.validateCredentialRequestStatusRequest(AID);
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_CREDENTIAL_REQUEST_STATUS,
-				aid));
+                AID));
 		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setStatus(residentService.getCredentialRequestStatus(aid));
+		responseDTO.setStatus(residentService.getCredentialRequestStatus(AID));
 		responseDTO.setMessage("Credential Request Status got Successfully");
 		response.setResponse(responseDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_CREDENTIAL_REQUEST_STATUS_SUCCESS,
-				aid));
+                AID));
 		return response;
 	}
 
