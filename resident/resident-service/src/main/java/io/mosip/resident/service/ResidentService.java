@@ -39,5 +39,5 @@ public interface ResidentService {
 
     List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	List<CredentialRequestStatusResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch);
+	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException;
 }

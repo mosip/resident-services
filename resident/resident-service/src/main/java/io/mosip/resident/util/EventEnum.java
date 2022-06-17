@@ -468,6 +468,9 @@ public enum EventEnum {
 	REQ_SERVICE_REQUEST_UPDATE_SUCCESS("RES-SER-216", RegistrationConstants.SYSTEM, "Request service request update Success",
 			"Requesting service request update is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	IDA_TOKEN_NOT_FOUND("RES-SER-217", RegistrationConstants.SYSTEM, "IDA token not found",
+			"IDA token not found", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	;
 
 	private final String eventId;

@@ -272,13 +272,13 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<List<CredentialRequestStatusResponseDto>> getServiceRequestUpdate(@RequestParam(name = "pageStart", required = false) Integer pageStart,
-																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) {
+	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> getServiceRequestUpdate(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) throws ResidentServiceCheckedException {
 		logger.info("getServiceRequestUpdate :: entry");
-		ResponseWrapper<List<CredentialRequestStatusResponseDto>> response = new ResponseWrapper<>();
+		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE, "Get Service request update"));
-		List<CredentialRequestStatusResponseDto> credentialRequestStatusResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
-		response.setResponse(credentialRequestStatusResponseDtoList);
+		List<ResidentServiceHistoryResponseDto> ResidentServiceHistoryResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
+		response.setResponse(ResidentServiceHistoryResponseDtoList);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE_SUCCESS,
 				"Get Service request update"));
 		return response;

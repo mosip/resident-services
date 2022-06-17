@@ -39,7 +39,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
     @Query(value = "Select new ResidentTransactionEntity(aid) " +
             "from ResidentTransactionEntity where tokenId=:tokenId "  +
-            " AND authTypeCode =:residentTransactionType" )
+            " AND authTypeCode =:residentTransactionType ORDER BY crDtimes DESC" )
     List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType") String residentTransactionType,
                                                          Pageable pagaeable);
 

@@ -1118,11 +1118,11 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<CredentialRequestStatusResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) {
+	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException {
 		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::entry");
 		ResponseDTO responseDTO = new ResponseDTO();
-		List<CredentialRequestStatusResponseDto> credentialRequestStatusResponseDtoList = new ArrayList<>();
+		List<ResidentServiceHistoryResponseDto> residentServiceHistoryResponseDtoList = new ArrayList<>();
 
 		try{
 			if(pageStart == null) {
@@ -1150,18 +1150,42 @@ public class ResidentServiceImpl implements ResidentService {
 					String requestId = residentTransactionEntity.getAid();
 					CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = residentCredentialServiceImpl.getStatus(requestId);
 					if(credentialRequestStatusResponseDto !=null) {
-						credentialRequestStatusResponseDtoList.add(credentialRequestStatusResponseDto);
+						if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("NEW")){
+							//insert in db
+						}
+						residentServiceHistoryResponseDtoList.add(convertCredentialResponseDtoToServiceHistoryResponseDto(
+								credentialRequestStatusResponseDto));
 					}
 
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (ResidentServiceCheckedException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::Exception");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.REQUEST_ID_NOT_FOUND.getErrorCode(),
+					ResidentErrorCode.REQUEST_ID_NOT_FOUND.getErrorMessage());
 
 		}
-		return credentialRequestStatusResponseDtoList;
+		catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.IDA_TOKEN_NOT_FOUND);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		return residentServiceHistoryResponseDtoList;
+	}
+
+	public ResidentServiceHistoryResponseDto convertCredentialResponseDtoToServiceHistoryResponseDto(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) {
+		ResidentServiceHistoryResponseDto residentServiceHistoryResponseDto = new ResidentServiceHistoryResponseDto();
+		residentServiceHistoryResponseDto.setRequestId(credentialRequestStatusResponseDto.getRequestId());
+		residentServiceHistoryResponseDto.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
+		residentServiceHistoryResponseDto.setId(credentialRequestStatusResponseDto.getId());
+		if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("PRINTING")) {
+			residentServiceHistoryResponseDto.setCardUrl("https");
+		} else{
+			residentServiceHistoryResponseDto.setCardUrl("");
+		}
+		return residentServiceHistoryResponseDto;
 	}
 
 	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
