@@ -16,12 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -237,7 +232,7 @@ public class ResidentController {
 	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetCredentialRequestStatus()"
 			+ ")")
-	@GetMapping(path="/check-status/aid")
+	@GetMapping(path="/check-status/aid/{AID}")
 	@Operation(summary = "getCredentialRequestStatus", description = "getCredentialRequestStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -246,7 +241,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<ResponseDTO> getCredentialRequestStatus(
-			@RequestParam(name = "AID") String AID) throws ResidentServiceCheckedException {
+			@PathVariable(name = "AID") String AID) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getCredentialRequestStatus"));
 		logger.debug("getCredentialRequestStatus controller entry");
 		validator.validateCredentialRequestStatusRequest(AID);
