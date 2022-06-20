@@ -3,26 +3,26 @@
  */
 package io.mosip.resident.test.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.crypto.SecretKey;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.kernel.authcodeflowproxy.api.service.validator.ScopeValidator;
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -42,26 +42,22 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import javax.crypto.SecretKey;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import io.mosip.kernel.authcodeflowproxy.api.service.validator.ScopeValidator;
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.RequestValidator;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -387,5 +383,30 @@ public class ResidentControllerTest {
 		this.mockMvc.perform(post("/req/update-uin").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testCheckAidStatus() throws Exception {
+		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+		aidStatusRequestDTO.setAid("8251649601");
+		aidStatusRequestDTO.setOtp("111111");
+		aidStatusRequestDTO.setTransactionID("1234567890");
+		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(aidStatusRequestDTO);
+		requestWrapper.setId("mosip.resident.uin");
+		requestWrapper.setVersion("v1");
+		Mockito.when(residentService.getAidStatus(Mockito.any())).thenReturn(new AidStatusResponseDTO());
+		String requestAsString = gson.toJson(requestWrapper);
+		this.mockMvc.perform(post("/aid/status").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetCredentialRequestStatusSuccess() throws Exception {
+		residentController.getCredentialRequestStatus("17");
+		when(residentService.getCredentialRequestStatus("17")).thenReturn("PROCESSED");
+		this.mockMvc.perform(get("/check-status/aid/17")).andExpect(status().isOk());
 	}
 }
