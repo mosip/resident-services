@@ -84,7 +84,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
     }
 
-    public void tryRegisterTopicEvent(String eventTopic) {
+    protected void tryRegisterTopicEvent(String eventTopic) {
         try {
             logger.debug(this.getClass().getCanonicalName(), "tryRegisterTopicEvent", "",
                     "Trying to register topic: " + eventTopic);

@@ -62,18 +62,11 @@ public class BaseWebSubInitializerTest {
         baseWebSubInitializer.onApplicationEvent(applicationReadyEvent);
     }
 
-    private BaseWebSubInitializer createTestSubject() {
+    private BaseWebSubInitializer testTaskScheduler() {
         BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer() {};
 
         ReflectionTestUtils.setField(baseWebSubInitializer, "taskScheduler", Mockito.mock(ThreadPoolTaskScheduler.class));
         return baseWebSubInitializer;
-    }
-
-    @Test
-    public void testTryRegisterTopicEvents() throws Exception {
-        BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
-        baseWebSubInitializer.tryRegisterTopicEvent("Topic");
-        ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "Topic");
     }
 
 }
