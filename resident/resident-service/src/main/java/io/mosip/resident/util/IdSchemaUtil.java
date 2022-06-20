@@ -111,6 +111,9 @@ public class IdSchemaUtil {
 				idschema.put(version, responseString);
 		}
 
+		if(idschema==null || idschema.isEmpty()){
+			return null;
+		}
 		return idschema.get(version);
 	}
 }

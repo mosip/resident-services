@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.dto.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -45,17 +46,6 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AuthRequestDTO;
-import io.mosip.resident.dto.AuthResponseDTO;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthTypeDTO;
-import io.mosip.resident.dto.AuthTypeStatus;
-import io.mosip.resident.dto.AuthTypeStatusRequestDto;
-import io.mosip.resident.dto.AuthTypeStatusResponseDto;
-import io.mosip.resident.dto.AutnTxnDto;
-import io.mosip.resident.dto.AutnTxnResponseDto;
-import io.mosip.resident.dto.OtpAuthRequestDTO;
-import io.mosip.resident.dto.PublicKeyResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
@@ -138,6 +128,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 					residentTransaction.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 					residentTransaction.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
 					residentTransaction.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
+					residentTransaction.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
 					residentTransactionRepository.save(residentTransaction);
 				}
 			}
