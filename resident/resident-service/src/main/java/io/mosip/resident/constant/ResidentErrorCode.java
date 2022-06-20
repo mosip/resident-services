@@ -80,10 +80,6 @@ public enum ResidentErrorCode {
 
 	PACKET_ENCRYPTION_FAILURE_EXCEPTION("RES-SER-460", "Packet encryption failed"),
 
-	REQUEST_ID_NOT_FOUND("RES-SER-461", "Request id not found"),
-
-
-
 	;
 	private final String errorCode;
 	private final String errorMessage;
