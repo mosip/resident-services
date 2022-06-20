@@ -78,6 +78,11 @@ public enum ResidentErrorCode {
 	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-458", "Credential request id not found"),
 	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
 
+	PACKET_ENCRYPTION_FAILURE_EXCEPTION("RES-SER-460", "Packet encryption failed"),
+
+	REQUEST_ID_NOT_FOUND("RES-SER-461", "Request id not found"),
+
+
 
 	;
 	private final String errorCode;
