@@ -30,7 +30,7 @@ import io.mosip.resident.validator.DocumentValidator;
 @ContextConfiguration
 public class DocumentControllerTest {
 	
-	private static final String REQUEST_JSON = "{\"id\":\"string\",\"version\":\"string\",\"requesttime\":\"2022-05-08T09:52:18.151Z\",\"request\":{\"docCatCode\":\"poi\",\"docTypCode\":\"doc006\",\"langCode\":\"eng\"}}";
+	private static final String REQUEST_JSON = "eyJpZCI6InN0cmluZyIsInZlcnNpb24iOiJzdHJpbmciLCJyZXF1ZXN0dGltZSI6IjIwMjItMDUtMDhUMDk6NTI6MTguMTUxWiIsInJlcXVlc3QiOnsiZG9jQ2F0Q29kZSI6InBvaSIsImRvY1R5cENvZGUiOiJkb2MwMDYiLCJsYW5nQ29kZSI6ImVuZyJ9fQ";
 
 	@InjectMocks
 	private DocumentController controller;
