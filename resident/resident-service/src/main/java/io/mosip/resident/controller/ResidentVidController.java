@@ -177,6 +177,7 @@ public class ResidentVidController {
 			residentIndividualId = getResidentIndividualId();
 		}
 		validator.validateVidRevokeRequest(requestDto, isOtpValidationRequired, residentIndividualId);
+		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
 		ResponseWrapper<VidRevokeResponseDTO> vidResponseDto = residentVidService.revokeVid(requestDto.getRequest(),
