@@ -97,7 +97,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         }
     }
 
-    public void initSubsriptions() {
+    protected void initSubsriptions() {
         logger.debug("subscribe", "",
                 "Trying to subscribe to topic: " + topic + " callback-url: "
                         + callbackUrl);
@@ -107,7 +107,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     }
 
-    public void subscribe(String topic, String callbackUrl, String secret, String hubUrl) {
+    private void subscribe(String topic, String callbackUrl, String secret, String hubUrl) {
         try {
             SubscriptionChangeRequest subscriptionRequest = new SubscriptionChangeRequest();
             logger.debug("subscribe", "",
@@ -117,9 +117,8 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
             subscriptionRequest.setSecret(secret);
             subscriptionRequest.setTopic(topic);
             subscriptionRequest.setHubURL(hubUrl);
-            if (subscribe != null) {
-                subscribe.subscribe(subscriptionRequest);
-            }
+            subscribe.subscribe(subscriptionRequest);
+
             logger.info("subscribe", "",
                     "Subscribed to topic: " + topic);
         } catch (Exception e) {

@@ -14,22 +14,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(MockitoJUnitRunner.class)
-@RefreshScope
 @ContextConfiguration
 public class BaseWebSubInitializerTest {
 
     @Mock
     private PublisherClient<String, Object, HttpHeaders> publisher;
 
-    @MockBean
+    @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
     @Mock
@@ -73,25 +70,10 @@ public class BaseWebSubInitializerTest {
     }
 
     @Test
-    public void testRegisterTopics() throws Exception {
-
-        BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
-        baseWebSubInitializer.authTransactionSubscription();
-        ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "authTransactionSubscription");
-    }
-
-    @Test
     public void testTryRegisterTopicEvents() throws Exception {
         BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
         baseWebSubInitializer.tryRegisterTopicEvent("Topic");
         ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "Topic");
-    }
-
-    @Test
-    public void testinitSubsriptions() throws Exception {
-        BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
-        baseWebSubInitializer.initSubsriptions();
-        ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "initSubsriptions");
     }
 
 }
