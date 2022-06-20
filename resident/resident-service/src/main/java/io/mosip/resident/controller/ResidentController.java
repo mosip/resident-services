@@ -277,8 +277,8 @@ public class ResidentController {
 		logger.info("getServiceRequestUpdate :: entry");
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE, "Get Service request update"));
-		List<ResidentServiceHistoryResponseDto> ResidentServiceHistoryResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
-		response.setResponse(ResidentServiceHistoryResponseDtoList);
+		List<ResidentServiceHistoryResponseDto> residentServiceHistoryResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
+		response.setResponse(residentServiceHistoryResponseDtoList);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE_SUCCESS,
 				"Get Service request update"));
 		return response;
