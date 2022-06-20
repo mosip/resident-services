@@ -308,9 +308,9 @@ public class ResidentController {
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
 		try{
-			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
+			List<AutnTxnDto> authTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
 			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
-			authTxnMap.put("authTransactions", AuthTxn);
+			authTxnMap.put("authTransactions", authTxn);
 			autnTxnResponseDto.setResponse(authTxnMap);
 			autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
 			response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
