@@ -41,6 +41,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> getServiceRequestUpdate;
 
-	private List<String> getCredentialRequestStatus;
+	private List<String> getCheckAidStatus;
 	
 }

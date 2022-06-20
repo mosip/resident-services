@@ -90,7 +90,7 @@ public class ResidentServiceGetCredentialRequestTest {
     @Test
     public void getCredentialRequestTest() throws ResidentServiceException, ResidentServiceCheckedException {
         Mockito.when(identityServiceImpl.getUinForIndividualId(any())).thenReturn("10006100435989220191202104224");
-        String result = residentService.getCredentialRequestStatus("10006100435989220191202104224");
+        String result = residentService.checkAidStatus("10006100435989220191202104224");
         assertEquals("PROCESSED", result);
     }
 }

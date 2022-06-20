@@ -43,6 +43,6 @@ public interface ResidentService {
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException ;
 
-	String getCredentialRequestStatus(String aid) throws ResidentServiceCheckedException;
+	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
 
 }

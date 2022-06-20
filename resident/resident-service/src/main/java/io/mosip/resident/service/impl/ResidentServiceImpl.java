@@ -1364,10 +1364,10 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public String getCredentialRequestStatus(String aid) throws ResidentServiceCheckedException {
+	public String checkAidStatus(String aid) throws ResidentServiceCheckedException {
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getCredentialRequestStatus()::Start");
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::checkAidStatus()::Start");
 		try{
 			String uin = identityServiceImpl.getUinForIndividualId(aid);
 			if(uin == null){
@@ -1380,7 +1380,7 @@ public class ResidentServiceImpl implements ResidentService {
 		} catch (ApisResourceAccessException | OtpValidationFailedException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::getCredentialRequestStatus():: ApisResourceAccessException");
+					"ResidentServiceImpl::checkAidStatus():: ApisResourceAccessException");
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
