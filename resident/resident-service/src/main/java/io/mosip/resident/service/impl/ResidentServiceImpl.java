@@ -1168,13 +1168,14 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.IDA_TOKEN_NOT_FOUND);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		return residentServiceHistoryResponseDtoList;
 	}
 
 	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto, ResidentTransactionEntity residentTransactionEntity) throws ApisResourceAccessException {
+		residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
