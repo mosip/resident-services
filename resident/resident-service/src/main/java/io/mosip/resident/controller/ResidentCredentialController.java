@@ -1,10 +1,11 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
@@ -24,17 +27,19 @@ import io.mosip.resident.dto.CredentialTypeResponse;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.RequestValidator;
-
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
@@ -67,6 +72,29 @@ public class ResidentCredentialController {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+	
+	@ResponseFilter
+	@PostMapping(value = "/req/credential-generator")
+	@Operation(summary = "reqCredential", description = "reqCredential", tags = { "resident-credential-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
+	public ResponseEntity<Object> requestCredentialV2(
+			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
+			throws ResidentServiceCheckedException {
+		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
+				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
+				});
+		request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()
+				.map(attr -> attr.getAttributeName()).collect(Collectors.toList()));
+		request.getRequest()
+				.setAdditionalData(Map.of("customizedFormats", requestDTO.getRequest().getSharableAttributes()));
+		return this.reqCredential(request);
+	}
+	
 	@GetMapping(value = "req/credential/status/{requestId}")
 	@Operation(summary = "getCredentialStatus", description = "getCredentialStatus", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
@@ -149,5 +177,5 @@ public class ResidentCredentialController {
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
+	
 }
