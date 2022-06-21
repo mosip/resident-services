@@ -41,4 +41,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> getServiceRequestUpdate;
 	
+	private List<String> getPartnersByPartnerType;
+	
 }
