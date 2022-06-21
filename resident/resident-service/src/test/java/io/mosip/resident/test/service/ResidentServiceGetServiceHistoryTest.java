@@ -74,8 +74,6 @@ public class ResidentServiceGetServiceHistoryTest {
         details = new ArrayList<>();
         pageSize = 10;
         pageStart = 2;
-        fromDate = LocalDateTime.now();
-        toDate = LocalDateTime.now();
         serviceType = "AUTHENTICATION_REQUEST";
         sortType = "ASC";
         serviceHistoryResponseDto = new ArrayList<>();
@@ -98,7 +96,6 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
-        Mockito.when(residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType)).thenReturn(serviceHistoryResponseDto);
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(new ArrayList<>());
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
@@ -107,11 +104,24 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testGetServiceHistorySuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 2;
         pageSize = 3;
+        fromDate = LocalDateTime.now();
+        toDate = LocalDateTime.now();
 
-        Mockito.when(residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType)).thenReturn(serviceHistoryResponseDto);
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, "DESC").size());
+        Mockito.when(residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType)).thenReturn(serviceHistoryResponseDto);
+        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType).size());
+        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC").size());
+    }
+
+    @Test
+    public void testGetServiceHistoryDateNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        pageStart = 2;
+        pageSize = 3;
+
+        Mockito.when(residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType)).thenReturn(serviceHistoryResponseDto);
+        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType).size());
         assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC").size());
+        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC").size());
+
     }
 
     @Test
