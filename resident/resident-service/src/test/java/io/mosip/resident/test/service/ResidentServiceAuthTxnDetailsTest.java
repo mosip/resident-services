@@ -90,6 +90,10 @@ public class ResidentServiceAuthTxnDetailsTest {
 
         assertEquals(2, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, "UIN",
                 LocalDateTime.now(), LocalDateTime.now()).size());
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, null,
+                LocalDateTime.now(), LocalDateTime.now()).size());
+        assertEquals(0, residentServiceImpl.getAuthTxnDetails(individualId, pageStart, pageSize, "UIN",
+                null, null ).size());
     }
 
     @Test
