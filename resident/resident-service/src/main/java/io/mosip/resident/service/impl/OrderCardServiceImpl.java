@@ -3,10 +3,12 @@ package io.mosip.resident.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -54,17 +56,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 		if (isPaymentEnabled) {
 			checkOrderStatus(requestDto.getTransactionID(), requestDto.getIndividualId());
-//			catch (HttpException e) {
-//				throw new HttpException("payment is not made yet..." + e.getMessage(), e.getCause());
-//			}
 		}
 		residentCredentialResponseDto = residentCredentialService.reqCredentialV2(requestDto);
 		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::exit");
 		return residentCredentialResponseDto;
 	}
 
-	@Override
-	public void checkOrderStatus(String transactionId, String individualId) throws ResidentServiceCheckedException {
+	private void checkOrderStatus(String transactionId, String individualId) throws ResidentServiceCheckedException {
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::entry");
 		List<String> pathsegments = null;
 
@@ -79,6 +77,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		try {
 			ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) restClientWithSelfTOkenRestTemplate.getApi(
 					ApiName.GET_ORDER_STATUS_URL, pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
+
 			if (responseWrapper != null) {
 				if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 					logger.debug(responseWrapper.getErrors().get(0).toString());

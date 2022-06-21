@@ -1,6 +1,5 @@
 package io.mosip.resident.controller;
 
-import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,6 @@ public class MockApiController {
 	 * 
 	 * @param transactionId
 	 * @param individualId
-	 * @throws HttpException
 	 */
 	@ResponseFilter
 	@GetMapping(value = "/print-partner/order-status")
@@ -49,18 +47,21 @@ public class MockApiController {
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "402", description = "Payment is not received yet", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public void getOrderStatus(@RequestParam("transactionId") String transactionId,
-			@RequestParam("individualId") String individualId) throws HttpException {
+	public ResponseEntity<?> getOrderStatus(@RequestParam("transactionId") String transactionId,
+			@RequestParam("individualId") String individualId) {
 		logger.debug("MockApiController::getOrderStatus()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS);
 		if (Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) >= 6
 				&& Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) <= 9) {
-			throw new HttpException("payment is not received yet..." + HttpStatus.BAD_REQUEST);
+			logger.error("payment is not made for this id");
+			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS_SUCCESS);
 		logger.debug("MockApiController::getOrderStatus()::exit");
+		return ResponseEntity.ok().build();
 	}
 
 }

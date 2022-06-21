@@ -18,19 +18,10 @@ public interface OrderCardService {
 	 * Send a physical card.
 	 * 
 	 * @param requestDto
-	 * @return responseWrapper<ResidentCredentialResponseDto> object
+	 * @return ResidentCredentialResponseDto object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResidentCredentialResponseDto sendPhysicalCard(ResidentCredentialRequestDto requestDto)
 			throws ResidentServiceCheckedException;
-
-	/**
-	 * Check order status.
-	 * 
-	 * @param transactionId
-	 * @param individualId
-	 * @throws ResidentServiceCheckedException
-	 */
-	public void checkOrderStatus(String transactionId, String individualId) throws ResidentServiceCheckedException;
 
 }

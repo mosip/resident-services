@@ -60,7 +60,7 @@ public class OrderCardController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<ResidentCredentialResponseDto> sendPhysicalCard(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestWrapper)
-			throws ResidentServiceCheckedException, HttpException {
+			throws ResidentServiceCheckedException {
 		logger.debug("OrderCardController::sendPhysicalCard()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD);
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();

@@ -60,6 +60,7 @@ public class OrderCardServiceTest {
 
 	@Before
 	public void setUp() throws Exception {
+		ReflectionTestUtils.setField(orderCardService, "isPaymentEnabled", true);
 		responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
@@ -85,7 +86,6 @@ public class OrderCardServiceTest {
 	@Test
 	public void testSendPhysicalCardIf() throws Exception {
 		responseWrapper = null;
-		ReflectionTestUtils.setField(orderCardService, "isPaymentEnabled", true);
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				any(), any())).thenReturn(responseWrapper);
 		when(residentCredentialService.reqCredentialV2(any())).thenReturn(residentCredentialResponseDto);
@@ -97,7 +97,6 @@ public class OrderCardServiceTest {
 	@Test
 	public void testSendPhysicalCardIfErrorsNull() throws Exception {
 		responseWrapper.setErrors(null);
-		ReflectionTestUtils.setField(orderCardService, "isPaymentEnabled", true);
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				any(), any())).thenReturn(responseWrapper);
 		when(residentCredentialService.reqCredentialV2(any())).thenReturn(residentCredentialResponseDto);
@@ -118,7 +117,7 @@ public class OrderCardServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		orderCardService.checkOrderStatus("1234327899", "8251649601");
+		orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 	}
 
 	@Test
@@ -128,7 +127,7 @@ public class OrderCardServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				any(), any())).thenReturn(responseWrapper);
 
-		orderCardService.checkOrderStatus("1234327899", "8251649601");
+		orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -136,7 +135,7 @@ public class OrderCardServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				any(), any())).thenThrow(new ApisResourceAccessException());
 
-		orderCardService.checkOrderStatus("1234327899", "8251649601");
+		orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 	}
 
 }
