@@ -1,5 +1,6 @@
 package io.mosip.resident.test.service;
 
+import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -19,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
@@ -50,6 +52,9 @@ public class ResidentServiceGetServiceRequestUpdateTest {
 
     @Mock
     private ResidentCredentialServiceImpl residentCredentialServiceImpl;
+
+    @Mock
+    private Environment env;
 
     @Mock
     private PartnerServiceImpl partnerServiceImpl;
@@ -121,6 +126,16 @@ public class ResidentServiceGetServiceRequestUpdateTest {
         Integer pageStart = 1;
         Mockito.when(residentServiceImpl.getServiceRequestUpdate( pageStart, -1)).thenThrow(ResidentServiceCheckedException.class);
         assertEquals(0, residentServiceImpl.getServiceRequestUpdate( pageStart, -1).size());
+    }
+
+    @Test
+    public void testGetServiceRequestPrintCheck() throws ResidentServiceCheckedException {
+        credentialRequestStatusResponseDto.setStatusCode("PRINTING");
+        Mockito.when(residentCredentialServiceImpl.getStatus(Mockito.anyString())).thenReturn(credentialRequestStatusResponseDto);
+        Mockito.when(env.getProperty(ApiName.RESIDENT_REQ_CREDENTIAL_URL.name())).thenReturn("https://dev.mosip.net/resident/v1/req/credential/status/");
+        Integer pageStart = 1;
+        Integer pageSize = 1;
+        assertEquals(1, residentServiceImpl.getServiceRequestUpdate( pageStart, pageSize).size());
     }
 
 }
