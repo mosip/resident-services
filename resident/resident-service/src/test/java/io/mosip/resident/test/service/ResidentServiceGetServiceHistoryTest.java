@@ -96,7 +96,6 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
-        Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(new ArrayList<>());
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
