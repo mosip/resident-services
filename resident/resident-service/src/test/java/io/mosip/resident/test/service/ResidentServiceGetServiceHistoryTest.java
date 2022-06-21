@@ -107,8 +107,8 @@ public class ResidentServiceGetServiceHistoryTest {
         toDate = LocalDateTime.now();
 
         Mockito.when(residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType)).thenReturn(serviceHistoryResponseDto);
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC").size());
+        assertEquals(2, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType).size());
+        assertEquals(2, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC").size());
     }
 
     @Test
@@ -118,20 +118,15 @@ public class ResidentServiceGetServiceHistoryTest {
 
         Mockito.when(residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType)).thenReturn(serviceHistoryResponseDto);
         assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC").size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC").size());
+        assertEquals(2, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC").size());
+        assertEquals(2, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC").size());
 
     }
 
     @Test
     public void testGetServiceHistoryNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(residentServiceImpl.getServiceHistory(null, null, fromDate, toDate, serviceType, sortType)).thenReturn(null);
-        assertEquals(0, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(null, pageSize, fromDate, toDate, serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(null, null, fromDate, toDate, serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(2, null, fromDate, toDate, serviceType, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(2, null, fromDate, toDate, null, sortType).size());
-        assertEquals(0, residentServiceImpl.getServiceHistory(2, null, fromDate, toDate, null, null).size());
+        assertEquals(2, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType).size());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
