@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
+
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -71,19 +74,18 @@ public class WebSubUpdateAuthTypeServiceTest {
 
     @Test
     public void testWebSubUpdateAuthTypeService() throws ResidentServiceCheckedException {
-
-        EventModel eventModel = new EventModel();
-        EventModel e1=new EventModel();
+        EventModel eventModel=new EventModel();
         Event event=new Event();
         event.setTransactionId("1234");
         event.setId("1234");
 
-        e1.setEvent(event);
-        e1.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
-        e1.setPublishedOn(String.valueOf(LocalDateTime.now()));
-        e1.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
+        eventModel.setEvent(event);
+        eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
+        eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
+        eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
 
-
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(e1);
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+        webSubUpdateAuthTypeService = mock(WebSubUpdateAuthTypeServiceImpl.class);
+        Mockito.lenient().doNothing().when(webSubUpdateAuthTypeService).updateAuthTypeStatus(Mockito.any());
     }
 }
