@@ -18,20 +18,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -65,25 +68,32 @@ public class PartnerServiceImplTest {
     @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-    private ResponseWrapper<?> responseWrapper;
+    private ResponseWrapper<Map<String, Object>> responseWrapper;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(partnerService).build();
-        responseWrapper = new ResponseWrapper<>();
+        responseWrapper = new ResponseWrapper<Map<String, Object>>();
         responseWrapper.setVersion("v1");
         responseWrapper.setId("1");
+        Map<String, Object> partners = new HashMap<>();
+        ArrayList<Object> partnerList = new ArrayList<>();
+        Map<String, Object> individualPartner = new HashMap<>();
+        individualPartner.put("partnerID", "1");
+        partnerList.add(individualPartner);
+        partners.put("partners", partnerList);
+        responseWrapper.setResponse(partners);
     }
 
     @Test
-    public void testPartnerService() throws ResidentServiceCheckedException, ApisResourceAccessException {
+    public void testPartnerService() throws ResidentServiceCheckedException, ApisResourceAccessException, URISyntaxException {
         String partnerId = "Online_Verification_Partner";
-        ArrayList<String> partnerIds = new ArrayList<>();
-        URI uri = URI.create("http://localhost:8080/v1/partner/");
-        responseWrapper = residentServiceRestClient.getApi(uri, ResponseWrapper.class);
+        ArrayList<String> partnerIds;
 
-        partnerService.getPartnerDetails(partnerId);
-        assertEquals(0, partnerIds.size());
+        ReflectionTestUtils.setField(partnerService, "partnerServiceUrl", "https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
+        URI uri = new URI("https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
+        when(residentServiceRestClient.getApi(uri, ResponseWrapper.class))
+                .thenReturn(responseWrapper);
+        partnerIds=partnerService.getPartnerDetails(partnerId);
+        assertEquals(1, partnerIds.size());
     }
 }
