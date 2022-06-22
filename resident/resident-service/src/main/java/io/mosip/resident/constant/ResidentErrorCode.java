@@ -76,7 +76,7 @@ public enum ResidentErrorCode {
 	PACKET_ENCRYPTION_FAILURE_EXCEPTION("RES-SER-455", "Packet encryption failed"),
 
 	REQUEST_ID_NOT_FOUND("RES-SER-456", "Request id not found"),
-
+	DIGITAL_CARD_RID_NOT_FOUND("RES-SER-457", "Digital Card Rid not found"),
 
 
 

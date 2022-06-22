@@ -471,6 +471,15 @@ public enum EventEnum {
 	IDA_TOKEN_NOT_FOUND("RES-SER-217", RegistrationConstants.SYSTEM, "IDA token not found",
 			"IDA token not found", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ("RES-SER-218", RegistrationConstants.SYSTEM, "RID digital card request",
+			"Request for downloading digital card based on RID", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-219", RegistrationConstants.SYSTEM, "RID digital card request",
+			"Downloading digital card based on RID success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-220", RegistrationConstants.SYSTEM, "RID digital card request",
+			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),;
 	;
 
 	private final String eventId;
