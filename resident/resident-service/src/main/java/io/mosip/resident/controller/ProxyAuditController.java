@@ -2,7 +2,7 @@ package io.mosip.resident.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,29 +27,28 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/proxy/audit")
 @Tag(name = "proxy-audit-controller", description = "Proxy Audit Controller")
 public class ProxyAuditController {
-	
+
 	/** The audit util. */
 	@Autowired
 	private AuditUtil auditUtil;
-	
+
 	/**
 	 * Audit log.
 	 *
 	 * @param auditRequestDto the audit request dto
 	 * @return the response entity
-	 * @throws ResidentServiceCheckedException the resident service checked exception
+	 * @throws ResidentServiceCheckedException the resident service checked
+	 *                                         exception
 	 */
 	@ResponseFilter
-	@GetMapping("/log")
-	@Operation(summary = "auditLog", description = "audit log", tags = {
-			"proxy-audit-controller" })
+	@PostMapping("/log")
+	@Operation(summary = "auditLog", description = "audit log", tags = { "proxy-audit-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> auditLog(
-			@RequestBody AuditRequestDTO auditRequestDto)
+	public ResponseEntity<?> auditLog(@RequestBody AuditRequestDTO auditRequestDto)
 			throws ResidentServiceCheckedException {
 		auditUtil.callAuditManager(auditRequestDto);
 		return ResponseEntity.ok().build();
