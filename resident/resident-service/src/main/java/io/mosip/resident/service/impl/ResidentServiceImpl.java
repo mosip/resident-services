@@ -28,7 +28,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -1151,7 +1150,7 @@ public class ResidentServiceImpl implements ResidentService {
 					CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = residentCredentialServiceImpl.getStatus(requestId);
 					if(credentialRequestStatusResponseDto !=null) {
 						if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("NEW")){
-							//insert in db
+							insertServiceRequestInDb(credentialRequestStatusResponseDto);
 						}
 						residentServiceHistoryResponseDtoList.add(convertCredentialResponseDtoToServiceHistoryResponseDto(
 								credentialRequestStatusResponseDto));
@@ -1169,10 +1168,29 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.IDA_TOKEN_NOT_FOUND);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		return residentServiceHistoryResponseDtoList;
+	}
+
+	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) throws ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());
+		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
+		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
+		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestSummary(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
+		residentTransactionEntity.setStatusComment(credentialRequestStatusResponseDto.getStatusCode());
+		residentTransactionEntity.setLangCode("eng");
+		residentTransactionEntity.setRefIdType("");
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
+		residentTransactionEntity.setCrBy("RESIDENT");
+		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+		residentTransactionEntity.setOlvPartnerId("");
+		residentTransactionRepository.save(residentTransactionEntity);
 	}
 
 	public ResidentServiceHistoryResponseDto convertCredentialResponseDtoToServiceHistoryResponseDto(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) {
@@ -1181,7 +1199,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentServiceHistoryResponseDto.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
 		residentServiceHistoryResponseDto.setId(credentialRequestStatusResponseDto.getId());
 		if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("PRINTING")) {
-			residentServiceHistoryResponseDto.setCardUrl("https");
+			residentServiceHistoryResponseDto.setCardUrl(env.getProperty(ApiName.RESIDENT_REQ_CREDENTIAL_URL.name())+credentialRequestStatusResponseDto.getRequestId());
 		} else{
 			residentServiceHistoryResponseDto.setCardUrl("");
 		}

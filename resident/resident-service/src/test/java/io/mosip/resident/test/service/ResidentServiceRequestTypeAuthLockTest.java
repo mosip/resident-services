@@ -8,6 +8,7 @@ import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
@@ -27,6 +28,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -67,6 +69,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	@Mock
 	IdentityServiceImpl identityServiceImpl;
 
+	@Mock
+	ResidentTransactionRepository residentTransactionRepository;
+
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
 
@@ -96,6 +101,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		ArrayList<String> partnerIds = new ArrayList<>();
+		partnerIds.add("m-partner-default-auth");
+		Mockito.when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthType()) {
 			 idAuthService.authTypeStatusUpdate(individualId,
 					List.of(authTypeStatusDto.getAuthType().split(",")),
