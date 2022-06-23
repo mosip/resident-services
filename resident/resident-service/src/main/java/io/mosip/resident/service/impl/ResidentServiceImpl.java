@@ -1174,6 +1174,11 @@ public class ResidentServiceImpl implements ResidentService {
 		return residentServiceHistoryResponseDtoList;
 	}
 
+	@Override
+	public List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType) throws ResidentServiceCheckedException {
+		return getServiceRequestUpdate(null, null);
+	}
+
 	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) throws ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());

@@ -32,7 +32,7 @@ public class MockApiController {
 
     private static final Logger logger = LoggerConfiguration.logConfig(MockApiController.class);
 
-    @GetMapping("/rid-digital-card/{rid}")
+    @GetMapping(path= "/rid-digital-card/{rid}")
     public ResponseEntity<Object> getRIDDigitalCard(
             @PathVariable("rid") String rid) throws Exception {
         auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);

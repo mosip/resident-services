@@ -1,37 +1,17 @@
 package io.mosip.resident.controller;
 
-import java.io.ByteArrayInputStream;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import io.mosip.resident.dto.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -44,6 +24,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -405,6 +400,22 @@ public class ResidentController {
 		}
 		return responseWrapper;
 	}
+
+//	@PreAuthorize("@scopeValidator.hasAllScopes("
+//			+ "@authorizedScopes.getGetDownloadCard()"
+//			+ ")")
+//	@GetMapping(path = "/download-card/individualId/{individualId}")
+//	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> downloadCard(@PathVariable("individualId") String individualId)
+//			throws ResidentServiceCheckedException {
+//		audit.setAuditRequestDto(
+//				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
+//		validator.validateIndividualId(individualId);
+//		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
+//		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, individualId));
+//		response.setResponse(residentService.downloadCard(individualId, getIdType(individualId)));
+//		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, individualId));
+//		return response;
+//	}
 
 	/**
 	 *  It returns the type of the ID passed to it

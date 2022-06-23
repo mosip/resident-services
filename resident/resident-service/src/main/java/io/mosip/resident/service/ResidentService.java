@@ -40,4 +40,6 @@ public interface ResidentService {
     List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException;
+
+    List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType) throws ResidentServiceCheckedException;
 }
