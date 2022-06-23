@@ -63,6 +63,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 1;
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
+	private static final String AVAILABLE = "AVAILABLE";
+	private static final String PRINTING = "PRINTING";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -1117,7 +1119,12 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException {
+	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException{
+		return getServiceRequestUpdate(pageStart, pageFetch, null);
+	}
+
+	@Override
+	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch, String individualId) throws ResidentServiceCheckedException {
 		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::entry");
 		ResponseDTO responseDTO = new ResponseDTO();
@@ -1153,7 +1160,7 @@ public class ResidentServiceImpl implements ResidentService {
 							insertServiceRequestInDb(credentialRequestStatusResponseDto);
 						}
 						residentServiceHistoryResponseDtoList.add(convertCredentialResponseDtoToServiceHistoryResponseDto(
-								credentialRequestStatusResponseDto));
+								credentialRequestStatusResponseDto, individualId));
 					}
 
 				}
@@ -1176,7 +1183,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType) throws ResidentServiceCheckedException {
-		return getServiceRequestUpdate(null, null);
+		return getServiceRequestUpdate(null, null, individualId);
 	}
 
 	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) throws ApisResourceAccessException {
@@ -1198,13 +1205,15 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 
-	public ResidentServiceHistoryResponseDto convertCredentialResponseDtoToServiceHistoryResponseDto(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) {
+	public ResidentServiceHistoryResponseDto convertCredentialResponseDtoToServiceHistoryResponseDto(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto, String individualId) {
 		ResidentServiceHistoryResponseDto residentServiceHistoryResponseDto = new ResidentServiceHistoryResponseDto();
 		residentServiceHistoryResponseDto.setRequestId(credentialRequestStatusResponseDto.getRequestId());
 		residentServiceHistoryResponseDto.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
 		residentServiceHistoryResponseDto.setId(credentialRequestStatusResponseDto.getId());
-		if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("PRINTING")) {
+		if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase(PRINTING)) {
 			residentServiceHistoryResponseDto.setCardUrl(env.getProperty(ApiName.RESIDENT_REQ_CREDENTIAL_URL.name())+credentialRequestStatusResponseDto.getRequestId());
+			}else if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase(AVAILABLE)) {
+			residentServiceHistoryResponseDto.setCardUrl(env.getProperty(ApiName.DIGITAL_CARD_STATUS_URL.name())+individualId);
 		} else{
 			residentServiceHistoryResponseDto.setCardUrl("");
 		}

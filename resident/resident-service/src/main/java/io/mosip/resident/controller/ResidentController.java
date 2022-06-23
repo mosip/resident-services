@@ -401,21 +401,21 @@ public class ResidentController {
 		return responseWrapper;
 	}
 
-//	@PreAuthorize("@scopeValidator.hasAllScopes("
-//			+ "@authorizedScopes.getGetDownloadCard()"
-//			+ ")")
-//	@GetMapping(path = "/download-card/individualId/{individualId}")
-//	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> downloadCard(@PathVariable("individualId") String individualId)
-//			throws ResidentServiceCheckedException {
-//		audit.setAuditRequestDto(
-//				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
-//		validator.validateIndividualId(individualId);
-//		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
-//		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, individualId));
-//		response.setResponse(residentService.downloadCard(individualId, getIdType(individualId)));
-//		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, individualId));
-//		return response;
-//	}
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetDownloadCard()"
+			+ ")")
+	@GetMapping(path = "/download-card/individualId/{individualId}")
+	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> downloadCard(@PathVariable("individualId") String individualId)
+			throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
+		validator.validateIndividualId(individualId);
+		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, individualId));
+		response.setResponse(residentService.downloadCard(individualId, getIdType(individualId)));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, individualId));
+		return response;
+	}
 
 	/**
 	 *  It returns the type of the ID passed to it

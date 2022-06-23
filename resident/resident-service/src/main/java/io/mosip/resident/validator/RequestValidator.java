@@ -764,7 +764,7 @@ public class RequestValidator {
 	}
 
     public void validateIndividualId(String individualId) {
-		if (StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
+		if (StringUtils.isEmpty(individualId) || !isNumeric(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request service history API"));
 			throw new InvalidInputException("individualId");
