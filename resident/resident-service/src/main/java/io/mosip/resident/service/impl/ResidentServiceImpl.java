@@ -1150,7 +1150,7 @@ public class ResidentServiceImpl implements ResidentService {
 					CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = residentCredentialServiceImpl.getStatus(requestId);
 					if(credentialRequestStatusResponseDto !=null) {
 						if(credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("NEW")){
-							insertServiceRequestInDb(credentialRequestStatusResponseDto, residentTransactionEntity);
+							insertServiceRequestInDb(credentialRequestStatusResponseDto);
 						}
 						residentServiceHistoryResponseDtoList.add(convertCredentialResponseDtoToServiceHistoryResponseDto(
 								credentialRequestStatusResponseDto));
@@ -1174,8 +1174,8 @@ public class ResidentServiceImpl implements ResidentService {
 		return residentServiceHistoryResponseDtoList;
 	}
 
-	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto, ResidentTransactionEntity residentTransactionEntity) throws ApisResourceAccessException {
-		residentTransactionEntity = new ResidentTransactionEntity();
+	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) throws ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
