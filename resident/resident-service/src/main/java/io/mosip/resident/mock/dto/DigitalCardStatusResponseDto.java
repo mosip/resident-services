@@ -1,4 +1,4 @@
-package io.mosip.resident.dto;
+package io.mosip.resident.mock.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

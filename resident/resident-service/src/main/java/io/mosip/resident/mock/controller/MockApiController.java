@@ -1,8 +1,8 @@
-package io.mosip.resident.controller;
+package io.mosip.resident.mock.controller;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.mock.service.MockService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 
@@ -31,15 +28,15 @@ public class MockApiController {
     private AuditUtil auditUtil;
 
     @Autowired
-    private ResidentCredentialService residentCredentialService;
+    private MockService mockService;
 
     private static final Logger logger = LoggerConfiguration.logConfig(MockApiController.class);
 
-    @PostMapping("/rid-digital-card")
+    @GetMapping("/rid-digital-card/{rid}")
     public ResponseEntity<Object> getRIDDigitalCard(
-            @RequestParam("rid") String rid) throws Exception {
+            @PathVariable("rid") String rid) throws Exception {
         auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
-        byte[] pdfBytes = residentCredentialService.getRIDDigitalCardV2(rid);
+        byte[] pdfBytes = mockService.getRIDDigitalCardV2(rid);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))

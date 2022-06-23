@@ -36,7 +36,6 @@ import java.util.*;
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
 	private static final String INDIVIDUAL_ID = "individualId";
-	private static final Object AVAILABLE = "AVAILABLE";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -347,45 +346,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		return response;
-	}
-
-	@Override
-	public byte[] getRIDDigitalCardV2(String rid)  {
-		try {
-			DigitalCardStatusResponseDto digitalCardStatusResponseDto = getDigitalCardStatus(rid);
-			if(!digitalCardStatusResponseDto.getStatusCode().equals(AVAILABLE)) {
-				audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-				throw new ResidentServiceException(
-						ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorCode(),
-						ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
-			}
-			URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
-			String data = residentServiceRestClient.getApi(dataShareUri, String.class);
-			return CryptoUtil.decodeURLSafeBase64(data);
-		} catch (ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-			throw new ResidentCredentialServiceException(
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-			throw new ResidentCredentialServiceException(
-					ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		}
-
-	}
-
-	private DigitalCardStatusResponseDto getDigitalCardStatus(String individualId)
-			throws ApisResourceAccessException, IOException {
-
-		Map<String, String> pathSegments = new HashMap<>();
-		pathSegments.put("rid", individualId);
-		ResponseWrapper<DigitalCardStatusResponseDto> responseDto =
-				residentServiceRestClient.getApi(ApiName.DIGITAL_CARD_STATUS_URL, pathSegments, ResponseWrapper.class);
-		DigitalCardStatusResponseDto digitalCardStatusResponseDto = JsonUtil.readValue(
-				JsonUtil.writeValueAsString(responseDto.getResponse()), DigitalCardStatusResponseDto.class);
-		return digitalCardStatusResponseDto;
 	}
 
 	public String generatePin() {
