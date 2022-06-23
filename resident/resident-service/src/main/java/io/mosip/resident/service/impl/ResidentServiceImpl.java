@@ -118,7 +118,7 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.update-uin.machine-zone-code}")
 	private String zoneCode;
 
-	@Value("${mosip.vid.only:true}")
+	@Value("${mosip.vid.only:false}")
 	private boolean vidOnly;
 
 	@Autowired
