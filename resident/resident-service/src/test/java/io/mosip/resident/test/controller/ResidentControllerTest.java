@@ -44,8 +44,8 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.mosip.kernel.authcodeflowproxy.api.service.validator.ScopeValidator;
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.authmanager.spi.ScopeValidator;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
