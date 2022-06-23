@@ -14,11 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.dto.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -50,20 +52,6 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
@@ -129,11 +117,13 @@ public class ResidentControllerTest {
 	RequestWrapper<AuthLockOrUnLockRequestDto> authLockRequest;
 	RequestWrapper<EuinRequestDTO> euinRequest;
 	RequestWrapper<AuthHistoryRequestDTO> authHistoryRequest;
+	RequestWrapper<AuthLockOrUnLockRequestDtoV2> authTypeStatusRequest;
 
 	/** The array to json. */
 	private String authLockRequestToJson;
 	private String euinRequestToJson;
 	private String historyRequestToJson;
+	private String authStatusRequestToJson;
 	private Gson gson;
 
 	/** The mock mvc. */
@@ -158,9 +148,28 @@ public class ResidentControllerTest {
 		euinRequest = new RequestWrapper<EuinRequestDTO>();
 		euinRequest.setRequest(new EuinRequestDTO("5734728510", "1234567890", IdType.UIN.name(), "UIN", "111111"));
 
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId("5734728510");
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(1L);
+		List<AuthTypeStatusDto> authTypeStatusDtoList = new ArrayList<>();
+		authTypeStatusDtoList.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authTypeStatusRequest = new RequestWrapper<>();
+		authTypeStatusRequest.setRequest(authLockOrUnLockRequestDtoV2);
+		authTypeStatusRequest.setRequesttime(LocalDateTime.now().toString());
+		authTypeStatusRequest.setVersion("v1");
+		authTypeStatusRequest.setId("io.mosip.resident.authHistory");
+
 		gson = new GsonBuilder().serializeNulls().create();
 		authLockRequestToJson = gson.toJson(authLockRequest);
 		euinRequestToJson = gson.toJson(euinRequest);
+
+
+
+		authStatusRequestToJson = gson.toJson(authTypeStatusRequest);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("5734728510");
@@ -191,20 +200,21 @@ public class ResidentControllerTest {
 				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
 	}
 
-	//FIXME remove the ignore
-	@Ignore
 	@Test
 	@WithUserDetails("resident")
 	public void testReqAuthTypeLock() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		responseDto.setStatus("success");
-		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
+		doNothing().when(validator).validateAuthLockOrUnlockRequestV2(Mockito.any());
 		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
-
+		residentController.reqAauthTypeStatusUpdateV2(authTypeStatusRequest);
+		validator.validateAuthLockOrUnlockRequestV2(authTypeStatusRequest);
 		this.mockMvc
-				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
+				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(authStatusRequestToJson))
+				.andExpect(status().isOk()).andExpect(status().isOk());
 	}
+
+
 
 	@Test
 	@WithUserDetails("resident")
@@ -296,22 +306,6 @@ public class ResidentControllerTest {
 				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
 	}
 
-	//FIXME remove the ignore
-	@Ignore
-	@Test
-	@WithUserDetails("reg-admin")
-	public void testRequestAuthTypeUnLockSuccess() throws Exception {
-		ResponseDTO responseDto = new ResponseDTO();
-		responseDto.setStatus("success");
-		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
-		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
-
-		this.mockMvc
-				.perform(
-						post("/req/auth-type-unlock").contentType(MediaType.APPLICATION_JSON).content(authLockRequestToJson))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.response.status", is("success")));
-	}
-
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testRequestAuthUnLockBadRequest() throws Exception {
@@ -325,13 +319,32 @@ public class ResidentControllerTest {
 		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
 
-	//FIXME remove the ignore
-	@Ignore
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testRequestGetAuthTxnDetailsSuccess() throws Exception {
 		Mockito.when(residentService.getAuthTxnDetails(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		residentController.getAuthTxnDetails(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"), LocalDateTime.parse("2022-06-10T20:04:22.956607"));
 		mockMvc.perform(MockMvcRequestBuilders.get("/authTransactions")
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetServiceHistorySuccess() throws Exception {
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"), LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(), ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
+		mockMvc.perform(MockMvcRequestBuilders.get("/getServiceHistory")
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetServiceRequestUpdateSuccess() throws Exception {
+		Mockito.when(residentService.getServiceRequestUpdate(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		residentController.getServiceRequestUpdate(1, 12);
+		mockMvc.perform(MockMvcRequestBuilders.get("/get/service-request-update")
 						.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}

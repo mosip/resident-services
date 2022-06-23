@@ -16,12 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -187,21 +182,21 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getPostAuthTypeLock()"
+			+ "@authorizedScopes.getPostAuthTypeStatus()"
 		+ ")")
 	@ResponseFilter
 	@PostMapping(value = "/req/auth-type-status")
-	@Operation(summary = "reqAauthTypeLockV2", description = "reqAauthTypeLockV2", tags = { "resident-controller" })
+	@Operation(summary = "reqAuthTypeStatus", description = "reqAuthTypeStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public ResponseWrapper<ResponseDTO> reqAauthTypeLockV2(
+	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type lock API"));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type status API"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
@@ -235,6 +230,61 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetServiceAuthHistoryRoles()"
+			+ ")")
+	@GetMapping(path="/getServiceHistory")
+	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseEntity<ServiceTypeResponseDto> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																	@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+																	@RequestParam(name = "fromDateTime", required = false)
+												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
+																	@RequestParam(name = "toDateTime", required = false)
+												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+																	@RequestParam(name = "sortType", required = false) String sortType,
+																	@RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
+		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType);
+		validator.validateServiceHistoryRequest(pageStart, pageFetch, fromDateTime, toDateTime, sortType, serviceType);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
+				"getServiceHistory"));
+		ServiceTypeResponseDto serviceTypeResponseDto = new ServiceTypeResponseDto();
+		Map<String, List<ServiceHistoryResponseDto>> serviceTypeMap = new HashMap<>();
+		serviceTypeMap.put("serviceType", residentServiceServiceHistory);
+		serviceTypeResponseDto.setResponse(serviceTypeMap);
+		serviceTypeResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+		return new ResponseEntity<>(serviceTypeResponseDto, HttpStatus.OK);
+	}
+
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetServiceRequestUpdate()"
+			+ ")")
+	@GetMapping(path="/get/service-request-update")
+	@Operation(summary = "getServiceRequestUpdate", description = "getServiceRequestUpdate", tags = { "resident-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> getServiceRequestUpdate(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																@RequestParam(name = "pageFetch", required = false) Integer pageFetch) throws ResidentServiceCheckedException {
+		logger.info("getServiceRequestUpdate :: entry");
+		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE, "Get Service request update"));
+		List<ResidentServiceHistoryResponseDto> residentServiceHistoryResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
+		response.setResponse(residentServiceHistoryResponseDtoList);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE_SUCCESS,
+				"Get Service request update"));
+		return response;
+	}
+
+	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetAuthTransactions()"
 		+ ")")
 	@GetMapping(path="/authTransactions")
@@ -251,30 +301,19 @@ public class ResidentController {
 																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
 																@RequestParam(name = "toDateTime", required = false)
 																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResponseEntity<AutnTxnResponseDto> response = null;
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
-		try{
-			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
-			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
-			authTxnMap.put("authTransactions", AuthTxn);
-			autnTxnResponseDto.setResponse(authTxnMap);
-			autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
-			response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
-		} catch (ResidentServiceCheckedException e){
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE, individualId));
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorCode(), e.getMessage());
-			audit.setAuditRequestDto(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE);
-			throw new ResidentServiceException(ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorCode(),
-					ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorMessage(), e);
-		}
-
+		List<AutnTxnDto> authTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
+		Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
+		authTxnMap.put("authTransactions", authTxn);
+		autnTxnResponseDto.setResponse(authTxnMap);
+		autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+		response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
 		return response;
 	}
 

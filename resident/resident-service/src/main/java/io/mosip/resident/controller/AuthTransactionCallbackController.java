@@ -10,6 +10,7 @@ import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.AuthTransactionCallBackService;
@@ -26,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 @Tag(name="AuthTransactionCallbackController", description="AuthTransactionCallbackController")
@@ -53,7 +56,7 @@ public class AuthTransactionCallbackController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authTransaction-status.secret}", callback = "${resident.websub.callback.authTransaction-status.relative.url}", topic = "${resident.websub.authTransaction-status.topic}")
-    public void authTypeCallback(@RequestBody EventModel eventModel) {
+    public void authTypeCallback(@RequestBody EventModel eventModel) throws ApisResourceAccessException, NoSuchAlgorithmException {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackController :: authTransactionCallback() :: Start");

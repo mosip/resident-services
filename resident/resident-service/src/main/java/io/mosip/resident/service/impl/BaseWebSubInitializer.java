@@ -7,6 +7,7 @@ import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -14,9 +15,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.http.HttpHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
-import io.mosip.resident.constant.ResidentConstants;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 @Component
@@ -27,11 +26,15 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
 
-    /** The task subsctiption delay. */
+    /**
+     * The task subsctiption delay.
+     */
     @Value("${" + ResidentConstants.SUBSCRIPTIONS_DELAY_ON_STARTUP + ":60000}")
     private int taskSubsctiptionDelay;
 
-    /** The publisher. */
+    /**
+     * The publisher.
+     */
     @Autowired
     private PublisherClient<String, Object, HttpHeaders> publisher;
 
@@ -64,7 +67,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        logger.info( "onApplicationEvent", "BaseWebSubInitializer", "Application is ready");
+        logger.info("onApplicationEvent", "BaseWebSubInitializer", "Application is ready");
         taskScheduler.schedule(() -> {
             //Invoke topic registrations. This is done only once.
             //Note: With authenticated websub, only register topics which are only published by IDA
@@ -77,13 +80,8 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     }
 
-    private void authTransactionSubscription() {
-        try{
-            subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
-        }
-        catch (Exception e){
-            logger.error( "authTransactionSubscription", "BaseWebSubInitializer", "Exception while subscribing to topic: " + e.getMessage());
-        }
+    public void authTransactionSubscription() {
+        subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
     }
 
     protected void tryRegisterTopicEvent(String eventTopic) {
@@ -95,23 +93,18 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
                     "Registered topic: " + eventTopic);
         } catch (Exception e) {
             logger.info(this.getClass().getCanonicalName(), "tryRegisterTopicEvent", e.getClass().toString(),
-                    "Error registering topic: " + eventTopic + "\n" + e.getMessage());
+                    "Error registering tryRegisterTopicEvent: " + eventTopic + "\n" + e.getMessage());
         }
     }
 
     protected void initSubsriptions() {
-        try {
-            logger.debug("subscribe", "",
-                    "Trying to subscribe to topic: " + topic + " callback-url: "
-                            + callbackUrl);
-            subscribe(topic, callbackUrl, secret, hubUrl);
-            logger.info("subscribe", "",
-                    "Subscribed to topic: " + topic);
-        } catch (Exception e) {
-            logger.info("subscribe", e.getClass().toString(),
-                    "Error subscribing topic: " + topic + "\n" + e.getMessage());
-            throw e;
-        }
+        logger.debug("subscribe", "",
+                "Trying to subscribe to topic: " + topic + " callback-url: "
+                        + callbackUrl);
+        subscribe(topic, callbackUrl, secret, hubUrl);
+        logger.info("subscribe", "",
+                "Subscribed to topic: " + topic);
+
     }
 
     private void subscribe(String topic, String callbackUrl, String secret, String hubUrl) {
@@ -125,6 +118,7 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
             subscriptionRequest.setTopic(topic);
             subscriptionRequest.setHubURL(hubUrl);
             subscribe.subscribe(subscriptionRequest);
+
             logger.info("subscribe", "",
                     "Subscribed to topic: " + topic);
         } catch (Exception e) {

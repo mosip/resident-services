@@ -7,6 +7,8 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -69,6 +71,9 @@ public class ResidentCredentialControllerTest {
 	
 	@MockBean
 	private DocumentService docService;
+
+    @MockBean
+    private ResidentServiceImpl residentService;
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;

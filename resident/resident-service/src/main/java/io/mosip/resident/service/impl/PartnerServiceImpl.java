@@ -36,11 +36,13 @@ public class PartnerServiceImpl implements PartnerService {
             if (partnerId != null && partnerServiceUrl != null) {
                 URI uri = URI.create(partnerServiceUrl);
                 ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(uri, ResponseWrapper.class);
-                Map<String, Object> partnerResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-               ArrayList<Object> partners = (ArrayList<Object>) partnerResponse.get("partners");
-                for (Object partner : partners) {
-                    Map<String, Object> individualPartner = new LinkedHashMap<>((Map<String, Object>) partner);
-                    partnerIds.add(individualPartner.get("partnerID").toString());
+                if (responseWrapper != null) {
+                    Map<String, Object> partnerResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
+                    ArrayList<Object> partners = (ArrayList<Object>) partnerResponse.get("partners");
+                    for (Object partner : partners) {
+                        Map<String, Object> individualPartner = new LinkedHashMap<>((Map<String, Object>) partner);
+                        partnerIds.add(individualPartner.get("partnerID").toString());
+                    }
                 }
             }
         } catch (Exception e) {

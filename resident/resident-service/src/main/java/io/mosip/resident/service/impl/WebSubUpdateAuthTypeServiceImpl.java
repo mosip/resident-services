@@ -11,6 +11,7 @@ import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -56,6 +57,9 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
     @Value("${resident.websub.callback.authtype-status.url}")
     private String callbackUrl;
+
+    @Autowired
+    private IdentityServiceImpl identityServiceImpl;
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
@@ -107,9 +111,10 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             residentTransactionEntity.setStatusCode(status);
             residentTransactionEntity.setStatusComment(status);
             residentTransactionEntity.setLangCode("eng");
-            residentTransactionEntity.setTokenId("");
+            residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
             residentTransactionEntity.setCrBy("mosip");
             residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+            residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
 
             residentTransactionRepository.save(residentTransactionEntity);
         }

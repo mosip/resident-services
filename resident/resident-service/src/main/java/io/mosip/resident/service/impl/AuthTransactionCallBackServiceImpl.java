@@ -6,7 +6,9 @@ import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.entity.AutnTxn;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.service.AuthTransactionCallBackService;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 
 @Component
@@ -39,15 +42,13 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     private IdentityServiceImpl identityService;
 
     @Override
-    public void updateAuthTransactionCallBackService(EventModel eventModel) throws ResidentServiceCheckedException {
+    public void updateAuthTransactionCallBackService(EventModel eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::entry");
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try {
-            logger.info( "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
-
+            logger.info("AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
             insertInResidentTransactionTable(eventModel, COMPLETED);
-
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::exception");
@@ -57,71 +58,51 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
         }
     }
 
-    private void insertInResidentTransactionTable(EventModel eventModel, String status) {
+    private void insertInResidentTransactionTable(EventModel eventModel, String status) throws ApisResourceAccessException, NoSuchAlgorithmException {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
-
-        try {
-            AutnTxn autnTxn = new AutnTxn();
-            String id = eventModel.getEvent().getId();
-            String hash = HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8));
-            AutnTxn autnTxn1 = autnTxnRepository.findById(hash);
-            if (autnTxn1 != null) {
-                updateAuthTxnTable(autnTxn1, eventModel, status);
-            } else {
-                insertAuthTxnTable(autnTxn, eventModel, status, hash);
-            }
-
-        } catch (Exception e) {
-            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::exception");
+        AutnTxn autnTxn = new AutnTxn();
+        String id = eventModel.getEvent().getId();
+        String hash = HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8));
+        AutnTxn autnTxnRepositoryById = autnTxnRepository.findById(hash);
+        if (autnTxnRepositoryById != null) {
+            updateAuthTxnTable(autnTxnRepositoryById, eventModel, status);
+        } else {
+            insertAuthTxnTable(autnTxn, eventModel, status, hash);
         }
-
     }
 
-    private void insertAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String status, String hash) {
+    private void insertAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String status, String hash) throws ApisResourceAccessException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertAuthTxnTable()::entry");
-        try {
-            autnTxn.setId(hash);
-            autnTxn.setRequestDTtimes(LocalDateTime.now());
-            autnTxn.setResponseDTimes(LocalDateTime.now());
-            autnTxn.setRequestTrnId(eventModel.getEvent().getTransactionId());
-            autnTxn.setAuthTypeCode(OTP);
-            autnTxn.setStatusCode(status);
-            autnTxn.setStatusComment(status);
-            autnTxn.setLangCode(ENG);
-            autnTxn.setCrBy(RESIDENT);
-            autnTxn.setCrDTimes(LocalDateTime.now());
-            autnTxn.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
-            autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
-            autnTxnRepository.save(autnTxn);
-        } catch (Exception e) {
-            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertAuthTxnTable()::exception");
-        }
-
-
+        autnTxn.setId(hash);
+        autnTxn.setRequestDTtimes(LocalDateTime.now());
+        autnTxn.setResponseDTimes(LocalDateTime.now());
+        autnTxn.setRequestTrnId(eventModel.getEvent().getTransactionId());
+        autnTxn.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+        autnTxn.setStatusCode(status);
+        autnTxn.setStatusComment(status);
+        autnTxn.setLangCode(ENG);
+        autnTxn.setCrBy(RESIDENT);
+        autnTxn.setCrDTimes(LocalDateTime.now());
+        autnTxn.setToken(identityService.getIDAToken(identityService.getResidentIndvidualId()));
+        autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
+        autnTxnRepository.save(autnTxn);
     }
 
-    private void updateAuthTxnTable(AutnTxn autnTxn1, EventModel eventModel, String status) {
+    private void updateAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String status) throws ApisResourceAccessException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTxnTable()::entry");
-        try {
-            autnTxn1.setResponseDTimes(LocalDateTime.now());
-            autnTxn1.setStatusCode(status);
-            autnTxn1.setStatusComment(status);
-            autnTxn1.setUpdBy(RESIDENT);
-            autnTxn1.setUpdDTimes(LocalDateTime.now());
-            autnTxn1.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
-            autnTxn1.setToken(identityService.getIDAToken(eventModel.getEvent().getId()));
-            autnTxnRepository.save(autnTxn1);
-        } catch (Exception e) {
-            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTxnTable()::exception");
-        }
-
+        autnTxn.setResponseDTimes(LocalDateTime.now());
+        autnTxn.setStatusCode(status);
+        autnTxn.setStatusComment(status);
+        autnTxn.setUpdBy(RESIDENT);
+        autnTxn.setUpdDTimes(LocalDateTime.now());
+        autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
+        autnTxn.setToken(identityService.getIDAToken(identityService.getResidentIndvidualId()));
+        autnTxn.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+        autnTxnRepository.save(autnTxn);
     }
 
 

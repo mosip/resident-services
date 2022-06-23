@@ -198,7 +198,7 @@ public class NotificationService {
 			List<TemplateDto> response = templateResponse.getTemplates();
 			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
 					"NotificationService::getTemplate()::exit");
-			return response.get(0).getFileText().replaceAll("^\"|\"$", "");
+			return response.get(0).getFileText().replaceAll("(^\")|(\"$)", "");
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),

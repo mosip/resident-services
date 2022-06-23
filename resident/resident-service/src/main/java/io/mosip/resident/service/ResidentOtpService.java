@@ -21,7 +21,7 @@ public interface ResidentOtpService {
 
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException;
 
-	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException;
+	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException;
 
 	public OtpResponseDTO generateOtpForAid(AidOtpRequestDTO otpRequestDto) throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException;
 
