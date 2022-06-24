@@ -42,7 +42,7 @@ public class MockApiController {
 	 * @param individualId
 	 */
 	@ResponseFilter
-	@GetMapping(value = "/print-partner/order-status")
+	@GetMapping(value = "/print-partner/check-order-status")
 	@Operation(summary = "getOrderStatus", description = "getOrderStatus", tags = { "mock-api-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -56,7 +56,7 @@ public class MockApiController {
 		auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS);
 		if (Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) >= 6
 				&& Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) <= 9) {
-			logger.error("payment is not made for this id");
+			logger.debug("payment is required for this id");
 			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS_SUCCESS);

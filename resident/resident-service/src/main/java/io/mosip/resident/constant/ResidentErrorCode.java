@@ -70,6 +70,8 @@ public enum ResidentErrorCode {
 	AUTH_TYPE_LOCK_FAILURE("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
+	
+	PAYMENT_REQUIRED("RES-SER-402","Payment is not made for this card"),
 
 
 

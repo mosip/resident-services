@@ -78,18 +78,11 @@ public class OrderCardServiceImpl implements OrderCardService {
 			ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) restClientWithSelfTOkenRestTemplate.getApi(
 					ApiName.GET_ORDER_STATUS_URL, pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
 
-			if (responseWrapper != null) {
-				if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-					logger.debug(responseWrapper.getErrors().get(0).toString());
-					throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
-							responseWrapper.getErrors().get(0).getMessage());
-				}
-			}
 		} catch (ApisResourceAccessException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS_EXCEPTION);
 			logger.error("Error occured in checking order status %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
+					ResidentErrorCode.PAYMENT_REQUIRED.getErrorMessage());
 		}
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::exit");
 	}
