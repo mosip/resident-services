@@ -101,7 +101,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
         try {
             ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-            String id = eventModel.getEvent().getId();
+            String id = identityServiceImpl.getResidentIndvidualId();
             residentTransactionEntity.setAid(HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8)));
             residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
             residentTransactionEntity.setResponseDtime(LocalDateTime.now());

@@ -10,12 +10,10 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
-import io.mosip.resident.entity.AutnTxn;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.*;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
@@ -90,9 +88,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
-
-	@Autowired
-	private AutnTxnRepository autnTxnRepository;
 
 	@Autowired
 	Environment env;

@@ -7,10 +7,10 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.ResidentTransactionType;
-import io.mosip.resident.entity.AutnTxn;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.AutnTxnRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AuthTransactionCallBackService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -36,7 +36,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     private AuditUtil auditUtil;
 
     @Autowired
-    private AutnTxnRepository autnTxnRepository;
+    private ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
     private IdentityServiceImpl identityService;
@@ -59,51 +59,26 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     }
 
     private void insertInResidentTransactionTable(EventModel eventModel, String status) throws ApisResourceAccessException, NoSuchAlgorithmException {
-
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
-        AutnTxn autnTxn = new AutnTxn();
-        String id = eventModel.getEvent().getId();
-        String hash = HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8));
-        AutnTxn autnTxnRepositoryById = autnTxnRepository.findById(hash);
-        if (autnTxnRepositoryById != null) {
-            updateAuthTxnTable(autnTxnRepositoryById, eventModel, status);
-        } else {
-            insertAuthTxnTable(autnTxn, eventModel, status, hash);
-        }
-    }
-
-    private void insertAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String status, String hash) throws ApisResourceAccessException {
+        ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+        String id = identityService.getResidentIndvidualId();
+        residentTransactionEntity.setAid(HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8)));
+        residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
+        residentTransactionEntity.setResponseDtime(LocalDateTime.now());
+        residentTransactionEntity.setRequestTrnId(eventModel.getEvent().getTransactionId());
+        residentTransactionEntity.setRequestTypeCode("Requested for Subscribing to WebSub");
+        residentTransactionEntity.setRequestSummary("Requested for Subscribing to WebSub");
+        residentTransactionEntity.setStatusCode(status);
+        residentTransactionEntity.setStatusComment(status);
+        residentTransactionEntity.setLangCode(ENG);
+        residentTransactionEntity.setTokenId(identityService.getIDAToken(identityService.getResidentIndvidualId()));
+        residentTransactionEntity.setCrBy(RESIDENT);
+        residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+        residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+        residentTransactionEntity.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
+        residentTransactionRepository.save(residentTransactionEntity);
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertAuthTxnTable()::entry");
-        autnTxn.setId(hash);
-        autnTxn.setRequestDTtimes(LocalDateTime.now());
-        autnTxn.setResponseDTimes(LocalDateTime.now());
-        autnTxn.setRequestTrnId(eventModel.getEvent().getTransactionId());
-        autnTxn.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
-        autnTxn.setStatusCode(status);
-        autnTxn.setStatusComment(status);
-        autnTxn.setLangCode(ENG);
-        autnTxn.setCrBy(RESIDENT);
-        autnTxn.setCrDTimes(LocalDateTime.now());
-        autnTxn.setToken(identityService.getIDAToken(identityService.getResidentIndvidualId()));
-        autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
-        autnTxnRepository.save(autnTxn);
+                LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::exit");
     }
-
-    private void updateAuthTxnTable(AutnTxn autnTxn, EventModel eventModel, String status) throws ApisResourceAccessException {
-        logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTxnTable()::entry");
-        autnTxn.setResponseDTimes(LocalDateTime.now());
-        autnTxn.setStatusCode(status);
-        autnTxn.setStatusComment(status);
-        autnTxn.setUpdBy(RESIDENT);
-        autnTxn.setUpdDTimes(LocalDateTime.now());
-        autnTxn.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
-        autnTxn.setToken(identityService.getIDAToken(identityService.getResidentIndvidualId()));
-        autnTxn.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
-        autnTxnRepository.save(autnTxn);
-    }
-
-
 }
