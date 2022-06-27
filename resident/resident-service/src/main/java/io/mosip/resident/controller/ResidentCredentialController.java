@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -177,13 +178,16 @@ public class ResidentCredentialController {
 
 	private void buildAdditionalMetadata(RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO,
 			RequestWrapper<ResidentCredentialRequestDto> request) {
-		request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()
-				.map(attr -> attr.getAttributeName()).collect(Collectors.toList()));
-		request.getRequest()
-				.setAdditionalData(Map.of("formatingAttributes", requestDTO.getRequest().getSharableAttributes(),
-						"maskingAttributes",
-						requestDTO.getRequest().getSharableAttributes().stream().filter(attr -> attr.isMasked())
-								.map(attr -> attr.getAttributeName()).collect(Collectors.toList())));
+		if (Objects.nonNull(requestDTO.getRequest().getSharableAttributes())) {
+			request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()
+					.map(attr -> attr.getAttributeName()).collect(Collectors.toList()));
+			request.getRequest()
+					.setAdditionalData(Map.of("formatingAttributes", requestDTO.getRequest().getSharableAttributes(),
+							"maskingAttributes",
+							requestDTO.getRequest().getSharableAttributes().stream().filter(attr -> attr.isMasked())
+									.map(attr -> attr.getAttributeName()).collect(Collectors.toList())));
+
+		}
 	}
 	
 }
