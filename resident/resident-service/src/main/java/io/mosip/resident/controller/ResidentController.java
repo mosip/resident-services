@@ -239,7 +239,7 @@ public class ResidentController {
 			@PathVariable(name = "AID") String AID) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
 		logger.debug("checkAidStatus controller entry");
-		validator.validateCheckAidStatusRequest(AID);
+		validator.validateIndividualId(AID);
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST,
 				AID));
