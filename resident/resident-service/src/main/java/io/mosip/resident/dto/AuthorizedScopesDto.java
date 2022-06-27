@@ -40,6 +40,8 @@ public class AuthorizedScopesDto {
 	private List<String> getServiceAuthHistoryRoles;
 
 	private List<String> getServiceRequestUpdate;
+
+	private List<String> getCheckAidStatus;
 	
 	private List<String> getPartnersByPartnerType;
 	

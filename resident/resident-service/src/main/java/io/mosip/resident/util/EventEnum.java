@@ -515,6 +515,12 @@ public enum EventEnum {
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	
+	CHECK_AID_STATUS_REQUEST("RES-SER-239", RegistrationConstants.SYSTEM, "Request Application status",
+			"Requesting application status", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-240", RegistrationConstants.SYSTEM, "Request credential request status success",
+			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	;
 
 	private final String eventId;
