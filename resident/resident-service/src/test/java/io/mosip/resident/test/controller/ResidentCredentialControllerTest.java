@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 
@@ -34,12 +35,15 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.resident.controller.ResidentCredentialController;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ResidentCredentialService;
@@ -179,4 +183,18 @@ public class ResidentCredentialControllerTest {
                 .andExpect(status().isOk());
     }
 
+    
+    @Test
+    public void testReqCredentialV2Success() throws Exception {
+        Mockito.when(residentCredentialService.reqCredential(Mockito.any())).thenReturn(credentialReqResponse);
+        ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
+        SharableAttributesDTO attr = new SharableAttributesDTO();
+        attr.setAttributeName("name");
+        attr.setMasked(false);
+		request.setSharableAttributes(List.of(attr));
+		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/req/credential-generator").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
+    }
 }
