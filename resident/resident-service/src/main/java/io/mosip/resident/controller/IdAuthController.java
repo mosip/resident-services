@@ -58,10 +58,12 @@ public class IdAuthController {
 	public ResponseWrapper<IdAuthResponseDto> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
 			throws OtpValidationFailedException {
 		logger.debug("IdAuthController::validateOtp()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.VALIDATE_OTP);
+		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionID(),
+				"OTP Validate Request"));
 		Boolean authStatus = idAuthService.validateOtp(requestWrapper.getRequest().getTransactionID(),
 				requestWrapper.getRequest().getIndividualId(), requestWrapper.getRequest().getOtp());
-		auditUtil.setAuditRequestDto(EventEnum.VALIDATE_OTP_SUCCESS);
+		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionID(),
+				"OTP Validate Request Success"));
 		ResponseWrapper<IdAuthResponseDto> responseWrapper = new ResponseWrapper<IdAuthResponseDto>();
 		IdAuthResponseDto idAuthResponseDto = new IdAuthResponseDto();
 		idAuthResponseDto.setAuthStatus(authStatus);
