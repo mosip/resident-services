@@ -58,6 +58,25 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.authmanager.spi.ScopeValidator;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.controller.ResidentController;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -321,6 +340,26 @@ public class ResidentControllerTest {
 		Mockito.when(residentService.getAuthTxnDetails(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
 		residentController.getAuthTxnDetails(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"), LocalDateTime.parse("2022-06-10T20:04:22.956607"));
 		mockMvc.perform(MockMvcRequestBuilders.get("/authTransactions")
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetServiceHistorySuccess() throws Exception {
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"), LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(), ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
+		mockMvc.perform(MockMvcRequestBuilders.get("/getServiceHistory")
+						.contentType(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetServiceRequestUpdateSuccess() throws Exception {
+		Mockito.when(residentService.getServiceRequestUpdate(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		residentController.getServiceRequestUpdate(1, 12);
+		mockMvc.perform(MockMvcRequestBuilders.get("/get/service-request-update")
 						.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}

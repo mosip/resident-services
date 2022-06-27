@@ -305,8 +305,8 @@ public class ResidentController {
 		logger.info("getServiceRequestUpdate :: entry");
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE, "Get Service request update"));
-		List<ResidentServiceHistoryResponseDto> ResidentServiceHistoryResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
-		response.setResponse(ResidentServiceHistoryResponseDtoList);
+		List<ResidentServiceHistoryResponseDto> residentServiceHistoryResponseDtoList =  residentService.getServiceRequestUpdate(pageStart, pageFetch);
+		response.setResponse(residentServiceHistoryResponseDtoList);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_SERVICE_REQUEST_UPDATE_SUCCESS,
 				"Get Service request update"));
 		return response;
@@ -329,30 +329,19 @@ public class ResidentController {
 																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
 																@RequestParam(name = "toDateTime", required = false)
 																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResponseEntity<AutnTxnResponseDto> response = null;
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
-		try{
-			List<AutnTxnDto> AuthTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
-			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
-			authTxnMap.put("authTransactions", AuthTxn);
-			autnTxnResponseDto.setResponse(authTxnMap);
-			autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
-			response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
-		} catch (ResidentServiceCheckedException e){
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE, individualId));
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorCode(), e.getMessage());
-			audit.setAuditRequestDto(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE);
-			throw new ResidentServiceException(ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorCode(),
-					ResidentErrorCode.RESIDENT_AUTH_TXN_DETAILS_FAILURE.getErrorMessage(), e);
-		}
-
+		List<AutnTxnDto> authTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
+		Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
+		authTxnMap.put("authTransactions", authTxn);
+		autnTxnResponseDto.setResponse(authTxnMap);
+		autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+		response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
 		return response;
 	}
 

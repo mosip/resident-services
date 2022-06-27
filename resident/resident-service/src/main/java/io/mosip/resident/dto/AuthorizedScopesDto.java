@@ -43,4 +43,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> getCheckAidStatus;
 	
+	private List<String> getPartnersByPartnerType;
+	
 }
