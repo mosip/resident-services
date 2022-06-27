@@ -762,4 +762,12 @@ public class RequestValidator {
 			}
 		}
 	}
+
+	public void validateCheckAidStatusRequest(String aid) {
+		if (StringUtils.isEmpty(aid) || aid==null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "aid",
+					"Request credential request status API"));
+			throw new InvalidInputException("aid");
+		}
+	}
 }

@@ -471,6 +471,12 @@ public enum EventEnum {
 	IDA_TOKEN_NOT_FOUND("RES-SER-217", RegistrationConstants.SYSTEM, "IDA token not found",
 			"IDA token not found", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	CHECK_AID_STATUS_REQUEST("RES-SER-218", RegistrationConstants.SYSTEM, "Request credential request status",
+			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-219", RegistrationConstants.SYSTEM, "Request credential request status",
+			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	;
 
 	private final String eventId;
