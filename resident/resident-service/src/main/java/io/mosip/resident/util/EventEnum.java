@@ -477,6 +477,20 @@ public enum EventEnum {
 	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-219", RegistrationConstants.SYSTEM, "Request credential request status",
 			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	SEND_PHYSICAL_CARD("RES-SER-236", RegistrationConstants.SYSTEM, "send a physical card",
+			"send a physical card", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	SEND_PHYSICAL_CARD_SUCCESS("RES-SER-237", RegistrationConstants.SYSTEM, "send a physical card",
+			"send a physical card is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	SEND_PHYSICAL_CARD_EXCEPTION("RES-SER-238", RegistrationConstants.SYSTEM, "send a physical card",
+			"send a physical card is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	CHECK_ORDER_STATUS_EXCEPTION("RES-SER-239", RegistrationConstants.SYSTEM, "check order status",
+			"check order status is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	;
 
 	private final String eventId;
