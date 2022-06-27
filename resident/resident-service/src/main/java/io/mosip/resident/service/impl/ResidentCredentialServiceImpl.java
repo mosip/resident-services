@@ -158,6 +158,65 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	@Override
+	public ResidentCredentialResponseDto reqCredentialV2(ResidentCredentialRequestDto dto)
+			throws ResidentServiceCheckedException {
+		ResidentCredentialResponseDto residentCredentialResponseDto=new ResidentCredentialResponseDto();
+		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
+		ResponseWrapper<PartnerResponseDto> parResponseDto = new ResponseWrapper<PartnerResponseDto>();
+		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
+		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
+		URI partnerUri = URI.create(partnerUrl);
+		try {
+			if (StringUtils.isBlank(dto.getIndividualId())) {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
+			}
+
+			credentialReqestDto = prepareCredentialRequest(dto);
+			requestDto.setId("mosip.credential.request.service.id");
+			requestDto.setRequest(credentialReqestDto);
+			requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+			requestDto.setVersion("1.0");
+			parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
+			partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
+					PartnerResponseDto.class);
+			additionalAttributes.put("partnerName", partnerResponseDto.getOrganizationName());
+			additionalAttributes.put("encryptionKey", credentialReqestDto.getEncryptionKey());
+			additionalAttributes.put("credentialName", credentialReqestDto.getCredentialType());
+
+			ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
+					env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
+					ResponseWrapper.class);
+			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
+					ResidentCredentialResponseDto.class);
+			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
+
+		}
+		catch (ResidentServiceCheckedException e) {
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		catch (ApisResourceAccessException e) {
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		catch (IOException e) {
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+		return residentCredentialResponseDto;
+	}
+	
+	@Override
 	public byte[] getCard(String requestId) throws Exception {
 		// TODO Auto-generated method stub
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
@@ -256,7 +315,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		crDto.setSharableAttributes(residentCreDto.getSharableAttributes());
 		crDto.setUser(residentCreDto.getUser());
 		crDto.setIssuer(residentCreDto.getIssuer());
-		if (residentCreDto.getEncryptionKey().isEmpty()) {
+		if (residentCreDto.getEncryptionKey()==null || residentCreDto.getEncryptionKey().isEmpty()) {
 			crDto.setEncryptionKey(generatePin());
 		} else {
 			crDto.setEncryptionKey(residentCreDto.getEncryptionKey());

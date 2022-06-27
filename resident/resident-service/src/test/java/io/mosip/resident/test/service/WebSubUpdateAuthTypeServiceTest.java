@@ -7,6 +7,7 @@ import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -67,9 +68,10 @@ public class WebSubUpdateAuthTypeServiceTest {
 
 
     @Before
-    public void setup() {
+    public void setup() throws ApisResourceAccessException {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
+        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
     }
 
     @Test

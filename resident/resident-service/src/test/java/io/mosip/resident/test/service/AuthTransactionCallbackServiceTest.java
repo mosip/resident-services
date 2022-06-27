@@ -7,11 +7,9 @@ import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
-import io.mosip.resident.dto.ResidentTransactionType;
-import io.mosip.resident.entity.AutnTxn;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.AutnTxnRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.AuthTransactionCallBackServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -59,7 +57,7 @@ public class AuthTransactionCallbackServiceTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
-    private AutnTxnRepository autnTxnRepository;
+    private ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,7 +71,7 @@ public class AuthTransactionCallbackServiceTest {
     EventModel eventModel;
 
     @Before
-    public void setup() {
+    public void setup() throws ApisResourceAccessException {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(authTransactionCallBackService).build();
         eventModel=new EventModel();
@@ -88,35 +86,18 @@ public class AuthTransactionCallbackServiceTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
+        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
     }
 
     @Test
-    public void testWebSubUpdateAuthTypeService() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
+    public void testAuthTransactionCallBackService() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
         authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
         authTransactionCallBackService = mock(AuthTransactionCallBackServiceImpl.class);
         Mockito.lenient().doNothing().when(authTransactionCallBackService).updateAuthTransactionCallBackService(Mockito.any());
     }
 
     @Test
-    public void testWebSubUpdateAuthTypeServiceUpdate() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
-        AutnTxn autnTxn = new AutnTxn();
-        autnTxn.setResponseDTimes(LocalDateTime.now());
-        autnTxn.setStatusCode("NEW");
-        autnTxn.setStatusComment("NEW");
-        autnTxn.setUpdBy("RESIDENT");
-        autnTxn.setUpdDTimes(LocalDateTime.now());
-        autnTxn.setOlvPartnerId("mpartner-default-auth");
-        autnTxn.setToken("1234");
-        autnTxn.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
-
-        Mockito.when(autnTxnRepository.findById(Mockito.anyString())).thenReturn(autnTxn);
-        authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
-        authTransactionCallBackService = mock(AuthTransactionCallBackServiceImpl.class);
-        Mockito.lenient().doNothing().when(authTransactionCallBackService).updateAuthTransactionCallBackService(Mockito.any());
-    }
-
-    @Test
-    public void testWebSubUpdateAuthTypeServiceException() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
+    public void testAuthTransactionCallBackServiceException() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
         authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
         authTransactionCallBackService = mock(AuthTransactionCallBackServiceImpl.class);
         Mockito.lenient().doThrow(ResidentServiceCheckedException.class).when(authTransactionCallBackService).updateAuthTransactionCallBackService(Mockito.any());

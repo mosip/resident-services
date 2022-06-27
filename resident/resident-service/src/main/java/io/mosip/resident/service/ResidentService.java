@@ -29,10 +29,7 @@ public interface ResidentService {
 
 	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
-	List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType
-	, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException;
-
-	RegStatusCheckResponseDTO getRidStatus(String rid);
+    RegStatusCheckResponseDTO getRidStatus(String rid);
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
@@ -44,4 +41,8 @@ public interface ResidentService {
 	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch, String individualId) throws ResidentServiceCheckedException;
 
     List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType) throws ResidentServiceCheckedException;
+	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException ;
+
+	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
+
 }

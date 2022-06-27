@@ -763,11 +763,11 @@ public class RequestValidator {
 		}
 	}
 
-    public void validateIndividualId(String individualId) {
-		if (StringUtils.isEmpty(individualId) || !isNumeric(individualId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request service history API"));
-			throw new InvalidInputException("individualId");
+	public void validateCheckAidStatusRequest(String aid) {
+		if (StringUtils.isEmpty(aid) || aid==null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "aid",
+					"Request credential request status API"));
+			throw new InvalidInputException("aid");
 		}
 	}
 }
