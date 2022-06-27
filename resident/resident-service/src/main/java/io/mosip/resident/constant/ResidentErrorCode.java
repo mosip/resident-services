@@ -79,6 +79,8 @@ public enum ResidentErrorCode {
 	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
 
 	PACKET_ENCRYPTION_FAILURE_EXCEPTION("RES-SER-460", "Packet encryption failed"),
+	
+	PAYMENT_REQUIRED("RES-SER-402","Payment is not made for this card"),
 
 	;
 	private final String errorCode;
