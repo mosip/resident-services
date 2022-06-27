@@ -42,6 +42,8 @@ public class AuthorizedScopesDto {
 
 	private List<String> getPartnersByPartnerType;
 
+	private List<String> getDownloadCard;
+	
 	private List<String> postSendPhysicalCard;
 
 }

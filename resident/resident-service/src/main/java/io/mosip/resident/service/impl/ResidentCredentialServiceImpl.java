@@ -1,25 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -29,33 +10,27 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
-import io.mosip.resident.dto.CredentialReqestDto;
-import io.mosip.resident.dto.CredentialRequestStatusDto;
-import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
-import io.mosip.resident.dto.CredentialTypeResponse;
-import io.mosip.resident.dto.CryptomanagerRequestDto;
-import io.mosip.resident.dto.CryptomanagerResponseDto;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
-import io.mosip.resident.dto.PartnerResponseDto;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentCredentialRequestDto;
-import io.mosip.resident.dto.ResidentCredentialResponseDto;
-import io.mosip.resident.dto.ResponseWrapper;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentCredentialServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.*;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.*;
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
@@ -67,7 +42,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Value("${crypto.PrependThumbprint.enable:true}")
 	private boolean isPrependThumbprintEnabled;
-	
+
 	@Value("${PARTNER_REFERENCE_Id}")
 	private String partnerReferenceId;
 
@@ -87,10 +62,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private AuditUtil audit;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialServiceImpl.class);
-	
+
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
-	
+
 	@Autowired
 	Environment env;
 
@@ -98,7 +73,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	NotificationService notificationService;
 
 	private SecureRandom random;
-	
+
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
 			throws ResidentServiceCheckedException {
@@ -181,7 +156,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 		return residentCredentialResponseDto;
 	}
-	
+
 	@Override
 	public ResidentCredentialResponseDto reqCredentialV2(ResidentCredentialRequestDto dto)
 			throws ResidentServiceCheckedException {
@@ -316,12 +291,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} 
+		}
 		catch (IllegalArgumentException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
 					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
-		} 
+		}
 		catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
@@ -346,7 +321,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			crDto.setEncryptionKey(residentCreDto.getEncryptionKey());
 		}
 		return crDto;
-		
+
 	}
 
 
@@ -379,7 +354,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.INVALID_ID.getErrorCode(),
 					ResidentErrorCode.INVALID_ID.getErrorMessage(), e);
-		} 
+		}
 		catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
@@ -443,8 +418,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Could not instantiate SecureRandom for pin generation", e);
 		}
-	} 
-	
+	}
+
 	private NotificationResponseDTO trySendNotification(String id,
 			NotificationTemplateCode templateTypeCode, Map<String, Object> additionalAttributes)
 			throws ResidentServiceCheckedException {

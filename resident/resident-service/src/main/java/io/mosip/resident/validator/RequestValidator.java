@@ -763,7 +763,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateCheckAidStatusRequest(String aid) {
+	public void validateIndividualId(String aid) {
 		if (StringUtils.isEmpty(aid) || aid==null) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "aid",
 					"Request credential request status API"));
