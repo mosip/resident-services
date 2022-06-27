@@ -10,12 +10,10 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
-import io.mosip.resident.entity.AutnTxn;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.*;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
@@ -90,9 +88,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
-
-	@Autowired
-	private AutnTxnRepository autnTxnRepository;
 
 	@Autowired
 	Environment env;
@@ -1244,109 +1239,6 @@ public class ResidentServiceImpl implements ResidentService {
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
-	}
-
-	@Override
-	public List<AutnTxnDto> getAuthTxnDetails(String individualId, Integer pageStart, Integer pageFetch, String idType, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
-		try{
-
-			if(pageStart == null) {
-				if(pageFetch == null) {
-					//If both Page start and page fetch values are null return all records
-					pageStart = DEFAULT_PAGE_START;
-					pageFetch = DEFAULT_PAGE_COUNT;
-				} else {
-					pageStart = DEFAULT_PAGE_START;
-				}
-			} else {
-				if(pageFetch == null) {
-					pageFetch = DEFAULT_PAGE_COUNT;
-				}
-			}
-			if(pageStart < 0) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
-			} else if(pageFetch < 0) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
-			}
-			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
-			if (idType != null) {
-				if (idType.equalsIgnoreCase("UIN")) {
-					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-							LoggerFileConstant.APPLICATIONID.toString(),
-							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is UIN");
-					return convertAutnTxnListToAuthTxnDto(getAuthHistory(individualId, pageRequest, fromDateTime, toDateTime));
-				} else if (idType.equalsIgnoreCase("VID")) {
-					logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-							LoggerFileConstant.APPLICATIONID.toString(),
-							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is VID");
-
-					String uin = utilities.getUinByVid(individualId);
-					return convertAutnTxnListToAuthTxnDto(getAuthHistory(uin, pageRequest, fromDateTime, toDateTime));
-				} else {
-					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-							LoggerFileConstant.APPLICATIONID.toString(),
-							"ResidentServiceImpl::getAuthTxnDetails():: Individual id is invalid");
-					throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
-							ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
-				}
-			}
-		}catch (ResidentServiceCheckedException e){
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::getAuthTxnDetails():: Individual id is invalid");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
-					ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
-		} catch (ApisResourceAccessException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::getAuthTxnDetails():: ApisResourceAccessException");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		} catch (IOException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::getAuthTxnDetails():: IOException");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		}
-		return new ArrayList<>(0);
-	}
-
-	private List<AutnTxn> getAuthHistory(String individualId, PageRequest pageRequest
-			, LocalDateTime fromDateTime, LocalDateTime toDateTime) throws ResidentServiceCheckedException {
-		List<AutnTxn> autnTxnList = null;
-		List<List<AutnTxn>> autnTxnLists = new ArrayList<>();
-		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
-		for(String partnerId:partnerIds) {
-			String idaToken = identityServiceImpl.getIDAToken(individualId, partnerId);
-			if(idaToken!=null) {
-				if(fromDateTime != null && toDateTime != null) {
-					autnTxnLists.add(autnTxnRepository.findByToken(idaToken, fromDateTime, toDateTime, pageRequest));
-				} else {
-					autnTxnLists.add(autnTxnRepository.findByTokenWithoutTime(idaToken, pageRequest));
-				}
-
-			}
-		}
-		autnTxnList= autnTxnLists.stream().flatMap(List::stream).collect(Collectors.toList());
-		return autnTxnList;
-	}
-
-	private List<AutnTxnDto> convertAutnTxnListToAuthTxnDto(List<AutnTxn> autnTxnList) {
-		List<AutnTxnDto> autnTxnDtos = new ArrayList<>();
-		if(autnTxnList != null){
-			for(AutnTxn autnTxn: autnTxnList) {
-				AutnTxnDto autnTxnDto = new AutnTxnDto();
-				autnTxnDto.setAuthtypeCode(autnTxn.getAuthTypeCode());
-				autnTxnDto.setEntityName(autnTxn.getEntityName());
-				autnTxnDto.setRequestdatetime(autnTxn.getRequestDTtimes());
-				autnTxnDto.setStatusCode(autnTxn.getStatusCode());
-				autnTxnDto.setTransactionID(autnTxn.getAuthTknId());
-				autnTxnDto.setStatusComment(autnTxn.getStatusComment());
-				autnTxnDtos.add(autnTxnDto);
-			}
-		}
-		return autnTxnDtos;
 	}
 
 	@Override

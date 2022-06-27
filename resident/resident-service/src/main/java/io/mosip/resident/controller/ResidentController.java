@@ -312,45 +312,6 @@ public class ResidentController {
 		return response;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getGetAuthTransactions()"
-		+ ")")
-	@GetMapping(path="/authTransactions")
-	@Operation(summary = "getAuthTransactionsByIndividualId", description = "getAuthTransactionsByIndividualId", tags = { "resident-controller" })
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<AutnTxnResponseDto> getAuthTxnDetails(@RequestParam(name = "pageStart", required = false) Integer pageStart,
-																@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-																@RequestParam(name = "fromDateTime", required = false)
-																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-																@RequestParam(name = "toDateTime", required = false)
-																	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime)
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResponseEntity<AutnTxnResponseDto> response = null;
-		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
-		String individualId = null;
-		try {
-			individualId = identityServiceImpl.getResidentIndvidualId();
-			validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
-			List<AutnTxnDto> authTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
-			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
-			authTxnMap.put("authTransactions", authTxn);
-			autnTxnResponseDto.setResponse(authTxnMap);
-			autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
-			response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
-		} catch (ApisResourceAccessException | ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE, individualId == null ? "UNKNOWN" : individualId));
-			throw e;
-		}
-		return response;
-	}
-
 	@Deprecated
 	@ResponseFilter
 	@PostMapping(value = "/req/update-uin")

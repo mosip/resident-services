@@ -8,7 +8,6 @@ import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.AutnTxnRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -55,9 +54,6 @@ public class PartnerServiceImplTest {
 
     @Mock
     private IdentityServiceImpl identityServiceImpl;
-
-    @Mock
-    private AutnTxnRepository autnTxnRepository;
 
     @Autowired
     private MockMvc mockMvc;

@@ -21,9 +21,7 @@ public class AuthorizedScopesDto {
 	private List<String> postgeneratevid;
 
 	private List<String> getvids;
-
-	private List<String> getAuthTransactions;
-
+	
 	private List<String> postAuthTypeStatus;
 
 	private List<String> postAuthTypeUnlock;
