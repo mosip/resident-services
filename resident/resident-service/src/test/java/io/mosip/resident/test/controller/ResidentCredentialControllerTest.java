@@ -33,6 +33,7 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.resident.controller.ResidentCredentialController;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
@@ -186,7 +187,9 @@ public class ResidentCredentialControllerTest {
         attr.setAttributeName("name");
         attr.setMasked(false);
 		request.setSharableAttributes(List.of(attr));
+		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
         mockMvc.perform(MockMvcRequestBuilders.post("/req/credential-generator").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(gson.toJson(request).getBytes())).andExpect(status().isOk());
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
 }

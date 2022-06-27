@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
@@ -86,9 +88,12 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> requestCredentialV2(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException {
+		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
+		requestDTO.getRequest().setSharableAttributes(null);
 		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
 				});
+		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
 		buildAdditionalMetadata(requestDTO, request);
 		return this.reqCredential(request);
 	}
