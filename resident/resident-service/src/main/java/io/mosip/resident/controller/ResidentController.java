@@ -196,7 +196,7 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type status API"));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"update auth Type status API"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
@@ -333,15 +333,21 @@ public class ResidentController {
 		ResponseEntity<AutnTxnResponseDto> response = null;
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getAuthTxnDetails"));
-		String individualId = identityServiceImpl.getResidentIndvidualId();
-		validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
-		List<AutnTxnDto> authTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
-		Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
-		authTxnMap.put("authTransactions", authTxn);
-		autnTxnResponseDto.setResponse(authTxnMap);
-		autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
-		response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
+		String individualId = null;
+		try {
+			individualId = identityServiceImpl.getResidentIndvidualId();
+			validator.validateAuthTxnDetailsRequest(individualId, pageStart, pageFetch);
+			List<AutnTxnDto> authTxn = residentService.getAuthTxnDetails(individualId, pageStart, pageFetch, getIdType(individualId), fromDateTime, toDateTime);
+			Map<String, List<AutnTxnDto>> authTxnMap = new HashMap<>();
+			authTxnMap.put("authTransactions", authTxn);
+			autnTxnResponseDto.setResponse(authTxnMap);
+			autnTxnResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+			response = new ResponseEntity<>(autnTxnResponseDto, HttpStatus.OK);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS, individualId));
+		} catch (ApisResourceAccessException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TXN_DETAILS_FAILURE, individualId == null ? "UNKNOWN" : individualId));
+			throw e;
+		}
 		return response;
 	}
 
@@ -391,7 +397,7 @@ public class ResidentController {
 	public ResponseWrapper<ResidentUpdateResponseDTO> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update Uin API"));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
