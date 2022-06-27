@@ -88,7 +88,7 @@ public class ProxyPartnerManagementControllerTest {
 	@Test
 	public void testGetPartnersByPartnerType() throws Exception {
 		Mockito.when(proxyPartnerManagementService.getPartnersByPartnerType(Mockito.any())).thenReturn(responseWrapper);
-		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/partners?partnerType=")).andExpect(status().isOk());
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/partners?partnerType=")).andExpect(status().isOk());
 	}
 
 }

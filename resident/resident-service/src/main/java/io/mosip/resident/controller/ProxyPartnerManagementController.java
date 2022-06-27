@@ -30,7 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Ritik Jain
  */
 @RestController
-@RequestMapping("/proxy/partners")
+@RequestMapping("/auth-proxy/partners")
 @Tag(name = "proxy-partner-management-controller", description = "Proxy Partner Management Controller")
 public class ProxyPartnerManagementController {
 
