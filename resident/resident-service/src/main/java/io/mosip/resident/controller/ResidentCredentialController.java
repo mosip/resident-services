@@ -88,10 +88,7 @@ public class ResidentCredentialController {
 		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
 				});
-		request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()
-				.map(attr -> attr.getAttributeName()).collect(Collectors.toList()));
-		request.getRequest()
-				.setAdditionalData(Map.of("customizedFormats", requestDTO.getRequest().getSharableAttributes()));
+		buildAdditionalMetadata(requestDTO, request);
 		return this.reqCredential(request);
 	}
 	
@@ -176,6 +173,17 @@ public class ResidentCredentialController {
 				.getPolicyByCredentialType(partnerId, credentialType);
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	private void buildAdditionalMetadata(RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO,
+			RequestWrapper<ResidentCredentialRequestDto> request) {
+		request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()
+				.map(attr -> attr.getAttributeName()).collect(Collectors.toList()));
+		request.getRequest()
+				.setAdditionalData(Map.of("formatingAttributes", requestDTO.getRequest().getSharableAttributes(),
+						"maskingAttributes",
+						requestDTO.getRequest().getSharableAttributes().stream().filter(attr -> attr.isMasked())
+								.map(attr -> attr.getAttributeName()).collect(Collectors.toList())));
 	}
 	
 }
