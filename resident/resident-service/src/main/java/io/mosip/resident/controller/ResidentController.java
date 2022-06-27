@@ -196,7 +196,7 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"request auth Type status API"));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST,"update auth Type status API"));
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
@@ -226,6 +226,34 @@ public class ResidentController {
 		response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
+		return response;
+	}
+
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetCredentialRequestStatus()"
+			+ ")")
+	@GetMapping(path="/check-status/aid/{AID}")
+	@Operation(summary = "getGetCheckAidStatus", description = "checkAidStatus", tags = { "resident-controller" })
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<ResponseDTO> checkAidStatus(
+			@PathVariable(name = "AID") String AID) throws ResidentServiceCheckedException {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
+		logger.debug("checkAidStatus controller entry");
+		validator.validateCheckAidStatusRequest(AID);
+		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST,
+				AID));
+		ResponseDTO responseDTO = new ResponseDTO();
+		responseDTO.setStatus(residentService.checkAidStatus(AID));
+		responseDTO.setMessage("Credential Request Status got Successfully");
+		response.setResponse(responseDTO);
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS,
+				AID));
 		return response;
 	}
 
@@ -330,7 +358,7 @@ public class ResidentController {
 	public ResponseWrapper<ResidentUpdateResponseDTO> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update Uin API"));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});

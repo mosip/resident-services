@@ -1243,10 +1243,18 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
+		return getAidStatus(reqDto, true);
+	}
+
+	@Override
+	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		try {
 			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getAid());
-			boolean otpValid = idAuthServiceImpl.validateOtp(reqDto.getTransactionID(), individualId, reqDto.getOtp());
-			if(otpValid) {
+			boolean validStatus = individualId != null;
+			if(performOtpValidation){
+				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionID(), individualId, reqDto.getOtp());
+			}
+			if(validStatus) {
 				AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
 				aidStatusResponseDTO.setIndividualId(individualId);
 				aidStatusResponseDTO.setAidStatus(PROCESSED);
@@ -1262,6 +1270,29 @@ public class ResidentServiceImpl implements ResidentService {
 			AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
 			aidStatusResponseDTO.setAidStatus(ridStatus.getRidStatus());
 			return aidStatusResponseDTO;
+		}
+	}
+
+	@Override
+	public String checkAidStatus(String aid) throws ResidentServiceCheckedException {
+
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::checkAidStatus()::Start");
+		try{
+			String uin = identityServiceImpl.getUinForIndividualId(aid);
+			if(uin == null){
+				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
+			}
+			AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+			aidStatusRequestDTO.setAid(aid);
+			AidStatusResponseDTO aidStatusResponseDTO = getAidStatus(aidStatusRequestDTO, false);
+			return aidStatusResponseDTO.getAidStatus();
+		} catch (ApisResourceAccessException | OtpValidationFailedException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::checkAidStatus():: ApisResourceAccessException");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
 
