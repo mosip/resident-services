@@ -220,13 +220,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
 
 		}
-//		catch (ResidentServiceCheckedException e) {
-//
-//			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-//			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-//			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-//					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-//		}
+		catch (ResidentServiceCheckedException e) {
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
 		catch (ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);

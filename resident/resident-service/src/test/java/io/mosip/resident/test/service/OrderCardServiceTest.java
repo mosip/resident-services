@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -17,7 +16,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
@@ -85,49 +83,12 @@ public class OrderCardServiceTest {
 
 	@Test
 	public void testSendPhysicalCardIf() throws Exception {
-		responseWrapper = null;
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				any(), any())).thenReturn(responseWrapper);
 		when(residentCredentialService.reqCredentialV2(any())).thenReturn(residentCredentialResponseDto);
 
 		ResidentCredentialResponseDto result = orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 		assertEquals("effc56cd-cf3b-4042-ad48-7277cf90f763", result.getRequestId());
-	}
-
-	@Test
-	public void testSendPhysicalCardIfErrorsNull() throws Exception {
-		responseWrapper.setErrors(null);
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
-				any(), any())).thenReturn(responseWrapper);
-		when(residentCredentialService.reqCredentialV2(any())).thenReturn(residentCredentialResponseDto);
-
-		ResidentCredentialResponseDto result = orderCardService.sendPhysicalCard(residentCredentialRequestDto);
-		assertEquals("effc56cd-cf3b-4042-ad48-7277cf90f763", result.getRequestId());
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testCheckOrderStatusNestedIf() throws Exception {
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
-				any(), any())).thenReturn(responseWrapper);
-		ServiceError error = new ServiceError();
-		error.setErrorCode("101");
-		error.setMessage("errors");
-
-		List<ServiceError> errorList = new ArrayList<ServiceError>();
-		errorList.add(error);
-
-		responseWrapper.setErrors(errorList);
-		orderCardService.sendPhysicalCard(residentCredentialRequestDto);
-	}
-
-	@Test
-	public void testCheckOrderStatusIfErrorsNull() throws Exception {
-		List<ServiceError> errorList = new ArrayList<ServiceError>();
-		responseWrapper.setErrors(errorList);
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
-				any(), any())).thenReturn(responseWrapper);
-
-		orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)

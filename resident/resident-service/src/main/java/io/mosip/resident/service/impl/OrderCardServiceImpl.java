@@ -3,12 +3,10 @@ package io.mosip.resident.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -79,8 +77,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 					ApiName.GET_ORDER_STATUS_URL, pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
 
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS_EXCEPTION);
 			logger.error("Error occured in checking order status %s", e.getMessage());
+			auditUtil.setAuditRequestDto(EventEnum.CHECK_ORDER_STATUS_EXCEPTION);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
 					ResidentErrorCode.PAYMENT_REQUIRED.getErrorMessage());
 		}

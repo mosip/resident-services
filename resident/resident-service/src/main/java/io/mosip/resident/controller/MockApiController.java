@@ -1,6 +1,5 @@
 package io.mosip.resident.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,9 +26,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @Tag(name = "mock-api-controller", description = "Mock API Controller")
 public class MockApiController {
-
-	@Autowired
-	private AuditUtil auditUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(MockApiController.class);
 
@@ -53,13 +47,11 @@ public class MockApiController {
 	public ResponseEntity<?> getOrderStatus(@RequestParam("transactionId") String transactionId,
 			@RequestParam("individualId") String individualId) {
 		logger.debug("MockApiController::getOrderStatus()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS);
 		if (Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) >= 6
 				&& Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) <= 9) {
 			logger.debug("payment is required for this id");
 			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_ORDER_STATUS_SUCCESS);
 		logger.debug("MockApiController::getOrderStatus()::exit");
 		return ResponseEntity.ok().build();
 	}

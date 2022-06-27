@@ -460,25 +460,19 @@ public enum EventEnum {
 			"Requesting auth type lock is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	SEND_PHYSICAL_CARD("RES-SER-187", RegistrationConstants.SYSTEM, "send a physical card",
+	SEND_PHYSICAL_CARD("RES-SER-236", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	SEND_PHYSICAL_CARD_SUCCESS("RES-SER-188", RegistrationConstants.SYSTEM, "send a physical card",
+	SEND_PHYSICAL_CARD_SUCCESS("RES-SER-237", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	SEND_PHYSICAL_CARD_EXCEPTION("RES-SER-189", RegistrationConstants.SYSTEM, "send a physical card",
+	SEND_PHYSICAL_CARD_EXCEPTION("RES-SER-238", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	CHECK_ORDER_STATUS_EXCEPTION("RES-SER-239", RegistrationConstants.SYSTEM, "check order status",
+			"check order status is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	GET_ORDER_STATUS("RES-SER-190", RegistrationConstants.SYSTEM, "get order status",
-			"get order status", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	GET_ORDER_STATUS_SUCCESS("RES-SER-191", RegistrationConstants.SYSTEM, "get order status",
-			"get order status is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	GET_ORDER_STATUS_EXCEPTION("RES-SER-192", RegistrationConstants.SYSTEM, "get order status",
-			"get order status is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	;
 
