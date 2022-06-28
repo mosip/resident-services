@@ -67,8 +67,7 @@ public enum ResidentErrorCode {
 	BIOMETRIC_MISSING("RES-SER-450", "Biometric data is not available in database"),
 	EMPTY_COLLECTION_FOUND("RES-SER-451","Collection is empty"),
 
-	AUTH_TYPE_LOCK_FAILURE("RES-SER-452", "Provided individualId does not belong to the logged in session."),
-
+	IDVID_NOT_MATCH_TO_SESSION("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
 	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),

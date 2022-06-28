@@ -793,8 +793,8 @@ public class ResidentServiceImpl implements ResidentService {
 			if(residentToken!=null && idaToken!=null){
 				if (!residentToken.equalsIgnoreCase(idaToken)) {
 					throw new ResidentServiceCheckedException(
-							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorCode(),
-							ResidentErrorCode.AUTH_TYPE_LOCK_FAILURE.getErrorMessage());
+							ResidentErrorCode.IDVID_NOT_MATCH_TO_SESSION.getErrorCode(),
+							ResidentErrorCode.IDVID_NOT_MATCH_TO_SESSION.getErrorMessage());
 				}
 			}
 
