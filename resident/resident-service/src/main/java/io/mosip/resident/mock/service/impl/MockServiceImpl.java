@@ -20,7 +20,7 @@ import java.net.URLConnection;
 @Service
 public class MockServiceImpl implements MockService {
 
-    @Value("${mosip.resident.service.pdf.url}")
+    @Value("${mosip.resident.service.mock.pdf.url}")
     private String residentServicePdfUrl;
 
     @Autowired
