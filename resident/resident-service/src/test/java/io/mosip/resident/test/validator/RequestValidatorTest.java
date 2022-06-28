@@ -1073,6 +1073,15 @@ public class RequestValidatorTest {
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
 	}
 
+	@Test
+	public void testValidateServiceHistoryRequestDateCheck() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "ASC";
+		String serviceType = "DATA_SHARE_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
 	@Test(expected = InvalidInputException.class)
 	public void testValidateIndividualId() throws Exception{
 		String individualId = "";
