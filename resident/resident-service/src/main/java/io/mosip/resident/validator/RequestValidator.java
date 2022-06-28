@@ -206,15 +206,10 @@ public class RequestValidator {
 		String[] authTypesArray = authTypes.split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (AuthTypeStatusDto authTypeStatusDto : authType) {
-			if (StringUtils.isEmpty(authTypeStatusDto.getAuthType())) {
+			if (StringUtils.isEmpty(authTypeStatusDto.getAuthType()) || !authTypesAllowed.contains(authTypeStatusDto.getAuthType())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType",
 						"Request to generate VID"));
 				throw new InvalidInputException("authType");
-			}
-			if (authTypeStatusDto.getUnlockForSeconds() == null) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
-						"Request to generate VID"));
-				throw new InvalidInputException("unlockForSeconds");
 			}
 			if(!isLong(authTypeStatusDto.getUnlockForSeconds())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
@@ -684,22 +679,13 @@ public class RequestValidator {
 		}
 	}
 
-    public void validateAuthTxnDetailsRequest(String individualId, Integer pageStart, Integer pageFetch) {
-		if (StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request auth txn details API"));
-			throw new InvalidInputException("individualId");
-		}
-    }
-
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		
 		if(reqDto.getRequest() == null) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "request");
+			throw new InvalidInputException("request");
 		}
-		
 		if(reqDto.getRequest().getAid() == null) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "request/aid");
+			throw new InvalidInputException("aid");
 		}
 		
 	}
@@ -718,12 +704,12 @@ public class RequestValidator {
 		}
     }
 
-    public void validateServiceHistoryRequest(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType) {
+    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType) {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
-		if(fromDateTime != null) {
-			isValidDate(fromDateTime);
-			isValidDate(toDateTime);
+		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
+			throw new InvalidInputException("DateTime");
 		}
 	}
 
