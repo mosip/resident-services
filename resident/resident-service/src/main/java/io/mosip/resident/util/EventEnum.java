@@ -13,78 +13,91 @@ public enum EventEnum {
 	RID_STATUS_SUCCESS("RES-SER-200", RegistrationConstants.SYSTEM, "Checking RID status",
 			"Request for checking RID status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_EUIN("RES-SER-102", RegistrationConstants.SYSTEM, "Request EUIN", "Requesting euin for transaction id %s",
 			"RES-SER", "Residence service", "%s", "Transaction id", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	REQ_EUIN_SUCCESS("RES-SER-210", RegistrationConstants.SYSTEM, "Request EUIN",
 			"Requesting euin for transaction id %s is success", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_PRINTUIN("RES-SER-103", RegistrationConstants.SYSTEM, "Request to print UIN",
 			"Requesting print uin for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_PRINTUIN_SUCCESS("RES-SER-201", RegistrationConstants.SYSTEM, "Request to print UIN",
 			"Requesting print uin api for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_AUTH_LOCK("RES-SER-104", RegistrationConstants.SYSTEM, "Request auth lock",
 			"Requesting auth lock for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_AUTH_LOCK_SUCCESS("RES-SER-202", RegistrationConstants.SYSTEM, "Request auth lock success",
 			"Requesting auth lock api for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_AUTH_UNLOCK("RES-SER-105", RegistrationConstants.SYSTEM, "Request auth unlock",
 			"Requesting auth unlock for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_AUTH_UNLOCK_SUCCESS("RES-SER-203", RegistrationConstants.SYSTEM, "Request auth unlock",
 			"Requesting auth unlock api for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_AUTH_HISTORY("RES-SER-106", RegistrationConstants.SYSTEM, "Request auth history",
 			"Requesting auth history for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_AUTH_HISTORY_SUCCESS("RES-SER-204", RegistrationConstants.SYSTEM, "Request auth history",
 			"Requesting auth history api for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	UPDATE_UIN("RES-SER-107", RegistrationConstants.SYSTEM, "Request update uin",
 			"Requesting update uin  api for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	UPDATE_UIN_SUCCESS("RES-SER-205", RegistrationConstants.SYSTEM, "Request update uin success",
 			"Requesting update uin api for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GENERATE_VID("RES-SER-108", RegistrationConstants.SYSTEM, "Request for generating VID",
 			"Request for generating VID for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GENERATE_VID_SUCCESS("RES-SER-206", RegistrationConstants.SYSTEM, "Request for generating VID success",
 			"Request for generating VID for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REVOKE_VID("RES-SER-109", RegistrationConstants.SYSTEM, "Request for revoking VID",
 			"Request for revoking VID for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REVOKE_VID_SUCCESS("RES-SER-207", RegistrationConstants.SYSTEM, "Request for revoking VID success",
 			"Request for revoking VID for transaction id %s is success", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	VALIDATE_REQUEST("RES-SER-110", RegistrationConstants.SYSTEM, "Validating input request",
 			"Validating input request of %s", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	SEND_NOTIFICATION_SUCCESS("RES-SER-208", RegistrationConstants.SYSTEM, "%s",
 			"Sending notification for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	VALIDATE_OTP("RES-SER-113", RegistrationConstants.SYSTEM, "%s", "Validate OTP for %s", "RES-SER",
 			"Residence service", "%s", "Transaction id", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	VALIDATE_OTP_SUCCESS("RES-SER-209", RegistrationConstants.SYSTEM, "%s",
 			"Validating OTP for transaction id %s is success", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GETTING_RID_STATUS("RES-SER-116", RegistrationConstants.SYSTEM, "Checking RID status",
 			"Getting RID status based on individual id", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	SEND_NOTIFICATION_FAILURE("RES-SER-403", RegistrationConstants.SYSTEM, "%s",
 			"Failure notification sent for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	OBTAINED_RID("RES-SER-114", RegistrationConstants.SYSTEM, "Request print UIN",
 			"Obtained RID for transaction id %s while requesting for printing UIN", "RES-SER", "Residence service",
 			"%s", "Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	OBTAINED_RID_UIN_UPDATE("RES-SER-115", RegistrationConstants.SYSTEM, "Request UIN Update",
 			"Obtained RID for transaction id %s while requesting for update UIN", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	VID_GENERATED("RES-SER-117", RegistrationConstants.SYSTEM, "Request to generate VID",
 			"VID generated for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -160,6 +173,7 @@ public enum EventEnum {
 	UNKNOWN_EXCEPTION("RES-SER-423", RegistrationConstants.SYSTEM, "Request to create packet",
 			"Unknown exception occured", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	PACKET_CREATED("RES-SER-119", RegistrationConstants.SYSTEM, "Request to upload UIN packet", "Uploading UIN packet",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
@@ -172,6 +186,7 @@ public enum EventEnum {
 	PACKET_SYNC("RES-SER-120", RegistrationConstants.SYSTEM, "Request to upload UIN packet", "Sync packet", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
+	
 	OTP_GEN("RES-SER-121", RegistrationConstants.SYSTEM, "generating otp", "Request for generating otp", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
@@ -181,6 +196,7 @@ public enum EventEnum {
 	OTP_GEN_EXCEPTION("RES-SER-123", RegistrationConstants.SYSTEM, "generating otp", "otp generation is failed",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
+	
 	CREDENTIAL_REQ("RES-SER-124", RegistrationConstants.SYSTEM, "credential request", "credential request", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
@@ -190,6 +206,7 @@ public enum EventEnum {
 	CREDENTIAL_REQ_EXCEPTION("RES-SER-126", RegistrationConstants.SYSTEM, "credential request",
 			"credential request failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	CREDENTIAL_REQ_STATUS("RES-SER-127", RegistrationConstants.SYSTEM, "credential status",
 			"request for credential status", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -199,6 +216,7 @@ public enum EventEnum {
 	CREDENTIAL_REQ_STATUS_EXCEPTION("RES-SER-129", RegistrationConstants.SYSTEM, "credential status",
 			"credential req status is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	CREDENTIAL_CANCEL_REQ("RES-SER-130", RegistrationConstants.SYSTEM, "credential cancel request",
 			"credential cancel request", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -208,6 +226,7 @@ public enum EventEnum {
 	CREDENTIAL_CANCEL_REQ_EXCEPTION("RES-SER-132", RegistrationConstants.SYSTEM, "credential cancel request",
 			"credential cancel request failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	CREDENTIAL_TYPES("RES-SER-133", RegistrationConstants.SYSTEM, "credential types", "credential types", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
@@ -217,6 +236,7 @@ public enum EventEnum {
 	CREDENTIAL_TYPES_EXCEPTION("RES-SER-135", RegistrationConstants.SYSTEM, "credential request",
 			"fetch credential types failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_CARD("RES-SER-136", RegistrationConstants.SYSTEM, "request for card", "request for card", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
@@ -226,6 +246,7 @@ public enum EventEnum {
 	REQ_CARD_EXCEPTION("RES-SER-138", RegistrationConstants.SYSTEM, "request for card", "request for card is failed",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_POLICY("RES-SER-139", RegistrationConstants.SYSTEM, "request for policy", "request for policy", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
@@ -235,9 +256,11 @@ public enum EventEnum {
 	REQ_POLICY_EXCEPTION("RES-SER-141", RegistrationConstants.SYSTEM, "request for policy",
 			"request for policy is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	VALIDATION_FAILED_EXCEPTION("RES-SER-142", RegistrationConstants.SYSTEM, "Validation failed",
 			"Validation failed : %s", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_VALID_DOCUMENT("RES-SER-143", RegistrationConstants.SYSTEM, "get valid documents",
 			"get valid documents by lang code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -247,6 +270,7 @@ public enum EventEnum {
 	GET_VALID_DOCUMENT_EXCEPTION("RES-SER-145", RegistrationConstants.SYSTEM, "get valid documents",
 			"get valid documents by lang code is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_LOCATION_HIERARCHY_LEVEL("RES-SER-146", RegistrationConstants.SYSTEM, "get location hierarchy levels",
 			"get location hierarchy level by lang code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -256,6 +280,7 @@ public enum EventEnum {
 	GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION("RES-SER-148", RegistrationConstants.SYSTEM, "get location hierarchy levels",
 			"get location hierarchy level by lang code is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_IMMEDIATE_CHILDREN("RES-SER-149", RegistrationConstants.SYSTEM, "get immediate children",
 			"get immediate children by location code and lang code", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -265,6 +290,7 @@ public enum EventEnum {
 	GET_IMMEDIATE_CHILDREN_EXCEPTION("RES-SER-151", RegistrationConstants.SYSTEM, "get immediate children",
 			"get immediate children by location code and lang code is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_LOCATION_DETAILS("RES-SER-152", RegistrationConstants.SYSTEM, "get location details",
 			"get location details by location code and lang code", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -274,6 +300,7 @@ public enum EventEnum {
 	GET_LOCATION_DETAILS_EXCEPTION("RES-SER-154", RegistrationConstants.SYSTEM, "get location details",
 			"get location details by location code and lang code is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_COORDINATE_SPECIFIC_REG_CENTERS("RES-SER-155", RegistrationConstants.SYSTEM,
 			"get coordinate specific registration centers", "get coordinate specific registration centers", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
@@ -286,6 +313,7 @@ public enum EventEnum {
 			"get coordinate specific registration centers", "get coordinate specific registration centers is failed",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
+	
 	GET_APPLICANT_VALID_DOCUMENT("RES-SER-158", RegistrationConstants.SYSTEM, "get applicant valid documents",
 			"get applicant valid documents", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -295,6 +323,7 @@ public enum EventEnum {
 	GET_APPLICANT_VALID_DOCUMENT_EXCEPTION("RES-SER-160", RegistrationConstants.SYSTEM, "get applicant valid documents",
 			"get applicant valid documents is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_REG_CENTERS_FOR_LOCATION_CODE("RES-SER-161", RegistrationConstants.SYSTEM,
 			"get registration centers for location code", "get registration centers for location code", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
@@ -307,6 +336,7 @@ public enum EventEnum {
 			"get registration centers for location code", "get registration centers for location code is failed",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
+	
 	GET_REG_CENTERS_PAGINATED("RES-SER-164", RegistrationConstants.SYSTEM, "get registration centers paginated",
 			"get registration centers paginated", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -325,7 +355,6 @@ public enum EventEnum {
 			"get resident configuration properties success", "get resident configuration properties is succeeded", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-
 	GET_CONFIGURATION_PROPERTIES_EXCEPTION("RES-SER-169", RegistrationConstants.SYSTEM,
 			"get resident configuration properties failure", "get resident configuration properties is failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
@@ -352,6 +381,7 @@ public enum EventEnum {
 	GET_LATEST_ID_SCHEMA_EXCEPTION("RES-SER-175", RegistrationConstants.SYSTEM, "get latest id schema failure",
 			"get latest id schema is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	UPLOAD_DOCUMENT("RES-SER-176", RegistrationConstants.SYSTEM, "Request document upload",
 			"Requesting document upload api for transaction id %s", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -361,6 +391,7 @@ public enum EventEnum {
 	UPLOAD_DOCUMENT_FAILED("RES-SER-178", RegistrationConstants.SYSTEM, "Document upload failed",
 			"document upload failed for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	GET_DOCUMENTS_METADATA("RES-SER-179", RegistrationConstants.SYSTEM, "Request get documents",
 			"Requesting get documents api for transaction id %s", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -390,6 +421,7 @@ public enum EventEnum {
 	AUTH_TYPE_CALL_BACK_FAILURE("RES-SER-184", RegistrationConstants.SYSTEM, "Auth type call back failure",
 			"auth type call back failure for transaction id %s", "RES-SER", "Residence service", "%s", "Transaction id",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	UPDATE_AUTH_TYPE_STATUS("RES-SER-185", RegistrationConstants.SYSTEM, "Request update auth type status",
 			"Requesting update auth type status for transaction id %s", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -403,13 +435,13 @@ public enum EventEnum {
 	GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION("RES-SER-188", RegistrationConstants.SYSTEM, "get partners by partner type failure",
 			"get partners by partner type is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	REQ_AUTH_TXN_DETAILS("RES-SER-189", RegistrationConstants.SYSTEM, "Request auth transaction details",
 			"Requesting auth transaction details for individual id %s", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_AUTH_TXN_DETAILS_FAILURE("RES-SER-190", RegistrationConstants.SYSTEM, "Request auth transaction details failure",
 			"Requesting auth transaction details for individual id %s failed", "RES-SER", "Residence service", "%s",
 			"Transaction id", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-
 
 	GET_VIDS("RES-SER-191", RegistrationConstants.SYSTEM, "get vids",
 			"get vids", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
@@ -418,7 +450,6 @@ public enum EventEnum {
 			"get vids success", "get vids is succeeded", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-
 	GET_VIDS_EXCEPTION("RES-SER-193", RegistrationConstants.SYSTEM,
 			"get vids failure", "get vids is failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
@@ -441,7 +472,6 @@ public enum EventEnum {
 			"get identity attributes success", "get identity attributes is succeeded", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-
 	GET_INPUT_ATTRIBUTES_EXCEPTION("RES-SER-199", RegistrationConstants.SYSTEM,
 			"get identity attributes failure", "get identity attributes has failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
@@ -509,29 +539,31 @@ public enum EventEnum {
 			"get identity mapping json success", "get identity mapping json is succeeded", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-
 	GET_IDMAPPING_EXCEPTION("RES-SER-229", RegistrationConstants.SYSTEM,
 			"get identity mapping json failure", "get identity mapping json is failed", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	
-	RID_DIGITAL_CARD_REQ("RES-SER-218", RegistrationConstants.SYSTEM, "RID digital card request",
+	RID_DIGITAL_CARD_REQ("RES-SER-230", RegistrationConstants.SYSTEM, "RID digital card request",
 			"Request for downloading digital card based on RID", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-219", RegistrationConstants.SYSTEM, "RID digital card request",
+	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "RID digital card request",
 			"Downloading digital card based on RID success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-220", RegistrationConstants.SYSTEM, "RID digital card request",
+	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-232", RegistrationConstants.SYSTEM, "RID digital card request",
 			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	CHECK_AID_STATUS_REQUEST("RES-SER-239", RegistrationConstants.SYSTEM, "Request Application status",
+	CHECK_AID_STATUS_REQUEST("RES-SER-233", RegistrationConstants.SYSTEM, "Request Application status",
 			"Requesting application status", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-240", RegistrationConstants.SYSTEM, "Request credential request status success",
+	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-234", RegistrationConstants.SYSTEM, "Request credential request status success",
 			"Requesting credential request status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
+	CHECK_ORDER_STATUS_EXCEPTION("RES-SER-235", RegistrationConstants.SYSTEM, "check order status",
+			"check order status is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	SEND_PHYSICAL_CARD("RES-SER-236", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
@@ -541,9 +573,7 @@ public enum EventEnum {
 	SEND_PHYSICAL_CARD_EXCEPTION("RES-SER-238", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	CHECK_ORDER_STATUS_EXCEPTION("RES-SER-239", RegistrationConstants.SYSTEM, "check order status",
-			"check order status is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	
 	;
 
