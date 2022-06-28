@@ -1073,4 +1073,9 @@ public class RequestValidatorTest {
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateIndividualId() throws Exception{
+		String individualId = "";
+		requestValidator.validateIndividualId(individualId);
+	}
 }
