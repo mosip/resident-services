@@ -273,7 +273,7 @@ public class ResidentController {
 																	@RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType);
-		validator.validateServiceHistoryRequest(pageStart, pageFetch, fromDateTime, toDateTime, sortType, serviceType);
+		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
 				"getServiceHistory"));
 		ServiceTypeResponseDto serviceTypeResponseDto = new ServiceTypeResponseDto();

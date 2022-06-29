@@ -1,13 +1,17 @@
 package io.mosip.resident.test.validator;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import io.mosip.kernel.core.idvalidator.spi.RidValidator;
+import io.mosip.kernel.core.idvalidator.spi.UinValidator;
+import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,25 +21,14 @@ import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import io.mosip.kernel.core.idvalidator.spi.RidValidator;
-import io.mosip.kernel.core.idvalidator.spi.UinValidator;
-import io.mosip.kernel.core.idvalidator.spi.VidValidator;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.RequestIdType;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.RequestValidator;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -897,4 +890,201 @@ public class RequestValidatorTest {
 		requestValidator.validateAuthUnlockRequest(requestWrapper1, AuthTypeStatus.LOCK);
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2BadRequest() throws Exception{
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(null);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2InvalidIndividualId() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId(null);
+		authLockOrUnLockRequestDtoV2.setAuthType(null);
+		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(10L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthType(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2InvalidIndividualIdBadIdType() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2InvalidAuthType() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
+		authLockOrUnLockRequestDtoV2.setAuthType(null);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2BadAuthType() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
+		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("dummy");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(10L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthType(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2NullUnlockForSeconds() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
+		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(null);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthType(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2BadUnlockForSeconds2() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
+		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(-10L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthType(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAidStatusRequestDto() throws Exception{
+		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+		aidStatusRequestDTO.setAid("12344567");
+		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.aidstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(null);
+		requestValidator.validateAidStatusRequestDto(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAidStatusRequestDtoAidNull() throws Exception{
+		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+		aidStatusRequestDTO.setAid(null);
+		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.aidstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(aidStatusRequestDTO);
+		requestValidator.validateAidStatusRequestDto(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateChannelVerificationStatus() throws Exception{
+		String channel ="";
+		String individualId ="";
+		requestValidator.validateChannelVerificationStatus(channel, individualId);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateChannelVerificationStatusNullChannel() throws Exception{
+		String channel ="BadChannel";
+		String individualId ="";
+		requestValidator.validateChannelVerificationStatus(channel, individualId);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateChannelVerificationStatusNullIndividualId() throws Exception{
+		String channel ="PHONE";
+		requestValidator.validateChannelVerificationStatus(channel, null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateServiceHistoryRequest() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "";
+		String serviceType = "";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateServiceHistoryRequestBadServiceType() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "";
+		String serviceType = "BadServiceType";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateServiceHistoryRequestBadSortType() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "BadSortType";
+		String serviceType = "DATA_SHARE_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test
+	public void testValidateServiceHistoryRequestDateCheck() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "ASC";
+		String serviceType = "DATA_SHARE_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateIndividualId() throws Exception{
+		String individualId = "";
+		requestValidator.validateIndividualId(individualId);
+	}
 }
