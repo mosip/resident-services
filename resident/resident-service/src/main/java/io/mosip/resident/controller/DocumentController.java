@@ -153,7 +153,7 @@ public class DocumentController {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
-			validator.validateGetDocumentByDocumentIdInput(transactionId, documentId);
+			validator.validateGetDocumentByDocumentIdInput(transactionId);
 			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(

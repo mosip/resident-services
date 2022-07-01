@@ -70,6 +70,12 @@ public class DocumentServiceImplTest {
 		assertNotNull(documentServiceImpl.getDocumentsWithMetadata("transactionId"));
 	}
 
+	@Test
+	public void testFetchDocumentByDocId() throws Exception {
+		Mockito.when(objectStoreHelper.getObject(Mockito.anyString())).thenReturn("value");
+		assertNotNull(documentServiceImpl.fetchDocumentByDocId("transactionId", "docId"));
+	}
+
 	private DocumentRequestDTO getDocumentRqtDto() {
 		DocumentRequestDTO request = new DocumentRequestDTO();
 		request.setDocCatCode("DocCatCode");
