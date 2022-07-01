@@ -6,16 +6,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import io.mosip.resident.dto.DocumentDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -136,4 +133,39 @@ public class DocumentController {
 		}
 		return responseWrapper;
 	}
+
+	/**
+	 * It fetches document for a given document id
+	 *
+	 * @param transactionId The transaction ID of the document should be passed as Request Param
+	 * @param documentId    The document ID of the document should be passed as Path Variable
+	 * @return ResponseWrapper<DocumentResponseDTO>
+	 */
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getGetUploadedDocuments()"
+			+ ")")
+	@GetMapping(path = "/document/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseWrapper<DocumentDTO> getDocumentByDocumentId(
+			@RequestParam("transactionId") String transactionId,
+			@PathVariable("document-id") String documentId) {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get document API"));
+		ResponseWrapper<DocumentDTO> responseWrapper = new ResponseWrapper<>();
+		try {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
+			validator.validateGetDocumentByDocumentIdInput(transactionId, documentId);
+			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
+			responseWrapper.setResponse(documentResponse);
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_SUCCESS, transactionId));
+		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		}
+		return responseWrapper;
+	}
+
 }

@@ -1,28 +1,28 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import io.mosip.commons.khazana.dto.ObjectDto;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.UUIDUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.DocumentDTO;
+import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.mosip.commons.khazana.dto.ObjectDto;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.UUIDUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.DocumentRequestDTO;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * It's a service class that uploads a document to the object store and returns
@@ -85,6 +85,21 @@ public class DocumentServiceImpl implements DocumentService {
 		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
 		return allObjects.stream().map(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()))
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * It fetches the document  from the object store
+	 * @param transactionId This is the transaction ID
+	 * @param documentId This is the document id
+	 */
+
+	@Override
+	public DocumentDTO fetchDocumentByDocId(String transactionId, String documentId) throws ResidentServiceCheckedException {
+		DocumentDTO document = new DocumentDTO();
+		String objectNameWithPath = transactionId + "/" + documentId;
+		String sourceFile = objectStoreHelper.getObject(objectNameWithPath);
+		document.setDocument(sourceFile.getBytes(StandardCharsets.UTF_8));
+		return document;
 	}
 
 	/**
