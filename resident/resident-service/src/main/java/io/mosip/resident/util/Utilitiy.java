@@ -245,7 +245,7 @@ public class Utilitiy {
 
 	private List<String> getDefaultTemplateLanguages() {
 		String defaultLanguages = env.getProperty("mosip.default.template-languages");
-		List<String> strList = null;
+		List<String> strList = new ArrayList<>();
 		if (defaultLanguages !=null && !StringUtils.isBlank(defaultLanguages)) {
 			String[] lanaguages = defaultLanguages.split(",");
 			if(lanaguages!=null && lanaguages.length >0 ) {
