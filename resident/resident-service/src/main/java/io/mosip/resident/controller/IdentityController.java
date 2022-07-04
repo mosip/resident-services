@@ -43,7 +43,7 @@ public class IdentityController {
 	@PreAuthorize("@scopeValidator.hasAllScopes("
     				+ "@authorizedScopes.getGetinputattributevalues()"
     			+ ")")
-	@GetMapping("/input-attributes/values")
+	@GetMapping("/info")
 	@Operation(summary = "getInputAttributeValues", description = "Get the Resident-UI Schema", tags = {
 			"identity-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
