@@ -6,10 +6,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import io.mosip.resident.dto.ResponseDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,6 +76,14 @@ public class DocumentControllerTest {
 		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
 		assertEquals(List.of(response), documentsByTransactionId.getResponse());
 	}
+
+	@Test
+	public void testDeleteDocumentsByDocumentIdSuccess() throws ResidentServiceCheckedException {
+		ResponseDTO response = new ResponseDTO();
+		when(service.deleteDocument(Mockito.anyString(), Mockito.anyString())).thenReturn(response);
+		ResponseWrapper<ResponseDTO> deleteDocumentsByDocumentId = controller.deleteDocument("", "");
+		assertEquals(response, deleteDocumentsByDocumentId.getResponse());
+	}
 	
 	@Test
 	public void testGetDocumentsByTransactionIdFailed() throws ResidentServiceCheckedException {
@@ -81,5 +91,13 @@ public class DocumentControllerTest {
 		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
 		assertEquals(documentsByTransactionId.getErrors().get(0).getErrorCode(), "");
 		assertEquals(documentsByTransactionId.getErrors().get(0).getMessage(), "");
+	}
+
+	@Test
+	public void testDeleteDocumentsByDocumentIdFailed() throws ResidentServiceCheckedException {
+		when(service.deleteDocument(Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException("", ""));
+		ResponseWrapper<ResponseDTO> deleteDocumentsByDocumentId = controller.deleteDocument("", "");
+		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode(), "");
+		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getMessage(), "");
 	}
 }

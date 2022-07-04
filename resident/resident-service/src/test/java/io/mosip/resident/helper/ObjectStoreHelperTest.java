@@ -179,11 +179,38 @@ public class ObjectStoreHelperTest {
 		assertNull(source.getValue());
 		assertNull(process.getValue());
 	}
+
+	@Test
+	public void testDeleteObjectSuccess() throws IOException {
+		ArgumentCaptor<String> objectStoreAccountName = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> objectStoreBucketName = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> source = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> process = ArgumentCaptor.forClass(String.class);
+		ArgumentCaptor<String> objectName = ArgumentCaptor.forClass(String.class);
+		helper.deleteObject("name");
+		verify(adapter).deleteObject(objectStoreAccountName.capture(),
+				objectStoreBucketName.capture(),
+				source.capture(),
+				process.capture(),
+				objectName.capture()
+				);
+		assertEquals("objectStoreAccountName", objectStoreAccountName.getValue());
+		assertEquals("objectStoreBucketName", objectStoreBucketName.getValue());
+		assertEquals("name", objectName.getValue());
+		assertNull(source.getValue());
+		assertNull(process.getValue());
+	}
 	
 	@Test(expected = ResidentServiceException.class)
 	public void testGetObjectException() throws IOException {
 		when(adapter.getObject(any(), any(), any(), any(), any())).thenThrow(new ObjectStoreAdapterException("", ""));
 		helper.getObject("name");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testDeleteObjectException() throws IOException {
+		when(adapter.deleteObject(any(), any(), any(), any(), any())).thenThrow(new ObjectStoreAdapterException("", ""));
+		helper.deleteObject("name");
 	}
 	
 	@Test

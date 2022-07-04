@@ -1,28 +1,27 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.velocity.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import io.mosip.commons.khazana.dto.ObjectDto;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.UUIDUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.velocity.util.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * It's a service class that uploads a document to the object store and returns
@@ -34,6 +33,10 @@ import io.mosip.resident.service.DocumentService;
 public class DocumentServiceImpl implements DocumentService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DocumentServiceImpl.class);
+	private static final String SUCCESS = "SUCCESS";
+	private static final String DOCUMENT_DELETION_SUCCESS_MESSAGE = "Document deleted successfully";
+	private static final String FAILURE = "FAILURE";
+	private static final String DOCUMENT_DELETION_FAILURE_MESSAGE = "Document deletion failed";
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
@@ -85,6 +88,20 @@ public class DocumentServiceImpl implements DocumentService {
 		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
 		return allObjects.stream().map(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException {
+		boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
+		ResponseDTO response = new ResponseDTO();
+		if(status) {
+			response.setStatus(SUCCESS);
+			response.setMessage(DOCUMENT_DELETION_SUCCESS_MESSAGE);
+		} else {
+			response.setStatus(FAILURE);
+			response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
+		}
+		return response;
 	}
 
 	/**

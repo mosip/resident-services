@@ -573,6 +573,15 @@ public enum EventEnum {
 	SEND_PHYSICAL_CARD_EXCEPTION("RES-SER-238", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	DELETE_DOCUMENT("RES-SER-239", RegistrationConstants.SYSTEM, "delete document",
+			"delete document", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	DELETE_DOCUMENT_SUCCESS("RES-SER-240", RegistrationConstants.SYSTEM, "delete document Success",
+			"delete document is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	DELETE_DOCUMENT_FAILED("RES-SER-241", RegistrationConstants.SYSTEM, "delete document Failed",
+			"delete document is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	
 	;

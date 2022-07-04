@@ -138,6 +138,22 @@ public class ObjectStoreHelper {
 	}
 
 	/**
+	 * This function returns boolean value indicating whether the object deleted or not.
+	 * @param objectName The name of the object to be deleted.
+	 * @return boolean value indicating whether the object deleted or not.
+	 */
+	public boolean deleteObject(String objectName) {
+		try {
+			return adapter.deleteObject(objectStoreAccountName, objectStoreBucketName, null, null, objectName);
+		} catch (ResidentServiceException | ObjectStoreAdapterException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			throw new ResidentServiceException(ResidentErrorCode.FAILED_TO_DELETE_DOC.getErrorCode(),
+					ResidentErrorCode.FAILED_TO_DELETE_DOC.getErrorMessage(), e);
+		}
+	}
+
+	/**
 	 * This function gets all the objects in the specified bucket
 	 * 
 	 * @param objectName The name of the object you want to retrieve.

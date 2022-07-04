@@ -6,16 +6,13 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+import io.mosip.resident.dto.ResponseDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -130,6 +127,40 @@ public class DocumentController {
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		}
+		return responseWrapper;
+	}
+
+	/**
+	 * It deletes a document for a given transaction id and document id
+	 *
+	 * @param transactionId The transaction ID of the document
+	 * @param documentId    The document ID of the document
+	 * @return ResponseWrapper<ResponseDTO>
+	 */
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getDeleteUploadDocuments()"
+			+ ")")
+	@DeleteMapping(path = "/documents/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseWrapper<ResponseDTO> deleteDocument(
+			@RequestParam("transactionId") String transactionId,
+			@PathVariable("document-id") String documentId) {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Delete document API"));
+		ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
+		try {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
+			ResponseDTO documentResponse = service
+					.deleteDocument(transactionId, documentId);
+			responseWrapper.setResponse(documentResponse);
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_SUCCESS, transactionId));
+		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
