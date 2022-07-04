@@ -48,7 +48,7 @@ public class IdAuthController {
 	 * @throws OtpValidationFailedException
 	 */
 	@ResponseFilter
-	@PostMapping("/req/auth")
+	@PostMapping("/req/validateOTP")
 	@Operation(summary = "validateOtp", description = "validateOtp", tags = { "id-auth-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),

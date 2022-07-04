@@ -48,7 +48,7 @@ public class ResidentOtpController {
 		return otpResponseDTO;
 	}
 	
-	@PostMapping(value = "/req/aid/otp")
+	@PostMapping(value = "/req/individualId/otp")
 	@Operation(summary = "reqAidOtp", description = "reqAidOtp", tags = { "resident-otp-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),

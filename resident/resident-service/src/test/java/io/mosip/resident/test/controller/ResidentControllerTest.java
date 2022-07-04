@@ -431,7 +431,7 @@ public class ResidentControllerTest {
 		requestWrapper.setVersion("v1");
 		Mockito.when(residentService.getAidStatus(Mockito.any())).thenReturn(new AidStatusResponseDTO());
 		String requestAsString = gson.toJson(requestWrapper);
-		this.mockMvc.perform(post("/aid/status").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
+		this.mockMvc.perform(post("/aid/get-individual-id").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 	}
 
