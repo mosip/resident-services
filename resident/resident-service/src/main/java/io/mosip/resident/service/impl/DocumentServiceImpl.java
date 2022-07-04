@@ -90,6 +90,13 @@ public class DocumentServiceImpl implements DocumentService {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * It Deletes the document metadata from the object store
+	 * @param transactionId
+	 * @param documentId
+	 * @return ResponseDTO
+	 * @throws ResidentServiceCheckedException
+	 */
 	@Override
 	public ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException {
 		boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
