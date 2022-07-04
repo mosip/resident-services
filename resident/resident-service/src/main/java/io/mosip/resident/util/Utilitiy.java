@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -242,15 +243,18 @@ public class Utilitiy {
 		}
 		return dataCapturedLangauges;
 	}
-
+	
 	private List<String> getDefaultTemplateLanguages() {
 		String defaultLanguages = env.getProperty("mosip.default.template-languages");
-		if (!StringUtils.isBlank(defaultLanguages)) {
+		List<String> strList = Collections.emptyList() ;
+		if (defaultLanguages !=null && !StringUtils.isBlank(defaultLanguages)) {
 			String[] lanaguages = defaultLanguages.split(",");
-			List<String> strList = Lists.newArrayList(lanaguages);
+			if(lanaguages!=null && lanaguages.length >0 ) {
+				 strList = Lists.newArrayList(lanaguages);
+			}
 			return strList;
 		}
-		return null;
+		return strList;
 	}
 
     public String getMappingJson() {
