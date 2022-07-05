@@ -573,7 +573,15 @@ public enum EventEnum {
 	SEND_PHYSICAL_CARD_EXCEPTION("RES-SER-238", RegistrationConstants.SYSTEM, "send a physical card",
 			"send a physical card is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	
+	GET_DOCUMENT_BY_DOC_ID("RES-SER-239", RegistrationConstants.SYSTEM, "get document by doc id",
+			"get document by doc id", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_BY_DOC_ID_SUCCESS("RES-SER-240", RegistrationConstants.SYSTEM, "get document by doc id",
+			"get document by doc id is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_BY_DOC_ID_FAILED("RES-SER-241", RegistrationConstants.SYSTEM, "get document by doc id",
+			"get document by doc id is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	;
 

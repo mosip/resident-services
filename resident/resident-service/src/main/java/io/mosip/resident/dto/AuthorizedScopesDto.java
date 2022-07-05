@@ -34,6 +34,8 @@ public class AuthorizedScopesDto {
 
 	private List<String> getUploadedDocuments;
 
+	private List<String> getUploadedDocument;
+
 	private List<String> getServiceAuthHistoryRoles;
 
 	private List<String> getServiceRequestUpdate;

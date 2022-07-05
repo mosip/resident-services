@@ -168,4 +168,16 @@ public class DocumentValidatorTest {
 	public void testSupportsFailed() {
 		assertFalse(validator.supports(MockMultipartFile.class));
 	}
+
+	@Test
+	public void testValidateGetDocumentByDocumentIdInputSuccess() {
+		String transactionId = "123";
+		validator.validateGetDocumentByDocumentIdInput(transactionId);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateGetDocumentByDocumentIdFailed() {
+		String transactionId = "123a";
+		validator.validateGetDocumentByDocumentIdInput(transactionId);
+	}
 }
