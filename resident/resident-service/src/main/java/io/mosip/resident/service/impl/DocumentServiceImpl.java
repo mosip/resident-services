@@ -9,6 +9,7 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
@@ -34,6 +35,11 @@ import java.util.stream.Collectors;
 public class DocumentServiceImpl implements DocumentService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DocumentServiceImpl.class);
+
+	private static final String SUCCESS = "SUCCESS";
+	private static final String DOCUMENT_DELETION_SUCCESS_MESSAGE = "Document deleted successfully";
+	private static final String FAILURE = "FAILURE";
+	private static final String DOCUMENT_DELETION_FAILURE_MESSAGE = "Document deletion failed";
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
@@ -132,6 +138,27 @@ public class DocumentServiceImpl implements DocumentService {
 		return new DocumentResponseDTO(transactionId, (String) metadata.get("docid"), (String) metadata.get("docname"),
 				(String) metadata.get("doccatcode"), (String) metadata.get("doctypcode"),
 				StringUtils.split((String) metadata.get("docname"), "\\.")[1]);
+	}
+
+	/**
+	 * It Deletes the document metadata from the object store
+	 * @param transactionId
+	 * @param documentId
+	 * @return ResponseDTO
+	 * @throws ResidentServiceCheckedException
+	 */
+	@Override
+	public ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException {
+		boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
+		ResponseDTO response = new ResponseDTO();
+		if(status) {
+			response.setStatus(SUCCESS);
+			response.setMessage(DOCUMENT_DELETION_SUCCESS_MESSAGE);
+		} else {
+			response.setStatus(FAILURE);
+			response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
+		}
+		return response;
 	}
 
 }
