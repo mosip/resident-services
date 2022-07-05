@@ -107,6 +107,14 @@ public class BaseWebSubInitializerTest {
 		baseWebSubInitializer.authTransactionSubscription();
 	}
 
+	@Test
+	public void testTryRegisterTopicEvent() {
+		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+		ReflectionTestUtils.setField(baseWebSubInitializer, "taskScheduler",
+				Mockito.mock(ThreadPoolTaskScheduler.class));
+		ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "AUTH_TYPE_STATUS_UPDATE_ACK");
+	}
+
 	private BaseWebSubInitializer testTaskScheduler() {
 		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer() {
 		};
