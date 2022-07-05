@@ -320,9 +320,12 @@ public class ResidentServiceRestClient {
 				HttpEntity<Object> httpEntity = (HttpEntity<Object>) requestType;
 				HttpHeaders httpHeader = httpEntity.getHeaders();
 				for (String key : httpHeader.keySet()) {
-					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type"))){
+					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type"))){						
 						if((httpHeader.get(key) != null && !httpHeader.get(key).isEmpty())){
-							headers.add(key, httpHeader.get(key).get(0));
+							List<String> headerKeys = httpHeader.get(key);
+							if(headerKeys != null && !headerKeys.isEmpty()){
+								headers.add(key,headerKeys.get(0));
+							}
 						}
 					}
 				}

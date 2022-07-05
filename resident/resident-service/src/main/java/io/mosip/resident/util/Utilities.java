@@ -299,12 +299,12 @@ public class Utilities {
 	public String getLanguageCode() {
 		String langCode=null;
 		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
-		if (!StringUtils.isBlank(mandatoryLanguages)) {
+		if (mandatoryLanguages!=null && !StringUtils.isBlank(mandatoryLanguages)) {
 			String[] lanaguages = mandatoryLanguages.split(",");
 			langCode = lanaguages[0];
 		} else {
 			String optionalLanguages = env.getProperty("mosip.optional-languages");
-			if (!StringUtils.isBlank(optionalLanguages)) {
+			if (optionalLanguages!= null && !StringUtils.isBlank(optionalLanguages)) {
 				String[] lanaguages = optionalLanguages.split(",");
 				langCode = lanaguages[0];
 			}
