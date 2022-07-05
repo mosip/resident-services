@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import io.mosip.resident.dto.DocumentDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -100,5 +101,21 @@ public class DocumentControllerTest {
 		ResponseWrapper<DocumentDTO> documentByDocumentId = controller.getDocumentByDocumentId("", "");
 		assertEquals(documentByDocumentId.getErrors().get(0).getErrorCode(), "");
 		assertEquals(documentByDocumentId.getErrors().get(0).getMessage(), "");
+	}
+
+	@Test
+	public void testDeleteDocumentsByDocumentIdSuccess() throws ResidentServiceCheckedException {
+		ResponseDTO response = new ResponseDTO();
+		when(service.deleteDocument(Mockito.anyString(), Mockito.anyString())).thenReturn(response);
+		ResponseWrapper<ResponseDTO> deleteDocumentsByDocumentId = controller.deleteDocument("", "");
+		assertEquals(response, deleteDocumentsByDocumentId.getResponse());
+	}
+
+	@Test
+	public void testDeleteDocumentsByDocumentIdFailed() throws ResidentServiceCheckedException {
+		when(service.deleteDocument(Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException("", ""));
+		ResponseWrapper<ResponseDTO> deleteDocumentsByDocumentId = controller.deleteDocument("", "");
+		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode(), "");
+		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getMessage(), "");
 	}
 }

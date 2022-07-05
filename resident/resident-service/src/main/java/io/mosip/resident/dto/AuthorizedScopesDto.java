@@ -48,4 +48,6 @@ public class AuthorizedScopesDto {
 	
 	private List<String> postSendPhysicalCard;
 
+	private List<String> deleteUploadDocuments;
+
 }

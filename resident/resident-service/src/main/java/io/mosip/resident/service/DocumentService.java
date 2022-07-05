@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.mosip.resident.dto.DocumentDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.mosip.resident.dto.DocumentRequestDTO;
@@ -58,4 +59,6 @@ public interface DocumentService {
          * @param documentId This is the document id
          */
         DocumentDTO fetchDocumentByDocId(String transactionId, String documentId) throws ResidentServiceCheckedException;
+
+        ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException;
 }

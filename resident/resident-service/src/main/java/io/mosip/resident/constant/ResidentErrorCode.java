@@ -82,6 +82,7 @@ public enum ResidentErrorCode {
 	DIGITAL_CARD_RID_NOT_FOUND("RES-SER-457", "Digital Card Rid not found"),
 	
 	PAYMENT_REQUIRED("RES-SER-402","Payment is not made for this card"),
+	FAILED_TO_DELETE_DOC("RES-SER-458", "Failed to delete document"),
 
 	;
 	private final String errorCode;

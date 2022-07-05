@@ -582,6 +582,15 @@ public enum EventEnum {
 	GET_DOCUMENT_BY_DOC_ID_FAILED("RES-SER-241", RegistrationConstants.SYSTEM, "get document by doc id",
 			"get document by doc id is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	DELETE_DOCUMENT("RES-SER-242", RegistrationConstants.SYSTEM, "delete document",
+			"delete document", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	DELETE_DOCUMENT_SUCCESS("RES-SER-243", RegistrationConstants.SYSTEM, "delete document Success",
+			"delete document is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	DELETE_DOCUMENT_FAILED("RES-SER-244", RegistrationConstants.SYSTEM, "delete document Failed",
+			"delete document is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	;
 
