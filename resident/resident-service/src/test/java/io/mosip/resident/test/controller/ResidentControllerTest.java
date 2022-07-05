@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.dto.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,26 +52,6 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
-import io.mosip.resident.dto.AuthTypeStatusDto;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentTransactionType;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ResponseWrapper;
-import io.mosip.resident.dto.SortType;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
@@ -416,6 +397,26 @@ public class ResidentControllerTest {
 		this.mockMvc.perform(post("/req/update-uin").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testUpdateUinDemographics() throws Exception {
+		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
+		request.setIndividualId("9876543210");
+		request.setIdentityJson("sdgfdgsfhfh");
+		request.setTransactionID("12345");
+
+		RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO = new RequestWrapper<>();
+		requestDTO.setRequest(request);
+		requestDTO.setId("mosip.resident.demographic");
+		requestDTO.setVersion("v1");
+
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
+		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> resultRequestWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController.updateUinDemographics(requestDTO);
+		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
 	}
 
 	@Test
