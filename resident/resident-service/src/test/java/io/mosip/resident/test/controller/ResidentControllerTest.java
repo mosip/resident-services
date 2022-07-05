@@ -21,7 +21,11 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.kernel.core.exception.ErrorResponse;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -417,6 +421,31 @@ public class ResidentControllerTest {
 		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> resultRequestWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testAuthLockStatus() throws Exception{
+		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
+		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
+		assertEquals(responseWrapper, resultRequestWrapper);
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testAuthLockStatusFailed() throws Exception{
+		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorCode(),
+				ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
+		responseWrapper.setResponsetime(null);
+
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(residentService.getAuthLockStatus(Mockito.any())).thenThrow(new ResidentServiceCheckedException("error", "error"));
+		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
+		resultRequestWrapper.setResponsetime(null);
+		assertEquals(responseWrapper, resultRequestWrapper);
 	}
 
 	@Test
