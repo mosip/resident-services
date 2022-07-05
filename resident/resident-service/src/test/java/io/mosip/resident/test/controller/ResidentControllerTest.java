@@ -450,6 +450,31 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
+	public void testDownloadCardIndividualId() throws Exception{
+		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		responseWrapper.setResponsetime(null);
+		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(objectResponseWrapper);
+		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+
+		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
+		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
+		dto.setId("12345");
+		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
+		dto.setRequestId("12345");
+		dto.setStatusCode("200");
+		list.add(dto);
+		resultResponseWrapper.setResponse(list);
+		resultResponseWrapper.setResponsetime(null);
+
+		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(list);
+		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultRequestWrapper = residentController.downloadCard("9876543210");
+		resultRequestWrapper.setResponsetime(null);
+		assertEquals(resultResponseWrapper, resultRequestWrapper);
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
 	public void testCheckAidStatus() throws Exception {
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
 		aidStatusRequestDTO.setAid("8251649601");
