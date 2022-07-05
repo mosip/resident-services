@@ -115,6 +115,18 @@ public class BaseWebSubInitializerTest {
 		ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "AUTH_TYPE_STATUS_UPDATE_ACK");
 	}
 
+	@Test(expected = Exception.class)
+	public void testInitSubsription() {
+		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+		ReflectionTestUtils.setField(baseWebSubInitializer, "authTransactionSecret", "authTransactionSecret");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "authTransactionTopic",
+				"AUTHENTICATION_TRANSACTION_STATUS");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "callbackAuthTransactionUrl",
+				"resident.websub.callback.authTransaction-status.relative.url");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "hubUrl", "https://dev2.mosip.net/lib");
+		ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "initSubsriptions");
+	}
+
 	private BaseWebSubInitializer testTaskScheduler() {
 		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer() {
 		};
