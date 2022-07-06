@@ -107,6 +107,48 @@ public class BaseWebSubInitializerTest {
 		baseWebSubInitializer.authTransactionSubscription();
 	}
 
+	@Test
+	public void testAuthTransactionSubcription() {
+		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+		ReflectionTestUtils.setField(baseWebSubInitializer, "authTransactionSecret", "authTransactionSecret");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "authTransactionTopic",
+				"AUTHENTICATION_TRANSACTION_STATUS");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "callbackAuthTransactionUrl",
+				"resident.websub.callback.authTransaction-status.relative.url");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "hubUrl", "https://dev2.mosip.net/lib");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "subscribe", subscribe);
+		baseWebSubInitializer.authTransactionSubscription();
+	}
+
+	@Test
+	public void testTryRegisterTopicEventFailed() {
+		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+		ReflectionTestUtils.setField(baseWebSubInitializer, "taskScheduler",
+				Mockito.mock(ThreadPoolTaskScheduler.class));
+		ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "AUTH_TYPE_STATUS_UPDATE_ACK");
+	}
+
+	@Test
+	public void testTryRegisterTopicEvent() {
+		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+		ReflectionTestUtils.setField(baseWebSubInitializer, "publishUrl", "https://dev2.mosip.net/lib");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "publisher", publisher);
+		ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "tryRegisterTopicEvent", "AUTH_TYPE_STATUS_UPDATE_ACK");
+	}
+
+	@Test
+	public void testInitSubsription() {
+		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer();
+		ReflectionTestUtils.setField(baseWebSubInitializer, "authTransactionSecret", "authTransactionSecret");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "authTransactionTopic",
+				"AUTHENTICATION_TRANSACTION_STATUS");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "callbackAuthTransactionUrl",
+				"resident.websub.callback.authTransaction-status.relative.url");
+		ReflectionTestUtils.setField(baseWebSubInitializer, "subscribe", subscribe);
+		ReflectionTestUtils.setField(baseWebSubInitializer, "hubUrl", "https://dev2.mosip.net/lib");
+		ReflectionTestUtils.invokeMethod(baseWebSubInitializer, "initSubsriptions");
+	}
+
 	private BaseWebSubInitializer testTaskScheduler() {
 		BaseWebSubInitializer baseWebSubInitializer = new BaseWebSubInitializer() {
 		};

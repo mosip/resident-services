@@ -21,6 +21,11 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.kernel.core.exception.ErrorResponse;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,26 +56,6 @@ import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
-import io.mosip.resident.dto.AuthTypeStatusDto;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentTransactionType;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ResponseWrapper;
-import io.mosip.resident.dto.SortType;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
@@ -416,6 +401,76 @@ public class ResidentControllerTest {
 		this.mockMvc.perform(post("/req/update-uin").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testUpdateUinDemographics() throws Exception {
+		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
+		request.setIndividualId("9876543210");
+		request.setIdentityJson("sdgfdgsfhfh");
+		request.setTransactionID("12345");
+
+		RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO = new RequestWrapper<>();
+		requestDTO.setRequest(request);
+		requestDTO.setId("mosip.resident.demographic");
+		requestDTO.setVersion("v1");
+
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
+		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> resultRequestWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController.updateUinDemographics(requestDTO);
+		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testAuthLockStatus() throws Exception{
+		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
+		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
+		assertEquals(responseWrapper, resultRequestWrapper);
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testAuthLockStatusFailed() throws Exception{
+		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorCode(),
+				ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
+		responseWrapper.setResponsetime(null);
+
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(residentService.getAuthLockStatus(Mockito.any())).thenThrow(new ResidentServiceCheckedException("error", "error"));
+		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
+		resultRequestWrapper.setResponsetime(null);
+		assertEquals(responseWrapper, resultRequestWrapper);
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testDownloadCardIndividualId() throws Exception{
+		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		responseWrapper.setResponsetime(null);
+		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(objectResponseWrapper);
+		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+
+		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
+		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
+		dto.setId("12345");
+		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
+		dto.setRequestId("12345");
+		dto.setStatusCode("200");
+		list.add(dto);
+		resultResponseWrapper.setResponse(list);
+		resultResponseWrapper.setResponsetime(null);
+
+		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(list);
+		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultRequestWrapper = residentController.downloadCard("9876543210");
+		resultRequestWrapper.setResponsetime(null);
+		assertEquals(resultResponseWrapper, resultRequestWrapper);
 	}
 
 	@Test
