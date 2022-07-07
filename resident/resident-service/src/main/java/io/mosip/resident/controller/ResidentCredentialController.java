@@ -106,7 +106,6 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@ResponseFilter
 	@PostMapping(value = "/req/rid-digital-card")
 	public ResponseEntity<Object> getRIDDigitalCard(
 			@RequestBody RequestWrapper<RIDDigitalCardRequestDto> requestDTO) {

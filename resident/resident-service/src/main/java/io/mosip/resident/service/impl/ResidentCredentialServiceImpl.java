@@ -62,7 +62,7 @@ import io.mosip.resident.util.Utilitiy;
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
-	private static final String AVAILABLE = "available";
+	private static final String AVAILABLE = "AVAILABLE";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -411,9 +411,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
 			}
 			URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
-			String data = residentServiceRestClient.getApi(dataShareUri, String.class,
+			byte[] data = residentServiceRestClient.getApi(dataShareUri, byte[].class,
 						tokenGenerator.getToken());
-			return CryptoUtil.decodeURLSafeBase64(data);
+			return data;
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(
