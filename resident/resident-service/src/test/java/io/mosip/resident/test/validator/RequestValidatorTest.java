@@ -657,6 +657,53 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
+	public void testValidateRidCheckStatusRequestDTONullRequest() throws Exception{
+		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.checkstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(null);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRidCheckStatusRequestDTOInvalidIdType() throws Exception{
+		RequestDTO requestDTO = new RequestDTO();
+		requestDTO.setIndividualIdType("Invalid");
+		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.checkstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRidCheckStatusRequestDTONullIndividualId() throws Exception{
+		RequestDTO requestDTO = new RequestDTO();
+		requestDTO.setIndividualIdType(IdType.RID.name());
+		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.checkstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
+	}
+
+	@Test
+	public void testValidateRidCheckStatusRequestDTOSuccess() throws Exception{
+		RequestDTO requestDTO = new RequestDTO();
+		requestDTO.setIndividualIdType(IdType.RID.name());
+		requestDTO.setIndividualId("1234567");
+		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.checkstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
 	public void testGetStatusValidIndividualId() throws Exception {
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(false);
 		RequestDTO requestDTO = new RequestDTO();
@@ -769,6 +816,75 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
+	public void testValidUpdateRequestNullRequest() throws Exception{
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("v1");
+		requestValidator.validateUpdateRequest(requestWrapper, false);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidUpdateRequestIndividualIdNull() throws Exception{
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("VID");
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidUpdateRequestIsPatchTrue() throws Exception{
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("VID");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("");
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test
+	public void testValidateUpdateRequest() throws Exception{
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("VID");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
+	}
+
+	@Test
+	public void testValidateUpdateRequestV2() throws Exception{
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, false);
+	}
+
+	@Test(expected = InvalidInputException.class)
 	public void testReprintValidIndividualType() throws Exception {
 		ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
 		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
@@ -788,6 +904,36 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
 		requestDTO.setIndividualIdType("VID");
 		requestDTO.setIndividualId("1234567");
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.print");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateReprintRequest(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testReprintNullIndividualId() throws Exception {
+		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
+		ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
+		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
+		requestDTO.setIndividualIdType("VID");
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.print");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateReprintRequest(requestWrapper);
+	}
+
+	@Test
+	public void testReprintSuccess() throws Exception{
+		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
+		ResidentReprintRequestDto requestDTO = new ResidentReprintRequestDto();
+		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
+		requestDTO.setIndividualIdType("VID");
+		requestDTO.setIndividualId("12345678");
+		requestDTO.setCardType(CardType.MASKED_UIN.name());
+		requestDTO.setOtp("111111");
+		requestDTO.setTransactionID("11111");
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.print");
 		requestWrapper.setVersion("v1");
@@ -838,6 +984,13 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.print");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateReprintRequest(requestWrapper);
+	}
+
+	public void testValidateReprintRequestNullRequest() throws Exception{
+
+		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(null);
 		requestValidator.validateReprintRequest(requestWrapper);
 	}
 
@@ -906,6 +1059,54 @@ public class RequestValidatorTest {
 		requestWrapper.setRequest(authUnLockRequestDto);
 		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
 
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthUnlockRequestUnlockForSecondsNull() throws Exception{
+		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
+		authUnLockRequestDto.setTransactionID("12345");
+		authUnLockRequestDto.setIndividualId("12345");
+		authUnLockRequestDto.setOtp("12345");
+		authUnLockRequestDto.setUnlockForSeconds(null);
+		List<String> authTypeList = new ArrayList<>();
+		authTypeList.add("bio-FIR");
+		authUnLockRequestDto.setAuthType(authTypeList);
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authUnLockRequestDto);
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+	}
+
+	@Test
+	public void testValidateAuthUnlockRequestSuccess() throws Exception{
+		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
+		authUnLockRequestDto.setTransactionID("12345");
+		authUnLockRequestDto.setIndividualId("12345");
+		authUnLockRequestDto.setOtp("12345");
+		authUnLockRequestDto.setUnlockForSeconds("10");
+		List<String> authTypeList = new ArrayList<>();
+		authTypeList.add("bio-FIR");
+		authUnLockRequestDto.setAuthType(authTypeList);
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authUnLockRequestDto);
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthUnlockRequestNullIndividualId() throws Exception {
+		AuthUnLockRequestDTO authUnLockRequestDto = new AuthUnLockRequestDTO();
+		authUnLockRequestDto.setTransactionID("12345");
+		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authUnLockRequestDto);
+		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -1142,6 +1343,18 @@ public class RequestValidatorTest {
 		requestValidator.validateAidStatusRequestDto(requestWrapper);
 	}
 
+	@Test
+	public void testValidateAidStatusRequestDtoSuccess() throws Exception{
+		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+		aidStatusRequestDTO.setAid("17");
+		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.aidstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(aidStatusRequestDTO);
+		requestValidator.validateAidStatusRequestDto(requestWrapper);
+	}
+
 	@Test(expected = InvalidInputException.class)
 	public void testValidateChannelVerificationStatus() throws Exception{
 		String channel ="";
@@ -1160,6 +1373,12 @@ public class RequestValidatorTest {
 	public void testValidateChannelVerificationStatusNullIndividualId() throws Exception{
 		String channel ="PHONE";
 		requestValidator.validateChannelVerificationStatus(channel, null);
+	}
+
+	@Test
+	public void testValidateChannelVerificationStatusSuccess() throws Exception{
+		String channel ="PHONE";
+		requestValidator.validateChannelVerificationStatus(channel, "12345678");
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -1189,6 +1408,14 @@ public class RequestValidatorTest {
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateServiceHistoryRequestNullSortType() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String serviceType = "DATA_SHARE_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, null, serviceType);
+	}
+
 	@Test
 	public void testValidateServiceHistoryRequestDateCheck() throws Exception{
 		LocalDateTime fromDate = LocalDateTime.now();
@@ -1198,9 +1425,61 @@ public class RequestValidatorTest {
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
 	}
 
+	@Test
+	public void testValidateServiceHistoryRequestServiceHistoryServiceRequest() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "ASC";
+		String serviceType = "SERVICE_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test
+	public void testValidateServiceHistoryRequestServiceHistoryID_MANAGEMENT_REQUEST() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "ASC";
+		String serviceType = "ID_MANAGEMENT_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test
+	public void testValidateServiceHistoryRequestServiceHistoryDATA_UPDATE_REQUEST() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "ASC";
+		String serviceType = "DATA_UPDATE_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test
+	public void testValidateServiceHistoryRequestServiceHistoryAUTHENTICATION_REQUEST() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "ASC";
+		String serviceType = "AUTHENTICATION_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+	@Test
+	public void testValidateServiceHistoryRequestServiceHistorySuccess() throws Exception{
+		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDateTime toDate = LocalDateTime.now();
+		String sortType = "DESC";
+		String serviceType = "AUTHENTICATION_REQUEST";
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+	}
+
+
 	@Test(expected = InvalidInputException.class)
 	public void testValidateIndividualId() throws Exception{
 		String individualId = "";
+		requestValidator.validateIndividualId(individualId);
+	}
+
+	@Test
+	public void testValidateIndividualIdSuccess() throws Exception {
+		String individualId = "123456789";
 		requestValidator.validateIndividualId(individualId);
 	}
 
