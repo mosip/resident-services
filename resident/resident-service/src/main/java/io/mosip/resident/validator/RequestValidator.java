@@ -190,11 +190,7 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 		String individualId = requestDto.getRequest().getIndividualId();
-		if (!validateIndividualIdvIdWithoutIdType(individualId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request to generate VID"));
-			throw new InvalidInputException("individualId");
-		}
+		validateIndividualIdvIdWithoutIdType(individualId);
 		validateAuthTypeV2(requestDto.getRequest().getAuthType());
 	}
 
