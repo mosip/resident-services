@@ -602,6 +602,23 @@ public class RequestValidatorTest {
 
 	}
 
+	@Test
+	public void testValidateEuinRequestSuccess() throws Exception{
+		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
+		EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
+		euinRequestDTO.setIndividualIdType(IdType.VID.name());
+		euinRequestDTO.setIndividualId("1234567");
+		euinRequestDTO.setCardType(CardType.MASKED_UIN.name());
+		euinRequestDTO.setOtp("12345");
+		euinRequestDTO.setTransactionID("9876543210");
+		RequestWrapper<EuinRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setRequest(euinRequestDTO);
+		requestWrapper.setVersion("v1");
+		requestWrapper.setId("mosip.resident.euin");
+		requestValidator.validateEuinRequest(requestWrapper);
+	}
+
 	@Test(expected = InvalidInputException.class)
 	public void testValidTransactionId() throws Exception {
 		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
