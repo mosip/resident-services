@@ -222,6 +222,40 @@ public class RequestValidatorTest {
 
 	}
 
+	@Test
+	public void testValidateAuthLockOrUnlockRequestSuccess() throws Exception{
+		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
+		authLockRequestDto.setTransactionID("12345");
+		authLockRequestDto.setIndividualId("12345");
+		authLockRequestDto.setOtp("12345");
+		List<String> authTypes = new ArrayList<>();
+		authTypes.add("bio-FIR");
+		authLockRequestDto.setAuthType(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockRequestDto);
+		requestValidator.validateAuthLockOrUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
+	}
+
+	@Test
+	public void testValidateAuthLockOrUnlockRequestSuccessForUnlock() throws Exception{
+		AuthLockOrUnLockRequestDto authLockRequestDto = new AuthLockOrUnLockRequestDto();
+		authLockRequestDto.setTransactionID("12345");
+		authLockRequestDto.setIndividualId("12345");
+		authLockRequestDto.setOtp("12345");
+		List<String> authTypes = new ArrayList<>();
+		authTypes.add("bio-FIR");
+		authLockRequestDto.setAuthType(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authunlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockRequestDto);
+		requestValidator.validateAuthLockOrUnlockRequest(requestWrapper, AuthTypeStatus.UNLOCK);
+	}
+
 	@Test(expected = InvalidInputException.class)
 	public void testeuinValidIndividualType() throws Exception {
 		EuinRequestDTO euinRequestDTO = new EuinRequestDTO();
