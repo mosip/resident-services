@@ -43,9 +43,9 @@ import io.mosip.resident.util.Utilitiy;
 @RunWith(MockitoJUnitRunner.class)
 public class ResidentCredentialServiceTest {
 
-	private static final String AVAILABLE = "available";
+	private static final String AVAILABLE = "AVAILABLE";
 
-	private static final String NOT_AVAILABLE = "notAvailable";
+	private static final String NOT_AVAILABLE = "NOT_AVAILABLE";
 
 	@InjectMocks
 	private ResidentCredentialServiceImpl residentCredentialService;
@@ -107,8 +107,8 @@ public class ResidentCredentialServiceTest {
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(true);
 		when(residentServiceRestClient.getApi(any(), eq(ResponseWrapper.class), any()))
 			.thenReturn(digitalCardStatusResponseWrapper);
-		when(residentServiceRestClient.getApi(any(), eq(String.class), any()))
-			.thenReturn("YWJjZGVm");
+		when(residentServiceRestClient.getApi(any(), eq(byte[].class), any()))
+			.thenReturn("abcdef".getBytes());
 		RIDDigitalCardRequestDto ridDigitalCardRequestDto = new RIDDigitalCardRequestDto();
 		ridDigitalCardRequestDto.setIndividualId("10001090900001020220414054750");
 		ridDigitalCardRequestDto.setOtp("123456");
