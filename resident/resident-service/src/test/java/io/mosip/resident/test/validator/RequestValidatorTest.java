@@ -869,6 +869,20 @@ public class RequestValidatorTest {
 
 	}
 
+	@Test
+	public void testValidateAuthHistoryRequestSuccess() throws Exception{
+		AuthHistoryRequestDTO authRequestDTO = new AuthHistoryRequestDTO();
+		authRequestDTO.setIndividualId("1234567");
+		authRequestDTO.setOtp("1245");
+		authRequestDTO.setTransactionID("1234567");
+		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setRequest(authRequestDTO);
+		requestWrapper.setVersion("v1");
+		requestWrapper.setId("mosip.resident.authhistory");
+		requestValidator.validateAuthHistoryRequest(requestWrapper);
+	}
+
 	@Test(expected = InvalidInputException.class)
 	public void testAuthUnlockRequestNull() throws Exception {
 		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
@@ -1202,5 +1216,32 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
 		String email = "abc@gmail.com";
 		requestValidator.emailValidator(email);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRevokeVidRequestWrapperRevokeVidNull() throws Exception{
+		BaseVidRevokeRequestDTO baseVidRevokeRequestDTO = new BaseVidRevokeRequestDTO();
+		baseVidRevokeRequestDTO.setVidStatus("REVOKED");
+		baseVidRevokeRequestDTO.setTransactionID("123456789");
+		RequestWrapper<BaseVidRevokeRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime("2019-01-0");
+		requestWrapper.setId("mosip.resident.revokevid");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(baseVidRevokeRequestDTO);
+		requestValidator.validateRevokeVidRequestWrapper(requestWrapper, "v1");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void	 testValidateRevokeVidRequestWrapper() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "revokeVidId", "mosip.resident.vidstatus");
+		BaseVidRevokeRequestDTO baseVidRevokeRequestDTO = new BaseVidRevokeRequestDTO();
+		baseVidRevokeRequestDTO.setVidStatus("mosip.resident.vidstatus");
+		baseVidRevokeRequestDTO.setTransactionID("123456789");
+		RequestWrapper<BaseVidRevokeRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime("2019-01-0");
+		requestWrapper.setId("mosip.resident.vidstatus");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(baseVidRevokeRequestDTO);
+		requestValidator.validateRevokeVidRequestWrapper(requestWrapper, "v1");
 	}
 }
