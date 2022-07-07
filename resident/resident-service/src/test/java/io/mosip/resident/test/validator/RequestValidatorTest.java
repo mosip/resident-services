@@ -987,6 +987,7 @@ public class RequestValidatorTest {
 		requestValidator.validateReprintRequest(requestWrapper);
 	}
 
+	@Test(expected = InvalidInputException.class)
 	public void testValidateReprintRequestNullRequest() throws Exception{
 
 		RequestWrapper<ResidentReprintRequestDto> requestWrapper = new RequestWrapper<>();
