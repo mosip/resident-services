@@ -1189,4 +1189,18 @@ public class RequestValidatorTest {
 		String individualId = "";
 		requestValidator.validateIndividualId(individualId);
 	}
+
+	@Test
+	public void testPhoneValidator() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		String phone = "1234567890";
+		requestValidator.phoneValidator(phone);
+	}
+
+	@Test
+	public void testEmailValidator() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		String email = "abc@gmail.com";
+		requestValidator.emailValidator(email);
+	}
 }
