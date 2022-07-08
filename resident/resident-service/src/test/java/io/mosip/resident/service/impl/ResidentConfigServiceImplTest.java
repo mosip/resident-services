@@ -144,8 +144,8 @@ public class ResidentConfigServiceImplTest {
 		List<Map<String, Object>> uiSchemaInputAttributes = new ArrayList<>();
 		Map<String, Object> uiSchemaInputAttribute = new HashMap<>();
 		uiSchemaInputAttribute.put("inputRequired", "firstName");
-		uiSchemaInputAttribute.put("CONTROL_TYPE", "text");
-		uiSchemaInputAttribute.put("ID", "1234");
+		uiSchemaInputAttribute.put("controlType", "text");
+		uiSchemaInputAttribute.put("id", "1234");
 		uiSchemaInputAttributes.add(uiSchemaInputAttribute);
 		uiSchema.put("identity", uiSchemaInputAttributes);
 		byte[] src = "{\"name\":\"ui-schema\"}".getBytes();
