@@ -1,12 +1,14 @@
 package io.mosip.resident.service.impl;
 
+import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +40,9 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private Resource identityMappingJsonFile;
+
+	@Mock
+	private ObjectMapper objectMapper;
 
 	@Before
 	public void setUp() throws Exception {
@@ -129,5 +134,48 @@ public class ResidentConfigServiceImplTest {
 		identityMapping = "{\"name\":\"identity-mapping\"}";
 		String result = testSubject.getIdentityMapping();
 		assertTrue(result.contains(identityMapping));
+	}
+
+	@Test
+	public void testGetUiSchemaFilteredInputAttributes() throws Exception{
+		ResidentConfigServiceImpl testSubject;
+		List<String> result;
+		Map<String, Object> uiSchema = new HashMap<>();
+		List<Map<String, Object>> uiSchemaInputAttributes = new ArrayList<>();
+		Map<String, Object> uiSchemaInputAttribute = new HashMap<>();
+		uiSchemaInputAttribute.put("inputRequired", "firstName");
+		uiSchemaInputAttribute.put("CONTROL_TYPE", "text");
+		uiSchemaInputAttribute.put("ID", "1234");
+		uiSchemaInputAttributes.add(uiSchemaInputAttribute);
+		uiSchema.put("identity", uiSchemaInputAttributes);
+		byte[] src = "{\"name\":\"ui-schema\"}".getBytes();
+		Mockito.when(objectMapper.readValue(src, Map.class)).thenReturn(uiSchema);
+		testSubject = createTestSubject();
+		result = testSubject.getUiSchemaFilteredInputAttributes();
+		assertNotNull(result.size());
+	}
+
+	@Test
+	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception{
+		ResidentConfigServiceImpl testSubject;
+		List<String> result;
+		Map<String, Object> uiSchema = new HashMap<>();
+		uiSchema.put("identity", null);
+		byte[] src = "{\"name\":\"ui-schema\"}".getBytes();
+		Mockito.when(objectMapper.readValue(src, Map.class)).thenReturn(uiSchema);
+		testSubject = createTestSubject();
+		result = testSubject.getUiSchemaFilteredInputAttributes();
+		assertNull(result);
+	}
+
+	@Test
+	public void testGetUiSchemaFilteredInputAttributesEmpty() throws Exception{
+		ResidentConfigServiceImpl testSubject;
+		List<String> result;
+		List<String> uiSchemaFilteredInputAttributes = new ArrayList<>();
+		testSubject = createTestSubject();
+		ReflectionTestUtils.setField(testSubject, "uiSchemaFilteredInputAttributes", uiSchemaFilteredInputAttributes);
+		result = testSubject.getUiSchemaFilteredInputAttributes();
+		assertNotNull(result);
 	}
 }
