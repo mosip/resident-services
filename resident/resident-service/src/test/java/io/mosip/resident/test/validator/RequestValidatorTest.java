@@ -1322,11 +1322,9 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAidStatusRequestDto() throws Exception{
-		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid("12344567");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.aidstatus");
+		requestWrapper.setId("mosip.resident.checkstatus");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(null);
 		requestValidator.validateAidStatusRequestDto(requestWrapper);
@@ -1338,7 +1336,7 @@ public class RequestValidatorTest {
 		aidStatusRequestDTO.setAid(null);
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.aidstatus");
+		requestWrapper.setId("mosip.resident.checkstatus");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestValidator.validateAidStatusRequestDto(requestWrapper);
@@ -1350,7 +1348,7 @@ public class RequestValidatorTest {
 		aidStatusRequestDTO.setAid("17");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.aidstatus");
+		requestWrapper.setId("mosip.resident.checkstatus");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestValidator.validateAidStatusRequestDto(requestWrapper);

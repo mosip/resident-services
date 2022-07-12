@@ -176,8 +176,7 @@ public class ResidentServiceImpl implements ResidentService {
 						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).toString());
 				audit.setAuditRequestDto(EventEnum.RID_NOT_FOUND);
 				throw new RIDInvalidException(ResidentErrorCode.NO_RID_FOUND_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.NO_RID_FOUND_EXCEPTION.getErrorMessage()
-								+ responseWrapper.getErrors().get(0).toString());
+						ResidentErrorCode.NO_RID_FOUND_EXCEPTION.getErrorMessage());
 			}
 			if ((responseWrapper.getResponse() == null || responseWrapper.getResponse().isEmpty())) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -1280,7 +1279,12 @@ public class ResidentServiceImpl implements ResidentService {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"ResidentServiceImpl::getAidStatus()::" + e.getClass().getSimpleName()+" :" + e.getMessage());
-			RegStatusCheckResponseDTO ridStatus = getRidStatus(reqDto.getAid());
+			RegStatusCheckResponseDTO ridStatus =null;
+			try {
+				ridStatus = getRidStatus(reqDto.getAid());
+			} catch (RIDInvalidException ex) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
+			}
 			AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
 			aidStatusResponseDTO.setAidStatus(ridStatus.getRidStatus());
 			return aidStatusResponseDTO;

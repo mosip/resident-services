@@ -186,6 +186,17 @@ public class ApiExceptionHandler {
 		return responseWrapper;
 	}
 	
+	@ExceptionHandler(RIDInvalidException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> getRidStackTraceHandler(
+			final HttpServletRequest httpServletRequest, final RIDInvalidException e) throws IOException {
+		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
+		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
+		errorResponse.getErrors().add(error);
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+	}
+	
 	@ExceptionHandler(ResidentServiceCheckedException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> getResidentServiceStackTraceHandler(
 			final HttpServletRequest httpServletRequest, final ResidentServiceCheckedException e) throws IOException {
