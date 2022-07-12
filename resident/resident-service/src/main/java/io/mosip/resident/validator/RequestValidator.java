@@ -680,6 +680,7 @@ public class RequestValidator {
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
+		validateRequest(reqDto, RequestIdType.CHECK_STATUS);
 		
 		if(reqDto.getRequest() == null) {
 			throw new InvalidInputException("request");
