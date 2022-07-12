@@ -1,22 +1,21 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.biometrics.spi.CbeffUtil;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,21 +26,19 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-import io.mosip.kernel.biometrics.spi.CbeffUtil;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -49,7 +46,10 @@ import io.mosip.resident.util.Utilitiy;
 public class IdentityServiceTest {
 
 	@InjectMocks
-	private IdentityService identityService = new IdentityServiceImpl();
+	private io.mosip.resident.service.IdentityService identityService = new IdentityServiceImpl();
+
+	@InjectMocks
+	private IdentityServiceImpl identityServiceImpl = new IdentityServiceImpl();
 
 	@Mock
 	private AuditUtil auditUtil;
@@ -61,7 +61,16 @@ public class IdentityServiceTest {
 	private CbeffUtil cbeffUtil;
 
 	@Mock
+	private TokenIDGenerator tokenIDGenerator;
+
+	@Mock
+	private ResidentVidService residentVidService;
+
+	@Mock
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
+
+	@Mock
+	private ResidentServiceRestClient restClientWithPlainRestTemplate;
 
 	@Mock
 	private ResidentConfigService residentConfigService;
@@ -227,4 +236,109 @@ public class IdentityServiceTest {
 		identityService.getIdentity("6");
 	}
 
+	@Test
+	public void testGetUinForIndividualId() throws Exception{
+		String id = "123456789";
+		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+				.thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		when(utility.getMappingJson()).thenReturn(mappingJson);
+		String result = identityService.getUinForIndividualId(id);
+		assertEquals("8251649601", result);
+	}
+
+	@Test
+	public void testGetIDATokenForIndividualId() throws Exception{
+		String id = "123456789";
+		String token = "1234";
+		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
+		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
+		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+				.thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		when(utility.getMappingJson()).thenReturn(mappingJson);
+		String result = identityService.getIDATokenForIndividualId(id);
+		assertEquals(token, result);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testGetClaimFromUserInfoFailure(){
+		Map<String, Object> userInfo = new HashMap<>();
+		ReflectionTestUtils.invokeMethod(identityServiceImpl, "getClaimFromUserInfo", userInfo, "claim");
+	}
+
+	@Test
+	public void testGetClaimFromUserInfoSuccess() {
+		Map<String, Object> userInfo = new HashMap<>();
+		userInfo.put("claim", "value");
+		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getClaimFromUserInfo", userInfo, "claim");
+		assertEquals("value", result);
+	}
+
+	@Test
+	public void testGetUserInfoSuccess() throws ApisResourceAccessException {
+		String token = "1234";
+		ReflectionTestUtils.setField(identityServiceImpl, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
+		Map<String, Object> userInfo = new HashMap<>();
+		userInfo.put("claim", "value");
+		URI uri = URI.create("http://localhost:8080/userinfo");
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", "Bearer " + token);
+
+		when(restClientWithPlainRestTemplate.getApi(uri, Map.class, headers))
+				.thenReturn(userInfo);
+		Map<String, Object> result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getUserInfo", token);
+		assertEquals("value", result.get("claim"));
+	}
+
+	@Test
+	public void testGetIndividualIdForAid() throws Exception{
+		String aid = "123456789";
+		ReflectionTestUtils.setField(identityServiceImpl, "dateFormat", "yyyy/MM/dd");
+		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+				.thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		when(utility.getMappingJson()).thenReturn(mappingJson);
+		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getIndividualIdForAid", aid);
+		assertEquals("8251649601", result);
+	}
+
+	@Test
+	public void testGetIndividualIdForAidUseVidOnlyTrue() throws Exception{
+		String aid = "123456789";
+		Optional<String> perpVid = Optional.of("8251649601");
+		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
+		ReflectionTestUtils.setField(identityServiceImpl, "dateFormat", "yyyy/MM/dd");
+		ReflectionTestUtils.setField(identityServiceImpl,"useVidOnly", true);
+		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+				.thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		when(utility.getMappingJson()).thenReturn(mappingJson);
+		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getIndividualIdForAid", aid);
+		assertEquals("8251649601", result);
+	}
 }
