@@ -190,11 +190,7 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 		String individualId = requestDto.getRequest().getIndividualId();
-		if (!validateIndividualIdvIdWithoutIdType(individualId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request to generate VID"));
-			throw new InvalidInputException("individualId");
-		}
+		validateIndividualIdvIdWithoutIdType(individualId);
 		validateAuthTypeV2(requestDto.getRequest().getAuthType());
 	}
 
@@ -512,12 +508,12 @@ public class RequestValidator {
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
-		validateRequest(requestDTO, RequestIdType.RE_PRINT_ID);
-
 		if (requestDTO.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
 		}
+
+		validateRequest(requestDTO, RequestIdType.RE_PRINT_ID);
 
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for print UIN API");
 
@@ -550,12 +546,12 @@ public class RequestValidator {
 	}
 
 	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
-		validateRequest(requestDTO, RequestIdType.RES_UPDATE);
-
 		if (requestDTO.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
 		}
+
+		validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 
 		if (!isPatch) {
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
@@ -589,12 +585,12 @@ public class RequestValidator {
 	}
 
 	public void validateRidCheckStatusRequestDTO(RequestWrapper<RequestDTO> requestDTO) {
-		validateRequest(requestDTO, RequestIdType.CHECK_STATUS);
-
 		if (requestDTO.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
 		}
+
+		validateRequest(requestDTO, RequestIdType.CHECK_STATUS);
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
 				|| (!requestDTO.getRequest().getIndividualIdType().equalsIgnoreCase(IdType.RID.name()))) {
