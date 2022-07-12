@@ -152,7 +152,7 @@ public class ResidentConfigServiceImplTest {
 		Mockito.when(objectMapper.readValue(src, Map.class)).thenReturn(uiSchema);
 		testSubject = createTestSubject();
 		result = testSubject.getUiSchemaFilteredInputAttributes();
-		assertNotNull(result.size());
+		assertNotNull(result);
 	}
 
 	@Test
