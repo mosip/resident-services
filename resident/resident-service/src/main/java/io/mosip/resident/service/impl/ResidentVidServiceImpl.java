@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -393,6 +394,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		request.setVersion(version);
 		request.setRequest(vidRequestDto);
 		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		String apiUrl=env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + vid;
+		URI apiUri=URI.create(apiUrl);
 
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 				"",
@@ -400,8 +403,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 						+ JsonUtils.javaObjectToJsonString(request));
 
 		try {
-			response = (ResponseWrapper) residentServiceRestClient.patchApi(
-					env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + vid, MediaType.APPLICATION_JSON, request,
+			response = (ResponseWrapper) residentServiceRestClient.patchApi(apiUri, MediaType.APPLICATION_JSON, request,
 					ResponseWrapper.class);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),

@@ -277,26 +277,26 @@ public class ResidentServiceRestClientTest {
 	public void testpatchApi() throws Exception {
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		autnTxnResponseDto.setId("ancd");
-
+		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234").build(false).encode().toUri();
+		
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		when(residentRestTemplate.patchForObject(any(String.class), any(), Matchers.<Class<AutnTxnResponseDto>>any()))
+		when(residentRestTemplate.patchForObject(any(URI.class), any(), Matchers.<Class<AutnTxnResponseDto>>any()))
 				.thenReturn(autnTxnResponseDto);
 
-		assertTrue(client.patchApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto,
-				AutnTxnResponseDto.class).toString().contains("ancd"));
+		assertTrue(client.patchApi(uri, autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
 	}
 
 	@Test(expected = ApisResourceAccessException.class)
 	public void testpatchApiException() throws Exception {
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		autnTxnResponseDto.setId("ancd");
+		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234").build(false).encode().toUri();
 
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
-		when(residentRestTemplate.patchForObject(any(String.class), any(), Matchers.<Class<AutnTxnResponseDto>>any()))
+		when(residentRestTemplate.patchForObject(any(URI.class), any(), Matchers.<Class<AutnTxnResponseDto>>any()))
 				.thenThrow(new RestClientException(""));
 
-		assertTrue(client.patchApi("https://int.mosip.io/individualIdType/UIN/individualId/1234", autnTxnResponseDto,
-				AutnTxnResponseDto.class).toString().contains("ancd"));
+		assertTrue(client.patchApi(uri, autnTxnResponseDto, AutnTxnResponseDto.class).toString().contains("ancd"));
 	}
 
 	@Test
