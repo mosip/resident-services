@@ -29,6 +29,9 @@ import java.time.LocalDateTime;
 public class ResidentTransactionEntity {
 
     @Id
+    private String eventId;
+
+    @Column(name = "aid")
     private String aid;
 
     @NotNull
