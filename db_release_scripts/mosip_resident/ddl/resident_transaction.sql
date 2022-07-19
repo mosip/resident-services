@@ -38,6 +38,11 @@ CREATE TABLE resident.resident_transaction(
     request_signature character varying,
     response_signature character varying,
     olv_partner_id character varying(36),
+    reference_link character varying(1024),
+    read_status boolean NOT NULL DEFAULT false,
+    pinned_status boolean NOT NULL DEFAULT false,
+    purpose character varying(64),
+    credential_request_id character varying(256),
     CONSTRAINT pk_restrn_aid PRIMARY KEY (aid)
 );
 
@@ -68,5 +73,10 @@ COMMENT ON COLUMN resident.resident_transaction.static_tkn_id IS 'The static tok
 COMMENT ON COLUMN resident.resident_transaction.request_signature IS 'The signature of the request';
 COMMENT ON COLUMN resident.resident_transaction.response_signature IS 'The signature of the response';
 COMMENT ON COLUMN resident.resident_transaction.olv_partner_id IS 'The partner id';
+COMMENT ON COLUMN resident.resident_transaction.reference_link IS 'The reference link';
+COMMENT ON COLUMN resident.resident_transaction.read_status IS 'The flag to identify if the request is read or not';
+COMMENT ON COLUMN resident.resident_transaction.pinned_status IS 'The flag to identify if the request is pinned or not';
+COMMENT ON COLUMN resident.resident_transaction.purpose IS 'The purpose of the request';
+COMMENT ON COLUMN resident.resident_transaction.credential_request_id IS 'The credential request id';
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
