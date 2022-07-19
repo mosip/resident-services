@@ -115,6 +115,23 @@ public class ResidentTransactionEntity {
 
     @Column(name = "olv_partner_id")
     private String olvPartnerId;
+    
+    @Column(name = "reference_link")
+    private String reference_link;
+
+    @NotNull
+    @Column(name = "read_status")
+    private boolean read_status=false;
+
+    @NotNull
+    @Column(name = "pinned_status")
+    private boolean pinned_status=false;
+
+    @Column(name = "purpose")
+    private String purpose;
+
+    @Column(name = "credential_request_id")
+    private String credentialRequestId;
 
     /**
      * The constructor used in retrieval of the specific fields.
