@@ -29,6 +29,10 @@ import java.time.LocalDateTime;
 public class ResidentTransactionEntity {
 
     @Id
+    @Column(name = "request_trn_id")
+    private String requestTrnId;
+
+    @Column(name = "aid")
     private String aid;
 
     @NotNull
@@ -38,9 +42,6 @@ public class ResidentTransactionEntity {
     @NotNull
     @Column(name = "response_dtime")
     private LocalDateTime responseDtime;
-
-    @Column(name = "request_trn_id")
-    private String requestTrnId;
 
     @NotNull
     @Column(name = "request_type_code")
@@ -115,6 +116,23 @@ public class ResidentTransactionEntity {
 
     @Column(name = "olv_partner_id")
     private String olvPartnerId;
+    
+    @Column(name = "reference_link")
+    private String reference_link;
+
+    @NotNull
+    @Column(name = "read_status")
+    private boolean read_status=false;
+
+    @NotNull
+    @Column(name = "pinned_status")
+    private boolean pinned_status=false;
+
+    @Column(name = "purpose")
+    private String purpose;
+
+    @Column(name = "credential_request_id")
+    private String credentialRequestId;
 
     /**
      * The constructor used in retrieval of the specific fields.
