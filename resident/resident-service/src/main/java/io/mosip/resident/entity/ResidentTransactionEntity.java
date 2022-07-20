@@ -29,7 +29,8 @@ import java.time.LocalDateTime;
 public class ResidentTransactionEntity {
 
     @Id
-    private String eventId;
+    @Column(name = "request_trn_id")
+    private String requestTrnId;
 
     @Column(name = "aid")
     private String aid;
@@ -41,9 +42,6 @@ public class ResidentTransactionEntity {
     @NotNull
     @Column(name = "response_dtime")
     private LocalDateTime responseDtime;
-
-    @Column(name = "request_trn_id")
-    private String requestTrnId;
 
     @NotNull
     @Column(name = "request_type_code")
