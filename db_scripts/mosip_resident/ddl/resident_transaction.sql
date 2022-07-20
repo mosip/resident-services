@@ -12,8 +12,7 @@
 
 -- This Table is used to save the  transaction related to residents.
 CREATE TABLE resident.resident_transaction(
-	request_trn_id character varying(64),
-	aid character varying(64) NOT NULL,
+	request_trn_id character varying(64) NOT NULL,
 	request_dtimes timestamp NOT NULL,
 	response_dtime timestamp NOT NULL,
 	request_type_code character varying(128) NOT NULL,
@@ -38,6 +37,7 @@ CREATE TABLE resident.resident_transaction(
     request_signature character varying,
     response_signature character varying,
     olv_partner_id character varying(36),
+    aid character varying(64),
     reference_link character varying(1024),
     read_status boolean NOT NULL DEFAULT false,
     pinned_status boolean NOT NULL DEFAULT false,
