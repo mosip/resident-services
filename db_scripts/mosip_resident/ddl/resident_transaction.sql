@@ -43,7 +43,7 @@ CREATE TABLE resident.resident_transaction(
     pinned_status boolean NOT NULL DEFAULT false,
     purpose character varying(64),
     credential_request_id character varying(256),
-    CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
+    CONSTRAINT pk_restrn_request_trn_id PRIMARY KEY (request_trn_id)
 );
 
 COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
