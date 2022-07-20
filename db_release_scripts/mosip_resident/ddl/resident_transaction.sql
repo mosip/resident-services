@@ -47,11 +47,10 @@ CREATE TABLE resident.resident_transaction(
 );
 
 COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
-COMMENT ON COLUMN resident_transaction.event_id IS 'Unique Id of each record.';
 COMMENT ON COLUMN resident.resident_transaction.aid IS 'The Application ID';
 COMMENT ON COLUMN resident.resident_transaction.request_dtimes IS 'The time when the request is received by the service';
 COMMENT ON COLUMN resident.resident_transaction.response_dtime IS 'The time when the response is received by the service';
-COMMENT ON COLUMN resident.resident_transaction.request_trn_id IS 'The unique identifier for any transaction';
+COMMENT ON COLUMN resident.resident_transaction.request_trn_id IS 'The unique identifier for each transaction';
 COMMENT ON COLUMN resident.resident_transaction.request_type_code IS 'The type of request';
 COMMENT ON COLUMN resident.resident_transaction.request_summary IS 'The summary of the request';
 COMMENT ON COLUMN resident.resident_transaction.status_code IS 'The current status of the request';
