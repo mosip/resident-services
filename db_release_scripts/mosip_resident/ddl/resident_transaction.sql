@@ -12,11 +12,9 @@
 
 -- This Table is used to save the  transaction related to residents.
 CREATE TABLE resident.resident_transaction(
-	event_id character varying(64) NOT NULL,
-	aid character varying(64) NOT NULL,
+	request_trn_id character varying(64),
 	request_dtimes timestamp NOT NULL,
 	response_dtime timestamp NOT NULL,
-	request_trn_id character varying(64),
 	request_type_code character varying(128) NOT NULL,
 	request_summary character varying(1024) NOT NULL,
 	status_code character varying(36) NOT NULL,
@@ -39,20 +37,21 @@ CREATE TABLE resident.resident_transaction(
     request_signature character varying,
     response_signature character varying,
     olv_partner_id character varying(36),
+    aid character varying(64) NOT NULL,
     reference_link character varying(1024),
     read_status boolean NOT NULL DEFAULT false,
     pinned_status boolean NOT NULL DEFAULT false,
     purpose character varying(64),
     credential_request_id character varying(256),
-    CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
+    CONSTRAINT pk_restrn_event_id PRIMARY KEY (request_trn_id)
 );
 
 COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
-COMMENT ON COLUMN resident_transaction.event_id IS 'Unique Id of the transaction.';
-COMMENT ON COLUMN resident.resident_transaction.aid IS 'A unique identifier for each transaction';
+COMMENT ON COLUMN resident_transaction.event_id IS 'Unique Id of each record.';
+COMMENT ON COLUMN resident.resident_transaction.aid IS 'The Application ID';
 COMMENT ON COLUMN resident.resident_transaction.request_dtimes IS 'The time when the request is received by the service';
 COMMENT ON COLUMN resident.resident_transaction.response_dtime IS 'The time when the response is received by the service';
-COMMENT ON COLUMN resident.resident_transaction.request_trn_id IS 'The unique identifier for each transaction';
+COMMENT ON COLUMN resident.resident_transaction.request_trn_id IS 'The unique identifier for any transaction';
 COMMENT ON COLUMN resident.resident_transaction.request_type_code IS 'The type of request';
 COMMENT ON COLUMN resident.resident_transaction.request_summary IS 'The summary of the request';
 COMMENT ON COLUMN resident.resident_transaction.status_code IS 'The current status of the request';
