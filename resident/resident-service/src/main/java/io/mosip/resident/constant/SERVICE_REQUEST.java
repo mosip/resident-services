@@ -1,0 +1,8 @@
+package io.mosip.resident.constant;
+
+public enum SERVICE_REQUEST {
+	DOWNLOAD_PERSONALIZED_CARD,
+	ORDER_PHYSICAL_CARD,
+	GET_MY_ID,
+	BOOK_AN_APPOINTMENT
+}
