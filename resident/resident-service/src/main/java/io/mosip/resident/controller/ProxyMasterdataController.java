@@ -3,9 +3,9 @@ package io.mosip.resident.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +32,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Ritik Jain
  */
 @RestController
-@RequestMapping("/proxy/masterdata")
 @Tag(name = "proxy-masterdata-controller", description = "Proxy Masterdata Controller")
 public class ProxyMasterdataController {
 
@@ -52,7 +51,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/validdocuments/{langCode}")
+	@GetMapping("/proxy/masterdata/validdocuments/{langCode}")
 	@Operation(summary = "getValidDocumentByLangCode", description = "getValidDocumentByLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -78,7 +77,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/locationHierarchyLevels/{langcode}")
+	@GetMapping("/proxy/masterdata/locationHierarchyLevels/{langcode}")
 	@Operation(summary = "getLocationHierarchyLevelByLangCode", description = "getLocationHierarchyLevelByLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -105,7 +104,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/locations/immediatechildren/{locationcode}/{langcode}")
+	@GetMapping("/proxy/masterdata/locations/immediatechildren/{locationcode}/{langcode}")
 	@Operation(summary = "getImmediateChildrenByLocCodeAndLangCode", description = "getImmediateChildrenByLocCodeAndLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -134,7 +133,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/locations/info/{locationcode}/{langcode}")
+	@GetMapping("/proxy/masterdata/locations/info/{locationcode}/{langcode}")
 	@Operation(summary = "getLocationDetailsByLocCodeAndLangCode", description = "getLocationDetailsByLocCodeAndLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -164,7 +163,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}")
+	@GetMapping("/proxy/masterdata/getcoordinatespecificregistrationcenters/{langcode}/{longitude}/{latitude}/{proximitydistance}")
 	@Operation(summary = "getCoordinateSpecificRegistrationCenters", description = "getCoordinateSpecificRegistrationCenters", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -193,7 +192,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/applicanttype/{applicantId}/languages")
+	@GetMapping("/proxy/masterdata/applicanttype/{applicantId}/languages")
 	@Operation(summary = "getApplicantValidDocument", description = "getApplicantValidDocument", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -221,7 +220,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/registrationcenters/{langcode}/{hierarchylevel}/names")
+	@GetMapping("/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names")
 	@Operation(summary = "getRegistrationCentersByHierarchyLevel", description = "getRegistrationCentersByHierarchyLevel", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -255,7 +254,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
+	@GetMapping("/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
 	@Operation(summary = "getRegistrationCenterByHierarchyLevelAndTextPaginated", description = "getRegistrationCenterByHierarchyLevelAndTextPaginated", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -290,7 +289,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/workingdays/{registrationCenterID}/{langCode}")
+	@GetMapping("/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}")
 	@Operation(summary = "getRegistrationCenterWorkingDays", description = "getRegistrationCenterWorkingDays", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -320,7 +319,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/idschema/latest")
+	@GetMapping("/proxy/masterdata/idschema/latest")
 	@Operation(summary = "getLatestIdSchema", description = "getLatestIdSchema", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -338,6 +337,35 @@ public class ProxyMasterdataController {
 		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLatestIdSchema(schemaVersion, domain, type);
 		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLatestIdSchema()::exit");
+		return responseWrapper;
+	}
+	
+	/**
+	 * Get templates by language code and template type code.
+	 * 
+	 * @param langCode
+	 * @param templateTypeCode
+	 * @return ResponseWrapper object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAllTemplateBylangCodeAndTemplateTypeCode()" + ")")
+	@GetMapping("/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}")
+	@Operation(summary = "getAllTemplateBylangCodeAndTemplateTypeCode", description = "getAllTemplateBylangCodeAndTemplateTypeCode", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(@PathVariable("langcode") String langCode,
+			@PathVariable("templatetypecode") String templateTypeCode) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getAllTemplateBylangCodeAndTemplateTypeCode()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_SUCCESS);
+		logger.debug("ProxyMasterdataController::getAllTemplateBylangCodeAndTemplateTypeCode()::exit");
 		return responseWrapper;
 	}
 

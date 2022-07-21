@@ -22,6 +22,8 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.dto.TemplateDto;
+import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -52,12 +54,24 @@ public class ProxyMasterdataServiceTest {
 	private ProxyMasterdataService proxyMasterdataService = new ProxyMasterdataServiceImpl();
 
 	private ResponseWrapper<?> responseWrapper;
+	
+	private ResponseWrapper<TemplateResponseDto> templateWrapper;
 
 	@Before
 	public void setup() {
 		responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
+		templateWrapper = new ResponseWrapper<>();
+		TemplateResponseDto templateResp = new TemplateResponseDto();
+		TemplateDto templateDto = new TemplateDto();
+		templateDto.setDescription("re print uin");
+		templateDto.setFileText(
+				"Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.");
+		List<TemplateDto> templateList = new ArrayList<>();
+		templateList.add(templateDto);
+		templateResp.setTemplates(templateList);
+		templateWrapper.setResponse(templateResp);
 	}
 
 	@Test
@@ -479,6 +493,48 @@ public class ProxyMasterdataServiceTest {
 		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(), any(),
 				any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getLatestIdSchema(0, "domain", "type");
+	}
+	
+	@Test
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCode()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng",
+				"otp-template");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCodeIf()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
+		ServiceError error = new ServiceError();
+		error.setErrorCode("101");
+		error.setMessage("errors");
+
+		List<ServiceError> errorList = new ArrayList<ServiceError>();
+		errorList.add(error);
+
+		templateWrapper.setErrors(errorList);
+		proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng", "otp-template");
+	}
+
+	@Test
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCodeElse()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
+		templateWrapper.setErrors(null);
+		ResponseWrapper<?> result = proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng",
+				"otp-template");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCodeWithApisResourceAccessException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any()))
+				.thenThrow(new ApisResourceAccessException());
+		proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng", "otp-template");
 	}
 
 }
