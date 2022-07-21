@@ -185,12 +185,6 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
 		}
-		if(requestDto.getRequest().getIndividualId() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("individualId");
-		}
-		String individualId = requestDto.getRequest().getIndividualId();
-		validateIndividualIdvIdWithoutIdType(individualId);
 		validateAuthTypeV2(requestDto.getRequest().getAuthType());
 	}
 

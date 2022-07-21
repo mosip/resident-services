@@ -153,7 +153,6 @@ public class ResidentControllerTest {
 		euinRequest.setRequest(new EuinRequestDTO("5734728510", "1234567890", IdType.UIN.name(), "UIN", "111111"));
 
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("5734728510");
 		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
 		authTypeStatusDto.setAuthType("bio-FIR");
 		authTypeStatusDto.setLocked(true);
