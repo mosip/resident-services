@@ -49,5 +49,7 @@ public class AuthorizedScopesDto {
 	private List<String> postSendPhysicalCard;
 
 	private List<String> deleteUploadDocuments;
+	
+	private List<String> getAllTemplateBylangCodeAndTemplateTypeCode;
 
 }

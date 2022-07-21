@@ -592,6 +592,16 @@ public enum EventEnum {
 			"delete document is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
+	GET_TEMPLATES("RES-SER-245", RegistrationConstants.SYSTEM, "get templates",
+			"get templates by langCode and templateTypeCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_TEMPLATES_SUCCESS("RES-SER-246", RegistrationConstants.SYSTEM, "get templates success",
+			"get templates by langCode and templateTypeCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_TEMPLATES_EXCEPTION("RES-SER-247", RegistrationConstants.SYSTEM, "get templates failure",
+			"get templates by langCode and templateTypeCode is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	;
 
 	private final String eventId;

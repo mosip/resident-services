@@ -132,5 +132,16 @@ public interface ProxyMasterdataService {
 	 */
 	public ResponseWrapper<?> getLatestIdSchema(double schemaVersion, String domain, String type)
 			throws ResidentServiceCheckedException;
+	
+	/**
+	 * Get templates by language code and template type code.
+	 * 
+	 * @param langCode
+	 * @param templateTypeCode
+	 * @return ResponseWrapper object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
+			throws ResidentServiceCheckedException;
 
 }
