@@ -25,6 +25,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -55,6 +56,12 @@ public class ResidentController {
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+
+	@Value("${resident.authLockStatusUpdateV2.id}")
+	private String authLockStatusUpdateV2Id;
+
+	@Value("${resident.authLockStatusUpdateV2.version}")
+	private String authLockStatusUpdateV2Version;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -197,6 +204,8 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest()));
+		response.setId(authLockStatusUpdateV2Id);
+		response.setVersion(authLockStatusUpdateV2Version);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS,individualId));
 		return response;
 	}

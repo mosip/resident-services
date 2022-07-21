@@ -24,7 +24,6 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
@@ -185,21 +184,21 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
 		}
-		validateAuthTypeV2(requestDto.getRequest().getAuthType());
+		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
 
 	private void validateAuthTypeV2(List<AuthTypeStatusDto> authType) {
 		if (authType == null || authType.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("authType");
+			throw new InvalidInputException("authTypes");
 		}
 		String[] authTypesArray = authTypes.split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (AuthTypeStatusDto authTypeStatusDto : authType) {
 			if (StringUtils.isEmpty(authTypeStatusDto.getAuthType()) || !authTypesAllowed.contains(authTypeStatusDto.getAuthType())) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType",
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes",
 						"Request to generate VID"));
-				throw new InvalidInputException("authType");
+				throw new InvalidInputException("authTypes");
 			}
 			if(!isLong(authTypeStatusDto.getUnlockForSeconds())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
@@ -388,15 +387,15 @@ public class RequestValidator {
 
 	public void validateAuthType(List<String> authType, String msg) {
 		if (authType == null || authType.isEmpty()) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType", msg));
-			throw new InvalidInputException("authType");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
+			throw new InvalidInputException("authTypes");
 		}
 		String[] authTypesArray = authTypes.split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (String type : authType) {
 			if (!authTypesAllowed.contains(type)) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authType", msg));
-				throw new InvalidInputException("authType");
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes", msg));
+				throw new InvalidInputException("authTypes");
 			}
 		}
 	}
