@@ -1240,6 +1240,24 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2NegativeUnlockForSeconds() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(-1L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+	
+	@Test
 	public void testValidateAuthLockOrUnlockRequestV2NullUnlockForSeconds() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
@@ -1255,6 +1273,26 @@ public class RequestValidatorTest {
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+		//Should not throw exception
+	}
+	
+	@Test
+	public void testValidateAuthLockOrUnlockRequestV2PositiveUnlockForSeconds() throws Exception{
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(1L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+		//Should not throw exception
 	}
 
 	@Test(expected = InvalidInputException.class)
