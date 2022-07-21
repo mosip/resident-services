@@ -781,7 +781,7 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK,
 					"Request for Auth Type Lock"));
 
-			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthType()) {
+			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId,
 						List.of(authTypeStatusDto.getAuthType().split(",")), 
 						authTypeStatusDto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK, authTypeStatusDto.getUnlockForSeconds());
@@ -791,7 +791,7 @@ public class ResidentServiceImpl implements ResidentService {
 					insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
 				} else {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
-							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthType() + " lock failed"));
+							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
 				}
@@ -803,12 +803,12 @@ public class ResidentServiceImpl implements ResidentService {
 							+ ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
-					"Request for auth" + authLockOrUnLockRequestDtoV2.getAuthType() + " lock failed"));
+					"Request for auth" + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
 		} finally {
 			NotificationTemplateCode templateCode = null;
-			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthType()) {
+			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 				if (authTypeStatusDto.getLocked()) {
 					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
 							: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
@@ -821,10 +821,10 @@ public class ResidentServiceImpl implements ResidentService {
 					null);
 			if (isTransactionSuccessful)
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
-						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthType() + " lock success"));
+						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock success"));
 			else
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
-						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthType() + " lock failed"));
+						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 			if (notificationResponseDTO != null) {
 				response.setMessage(notificationResponseDTO.getMessage());
 			}
