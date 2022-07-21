@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.kernel.core.exception.ErrorResponse;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
@@ -160,7 +159,7 @@ public class ResidentControllerTest {
 		authTypeStatusDto.setUnlockForSeconds(1L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		authTypeStatusRequest = new RequestWrapper<>();
 		authTypeStatusRequest.setRequest(authLockOrUnLockRequestDtoV2);
 		authTypeStatusRequest.setRequesttime(LocalDateTime.now().toString());

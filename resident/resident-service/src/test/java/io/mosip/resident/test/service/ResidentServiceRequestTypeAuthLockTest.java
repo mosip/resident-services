@@ -100,11 +100,11 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setUnlockForSeconds(10L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		ArrayList<String> partnerIds = new ArrayList<>();
 		partnerIds.add("m-partner-default-auth");
 		Mockito.when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
-		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthType()) {
+		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 			 idAuthService.authTypeStatusUpdate(individualId,
 					List.of(authTypeStatusDto.getAuthType().split(",")),
 					authTypeStatusDto.getLocked() ? AuthTypeStatus.LOCK : AuthTypeStatus.UNLOCK, authTypeStatusDto.getUnlockForSeconds());
@@ -131,7 +131,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setUnlockForSeconds(10L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 
 	}
@@ -147,7 +147,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setUnlockForSeconds(10L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		Mockito.when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
 				authTypeStatusDto.getUnlockForSeconds())).thenReturn(true);
 		Mockito.when(notificationService.sendNotification(Mockito.any()))
@@ -167,7 +167,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setUnlockForSeconds(10L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		Mockito.when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
 						authTypeStatusDto.getUnlockForSeconds()))
 				.thenThrow(new ApisResourceAccessException());
@@ -185,7 +185,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setUnlockForSeconds(10L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 
 		Mockito.lenient().when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
 				authTypeStatusDto.getUnlockForSeconds()))
@@ -203,7 +203,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setUnlockForSeconds(10L);
 		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthType(authTypeStatusDtoList);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 
 	}

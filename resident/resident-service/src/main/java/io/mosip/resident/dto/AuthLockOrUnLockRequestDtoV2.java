@@ -9,11 +9,11 @@ import java.util.List;
 
 
 @Data
-@JsonPropertyOrder({ "individualId", "authType" })
+@JsonPropertyOrder({ "individualId", "authTypes" })
 public class AuthLockOrUnLockRequestDtoV2 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String individualId;
-	private List<AuthTypeStatusDto> authType;
+	private List<AuthTypeStatusDto> authTypes;
 
 }
