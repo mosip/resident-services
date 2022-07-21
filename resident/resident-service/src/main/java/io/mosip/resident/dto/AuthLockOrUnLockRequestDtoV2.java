@@ -13,7 +13,6 @@ import java.util.List;
 public class AuthLockOrUnLockRequestDtoV2 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private String individualId;
 	private List<AuthTypeStatusDto> authType;
 
 }
