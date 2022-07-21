@@ -738,7 +738,7 @@ public class ResidentServiceImpl implements ResidentService {
 		txn.setAid(HMACUtils2.digestAsPlainText(response.getRegistrationId().getBytes()));
 		txn.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		txn.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		txn.setRequestTrnId(dto.getTransactionID());
+		txn.setRequestTrnId((UUID.randomUUID().toString()));
 		txn.setRequestTypeCode("UIN_UPDATED");
 		txn.setAuthTypeCode(ResidentTransactionType.DATA_UPDATE_REQUEST.toString());
 		txn.setRequestSummary("Uin updated successfully");
@@ -858,6 +858,7 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntity.setCrBy("RESIDENT");
 			residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 			residentTransactionEntity.setOlvPartnerId(partner);
+			residentTransactionEntity.setRequestTrnId((UUID.randomUUID().toString()));
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 	}
@@ -1180,6 +1181,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setCrBy("RESIDENT");
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 		residentTransactionEntity.setOlvPartnerId("");
+		residentTransactionEntity.setRequestTrnId((UUID.randomUUID().toString()));
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 

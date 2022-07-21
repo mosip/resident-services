@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeService {
@@ -105,7 +106,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             residentTransactionEntity.setAid(HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8)));
             residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
             residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-            residentTransactionEntity.setRequestTrnId(eventModel.getEvent().getTransactionId());
+            residentTransactionEntity.setRequestTrnId((UUID.randomUUID().toString()));
             residentTransactionEntity.setRequestTypeCode("Requested for Subscribing to WebSub");
             residentTransactionEntity.setRequestSummary("Requested for Subscribing to WebSub");
             residentTransactionEntity.setStatusCode(status);
