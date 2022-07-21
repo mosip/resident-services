@@ -242,15 +242,13 @@ public class ResidentServiceRestClient {
 	 * @return the t
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
+	public <T> T patchApi(URI uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		T result = null;
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-			if(uri==null){
-				throw new ApisResourceAccessException("URI is null");
-			}
+			
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
@@ -264,7 +262,7 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	public <T> T patchApi(String uri, Object requestType, Class<?> responseClass) throws Exception {
+	public <T> T patchApi(URI uri, Object requestType, Class<?> responseClass) throws Exception {
 		return patchApi(uri, null, requestType, responseClass);
 	}
 

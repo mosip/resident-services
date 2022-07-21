@@ -780,22 +780,6 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK,
 					"Request for Auth Type Lock"));
-			String individualIdFromRequest = authLockOrUnLockRequestDtoV2.getIndividualId();
-			String uin;
-			if (vidOnly) {
-				uin =  utilities.getUinByVid(individualIdFromRequest);
-			} else{
-				uin = individualIdFromRequest;
-			}
-			String residentToken = identityServiceImpl.getResidentIdaToken();
-			String idaToken = identityServiceImpl.getIDAToken(uin);
-			if(residentToken!=null && idaToken!=null){
-				if (!residentToken.equalsIgnoreCase(idaToken)) {
-					throw new ResidentServiceCheckedException(
-							ResidentErrorCode.IDVID_NOT_MATCH_TO_SESSION.getErrorCode(),
-							ResidentErrorCode.IDVID_NOT_MATCH_TO_SESSION.getErrorMessage());
-				}
-			}
 
 			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId,
@@ -812,7 +796,7 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
 				}
 			}
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException | IOException e) {
+		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()

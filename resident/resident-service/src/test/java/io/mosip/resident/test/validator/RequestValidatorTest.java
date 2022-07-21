@@ -1168,7 +1168,7 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
-	public void testValidateAuthLockOrUnlockRequestV2InvalidIndividualId() throws Exception{
+  public void testValidateAuthLockOrUnlockRequestV2InvalidIndividualId() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
 		authLockOrUnLockRequestDtoV2.setIndividualId(null);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(null);
@@ -1188,9 +1188,8 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
-	public void testValidateAuthLockOrUnlockRequestV2InvalidIndividualIdBadIdType() throws Exception{
+  public void testValidateAuthLockOrUnlockRequestV2InvalidIndividualIdBadIdType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
@@ -1202,9 +1201,9 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2InvalidAuthType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
+    authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		authLockOrUnLockRequestDtoV2.setAuthTypes(null);
-		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+    RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
 		requestWrapper.setVersion("v1");
@@ -1215,7 +1214,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2BadAuthType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
 		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
 		authTypeStatusDto.setAuthType("dummy");
@@ -1234,7 +1232,6 @@ public class RequestValidatorTest {
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
 		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
 		authTypeStatusDto.setAuthType("bio-FIR");
@@ -1253,7 +1250,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2EmptyAuthType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
@@ -1267,7 +1263,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2NullUnlockForSeconds() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
 		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
 		authTypeStatusDto.setAuthType("bio-FIR");
@@ -1286,7 +1281,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2EmptyAuthTypeV2() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
 		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
 		authTypes.add(authTypeStatusDto);
@@ -1302,7 +1296,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2BadUnlockForSeconds2() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		authLockOrUnLockRequestDtoV2.setIndividualId("12344567");
 		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
 		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
 		authTypeStatusDto.setAuthType("bio-FIR");
