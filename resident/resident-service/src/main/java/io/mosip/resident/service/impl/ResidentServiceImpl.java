@@ -797,7 +797,7 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
 				}
 			}
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
+		} catch (ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
