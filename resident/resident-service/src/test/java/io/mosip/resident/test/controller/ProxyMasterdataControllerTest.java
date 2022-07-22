@@ -171,5 +171,13 @@ public class ProxyMasterdataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=&domain=&type="))
 				.andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(),
+				Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/templates/eng/OTP-sms-template"))
+				.andExpect(status().isOk());
+	}
 
 }

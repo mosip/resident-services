@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,11 +17,13 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
@@ -349,6 +352,43 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getLatestIdSchema()::exit");
 		return responseWrapper;
+	}
+	
+	@Override
+	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getAllTemplateBylangCodeAndTemplateTypeCode()::entry");
+		ResponseWrapper<TemplateResponseDto> response = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("langcode", langCode);
+		pathsegments.put("templatetypecode", templateTypeCode);
+
+		try {
+			response = residentServiceRestClient.getApi(ApiName.TEMPLATES_BY_LANGCODE_AND_TEMPLATETYPECODE_URL,
+					pathsegments, ResponseWrapper.class);
+			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+				logger.debug(response.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.TEMPLATE_EXCEPTION);
+			}
+			TemplateResponseDto templateResponse = JsonUtil
+					.readValue(JsonUtil.writeValueAsString(response.getResponse()), TemplateResponseDto.class);
+			String template = templateResponse.getTemplates().get(0).getFileText();
+			ResponseWrapper<Map> responseWrapper = new ResponseWrapper<>();
+			Map<String, String> responseMap = new HashMap<>();
+			responseMap.put("fileText", template);
+			responseWrapper.setResponse(responseMap);
+			logger.debug("ProxyMasterdataServiceImpl::getAllTemplateBylangCodeAndTemplateTypeCode()::exit");
+			return responseWrapper;
+
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
+			logger.error("Error occured in accessing templates %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
 	}
 
 }

@@ -29,6 +29,9 @@ import java.time.LocalDateTime;
 public class ResidentTransactionEntity {
 
     @Id
+    @Column(name = "event_id")
+    private String eventId;
+
     @Column(name = "request_trn_id")
     private String requestTrnId;
 

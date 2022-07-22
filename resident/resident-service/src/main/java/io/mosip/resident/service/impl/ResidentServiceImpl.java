@@ -735,6 +735,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private void updateResidentTransaction(ResidentUpdateRequestDto dto, PacketGeneratorResDto response)
 			throws NoSuchAlgorithmException {
 		ResidentTransactionEntity txn = new ResidentTransactionEntity();
+		txn.setEventId(UUID.randomUUID().toString());
 		txn.setAid(HMACUtils2.digestAsPlainText(response.getRegistrationId().getBytes()));
 		txn.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		txn.setResponseDtime(DateUtils.getUTCCurrentDateTime());
@@ -844,6 +845,7 @@ public class ResidentServiceImpl implements ResidentService {
 			String id= individualId+partner;
 			byte[] idBytes = id.getBytes();
 			String hash = HMACUtils2.digestAsPlainText(idBytes);
+			residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 			residentTransactionEntity.setAid(hash);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
@@ -1166,6 +1168,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto) throws ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());

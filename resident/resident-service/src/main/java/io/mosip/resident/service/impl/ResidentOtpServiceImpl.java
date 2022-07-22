@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import io.mosip.resident.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		byte[] idBytes = id.getBytes();
 		String hash = HMACUtils2.digestAsPlainText(idBytes);
 		residentTransactionEntity.setAid(hash);
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());

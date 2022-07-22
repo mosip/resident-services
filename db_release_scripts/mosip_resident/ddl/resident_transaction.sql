@@ -12,7 +12,8 @@
 
 -- This Table is used to save the  transaction related to residents.
 CREATE TABLE resident.resident_transaction(
-	request_trn_id character varying(64) NOT NULL,
+    event_id VARCHAR(64) NOT NULL,
+	request_trn_id character varying(64) ,
 	request_dtimes timestamp NOT NULL,
 	response_dtime timestamp NOT NULL,
 	request_type_code character varying(128) NOT NULL,
@@ -43,10 +44,11 @@ CREATE TABLE resident.resident_transaction(
     pinned_status boolean NOT NULL DEFAULT false,
     purpose character varying(64),
     credential_request_id character varying(256),
-    CONSTRAINT pk_restrn_request_trn_id PRIMARY KEY (request_trn_id)
+    CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
 );
 
 COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
+COMMENT ON COLUMN resident_transaction.event_id IS 'Unique Id of the transaction.';
 COMMENT ON COLUMN resident.resident_transaction.aid IS 'The Application ID';
 COMMENT ON COLUMN resident.resident_transaction.request_dtimes IS 'The time when the request is received by the service';
 COMMENT ON COLUMN resident.resident_transaction.response_dtime IS 'The time when the response is received by the service';

@@ -77,7 +77,8 @@ public class AuthTransactionCallbackServiceTest {
         eventModel=new EventModel();
         Event event=new Event();
         event.setTransactionId("1234");
-        event.setId("io.mosip.idauthentication");
+        event.setTimestamp(LocalDateTime.now().toString());
+        event.setId("12345");
         Map<String, Object> partnerIdMap = new java.util.HashMap<>();
         partnerIdMap.put("olv_partner_id", "mpartner-default-auth");
         event.setData(partnerIdMap);
