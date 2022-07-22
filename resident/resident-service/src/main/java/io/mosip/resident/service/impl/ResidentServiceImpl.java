@@ -788,7 +788,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
-					insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
+					//FIXME Temporarily disabled storing auth status
+					//insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
 				} else {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
 							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
@@ -796,7 +797,7 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
 				}
 			}
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
+		} catch (ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
