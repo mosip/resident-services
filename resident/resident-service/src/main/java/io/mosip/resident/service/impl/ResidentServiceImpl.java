@@ -788,8 +788,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
-					//FIXME Temporarily disabled storing auth status
-					//insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
+					insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
 				} else {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
 							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
@@ -797,7 +796,7 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
 				}
 			}
-		} catch (ApisResourceAccessException e) {
+		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
@@ -845,6 +844,9 @@ public class ResidentServiceImpl implements ResidentService {
 			String id= individualId+partner;
 			byte[] idBytes = id.getBytes();
 			String hash = HMACUtils2.digestAsPlainText(idBytes);
+			//FIXME temporary fix. Remove it
+			residentTransactionEntity.setRequestTrnId(UUID.randomUUID().toString());
+					;
 			residentTransactionEntity.setAid(hash);
 			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
