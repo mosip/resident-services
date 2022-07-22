@@ -788,7 +788,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
-					insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
+					//FIXME Temporarily disabled storing auth status
+					//insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
 				} else {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
 							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
