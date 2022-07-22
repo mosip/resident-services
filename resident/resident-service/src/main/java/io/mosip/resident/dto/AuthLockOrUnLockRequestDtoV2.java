@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Data
-@JsonPropertyOrder({ "individualId", "authTypes" })
+@JsonPropertyOrder({ "authTypes" })
 public class AuthLockOrUnLockRequestDtoV2 implements Serializable {
 
 	private static final long serialVersionUID = 1L;
