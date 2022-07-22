@@ -1257,7 +1257,11 @@ public class ResidentServiceImpl implements ResidentService {
 			serviceHistoryResponseDto.setApplicationId(residentTransactionEntity.getRequestTrnId());
 			serviceHistoryResponseDto.setAdditionalInformation(residentTransactionEntity.getStatusComment());
 			serviceHistoryResponseDto.setStatus(residentTransactionEntity.getStatusCode());
-			serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
+			if(residentTransactionEntity.getUpdDtimes()!= null && residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
+				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getUpdDtimes().toString());
+			} else {
+				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
+			}
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
