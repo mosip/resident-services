@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBackService {
@@ -64,11 +65,12 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         String id = identityService.getResidentIndvidualId();
         residentTransactionEntity.setAid(HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8)));
-        residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
-        residentTransactionEntity.setResponseDtime(LocalDateTime.now());
+        residentTransactionEntity.setEventId(eventModel.getEvent().getId());
+        residentTransactionEntity.setRequestDtimes(LocalDateTime.parse(eventModel.getEvent().getTimestamp()));
+        residentTransactionEntity.setResponseDtime(LocalDateTime.parse(eventModel.getEvent().getTimestamp()));
         residentTransactionEntity.setRequestTrnId(eventModel.getEvent().getTransactionId());
-        residentTransactionEntity.setRequestTypeCode("Requested for Subscribing to WebSub");
-        residentTransactionEntity.setRequestSummary("Requested for Subscribing to WebSub");
+        residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
+        residentTransactionEntity.setRequestSummary(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
         residentTransactionEntity.setStatusCode(status);
         residentTransactionEntity.setStatusComment(status);
         residentTransactionEntity.setLangCode(ENG);
