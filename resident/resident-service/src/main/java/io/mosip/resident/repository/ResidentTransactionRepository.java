@@ -21,21 +21,29 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
     public ResidentTransactionEntity findByAid(String aid);
 
 
-    @Query(value = "Select new ResidentTransactionEntity( requestTrnId, statusComment , crDtimes, statusCode, updDtimes) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
             "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
-            " AND authTypeCode in :residentTransactionType ORDER BY pinnedStatus DESC" )
+            " AND authTypeCode in :residentTransactionType " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            "ORDER BY pinnedStatus DESC" )
     List<ResidentTransactionEntity> findByToken( @Param("tokenId") String tokenId,
                                                  @Param("fromDateTime") LocalDateTime fromDateTime,
                                                 @Param("toDateTime") LocalDateTime toDateTime,
                                                 @Param("residentTransactionType") List<String> residentTransactionType,
-                                                Pageable pagaeable);
+                                                Pageable pagaeable, @Param("searchText") String searchText);
 
-    @Query(value = "Select new ResidentTransactionEntity( requestTrnId, statusComment , crDtimes, statusCode, updDtimes) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
             "from ResidentTransactionEntity where tokenId=:tokenId " +
-            " AND authTypeCode in :residentTransactionType ORDER BY pinnedStatus DESC" )
+            " AND authTypeCode in :residentTransactionType " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            " ORDER BY pinnedStatus DESC" )
     List<ResidentTransactionEntity> findByTokenWithoutDate(@Param("tokenId") String tokenId,
                                                            @Param("residentTransactionType") List<String> residentTransactionType,
-                                                           Pageable pagaeable);
+                                                           Pageable pagaeable, @Param("searchText") String searchText);
 
     @Query(value = "Select new ResidentTransactionEntity(aid) " +
             "from ResidentTransactionEntity where tokenId=:tokenId "  +

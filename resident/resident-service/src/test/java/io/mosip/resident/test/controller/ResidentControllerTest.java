@@ -1,6 +1,3 @@
-/**
- * 
- */
 package io.mosip.resident.test.controller;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -324,9 +321,11 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetServiceHistorySuccess() throws Exception {
-		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
-		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"), LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(), ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
-		mockMvc.perform(MockMvcRequestBuilders.get("/getServiceHistory")
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), "", "")).thenReturn(new ArrayList<>(0));
+		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
+				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
+				ResidentTransactionType.AUTHENTICATION_REQUEST.toString(), null, null);
+		mockMvc.perform(MockMvcRequestBuilders.get("/service-history")
 						.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}

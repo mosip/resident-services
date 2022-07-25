@@ -1066,7 +1066,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime,
-															 LocalDateTime toDateTime, String serviceType, String sortType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+															 LocalDateTime toDateTime, String serviceType, String sortType, String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if(pageStart == null) {
 			if(pageFetch == null) {
@@ -1094,7 +1094,7 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if(sortType.equalsIgnoreCase(SortType.DESC.toString())) {
 			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.DESC, "crDtimes"));
 		}
-		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType);
+		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = getServiceHistoryForEachPartner(pageRequest, fromDateTime, toDateTime, serviceType, searchColumn, searchText);
 		return serviceHistoryResponseDtoList;
 	}
 
@@ -1201,10 +1201,13 @@ public class ResidentServiceImpl implements ResidentService {
 		return residentServiceHistoryResponseDto;
 	}
 
-	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	private List<ServiceHistoryResponseDto> getServiceHistoryForEachPartner(PageRequest pageRequest, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<String> residentTransactionTypeList = convertServiceTypeToResidentTransactionType(serviceType);
 		List<List<ResidentTransactionEntity>> residentTransactionEntityLists = new ArrayList<>();
 		ArrayList<String> partnerIds= partnerServiceImpl.getPartnerDetails("Online_Verification_Partner");
+		if(searchText==null) {
+			searchText="";
+		}
 		if(partnerIds != null) {
 			for (String partnerId : partnerIds) {
 				String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId(), partnerId);
@@ -1212,9 +1215,9 @@ public class ResidentServiceImpl implements ResidentService {
 					if (fromDateTime != null && toDateTime != null) {
 						residentTransactionEntityLists.add(residentTransactionRepository.
 								findByToken(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
-										, pageRequest));
+										, pageRequest, searchText));
 					} else {
-						residentTransactionEntityLists.add(residentTransactionRepository.findByTokenWithoutDate(idaToken, residentTransactionTypeList, pageRequest));
+						residentTransactionEntityLists.add(residentTransactionRepository.findByTokenWithoutDate(idaToken, residentTransactionTypeList, pageRequest, searchText));
 					}
 				}
 			}
@@ -1254,7 +1257,7 @@ public class ResidentServiceImpl implements ResidentService {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
-			serviceHistoryResponseDto.setApplicationId(residentTransactionEntity.getRequestTrnId());
+			serviceHistoryResponseDto.setApplicationId(residentTransactionEntity.getEventId());
 			serviceHistoryResponseDto.setAdditionalInformation(residentTransactionEntity.getStatusComment());
 			serviceHistoryResponseDto.setStatus(residentTransactionEntity.getStatusCode());
 			if(residentTransactionEntity.getUpdDtimes()!= null && residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {

@@ -173,8 +173,8 @@ public class ResidentTransactionEntity {
         this.statusCode = statusCode;
     }
 
-    public ResidentTransactionEntity(String requestTrnId, String statusComment ,LocalDateTime crDtimes, String statusCode, LocalDateTime updDtimes) {
-        this.requestTrnId = requestTrnId;
+    public ResidentTransactionEntity(String eventId, String statusComment ,LocalDateTime crDtimes, String statusCode, LocalDateTime updDtimes) {
+        this.eventId = eventId;
         this.statusComment = statusComment;
         this.crDtimes = crDtimes;
         this.statusCode = statusCode;

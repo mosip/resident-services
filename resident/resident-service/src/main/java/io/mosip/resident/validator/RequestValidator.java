@@ -694,12 +694,29 @@ public class RequestValidator {
 		}
     }
 
-    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType) {
+    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType, String searchColumn, String searchText) {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
+		validateSearch(searchText, searchColumn, "Request service history API");
 		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
 			throw new InvalidInputException("DateTime");
+		}
+	}
+
+	private void validateSearch(String searchText, String searchColumn, String request_service_history_api) {
+		if(StringUtils.isNotEmpty(searchText) && StringUtils.isEmpty(searchColumn)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchText", request_service_history_api));
+			throw new InvalidInputException("Please provide searchColumn");
+		}
+		validateSearchColumn(searchColumn, request_service_history_api);
+	}
+
+	private void validateSearchColumn(String searchColumn, String request_service_history_api) {
+		if(!searchColumn.equalsIgnoreCase("eventId") && !searchColumn.equalsIgnoreCase("statusComment")
+				&& !searchColumn.equalsIgnoreCase("statusCode")) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumn", request_service_history_api));
+			throw new InvalidInputException("Please provide valid searchColumn");
 		}
 	}
 

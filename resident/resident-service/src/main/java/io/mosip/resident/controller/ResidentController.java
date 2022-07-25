@@ -62,6 +62,12 @@ public class ResidentController {
 
 	@Value("${resident.authLockStatusUpdateV2.version}")
 	private String authLockStatusUpdateV2Version;
+
+	@Value("${resident.service.history.id}")
+	private String serviceHistoryId;
+
+	@Value("${resident.service.history.version}")
+	private String serviceHistoryVersion;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -264,7 +270,7 @@ public class ResidentController {
 	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetServiceAuthHistoryRoles()"
 			+ ")")
-	@GetMapping(path="/getServiceHistory")
+	@GetMapping(path="/service-history")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -279,10 +285,12 @@ public class ResidentController {
 																	@RequestParam(name = "toDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
 																	@RequestParam(name = "sortType", required = false) String sortType,
-																	@RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+																	@RequestParam(name = "serviceType", required = false) String serviceType,
+																	@RequestParam(name = "searchColumn", required = false) String searchColumn,
+																	@RequestParam(name = "searchText", required = false) String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType);
-		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType);
+		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, searchColumn, searchText);
+		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, searchColumn, searchText);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
 				"getServiceHistory"));
 		ServiceTypeResponseDto serviceTypeResponseDto = new ServiceTypeResponseDto();
@@ -290,6 +298,8 @@ public class ResidentController {
 		serviceTypeMap.put("serviceType", residentServiceServiceHistory);
 		serviceTypeResponseDto.setResponse(serviceTypeMap);
 		serviceTypeResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
+		serviceTypeResponseDto.setId(serviceHistoryId);
+		serviceTypeResponseDto.setVersion(serviceHistoryVersion);
 		return new ResponseEntity<>(serviceTypeResponseDto, HttpStatus.OK);
 	}
 
