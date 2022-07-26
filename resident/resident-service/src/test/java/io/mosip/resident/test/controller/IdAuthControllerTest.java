@@ -92,7 +92,7 @@ public class IdAuthControllerTest {
 		Boolean authStatus = true;
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(authStatus);
-		mockMvc.perform(MockMvcRequestBuilders.post("/req/validateOTP").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 
