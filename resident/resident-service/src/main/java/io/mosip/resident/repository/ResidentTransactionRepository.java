@@ -1,6 +1,7 @@
 package io.mosip.resident.repository;
 
 import io.mosip.resident.entity.ResidentTransactionEntity;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -48,7 +49,25 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
     @Query(value = "Select new ResidentTransactionEntity(aid) " +
             "from ResidentTransactionEntity where tokenId=:tokenId "  +
             " AND authTypeCode =:residentTransactionType ORDER BY crDtimes DESC" )
-    List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType") String residentTransactionType,
-                                                         Pageable pagaeable);
+    List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType")
+            String residentTransactionType, Pageable pagaeable);
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
+            "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            "ORDER BY pinnedStatus DESC" )
+    List<ResidentTransactionEntity> findByTokenWithoutServiceType( @Param("tokenId") String tokenId,
+                                                                   @Param("fromDateTime") LocalDateTime fromDateTime,
+                                                                   @Param("toDateTime") LocalDateTime toDateTime,
+                                                                   Pageable pagaeable, @Param("searchText") String searchText);
 
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
+            "from ResidentTransactionEntity where tokenId=:tokenId " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            " ORDER BY pinnedStatus DESC" )
+    List<ResidentTransactionEntity> findByTokenWithoutServiceTypeAndDate(@Param("tokenId") String tokenId,
+                                                                         Pageable pagaeable, @Param("searchText") String searchText);
 }

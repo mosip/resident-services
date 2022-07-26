@@ -1212,10 +1212,16 @@ public class ResidentServiceImpl implements ResidentService {
 			for (String partnerId : partnerIds) {
 				String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId(), partnerId);
 				if (idaToken != null) {
-					if (fromDateTime != null && toDateTime != null) {
+					if(fromDateTime != null && toDateTime != null && (serviceType == null || residentTransactionTypeList.size() == ResidentTransactionType.values().length)) {
+						residentTransactionEntityLists.add(residentTransactionRepository.
+								findByTokenWithoutServiceType(idaToken, fromDateTime, toDateTime, pageRequest, searchText));
+					} else if (fromDateTime != null && toDateTime != null && serviceType != null) {
 						residentTransactionEntityLists.add(residentTransactionRepository.
 								findByToken(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
 										, pageRequest, searchText));
+					}else if(fromDateTime == null && toDateTime == null && (serviceType == null || residentTransactionTypeList.size() == ResidentTransactionType.values().length)) {
+						residentTransactionEntityLists.add(residentTransactionRepository.
+								findByTokenWithoutServiceTypeAndDate(idaToken, pageRequest, searchText));
 					} else {
 						residentTransactionEntityLists.add(residentTransactionRepository.findByTokenWithoutDate(idaToken, residentTransactionTypeList, pageRequest, searchText));
 					}
@@ -1228,13 +1234,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private List<String> convertServiceTypeToResidentTransactionType(String serviceType) {
 		List<String> residentTransactionTypeList = new ArrayList<>();
-		if(serviceType == null) {
-			residentTransactionTypeList.addAll(Arrays.asList(AUTHENTICATION_REQUEST.values()).stream().map(Enum::name).collect(Collectors.toList()));
-			residentTransactionTypeList.addAll(Arrays.asList(SERVICE_REQUEST.values()).stream().map(Enum::name).collect(Collectors.toList()));
-			residentTransactionTypeList.addAll(Arrays.asList(DATA_UPDATE_REQUEST.values()).stream().map(Enum::name).collect(Collectors.toList()));
-			residentTransactionTypeList.addAll(Arrays.asList(ID_MANAGEMENT_REQUEST.values()).stream().map(Enum::name).collect(Collectors.toList()));
-			residentTransactionTypeList.addAll(Arrays.asList(DATA_SHARE_REQUEST.values()).stream().map(Enum::name).collect(Collectors.toList()));
-		} else {
+		if(serviceType!=null) {
 			List<String> serviceTypeList = List.of(serviceType.split(",")).stream().map(String::toUpperCase).collect(Collectors.toList());
 			for (String service : serviceTypeList) {
 				if(service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())) {
