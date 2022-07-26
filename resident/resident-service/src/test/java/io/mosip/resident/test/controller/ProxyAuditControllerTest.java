@@ -99,7 +99,7 @@ public class ProxyAuditControllerTest {
 
 	@Test
 	public void testAuditLog() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 

@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Loganathan.S
  */
 @RestController
-@RequestMapping("/proxy/audit")
+@RequestMapping("/auth-proxy/audit")
 @Tag(name = "proxy-audit-controller", description = "Proxy Audit Controller")
 public class ProxyAuditController {
 
@@ -41,6 +42,7 @@ public class ProxyAuditController {
 	 *                                         exception
 	 */
 	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostAuditLog()" + ")")
 	@PostMapping("/log")
 	@Operation(summary = "auditLog", description = "audit log", tags = { "proxy-audit-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

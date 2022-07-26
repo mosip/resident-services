@@ -79,7 +79,7 @@ public class IdAuthControllerTest {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(idAuthController).build();
 		RequestWrapper<IdAuthRequestDto> requestWrapper = new RequestWrapper<IdAuthRequestDto>();
 		IdAuthRequestDto idAuthRequestDto = new IdAuthRequestDto();
-		idAuthRequestDto.setTransactionID("1234567890");
+		idAuthRequestDto.setTransactionId("1234567890");
 		idAuthRequestDto.setIndividualId("8251649601");
 		idAuthRequestDto.setOtp("111111");
 		requestWrapper.setRequest(idAuthRequestDto);
