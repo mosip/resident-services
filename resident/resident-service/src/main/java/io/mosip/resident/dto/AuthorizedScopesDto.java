@@ -52,4 +52,6 @@ public class AuthorizedScopesDto {
 	
 	private List<String> getAllTemplateBylangCodeAndTemplateTypeCode;
 
+	private List<String> getAcknowledgement;
+
 }

@@ -746,4 +746,17 @@ public class RequestValidator {
 			throw new InvalidInputException("aid");
 		}
 	}
+
+    public void validateAcknowledgementRequest(String eventId, String languageCode) {
+		if (StringUtils.isEmpty(eventId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "eventId",
+					"Request acknowledgement API"));
+			throw new InvalidInputException("eventId");
+		}
+		if (StringUtils.isEmpty(languageCode)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "languageCode",
+					"Request acknowledgement API"));
+			throw new InvalidInputException("languageCode");
+		}
+    }
 }

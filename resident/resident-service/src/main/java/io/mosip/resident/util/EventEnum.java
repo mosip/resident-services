@@ -601,6 +601,9 @@ public enum EventEnum {
 	GET_TEMPLATES_EXCEPTION("RES-SER-247", RegistrationConstants.SYSTEM, "get templates failure",
 			"get templates by langCode and templateTypeCode is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL("RES-SER-248", RegistrationConstants.SYSTEM, "get acknowledgement download url",
+			"get acknowledgement download url", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	;
 
