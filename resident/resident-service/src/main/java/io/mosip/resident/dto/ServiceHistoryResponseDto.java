@@ -18,4 +18,5 @@ public class ServiceHistoryResponseDto {
     private String additionalInformation;
     private String TimeStamp;
     private String status;
+    private String requestTypeCode;
 }

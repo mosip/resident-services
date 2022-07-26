@@ -1,7 +1,6 @@
 package io.mosip.resident.repository;
 
 import io.mosip.resident.entity.ResidentTransactionEntity;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,11 +17,11 @@ import java.util.List;
  */
 @Repository
 public interface ResidentTransactionRepository extends JpaRepository<ResidentTransactionEntity, String> {
-    public List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
-    public ResidentTransactionEntity findByAid(String aid);
+    List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
+    ResidentTransactionEntity findByAid(String aid);
 
 
-    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
             " AND authTypeCode in :residentTransactionType " +
             " AND (eventId like %:searchText%" +
@@ -35,7 +34,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
                                                 @Param("residentTransactionType") List<String> residentTransactionType,
                                                 Pageable pagaeable, @Param("searchText") String searchText);
 
-    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId " +
             " AND authTypeCode in :residentTransactionType " +
             " AND (eventId like %:searchText%" +
@@ -51,7 +50,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
             " AND authTypeCode =:residentTransactionType ORDER BY crDtimes DESC" )
     List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType")
             String residentTransactionType, Pageable pagaeable);
-    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
+
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
             " AND (eventId like %:searchText%" +
             " OR statusComment like %:searchText% " +
@@ -62,7 +62,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
                                                                    @Param("toDateTime") LocalDateTime toDateTime,
                                                                    Pageable pagaeable, @Param("searchText") String searchText);
 
-    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId " +
             " AND (eventId like %:searchText%" +
             " OR statusComment like %:searchText% " +
