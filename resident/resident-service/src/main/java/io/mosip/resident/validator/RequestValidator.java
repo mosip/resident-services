@@ -708,8 +708,12 @@ public class RequestValidator {
 		if(StringUtils.isNotEmpty(searchText) && StringUtils.isEmpty(searchColumn)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchText", request_service_history_api));
 			throw new InvalidInputException("Please provide searchColumn");
+		} else if(StringUtils.isEmpty(searchText) && StringUtils.isNotEmpty(searchColumn)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumn", request_service_history_api));
+			throw new InvalidInputException("Please provide searchText");
+		} else if(StringUtils.isNotEmpty(searchText) && StringUtils.isNotEmpty(searchColumn)) {
+			validateSearchColumn(searchColumn, request_service_history_api);;
 		}
-		validateSearchColumn(searchColumn, request_service_history_api);
 	}
 
 	private void validateSearchColumn(String searchColumn, String request_service_history_api) {
