@@ -33,23 +33,22 @@ public class AcknowledgementController {
     @Autowired
     private AcknowledgementService acknowledgementService;
 
-    @PreAuthorize("@scopeValidator.hasAllScopes("
-            + "@authorizedScopes.getGetAcknowledgement()"
-            + ")")
+//    @PreAuthorize("@scopeValidator.hasAllScopes("
+//            + "@authorizedScopes.getGetAcknowledgement()"
+//            + ")")
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
-    public ResponseEntity<Object> acknowledgement(@PathVariable("eventId") String eventId,
+    public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
                                                   @PathVariable("languageCode") String languageCode) {
         logger.debug("AcknowledgementController::acknowledgement()::entry");
         auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
         requestValidator.validateAcknowledgementRequest(eventId, languageCode);
         byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
-//        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-//                .header("Content-Disposition", "attachment; filename=\"" +
-//                        rid + ".pdf\"")
-//                .body((Object) resource);
+        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
         logger.debug("AcknowledgementController::acknowledgement()::exit");
-        return null;
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+                .header("Content-Disposition", "attachment; filename=\"" +
+                        eventId + ".pdf\"")
+                .body(resource);
     }
 }
