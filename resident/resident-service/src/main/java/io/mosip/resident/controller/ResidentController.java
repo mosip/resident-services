@@ -2,7 +2,7 @@ package io.mosip.resident.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.mosip.idrepository.core.dto.CredentialRequestIdsDto;
-import io.mosip.idrepository.core.dto.PageDto;
+import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;

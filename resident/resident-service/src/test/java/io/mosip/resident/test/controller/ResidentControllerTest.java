@@ -18,7 +18,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.idrepository.core.dto.PageDto;
+import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;

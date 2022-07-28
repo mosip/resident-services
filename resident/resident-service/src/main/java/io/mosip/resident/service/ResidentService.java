@@ -1,6 +1,6 @@
 package io.mosip.resident.service;
 
-import io.mosip.idrepository.core.dto.PageDto;
+import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;

@@ -1,9 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.idrepository.core.dto.CredentialIssueRequestDto;
-import io.mosip.idrepository.core.dto.CredentialRequestIdsDto;
-import io.mosip.idrepository.core.dto.PageDto;
-import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -26,7 +22,6 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
@@ -38,7 +33,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1222,7 +1216,6 @@ public class ResidentServiceImpl implements ResidentService {
 		if(searchText==null) {
 			searchText="";
 		}
-		List<Page<ResidentTransactionEntity>> pageDataList= new ArrayList<>();
 		if(partnerIds != null) {
 			for (String partnerId : partnerIds) {
 				String idaToken = identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId(), partnerId);
@@ -1243,57 +1236,21 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}
 		}
-//		int totalElements = 0;
-//		int totalPages = 0;
-//		List<ServiceHistoryResponseDto> requestDetails = new ArrayList<>();
-//		if(pageDataList.size()>0){
-//			for(Page<ResidentTransactionEntity> pageData:pageDataList) {
-//				if(pageData != null && pageData.getContent() != null && !pageData.getContent().isEmpty()){
-//					List<ResidentTransactionEntity> residentTransactionEntityList = pageData.getContent();
-//					for(ResidentTransactionEntity residentTransactionEntity:residentTransactionEntityList) {
-//						ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
-//						serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-//						serviceHistoryResponseDto.setSummary(residentTransactionEntity.getStatusComment());
-//						serviceHistoryResponseDto.setEventStatus(residentTransactionEntity.getStatusCode());
-//						if(residentTransactionEntity.getUpdDtimes()!= null && residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
-//							serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getUpdDtimes().toString());
-//						} else {
-//							serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
-//						}
-//						serviceHistoryResponseDto.setRequestType(residentTransactionEntity.getRequestTypeCode());
-//						requestDetails.add(serviceHistoryResponseDto);
-//					}
-//				}
-//				totalElements = (int) (totalElements + pageData.getTotalElements());
-//				totalPages = totalPages + pageData.getTotalPages();
-//			}
-//
-//		}
 
 		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionEntityLists.stream().flatMap(List::stream).collect(Collectors.toList());
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList);
-
-		pageDto = new PageDto<>(pageRequest.getPageNumber(), pageRequest.getPageSize(), pageRequest.getSort(), residentTransactionRepository.findAll().size(),
-				(residentTransactionRepository.findAll().size()/pageRequest.getPageSize())+1, serviceHistoryResponseDtoList);
+		int size = residentTransactionRepository.findAll().size();
+		pageDto = new PageDto<>(pageRequest.getPageNumber(), pageRequest.getPageSize(),  size,
+				(size/pageRequest.getPageSize())+1, serviceHistoryResponseDtoList);
 
 		responseWrapper.setResponse(pageDto);
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
-		DateTimeFormatter format = DateTimeFormatter.ofPattern(EnvUtil.getDateTimePattern());
-		LocalDateTime localdatetime = LocalDateTime
-				.parse(DateUtils.getUTCCurrentDateTimeString(EnvUtil.getDateTimePattern()), format);
-		responseWrapper.setResponsetime(localdatetime);
+		responseWrapper.setResponsetime(LocalDateTime.now());
 
 		return responseWrapper;
 	}
-//if (pageData != null && pageData.getContent() != null && !pageData.getContent().isEmpty()) {
-//		List<CredentialEntity> credentialRequestList = pageData.getContent();
-//		for (CredentialEntity credential : credentialRequestList) {
-//			CredentialRequestIdsDto credentialRequestIdsDto=new CredentialRequestIdsDto();
-//			CredentialIssueRequestDto credentialIssueRequestDto = mapper.readValue(credential.getRequest(),
-//					CredentialIssueRequestDto.class);
-//			credentialRequestIdsDto.setRequestId(credential.getRequestId());
-//			credentialRequestIdsDto.setCredentialType(credentialIssueRequestDto.getCredentialType());
+
 	private List<String> convertServiceTypeToResidentTransactionType(String serviceType) {
 		List<String> residentTransactionTypeList = new ArrayList<>();
 		if(serviceType!=null) {
