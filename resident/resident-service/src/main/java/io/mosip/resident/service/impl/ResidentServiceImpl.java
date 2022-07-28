@@ -1225,7 +1225,7 @@ public class ResidentServiceImpl implements ResidentService {
 								findByTokenWithoutServiceType(idaToken, fromDateTime, toDateTime, pageRequest, searchText));
 					} else if (fromDateTime != null && toDateTime != null && serviceType != null) {
 						residentTransactionEntityLists.add(residentTransactionRepository.
-								findByToken(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
+								findByTokenAndTransactionType(idaToken, fromDateTime, toDateTime, residentTransactionTypeList
 										, pageRequest, searchText));
 					}else if(fromDateTime == null && toDateTime == null && (serviceType == null || residentTransactionTypeList.size() == ResidentTransactionType.values().length)) {
 						residentTransactionEntityLists.add(residentTransactionRepository.
@@ -1239,7 +1239,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 		List<ResidentTransactionEntity> residentTransactionEntityList = residentTransactionEntityLists.stream().flatMap(List::stream).collect(Collectors.toList());
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList);
-		int size = residentTransactionRepository.findAll().size();
+		int size = residentTransactionRepository.findByTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId())).size();
 		pageDto = new PageDto<>(pageRequest.getPageNumber(), pageRequest.getPageSize(),  size,
 				(size/pageRequest.getPageSize())+1, serviceHistoryResponseDtoList);
 

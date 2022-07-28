@@ -20,6 +20,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
     List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
     ResidentTransactionEntity findByAid(String aid);
 
+    List<ResidentTransactionEntity> findByTokenId(String token);
+
 
     @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
@@ -28,11 +30,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
             " OR statusComment like %:searchText% " +
             " OR statusCode like %:searchText%) " +
             "ORDER BY pinnedStatus DESC" )
-    List<ResidentTransactionEntity> findByToken( @Param("tokenId") String tokenId,
-                                                 @Param("fromDateTime") LocalDateTime fromDateTime,
-                                                @Param("toDateTime") LocalDateTime toDateTime,
-                                                @Param("residentTransactionType") List<String> residentTransactionType,
-                                                Pageable pagaeable, @Param("searchText") String searchText);
+    List<ResidentTransactionEntity> findByTokenAndTransactionType(@Param("tokenId") String tokenId,
+                                                                  @Param("fromDateTime") LocalDateTime fromDateTime,
+                                                                  @Param("toDateTime") LocalDateTime toDateTime,
+                                                                  @Param("residentTransactionType") List<String> residentTransactionType,
+                                                                  Pageable pagaeable, @Param("searchText") String searchText);
 
     @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId " +

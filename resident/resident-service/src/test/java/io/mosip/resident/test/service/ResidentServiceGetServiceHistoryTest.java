@@ -104,7 +104,7 @@ public class ResidentServiceGetServiceHistoryTest {
 
 
 
-        Mockito.when(residentTransactionRepository.findByToken(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString())).thenReturn(residentTransactionEntityList);
+        Mockito.when(residentTransactionRepository.findByTokenAndTransactionType(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString())).thenReturn(residentTransactionEntityList);
 
         Mockito.when(residentTransactionRepository.findByTokenWithoutDate(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.anyString())).thenReturn(residentTransactionEntityList);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
