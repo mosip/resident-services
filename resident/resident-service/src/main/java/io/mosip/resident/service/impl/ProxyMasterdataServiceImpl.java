@@ -57,7 +57,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -83,7 +83,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -110,7 +110,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -137,7 +137,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -166,7 +166,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -200,7 +200,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -234,7 +234,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -278,7 +278,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -305,7 +305,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -341,7 +341,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
