@@ -161,9 +161,6 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 
-		validateVidType(requestDto, "Request to generate VID");
-
-
 		if (!validateIndividualId(requestDto.getRequest().getIndividualId(), IdType.UIN.name())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request to generate VID"));
@@ -186,15 +183,6 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateVidType(ResidentVidRequestDto requestDto, String msg) {
-		if (StringUtils.isEmpty(requestDto.getRequest().getVidType())
-				|| (!requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.PERPETUAL.name())
-						&& !requestDto.getRequest().getVidType().equalsIgnoreCase(VidType.TEMPORARY.name()))) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "vidType", msg));
-
-			throw new InvalidInputException("vidType");
-		}
-	}
 
 	public void validateAuthLockOrUnlockRequest(RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO,
 			AuthTypeStatus authTypeStatus) {
