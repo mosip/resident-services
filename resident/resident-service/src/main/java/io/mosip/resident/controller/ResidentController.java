@@ -234,31 +234,26 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getGetCredentialRequestStatus()"
+			+ "@authorizedScopes.getGetEventIdStatus()"
 			+ ")")
-	@GetMapping(path="/check-status/aid/{AID}")
-	@Operation(summary = "getGetCheckAidStatus", description = "checkAidStatus", tags = { "resident-controller" })
+	@GetMapping(path="/checkAidStatus/events/{event-id}")
+	@Operation(summary = "getGetCheckEventIdStatus", description = "checkEventIdStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResponseDTO> checkAidStatus(
-			@PathVariable(name = "AID") String AID) throws ResidentServiceCheckedException {
+	public ResponseWrapper<EventStatusResponseDTO> checkAidStatus(
+			@PathVariable(name = "event-id") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
 		logger.debug("checkAidStatus controller entry");
-		validator.validateIndividualId(AID);
-		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
+		validator.validateIndividualId(eventId);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST,
-				AID));
-		ResponseDTO responseDTO = new ResponseDTO();
-		responseDTO.setStatus(residentService.checkAidStatus(AID));
-		responseDTO.setMessage("Credential Request Status got Successfully");
-		response.setResponse(responseDTO);
+				eventId));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS,
-				AID));
-		return response;
+				eventId));
+		return residentService.getEventStatus(eventId);
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("

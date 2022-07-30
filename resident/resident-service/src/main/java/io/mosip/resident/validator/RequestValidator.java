@@ -739,11 +739,10 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateIndividualId(String aid) {
-		if (StringUtils.isEmpty(aid) || aid==null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "aid",
-					"Request credential request status API"));
-			throw new InvalidInputException("aid");
+	public void validateIndividualId(String eventId) {
+		if (StringUtils.isEmpty(eventId) || eventId==null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "eventId", "Request service history API"));
+			throw new InvalidInputException("eventId");
 		}
 	}
 }

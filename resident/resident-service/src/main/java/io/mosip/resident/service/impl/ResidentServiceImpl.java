@@ -95,6 +95,9 @@ public class ResidentServiceImpl implements ResidentService {
 	Environment env;
 
 	@Autowired
+	private TemplateUtil templateUtil;
+
+	@Autowired
 	private Utilitiy utility;
 
 	@Autowired
@@ -1299,6 +1302,86 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	@Override
+	public ResponseWrapper<EventStatusResponseDTO> getEventStatus(String eventId) {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getEventStatus()::Start");
+		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+		try {
+			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+			String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
+			//Need to change requestTypeCode to RequestType enum class
+			RequestType requestType = RequestType.valueOf(requestTypeCode);
+			Map<String, String> eventStatusMap;
+			if (requestType != null){
+				eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId);
+				// iterate over the map and set the values to the response dto
+				EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
+				for (Map.Entry<String, String> entry : eventStatusMap.entrySet()) {
+					entry.setValue(getResidentTransactionEntityValue(residentTransactionEntity, entry.getKey()));
+//					switch (entry.getKey()) {
+//					case "eventId":
+//						entry.setValue(residentTransactionEntity.get().getEventId());
+//						break;
+//					case "eventType":
+//						entry.setValue(residentTransactionEntity.get().getRequestTypeCode());
+//						break;
+//
+//					default:
+//						break;
+//					}
+				}
+				eventStatusResponseDTO.setInfo(eventStatusMap);
+				responseWrapper.setResponse(eventStatusResponseDTO);
+			}
+		}
+		catch (Exception e){
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getEventStatus():: Exception");
+			System.out.println(e);
+		}
+		return responseWrapper;
+	}
+
+	private String getResidentTransactionEntityValue(Optional<ResidentTransactionEntity> residentTransactionEntity, String key) {
+		String value = null;
+		switch (key) {
+		case "eventId":
+			value = residentTransactionEntity.get().getEventId();
+			break;
+		case "requestTrnId":
+			value = residentTransactionEntity.get().getRequestTrnId();
+			break;
+		case "aid":
+			value = residentTransactionEntity.get().getAid();
+			break;
+		case "requestDtimes":
+			value = residentTransactionEntity.get().getRequestDtimes().toString();
+			break;
+		case "responseDtimes":
+			value = residentTransactionEntity.get().getResponseDtime().toString();
+			break;
+		case "requestTypeCode":
+			value = residentTransactionEntity.get().getRequestTypeCode();
+			break;
+		case "requestSummary":
+			value = residentTransactionEntity.get().getRequestSummary();
+			break;
+		case "statusCode":
+			value = residentTransactionEntity.get().getStatusCode();
+			break;
+		case "statusComment":
+			value = residentTransactionEntity.get().getStatusComment();
+			break;
+		case "purpose":
+			value = residentTransactionEntity.get().getPurpose();
+			break;
+
+		}
+		return value;
 	}
 
 }
