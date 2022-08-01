@@ -285,15 +285,9 @@ public class ResidentController {
 																			   @RequestParam(name = "searchColumn", required = false) String searchColumn,
 																			   @RequestParam(name = "searchText", required = false) String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-		//List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, searchColumn, searchText);
 		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, searchColumn, searchText);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
 				"getServiceHistory"));
-//		ServiceTypeResponseDto serviceTypeResponseDto = new ServiceTypeResponseDto();
-//		Map<String, List<ServiceHistoryResponseDto>> serviceTypeMap = new HashMap<>();
-//		serviceTypeMap.put("serviceType", residentServiceServiceHistory);
-//		serviceTypeResponseDto.setResponse(serviceTypeMap);
-//		serviceTypeResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper =
 				residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, searchColumn, searchText);;
 		return responseWrapper;
