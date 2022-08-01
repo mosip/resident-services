@@ -1,6 +1,8 @@
 package io.mosip.resident.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.mosip.idrepository.core.dto.CredentialRequestIdsDto;
+import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -62,7 +64,7 @@ public class ResidentController {
 
 	@Value("${resident.authLockStatusUpdateV2.version}")
 	private String authLockStatusUpdateV2Version;
-	
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
 	@ResponseFilter
@@ -264,7 +266,7 @@ public class ResidentController {
 	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetServiceAuthHistoryRoles()"
 			+ ")")
-	@GetMapping(path="/getServiceHistory")
+	@GetMapping(path="/service-history")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -272,25 +274,23 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ServiceTypeResponseDto> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
-																	@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-																	@RequestParam(name = "fromDateTime", required = false)
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+																			   @RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+																			   @RequestParam(name = "fromDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-																	@RequestParam(name = "toDateTime", required = false)
+																			   @RequestParam(name = "toDateTime", required = false)
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
-																	@RequestParam(name = "sortType", required = false) String sortType,
-																	@RequestParam(name = "serviceType", required = false) String serviceType) throws ResidentServiceCheckedException, ApisResourceAccessException {
+																			   @RequestParam(name = "sortType", required = false) String sortType,
+																			   @RequestParam(name = "serviceType", required = false) String serviceType,
+																			   @RequestParam(name = "searchColumns", required = false) String searchColumns,
+																			   @RequestParam(name = "searchText", required = false) String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-		List<ServiceHistoryResponseDto> residentServiceServiceHistory =residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType);
-		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType);
+		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, searchColumns, searchText);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
 				"getServiceHistory"));
-		ServiceTypeResponseDto serviceTypeResponseDto = new ServiceTypeResponseDto();
-		Map<String, List<ServiceHistoryResponseDto>> serviceTypeMap = new HashMap<>();
-		serviceTypeMap.put("serviceType", residentServiceServiceHistory);
-		serviceTypeResponseDto.setResponse(serviceTypeMap);
-		serviceTypeResponseDto.setResponseTime(String.valueOf(LocalDateTime.now()));
-		return new ResponseEntity<>(serviceTypeResponseDto, HttpStatus.OK);
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper =
+				residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, searchColumns, searchText);;
+		return responseWrapper;
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("
