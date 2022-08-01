@@ -121,15 +121,15 @@ public class ResidentTransactionEntity {
     private String olvPartnerId;
     
     @Column(name = "reference_link")
-    private String reference_link;
+    private String referenceLink;
 
     @NotNull
     @Column(name = "read_status")
-    private boolean read_status=false;
+    private boolean readStatus=false;
 
     @NotNull
     @Column(name = "pinned_status")
-    private boolean pinned_status=false;
+    private boolean pinnedStatus=false;
 
     @Column(name = "purpose")
     private String purpose;
@@ -171,6 +171,16 @@ public class ResidentTransactionEntity {
         this.statusComment = statusComment;
         this.crDtimes = crDtimes;
         this.statusCode = statusCode;
+    }
+
+    public ResidentTransactionEntity(String eventId, String statusComment ,LocalDateTime crDtimes,
+                                     String statusCode, LocalDateTime updDtimes, String requestTypeCode) {
+        this.eventId = eventId;
+        this.statusComment = statusComment;
+        this.crDtimes = crDtimes;
+        this.statusCode = statusCode;
+        this.updDtimes = updDtimes;
+        this.requestTypeCode = requestTypeCode;
     }
 
     public ResidentTransactionEntity(String aid) {
