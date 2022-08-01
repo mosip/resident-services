@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class IdAuthRequestDto {
 
-	private String transactionID;
+	private String transactionId;
 	private String individualId;
 	private String otp;
 

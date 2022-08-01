@@ -79,7 +79,7 @@ public class IdAuthControllerTest {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(idAuthController).build();
 		RequestWrapper<IdAuthRequestDto> requestWrapper = new RequestWrapper<IdAuthRequestDto>();
 		IdAuthRequestDto idAuthRequestDto = new IdAuthRequestDto();
-		idAuthRequestDto.setTransactionID("1234567890");
+		idAuthRequestDto.setTransactionId("1234567890");
 		idAuthRequestDto.setIndividualId("8251649601");
 		idAuthRequestDto.setOtp("111111");
 		requestWrapper.setRequest(idAuthRequestDto);
@@ -92,7 +92,7 @@ public class IdAuthControllerTest {
 		Boolean authStatus = true;
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(authStatus);
-		mockMvc.perform(MockMvcRequestBuilders.post("/req/validateOTP").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 
