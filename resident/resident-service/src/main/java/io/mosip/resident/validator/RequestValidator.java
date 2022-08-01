@@ -704,23 +704,23 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateSearch(String searchText, String searchColumn, String request_service_history_api) {
+	private void validateSearch(String searchText, String searchColumn, String requestServiceHistoryApi) {
 		if(StringUtils.isNotEmpty(searchText) && StringUtils.isEmpty(searchColumn)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchText", request_service_history_api));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchText", requestServiceHistoryApi));
 			throw new InvalidInputException("Please provide searchColumn");
 		} else if(StringUtils.isEmpty(searchText) && StringUtils.isNotEmpty(searchColumn)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumn", request_service_history_api));
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumn", requestServiceHistoryApi));
 			throw new InvalidInputException("Please provide searchText");
 		} else if(StringUtils.isNotEmpty(searchText) && StringUtils.isNotEmpty(searchColumn)) {
-			validateSearchColumn(searchColumn, request_service_history_api);;
+			validateSearchColumn(searchColumn, requestServiceHistoryApi);;
 		}
 	}
 
-	private void validateSearchColumn(String searchColumn, String request_service_history_api) {
-		if(!searchColumn.equalsIgnoreCase("eventId") && !searchColumn.equalsIgnoreCase("statusComment")
-				&& !searchColumn.equalsIgnoreCase("statusCode")) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumn", request_service_history_api));
-			throw new InvalidInputException("Please provide valid searchColumn");
+	private void validateSearchColumn(String searchColumns, String requestServiceHistoryApi) {
+		if(!searchColumns.equalsIgnoreCase("eventId") && !searchColumns.equalsIgnoreCase("statusComment")
+				&& !searchColumns.equalsIgnoreCase("statusCode")) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumns", requestServiceHistoryApi));
+			throw new InvalidInputException("Please provide valid searchColumns");
 		}
 	}
 
@@ -733,18 +733,18 @@ public class RequestValidator {
 		return true;
 	}
 
-	private void validateSortType(String sortType, String request_service_history_api) {
+	private void validateSortType(String sortType, String requestServiceHistoryApi) {
 		if(sortType!=null) {
 			if (!sortType.equalsIgnoreCase(SortType.ASC.toString())
 					&& !sortType.equalsIgnoreCase(SortType.DESC.toString())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "sortType",
-						request_service_history_api));
+						requestServiceHistoryApi));
 				throw new InvalidInputException("sortType");
 			}
 		}
 	}
 
-	private void validateServiceType(String serviceType, String request_service_history_api) {
+	private void validateServiceType(String serviceType, String requestServiceHistoryApi) {
 		if(serviceType!=null) {
 			List<String> serviceTypes = List.of(serviceType.split(","));
 			for (String service : serviceTypes) {
@@ -754,7 +754,7 @@ public class RequestValidator {
 						&& !service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
 						&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
-							request_service_history_api));
+							requestServiceHistoryApi));
 					throw new InvalidInputException("serviceType");
 				}
 			}
