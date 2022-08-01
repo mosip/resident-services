@@ -2,6 +2,14 @@ package io.mosip.resident.dto;
 
 import java.util.List;
 
+/**
+ * The Class PageDto.
+ * @author Kamesh Shekhar Prasad
+ *
+ *
+ * @param <T>
+ */
+
 public class PageDto<T> {
     private int pageNo;
     private int pageSize;

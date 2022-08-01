@@ -4,6 +4,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * The Class TemplateUtil.
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Component
  public class TemplateUtil {
 
