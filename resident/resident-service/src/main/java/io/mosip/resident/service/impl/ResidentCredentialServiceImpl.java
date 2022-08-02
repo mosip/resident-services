@@ -60,6 +60,7 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
+
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
@@ -67,7 +68,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String ENG = "eng";
 	private static final String RESIDENT = "RESIDENT";
 	private static final String NEW = "new";
-
 
 	@Autowired
 	IdAuthService idAuthService;

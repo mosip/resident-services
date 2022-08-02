@@ -33,6 +33,5 @@ public class ResidentCredentialRequestDto {
 	
     private List<String> sharableAttributes;
     
-    private Map<String,Object> additionalData;
-	
+    private Map<String,Object> additionalData;	
 }
