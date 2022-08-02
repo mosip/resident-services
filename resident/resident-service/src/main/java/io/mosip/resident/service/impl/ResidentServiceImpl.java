@@ -17,6 +17,7 @@ import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +57,15 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String VALUE = "value";
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
-	private static final String UIN = "uin";
+	private static final String UIN = "UIN";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 1;
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String PRINTING = "PRINTING";
+	private static final String VID = "VID";
+	private static final String AID = "AID";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -127,6 +130,12 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.service.history.version}")
 	private String serviceHistoryVersion;
 
+	@Value("${resident.service.event.id}")
+	private String serviceEventId;
+
+	@Value("${resident.service.event.version}")
+	private String serviceEventVersion;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -144,6 +153,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
+
+	@Autowired
+	private RequestValidator requestValidator;
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -1365,18 +1377,34 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 			String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-			//Need to change requestTypeCode to RequestType enum class
+
 			RequestType requestType = RequestType.valueOf(requestTypeCode);
 			Map<String, String> eventStatusMap;
 			if (requestType != null){
 				eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId);
 
 				EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
+				eventStatusResponseDTO.setEventId(eventId);
+				eventStatusResponseDTO.setEventType(requestType.name());
+				eventStatusResponseDTO.setEventStatus(getEventStatusForRequestType(residentTransactionEntity.get().getStatusCode()));
+				eventStatusResponseDTO.setIndividualId(getIndividualIdType());
+				eventStatusResponseDTO.setSummary(residentTransactionEntity.get().getRequestSummary());
+				eventStatusResponseDTO.setTimestamp(residentTransactionEntity.get().getCrDtimes().toString());
+
+				eventStatusMap.remove("eventId");
+				eventStatusMap.remove("eventType");
+				eventStatusMap.remove("eventStatus");
+				eventStatusMap.remove("individualId");
+				eventStatusMap.remove("summary");
+				eventStatusMap.remove("timestamp");
+
 				for (Map.Entry<String, String> entry : eventStatusMap.entrySet()) {
 					entry.setValue(getResidentTransactionEntityValue(residentTransactionEntity, entry.getKey()));
-
 				}
 				eventStatusResponseDTO.setInfo(eventStatusMap);
+				responseWrapper.setId(serviceEventId);
+				responseWrapper.setVersion(serviceEventId);
+				responseWrapper.setResponsetime(LocalDateTime.parse(LocalDateTime.now().toString()));
 				responseWrapper.setResponse(eventStatusResponseDTO);
 			}
 		}
@@ -1389,38 +1417,43 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseWrapper;
 	}
 
+	private String getIndividualIdType() throws ApisResourceAccessException {
+		String individualId= identityServiceImpl.getResidentIndvidualId();
+		if(requestValidator.validateUin(individualId)){
+			return UIN;
+		} else if(requestValidator.validateVid(individualId)){
+			return VID;
+		} else{
+			return AID;
+		}
+	}
+
+	private String getEventStatusForRequestType(String statusCode) {
+		String eventStatus = "";
+		List<String> successStatusCodes = Arrays.stream(EventStatusSuccess.values()).map(Enum::name).collect(Collectors.toList());
+		List<String> failureStatusCodes = Arrays.stream(EventStatusFailure.values()).map(Enum::name).collect(Collectors.toList());
+		if(successStatusCodes.contains(statusCode)){
+			eventStatus = EventStatus.SUCCESS.name();
+		} else if(failureStatusCodes.contains(statusCode)){
+			eventStatus = EventStatus.FAILED.name();
+		} else {
+			eventStatus = EventStatus.IN_PROGRESS.name();
+		}
+		return eventStatus;
+	}
+
 	private String getResidentTransactionEntityValue(Optional<ResidentTransactionEntity> residentTransactionEntity, String key) {
 		String value = null;
 		switch (key) {
-		case "eventId":
-			value = residentTransactionEntity.get().getEventId();
-			break;
-		case "requestTrnId":
-			value = residentTransactionEntity.get().getRequestTrnId();
-			break;
-		case "aid":
-			value = residentTransactionEntity.get().getAid();
-			break;
-		case "requestDtimes":
-			value = residentTransactionEntity.get().getRequestDtimes().toString();
-			break;
-		case "responseDtimes":
-			value = residentTransactionEntity.get().getResponseDtime().toString();
-			break;
-		case "requestTypeCode":
-			value = residentTransactionEntity.get().getRequestTypeCode();
-			break;
-		case "requestSummary":
-			value = residentTransactionEntity.get().getRequestSummary();
-			break;
-		case "statusCode":
-			value = residentTransactionEntity.get().getStatusCode();
-			break;
-		case "statusComment":
-			value = residentTransactionEntity.get().getStatusComment();
-			break;
+
 		case "purpose":
 			value = residentTransactionEntity.get().getPurpose();
+			break;
+		case "authenticationMode":
+			value = residentTransactionEntity.get().getAuthTypeCode();
+			break;
+		case "partnerName":
+			value = residentTransactionEntity.get().getOlvPartnerId();
 			break;
 
 		}
