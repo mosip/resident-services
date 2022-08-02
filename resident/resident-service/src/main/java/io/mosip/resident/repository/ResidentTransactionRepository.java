@@ -64,6 +64,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
                                                                    @Param("fromDateTime") LocalDateTime fromDateTime,
                                                                    @Param("toDateTime") LocalDateTime toDateTime,
                                                                    Pageable pagaeable, @Param("searchText") String searchText);
+    
+	public List<ResidentTransactionEntity> findByStatusCodeIn(List<String> statusCodes);
 
     @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId " +
