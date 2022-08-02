@@ -1,6 +1,7 @@
 package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.EventStatusResponseDTO;
@@ -96,5 +97,39 @@ public class ResidentServiceGetEventStatusTest {
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
+    @Test
+    public void getEventStatusTestVid() throws ResidentServiceCheckedException {
+        Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
+    }
 
+    @Test
+    public void getEventStatusTestUIN() throws ResidentServiceCheckedException {
+        Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
+    }
+
+    @Test
+    public void getEventStatusTestEventStatusFailure() throws ResidentServiceCheckedException {
+        residentTransactionEntity.get().setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        assert resultResponseWrapper.getResponse().getEventStatus().equals("FAILED");
+    }
+
+    @Test
+    public void getEventStatusTestEventStatusPending() throws ResidentServiceCheckedException{
+        residentTransactionEntity.get().setStatusCode("in-progress");
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        assert resultResponseWrapper.getResponse().getEventStatus().equals("IN_PROGRESS");
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void getEventStatusTestException() throws ResidentServiceCheckedException {
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
+        residentService.getEventStatus(eventId, langCode);
+    }
 }
