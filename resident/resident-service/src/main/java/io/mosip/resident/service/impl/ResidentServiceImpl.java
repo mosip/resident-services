@@ -1305,7 +1305,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<EventStatusResponseDTO> getEventStatus(String eventId) {
+	public ResponseWrapper<EventStatusResponseDTO> getEventStatus(String eventId, String languageCode) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getEventStatus()::Start");
 		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
@@ -1317,21 +1317,11 @@ public class ResidentServiceImpl implements ResidentService {
 			Map<String, String> eventStatusMap;
 			if (requestType != null){
 				eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId);
-				// iterate over the map and set the values to the response dto
+
 				EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
 				for (Map.Entry<String, String> entry : eventStatusMap.entrySet()) {
 					entry.setValue(getResidentTransactionEntityValue(residentTransactionEntity, entry.getKey()));
-//					switch (entry.getKey()) {
-//					case "eventId":
-//						entry.setValue(residentTransactionEntity.get().getEventId());
-//						break;
-//					case "eventType":
-//						entry.setValue(residentTransactionEntity.get().getRequestTypeCode());
-//						break;
-//
-//					default:
-//						break;
-//					}
+
 				}
 				eventStatusResponseDTO.setInfo(eventStatusMap);
 				responseWrapper.setResponse(eventStatusResponseDTO);
@@ -1341,7 +1331,7 @@ public class ResidentServiceImpl implements ResidentService {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"ResidentServiceImpl::getEventStatus():: Exception");
-			System.out.println(e);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 		}
 		return responseWrapper;
 	}

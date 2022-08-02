@@ -45,5 +45,5 @@ public interface ResidentService {
 
 	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
 
-	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String eventId);
+	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId) throws ResidentServiceCheckedException;
 }

@@ -491,7 +491,7 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
-		residentController.checkAidStatus("17");
+		residentController.checkAidStatus("17", "eng");
 		when(residentService.checkAidStatus("17")).thenReturn("PROCESSED");
 		this.mockMvc.perform(get("/checkAidStatus/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453")).andExpect(status().isOk());
 	}

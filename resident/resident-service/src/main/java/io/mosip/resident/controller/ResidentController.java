@@ -236,7 +236,7 @@ public class ResidentController {
 	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetEventIdStatus()"
 			+ ")")
-	@GetMapping(path="/checkAidStatus/events/{event-id}")
+	@GetMapping(path="/events/{event-id}/language/{language-code}")
 	@Operation(summary = "getGetCheckEventIdStatus", description = "checkEventIdStatus", tags = { "resident-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -245,15 +245,16 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<EventStatusResponseDTO> checkAidStatus(
-			@PathVariable(name = "event-id") String eventId) throws ResidentServiceCheckedException {
+			@PathVariable(name = "event-id") String eventId, @PathVariable(name = "language-code") String languageCode) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
 		logger.debug("checkAidStatus controller entry");
-		validator.validateIndividualId(eventId);
+		validator.validateEventIdLanguageCode(eventId, languageCode);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST,
 				eventId));
+		ResponseWrapper<EventStatusResponseDTO> responseWrapper = residentService.getEventStatus(eventId, languageCode);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS,
 				eventId));
-		return residentService.getEventStatus(eventId);
+		return responseWrapper;
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes("

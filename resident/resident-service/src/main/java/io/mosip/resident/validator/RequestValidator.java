@@ -111,6 +111,12 @@ public class RequestValidator {
 		this.reprintId = reprintId;
 	}
 
+	@Value("${mosip.mandatory-languages}")
+	private String mandatoryLanguages;
+
+	@Value("${mosip.optional-languages}")
+	private String optionalLanguages;
+
 	@PostConstruct
 	public void setMap() {
 		map = new EnumMap<>(RequestIdType.class);
@@ -745,4 +751,23 @@ public class RequestValidator {
 			throw new InvalidInputException("eventId");
 		}
 	}
+
+	public void validateEventIdLanguageCode(String eventId, String languageCode) {
+		validateIndividualId(eventId);
+		validateLanguageCode(languageCode);
+	}
+
+	private void validateLanguageCode(String languageCode) {
+		List<String> allowedMandatoryLanguage = List.of(mandatoryLanguages.split(","));
+		List<String> allowedOptionalLanguage = List.of(optionalLanguages.split(","));
+		if(StringUtils.isEmpty(languageCode)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "languageCode", "Request service history API"));
+			throw new InvalidInputException("languageCode");
+		}
+		if(!allowedMandatoryLanguage.contains(languageCode) && !allowedOptionalLanguage.contains(languageCode)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_LANGUAGE_CODE, "languageCode", "Request service history API"));
+			throw new InvalidInputException("languageCode");
+		}
+	}
+
 }

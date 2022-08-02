@@ -14,6 +14,7 @@ public class EventStatusResponseDTO {
     private String eventType;
     private String eventStatus;
     private String individualId;
+    private String summary;
     private String timestamp;
     private Map<String, String> info;
 }
