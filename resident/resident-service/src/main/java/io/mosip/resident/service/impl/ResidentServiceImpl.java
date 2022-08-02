@@ -57,7 +57,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String VALUE = "value";
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
-	private static final String UIN = "UIN";
+	private static final String UIN = "uin";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 1;
