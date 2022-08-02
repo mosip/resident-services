@@ -5,6 +5,11 @@ import io.mosip.resident.util.TemplateUtil;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+/**
+ * The Enum RequestType.
+ * @author Kamesh Shekhar Prasad
+ */
+
 public enum RequestType {
 	AUTHENTICATION_REQUEST(TemplateUtil::getAckTemplateVariablesForAuthenticationRequest),
 	SHARE_CRED_WITH_PARTNER(TemplateUtil::getAckTemplateVariablesForCredentialShare),

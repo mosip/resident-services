@@ -48,7 +48,7 @@ public class IdAuthController {
 	 * @throws OtpValidationFailedException
 	 */
 	@ResponseFilter
-	@PostMapping("/req/validateOTP")
+	@PostMapping("/validate-otp")
 	@Operation(summary = "validateOtp", description = "validateOtp", tags = { "id-auth-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -58,16 +58,16 @@ public class IdAuthController {
 	public ResponseWrapper<IdAuthResponseDto> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
 			throws OtpValidationFailedException {
 		logger.debug("IdAuthController::validateOtp()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionID(),
+		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request"));
-		Boolean authStatus = idAuthService.validateOtp(requestWrapper.getRequest().getTransactionID(),
+		Boolean authStatus = idAuthService.validateOtp(requestWrapper.getRequest().getTransactionId(),
 				requestWrapper.getRequest().getIndividualId(), requestWrapper.getRequest().getOtp());
-		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionID(),
+		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request Success"));
 		ResponseWrapper<IdAuthResponseDto> responseWrapper = new ResponseWrapper<IdAuthResponseDto>();
 		IdAuthResponseDto idAuthResponseDto = new IdAuthResponseDto();
 		idAuthResponseDto.setAuthStatus(authStatus);
-		idAuthResponseDto.setTransactionID(requestWrapper.getRequest().getTransactionID());
+		idAuthResponseDto.setTransactionId(requestWrapper.getRequest().getTransactionId());
 		responseWrapper.setResponse(idAuthResponseDto);
 		logger.debug("IdAuthController::validateOtp()::exit");
 		return responseWrapper;

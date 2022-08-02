@@ -34,6 +34,7 @@ import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.controller.ProxyAuditController;
 import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.dto.AuditRequestDtoV2;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -77,7 +78,7 @@ public class ProxyAuditControllerTest {
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
-	private AuditRequestDTO auditRequestDTO;
+	private AuditRequestDtoV2 auditRequestDtoV2;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -90,16 +91,16 @@ public class ProxyAuditControllerTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(proxyAuditController).build();
-		auditRequestDTO = new AuditRequestDTO();
-		auditRequestDTO.setEventId("RES-SER-1111");
-		auditRequestDTO.setModuleId("RES-SER");
-		auditRequestDTO.setModuleName("Residence service");
-		reqJson = gson.toJson(auditRequestDTO);
+		auditRequestDtoV2 = new AuditRequestDtoV2();
+		auditRequestDtoV2.setAuditEventId("RES-SER-1111");
+		auditRequestDtoV2.setModuleId("RES-SER");
+		auditRequestDtoV2.setModuleName("Residence service");
+		reqJson = gson.toJson(auditRequestDtoV2);
 	}
 
 	@Test
 	public void testAuditLog() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
+		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 

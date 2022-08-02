@@ -51,5 +51,7 @@ public class AuthorizedScopesDto {
 	private List<String> deleteUploadDocuments;
 	
 	private List<String> getAllTemplateBylangCodeAndTemplateTypeCode;
+	
+	private List<String> postAuditLog;
 
 }
