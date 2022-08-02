@@ -1455,7 +1455,6 @@ public class ResidentServiceImpl implements ResidentService {
 		case "partnerName":
 			value = residentTransactionEntity.get().getOlvPartnerId();
 			break;
-
 		}
 		return value;
 	}
