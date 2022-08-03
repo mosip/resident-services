@@ -6,6 +6,11 @@ import lombok.Setter;
 
 import java.util.Map;
 
+/**
+ * This class is used to test the TemplateUtil class
+ * @author Kamesh Shekhar Prasad
+ */
+
 @Data
 @Getter
 @Setter
