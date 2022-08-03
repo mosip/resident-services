@@ -83,6 +83,7 @@ public enum ResidentErrorCode {
 	
 	PAYMENT_REQUIRED("RES-SER-402","Payment is not made for this card"),
 	FAILED_TO_DELETE_DOC("RES-SER-458", "Failed to delete document"),
+	EVENT_STATUS_NOT_FOUND("RES-SER-459", "EID not available in database"),
 
 	;
 	private final String errorCode;

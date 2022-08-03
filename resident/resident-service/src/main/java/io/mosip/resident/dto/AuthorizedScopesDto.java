@@ -40,7 +40,7 @@ public class AuthorizedScopesDto {
 
 	private List<String> getServiceRequestUpdate;
 
-	private List<String> getCheckAidStatus;
+	private List<String> getEventIdStatus;
 
 	private List<String> getPartnersByPartnerType;
 

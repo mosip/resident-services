@@ -17,6 +17,7 @@ import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,9 @@ public class ResidentServiceImpl implements ResidentService {
 	Environment env;
 
 	@Autowired
+	private TemplateUtil templateUtil;
+
+	@Autowired
 	private Utilitiy utility;
 
 	@Autowired
@@ -123,6 +127,12 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${resident.service.history.version}")
 	private String serviceHistoryVersion;
+
+	@Value("${resident.service.event.id}")
+	private String serviceEventId;
+
+	@Value("${resident.service.event.version}")
+	private String serviceEventVersion;
 
 	@Autowired
 	private AuditUtil audit;
@@ -1352,6 +1362,54 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	@Override
+	public ResponseWrapper<EventStatusResponseDTO> getEventStatus(String eventId, String languageCode) throws ResidentServiceCheckedException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getEventStatus()::Start");
+		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+		try {
+			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+			String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
+
+			RequestType requestType = RequestType.valueOf(requestTypeCode);
+			Map<String, String> eventStatusMap;
+			if (requestType != null){
+				eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId);
+
+				EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
+				eventStatusResponseDTO.setEventId(eventId);
+				eventStatusResponseDTO.setEventType(eventStatusMap.get(TemplateVariablesEnum.EVENT_TYPE));
+				eventStatusResponseDTO.setEventStatus(eventStatusMap.get(TemplateVariablesEnum.EVENT_STATUS));
+				eventStatusResponseDTO.setIndividualId(eventStatusMap.get(TemplateVariablesEnum.INDIVIDUAL_ID));
+				eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesEnum.SUMMARY));
+				eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesEnum.TIMESTAMP));
+
+				/**
+				 * Removed map value from eventStatusMap to put outside of info in EventStatusResponseDTO
+				 */
+				eventStatusMap.remove(TemplateVariablesEnum.EVENT_ID);
+				eventStatusMap.remove(TemplateVariablesEnum.EVENT_TYPE);
+				eventStatusMap.remove(TemplateVariablesEnum.EVENT_STATUS);
+				eventStatusMap.remove(TemplateVariablesEnum.INDIVIDUAL_ID);
+				eventStatusMap.remove(TemplateVariablesEnum.SUMMARY);
+				eventStatusMap.remove(TemplateVariablesEnum.TIMESTAMP);
+
+				eventStatusResponseDTO.setInfo(eventStatusMap);
+				responseWrapper.setId(serviceEventId);
+				responseWrapper.setVersion(serviceEventVersion);
+				responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+				responseWrapper.setResponse(eventStatusResponseDTO);
+			}
+		}
+		catch (Exception e){
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"ResidentServiceImpl::getEventStatus():: Exception");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
+		}
+		return responseWrapper;
 	}
 
 }
