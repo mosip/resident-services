@@ -1,5 +1,6 @@
 package io.mosip.resident.test.util;
 
+import io.mosip.resident.constant.TemplateVariablesEnum;
 import io.mosip.resident.util.TemplateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,31 +34,31 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForAuthenticationRequest() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(eventId);
-        assertEquals("AUTHENTICATION_REQUEST",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForCredentialShare() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForCredentialShare( eventId);
-        assertEquals("credential-share",ackTemplateVariables.get("purpose"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForDownloadPersonalizedCard() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForDownloadPersonalizedCard( eventId);
-        assertEquals("DOWNLOAD_PERSONALIZED_CARD",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForOrderPhysicalCard() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId);
-        assertEquals("ORDER_PHYSICAL_CARD",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForGetMyId() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGetMyId( eventId);
-        assertEquals("GET_MY_ID",ackTemplateVariables.get("eventType"));
+        assertEquals(eventId,ackTemplateVariables.get(TemplateVariablesEnum.EVENT_ID));
     }
 
     @Test
@@ -69,30 +70,30 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForUpdateMyUin() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForUpdateMyUin( eventId);
-        assertEquals("UPDATE_MY_UIN",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForGenerateVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGenerateVid( eventId);
-        assertEquals("GENERATE_VID",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForRevokeVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForRevokeVid( eventId);
-        assertEquals("REVOKE_VID",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForVerifyPhoneOrEmail() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForVerifyPhoneEmail( eventId);
-        assertEquals("VERIFY_PHONE_EMAIL",ackTemplateVariables.get("eventType"));
+        assertEquals(eventId,ackTemplateVariables.get(TemplateVariablesEnum.EVENT_ID));
     }
 
     @Test
     public void getAckTemplateVariablesForAuthLock() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock( eventId);
-        assertEquals("AUTH_TYPE_LOCK_UNLOCK",ackTemplateVariables.get("eventType"));
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
     }
 }
