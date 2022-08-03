@@ -15,5 +15,13 @@ public enum EventStatusFailure {
     CARD_DELIVERY_FAILED,
     DATA_SHARE_FAILED,
     EMAIL_VERIFICATION_FAILED,
-    PHONE_VERIFICATION_FAILED
+    PHONE_VERIFICATION_FAILED;
+    public static boolean containsStatus(String status) {
+        for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {
+            if (eventStatusSuccess.name().equals(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1430,11 +1430,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private String getEventStatusForRequestType(String statusCode) {
 		String eventStatus = "";
-		List<String> successStatusCodes = Arrays.stream(EventStatusSuccess.values()).map(Enum::name).collect(Collectors.toList());
-		List<String> failureStatusCodes = Arrays.stream(EventStatusFailure.values()).map(Enum::name).collect(Collectors.toList());
-		if(successStatusCodes.contains(statusCode)){
+		if(EventStatusSuccess.containsStatus(statusCode)){
 			eventStatus = EventStatus.SUCCESS.name();
-		} else if(failureStatusCodes.contains(statusCode)){
+		} else if(EventStatusFailure.containsStatus(statusCode)){
 			eventStatus = EventStatus.FAILED.name();
 		} else {
 			eventStatus = EventStatus.IN_PROGRESS.name();

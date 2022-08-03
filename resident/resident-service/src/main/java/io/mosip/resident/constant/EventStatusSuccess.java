@@ -15,5 +15,14 @@ public enum EventStatusSuccess {
     CARD_DELIVERED,
     DATA_SHARED_SUCCESSFULLY,
     EMAIL_VERIFIED,
-    PHONE_VERIFIED
+    PHONE_VERIFIED;
+
+    public static boolean containsStatus(String status) {
+        for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {
+            if (eventStatusSuccess.name().equals(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
