@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -32,9 +31,6 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
-
-	@Autowired
-	Environment env;
 
 	@Override
 	public ResponseWrapper<Map<String, Integer>> getRemainingUpdateCountByIndividualId(String individualId,
