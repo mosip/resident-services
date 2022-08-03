@@ -601,6 +601,9 @@ public enum EventEnum {
 	GET_TEMPLATES_EXCEPTION("RES-SER-247", RegistrationConstants.SYSTEM, "get templates failure",
 			"get templates by langCode and templateTypeCode is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	INVALID_LANGUAGE_CODE("RES-SER-500", RegistrationConstants.SYSTEM, "Invalid language code",
+			"invalid lang code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	GET_IDENTITY_UPDATE_COUNT("RES-SER-248", RegistrationConstants.SYSTEM, "get identity update count",
 			"retrieve remaining update counts for each id attributes for a UIN/VID", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
@@ -610,8 +613,7 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_IDENTITY_UPDATE_COUNT_EXCEPTION("RES-SER-250", RegistrationConstants.SYSTEM, "get identity update count failure",
 			"retrieve remaining update counts for each id attributes for a UIN/VID is failed", "RES-SER", "Residence service", "NO_ID",
-			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
 	;
 
 	private final String eventId;
