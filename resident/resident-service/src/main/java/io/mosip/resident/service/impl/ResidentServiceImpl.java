@@ -1371,8 +1371,12 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
-			String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-
+			String requestTypeCode;
+			if(residentTransactionEntity.isPresent()) {
+				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
+			} else {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
+			}
 			RequestType requestType = RequestType.valueOf(requestTypeCode);
 			Map<String, String> eventStatusMap;
 			if (requestType != null){

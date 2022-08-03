@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * The Class TemplateUtil.
@@ -44,19 +45,26 @@ import java.util.Map;
 
     private Map<String, String> getCommonTemplateVariables(String eventId) {
         Map<String, String> templateVariables = new HashMap<>();
-        ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findById(eventId).get();
         templateVariables.put(TemplateVariablesEnum.EVENT_ID, eventId);
-        templateVariables.put(TemplateVariablesEnum.EVENT_TYPE, residentTransactionEntity.getRequestTypeCode());
-        templateVariables.put(TemplateVariablesEnum.PURPOSE, residentTransactionEntity.getPurpose());
-        templateVariables.put(TemplateVariablesEnum.EVENT_STATUS, getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
+        Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
+                .findById(eventId);
+        if(residentTransactionEntity.isPresent()) {
+            ResidentTransactionEntity residentTransaction = residentTransactionEntity.get();
+            templateVariables.put(TemplateVariablesEnum.EVENT_TYPE, residentTransaction.getRequestTypeCode());
+            templateVariables.put(TemplateVariablesEnum.PURPOSE, residentTransaction.getPurpose());
+            templateVariables.put(TemplateVariablesEnum.EVENT_STATUS, getEventStatusForRequestType(residentTransaction.getStatusCode()));
+            templateVariables.put(TemplateVariablesEnum.SUMMARY, residentTransaction.getRequestSummary());
+            templateVariables.put(TemplateVariablesEnum.TIMESTAMP, DateUtils.formatToISOString(residentTransaction.getCrDtimes()));
+        } else{
+            throw new ResidentServiceException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND,
+                    ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
+        }
         try {
             templateVariables.put(TemplateVariablesEnum.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
         }
-        templateVariables.put(TemplateVariablesEnum.SUMMARY, residentTransactionEntity.getRequestSummary());
-        templateVariables.put(TemplateVariablesEnum.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
         return templateVariables;
     }
 
