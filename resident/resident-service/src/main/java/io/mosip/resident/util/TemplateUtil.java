@@ -1,11 +1,13 @@
 package io.mosip.resident.util;
 
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,11 +23,17 @@ import java.util.Map;
 @Component
  public class TemplateUtil {
 
+    private static final String UIN = "UIN";
+    private static final String VID = "VID";
+    private static final String AID = "AID";
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
     private IdentityServiceImpl identityServiceImpl;
+
+    @Autowired
+    private RequestValidator requestValidator;
 
     /**
      * Gets the ack template variables for authentication request.
@@ -42,14 +50,25 @@ import java.util.Map;
         templateVariables.put(TemplateVariablesEnum.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesEnum.EVENT_STATUS, getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
         try {
-            templateVariables.put(TemplateVariablesEnum.INDIVIDUAL_ID, identityServiceImpl.getResidentIndvidualId());
+            templateVariables.put(TemplateVariablesEnum.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
         }
         templateVariables.put(TemplateVariablesEnum.SUMMARY, residentTransactionEntity.getRequestSummary());
-        templateVariables.put(TemplateVariablesEnum.TIMESTAMP, residentTransactionEntity.getCrDtimes().toString());
+        templateVariables.put(TemplateVariablesEnum.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
         return templateVariables;
+    }
+
+    private String getIndividualIdType() throws ApisResourceAccessException {
+        String individualId= identityServiceImpl.getResidentIndvidualId();
+        if(requestValidator.validateUin(individualId)){
+            return UIN;
+        } else if(requestValidator.validateVid(individualId)){
+            return VID;
+        } else{
+            return AID;
+        }
     }
 
     private String getEventStatusForRequestType(String statusCode) {

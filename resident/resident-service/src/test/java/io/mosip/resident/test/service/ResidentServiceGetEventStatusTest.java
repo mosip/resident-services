@@ -116,7 +116,7 @@ public class ResidentServiceGetEventStatusTest {
         residentTransactionEntity.get().setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
-        assert resultResponseWrapper.getResponse().getEventStatus().equals("FAILED");
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class ResidentServiceGetEventStatusTest {
         residentTransactionEntity.get().setStatusCode("in-progress");
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
-        assert resultResponseWrapper.getResponse().getEventStatus().equals("IN_PROGRESS");
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test(expected = ResidentServiceCheckedException.class)

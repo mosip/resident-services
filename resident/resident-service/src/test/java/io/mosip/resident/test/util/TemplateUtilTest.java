@@ -8,6 +8,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +40,9 @@ public class TemplateUtilTest {
     @Mock
     private IdentityServiceImpl identityServiceImpl;
 
+    @Mock
+    private RequestValidator validator;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -54,12 +58,13 @@ public class TemplateUtilTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(eventId);
+        Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
     }
 
     @Test
     public void getAckTemplateVariablesForAuthenticationRequest() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(eventId);
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesEnum.AUTHENTICATION_MODE));
+        assertEquals("SUCCESS",ackTemplateVariables.get(TemplateVariablesEnum.EVENT_STATUS));
     }
 
     @Test

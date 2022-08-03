@@ -64,8 +64,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String PRINTING = "PRINTING";
-	private static final String VID = "VID";
-	private static final String AID = "AID";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -153,9 +151,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
-
-	@Autowired
-	private RequestValidator requestValidator;
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -1385,12 +1380,15 @@ public class ResidentServiceImpl implements ResidentService {
 
 				EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
 				eventStatusResponseDTO.setEventId(eventId);
-				eventStatusResponseDTO.setEventType(requestType.name());
-				eventStatusResponseDTO.setEventStatus(getEventStatusForRequestType(residentTransactionEntity.get().getStatusCode()));
-				eventStatusResponseDTO.setIndividualId(getIndividualIdType());
-				eventStatusResponseDTO.setSummary(residentTransactionEntity.get().getRequestSummary());
-				eventStatusResponseDTO.setTimestamp(residentTransactionEntity.get().getCrDtimes().toString());
+				eventStatusResponseDTO.setEventType(eventStatusMap.get(TemplateVariablesEnum.EVENT_TYPE));
+				eventStatusResponseDTO.setEventStatus(eventStatusMap.get(TemplateVariablesEnum.EVENT_STATUS));
+				eventStatusResponseDTO.setIndividualId(eventStatusMap.get(TemplateVariablesEnum.INDIVIDUAL_ID));
+				eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesEnum.SUMMARY));
+				eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesEnum.TIMESTAMP));
 
+				/**
+				 * Removed map value from eventStatusMap to put outside of info in EventStatusResponseDTO
+				 */
 				eventStatusMap.remove(TemplateVariablesEnum.EVENT_ID);
 				eventStatusMap.remove(TemplateVariablesEnum.EVENT_TYPE);
 				eventStatusMap.remove(TemplateVariablesEnum.EVENT_STATUS);
@@ -1398,13 +1396,10 @@ public class ResidentServiceImpl implements ResidentService {
 				eventStatusMap.remove(TemplateVariablesEnum.SUMMARY);
 				eventStatusMap.remove(TemplateVariablesEnum.TIMESTAMP);
 
-				for (Map.Entry<String, String> entry : eventStatusMap.entrySet()) {
-					entry.setValue(getResidentTransactionEntityValue(residentTransactionEntity, entry.getKey()));
-				}
 				eventStatusResponseDTO.setInfo(eventStatusMap);
 				responseWrapper.setId(serviceEventId);
-				responseWrapper.setVersion(serviceEventId);
-				responseWrapper.setResponsetime(LocalDateTime.parse(LocalDateTime.now().toString()));
+				responseWrapper.setVersion(serviceEventVersion);
+				responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 				responseWrapper.setResponse(eventStatusResponseDTO);
 			}
 		}
@@ -1417,39 +1412,4 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseWrapper;
 	}
 
-	private String getIndividualIdType() throws ApisResourceAccessException {
-		String individualId= identityServiceImpl.getResidentIndvidualId();
-		if(requestValidator.validateUin(individualId)){
-			return UIN;
-		} else if(requestValidator.validateVid(individualId)){
-			return VID;
-		} else{
-			return AID;
-		}
-	}
-
-	private String getEventStatusForRequestType(String statusCode) {
-		String eventStatus = "";
-		if(EventStatusSuccess.containsStatus(statusCode)){
-			eventStatus = EventStatus.SUCCESS.name();
-		} else if(EventStatusFailure.containsStatus(statusCode)){
-			eventStatus = EventStatus.FAILED.name();
-		} else {
-			eventStatus = EventStatus.IN_PROGRESS.name();
-		}
-		return eventStatus;
-	}
-
-	private String getResidentTransactionEntityValue(Optional<ResidentTransactionEntity> residentTransactionEntity, String key) {
-		String value = null;
-		switch (key) {
-			case TemplateVariablesEnum.PURPOSE:
-				value = residentTransactionEntity.get().getPurpose();
-				break;
-			case TemplateVariablesEnum.AUTHENTICATION_MODE:
-				value = residentTransactionEntity.get().getAuthTypeCode();
-				break;
-		}
-		return value;
-	}
 }
