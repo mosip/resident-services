@@ -17,8 +17,8 @@ public enum EventStatusFailure {
     EMAIL_VERIFICATION_FAILED,
     PHONE_VERIFICATION_FAILED;
     public static boolean containsStatus(String status) {
-        for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {
-            if (eventStatusSuccess.name().equals(status)) {
+        for (EventStatusFailure eventStatusFailure : EventStatusFailure.values()) {
+            if (eventStatusFailure.name().equals(status)) {
                 return true;
             }
         }
