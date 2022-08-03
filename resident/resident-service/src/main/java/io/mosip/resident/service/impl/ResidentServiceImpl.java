@@ -1391,12 +1391,12 @@ public class ResidentServiceImpl implements ResidentService {
 				eventStatusResponseDTO.setSummary(residentTransactionEntity.get().getRequestSummary());
 				eventStatusResponseDTO.setTimestamp(residentTransactionEntity.get().getCrDtimes().toString());
 
-				eventStatusMap.remove("eventId");
-				eventStatusMap.remove("eventType");
-				eventStatusMap.remove("eventStatus");
-				eventStatusMap.remove("individualId");
-				eventStatusMap.remove("summary");
-				eventStatusMap.remove("timestamp");
+				eventStatusMap.remove(TemplateVariablesEnum.EVENT_ID);
+				eventStatusMap.remove(TemplateVariablesEnum.EVENT_TYPE);
+				eventStatusMap.remove(TemplateVariablesEnum.EVENT_STATUS);
+				eventStatusMap.remove(TemplateVariablesEnum.INDIVIDUAL_ID);
+				eventStatusMap.remove(TemplateVariablesEnum.SUMMARY);
+				eventStatusMap.remove(TemplateVariablesEnum.TIMESTAMP);
 
 				for (Map.Entry<String, String> entry : eventStatusMap.entrySet()) {
 					entry.setValue(getResidentTransactionEntityValue(residentTransactionEntity, entry.getKey()));
@@ -1445,18 +1445,13 @@ public class ResidentServiceImpl implements ResidentService {
 	private String getResidentTransactionEntityValue(Optional<ResidentTransactionEntity> residentTransactionEntity, String key) {
 		String value = null;
 		switch (key) {
-
-		case "purpose":
-			value = residentTransactionEntity.get().getPurpose();
-			break;
-		case "authenticationMode":
-			value = residentTransactionEntity.get().getAuthTypeCode();
-			break;
-		case "partnerName":
-			value = residentTransactionEntity.get().getOlvPartnerId();
-			break;
+			case TemplateVariablesEnum.PURPOSE:
+				value = residentTransactionEntity.get().getPurpose();
+				break;
+			case TemplateVariablesEnum.AUTHENTICATION_MODE:
+				value = residentTransactionEntity.get().getAuthTypeCode();
+				break;
 		}
 		return value;
 	}
-
 }

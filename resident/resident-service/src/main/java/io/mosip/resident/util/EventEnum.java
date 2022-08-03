@@ -602,7 +602,7 @@ public enum EventEnum {
 			"get templates by langCode and templateTypeCode is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	INVALID_LANGUAGE_CODE("RES-SER-500", RegistrationConstants.SYSTEM, "Invalid language code",
-			"invalid language code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			"invalid lang code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 
