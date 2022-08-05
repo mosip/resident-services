@@ -104,7 +104,6 @@ public class ResidentTransactionEntity {
     @Column(name = "del_dtimes")
     private LocalDateTime delDtimes;
 
-    @NotNull
     @Column(name = "auth_type_code")
     private String authTypeCode;
 
@@ -136,6 +135,9 @@ public class ResidentTransactionEntity {
 
     @Column(name = "credential_request_id")
     private String credentialRequestId;
+    
+    @Column(name = "attribute_list")
+    private String attributeList;
 
     /**
      * The constructor used in retrieval of the specific fields.

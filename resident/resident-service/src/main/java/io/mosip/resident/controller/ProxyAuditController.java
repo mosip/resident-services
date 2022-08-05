@@ -37,7 +37,7 @@ public class ProxyAuditController {
 	/**
 	 * Audit log.
 	 *
-	 * @param auditRequestDto the audit request dto
+	 * @param auditRequestDtoV2 the audit request dto
 	 * @return the response entity
 	 * @throws ResidentServiceCheckedException the resident service checked
 	 *                                         exception
