@@ -173,6 +173,10 @@ import java.util.Optional;
          return templateVariables;
      }
 
+     public  Map<String, String> getAckTemplateVariablesForVidCardDownload(String eventId) {
+         return Collections.emptyMap();
+     }
+
      //ToDo: Need to change method implementation
      private String getVidNumber(String eventId) {
          return "vid";
