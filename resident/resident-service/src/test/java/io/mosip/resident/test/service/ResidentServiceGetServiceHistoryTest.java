@@ -1,10 +1,11 @@
 package io.mosip.resident.test.service;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusSuccess;
-import io.mosip.resident.dto.PageDto;
-import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -181,6 +182,36 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testSortTypeNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 1;
         pageSize = 10;
-        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, null, statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType,
+                null, statusFilter, searchText).getResponse().getPageSize());
+    }
+
+    @Test
+    public void testServiceHistoryWithDifferentParameters() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        pageStart = 1;
+        pageSize = 10;
+        fromDate = LocalDateTime.MAX;
+        toDate = LocalDateTime.MIN;
+        serviceType = ServiceType.AUTHENTICATION_REQUEST.toString();
+        sortType = "ASC";
+        statusFilter = "SUCCESS";
+        searchText = "a";
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType,
+                statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
+                statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType,
+                statusFilter, null).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
+                statusFilter, null).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType,
+                null, "a").getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
+                null, "a").getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, null, sortType,
+                statusFilter, "a").getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
+                null, "a").getResponse().getPageSize());
+
     }
 }
