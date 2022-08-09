@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class ServiceHistoryResponseDto {
     private String eventId;
-    private String summary;
+    private String purpose;
     private String eventStatus;
     private String timeStamp;
     private String requestType;
