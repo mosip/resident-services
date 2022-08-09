@@ -1,5 +1,7 @@
 package io.mosip.resident.test.service;
 
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.AutnTxnDto;
@@ -23,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,6 +61,9 @@ public class ResidentServiceGetServiceHistoryTest {
     private Utilities utilities;
 
     @Mock
+    private EntityManager entityManager;
+
+    @Mock
     private PartnerServiceImpl partnerServiceImpl;
     List<AutnTxnDto> details = null;
 
@@ -70,15 +77,16 @@ public class ResidentServiceGetServiceHistoryTest {
     private ArrayList<String> partnerIds;
     List<ResidentTransactionEntity> residentTransactionEntityList;
     ResidentTransactionEntity residentTransactionEntity;
-    private String searchColumn;
+    private String statusFilter;
     private String searchText;
 
     private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper;
+    private Query query;
 
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-        searchColumn = "";
-        searchText = "";
+        statusFilter = EventStatus.SUCCESS.toString();
+        searchText = "1";
         details = new ArrayList<>();
         pageSize = 10;
         pageStart = 2;
@@ -91,11 +99,13 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setEventId("eventId");
 
         responseWrapper = new ResponseWrapper<>();
+        query = Mockito.mock(Query.class);
 
         residentTransactionEntity.setRequestTrnId("12345");
         residentTransactionEntity.setStatusCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
         residentTransactionEntity.setStatusComment("Success");
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+        residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.toString());
 
         residentTransactionEntityList.add(residentTransactionEntity);
 
@@ -110,6 +120,7 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
@@ -119,8 +130,8 @@ public class ResidentServiceGetServiceHistoryTest {
         pageSize = 3;
         fromDate = LocalDateTime.now();
         toDate = LocalDateTime.now();
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType, searchColumn, searchText).getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC", searchColumn, searchText).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC", statusFilter, searchText).getResponse().getPageSize());
     }
 
     @Test
@@ -128,32 +139,32 @@ public class ResidentServiceGetServiceHistoryTest {
         pageStart = 2;
         pageSize = 3;
 
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType, searchColumn, searchText).getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", searchColumn, searchText).getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", searchColumn, searchText).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", statusFilter, searchText).getResponse().getPageSize());
 
     }
 
     @Test
     public void testGetServiceHistoryNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType, searchColumn, searchText).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetServiceHistoryCheckedException() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Integer pageStart = 1;
         Integer pageSize = 1;
-        Mockito.when(residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, searchColumn, searchText)).thenThrow(ResidentServiceCheckedException.class);
-        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, searchColumn, searchText)).thenThrow(ResidentServiceCheckedException.class);
-        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, 1, fromDate, toDate, serviceType, sortType, searchColumn, searchText)).thenThrow(ResidentServiceCheckedException.class);
-        assertEquals(0, residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, searchColumn, searchText).getResponse().getPageSize());
-        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, searchColumn, searchText).getResponse().getPageSize());
+        Mockito.when(residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText)).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText)).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, 1, fromDate, toDate, serviceType, sortType, statusFilter, searchText)).thenThrow(ResidentServiceCheckedException.class);
+        assertEquals(0, residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetServiceHistoryNegativeResidentServiceCheckedException() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Integer pageStart = 1;
-        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, searchColumn, searchText)).thenThrow(ResidentServiceCheckedException.class);
-        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, searchColumn, searchText).getResponse().getPageSize());
+        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText)).thenThrow(ResidentServiceCheckedException.class);
+        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
     }
 }

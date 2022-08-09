@@ -702,9 +702,26 @@ public class RequestValidator {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
 		validateStatusFilter(statusFilter, "Request service history API");
+		validateFromDateTimeToDateTime(fromDateTime, toDateTime, "Request service history API");
 		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
 			throw new InvalidInputException("DateTime");
+		}
+	}
+
+	public void validateFromDateTimeToDateTime(LocalDateTime fromDateTime, LocalDateTime toDateTime, String request_service_history_api) {
+		if(fromDateTime != null && toDateTime != null) {
+			if(fromDateTime.isAfter(toDateTime)) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
+				throw new InvalidInputException("fromDateTime");
+			}
+		}
+		if(fromDateTime == null && toDateTime != null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
+			throw new InvalidInputException("fromDateTime");
+		} else if(fromDateTime != null && toDateTime == null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "toDateTime", request_service_history_api));
+			throw new InvalidInputException("toDateTime");
 		}
 	}
 

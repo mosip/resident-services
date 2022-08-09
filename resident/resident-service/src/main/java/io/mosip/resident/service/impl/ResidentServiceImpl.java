@@ -18,7 +18,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hibernate.query.Query;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +31,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -1223,9 +1223,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType, Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String statusFilter, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
-
 		String idaToken = identityServiceImpl.getResidentIdaToken();
-
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter, searchText, fromDateTime, toDateTime, serviceType));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
@@ -1236,7 +1234,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart, Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType) {
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter, searchText, fromDateTime, toDateTime, serviceType);
-		Query q = (Query) entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
+		Query q =  entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) q.getResultList();
 		int size= Math.toIntExact(residentTransactionRepository.countByTokenId(idaToken));
 		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1, convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList));
