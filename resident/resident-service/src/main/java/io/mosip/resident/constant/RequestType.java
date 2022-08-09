@@ -21,7 +21,8 @@ public enum RequestType {
 	GENERATE_VID(TemplateUtil::getAckTemplateVariablesForGenerateVid),
 	REVOKE_VID(TemplateUtil::getAckTemplateVariablesForRevokeVid),
 	VERIFY_PHONE_EMAIL(TemplateUtil::getAckTemplateVariablesForVerifyPhoneEmail),
-	AUTH_TYPE_LOCK_UNLOCK(TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock);
+	AUTH_TYPE_LOCK_UNLOCK(TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock),
+	VID_CARD_DOWNLOAD(TemplateUtil::getAckTemplateVariablesForVidCardDownload);
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private RequestType(BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction) {
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;

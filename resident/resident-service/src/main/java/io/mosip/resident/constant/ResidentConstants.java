@@ -39,5 +39,7 @@ public class ResidentConstants {
     public static final String IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED = "mosip.resident.update.service.status.job.enabled";
 
     public static final String ID_TYPE = "idType";
+    
+    public static final String PUBLIC_URL = "mosipbox.public.url";
 
 }
