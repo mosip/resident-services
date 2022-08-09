@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.resident.constant.*;
+import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +22,6 @@ import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
@@ -700,33 +698,27 @@ public class RequestValidator {
 		}
     }
 
-    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType, String searchColumn, String searchText) {
+    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType, String statusFilter) {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
-		validateSearch(searchText, searchColumn, "Request service history API");
+		validateStatusFilter(statusFilter, "Request service history API");
 		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
 			throw new InvalidInputException("DateTime");
 		}
 	}
 
-	private void validateSearch(String searchText, String searchColumn, String requestServiceHistoryApi) {
-		if(StringUtils.isNotEmpty(searchText) && StringUtils.isEmpty(searchColumn)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchText", requestServiceHistoryApi));
-			throw new InvalidInputException("Please provide searchColumn");
-		} else if(StringUtils.isEmpty(searchText) && StringUtils.isNotEmpty(searchColumn)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumn", requestServiceHistoryApi));
-			throw new InvalidInputException("Please provide searchText");
-		} else if(StringUtils.isNotEmpty(searchText) && StringUtils.isNotEmpty(searchColumn)) {
-			validateSearchColumn(searchColumn, requestServiceHistoryApi);;
-		}
-	}
-
-	private void validateSearchColumn(String searchColumns, String requestServiceHistoryApi) {
-		if(!searchColumns.equalsIgnoreCase("eventId") && !searchColumns.equalsIgnoreCase("statusComment")
-				&& !searchColumns.equalsIgnoreCase("statusCode")) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "searchColumns", requestServiceHistoryApi));
-			throw new InvalidInputException("Please provide valid searchColumns");
+	private void validateStatusFilter(String statusFilter, String request_service_history_api) {
+		if(statusFilter != null) {
+			List<String> statusFilterList = Arrays.asList(statusFilter.split(","));
+			for (String status : statusFilterList) {
+				if (!status.equalsIgnoreCase(EventStatus.FAILED.toString()) && !status.equalsIgnoreCase(EventStatus.IN_PROGRESS.toString())
+						&& !status.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "statusFilter",
+							request_service_history_api));
+					throw new InvalidInputException("statusFilter");
+				}
+			}
 		}
 	}
 
@@ -758,7 +750,8 @@ public class RequestValidator {
 						&& !service.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())
 						&& !service.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())
 						&& !service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
-						&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())) {
+						&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())
+						&& !service.equalsIgnoreCase("ALL")) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
 							requestServiceHistoryApi));
 					throw new InvalidInputException("serviceType");
