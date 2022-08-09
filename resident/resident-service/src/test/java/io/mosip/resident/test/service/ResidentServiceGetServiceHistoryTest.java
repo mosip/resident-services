@@ -167,4 +167,20 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText)).thenThrow(ResidentServiceCheckedException.class);
         assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
     }
+
+    @Test
+    public void testPageSizeCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        pageSize = 10;
+        pageStart = 1;
+        assertEquals(10, residentServiceImpl.getServiceHistory(null, null, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(null, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, null, fromDate, toDate, serviceType, sortType, statusFilter, searchText).getResponse().getPageSize());
+    }
+
+    @Test
+    public void testSortTypeNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        pageStart = 1;
+        pageSize = 10;
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, null, statusFilter, searchText).getResponse().getPageSize());
+    }
 }

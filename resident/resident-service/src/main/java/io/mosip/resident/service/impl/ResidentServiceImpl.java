@@ -1127,7 +1127,6 @@ public class ResidentServiceImpl implements ResidentService {
 	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch, String individualId) throws ResidentServiceCheckedException {
 		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::entry");
-		ResponseDTO responseDTO = new ResponseDTO();
 		List<ResidentServiceHistoryResponseDto> residentServiceHistoryResponseDtoList = new ArrayList<>();
 
 		try{
@@ -1234,8 +1233,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart, Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType) {
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter, searchText, fromDateTime, toDateTime, serviceType);
-		Query q =  entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
-		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) q.getResultList();
+		Query nativeQuery =  entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
+		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery.getResultList();
 		int size= Math.toIntExact(residentTransactionRepository.countByTokenId(idaToken));
 		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1, convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList));
 	}
