@@ -56,6 +56,7 @@ import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -74,6 +75,9 @@ import io.mosip.resident.validator.RequestValidator;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private ResidentServiceImpl residentService;

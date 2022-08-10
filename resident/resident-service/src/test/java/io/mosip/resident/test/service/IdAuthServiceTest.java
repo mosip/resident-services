@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,6 +56,7 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
@@ -62,6 +64,9 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 @RefreshScope
 @ContextConfiguration
 public class IdAuthServiceTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

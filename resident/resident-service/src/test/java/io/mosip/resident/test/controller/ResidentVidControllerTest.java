@@ -50,6 +50,7 @@ import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -63,6 +64,9 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentVidControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private ResidentVidServiceImpl residentVidService;

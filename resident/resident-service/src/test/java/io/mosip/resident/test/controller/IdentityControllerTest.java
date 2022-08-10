@@ -33,6 +33,7 @@ import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.controller.IdentityController;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -47,6 +48,9 @@ import io.mosip.resident.util.AuditUtil;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class IdentityControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@InjectMocks
 	private IdentityController identityController;
