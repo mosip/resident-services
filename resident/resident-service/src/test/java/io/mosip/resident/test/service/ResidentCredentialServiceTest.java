@@ -1,38 +1,9 @@
 package io.mosip.resident.test.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentCredentialServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.Utilitiy;
-
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,11 +12,58 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialReqestDto;
+import io.mosip.resident.dto.CredentialRequestStatusDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.CryptomanagerResponseDto;
+import io.mosip.resident.dto.EncryptResponseDto;
+import io.mosip.resident.dto.Issuer;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.PartnerResponseDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialRequestDtoV3;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.Type;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -81,7 +99,12 @@ public class ResidentCredentialServiceTest {
 
     @InjectMocks
     private ResidentCredentialService residentCredentialService = new ResidentCredentialServiceImpl();
-
+    
+    @Mock
+   	private IdentityServiceImpl identityService;
+    
+    @Mock
+    private ResidentTransactionRepository residentTransactionRepository;    
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException {
     	random=new SecureRandom();
@@ -128,10 +151,44 @@ public class ResidentCredentialServiceTest {
         assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
     }
     
+	@Test
+	public void generatePurposeCredentialTest() throws OtpValidationFailedException, IOException,
+			ApisResourceAccessException, ResidentServiceCheckedException {
+		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+		residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
+		String purpose = "Bank account";
+		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
+		response.setResponsetime(DateUtils.getCurrentDateTimeString());
+		response.setResponse(residentCredentialResponseDto);
+		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
+		partnerResponseDto.setOrganizationName("MOSIP");
+		ResponseWrapper<PartnerResponseDto> partnerResponseDtoResponseWrapper = new ResponseWrapper<>();
+		partnerResponseDtoResponseWrapper.setResponse(partnerResponseDto);
+
+		when(idAuthService.validateOtp(residentCredentialRequestDto.getTransactionID(),
+				residentCredentialRequestDto.getIndividualId(), residentCredentialRequestDto.getOtp()))
+						.thenReturn(Boolean.TRUE);
+
+		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
+		requestDto.setId("mosip.credential.request.service.id");
+		requestDto.setRequest(new CredentialReqestDto());
+		requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+		requestDto.setVersion("1.0");
+
+		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/"
+				+ residentCredentialRequestDto.getIssuer();
+		URI partnerUri = URI.create(partnerUrl);
+		when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class))
+				.thenReturn(partnerResponseDtoResponseWrapper);
+		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
+		ResidentCredentialResponseDto credentialResponseDto = residentCredentialService
+				.reqCredential(residentCredentialRequestDto, purpose);
+		assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
+	}
+    
     @Test(expected = ResidentServiceException.class)
     public void testGenerateCredentialWithIndividualIdNull() throws ResidentServiceCheckedException {
     	residentCredentialRequestDto.setIndividualId(null);
-
         residentCredentialService.reqCredential(residentCredentialRequestDto);
     }
     
@@ -555,5 +612,32 @@ public class ResidentCredentialServiceTest {
     	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(IllegalArgumentException.class);
     	
     	residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
+    }
+    
+    private ResidentCredentialRequestDtoV3 getResidentCredentialRequestDto() {    	
+    	ResidentCredentialRequestDtoV3 residentCredentialDto = new ResidentCredentialRequestDtoV3();
+    	residentCredentialDto.setOtp("123");
+    	residentCredentialDto.setTransactionID("12345");
+    	residentCredentialDto.setIndividualId("1234567890");
+    	residentCredentialDto.setIssuer("mpartner-default-print");
+    	residentCredentialDto.setCredentialType("euin");
+    	residentCredentialDto.setEncrypt(true);
+    	residentCredentialDto.setEncryptionKey("abc123");
+    	residentCredentialDto.setPurpose("Bank");
+    	return residentCredentialDto;
+    }
+    
+    private  ResidentTransactionEntity getResidentTransactionEntity() {
+    	ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+    	residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
+        residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.name());
+        RequestType requestType = RequestType.AUTHENTICATION_REQUEST;
+        residentTransactionEntity.setEventId("123456789");
+        residentTransactionEntity.setLangCode("eng");
+        residentTransactionEntity.setRequestSummary("requestSummary");
+        residentTransactionEntity.setRequestTypeCode(requestType.name());
+        residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+        return residentTransactionEntity;
+    	
     }
 }

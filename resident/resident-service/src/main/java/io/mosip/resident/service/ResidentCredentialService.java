@@ -13,6 +13,8 @@ public interface ResidentCredentialService {
 
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException;
 	
+	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request,String purpose) throws ResidentServiceCheckedException;
+	
 	public ResidentCredentialResponseDto reqCredentialV2(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException;
 
 	public CredentialRequestStatusResponseDto getStatus(String requestId) throws ResidentServiceCheckedException;
