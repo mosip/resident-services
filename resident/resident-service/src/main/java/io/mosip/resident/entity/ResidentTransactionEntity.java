@@ -1,16 +1,17 @@
 package io.mosip.resident.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * This entity class defines the database table details for resident_transaction table.
@@ -136,6 +137,9 @@ public class ResidentTransactionEntity {
 
     @Column(name = "credential_request_id")
     private String credentialRequestId;
+
+    @Column(name = "individual_id")
+    private String individualId;
 
     /**
      * The constructor used in retrieval of the specific fields.

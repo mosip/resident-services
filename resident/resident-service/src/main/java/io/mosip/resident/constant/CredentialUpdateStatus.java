@@ -15,13 +15,14 @@ public class CredentialUpdateStatus {
 
 	public static final String PRINTING = "PRINTING";
 
-	public static final String DISPATCHED = "DISPATCHED";
-
 	public static final String FAILED = "FAILED";
 
 	public static final String PROCESSING = "PROCESSING";
 	
 	public static final String RECEIVED = "RECEIVED";
 	
-	public static final String DELIVERED = "DELIVERED";
+	public static final String DELIVERED = "CARD_DELIVERED";
+	
+	public static final String STORED = "STORED";
+	
 }
