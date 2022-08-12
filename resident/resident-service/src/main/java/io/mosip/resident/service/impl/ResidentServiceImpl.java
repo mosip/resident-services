@@ -33,6 +33,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -1235,7 +1236,13 @@ public class ResidentServiceImpl implements ResidentService {
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter, searchText, fromDateTime, toDateTime, serviceType);
 		Query nativeQuery =  entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery.getResultList();
-		int size= Math.toIntExact(residentTransactionRepository.countByTokenId(idaToken));
+
+		String[] split = nativeQueryString.split("order by");
+		String nativeQueryStringWithoutOrderBy = split[0];
+		nativeQueryStringWithoutOrderBy = nativeQueryStringWithoutOrderBy.replace("*", "count(*)");
+		nativeQuery =  entityManager.createNativeQuery(nativeQueryStringWithoutOrderBy);
+		BigInteger count = (BigInteger) nativeQuery.getSingleResult();
+		int size= count.intValue();
 		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1, convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList));
 	}
 
