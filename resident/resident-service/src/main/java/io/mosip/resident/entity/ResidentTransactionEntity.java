@@ -143,6 +143,9 @@ public class ResidentTransactionEntity {
     @Column(name = "individual_id")
     private String individualId;
 
+    @Column(name = "individual_id")
+    private String individualId;
+
     /**
      * The constructor used in retrieval of the specific fields.
      * @param requestTrnId
