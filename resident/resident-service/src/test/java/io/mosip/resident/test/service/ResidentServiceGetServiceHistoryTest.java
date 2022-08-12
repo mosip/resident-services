@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -122,6 +123,8 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
+        Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 
