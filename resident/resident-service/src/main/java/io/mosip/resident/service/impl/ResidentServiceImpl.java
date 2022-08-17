@@ -1290,7 +1290,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		String orderByQuery=  " order by pinned_status desc, " +
 				"cr_dtimes "+sortType+" limit "+pageFetch + " offset "
-				+ (pageStart-1);
+				+ (pageStart-1)*pageFetch;
 		return query+DynamicQuery+orderByQuery;
 	}
 
