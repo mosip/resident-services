@@ -42,10 +42,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
             " AND (eventId like %:searchText%" +
             " OR statusComment like %:searchText% " +
             " OR statusCode like %:searchText%) " +
-            " ORDER BY pinnedStatus DESC" )
+            " ORDER BY pinnedStatus DESC LIMIT :pageFetch OFFSET :pageStart", nativeQuery = true)
     List<ResidentTransactionEntity> findByTokenWithoutDate(@Param("tokenId") String tokenId,
                                                            @Param("residentTransactionType") List<String> residentTransactionType,
-                                                           Pageable pagaeable, @Param("searchText") String searchText);
+                                                           @Param("pageStart") String pageStart,
+            @Param("pageFetch") String pageFetch, @Param("searchText") String searchText);
 
     @Query(value = "Select new ResidentTransactionEntity(aid) " +
             "from ResidentTransactionEntity where tokenId=:tokenId "  +
@@ -69,7 +70,12 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
             " AND (eventId like %:searchText%" +
             " OR statusComment like %:searchText% " +
             " OR statusCode like %:searchText%) " +
-            " ORDER BY pinnedStatus DESC" )
+            " ORDER BY pinnedStatus DESC LIMIT :pageFetch OFFSET :pageStart", nativeQuery = true)
     List<ResidentTransactionEntity> findByTokenWithoutServiceTypeAndDate(@Param("tokenId") String tokenId,
-                                                                         Pageable pagaeable, @Param("searchText") String searchText);
+                                                                         @Param("pageStart") int pageStart,
+                                                                         @Param("pageFetch") int pageFetch, @Param("searchText")
+                                                                                 String searchText);
+
+    Long countByTokenId(String tokenId);
+
 }

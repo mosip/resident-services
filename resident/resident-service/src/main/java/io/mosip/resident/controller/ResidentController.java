@@ -1,7 +1,6 @@
 package io.mosip.resident.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.mosip.idrepository.core.dto.CredentialRequestIdsDto;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
@@ -39,9 +38,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -278,14 +275,14 @@ public class ResidentController {
 												   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
 																			   @RequestParam(name = "sortType", required = false) String sortType,
 																			   @RequestParam(name = "serviceType", required = false) String serviceType,
-																			   @RequestParam(name = "searchColumns", required = false) String searchColumns,
+																			   @RequestParam(name = "statusFilter", required = false) String statusFilter,
 																			   @RequestParam(name = "searchText", required = false) String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, searchColumns, searchText);
+		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, statusFilter);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY,
 				"getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper =
-				residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, searchColumns, searchText);;
+				residentService.getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText);;
 		return responseWrapper;
 	}
 
