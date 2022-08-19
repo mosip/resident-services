@@ -71,7 +71,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 		residentTransactionEntity.setStatusCode(status);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestSummary("");
-		residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(individualId));
 		residentTransactionEntity.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.parse(eventModel.getEvent().getTimestamp()));
 		residentTransactionEntity.setResponseDtime(LocalDateTime.parse(eventModel.getEvent().getTimestamp()));

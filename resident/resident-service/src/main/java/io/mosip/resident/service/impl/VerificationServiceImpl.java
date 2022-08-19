@@ -91,7 +91,7 @@ public class VerificationServiceImpl implements VerificationService {
         residentTransEntity.setEventId(UUID.randomUUID().toString());
         residentTransEntity.setRequestTypeCode(RequestType.VERIFY_PHONE_EMAIL.name());
         residentTransEntity.setRefId(utility.convertToMaskDataFormat(individualId));
-        residentTransEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+        residentTransEntity.setTokenId(identityServiceImpl.getIDAToken(individualId));
 		residentTransEntity.setRequestSummary("in-progress");
 		return residentTransEntity;
 	}
