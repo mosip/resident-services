@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -36,6 +37,7 @@ import com.nimbusds.jose.util.IOUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
@@ -44,10 +46,12 @@ import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.JsonValue;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 /**
  * @author Girish Yarru
@@ -88,6 +92,9 @@ public class Utilitiy {
 	
 	@Value("${resident.phone.mask.function}")
 	private String phoneMaskFunction;
+	
+	@Value("${resident.data.mask.function}")
+	private String maskingFunction;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -298,6 +305,17 @@ public class Utilitiy {
 		return maskData(phone, phoneMaskFunction);
 	}
 
-
+	public String convertToMaskDataFormat(String maskData) {
+		return maskData(maskData, maskingFunction);
+	}
+	
+	public ResidentTransactionEntity createEntity() throws ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
+		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
+		residentTransactionEntity.setCrBy("resident-services");
+		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+		return residentTransactionEntity;
+	}
 
 }

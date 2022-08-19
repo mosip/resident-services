@@ -5,7 +5,6 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.*;
@@ -17,7 +16,6 @@ import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.*;
 import io.mosip.resident.util.*;
-import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +29,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -141,13 +142,13 @@ public class ResidentServiceImpl implements ResidentService {
 	private DocumentService docService;
 	
 	@Autowired
-	private ResidentTransactionRepository txnRepo;
-
-	@Autowired
 	private PartnerService partnerServiceImpl;
 	
 	@Autowired
 	private IdAuthService idAuthServiceImpl;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Autowired
 	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
@@ -614,7 +615,10 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto)
 			throws ResidentServiceCheckedException {
 		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
+		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
+			residentTransactionEntity = createResidentTransEntity(dto);
+			
 			if (Objects.nonNull(dto.getOtp())) {
 				if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,
@@ -686,8 +690,12 @@ public class ResidentServiceImpl implements ResidentService {
 			responseDto.setRegistrationId(response.getRegistrationId());
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
-			updateResidentTransaction(dto, response);
+			
+			updateResidentTransaction(residentTransactionEntity, response);
 		} catch (OtpValidationFailedException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			residentTransactionEntity.setRequestSummary("failed");
+			
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -698,6 +706,9 @@ public class ResidentServiceImpl implements ResidentService {
 					e);
 
 		} catch (ValidationFailedException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			residentTransactionEntity.setRequestSummary("failed");
+			
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATION_FAILED_EXCEPTION,
 					e.getMessage() + " Transaction id: " + dto.getTransactionID(), "Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -707,6 +718,9 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(e.getErrorCode(), e.getMessage(), e);
 
 		} catch (ApisResourceAccessException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			residentTransactionEntity.setRequestSummary("failed");
+			
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_RESOURCE_UNACCESS,
 					dto.getTransactionID(), "Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -727,6 +741,9 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
 			}
 		} catch (IOException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			residentTransactionEntity.setRequestSummary("failed");
+			
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -735,7 +752,10 @@ public class ResidentServiceImpl implements ResidentService {
 					dto.getTransactionID(), "Request for UIN update"));
 			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (BaseCheckedException | NoSuchAlgorithmException e) {
+		} catch (BaseCheckedException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			residentTransactionEntity.setRequestSummary("failed");
+			
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.BASE_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -744,31 +764,37 @@ public class ResidentServiceImpl implements ResidentService {
 					dto.getTransactionID(), "Request for UIN update"));
 			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
+		} finally {
+			residentTransactionRepository.save(residentTransactionEntity);
 		}
 		return responseDto;
 	}
 
-	private void updateResidentTransaction(ResidentUpdateRequestDto dto, PacketGeneratorResDto response)
-			throws NoSuchAlgorithmException {
-		ResidentTransactionEntity txn = new ResidentTransactionEntity();
-		txn.setEventId(UUID.randomUUID().toString());
-		txn.setAid(HMACUtils2.digestAsPlainText(response.getRegistrationId().getBytes()));
-		txn.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
-		txn.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		txn.setRequestTrnId(dto.getTransactionID());
-		txn.setRequestTypeCode("UIN_UPDATED");
-		txn.setAuthTypeCode(ResidentTransactionType.DATA_UPDATE_REQUEST.toString());
-		txn.setRequestSummary("Uin updated successfully");
-		txn.setStatusCode("UIN_UPDATED");
-		txn.setStatusComment("Uin updated successfully");
-		txn.setLangCode("");
-		txn.setRefIdType("INDIVIDUAL_ID");
-		txn.setRefId(HMACUtils2.digestAsPlainText(dto.getIndividualId().getBytes()));
-		txn.setCrBy("mosip");
-		txn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
-		txnRepo.save(txn);
+	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
+			throws ApisResourceAccessException, IOException, JsonParseException, JsonMappingException {
+		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		byte[] decodedIdJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
+		Map<String, Object> identityResponse=objectMapper.readValue(decodedIdJson, Map.class);
+		Map<String, ?> identityMap = (Map<String, ?>)identityResponse.get(IDENTITY);
+		
+		Set<String> keys = identityMap.keySet();
+		keys.remove("IDSchemaVersion");
+		keys.remove("UIN");
+		String attributeList=keys.stream().collect(Collectors.joining(", "));
+		residentTransactionEntity.setAttributeList(attributeList);
+		return residentTransactionEntity;
 	}
-  
+
+	private void updateResidentTransaction(ResidentTransactionEntity residentTransactionEntity, PacketGeneratorResDto response) {
+		residentTransactionEntity.setAid(response.getRegistrationId());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setRequestSummary("in-progress");
+	}
+
 	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument) {
 		if (Objects.nonNull(dto.getDocuments())) {
 			return dto.getDocuments();
@@ -794,26 +820,58 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseDTO response = new ResponseDTO();
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		boolean isTransactionSuccessful = false;
+		List<ResidentTransactionEntity> residentTransactionEntities=List.of();
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK,
 					"Request for Auth Type Lock"));
-
-			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
-				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId,
-						List.of(authTypeStatusDto.getAuthType().split(",")), 
-						authTypeStatusDto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK, authTypeStatusDto.getUnlockForSeconds());
-
-				if (isAuthTypeStatusUpdated) {
-					isTransactionSuccessful = true;
-					insertAuthStatusInDb(isTransactionSuccessful, authLockOrUnLockRequestDtoV2, individualId);
-				} else {
-					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
-							, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
-					throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
-							ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+			ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");
+			residentTransactionEntities = partnerIds.stream().map(partnerId -> {
+				try {
+					return createResidentTransactionEntity(individualId, partnerId);
+				} catch (ApisResourceAccessException e) {
+					logger.error("Error occured in creating entities %s", e.getMessage());
+					throw new ResidentServiceException(ResidentErrorCode.UNKNOWN_EXCEPTION, e);
 				}
+			}).collect(Collectors.toList());
+
+			List<AuthTypeStatusDto> authTypesStatusList=authLockOrUnLockRequestDtoV2.getAuthTypes();
+			String authType = authTypesStatusList.stream().map(AuthTypeStatusDto::getAuthType).collect(Collectors.joining(", "));
+			
+			Map<String, AuthTypeStatus> authTypeStatusMap=authTypesStatusList.stream()
+											.collect(Collectors.toMap(AuthTypeStatusDto::getAuthType, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
+			Map<String, Long> unlockForSecondsMap=authTypesStatusList.stream()
+											.collect(Collectors.toMap(AuthTypeStatusDto::getAuthType, AuthTypeStatusDto::getUnlockForSeconds));
+			
+			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+			
+			residentTransactionEntities.forEach(residentTransactionEntity -> {
+				if (isAuthTypeStatusUpdated) {
+					residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+					residentTransactionEntity.setRequestSummary("in-progress");
+					residentTransactionEntity.setPurpose(authType);
+				}
+				else {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary("failed");
+				}
+			});
+			
+			if (isAuthTypeStatusUpdated) {
+				isTransactionSuccessful = true;
 			}
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
+			else {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED
+						, "Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
+				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
+						ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+			}
+			
+		} catch (ApisResourceAccessException e) {
+			residentTransactionEntities.forEach(residentTransactionEntity -> {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			});
+			
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
@@ -824,6 +882,8 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
 		} finally {
+			residentTransactionRepository.saveAll(residentTransactionEntities);
+			
 			NotificationTemplateCode templateCode = null;
 			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 				if (authTypeStatusDto.getLocked()) {
@@ -851,33 +911,15 @@ public class ResidentServiceImpl implements ResidentService {
 		return response;
 	}
 
-
-	private void insertAuthStatusInDb(boolean isAuthSuccess, AuthLockOrUnLockRequestDtoV2 dto, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-
-		ArrayList<String> partnerIds =partnerService.getPartnerDetails("Online_Verification_Partner");
-
-		for(String partner: partnerIds) {
-			String id= individualId+partner;
-			byte[] idBytes = id.getBytes();
-			String hash = HMACUtils2.digestAsPlainText(idBytes);
-			residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-			residentTransactionEntity.setAid(hash);
-			residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
-			residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-			residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
-			residentTransactionEntity.setRequestSummary(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
-			residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
-			residentTransactionEntity.setStatusCode("NEW");
-			residentTransactionEntity.setStatusComment(isAuthSuccess ? "Success" : "Failure");
-			residentTransactionEntity.setLangCode("eng");
-			residentTransactionEntity.setRefIdType("");
-			residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
-			residentTransactionEntity.setCrBy("RESIDENT");
-			residentTransactionEntity.setCrDtimes(LocalDateTime.now());
-			residentTransactionEntity.setOlvPartnerId(partner);
-			residentTransactionRepository.save(residentTransactionEntity);
-		}
+	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId) throws ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntity;
+		residentTransactionEntity=utility.createEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setOlvPartnerId(partnerId);
+		return residentTransactionEntity;
 	}
 
 	// get name of document

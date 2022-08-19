@@ -13,6 +13,7 @@ import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,9 @@ public class ResidentServiceGetServiceRequestUpdateTest {
 
     @Mock
     private IdentityServiceImpl identityServiceImpl;
+    
+    @Mock
+    private Utilitiy utilitiy;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;

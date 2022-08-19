@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.VerificationResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -43,9 +44,10 @@ public class VerificationController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-    public VerificationResponseDTO getChannelVerificationStatus(@RequestParam("channel") String channel,
-                                                                                 @RequestParam("individualId") String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
-        logger.info("getChannelVerificationStatus method started");
+	public VerificationResponseDTO getChannelVerificationStatus(@RequestParam("channel") String channel,
+			@RequestParam("individualId") String individualId)
+			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
+		logger.info("getChannelVerificationStatus method started");
         validator.validateChannelVerificationStatus(channel, individualId);
         VerificationResponseDTO verificationResponseDTO = verificationServiceImpl.checkChannelVerificationStatus(channel, individualId);
         return verificationResponseDTO;
