@@ -41,6 +41,7 @@ import java.math.BigInteger;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
@@ -49,6 +50,8 @@ import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPT
 @Service
 public class ResidentServiceImpl implements ResidentService {
 
+	private static final String AUTH_TYPE_LIST_DELIMITER = ", ";
+	private static final String AUTH_TYPE_SEPERATOR = "-";
 	private static final String PROCESSED = "PROCESSED";
 	private static final String DATETIME_PATTERN = "mosip.utc-datetime-pattern";
 	private static final String STATUS_CHECK_ID = "mosip.resident.service.status.check.id";
@@ -160,6 +163,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private EntityManager entityManager;
+	
+	public static Function<? super AuthTypeStatusDtoV2, ? extends String> AUTH_TYPE_FUNCTION = t -> t.getAuthType()+AUTH_TYPE_SEPERATOR+t.getAuthSubType();
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -792,7 +797,7 @@ public class ResidentServiceImpl implements ResidentService {
 		Set<String> keys = identityMap.keySet();
 		keys.remove("IDSchemaVersion");
 		keys.remove("UIN");
-		String attributeList=keys.stream().collect(Collectors.joining(", "));
+		String attributeList=keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		return residentTransactionEntity;
 	}
@@ -842,13 +847,14 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}).collect(Collectors.toList());
 
-			List<AuthTypeStatusDto> authTypesStatusList=authLockOrUnLockRequestDtoV2.getAuthTypes();
-			String authType = authTypesStatusList.stream().map(AuthTypeStatusDto::getAuthType).collect(Collectors.joining(", "));
+			List<AuthTypeStatusDtoV2> authTypesStatusList=authLockOrUnLockRequestDtoV2.getAuthTypes();
+			String authType = authTypesStatusList.stream().map(AuthTypeStatusDto::getAuthType).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 			
 			Map<String, AuthTypeStatus> authTypeStatusMap=authTypesStatusList.stream()
-											.collect(Collectors.toMap(AuthTypeStatusDto::getAuthType, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
+											.collect(Collectors.toMap(AUTH_TYPE_FUNCTION, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
+			
 			Map<String, Long> unlockForSecondsMap=authTypesStatusList.stream()
-											.collect(Collectors.toMap(AuthTypeStatusDto::getAuthType, AuthTypeStatusDto::getUnlockForSeconds));
+											.collect(Collectors.toMap(AUTH_TYPE_FUNCTION, AuthTypeStatusDtoV2::getUnlockForSeconds));
 			
 			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
 			
@@ -1352,7 +1358,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String getSearchQuery(String searchText) {
-		return " and Replace(event_id,'-','') like '%"+searchText.replace("-","")+"%'";
+		return " and Replace(event_id,'-','') like '%"+searchText.replace(AUTH_TYPE_SEPERATOR,"")+"%'";
 	}
 
 	public String getStatusFilterQuery(String statusFilter) {
