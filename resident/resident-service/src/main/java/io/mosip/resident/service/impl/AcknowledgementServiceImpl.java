@@ -8,6 +8,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,21 +29,26 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     @Autowired
     private TemplateUtil templateUtil;
 
+    @Value("${resident.template.ack.share-cred-with-partner}")
+    private String shareCredWithPartnerTemplate;
+
     @Override
     public byte[] getAcknowledgementPDF(String eventId, String languageCode) {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
         try{
 //            String requestTypeCode = residentTransactionRepository.findById(eventId).get().getRequestTypeCode();
-            String requestTypeCode = "tnc-order-a-physical-card";
+            String requestTypeCode = "SHARE_CRED_WITH_PARTNER";
+            String requestProperty = "";
+            if(requestTypeCode.equals(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
+                requestProperty = shareCredWithPartnerTemplate;
+            }
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
-                    getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestTypeCode);
+                    getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
             System.out.println(responseWrapper.getResponse());
             Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
             String fileText = (String) templateResponse.get("fileText");
             System.out.println(fileText);
-            if(requestTypeCode.equals(RequestType.ORDER_PHYSICAL_CARD.toString())) {
-                //return templateUtil.getAcknowledgementPDF(fileText, languageCode);
-            }
+
             Map<String, String> templateVariables = RequestType.ORDER_PHYSICAL_CARD.getAckTemplateVariables(templateUtil, eventId);
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
         }catch (Exception e){

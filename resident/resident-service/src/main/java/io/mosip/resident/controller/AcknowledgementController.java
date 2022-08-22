@@ -33,15 +33,15 @@ public class AcknowledgementController {
     @Autowired
     private AcknowledgementService acknowledgementService;
 
-//    @PreAuthorize("@scopeValidator.hasAllScopes("
-//            + "@authorizedScopes.getGetAcknowledgement()"
-//            + ")")
+    @PreAuthorize("@scopeValidator.hasAllScopes("
+            + "@authorizedScopes.getGetAcknowledgement()"
+            + ")")
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
                                                   @PathVariable("languageCode") String languageCode) {
         logger.debug("AcknowledgementController::acknowledgement()::entry");
         auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
-        requestValidator.validateAcknowledgementRequest(eventId, languageCode);
+        requestValidator.validateEventIdLanguageCode(eventId, languageCode);
         byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);

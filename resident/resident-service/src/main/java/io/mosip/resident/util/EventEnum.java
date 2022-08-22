@@ -604,7 +604,12 @@ public enum EventEnum {
 	INVALID_LANGUAGE_CODE("RES-SER-500", RegistrationConstants.SYSTEM, "Invalid language code",
 			"invalid lang code", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL("RES-SER-248", RegistrationConstants.SYSTEM, "get acknowledgement download url",
+			"get acknowledgement download url", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-249", RegistrationConstants.SYSTEM, "get acknowledgement download url success",
+			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
 	;
 
