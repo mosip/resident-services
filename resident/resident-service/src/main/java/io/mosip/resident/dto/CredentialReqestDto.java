@@ -26,7 +26,10 @@ public class CredentialReqestDto {
 	
 	private String user;
 	
+	private String purpose;
+	
     private List<String> sharableAttributes;
     
     private Map<String,Object> additionalData;
 }
+

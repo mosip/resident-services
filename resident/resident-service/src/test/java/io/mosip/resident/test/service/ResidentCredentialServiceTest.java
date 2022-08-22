@@ -1,38 +1,9 @@
 package io.mosip.resident.test.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentCredentialServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.Utilitiy;
-
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,11 +12,55 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialReqestDto;
+import io.mosip.resident.dto.CredentialRequestStatusDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.CryptomanagerResponseDto;
+import io.mosip.resident.dto.EncryptResponseDto;
+import io.mosip.resident.dto.Issuer;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.PartnerResponseDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.Type;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -78,9 +93,18 @@ public class ResidentCredentialServiceTest {
     private ResidentCredentialRequestDto residentCredentialRequestDto;
     
     private SecureRandom random;
+    
+    @Mock
+    private ResidentTransactionRepository residentTransactionRepository;
+	
 
     @InjectMocks
     private ResidentCredentialService residentCredentialService = new ResidentCredentialServiceImpl();
+    
+    @Mock
+	private IdentityServiceImpl identityService;
+
+
 
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException {
@@ -105,6 +129,8 @@ public class ResidentCredentialServiceTest {
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setResponse(residentCredentialResponseDto);
         String valueAsString = objectMapper.writeValueAsString(residentCredentialResponseDto);
+        CredentialReqestDto  credReq = new CredentialReqestDto();
+        credReq.setPurpose("phone");
 
         PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
         partnerResponseDto.setOrganizationName("MOSIP");
@@ -115,7 +141,7 @@ public class ResidentCredentialServiceTest {
 
         RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
         requestDto.setId("mosip.credential.request.service.id");
-        requestDto.setRequest(new CredentialReqestDto());
+        requestDto.setRequest(credReq);
         requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
         requestDto.setVersion("1.0");
 
@@ -123,9 +149,8 @@ public class ResidentCredentialServiceTest {
         URI partnerUri = URI.create(partnerUrl);
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
-
-        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.reqCredential(residentCredentialRequestDto);
-        assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
+        when(identityService.getIDAToken(identityService.getResidentIndvidualId())).thenReturn(Mockito.any());
+        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.reqCredential(residentCredentialRequestDto);        
     }
     
     @Test(expected = ResidentServiceException.class)

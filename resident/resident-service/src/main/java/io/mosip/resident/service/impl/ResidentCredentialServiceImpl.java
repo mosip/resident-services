@@ -1,21 +1,14 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.ExceptionUtils;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.*;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.*;
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +18,56 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.exception.ExceptionUtils;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialReqestDto;
+import io.mosip.resident.dto.CredentialRequestStatusDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.CryptomanagerResponseDto;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.PartnerResponseDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentTransactionType;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
 	private static final String INDIVIDUAL_ID = "individualId";
+	private static final String ENG = "eng";
+	private static final String RESIDENT = "RESIDENT";
+	private static final String NEW = "new";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -64,15 +96,21 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialServiceImpl.class);
 
 	@Autowired
-	private ResidentServiceRestClient residentServiceRestClient;
-
-	@Autowired
 	Environment env;
 
 	@Autowired
 	NotificationService notificationService;
 
 	private SecureRandom random;
+	
+	@Autowired
+	private ResidentServiceRestClient residentServiceRestClient;
+	
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
+	
+	@Autowired
+	private IdentityServiceImpl identityService;
 
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
@@ -112,6 +150,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 							JsonUtil.writeValueAsString(responseDto.getResponse()),
 							ResidentCredentialResponseDto.class);
 					additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
+					insertCredentialreqInDB(Boolean.TRUE,credentialReqestDto,residentCredentialResponseDto.getRequestId());
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
 							additionalAttributes);
 
@@ -152,6 +191,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}catch (NoSuchAlgorithmException e) {
+			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
+			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		}
 
 		return residentCredentialResponseDto;
@@ -315,6 +360,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		crDto.setSharableAttributes(residentCreDto.getSharableAttributes());
 		crDto.setUser(residentCreDto.getUser());
 		crDto.setIssuer(residentCreDto.getIssuer());
+		crDto.setPurpose(residentCreDto.getPurpose());
 		if (residentCreDto.getEncryptionKey()==null || residentCreDto.getEncryptionKey().isEmpty()) {
 			crDto.setEncryptionKey(generatePin());
 		} else {
@@ -442,6 +488,29 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
+	
+	private void insertCredentialreqInDB(boolean isCredReqSuccess, CredentialReqestDto credentialReqestDto,
+			String credentialRequestId) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException{
+
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setPurpose(credentialReqestDto.getPurpose());
+		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
+		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
+		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestSummary(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setCredentialRequestId(credentialRequestId);
+		residentTransactionEntity.setStatusCode(NEW);
+		residentTransactionEntity.setStatusComment(isCredReqSuccess ? "Success" : "Failure");
+		residentTransactionEntity.setLangCode(ENG);
+		residentTransactionEntity.setCrBy(RESIDENT);
+		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(identityService.getResidentIndvidualId()));
+		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionRepository.save(residentTransactionEntity);
+	}
+
+	
 	/*
 	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
 	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
