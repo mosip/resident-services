@@ -13,7 +13,11 @@ public interface ResidentCredentialService {
 
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException;
 	
+
+	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request,String purpose) throws ResidentServiceCheckedException;
+
 	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto request, String requestType) throws ResidentServiceCheckedException;
+
 	
 	public ResidentCredentialResponseDto reqCredentialV2(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException;
 

@@ -70,12 +70,20 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
-		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
+		return doRequestCredential(requestDTO,null);
+		}
+
+		private ResponseEntity<Object> doRequestCredential(RequestWrapper<ResidentCredentialRequestDto> requestDTO,String purpose)
+				throws ResidentServiceCheckedException {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
+			ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();		
+			ResidentCredentialResponseDto reqCredential = purpose == null
+					? residentCredentialService.reqCredential(requestDTO.getRequest())
+					: residentCredentialService.reqCredential(requestDTO.getRequest(), purpose);
+			response.setResponse(reqCredential);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}
 	
 	@ResponseFilter
 	@PostMapping(value = "/req/download-personalized-card")
@@ -91,12 +99,17 @@ public class ResidentCredentialController {
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
+		RequestWrapper<ResidentCredentialRequestDto> request = null;
+		String purpose = requestDTO.getRequest().getPurpose();
 		requestDTO.getRequest().setSharableAttributes(null);
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
-				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
-				});
+		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
+		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
+		requestDTOMap.remove("purpose");
+		request = JsonUtil.convertValue(requestMap, new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
+		});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
 		buildAdditionalMetadata(requestDTO, request);
+		return doRequestCredential(request, purpose);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.DOWNLOAD_PERSONALIZED_CARD.name()));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);

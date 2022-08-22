@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,6 +47,7 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -132,7 +131,7 @@ public class ResidentCredentialControllerTest {
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
 
-        Mockito.when(residentCredentialService.reqCredential(Mockito.any())).thenReturn(credentialReqResponse);
+        Mockito.when(residentCredentialService.reqCredential(new ResidentCredentialRequestDto())).thenReturn(credentialReqResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/req/credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
@@ -187,6 +186,13 @@ public class ResidentCredentialControllerTest {
                 .andExpect(status().isOk());
     }
 
+    
+    @Test
+    public void testReqCredentialV2Success() throws Exception {
+        Mockito.when(residentCredentialService.reqCredential(new ResidentCredentialRequestDto())).thenReturn(credentialReqResponse);
+        ResidentCredentialRequestDtoV2 request = getResidentCredentialRequestDtoV2();
+
+
     @Test
     public void testRequestDownloadPersonalizedCard() throws Exception {
         Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
@@ -214,4 +220,11 @@ public class ResidentCredentialControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/req/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
+    
+	private ResidentCredentialRequestDtoV2 getResidentCredentialRequestDtoV2() {
+
+		ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
+		return request;
+
+	}
 }
