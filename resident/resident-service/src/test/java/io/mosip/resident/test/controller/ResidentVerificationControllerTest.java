@@ -5,6 +5,7 @@ import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
@@ -43,6 +44,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentVerificationControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @MockBean
     private VerificationService verificationService;

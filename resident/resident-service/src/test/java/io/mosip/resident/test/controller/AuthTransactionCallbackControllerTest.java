@@ -76,6 +76,9 @@ public class AuthTransactionCallbackControllerTest {
 
     @MockBean
     private VerificationServiceImpl verificationServiceImpl;
+    
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @InjectMocks
     VerificationController verificationController;

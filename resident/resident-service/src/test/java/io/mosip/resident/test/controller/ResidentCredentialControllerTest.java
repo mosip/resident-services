@@ -46,6 +46,7 @@ import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
@@ -57,6 +58,9 @@ import io.mosip.resident.validator.RequestValidator;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentCredentialControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @MockBean
     private ResidentCredentialService residentCredentialService;
