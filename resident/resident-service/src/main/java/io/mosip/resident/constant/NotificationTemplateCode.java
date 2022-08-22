@@ -19,6 +19,7 @@ public enum NotificationTemplateCode {
 	RS_VIN_REV_FAILURE("RS_VIN_REV_FAILURE"), RS_CRE_REQ_SUCCESS("RS_CRE_REQ_SUCCESS"),
 	RS_CRE_REQ_FAILURE("RS_CRE_REQ_FAILURE"), RS_CRE_STATUS("RS_CRE_STATUS"),
 	RS_CRE_CANCEL_SUCCESS("RS_CRE_CANCEL_SUCCESS"), 
+	// FIXME Replace these template codes with the Request type enum methods
 	DOWNLOAD_PERSONALIZED_CARD_RECEIVED("cust-and-down-my-card-request-received"),
 	DOWNLOAD_PERSONALIZED_CARD_FAILED("cust-and-down-my-card-failure"),
 	DOWNLOAD_PERSONALIZED_CARD_SUCCESS("cust-and-down-my-card-success"),
