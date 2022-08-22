@@ -211,7 +211,7 @@ public class RequestValidator {
 						"Request to generate VID"));
 				throw new InvalidInputException("unlockForSeconds");
 			}
-			List<String> authTypes = Arrays.asList(authTypeStatusDto.getAuthType().split(","));
+			List<String> authTypes = Arrays.asList(authTypeString);
 			validateAuthType(authTypes,
 					"Request auth " + authTypes.toString().toLowerCase() + " API");
 

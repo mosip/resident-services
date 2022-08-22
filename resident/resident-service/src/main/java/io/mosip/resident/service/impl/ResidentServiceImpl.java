@@ -164,7 +164,14 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private EntityManager entityManager;
 	
-	public static Function<? super AuthTypeStatusDtoV2, ? extends String> AUTH_TYPE_FUNCTION = t -> t.getAuthType()+AUTH_TYPE_SEPERATOR+t.getAuthSubType();
+	public static Function<? super AuthTypeStatusDtoV2, ? extends String> AUTH_TYPE_FUNCTION = t -> {
+		if(t.getAuthSubType()!=null) {
+			return t.getAuthType()+AUTH_TYPE_SEPERATOR+t.getAuthSubType();
+		}
+		else {
+			return t.getAuthType();
+		}
+	};
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -854,13 +861,13 @@ public class ResidentServiceImpl implements ResidentService {
 											.collect(Collectors.toMap(AUTH_TYPE_FUNCTION, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
 			
 			Map<String, Long> unlockForSecondsMap=authTypesStatusList.stream()
+											.filter(dto -> dto.getUnlockForSeconds()!=null)
 											.collect(Collectors.toMap(AUTH_TYPE_FUNCTION, AuthTypeStatusDtoV2::getUnlockForSeconds));
 			
 			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
 			
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (isAuthTypeStatusUpdated) {
-					residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 					residentTransactionEntity.setRequestSummary("in-progress");
 					residentTransactionEntity.setPurpose(authType);
 				}
@@ -929,7 +936,9 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity=utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
+		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
