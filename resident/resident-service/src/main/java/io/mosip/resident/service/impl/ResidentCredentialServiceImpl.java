@@ -26,6 +26,8 @@ import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -51,6 +53,9 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentCredentialServiceException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.*;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
@@ -59,6 +64,23 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.*;
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
@@ -99,6 +121,15 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Autowired
 	Environment env;
+	
+	@Autowired
+	private Utilitiy utility;
+	
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
+	
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
 	NotificationService notificationService;
@@ -142,8 +173,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
 					partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
 							PartnerResponseDto.class);
-					additionalAttributes.put("partnerName",
-							partnerResponseDto.getOrganizationName());
+					additionalAttributes.put("partnerName", partnerResponseDto.getOrganizationName());
 					additionalAttributes.put("encryptionKey", credentialReqestDto.getEncryptionKey());
 					additionalAttributes.put("credentialName", credentialReqestDto.getCredentialType());
 
@@ -198,6 +228,101 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		}
 
 		return residentCredentialResponseDto;
+	}
+	
+	@Override
+	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto dto, String requestType)
+			throws ResidentServiceCheckedException {
+		ResidentCredentialResponseDto residentCredentialResponseDto=new ResidentCredentialResponseDto();
+		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
+		ResponseWrapper<PartnerResponseDto> parResponseDto = new ResponseWrapper<PartnerResponseDto>();
+		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
+		CredentialReqestDto credentialReqestDto=new CredentialReqestDto();
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
+		URI partnerUri = URI.create(partnerUrl);
+		ResidentTransactionEntity residentTransactionEntity=null;
+		try {
+			if (StringUtils.isBlank(dto.getIndividualId())) {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
+			}
+			residentTransactionEntity = createResidentTransactionEntity(dto, requestType);
+
+			credentialReqestDto = prepareCredentialRequest(dto);
+			requestDto.setId("mosip.credential.request.service.id");
+			requestDto.setRequest(credentialReqestDto);
+			requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+			requestDto.setVersion("1.0");
+			parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
+			partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
+					PartnerResponseDto.class);
+			additionalAttributes.put("partnerName", partnerResponseDto.getOrganizationName());
+			additionalAttributes.put("encryptionKey", credentialReqestDto.getEncryptionKey());
+			additionalAttributes.put("credentialName", credentialReqestDto.getCredentialType());
+
+			ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
+					env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
+					ResponseWrapper.class);
+			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
+					ResidentCredentialResponseDto.class);
+			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
+
+			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
+		}
+		catch (ResidentServiceCheckedException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		catch (ApisResourceAccessException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		catch (IOException e) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+		finally {
+			residentTransactionRepository.save(residentTransactionEntity);
+		}
+		return residentCredentialResponseDto;
+	}
+
+	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto dto, String requestType)
+			throws ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setRequestTypeCode(requestType);
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(dto.getIndividualId()));
+		residentTransactionEntity.setRequestSummary("in-progress");
+		String attributeList=dto.getSharableAttributes().stream()
+										.collect(Collectors.joining(", "));
+		residentTransactionEntity.setAttributeList(attributeList);
+		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
+		return residentTransactionEntity;
+	}
+	
+	private void updateResidentTransaction(ResidentCredentialRequestDto dto,
+			ResidentCredentialResponseDto residentCredentialResponseDto,
+			ResidentTransactionEntity residentTransactionEntity) {
+		//	TODO: need to fix transaction ID (need partner's end transactionId)
+		residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setAid(residentCredentialResponseDto.getRequestId());
 	}
 
 	@Override

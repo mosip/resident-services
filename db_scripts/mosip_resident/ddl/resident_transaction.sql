@@ -45,6 +45,7 @@ CREATE TABLE resident.resident_transaction(
     purpose character varying(64),
     credential_request_id character varying(256),
     attribute_list character varying(255),
+    individual_id character varying(500),
     CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
 );
 

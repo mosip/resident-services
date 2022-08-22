@@ -1,6 +1,7 @@
 package io.mosip.resident.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -20,4 +21,7 @@ public interface IdAuthService {
 	
 	public List<AuthTxnDetailsDTO> getAuthHistoryDetails(String individualId,
 			String pageStart, String pageFetch) throws ApisResourceAccessException;
+	
+	public boolean authTypeStatusUpdate(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap)
+			throws ApisResourceAccessException;
 }

@@ -44,6 +44,7 @@ import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -56,6 +57,9 @@ import io.mosip.resident.validator.RequestValidator;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentCredentialControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @MockBean
     private ResidentCredentialService residentCredentialService;
@@ -181,18 +185,39 @@ public class ResidentCredentialControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/req/policy/partnerId/1/credentialType/credentialType").contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk());
     }
+
     
     @Test
     public void testReqCredentialV2Success() throws Exception {
         Mockito.when(residentCredentialService.reqCredential(new ResidentCredentialRequestDto())).thenReturn(credentialReqResponse);
         ResidentCredentialRequestDtoV2 request = getResidentCredentialRequestDtoV2();
+
+
+    @Test
+    public void testRequestDownloadPersonalizedCard() throws Exception {
+        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
+        ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");
         attr.setMasked(false);
 		request.setSharableAttributes(List.of(attr));
 		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(request);
-        mockMvc.perform(MockMvcRequestBuilders.post("/req/credential-generator").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(MockMvcRequestBuilders.post("/req/download-personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
+    }
+    
+    @Test
+    public void testRequestShareCredWithPartner() throws Exception {
+        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
+        ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
+        SharableAttributesDTO attr = new SharableAttributesDTO();
+        attr.setAttributeName("name");
+        attr.setMasked(false);
+		request.setSharableAttributes(List.of(attr));
+		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/req/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
     

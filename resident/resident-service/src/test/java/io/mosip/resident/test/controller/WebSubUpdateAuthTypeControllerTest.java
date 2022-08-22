@@ -42,6 +42,9 @@ import java.util.Map;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class WebSubUpdateAuthTypeControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")
