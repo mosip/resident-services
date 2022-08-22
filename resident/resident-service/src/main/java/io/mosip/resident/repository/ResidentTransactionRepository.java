@@ -17,30 +17,65 @@ import java.util.List;
  */
 @Repository
 public interface ResidentTransactionRepository extends JpaRepository<ResidentTransactionEntity, String> {
-    public List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
-    public ResidentTransactionEntity findByAid(String aid);
+    List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
+    ResidentTransactionEntity findByAid(String aid);
+
+    List<ResidentTransactionEntity> findByTokenId(String token);
 
 
-    @Query(value = "Select new ResidentTransactionEntity( requestTrnId, statusComment , crDtimes, statusCode) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
-            " AND authTypeCode in :residentTransactionType" )
-    List<ResidentTransactionEntity> findByToken( @Param("tokenId") String tokenId,
-                                                 @Param("fromDateTime") LocalDateTime fromDateTime,
-                                                @Param("toDateTime") LocalDateTime toDateTime,
-                                                @Param("residentTransactionType") List<String> residentTransactionType,
-                                                Pageable pagaeable);
+            " AND authTypeCode in :residentTransactionType " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            "ORDER BY pinnedStatus DESC" )
+    List<ResidentTransactionEntity> findByTokenAndTransactionType(@Param("tokenId") String tokenId,
+                                                                  @Param("fromDateTime") LocalDateTime fromDateTime,
+                                                                  @Param("toDateTime") LocalDateTime toDateTime,
+                                                                  @Param("residentTransactionType") List<String> residentTransactionType,
+                                                                  Pageable pagaeable, @Param("searchText") String searchText);
 
-    @Query(value = "Select new ResidentTransactionEntity( requestTrnId, statusComment , crDtimes, statusCode) " +
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
             "from ResidentTransactionEntity where tokenId=:tokenId " +
-            " AND authTypeCode in :residentTransactionType" )
+            " AND authTypeCode in :residentTransactionType " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            " ORDER BY pinnedStatus DESC LIMIT :pageFetch OFFSET :pageStart", nativeQuery = true)
     List<ResidentTransactionEntity> findByTokenWithoutDate(@Param("tokenId") String tokenId,
                                                            @Param("residentTransactionType") List<String> residentTransactionType,
-                                                           Pageable pagaeable);
+                                                           @Param("pageStart") String pageStart,
+            @Param("pageFetch") String pageFetch, @Param("searchText") String searchText);
 
     @Query(value = "Select new ResidentTransactionEntity(aid) " +
             "from ResidentTransactionEntity where tokenId=:tokenId "  +
             " AND authTypeCode =:residentTransactionType ORDER BY crDtimes DESC" )
-    List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType") String residentTransactionType,
-                                                         Pageable pagaeable);
+    List<ResidentTransactionEntity> findRequestIdByToken(@Param("tokenId") String tokenId,@Param("residentTransactionType")
+            String residentTransactionType, Pageable pagaeable);
+
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
+            "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            "ORDER BY pinnedStatus DESC" )
+    List<ResidentTransactionEntity> findByTokenWithoutServiceType( @Param("tokenId") String tokenId,
+                                                                   @Param("fromDateTime") LocalDateTime fromDateTime,
+                                                                   @Param("toDateTime") LocalDateTime toDateTime,
+                                                                   Pageable pagaeable, @Param("searchText") String searchText);
+
+    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
+            "from ResidentTransactionEntity where tokenId=:tokenId " +
+            " AND (eventId like %:searchText%" +
+            " OR statusComment like %:searchText% " +
+            " OR statusCode like %:searchText%) " +
+            " ORDER BY pinnedStatus DESC LIMIT :pageFetch OFFSET :pageStart", nativeQuery = true)
+    List<ResidentTransactionEntity> findByTokenWithoutServiceTypeAndDate(@Param("tokenId") String tokenId,
+                                                                         @Param("pageStart") int pageStart,
+                                                                         @Param("pageFetch") int pageFetch, @Param("searchText")
+                                                                                 String searchText);
+
+    Long countByTokenId(String tokenId);
 
 }

@@ -95,12 +95,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private String thumbprint=null;
 
 	@Override
-	public boolean validateOtp(String transactionID, String individualId, String otp)
+	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
 		try {
-			response = internelOtpAuth(transactionID, individualId, otp);
-			updateResidentTransaction(response.getResponse().isAuthStatus(), transactionID, individualId);
+			response = internelOtpAuth(transactionId, individualId, otp);
+			updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId, individualId);
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
@@ -118,8 +118,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return response.getResponse().isAuthStatus();
 	}
 
-	private void updateResidentTransaction(boolean verified,String transactionID, String individualId) throws NoSuchAlgorithmException {
-		List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(transactionID, getRefIdHash(individualId));
+	private void updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException {
+		List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(transactionId, getRefIdHash(individualId));
 		if (residentTransactionEntity != null && !residentTransactionEntity.isEmpty()) {
 			ResidentTransactionEntity residentTransaction = residentTransactionEntity.get(0);
 			if (residentTransaction != null) {
@@ -140,7 +140,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return HMACUtils2.digestAsPlainText(individualId.getBytes());
 	}
 
-	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,
+	public AuthResponseDTO internelOtpAuth(String transactionId, String individualId,
 			String otp) throws ApisResourceAccessException, InvalidKeySpecException, NoSuchAlgorithmException,
 			IOException, JsonProcessingException, CertificateEncodingException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
@@ -151,7 +151,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authRequestDTO.setVersion(internalAuthVersion);
 
 		authRequestDTO.setRequestTime(dateTime);
-		authRequestDTO.setTransactionID(transactionID);
+		authRequestDTO.setTransactionID(transactionId);
 		authRequestDTO.setEnv(idaEnv);
 		authRequestDTO.setDomainUri(domainUrl);
 

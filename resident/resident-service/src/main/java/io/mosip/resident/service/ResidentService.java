@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
@@ -34,7 +35,7 @@ public interface ResidentService {
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
-    List<ServiceHistoryResponseDto> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType, String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException;
 
@@ -45,4 +46,5 @@ public interface ResidentService {
 
 	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
 
+	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId) throws ResidentServiceCheckedException;
 }

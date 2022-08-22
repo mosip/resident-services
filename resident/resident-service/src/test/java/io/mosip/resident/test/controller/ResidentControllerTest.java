@@ -1,6 +1,3 @@
-/**
- * 
- */
 package io.mosip.resident.test.controller;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -21,6 +18,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.dto.PageDto;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
@@ -324,9 +322,13 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetServiceHistorySuccess() throws Exception {
-		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
-		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"), LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(), ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
-		mockMvc.perform(MockMvcRequestBuilders.get("/getServiceHistory")
+		io.mosip.kernel.core.http.ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(response);
+		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
+				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
+				ResidentTransactionType.AUTHENTICATION_REQUEST.toString(), null, null);
+		mockMvc.perform(MockMvcRequestBuilders.get("/service-history")
 						.contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
@@ -491,8 +493,8 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
-		residentController.checkAidStatus("17");
+		residentController.checkAidStatus("17", "eng");
 		when(residentService.checkAidStatus("17")).thenReturn("PROCESSED");
-		this.mockMvc.perform(get("/check-status/aid/17")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng")).andExpect(status().isOk());
 	}
 }

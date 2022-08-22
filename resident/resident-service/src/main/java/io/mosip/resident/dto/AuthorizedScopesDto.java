@@ -40,7 +40,7 @@ public class AuthorizedScopesDto {
 
 	private List<String> getServiceRequestUpdate;
 
-	private List<String> getCheckAidStatus;
+	private List<String> getEventIdStatus;
 
 	private List<String> getPartnersByPartnerType;
 
@@ -51,6 +51,8 @@ public class AuthorizedScopesDto {
 	private List<String> deleteUploadDocuments;
 	
 	private List<String> getAllTemplateBylangCodeAndTemplateTypeCode;
+	
+	private List<String> postAuditLog;
 
 	private List<String> getAcknowledgement;
 

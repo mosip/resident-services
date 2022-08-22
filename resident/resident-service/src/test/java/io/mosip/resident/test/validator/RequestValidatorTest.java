@@ -1396,7 +1396,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "";
 		String serviceType = "";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -1405,7 +1405,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "";
 		String serviceType = "BadServiceType";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -1414,7 +1414,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "BadSortType";
 		String serviceType = "DATA_SHARE_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -1422,7 +1422,7 @@ public class RequestValidatorTest {
 		LocalDateTime fromDate = LocalDateTime.now();
 		LocalDateTime toDate = LocalDateTime.now();
 		String serviceType = "DATA_SHARE_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, null, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, null, null, serviceType);
 	}
 
 	@Test
@@ -1431,7 +1431,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "ASC";
 		String serviceType = "DATA_SHARE_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 	@Test
@@ -1440,7 +1440,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "ASC";
 		String serviceType = "SERVICE_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 	@Test
@@ -1449,7 +1449,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "ASC";
 		String serviceType = "ID_MANAGEMENT_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 	@Test
@@ -1458,7 +1458,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "ASC";
 		String serviceType = "DATA_UPDATE_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 	@Test
@@ -1467,7 +1467,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "ASC";
 		String serviceType = "AUTHENTICATION_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 	@Test
@@ -1476,7 +1476,7 @@ public class RequestValidatorTest {
 		LocalDateTime toDate = LocalDateTime.now();
 		String sortType = "DESC";
 		String serviceType = "AUTHENTICATION_REQUEST";
-		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType);
+		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 

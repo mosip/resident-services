@@ -44,6 +44,7 @@ CREATE TABLE resident.resident_transaction(
     pinned_status boolean NOT NULL DEFAULT false,
     purpose character varying(64),
     credential_request_id character varying(256),
+    attribute_list character varying(255),
     CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
 );
 

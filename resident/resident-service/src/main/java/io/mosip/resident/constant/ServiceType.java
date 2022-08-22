@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The Enum ServiceType.
+ * @author Kamesh Shekhar Prasad
+ */
+
 public enum ServiceType {
     AUTHENTICATION_REQUEST(List.of(RequestType.AUTHENTICATION_REQUEST)),
     SERVICE_REQUEST(List.of(RequestType.DOWNLOAD_PERSONALIZED_CARD,

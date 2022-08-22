@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.resident.constant.*;
+import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,10 +22,6 @@ import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.CardType;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.AuditUtil;
@@ -110,6 +108,12 @@ public class RequestValidator {
 	public void setReprintId(String reprintId) {
 		this.reprintId = reprintId;
 	}
+
+	@Value("${mosip.mandatory-languages}")
+	private String mandatoryLanguages;
+
+	@Value("${mosip.optional-languages}")
+	private String optionalLanguages;
 
 	@PostConstruct
 	public void setMap() {
@@ -694,69 +698,108 @@ public class RequestValidator {
 		}
     }
 
-    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType) {
+    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType, String statusFilter) {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
+		validateStatusFilter(statusFilter, "Request service history API");
+		validateFromDateTimeToDateTime(fromDateTime, toDateTime, "Request service history API");
 		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
 			throw new InvalidInputException("DateTime");
 		}
 	}
 
-	private boolean isValidDate(LocalDateTime localDateTime) {
-		if(localDateTime.getYear() < 0 || localDateTime.getMonthValue() < 0 || localDateTime.getDayOfMonth() < 0) {
-			return false;
+	public void validateFromDateTimeToDateTime(LocalDateTime fromDateTime, LocalDateTime toDateTime, String request_service_history_api) {
+		if(fromDateTime != null && toDateTime != null) {
+			if(fromDateTime.isAfter(toDateTime)) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
+				throw new InvalidInputException("fromDateTime");
+			}
 		}
-		return true;
+		if(fromDateTime == null && toDateTime != null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
+			throw new InvalidInputException("fromDateTime");
+		} else if(fromDateTime != null && toDateTime == null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "toDateTime", request_service_history_api));
+			throw new InvalidInputException("toDateTime");
+		}
 	}
 
-	private void validateSortType(String sortType, String request_service_history_api) {
-		if (StringUtils.isEmpty(sortType) || !sortType.equalsIgnoreCase(SortType.ASC.toString())
-				&& !sortType.equalsIgnoreCase(SortType.DESC.toString())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "sortType",
-					request_service_history_api));
-			throw new InvalidInputException("sortType");
-		}
-	}
-
-	private void validateServiceType(String serviceType, String request_service_history_api) {
-		if (StringUtils.isEmpty(serviceType)){
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
-					request_service_history_api));
-			throw new InvalidInputException("serviceType");
-		}
-		List<String> serviceTypes = List.of(serviceType.split(","));
-		for(String service : serviceTypes) {
-			if(!service.equalsIgnoreCase(ResidentTransactionType.DATA_SHARE_REQUEST.toString())
-					&& !service.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())
-					&& !service.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())
-					&& !service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
-					&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
-						request_service_history_api));
-				throw new InvalidInputException("serviceType");
+	private void validateStatusFilter(String statusFilter, String request_service_history_api) {
+		if(statusFilter != null) {
+			List<String> statusFilterList = Arrays.asList(statusFilter.split(","));
+			for (String status : statusFilterList) {
+				if (!status.equalsIgnoreCase(EventStatus.FAILED.toString()) && !status.equalsIgnoreCase(EventStatus.IN_PROGRESS.toString())
+						&& !status.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "statusFilter",
+							request_service_history_api));
+					throw new InvalidInputException("statusFilter");
+				}
 			}
 		}
 	}
 
-	public void validateIndividualId(String aid) {
-		if (StringUtils.isEmpty(aid) || aid==null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "aid",
-					"Request credential request status API"));
-			throw new InvalidInputException("aid");
+	private boolean isValidDate(LocalDateTime localDateTime) {
+		if(localDateTime!=null) {
+			if (localDateTime.getYear() < 0 || localDateTime.getMonthValue() < 0 || localDateTime.getDayOfMonth() < 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private void validateSortType(String sortType, String requestServiceHistoryApi) {
+		if(sortType!=null) {
+			if (!sortType.equalsIgnoreCase(SortType.ASC.toString())
+					&& !sortType.equalsIgnoreCase(SortType.DESC.toString())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "sortType",
+						requestServiceHistoryApi));
+				throw new InvalidInputException("sortType");
+			}
 		}
 	}
 
-    public void validateAcknowledgementRequest(String eventId, String languageCode) {
-		if (StringUtils.isEmpty(eventId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "eventId",
-					"Request acknowledgement API"));
+	private void validateServiceType(String serviceType, String requestServiceHistoryApi) {
+		if(serviceType!=null) {
+			List<String> serviceTypes = List.of(serviceType.split(","));
+			for (String service : serviceTypes) {
+				if (!service.equalsIgnoreCase(ResidentTransactionType.DATA_SHARE_REQUEST.toString())
+						&& !service.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())
+						&& !service.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())
+						&& !service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
+						&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())
+						&& !service.equalsIgnoreCase("ALL")) {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
+							requestServiceHistoryApi));
+					throw new InvalidInputException("serviceType");
+				}
+			}
+		}
+	}
+
+	public void validateIndividualId(String eventId) {
+		if (StringUtils.isEmpty(eventId) || eventId==null) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "eventId", "Request service history API"));
 			throw new InvalidInputException("eventId");
 		}
-		if (StringUtils.isEmpty(languageCode)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "languageCode",
-					"Request acknowledgement API"));
+	}
+
+	public void validateEventIdLanguageCode(String eventId, String languageCode) {
+		validateIndividualId(eventId);
+		validateLanguageCode(languageCode);
+	}
+
+	private void validateLanguageCode(String languageCode) {
+		List<String> allowedMandatoryLanguage = List.of(mandatoryLanguages.split(","));
+		List<String> allowedOptionalLanguage = List.of(optionalLanguages.split(","));
+		if(StringUtils.isEmpty(languageCode)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "languageCode", "Request service history API"));
 			throw new InvalidInputException("languageCode");
 		}
-    }
+		if(!allowedMandatoryLanguage.contains(languageCode) && !allowedOptionalLanguage.contains(languageCode)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_LANGUAGE_CODE, "languageCode", "Request service history API"));
+			throw new InvalidInputException("languageCode");
+		}
+	}
+
 }
