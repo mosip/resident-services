@@ -187,10 +187,9 @@ public class ResidentCredentialControllerTest {
                 .andExpect(status().isOk());
     }
 
-    
     @Test
-    public void testReqCredentialV2Success() throws Exception {
-        Mockito.when(residentCredentialService.reqCredential(Mockito.any())).thenReturn(credentialReqResponse);
+    public void testRequestDownloadPersonalizedCard() throws Exception {
+        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
         ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");
@@ -198,7 +197,21 @@ public class ResidentCredentialControllerTest {
 		request.setSharableAttributes(List.of(attr));
 		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(request);
-        mockMvc.perform(MockMvcRequestBuilders.post("/req/credential-generator").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(MockMvcRequestBuilders.post("/req/download-personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
+    }
+    
+    @Test
+    public void testRequestShareCredWithPartner() throws Exception {
+        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
+        ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
+        SharableAttributesDTO attr = new SharableAttributesDTO();
+        attr.setAttributeName("name");
+        attr.setMasked(false);
+		request.setSharableAttributes(List.of(attr));
+		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/req/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
 }

@@ -13,8 +13,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -44,6 +48,7 @@ import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -238,10 +243,17 @@ public class IdAuthServiceImpl implements IdAuthService {
 		PublicKey publicKey = req509.getPublicKey();
 		return encryptor.asymmetricEncrypt(publicKey, sessionKey);
 	}
+	
+	@Override
+	public boolean authTypeStatusUpdate(String individualId, List<String> authType, AuthTypeStatus authTypeStatus, Long unlockForSeconds)
+			throws ApisResourceAccessException{
+		Map<String, AuthTypeStatus> authTypeStatusMap=authType.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> authTypeStatus));
+		Map<String, Long> unlockForSecondsMap=authType.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> unlockForSeconds));
+		return authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+	}
 
 	@Override
-	public boolean authTypeStatusUpdate(String individualId, List<String> authType,
-			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant, Long unlockForSeconds)
+	public boolean authTypeStatusUpdate(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap)
 			throws ApisResourceAccessException {
 		boolean isAuthTypeStatusSuccess = false;
 		AuthTypeStatusRequestDto authTypeStatusRequestDto = new AuthTypeStatusRequestDto();
@@ -250,11 +262,11 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authTypeStatusRequestDto.setIndividualId(individualId);
 		authTypeStatusRequestDto.setVersion(internalAuthVersion);
 		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-		List<AuthTypeStatus> authTypes = new ArrayList<>();
-		for (String type : authType) {
+		List<io.mosip.resident.dto.AuthTypeStatus> authTypes = new ArrayList<>();
+		for (Entry<String, AuthTypeStatus> entry : authTypeStatusMap.entrySet()) {
 
-			String[] types = type.split("-");
-			AuthTypeStatus authTypeStatus = new AuthTypeStatus();
+			String[] types = entry.getKey().split("-");
+			io.mosip.resident.dto.AuthTypeStatus authTypeStatus = new io.mosip.resident.dto.AuthTypeStatus();
 			String requestId = UUID.randomUUID().toString();
 			authTypeStatus.setRequestId(requestId);
 			if (types.length == 1) {
@@ -263,12 +275,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 				authTypeStatus.setAuthType(types[0]);
 				authTypeStatus.setAuthSubType(types[1]);
 			}
-			if (authTypeStatusConstant.equals(io.mosip.resident.constant.AuthTypeStatus.LOCK)) {
+			if (entry.getValue().equals(AuthTypeStatus.LOCK)) {
 				authTypeStatus.setLocked(true);
 				authTypeStatus.setUnlockForSeconds(null);
 			} else {
-				if (unlockForSeconds != null) {
-					authTypeStatus.setUnlockForSeconds(unlockForSeconds);
+				if (unlockForSecondsMap.get(entry.getKey()) != null) {
+					authTypeStatus.setUnlockForSeconds(unlockForSecondsMap.get(entry.getKey()));
                 }
 
 				authTypeStatus.setLocked(false);

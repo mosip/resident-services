@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -22,6 +23,6 @@ public interface OrderCardService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResidentCredentialResponseDto sendPhysicalCard(ResidentCredentialRequestDto requestDto)
-			throws ResidentServiceCheckedException;
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

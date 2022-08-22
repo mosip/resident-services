@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -36,6 +38,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
@@ -107,9 +110,10 @@ public class IdAuthServiceTest {
         AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
         when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
         List<String> authTypes = new ArrayList<>();
-        authTypes.add("bio-FIR");
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
-                null);
+        authTypes.add("bio");
+        Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
+        Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
+        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
         assertTrue(isUpdated);
     }
 
@@ -119,8 +123,9 @@ public class IdAuthServiceTest {
         when(restClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
         List<String> authTypes = new ArrayList<>();
         authTypes.add("bio-FIR");
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
-                null);
+        Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
+        Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
+        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
         assertTrue(isUpdated);
     }
 
@@ -340,12 +345,20 @@ public class IdAuthServiceTest {
     public void testAuthTypeStatusUpdateUnlockSuccess()
             throws ApisResourceAccessException, ResidentServiceCheckedException {
         AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
+        
+        ErrorDTO error = new ErrorDTO();
+		error.setErrorCode("101");
+		error.setErrorMessage("errors");
+
+		List<ErrorDTO> errorList = new ArrayList<ErrorDTO>();
+		errorList.add(error);
+		authTypeStatusResponseDto.setErrors(errorList);
         when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
         List<String> authTypes = new ArrayList<>();
         authTypes.add("bio-FIR");
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.UNLOCK,
-                null);
-        assertTrue(isUpdated);
+        Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
+        Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
+        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
     }
 
     @Test
