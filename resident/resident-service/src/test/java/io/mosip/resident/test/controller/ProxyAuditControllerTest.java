@@ -36,6 +36,7 @@ import io.mosip.resident.controller.ProxyAuditController;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.dto.AuditRequestDtoV2;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -49,6 +50,9 @@ import io.mosip.resident.util.AuditUtil;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class ProxyAuditControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@InjectMocks
 	private ProxyAuditController proxyAuditController;

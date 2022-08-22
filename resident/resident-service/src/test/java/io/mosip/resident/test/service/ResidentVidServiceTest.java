@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
@@ -45,12 +46,14 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidAlreadyPresentException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
@@ -97,13 +100,15 @@ public class ResidentVidServiceTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @InjectMocks
-    private ResidentVidServiceImpl residentVidService;
+    private ResidentVidService residentVidService=new ResidentVidServiceImpl();
     
+    @Mock
+	private ResidentTransactionRepository residentTransactionRepository;
     
     private JSONObject identity;
     
     @Before
-    public void setup() throws IOException, ResidentServiceCheckedException {
+    public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
 
         requestDto = new VidRequestDto();
         requestDto.setOtp("123");
@@ -137,6 +142,11 @@ public class ResidentVidServiceTest {
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
 		notificationRequestDto.setId("1234567");
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
+		when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
     }
 
     @Test

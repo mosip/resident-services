@@ -12,6 +12,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -24,11 +25,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,9 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceGetServiceHistoryTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @Mock
     private AuditUtil audit;
@@ -122,6 +128,8 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
+        Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
     }
 

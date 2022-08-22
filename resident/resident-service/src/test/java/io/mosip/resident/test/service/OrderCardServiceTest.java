@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,13 +21,17 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.OrderCardServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 
 /**
  * Resident order card service test class.
@@ -43,6 +48,15 @@ public class OrderCardServiceTest {
 
 	@Mock
 	private AuditUtil auditUtil;
+	
+	@Mock
+	private Utilitiy utility;
+	
+	@Mock
+	private IdentityServiceImpl identityServiceImpl;
+	
+	@Mock
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Mock
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
@@ -62,6 +76,11 @@ public class OrderCardServiceTest {
 		responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
+		
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("uin");
 
 		residentCredentialRequestDto = new ResidentCredentialRequestDto();
 		residentCredentialRequestDto.setTransactionID("1234327890");
