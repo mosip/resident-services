@@ -20,11 +20,13 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import org.springframework.stereotype.Service;
 
 /**
  * @author Manoj SP
  *
  */
+@Service
 public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoServiceImpl.class);
