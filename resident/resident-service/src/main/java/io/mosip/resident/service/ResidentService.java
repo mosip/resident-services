@@ -1,15 +1,34 @@
 package io.mosip.resident.service;
 
-import io.mosip.resident.dto.PageDto;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.BellNotificationDto;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.EventStatusResponseDTO;
+import io.mosip.resident.dto.PageDto;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.dto.UnreadNotificationDto;
+import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public interface ResidentService {
 
@@ -23,28 +42,45 @@ public interface ResidentService {
 			throws ResidentServiceCheckedException;
 
 	public AuthHistoryResponseDTO reqAuthHistory(AuthHistoryRequestDTO dto) throws ResidentServiceCheckedException;
-	
+
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 
-	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
-    RegStatusCheckResponseDTO getRidStatus(String rid);
+	RegStatusCheckResponseDTO getRidStatus(String rid);
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
-	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType, String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
+			String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch) throws ResidentServiceCheckedException;
+	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch)
+			throws ResidentServiceCheckedException;
 
-	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch, String individualId) throws ResidentServiceCheckedException;
+	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch,
+			String individualId) throws ResidentServiceCheckedException;
 
-    List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType) throws ResidentServiceCheckedException;
-	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation) throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException ;
+	List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType)
+			throws ResidentServiceCheckedException;
+
+	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
+			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
 	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
 
-	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId) throws ResidentServiceCheckedException;
+	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId)
+			throws ResidentServiceCheckedException;
+
+	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id);
+
+	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id);
+
+	int updatebellClickdttimes(String individualId);
+
+	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
 }
