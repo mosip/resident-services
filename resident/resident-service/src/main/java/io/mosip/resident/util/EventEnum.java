@@ -613,7 +613,8 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_IDENTITY_UPDATE_COUNT_EXCEPTION("RES-SER-250", RegistrationConstants.SYSTEM, "get identity update count failure",
 			"retrieve remaining update counts for each id attributes for a UIN/VID is failed", "RES-SER", "Residence service", "NO_ID",
-			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
 	;
 
 	private final String eventId;

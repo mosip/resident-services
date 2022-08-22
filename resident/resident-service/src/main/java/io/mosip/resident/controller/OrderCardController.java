@@ -13,6 +13,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.util.AuditUtil;
@@ -47,6 +48,7 @@ public class OrderCardController {
 	 * @param requestWrapper
 	 * @return responseWrapper<ResidentCredentialResponseDto> object
 	 * @throws ResidentServiceCheckedException
+	 * @throws ApisResourceAccessException 
 	 */
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostSendPhysicalCard()" + ")")
@@ -59,7 +61,7 @@ public class OrderCardController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<ResidentCredentialResponseDto> sendPhysicalCard(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestWrapper)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::sendPhysicalCard()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD);
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();

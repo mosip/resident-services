@@ -7,12 +7,14 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -31,6 +34,9 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceGetServiceRequestUpdateTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @Mock
     private AuditUtil audit;
@@ -46,6 +52,9 @@ public class ResidentServiceGetServiceRequestUpdateTest {
 
     @Mock
     private IdentityServiceImpl identityServiceImpl;
+    
+    @Mock
+    private Utilitiy utilitiy;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;

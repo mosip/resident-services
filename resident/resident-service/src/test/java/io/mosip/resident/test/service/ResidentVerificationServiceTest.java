@@ -2,6 +2,7 @@ package io.mosip.resident.test.service;
 
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.dto.VerificationStatusDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -10,6 +11,8 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,8 +25,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -44,12 +49,18 @@ public class ResidentVerificationServiceTest {
 
     @Mock
     private IdentityServiceImpl identityServiceImpl;
+    
+    @Mock
+	private Utilitiy utilitiy;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
+    	ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
     }
 
     @Test

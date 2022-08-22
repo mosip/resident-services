@@ -1,13 +1,15 @@
 package io.mosip.resident.service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.VerificationResponseDTO;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.stereotype.Service;
 
-import java.security.NoSuchAlgorithmException;
+import io.mosip.resident.dto.VerificationResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 @Service
 public interface VerificationService {
-    VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId) throws ResidentServiceCheckedException, NoSuchAlgorithmException;
+	VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId)
+			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException;
 }
