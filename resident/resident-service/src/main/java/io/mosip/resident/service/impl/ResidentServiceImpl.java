@@ -66,7 +66,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UIN = "uin";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
-	private static final Integer DEFAULT_PAGE_START = 1;
+	private static final Integer DEFAULT_PAGE_START = 0;
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String PRINTING = "PRINTING";
@@ -1152,14 +1152,7 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if(pageFetch < 0) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 		}
-		PageRequest pageRequest = null;
-		if(sortType == null) {
-			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.ASC, "crDtimes"));
-		} else if(sortType.equalsIgnoreCase(SortType.ASC.toString())) {
-			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.ASC, "crDtimes"));
-		} else if(sortType.equalsIgnoreCase(SortType.DESC.toString())) {
-			pageRequest = PageRequest.of(pageStart-1, pageFetch, Sort.by(Sort.Direction.DESC, "crDtimes"));
-		}
+
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText);
 		return serviceHistoryResponseDtoList;
 	}
@@ -1193,7 +1186,7 @@ public class ResidentServiceImpl implements ResidentService {
 			} else if(pageFetch < 0) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 			}
-			PageRequest pageRequest = PageRequest.of(pageStart-1, pageFetch);
+			PageRequest pageRequest = PageRequest.of(pageStart, pageFetch);
 			String idaToken = identityServiceImpl.getResidentIdaToken();
 			List<ResidentTransactionEntity> residentTransactionEntities = residentTransactionRepository.findRequestIdByToken(idaToken, ResidentTransactionType.SERVICE_REQUEST.toString(),pageRequest);
 			if(residentTransactionEntities != null) {
@@ -1335,7 +1328,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		String orderByQuery=  " order by pinned_status desc, " +
 				"cr_dtimes "+sortType+" limit "+pageFetch + " offset "
-				+ (pageStart-1)*pageFetch;
+				+ (pageStart)*pageFetch;
 		return query+DynamicQuery+orderByQuery;
 	}
 
