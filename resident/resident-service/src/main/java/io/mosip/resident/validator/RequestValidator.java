@@ -24,6 +24,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
@@ -191,15 +192,16 @@ public class RequestValidator {
 		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
 
-	private void validateAuthTypeV2(List<AuthTypeStatusDto> authType) {
+	private void validateAuthTypeV2(List<AuthTypeStatusDtoV2> authType) {
 		if (authType == null || authType.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("authTypes");
 		}
 		String[] authTypesArray = authTypes.split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
-		for (AuthTypeStatusDto authTypeStatusDto : authType) {
-			if (StringUtils.isEmpty(authTypeStatusDto.getAuthType()) || !authTypesAllowed.contains(authTypeStatusDto.getAuthType())) {
+		for (AuthTypeStatusDtoV2 authTypeStatusDto : authType) {
+			String authTypeString = ResidentServiceImpl.AUTH_TYPE_FUNCTION.apply(authTypeStatusDto);
+			if (StringUtils.isEmpty(authTypeString) || !authTypesAllowed.contains(authTypeString)) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes",
 						"Request to generate VID"));
 				throw new InvalidInputException("authTypes");
@@ -209,7 +211,7 @@ public class RequestValidator {
 						"Request to generate VID"));
 				throw new InvalidInputException("unlockForSeconds");
 			}
-			List<String> authTypes = Arrays.asList(authTypeStatusDto.getAuthType().split(","));
+			List<String> authTypes = Arrays.asList(authTypeString);
 			validateAuthType(authTypes,
 					"Request auth " + authTypes.toString().toLowerCase() + " API");
 
