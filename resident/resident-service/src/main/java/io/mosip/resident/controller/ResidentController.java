@@ -461,6 +461,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetNotificationCount()" + ")")
 	@GetMapping("/unread/notification-count")
 	@Operation(summary = "unreadnotification-count", description = "Get notification count", tags = {
 			"resident-controller" })
@@ -481,6 +482,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetNotificationClick()" + ")")
 	@GetMapping("/bell/notification-click")
 	@Operation(summary = "checkLastClickdttimes", description = "Get notification-clickdttimes", tags = {
 			"resident-controller" })
@@ -499,6 +501,8 @@ public class ResidentController {
 		return response;
 	}
 
+	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetupdatedttimes()" + ")")
 	@PutMapping(path = "/bell/updatedttime")
 	@Operation(summary = "updatebellClickdttimes", description = "updatedttimes")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -514,6 +518,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
 	@GetMapping("/unread/service-list")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
