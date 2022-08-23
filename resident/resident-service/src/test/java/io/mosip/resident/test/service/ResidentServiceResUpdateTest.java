@@ -13,7 +13,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -32,9 +36,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.FileNotFoundException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -49,6 +56,7 @@ import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
 import io.mosip.resident.dto.ResidentDocuments;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -60,6 +68,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -90,7 +99,10 @@ public class ResidentServiceResUpdateTest {
 	private UinValidator<String> uinValidator;
 	
 	@Mock
-	private ResidentTransactionRepository txnRepo;
+	private ResidentTransactionRepository residentTransactionRepository;
+	
+	@Mock
+	private IdentityServiceImpl identityServiceImpl;
 
 	@Mock
 	Environment env;
@@ -105,6 +117,9 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private AuditUtil audit;
+	
+	@Mock
+	private ObjectMapper objectMapper;
 
 	ResidentUpdateRequestDto dto;
 
@@ -129,6 +144,18 @@ public class ResidentServiceResUpdateTest {
 		dto.setOtp("12345");
 		ReflectionTestUtils.setField(residentServiceImpl, "centerId", "10008");
 		ReflectionTestUtils.setField(residentServiceImpl, "machineId", "10008");
+		
+		Map identityResponse=new LinkedHashMap();
+		Map identityMap = new LinkedHashMap();
+		identityMap.put("UIN", "8251649601");
+		identityMap.put("email", "manojvsp12@gmail.com");
+		identityResponse.put("identity", identityMap);
+		
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		byte[] str=CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
+		when(objectMapper.readValue(str, Map.class)).thenReturn(identityResponse);
 
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());

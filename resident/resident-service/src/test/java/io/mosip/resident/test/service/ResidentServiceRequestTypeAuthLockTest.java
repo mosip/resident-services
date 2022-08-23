@@ -5,6 +5,7 @@ import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -18,6 +19,8 @@ import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
+import io.mosip.resident.util.Utilitiy;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +30,16 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -68,6 +76,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 
 	@Mock
 	IdentityServiceImpl identityServiceImpl;
+	
+	@Mock
+	private Utilitiy utility;
 
 	@Mock
 	ResidentTransactionRepository residentTransactionRepository;
@@ -88,36 +99,36 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO.setStatus("Notification success");
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		individualId = identityServiceImpl.getResidentIndvidualId();
+		
+		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		residentTransactionEntities.add(residentTransactionEntity);
+		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "individualId", "partnerId");
 	}
 
 	@Test
 	public void testReqAuthTypeStatusUpdateSuccess()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		ArrayList<String> partnerIds = new ArrayList<>();
 		partnerIds.add("m-partner-default-auth");
-		Mockito.when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
-			 idAuthService.authTypeStatusUpdate(individualId,
-					List.of(authTypeStatusDto.getAuthType().split(",")),
-					authTypeStatusDto.getLocked() ? AuthTypeStatus.LOCK : AuthTypeStatus.UNLOCK, authTypeStatusDto.getUnlockForSeconds());
+			Mockito.when(idAuthService.authTypeStatusUpdate(any(), any(), any())).thenReturn(true);
 			ResponseDTO response = new ResponseDTO();
 			response.setMessage("Notification success");
-			Mockito.when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
-					authTypeStatusDto.getUnlockForSeconds())).thenReturn(true);
 			Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
 			ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 			assertEquals(authLockResponse.getMessage(), authLockResponse.getMessage());
 		}
-
-
 
 	}
 
@@ -125,11 +136,11 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	public void testReqAuthTypeLockFailed()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
@@ -141,15 +152,13 @@ public class ResidentServiceRequestTypeAuthLockTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
-		Mockito.when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
-				authTypeStatusDto.getUnlockForSeconds())).thenReturn(true);
 		Mockito.when(notificationService.sendNotification(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException());
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
@@ -161,47 +170,28 @@ public class ResidentServiceRequestTypeAuthLockTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
-		Mockito.when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
-						authTypeStatusDto.getUnlockForSeconds()))
-				.thenThrow(new ApisResourceAccessException());
+		Mockito.when(idAuthService.authTypeStatusUpdate(any(), any(), any())).thenThrow(new ApisResourceAccessException());
 
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testReqAuthTypeUnLockException() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
-		authTypeStatusDto.setAuthType("OTP");
-		authTypeStatusDto.setLocked(true);
-		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
-		authTypeStatusDtoList.add(authTypeStatusDto);
-		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
-
-		Mockito.lenient().when(idAuthService.authTypeStatusUpdate(individualId,List.of(authTypeStatusDto.getAuthType().split(",")), AuthTypeStatus.LOCK,
-				authTypeStatusDto.getUnlockForSeconds()))
-				.thenThrow(new ApisResourceAccessException());
-		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testReqAuthTypeLockOTPFailedException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
-		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setLocked(false);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);

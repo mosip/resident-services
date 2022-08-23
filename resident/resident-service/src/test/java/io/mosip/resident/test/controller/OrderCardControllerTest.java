@@ -41,6 +41,7 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.OrderCardService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -54,6 +55,9 @@ import io.mosip.resident.util.AuditUtil;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class OrderCardControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@InjectMocks
 	private OrderCardController orderCardController;

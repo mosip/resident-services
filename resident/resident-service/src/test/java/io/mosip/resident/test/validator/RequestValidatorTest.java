@@ -1193,8 +1193,8 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2BadAuthType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("dummy");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
@@ -1211,8 +1211,8 @@ public class RequestValidatorTest {
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("bio-FIR");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
@@ -1229,7 +1229,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2EmptyAuthType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
@@ -1242,8 +1242,8 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2NegativeUnlockForSeconds() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("bio-FIR");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(-1L);
@@ -1260,8 +1260,8 @@ public class RequestValidatorTest {
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2NullUnlockForSeconds() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("bio-FIR");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(null);
@@ -1279,8 +1279,8 @@ public class RequestValidatorTest {
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2PositiveUnlockForSeconds() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("bio-FIR");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(1L);
@@ -1298,8 +1298,8 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2EmptyAuthTypeV2() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypes.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
@@ -1313,8 +1313,8 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2BadUnlockForSeconds2() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		List<AuthTypeStatusDto> authTypes = new ArrayList<>();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("bio-FIR");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(-10L);
