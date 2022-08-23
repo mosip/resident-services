@@ -7,6 +7,10 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
@@ -18,12 +22,13 @@ import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static io.mosip.resident.constant.ResidentErrorCode.BASE_EXCEPTION;
 
 @Service
 public class AcknowledgementServiceImpl implements AcknowledgementService {
@@ -63,31 +68,35 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     public byte[] getAcknowledgementPDF(String eventId, String languageCode) {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
         try{
-//            String requestTypeCode = residentTransactionRepository.findById(eventId).get().getRequestTypeCode();
-            String requestTypeCode = "SHARE_CRED_WITH_PARTNER";
+            Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
+                    .findById(eventId);
+            String requestTypeCode;
+            if (residentTransactionEntity.isPresent()) {
+                requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
+            } else {
+                throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
+            }
             String requestProperty = "";
             if(requestTypeCode.equals(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
                 requestProperty = shareCredWithPartnerTemplate;
+            } else {
+                throw new ResidentServiceCheckedException(ResidentErrorCode.ACK_PROPERTY_NOT_FOUND);
             }
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
                     getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
             System.out.println(responseWrapper.getResponse());
             Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
             String fileText = (String) templateResponse.get("fileText");
-
             Map<String, String> templateVariables = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId);
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
-            System.out.println(templateValue);
-
             ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(templateValue);
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
             return pdfValue.toByteArray();
         }catch (Exception e){
             logger.error("AcknowledgementServiceImpl::getAcknowledgementPDF()::error::"+e.getMessage());
+            throw new ResidentServiceException(BASE_EXCEPTION);
         }
-
-        return new byte[0];
     }
 
     private Map<String, Object> convertMapValueFromStringToObject(Map<String, String> templateVariables) {
