@@ -64,14 +64,14 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
         
-		String individualId = identityService.getResidentIndvidualId();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
 		residentTransactionEntity.setStatusCode(status);
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat((String) eventModel.getEvent().getData().get("individualId")));
 		residentTransactionEntity.setRequestSummary("");
-		residentTransactionEntity.setTokenId(identityService.getIDAToken(individualId));
+		residentTransactionEntity.setTokenId((String) eventModel.getEvent().getData().get("tokenId"));
+		residentTransactionEntity.setRequestedEntityId((String) eventModel.getEvent().getData().get("entityId"));
 		residentTransactionEntity.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.parse(eventModel.getEvent().getTimestamp()));
 		residentTransactionEntity.setResponseDtime(LocalDateTime.parse(eventModel.getEvent().getTimestamp()));
