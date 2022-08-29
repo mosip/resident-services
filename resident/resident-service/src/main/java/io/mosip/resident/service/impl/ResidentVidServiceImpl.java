@@ -162,14 +162,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 		}
-
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		String email = identityDTO.getEmail();
 		String phone = identityDTO.getPhone();
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
-			residentTransactionEntity = createResidentTransactionEntity(requestDto);
-			
+			if(Utilitiy.isSecureSession()){
+				residentTransactionEntity = createResidentTransactionEntity(requestDto);
+			}
 			String uin = identityDTO.getUIN();
 			// generate vid
 			VidGeneratorResponseDto vidResponse = vidGenerator(requestDto, uin);
@@ -204,13 +204,16 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			vidResponseDto.setVid(vidResponse.getVID());
 			vidResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidResponseDto);
-			
-			residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
-			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
+				residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			}
 			
 		} catch (JsonProcessingException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_JSON_PARSING_EXCEPTION,
 					requestDto.getTransactionID(), "Request to generate VID"));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
@@ -219,8 +222,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to generate VID"));
 			throw new VidCreationException(e.getErrorText());
 		} catch (IOException | ApisResourceAccessException | VidCreationException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_GENERATION_FAILURE, requestDto.getTransactionID()));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
@@ -229,8 +233,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to generate VID"));
 			throw new VidCreationException(e.getMessage());
 		} catch (VidAlreadyPresentException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_ALREADY_EXISTS, requestDto.getTransactionID()));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
@@ -239,7 +244,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to generate VID"));
 			throw e;
 		} finally {
-			residentTransactionRepository.save(residentTransactionEntity);
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionRepository.save(residentTransactionEntity);
+			}
 		}
 
 		responseDto.setId(id);
@@ -341,9 +348,10 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 		}
-		
-		ResidentTransactionEntity residentTransactionEntity = createResidentTransEntity(vid);
-		
+		ResidentTransactionEntity residentTransactionEntity = null;
+		if(Utilitiy.isSecureSession()) {
+			residentTransactionEntity = createResidentTransEntity(vid);
+		}
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(indivudalId);
 		String uin = identityDTO.getUIN();
 
@@ -353,17 +361,19 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			String idaTokenForIndividualId = identityServiceImpl.getResidentIdaToken();
 			String idaTokenForVid = identityServiceImpl.getIDATokenForIndividualId(vid);
 			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionRepository.save(residentTransactionEntity);
-				
+				if(Utilitiy.isSecureSession()) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionRepository.save(residentTransactionEntity);
+				}
 				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION);
 			}
 		} else {
 			String uinForVid = identityServiceImpl.getUinForIndividualId(vid);
 			if(uinForVid == null || !uinForVid.equalsIgnoreCase(uin)) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionRepository.save(residentTransactionEntity);
-				
+				if(Utilitiy.isSecureSession()) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionRepository.save(residentTransactionEntity);
+				}
 				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_INDIVITUAL);
 			}
 		}
@@ -388,12 +398,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			VidRevokeResponseDTO vidRevokeResponseDto = new VidRevokeResponseDTO();
 			vidRevokeResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidRevokeResponseDto);
-			
-			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			}
 		} catch (JsonProcessingException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_JSON_PARSING_EXCEPTION,
 					requestDto.getTransactionID(), "Request to revoke VID"));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
@@ -402,8 +413,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to revoke VID"));
 			throw new VidRevocationException(e.getErrorText());
 		} catch (IOException | ApisResourceAccessException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_REVOKE_EXCEPTION, requestDto.getTransactionID()));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
@@ -412,8 +424,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to revoke VID"));
 			throw new VidRevocationException(e.getMessage());
 		} catch (VidRevocationException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_REVOKE_EXCEPTION, requestDto.getTransactionID()));
 			notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_REV_FAILURE);
@@ -422,7 +435,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to revoke VID"));
 			throw e;
 		} finally {
-			residentTransactionRepository.save(residentTransactionEntity);
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionRepository.save(residentTransactionEntity);
+			}
 		}
 
 		responseDto.setId(revokeVidId);

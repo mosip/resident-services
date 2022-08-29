@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -82,6 +83,8 @@ public class Utilitiy {
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static String regProcessorIdentityJson = "";
+
+	private static String ANONYMOUS_USER = "anonymousUser";
 	
 	@Autowired(required = true)
 	@Qualifier("varres")
@@ -318,4 +321,14 @@ public class Utilitiy {
 		return residentTransactionEntity;
 	}
 
+	public static boolean isSecureSession(){
+		if(SecurityContextHolder.getContext()!=null){
+			if(SecurityContextHolder.getContext().getAuthentication()!=null){
+				if(SecurityContextHolder.getContext().getAuthentication().getPrincipal()!=null){
+					return !SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals(ANONYMOUS_USER);
+				}
+			}
+		}
+		return true;
+	}
 }
