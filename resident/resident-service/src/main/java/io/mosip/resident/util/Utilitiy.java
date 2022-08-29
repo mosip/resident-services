@@ -3,15 +3,7 @@ package io.mosip.resident.util;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 
@@ -26,6 +18,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -322,13 +316,6 @@ public class Utilitiy {
 	}
 
 	public static boolean isSecureSession(){
-		if(SecurityContextHolder.getContext()!=null){
-			if(SecurityContextHolder.getContext().getAuthentication()!=null){
-				if(SecurityContextHolder.getContext().getAuthentication().getPrincipal()!=null){
-					return !SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals(ANONYMOUS_USER);
-				}
-			}
-		}
-		return true;
+		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .map(obj -> obj.equals(ANONYMOUS_USER)) .isPresent();
 	}
 }
