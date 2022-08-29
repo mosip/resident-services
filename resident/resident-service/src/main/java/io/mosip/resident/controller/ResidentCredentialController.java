@@ -80,7 +80,7 @@ public class ResidentCredentialController {
 	
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestDownloadPersonalizedCard()" + ")")
-	@PostMapping(value = "/req/download-personalized-card")
+	@PostMapping(value = "/download-personalized-card")
 	@Operation(summary = "requestDownloadPersonalizedCard", description = "requestDownloadPersonalizedCard", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -107,7 +107,7 @@ public class ResidentCredentialController {
 	
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestShareCredWithPartner()" + ")")
-	@PostMapping(value = "/req/share-credential")
+	@PostMapping(value = "/share-credential")
 	@Operation(summary = "requestShareCredWithPartner", description = "requestShareCredWithPartner", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
