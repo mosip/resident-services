@@ -1710,8 +1710,10 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
 		BellNotificationDto bellnotifdttimes = new BellNotificationDto();
 		Optional<ResidentUserEntity> timstamp = residentUserRepository.findById(Id);
-		LocalDateTime time = timstamp.get().getLastbellnotifDtimes();
-		bellnotifdttimes.setLastbellnotifclicktime(time);
+		if (timstamp.isPresent()) {
+			LocalDateTime time = timstamp.get().getLastbellnotifDtimes();
+			bellnotifdttimes.setLastbellnotifclicktime(time);
+		}
 		responseWrapper.setId(serviceEventId);
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponse(bellnotifdttimes);
@@ -1721,8 +1723,7 @@ public class ResidentServiceImpl implements ResidentService {
 	@Override
 	public int updatebellClickdttimes(String Id) {
 		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
-		int update = residentUserRepository.updateByIdandTime(Id, dt);
-		return update;
+		return residentUserRepository.updateByIdandTime(Id, dt);
 	}
 
 	@Override
