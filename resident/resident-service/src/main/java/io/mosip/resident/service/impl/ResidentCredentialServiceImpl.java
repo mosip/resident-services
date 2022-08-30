@@ -1,6 +1,26 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -12,35 +32,45 @@ import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialReqestDto;
+import io.mosip.resident.dto.CredentialRequestStatusDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.CryptomanagerResponseDto;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.PartnerResponseDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentTransactionType;
+import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.*;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.*;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
 	private static final String INDIVIDUAL_ID = "individualId";
+	private static final String ENG = "eng";
+	private static final String RESIDENT = "RESIDENT";
+	private static final String NEW = "new";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -87,7 +117,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	NotificationService notificationService;
 
 	private SecureRandom random;
-
+	
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
 			throws ResidentServiceCheckedException {
@@ -147,14 +177,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 						e.getErrorText(), e);
 			}
 
-		catch (ResidentServiceCheckedException e) {
-
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		catch (ApisResourceAccessException e) {
+		catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
@@ -170,8 +193,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return residentCredentialResponseDto;
 	}
 	
+	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto dto,String requestType)
+			throws ResidentServiceCheckedException {
+		return shareCredential(dto,requestType,null);		
+	}
+	
 	@Override
-	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto dto, String requestType)
+	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto dto, String requestType, String purpose)
 			throws ResidentServiceCheckedException {
 		ResidentCredentialResponseDto residentCredentialResponseDto=new ResidentCredentialResponseDto();
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
@@ -206,34 +234,35 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResponseWrapper.class);
 			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
 					ResidentCredentialResponseDto.class);
+			if (purpose != null) {
+				insertCredentialreqInDB(Boolean.TRUE, purpose, residentCredentialResponseDto.getRequestId());
+			}
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
 
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
 		}
-		catch (ResidentServiceCheckedException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		catch (ApisResourceAccessException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+		catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			if(residentTransactionEntity != null) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}			
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		catch (IOException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());			
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}catch (NoSuchAlgorithmException e) {
+			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
+			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		}
 		finally {
 			residentTransactionRepository.save(residentTransactionEntity);
@@ -303,19 +332,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
 
 		}
-		catch (ResidentServiceCheckedException e) {
+		catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		catch (ApisResourceAccessException e) {
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		catch (IOException e) {
+		}catch (IOException e) {
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
@@ -550,6 +572,29 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				additionalAttributes);
 		return notificationService.sendNotification(notificationRequest);
 	}
+
+	@SuppressWarnings("unused")
+	private void insertCredentialreqInDB(boolean isCredReqSuccess, String purpose,
+			String credentialRequestId) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException{		
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		LocalDateTime now = LocalDateTime.now();
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setPurpose(purpose);
+		residentTransactionEntity.setRequestDtimes(now);
+		residentTransactionEntity.setResponseDtime(now);
+		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestSummary(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setCredentialRequestId(credentialRequestId);
+		residentTransactionEntity.setStatusCode(NEW);
+		residentTransactionEntity.setStatusComment(isCredReqSuccess ? "Success" : "Failure");
+		residentTransactionEntity.setLangCode(ENG);
+		residentTransactionEntity.setCrBy(RESIDENT);
+		residentTransactionEntity.setCrDtimes(now);
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
+		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionRepository.save(residentTransactionEntity);
+	}
+	
 	/*
 	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
 	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
