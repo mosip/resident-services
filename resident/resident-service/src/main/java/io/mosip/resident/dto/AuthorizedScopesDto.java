@@ -62,4 +62,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> getupdatedttimes;
 
+	private List<String> getAcknowledgement;
+
 }
