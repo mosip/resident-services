@@ -10,6 +10,8 @@ import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
@@ -50,6 +52,9 @@ public class RequestValidatorTest {
 
 	String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+	@InjectMocks
+	private ResidentService residentService = new ResidentServiceImpl();
+
 	@Before
 	public void setup() {
 		Mockito.when(uinValidator.validateId(Mockito.any())).thenReturn(true);
@@ -69,6 +74,8 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "authTypes", "bio-FIR,bio-IIR");
 		ReflectionTestUtils.setField(requestValidator, "version", "v1");
 		ReflectionTestUtils.setField(requestValidator, "map", map);
+		ReflectionTestUtils.setField(requestValidator, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
+		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);

@@ -32,6 +32,7 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ResidentServiceRequestAuthLockTest {
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-
+		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 	}
 
 	@Test
