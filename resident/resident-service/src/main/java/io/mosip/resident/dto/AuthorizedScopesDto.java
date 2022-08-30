@@ -21,7 +21,7 @@ public class AuthorizedScopesDto {
 	private List<String> postgeneratevid;
 
 	private List<String> getvids;
-	
+
 	private List<String> postAuthTypeStatus;
 
 	private List<String> postAuthTypeUnlock;
@@ -45,15 +45,21 @@ public class AuthorizedScopesDto {
 	private List<String> getPartnersByPartnerType;
 
 	private List<String> getDownloadCard;
-	
+
 	private List<String> postSendPhysicalCard;
 
 	private List<String> deleteUploadDocuments;
-	
+
 	private List<String> getAllTemplateBylangCodeAndTemplateTypeCode;
-	
+
 	private List<String> postAuditLog;
 
-	private List<String> getAcknowledgement;
+	private List<String> getUnreadServiceList;
+
+	private List<String> getNotificationCount;
+
+	private List<String> getNotificationClick;
+
+	private List<String> getupdatedttimes;
 
 }

@@ -54,7 +54,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  */
 @RefreshScope
 @RestController
-@Tag(name = "Resident Service", description = "Resident Vid Controller")
+@Tag(name = "resident-vid-controller", description = "Resident Vid Controller")
 public class ResidentVidController {
 
 	Logger logger = LoggerConfiguration.logConfig(ResidentVidController.class);
