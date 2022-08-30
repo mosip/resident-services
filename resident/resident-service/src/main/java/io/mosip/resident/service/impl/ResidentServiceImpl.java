@@ -727,8 +727,9 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
-			residentTransactionEntity = createResidentTransEntity(dto);
-
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity = createResidentTransEntity(dto);
+			}
 			if (Objects.nonNull(dto.getOtp())) {
 				if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,
@@ -800,12 +801,14 @@ public class ResidentServiceImpl implements ResidentService {
 			responseDto.setRegistrationId(response.getRegistrationId());
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
-
-			updateResidentTransaction(residentTransactionEntity, response);
+			if(Utilitiy.isSecureSession()) {
+				updateResidentTransaction(residentTransactionEntity, response);
+			}
 		} catch (OtpValidationFailedException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			residentTransactionEntity.setRequestSummary("failed");
-
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -816,9 +819,10 @@ public class ResidentServiceImpl implements ResidentService {
 					e);
 
 		} catch (ValidationFailedException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			residentTransactionEntity.setRequestSummary("failed");
-
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATION_FAILED_EXCEPTION,
 					e.getMessage() + " Transaction id: " + dto.getTransactionID(), "Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -828,9 +832,10 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(e.getErrorCode(), e.getMessage(), e);
 
 		} catch (ApisResourceAccessException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			residentTransactionEntity.setRequestSummary("failed");
-
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_RESOURCE_UNACCESS,
 					dto.getTransactionID(), "Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -851,9 +856,10 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
 			}
 		} catch (IOException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			residentTransactionEntity.setRequestSummary("failed");
-
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -863,9 +869,10 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} catch (BaseCheckedException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			residentTransactionEntity.setRequestSummary("failed");
-
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.BASE_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
@@ -875,7 +882,9 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 		} finally {
-			residentTransactionRepository.save(residentTransactionEntity);
+			if(Utilitiy.isSecureSession()) {
+				residentTransactionRepository.save(residentTransactionEntity);
+			}
 		}
 		return responseDto;
 	}
