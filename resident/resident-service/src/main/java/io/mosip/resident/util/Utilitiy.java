@@ -316,6 +316,6 @@ public class Utilitiy {
 	}
 
 	public static boolean isSecureSession(){
-		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .map(obj -> obj.equals(ANONYMOUS_USER)) .isPresent();
+		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .filter(obj -> !obj.equals(ANONYMOUS_USER)) .isPresent();
 	}
 }
