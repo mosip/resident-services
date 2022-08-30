@@ -106,6 +106,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		residentTransactionEntities.add(residentTransactionEntity);
 		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "individualId", "partnerId");
+		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 	}
 
 	@Test
