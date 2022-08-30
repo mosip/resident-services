@@ -92,7 +92,6 @@ public class AuthTransactionCallbackServiceTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
     }
 
     @Test
