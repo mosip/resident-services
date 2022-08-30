@@ -256,8 +256,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public static Function<? super AuthTypeStatusDtoV2, ? extends String> AUTH_TYPE_FUNCTION = t -> {
 		String[] authTypesArray = authTypes.split(",");
-		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
-		for(String authType : authTypesAllowed) {
+		for(String authType : authTypesArray) {
 			if(t.getAuthSubType()!=null) {
 				if(authType.toLowerCase().contains(t.getAuthSubType().toLowerCase())){
 					return authType;
