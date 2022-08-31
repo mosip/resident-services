@@ -267,6 +267,16 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		return null;
 	};
+	
+	public static Function<? super String, ? extends String> AUTH_LOCK_UNLOCK_FUNCTION = str -> {
+		String[] authTypesArray = authTypes.split(",");
+		for(String authType : authTypesArray) {
+			if(authType.toLowerCase().contains(str.toLowerCase())){
+				return authType;
+			}
+		}
+		return null;
+	};
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -550,12 +560,19 @@ public class ResidentServiceImpl implements ResidentService {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
 				Long unlockForSeconds = null;
+				List<String> authTypes = new ArrayList<String>();
+				if (dto.getAuthType() != null && !dto.getAuthType().isEmpty()) {
+					for(String authType:dto.getAuthType()) {
+						String authTypeString = AUTH_LOCK_UNLOCK_FUNCTION.apply(authType);
+						 authTypes.add(authTypeString);
+					}
+				}
 				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
 					AuthUnLockRequestDTO authUnLockRequestDTO = (AuthUnLockRequestDTO) dto;
 					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
 				}
 				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
-						dto.getAuthType(), authTypeStatus, unlockForSeconds);
+						authTypes, authTypeStatus, unlockForSeconds);
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
 				} else {
