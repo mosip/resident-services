@@ -253,7 +253,14 @@ public class RequestValidator {
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("transactionId");
 		}
-		validateAuthType(requestDTO.getRequest().getAuthType(),
+		List<String> authTypes = new ArrayList<String>();
+		if (requestDTO.getRequest().getAuthType() != null && !requestDTO.getRequest().getAuthType().isEmpty()) {
+			for(String authType:requestDTO.getRequest().getAuthType()) {
+				String authTypeString = ResidentServiceImpl.AUTH_LOCK_UNLOCK_FUNCTION.apply(authType);
+				 authTypes.add(authTypeString);
+			}
+		}
+		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
 
 	}
@@ -642,7 +649,12 @@ public class RequestValidator {
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("transactionId");
 		}
-		validateAuthType(requestDTO.getRequest().getAuthType(),
+		List<String> authTypes = new ArrayList<String>();
+		for(String authType:requestDTO.getRequest().getAuthType()) {
+			String authTypeString = ResidentServiceImpl.AUTH_LOCK_UNLOCK_FUNCTION.apply(authType);
+			 authTypes.add(authTypeString);
+		}
+		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
 		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
