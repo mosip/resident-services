@@ -271,7 +271,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public static Function<? super String, ? extends String> AUTH_LOCK_UNLOCK_FUNCTION = str -> {
 		String[] authTypesArray = authTypes.split(",");
 		for(String authType : authTypesArray) {
-			if(authType.toLowerCase().contains(str.toLowerCase())){
+			if(authType.toLowerCase().equals(str.toLowerCase())){
 				return authType;
 			}
 		}
