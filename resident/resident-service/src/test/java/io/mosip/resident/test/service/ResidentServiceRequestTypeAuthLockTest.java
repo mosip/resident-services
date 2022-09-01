@@ -106,17 +106,18 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		residentTransactionEntities.add(residentTransactionEntity);
 		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "individualId", "partnerId");
+		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 	}
 
 	@Test
 	public void testReqAuthTypeStatusUpdateSuccess()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		ArrayList<String> partnerIds = new ArrayList<>();
@@ -136,11 +137,11 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	public void testReqAuthTypeLockFailed()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
@@ -152,11 +153,11 @@ public class ResidentServiceRequestTypeAuthLockTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		Mockito.when(notificationService.sendNotification(Mockito.any()))
@@ -170,11 +171,11 @@ public class ResidentServiceRequestTypeAuthLockTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		Mockito.when(idAuthService.authTypeStatusUpdate(any(), any(), any())).thenThrow(new ApisResourceAccessException());
@@ -187,11 +188,11 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	public void testReqAuthTypeLockOTPFailedException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
-		AuthTypeStatusDto authTypeStatusDto = new AuthTypeStatusDto();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(false);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDto> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);

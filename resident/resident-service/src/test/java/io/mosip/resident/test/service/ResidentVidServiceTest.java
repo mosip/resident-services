@@ -145,8 +145,8 @@ public class ResidentVidServiceTest {
 		
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
+		Mockito.lenient().when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
+		Mockito.lenient().when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
     }
 
     @Test

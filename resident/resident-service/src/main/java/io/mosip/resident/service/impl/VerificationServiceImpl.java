@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -47,9 +48,8 @@ public class VerificationServiceImpl implements VerificationService {
 	public VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::Start");
-        
+
         ResidentTransactionEntity residentTransEntity = createResidentTransactionEntity(individualId);
-        
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
         IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
@@ -68,9 +68,9 @@ public class VerificationServiceImpl implements VerificationService {
         residentTransEntity.setStatusCode(EventStatusFailure.FAILED.name());
         byte[] idBytes = id.getBytes();
         String hash = HMACUtils2.digestAsPlainText(idBytes);
-        ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findByAid(hash);
-        if (residentTransactionEntity != null) {
-            if(residentTransactionEntity.getStatusCode().equalsIgnoreCase("OTP_VERIFIED")){
+        Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(hash);
+        if (residentTransactionEntity.isPresent()) {
+            if(residentTransactionEntity.get().getStatusCode().equalsIgnoreCase("OTP_VERIFIED")){
                 verificationStatus = true;
                 residentTransEntity.setStatusCode(EventStatusInProgress.NEW.name());
             }

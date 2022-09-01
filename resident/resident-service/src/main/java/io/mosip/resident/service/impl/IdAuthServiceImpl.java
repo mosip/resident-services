@@ -248,7 +248,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	public boolean authTypeStatusUpdate(String individualId, List<String> authType, AuthTypeStatus authTypeStatus, Long unlockForSeconds)
 			throws ApisResourceAccessException{
 		Map<String, AuthTypeStatus> authTypeStatusMap=authType.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> authTypeStatus));
-		Map<String, Long> unlockForSecondsMap=authType.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> unlockForSeconds));
+		Map<String, Long> unlockForSecondsMap=authType.stream().distinct().filter(str -> unlockForSeconds!=null).collect(Collectors.toMap(Function.identity(), str -> unlockForSeconds));
 		return authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
 	}
 
