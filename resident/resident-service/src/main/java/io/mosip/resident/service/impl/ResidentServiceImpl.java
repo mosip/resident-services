@@ -254,29 +254,30 @@ public class ResidentServiceImpl implements ResidentService {
 		authTypes = authType;
 	}
 
-	public static Function<? super AuthTypeStatusDtoV2, ? extends String> AUTH_TYPE_FUNCTION = t -> {
+	public static String getAuthTypeBasedOnConfigV2(AuthTypeStatusDtoV2 authTypeStatus) {
 		String[] authTypesArray = authTypes.split(",");
 		for(String authType : authTypesArray) {
-			if(t.getAuthSubType()!=null) {
-				if(authType.toLowerCase().contains(t.getAuthSubType().toLowerCase())){
+			if(authTypeStatus.getAuthSubType()!=null) {
+				String authTypeConcat=authTypeStatus.getAuthType()+AUTH_TYPE_SEPERATOR+authTypeStatus.getAuthSubType();
+				if(authType.equalsIgnoreCase(authTypeConcat)){
 					return authType;
 				}
 			} else {
-				return t.getAuthType();
+				return authTypeStatus.getAuthType();
 			}
 		}
 		return null;
-	};
+	}
 	
-	public static Function<? super String, ? extends String> AUTH_LOCK_UNLOCK_FUNCTION = str -> {
+	public static String getAuthTypeBasedOnConfig(String inputAuthType) {
 		String[] authTypesArray = authTypes.split(",");
 		for(String authType : authTypesArray) {
-			if(authType.toLowerCase().equals(str.toLowerCase())){
+			if(authType.equalsIgnoreCase(inputAuthType)){
 				return authType;
 			}
 		}
 		return null;
-	};
+	}
 
 	@Override
 	public RegStatusCheckResponseDTO getRidStatus(RequestDTO request) {
@@ -563,7 +564,7 @@ public class ResidentServiceImpl implements ResidentService {
 				List<String> authTypes = new ArrayList<String>();
 				if (dto.getAuthType() != null && !dto.getAuthType().isEmpty()) {
 					for(String authType:dto.getAuthType()) {
-						String authTypeString = AUTH_LOCK_UNLOCK_FUNCTION.apply(authType);
+						String authTypeString = getAuthTypeBasedOnConfig(authType);
 						 authTypes.add(authTypeString);
 					}
 				}
@@ -979,11 +980,11 @@ public class ResidentServiceImpl implements ResidentService {
 			String authType = authTypesStatusList.stream().map(AuthTypeStatusDto::getAuthType).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
-					.collect(Collectors.toMap(AUTH_TYPE_FUNCTION, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
+					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
 			
 			Map<String, Long> unlockForSecondsMap = authTypesStatusList.stream()
 														.filter(dto -> dto.getUnlockForSeconds()!=null)
-														.collect(Collectors.toMap(AUTH_TYPE_FUNCTION, AuthTypeStatusDtoV2::getUnlockForSeconds));
+														.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2, AuthTypeStatusDtoV2::getUnlockForSeconds));
 
 			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap,
 					unlockForSecondsMap);

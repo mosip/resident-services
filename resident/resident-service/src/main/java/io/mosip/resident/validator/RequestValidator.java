@@ -200,7 +200,7 @@ public class RequestValidator {
 		String[] authTypesArray = authTypes.split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (AuthTypeStatusDtoV2 authTypeStatusDto : authType) {
-			String authTypeString = ResidentServiceImpl.AUTH_TYPE_FUNCTION.apply(authTypeStatusDto);
+			String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatusDto);
 			if (StringUtils.isEmpty(authTypeString) || !authTypesAllowed.contains(authTypeString)) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes",
 						"Request to generate VID"));
@@ -256,7 +256,7 @@ public class RequestValidator {
 		List<String> authTypes = new ArrayList<String>();
 		if (requestDTO.getRequest().getAuthType() != null && !requestDTO.getRequest().getAuthType().isEmpty()) {
 			for(String authType:requestDTO.getRequest().getAuthType()) {
-				String authTypeString = ResidentServiceImpl.AUTH_LOCK_UNLOCK_FUNCTION.apply(authType);
+				String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfig(authType);
 				 authTypes.add(authTypeString);
 			}
 		}
@@ -650,9 +650,11 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionId");
 		}
 		List<String> authTypes = new ArrayList<String>();
-		for(String authType:requestDTO.getRequest().getAuthType()) {
-			String authTypeString = ResidentServiceImpl.AUTH_LOCK_UNLOCK_FUNCTION.apply(authType);
-			 authTypes.add(authTypeString);
+		if (requestDTO.getRequest().getAuthType() != null && !requestDTO.getRequest().getAuthType().isEmpty()) {
+			for(String authType:requestDTO.getRequest().getAuthType()) {
+				String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfig(authType);
+				 authTypes.add(authTypeString);
+			}
 		}
 		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
