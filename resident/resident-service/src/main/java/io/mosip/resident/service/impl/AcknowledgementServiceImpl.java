@@ -113,7 +113,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
         }
     }
 
-    private String getRequestTypeProperty(String requestTypeCode) throws ResidentServiceCheckedException {
+    public String getRequestTypeProperty(String requestTypeCode) throws ResidentServiceCheckedException {
         if(requestTypeCode.equals(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
             return shareCredWithPartnerTemplate;
         }else if(requestTypeCode.equals(RequestType.GENERATE_VID.toString()) || requestTypeCode.equals(RequestType.REVOKE_VID.toString())){
@@ -133,7 +133,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
         }
     }
 
-    private Map<String, Object> convertMapValueFromStringToObject(Map<String, String> templateVariables) {
+    public Map<String, Object> convertMapValueFromStringToObject(Map<String, String> templateVariables) {
         Map<String, Object> templateMapObject = new HashMap<>();
         for(Map.Entry<String, String> entry: templateVariables.entrySet()){
             templateMapObject.put(entry.getKey(), entry.getValue());
