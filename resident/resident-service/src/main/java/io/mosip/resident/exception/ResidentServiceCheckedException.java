@@ -26,4 +26,8 @@ public class ResidentServiceCheckedException extends BaseCheckedException {
 		super(errorCode, errorMessage, rootCause);
 	}
 
+	public ResidentServiceCheckedException(ResidentErrorCode error, ApisResourceAccessException e) {
+		this(error.getErrorCode(), error.getErrorMessage(), e);
+	}
+
 }

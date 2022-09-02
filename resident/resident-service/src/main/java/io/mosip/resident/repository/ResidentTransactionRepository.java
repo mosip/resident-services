@@ -66,6 +66,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	List<ResidentTransactionEntity> findByTokenWithoutServiceTypeAndDate(@Param("tokenId") String tokenId,
 			@Param("pageStart") int pageStart, @Param("pageFetch") int pageFetch,
 			@Param("searchText") String searchText);
+    
+	public List<ResidentTransactionEntity> findByStatusCodeIn(List<String> statusCodes);
 
 	Long countByTokenId(String tokenId);
 
