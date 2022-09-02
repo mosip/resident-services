@@ -50,6 +50,21 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     @Value("${resident.template.ack.manage-my-vid}")
     private String manageMyVidTemplate;
 
+    @Value("${resident.template.ack.order-a-physical-card}")
+    private String orderAPhysicalCard;
+
+    @Value("${resident.template.ack.download-a-personalized-card}")
+    private String downloadAPersonalizedCard;
+
+    @Value("${resident.template.ack.update-demographic-data}")
+    private String updateDemographicData;
+
+    @Value("${resident.template.ack.verify-email-id-or-phone-number}")
+    private String verifyEmailIdOrPhoneNumber;
+
+    @Value("${resident.template.ack.secure-my-id}")
+    private String secureMyId;
+
     private static final String CLASSPATH = "classpath";
     private static final String ENCODE_TYPE = "UTF-8";
 
@@ -101,10 +116,19 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private String getRequestTypeProperty(String requestTypeCode) throws ResidentServiceCheckedException {
         if(requestTypeCode.equals(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
             return shareCredWithPartnerTemplate;
-        } else if(requestTypeCode.equals(RequestType.GENERATE_VID) || requestTypeCode.equals(RequestType.REVOKE_VID)){
+        }else if(requestTypeCode.equals(RequestType.GENERATE_VID.toString()) || requestTypeCode.equals(RequestType.REVOKE_VID.toString())){
             return manageMyVidTemplate;
-        }
-        else {
+        }else if(requestTypeCode.equals(RequestType.ORDER_PHYSICAL_CARD.toString())){
+            return orderAPhysicalCard;
+        }else if(requestTypeCode.equals(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())){
+            return downloadAPersonalizedCard;
+        }else if(requestTypeCode.equals(RequestType.UPDATE_MY_UIN.toString())){
+            return updateDemographicData;
+        }else if(requestTypeCode.equals(RequestType.VERIFY_PHONE_EMAIL.toString())){
+            return verifyEmailIdOrPhoneNumber;
+        }else if(requestTypeCode.equals(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
+            return secureMyId;
+        }else {
             throw new ResidentServiceCheckedException(ResidentErrorCode.ACK_PROPERTY_NOT_FOUND);
         }
     }
