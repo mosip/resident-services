@@ -6,32 +6,27 @@ import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
+
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Acknowledgment Controller Test
@@ -39,50 +34,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Kamesh Shekhar Prasad
  */
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = ResidentTestBootApplication.class)
-@AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application.properties")
+@RunWith(MockitoJUnitRunner.class)
+@ContextConfiguration
 public class AcknowledgmentControllerTest {
-	
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    @InjectMocks
     private AcknowledgementController acknowledgementController;
 
-    @MockBean
+    @Mock
     private AuditUtil auditUtil;
 
-    @MockBean
+    @Mock
     private RequestValidator requestValidator;
 
-    @MockBean
+    @Mock
     private AcknowledgementService acknowledgementService;
 
-    @MockBean
+    @Mock
     private IdentityServiceImpl identityService;
 
-    @MockBean
+    @Mock
     private ObjectStoreHelper objectStore;
 
-    @MockBean
+    @Mock
     private ResidentVidServiceImpl residentVidService;
 
     @MockBean
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
 
-    @MockBean
+    @Mock
     private IdAuthService idAuthService;
 
     private ResponseEntity<Object> responseEntity;
 
     @Before
     public void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(acknowledgementController).build();
         String eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
         byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
@@ -94,9 +80,9 @@ public class AcknowledgmentControllerTest {
 
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
-        Mockito.when(acknowledgementController.getAcknowledgement(Mockito.any(),Mockito.any())).thenReturn(responseEntity);
-        mockMvc.perform(MockMvcRequestBuilders.get("/ack/download/pdf/event/bf42d76e-b02e-48c8-a17a-6bb842d85ea9/language/eng"))
-                .andExpect(status().isOk());
+        Mockito.when(acknowledgementService.getAcknowledgementPDF(Mockito.anyString(), Mockito.anyString())).thenReturn("test".getBytes());
+        ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng");
+        assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
     }
 
 }
