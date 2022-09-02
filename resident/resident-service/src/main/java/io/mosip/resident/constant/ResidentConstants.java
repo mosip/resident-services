@@ -43,6 +43,8 @@ public class ResidentConstants {
     public static final String PUBLIC_URL = "mosipbox.public.url";
     
     public static final String NOTIFICATION_ZONE = "mosip.notification.timezone";
+    public static final String NOTIFICATION_DATE_PATTERN = "mosip.notification.date.pattern";
+    public static final String NOTIFICATION_TIME_PATTERN = "mosip.notification.time.pattern";
     
     public static final String EVENT_ID = "eventId";
     

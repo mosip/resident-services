@@ -19,7 +19,7 @@ import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
 import static io.mosip.resident.constant.RequestType.SHARE_CRED_WITH_PARTNER;
 import static io.mosip.resident.constant.RequestType.UPDATE_MY_UIN;
 import static io.mosip.resident.constant.RequestType.VID_CARD_DOWNLOAD;
-import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY;
+import static io.mosip.resident.constant.ResidentConstants.*;
 import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT;
 import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL;
 import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL_DEFAULT;
@@ -87,11 +87,21 @@ import reactor.util.function.Tuples;
 @ConditionalOnProperty(name = IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED, havingValue = "true", matchIfMissing = true)
 public class CredentialStatusUpdateBatchJob {
 
+	private static final String DEFAULT_NOTIF_TIME_PATTERN = "HH:mm:ss";
+
+	private static final String DEFAULT_NOTIF_DATE_PATTERN = "dd-MM-yyyy";
+
 	@Value("${" + PUBLIC_URL + "}")
 	private String publicUrl;
 
 	@Value("${" + NOTIFICATION_ZONE + "}")
 	private String notificationZone;
+	
+	@Value("${" + NOTIFICATION_DATE_PATTERN + ":" + DEFAULT_NOTIF_DATE_PATTERN + "}")
+	private String notificationDatePattern;
+	
+	@Value("${" + NOTIFICATION_TIME_PATTERN + ":" + DEFAULT_NOTIF_TIME_PATTERN + "}")
+	private String notificationTimePattern;
 
 	private final Logger logger = LoggerConfiguration.logConfig(CredentialStatusUpdateBatchJob.class);
 
@@ -119,15 +129,32 @@ public class CredentialStatusUpdateBatchJob {
 		List<ResidentTransactionEntity> residentTxnList = repo
 				.findByStatusCodeIn(List.of(NEW, ISSUED, RECEIVED, PRINTING, FAILED, DELIVERED));
 		for (ResidentTransactionEntity txn : residentTxnList) {
+			logger.info("Processing event:" + txn.getEventId());
+
 			try {
 				updateDownloadPersonalizedCardTxnStatus(txn);
+			} catch (ApisResourceAccessException e) {
+				logger.error(ExceptionUtils.getStackTrace(e));
+			}
+			try {
 				updateVidCardDownloadTxnStatus(txn);
+			} catch (ApisResourceAccessException e) {
+				logger.error(ExceptionUtils.getStackTrace(e));
+			}
+			try {
 				updateOrderPhysicalCardTxnStatus(txn);
+			} catch (ApisResourceAccessException e) {
+				logger.error(ExceptionUtils.getStackTrace(e));
+			}
+			try {
 				updateShareCredentialWithPartnerTxnStatus(txn);
+			} catch (ApisResourceAccessException e) {
+				logger.error(ExceptionUtils.getStackTrace(e));
+			}
+			try {
 				updateUinDemoDataUpdateTxnStatus(txn);
 			} catch (ApisResourceAccessException e) {
 				logger.error(ExceptionUtils.getStackTrace(e));
-				throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION, e);
 			}
 		}
 		repo.saveAll(residentTxnList);
@@ -179,7 +206,7 @@ public class CredentialStatusUpdateBatchJob {
 	private void trackAndUpdateNewOrIssuedStatus(ResidentTransactionEntity txn)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getStatusCode().contentEquals(NEW) || txn.getStatusCode().contentEquals(ISSUED)) {
-			Map<String, String> eventDetails = getCredentialEventDetails(txn.getEventId());
+			Map<String, String> eventDetails = getCredentialEventDetails(txn.getCredentialRequestId());
 			txn.setStatusCode(eventDetails.get(STATUS_CODE));
 			txn.setReadStatus(false);
 			txn.setUpdBy(RESIDENT);
@@ -217,12 +244,11 @@ public class CredentialStatusUpdateBatchJob {
 
 	private void createResidentDwldUrlAndNotify(ResidentTransactionEntity txn, NotificationTemplateCode templateCode,
 			String eventDetails) throws ResidentServiceCheckedException {
-		txn.setReferenceLink(publicUrl.concat(DOWNLOAD_CARD).concat(txn.getAid()));
+		txn.setReferenceLink(publicUrl.concat(DOWNLOAD_CARD).concat(txn.getEventId()));
 		txn.setUpdBy(RESIDENT);
 		txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-		Tuple2<String, String> dateAndTime = getDateAndTime(
-				DateUtils.parseToLocalDateTime(DateUtils.getUTCCurrentDateTimeString()));
-		notificationService.sendNotification(new NotificationRequestDto(txn.getAid(), templateCode,
+		Tuple2<String, String> dateAndTime = getDateAndTime(DateUtils.getUTCCurrentDateTime());
+		notificationService.sendNotification(new NotificationRequestDto(txn.getEventId(), templateCode,
 				Map.of(NAME, getNameForIndividualId(txn.getIndividualId()), EVENT_DETAILS, eventDetails, DATE,
 						dateAndTime.getT1(), TIME, dateAndTime.getT2(), EVENT_ID, txn.getEventId(), DOWNLOAD_LINK,
 						txn.getReferenceLink())));
@@ -231,11 +257,10 @@ public class CredentialStatusUpdateBatchJob {
 	private void trackAndUpdateFailedStatus(ResidentTransactionEntity txn, NotificationTemplateCode templateCode,
 			String eventDetails) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getStatusCode().contentEquals(FAILED)) {
-			Map<String, String> credEventDetails = getCredentialEventDetails(txn.getEventId());
+			Map<String, String> credEventDetails = getCredentialEventDetails(txn.getCredentialRequestId());
 			if (credEventDetails.get(STATUS_CODE).contentEquals(FAILED)) {
-				Tuple2<String, String> dateAndTime = getDateAndTime(
-						DateUtils.parseToLocalDateTime(DateUtils.getUTCCurrentDateTimeString()));
-				notificationService.sendNotification(new NotificationRequestDto(txn.getAid(), templateCode,
+				Tuple2<String, String> dateAndTime = getDateAndTime(DateUtils.getUTCCurrentDateTime());
+				notificationService.sendNotification(new NotificationRequestDto(txn.getEventId(), templateCode,
 						Map.of(NAME, getNameForIndividualId(txn.getIndividualId()), EVENT_DETAILS, eventDetails, DATE,
 								dateAndTime.getT1(), TIME, dateAndTime.getT2(), EVENT_ID, txn.getEventId(),
 								TRACK_SERVICE_REQUEST_LINK, txn.getReferenceLink())));
@@ -268,6 +293,10 @@ public class CredentialStatusUpdateBatchJob {
 	}
 
 	private String getNameForIndividualId(String individualId) throws ResidentServiceCheckedException {
+		if(individualId == null) {
+			logger.error("individualId is null");
+			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
+		}
 		return identityService.getIdentity(individualId).getFullName();
 	}
 
@@ -278,8 +307,8 @@ public class CredentialStatusUpdateBatchJob {
 	private Tuple2<String, String> getDateAndTime(LocalDateTime timestamp) {
 		ZonedDateTime dateTime = ZonedDateTime.of(timestamp, ZoneId.of("UTC"))
 				.withZoneSameInstant(ZoneId.of(notificationZone));
-		String date = dateTime.format(DateTimeFormatter.ofPattern(notificationZone));
-		String time = dateTime.format(DateTimeFormatter.ofPattern(notificationZone));
+		String date = dateTime.format(DateTimeFormatter.ofPattern(notificationDatePattern));
+		String time = dateTime.format(DateTimeFormatter.ofPattern(notificationTimePattern));
 		return Tuples.of(date, time);
 	}
 
