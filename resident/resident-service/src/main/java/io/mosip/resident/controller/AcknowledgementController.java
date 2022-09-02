@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -38,7 +39,7 @@ public class AcknowledgementController {
             + ")")
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
-                                                  @PathVariable("languageCode") String languageCode) {
+                                                  @PathVariable("languageCode") String languageCode) throws ResidentServiceCheckedException {
         logger.debug("AcknowledgementController::acknowledgement()::entry");
         auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
         requestValidator.validateEventIdLanguageCode(eventId, languageCode);

@@ -10,7 +10,6 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
@@ -21,14 +20,13 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import static io.mosip.resident.constant.ResidentErrorCode.BASE_EXCEPTION;
 
 @Service
 public class AcknowledgementServiceImpl implements AcknowledgementService {
@@ -83,7 +81,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private PDFGenerator pdfGenerator;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode) {
+    public byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
         try{
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
@@ -107,9 +105,9 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(templateValue);
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
             return pdfValue.toByteArray();
-        }catch (Exception e){
+        }catch (ResidentServiceCheckedException | IOException e){
             logger.error("AcknowledgementServiceImpl::getAcknowledgementPDF()::error::"+e.getMessage());
-            throw new ResidentServiceException(BASE_EXCEPTION);
+            throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.name(), ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
         }
     }
 

@@ -6,6 +6,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
@@ -109,13 +110,13 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceTest() {
+    public void testAcknowledgementServiceTest() throws ResidentServiceCheckedException {
           byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
           assertNotNull(actualResult);
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeGenerateVidTest(){
+    public void testAcknowledgementServiceRequestTypeGenerateVidTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.GENERATE_VID.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
@@ -123,7 +124,7 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeRevokeVidTest(){
+    public void testAcknowledgementServiceRequestTypeRevokeVidTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.REVOKE_VID.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
@@ -131,7 +132,7 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeOrderPhysicalCardTest(){
+    public void testAcknowledgementServiceRequestTypeOrderPhysicalCardTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
@@ -139,7 +140,7 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeDownloadPersonalizedCardTest(){
+    public void testAcknowledgementServiceRequestTypeDownloadPersonalizedCardTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
@@ -147,7 +148,7 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeUpdateMyUinTest(){
+    public void testAcknowledgementServiceRequestTypeUpdateMyUinTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
@@ -155,7 +156,7 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeVerifyPhoneOrEmailTest(){
+    public void testAcknowledgementServiceRequestTypeVerifyPhoneOrEmailTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.VERIFY_PHONE_EMAIL.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
@@ -163,8 +164,24 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeSecureMyIdTest(){
+    public void testAcknowledgementServiceRequestTypeSecureMyIdTest() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString());
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
+        assertNotNull(actualResult);
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testAcknowledgmentBadEventIdTest() throws ResidentServiceCheckedException{
+        residentTransactionEntity = Optional.empty();
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
+        assertNotNull(actualResult);
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testAcknowledgmentBadRequestTypeTest() throws ResidentServiceCheckedException{
+        residentTransactionEntity.get().setRequestTypeCode(RequestType.GET_MY_ID.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
         assertNotNull(actualResult);
