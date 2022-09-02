@@ -66,17 +66,6 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	List<ResidentTransactionEntity> findByTokenWithoutServiceTypeAndDate(@Param("tokenId") String tokenId,
 			@Param("pageStart") int pageStart, @Param("pageFetch") int pageFetch,
 			@Param("searchText") String searchText);
-
-    @Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) " +
-            "from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :fromDateTime AND crDtimes<= :toDateTime  " +
-            " AND (eventId like %:searchText%" +
-            " OR statusComment like %:searchText% " +
-            " OR statusCode like %:searchText%) " +
-            "ORDER BY pinnedStatus DESC" )
-    List<ResidentTransactionEntity> findByTokenWithoutServiceType( @Param("tokenId") String tokenId,
-                                                                   @Param("fromDateTime") LocalDateTime fromDateTime,
-                                                                   @Param("toDateTime") LocalDateTime toDateTime,
-                                                                   Pageable pagaeable, @Param("searchText") String searchText);
     
 	public List<ResidentTransactionEntity> findByStatusCodeIn(List<String> statusCodes);
 
