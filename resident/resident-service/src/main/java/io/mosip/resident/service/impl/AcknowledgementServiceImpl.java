@@ -47,6 +47,9 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     @Value("${resident.template.ack.share-cred-with-partner}")
     private String shareCredWithPartnerTemplate;
 
+    @Value("${resident.template.ack.manage-my-vid}")
+    private String manageMyVidTemplate;
+
     private static final String CLASSPATH = "classpath";
     private static final String ENCODE_TYPE = "UTF-8";
 
@@ -76,12 +79,8 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            String requestProperty = "";
-            if(requestTypeCode.equals(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
-                requestProperty = shareCredWithPartnerTemplate;
-            } else {
-                throw new ResidentServiceCheckedException(ResidentErrorCode.ACK_PROPERTY_NOT_FOUND);
-            }
+            String requestProperty = getRequestTypeProperty(requestTypeCode);
+
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
                     getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
             System.out.println(responseWrapper.getResponse());
@@ -96,6 +95,17 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
         }catch (Exception e){
             logger.error("AcknowledgementServiceImpl::getAcknowledgementPDF()::error::"+e.getMessage());
             throw new ResidentServiceException(BASE_EXCEPTION);
+        }
+    }
+
+    private String getRequestTypeProperty(String requestTypeCode) throws ResidentServiceCheckedException {
+        if(requestTypeCode.equals(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
+            return shareCredWithPartnerTemplate;
+        } else if(requestTypeCode.equals(RequestType.GENERATE_VID) || requestTypeCode.equals(RequestType.REVOKE_VID)){
+            return manageMyVidTemplate;
+        }
+        else {
+            throw new ResidentServiceCheckedException(ResidentErrorCode.ACK_PROPERTY_NOT_FOUND);
         }
     }
 
