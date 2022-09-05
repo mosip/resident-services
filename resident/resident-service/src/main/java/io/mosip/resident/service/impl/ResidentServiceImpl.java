@@ -798,7 +798,12 @@ public class ResidentServiceImpl implements ResidentService {
 			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), mappingJsonObject,
 					demographicIdentity);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
-			List<ResidentDocuments> documents = getResidentDocuments(dto, mappingDocument);
+			List<ResidentDocuments> documents;
+			if(Utilitiy.isSecureSession()) {
+				documents = getResidentDocuments(dto, mappingDocument);
+			} else {
+				documents = dto.getDocuments();
+			}
 			String poaMapping = getDocumentName(mappingDocument, PROOF_OF_ADDRESS);
 			String poiMapping = getDocumentName(mappingDocument, PROOF_OF_IDENTITY);
 			String porMapping = getDocumentName(mappingDocument, PROOF_OF_RELATIONSHIP);
