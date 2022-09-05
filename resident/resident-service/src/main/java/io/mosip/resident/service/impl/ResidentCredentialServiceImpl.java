@@ -593,7 +593,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setLangCode(ENG);
 		residentTransactionEntity.setCrBy(RESIDENT);
 		residentTransactionEntity.setCrDtimes(now);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIdaToken()));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 	
