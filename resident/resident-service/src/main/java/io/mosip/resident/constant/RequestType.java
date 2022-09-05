@@ -51,7 +51,10 @@ public enum RequestType {
 	AUTH_TYPE_LOCK_UNLOCK(TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			List.of(EventStatusSuccess.LOCKED, EventStatusSuccess.UNLOCKED,
 					EventStatusSuccess.AUTHENTICATION_TYPE_LOCKED, EventStatusSuccess.AUTHENTICATION_TYPE_UNLOCKED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW));
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW)),
+	VID_CARD_DOWNLOAD(TemplateUtil::getAckTemplateVariablesForVidCardDownload,
+			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
+			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED));
 
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
