@@ -593,11 +593,15 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setCrBy(RESIDENT);
 		residentTransactionEntity.setCrDtimes(now);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
-		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 	
-	String prepareReqSummaryMsg(List<String> sharableAttributes) {
+	/**
+	 * prepare the request summary message
+	 * @param sharableAttributes
+	 * @return
+	 */
+	private String prepareReqSummaryMsg(List<String> sharableAttributes) {
 		String prepareReqSummaryMsg = "";
 		StringBuilder sharableAttrData = new StringBuilder("");
 		for (int i = 0; i < sharableAttributes.size(); i++) {
@@ -613,7 +617,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				
 		}
 		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
-		System.out.println("prepare summary rqt msg:   " + prepareReqSummaryMsg);
 		return prepareReqSummaryMsg;
 	}
 
