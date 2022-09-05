@@ -62,4 +62,8 @@ public class AuthorizedScopesDto {
 
 	private List<String> getupdatedttimes;
 
+	private List<String> postPinStatus;
+
+	private List<String> postUnPinStatus;
+
 }
