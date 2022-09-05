@@ -200,7 +200,7 @@ public class RequestValidator {
 		String[] authTypesArray = authTypes.split(",");
 		List<String> authTypesAllowed = new ArrayList<>(Arrays.asList(authTypesArray));
 		for (AuthTypeStatusDtoV2 authTypeStatusDto : authType) {
-			String authTypeString = ResidentServiceImpl.AUTH_TYPE_FUNCTION.apply(authTypeStatusDto);
+			String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatusDto);
 			if (StringUtils.isEmpty(authTypeString) || !authTypesAllowed.contains(authTypeString)) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "authTypes",
 						"Request to generate VID"));
@@ -253,7 +253,14 @@ public class RequestValidator {
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("transactionId");
 		}
-		validateAuthType(requestDTO.getRequest().getAuthType(),
+		List<String> authTypes = new ArrayList<String>();
+		if (requestDTO.getRequest().getAuthType() != null && !requestDTO.getRequest().getAuthType().isEmpty()) {
+			for(String authType:requestDTO.getRequest().getAuthType()) {
+				String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfig(authType);
+				 authTypes.add(authTypeString);
+			}
+		}
+		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
 
 	}
@@ -642,7 +649,14 @@ public class RequestValidator {
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("transactionId");
 		}
-		validateAuthType(requestDTO.getRequest().getAuthType(),
+		List<String> authTypes = new ArrayList<String>();
+		if (requestDTO.getRequest().getAuthType() != null && !requestDTO.getRequest().getAuthType().isEmpty()) {
+			for(String authType:requestDTO.getRequest().getAuthType()) {
+				String authTypeString = ResidentServiceImpl.getAuthTypeBasedOnConfig(authType);
+				 authTypes.add(authTypeString);
+			}
+		}
+		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
 		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",

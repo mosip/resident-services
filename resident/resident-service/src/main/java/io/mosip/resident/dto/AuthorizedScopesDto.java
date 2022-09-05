@@ -66,4 +66,8 @@ public class AuthorizedScopesDto {
 	
 	private List<String> postRequestShareCredWithPartner;
 
+	private List<String> postPinStatus;
+
+	private List<String> postUnPinStatus;
+
 }
