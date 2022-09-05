@@ -614,12 +614,20 @@ public enum EventEnum {
 	GET_IDENTITY_UPDATE_COUNT_EXCEPTION("RES-SER-250", RegistrationConstants.SYSTEM, "get identity update count failure",
 			"retrieve remaining update counts for each id attributes for a UIN/VID is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL("RES-SER-251", RegistrationConstants.SYSTEM, "get acknowledgement download url",
-			"get acknowledgement download url", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
-	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-252", RegistrationConstants.SYSTEM, "get acknowledgement download url success",
-			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	PIN_STATUS("RES-SER-251", RegistrationConstants.SYSTEM, "pin status", "pin status based on event id", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
+	PIN_STATUS_SUCCESS("RES-SER-252", RegistrationConstants.SYSTEM, "pin status success", "pin status success based on event id", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
+	PIN_STATUS_FAILURE("RES-SER-253", RegistrationConstants.SYSTEM, "pin status", "pin status failure based on event id", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
+
+	UN_PIN_STATUS("RES-SER-254", RegistrationConstants.SYSTEM, "un pin status", "un pin status based on event id", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
+	UN_PIN_STATUS_SUCCESS("RES-SER-255", RegistrationConstants.SYSTEM, "un pin status success", "un pin status success based on event id", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
+	UN_PIN_STATUS_FAILURE("RES-SER-256", RegistrationConstants.SYSTEM, "un pin status failure", "un pin status failure based on event id", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
+
 	
 	;
 
