@@ -94,7 +94,10 @@ public class ResidentCredentialController {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
 		requestDTO.getRequest().setSharableAttributes(null);
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
+		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
+		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
+		requestDTOMap.remove("purpose");
+		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestMap,
 				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
 				});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
@@ -118,16 +121,25 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException {
+		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
 		requestDTO.getRequest().setSharableAttributes(null);
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
+		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
+		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
+		requestDTOMap.remove("purpose");
+		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestMap,
 				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
 				});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
 		buildAdditionalMetadata(requestDTO, request);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name()));
+		if(purpose != null) {
+			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name(),purpose));
+		}else {
+			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name()));
+		}
+		
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}

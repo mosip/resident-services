@@ -209,6 +209,7 @@ public class ResidentCredentialControllerTest {
         attr.setAttributeName("name");
         attr.setMasked(false);
 		request.setSharableAttributes(List.of(attr));
+		request.setPurpose("banking");
 		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(request);
         mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
