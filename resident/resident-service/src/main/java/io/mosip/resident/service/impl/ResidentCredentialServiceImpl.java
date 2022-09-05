@@ -592,7 +592,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setLangCode(ENG);
 		residentTransactionEntity.setCrBy(RESIDENT);
 		residentTransactionEntity.setCrDtimes(now);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIdaToken()));
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 	
@@ -608,6 +608,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			sharableAttrData.append(sharableAttributes.get(i));
 			sharableAttrData.append(",");
 			sharableAttrData.append(" ");
+			// add  'and' at the end of sharable attributes list
 			if (i == sharableAttributes.size() - 2) {
 				sharableAttrData.append("and ");
 				sharableAttrData.append(sharableAttributes.get(++i));
