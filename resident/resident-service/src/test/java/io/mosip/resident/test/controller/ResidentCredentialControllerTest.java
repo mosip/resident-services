@@ -197,7 +197,7 @@ public class ResidentCredentialControllerTest {
 		request.setSharableAttributes(List.of(attr));
 		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(request);
-        mockMvc.perform(MockMvcRequestBuilders.post("/req/download-personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(MockMvcRequestBuilders.post("/download-personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
     
@@ -211,7 +211,7 @@ public class ResidentCredentialControllerTest {
 		request.setSharableAttributes(List.of(attr));
 		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(request);
-        mockMvc.perform(MockMvcRequestBuilders.post("/req/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
+        mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
 }

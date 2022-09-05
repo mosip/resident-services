@@ -982,7 +982,7 @@ public class ResidentServiceImpl implements ResidentService {
 			}).collect(Collectors.toList());
 
 			List<AuthTypeStatusDtoV2> authTypesStatusList=authLockOrUnLockRequestDtoV2.getAuthTypes();
-			String authType = authTypesStatusList.stream().map(AuthTypeStatusDto::getAuthType).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
+			String authType = authTypesStatusList.stream().map(AUTH_TYPE_FUNCTION).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
 					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
