@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -235,7 +236,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
 					ResidentCredentialResponseDto.class);
 			if (purpose != null) {
-				insertCredentialreqInDB(Boolean.TRUE, purpose, residentCredentialResponseDto.getRequestId());
+				String requestSummaryMsg = prepareReqSummaryMsg(dto.getSharableAttributes());
+				insertCredentialreqInDB(Boolean.TRUE, purpose, residentCredentialResponseDto.getRequestId(),requestSummaryMsg);
 			}
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS, additionalAttributes);
@@ -575,7 +577,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@SuppressWarnings("unused")
 	private void insertCredentialreqInDB(boolean isCredReqSuccess, String purpose,
-			String credentialRequestId) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException{		
+			String credentialRequestId,String requestSummary) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException{		
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		LocalDateTime now = LocalDateTime.now();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
@@ -583,7 +585,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRequestDtimes(now);
 		residentTransactionEntity.setResponseDtime(now);
 		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
-		residentTransactionEntity.setRequestSummary(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestSummary(requestSummary);
 		residentTransactionEntity.setCredentialRequestId(credentialRequestId);
 		residentTransactionEntity.setStatusCode(NEW);
 		residentTransactionEntity.setStatusComment(isCredReqSuccess ? "Success" : "Failure");
@@ -595,6 +597,26 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 	
+	String prepareReqSummaryMsg(List<String> sharableAttributes) {
+		String prepareReqSummaryMsg = "";
+		StringBuilder sharableAttrData = new StringBuilder("");
+		for (int i = 0; i < sharableAttributes.size(); i++) {
+			sharableAttrData.append(sharableAttributes.get(i));
+			sharableAttrData.append(",");
+			sharableAttrData.append(" ");
+			if (i == sharableAttributes.size() - 2) {
+				sharableAttrData.append("and ");
+				sharableAttrData.append(sharableAttributes.get(++i));
+				sharableAttrData.append(" ");
+				break;
+			} 
+				
+		}
+		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
+		System.out.println("prepare summary rqt msg:   " + prepareReqSummaryMsg);
+		return prepareReqSummaryMsg;
+	}
+
 	/*
 	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
 	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
