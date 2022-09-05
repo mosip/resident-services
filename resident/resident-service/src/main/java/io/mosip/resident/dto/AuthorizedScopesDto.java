@@ -61,5 +61,13 @@ public class AuthorizedScopesDto {
 	private List<String> getNotificationClick;
 
 	private List<String> getupdatedttimes;
+	
+	private List<String> postRequestDownloadPersonalizedCard;
+	
+	private List<String> postRequestShareCredWithPartner;
+
+	private List<String> postPinStatus;
+
+	private List<String> postUnPinStatus;
 
 }
