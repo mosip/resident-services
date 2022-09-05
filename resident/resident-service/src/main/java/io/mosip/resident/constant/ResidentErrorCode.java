@@ -85,7 +85,7 @@ public enum ResidentErrorCode {
 	FAILED_TO_DELETE_DOC("RES-SER-458", "Failed to delete document"),
 	EVENT_STATUS_NOT_FOUND("RES-SER-459", "EID not available in database"),
 
-	;
+    ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found" );
 	private final String errorCode;
 	private final String errorMessage;
 
