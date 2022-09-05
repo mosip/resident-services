@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @RestController
 @Tag(name="AcknowledgementController", description="AcknowledgementController")
@@ -39,7 +40,7 @@ public class AcknowledgementController {
             + ")")
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
-                                                  @PathVariable("languageCode") String languageCode) throws ResidentServiceCheckedException {
+                                                  @PathVariable("languageCode") String languageCode) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementController::acknowledgement()::entry");
         auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
         requestValidator.validateEventIdLanguageCode(eventId, languageCode);

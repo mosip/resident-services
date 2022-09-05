@@ -81,9 +81,9 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private PDFGenerator pdfGenerator;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException {
+    public byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
-        try{
+        //try{
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
                     .findById(eventId);
             String requestTypeCode;
@@ -105,10 +105,11 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(templateValue);
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
             return pdfValue.toByteArray();
-        }catch (ResidentServiceCheckedException | IOException e){
-            logger.error("AcknowledgementServiceImpl::getAcknowledgementPDF()::error::"+e.getMessage());
-            throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.name(), ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
-        }
+//        }
+//        catch (ResidentServiceCheckedException | IOException e){
+//            logger.error("AcknowledgementServiceImpl::getAcknowledgementPDF()::error::"+e.getMessage());
+//            throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.name(), ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
+//        }
     }
 
     public String getRequestTypeProperty(String requestTypeCode) throws ResidentServiceCheckedException {
