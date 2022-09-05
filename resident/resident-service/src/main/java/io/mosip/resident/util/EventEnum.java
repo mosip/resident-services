@@ -614,6 +614,12 @@ public enum EventEnum {
 	GET_IDENTITY_UPDATE_COUNT_EXCEPTION("RES-SER-250", RegistrationConstants.SYSTEM, "get identity update count failure",
 			"retrieve remaining update counts for each id attributes for a UIN/VID is failed", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL("RES-SER-251", RegistrationConstants.SYSTEM, "get acknowledgement download url",
+			"get acknowledgement download url", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-252", RegistrationConstants.SYSTEM, "get acknowledgement download url success",
+			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
 	;
 
