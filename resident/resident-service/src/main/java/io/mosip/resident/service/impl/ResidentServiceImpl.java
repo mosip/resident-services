@@ -798,7 +798,12 @@ public class ResidentServiceImpl implements ResidentService {
 			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), mappingJsonObject,
 					demographicIdentity);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
-			List<ResidentDocuments> documents = getResidentDocuments(dto, mappingDocument);
+			List<ResidentDocuments> documents;
+			if(Utilitiy.isSecureSession()) {
+				documents = getResidentDocuments(dto, mappingDocument);
+			} else {
+				documents = dto.getDocuments();
+			}
 			String poaMapping = getDocumentName(mappingDocument, PROOF_OF_ADDRESS);
 			String poiMapping = getDocumentName(mappingDocument, PROOF_OF_IDENTITY);
 			String porMapping = getDocumentName(mappingDocument, PROOF_OF_RELATIONSHIP);
@@ -977,7 +982,7 @@ public class ResidentServiceImpl implements ResidentService {
 			}).collect(Collectors.toList());
 
 			List<AuthTypeStatusDtoV2> authTypesStatusList=authLockOrUnLockRequestDtoV2.getAuthTypes();
-			String authType = authTypesStatusList.stream().map(AuthTypeStatusDto::getAuthType).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
+			String authType = authTypesStatusList.stream().map(AUTH_TYPE_FUNCTION).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
 					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));

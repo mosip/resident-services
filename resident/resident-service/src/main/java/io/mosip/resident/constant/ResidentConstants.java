@@ -39,5 +39,35 @@ public class ResidentConstants {
     public static final String IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED = "mosip.resident.update.service.status.job.enabled";
 
     public static final String ID_TYPE = "idType";
+    
+    public static final String PUBLIC_URL = "mosipbox.public.url";
+    
+    public static final String NOTIFICATION_ZONE = "mosip.notification.timezone";
+    public static final String NOTIFICATION_DATE_PATTERN = "mosip.notification.date.pattern";
+    public static final String NOTIFICATION_TIME_PATTERN = "mosip.notification.time.pattern";
+    
+    public static final String EVENT_ID = "eventId";
+    
+    public static final String EVENT_DETAILS = "eventDetails";
+    
+    public static final String NAME = "name";
+    
+    public static final String DATE = "date";
+    
+    public static final String TIME = "time";
+
+    public static final String DOWNLOAD_CARD = "/download/card/";
+
+    public static final String STATUS_CODE = "statusCode";
+
+    public static final String URL = "url";
+    
+    public static final String DOWNLOAD_LINK = "downloadLink";
+    
+    public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
+
+    public static final String TXN_ID = "txnId";
+    
+    public static final String RESIDENT = "RESIDENT";
 
 }

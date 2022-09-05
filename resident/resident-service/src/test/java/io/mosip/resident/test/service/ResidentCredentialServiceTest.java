@@ -125,6 +125,7 @@ public class ResidentCredentialServiceTest {
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234567890");
     }
 
     @Test
@@ -319,9 +320,10 @@ public class ResidentCredentialServiceTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testShareCredentialWithIndividualIdNull() throws ResidentServiceCheckedException {
+    public void testShareCredentialWithIndividualIdNull() throws ResidentServiceCheckedException, ApisResourceAccessException {
     	residentCredentialRequestDto.setIndividualId(null);
-        residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode");
+    	when(identityServiceImpl.getResidentIndvidualId()).thenReturn(null);
+      residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode");
     }
 
     @Test(expected = ResidentCredentialServiceException.class)

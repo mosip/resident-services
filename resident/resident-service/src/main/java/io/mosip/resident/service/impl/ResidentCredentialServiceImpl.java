@@ -212,6 +212,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		URI partnerUri = URI.create(partnerUrl);
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
+			dto.setIndividualId(identityServiceImpl.getResidentIndvidualId());
 			if (StringUtils.isBlank(dto.getIndividualId())) {
 				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
 						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
@@ -278,7 +279,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(requestType);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(dto.getIndividualId()));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		String attributeList=dto.getSharableAttributes().stream()
 										.collect(Collectors.joining(", "));
