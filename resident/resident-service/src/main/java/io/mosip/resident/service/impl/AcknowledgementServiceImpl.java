@@ -28,6 +28,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * This class is used to create service class implementation for getting acknowledgement API.
+ * @Author Kamesh Shekhar Prasad
+ */
 @Service
 public class AcknowledgementServiceImpl implements AcknowledgementService {
 

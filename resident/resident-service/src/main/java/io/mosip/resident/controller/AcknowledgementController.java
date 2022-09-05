@@ -20,6 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+/**
+ * This class is used to create api for getting acknowledgement.
+ * @Author Kamesh Shekhar Prasad
+ */
 @RestController
 @Tag(name="AcknowledgementController", description="AcknowledgementController")
 public class AcknowledgementController {

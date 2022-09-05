@@ -31,6 +31,10 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * This class is used to create service class test  for getting acknowledgement API.
+ * @Author Kamesh Shekhar Prasad
+ */
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
