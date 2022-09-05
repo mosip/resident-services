@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class RedressalController {
-	@RequestMapping("/external/grievence/redressel")
+	@RequestMapping("/external/grievance/redressel")
 	public String grievence(Model model, @RequestParam("name") String name, @RequestParam("emailId") String emailId,
 			@RequestParam("phoneNo") String phoneNo, @RequestParam("eventId") String eventId)
 			throws MalformedURLException {
@@ -20,6 +20,6 @@ public class RedressalController {
 		model.addAttribute("email", emailId);
 		model.addAttribute("phoneno", phoneNo);
 		model.addAttribute("eventId", eventId);
-		return "griveance";
+		return "grievance";
 	}
 }
