@@ -13,6 +13,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,7 +79,8 @@ public class ResidentCredentialController {
 	}
 	
 	@ResponseFilter
-	@PostMapping(value = "/req/download-personalized-card")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestDownloadPersonalizedCard()" + ")")
+	@PostMapping(value = "/download-personalized-card")
 	@Operation(summary = "requestDownloadPersonalizedCard", description = "requestDownloadPersonalizedCard", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -104,7 +106,8 @@ public class ResidentCredentialController {
 	}
 	
 	@ResponseFilter
-	@PostMapping(value = "/req/share-credential")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestShareCredWithPartner()" + ")")
+	@PostMapping(value = "/share-credential")
 	@Operation(summary = "requestShareCredWithPartner", description = "requestShareCredWithPartner", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
