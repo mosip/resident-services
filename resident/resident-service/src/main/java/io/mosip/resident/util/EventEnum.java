@@ -628,7 +628,13 @@ public enum EventEnum {
 	UN_PIN_STATUS_FAILURE("RES-SER-256", RegistrationConstants.SYSTEM, "un pin status failure", "un pin status failure based on event id", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
 
-	
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL("RES-SER-257", RegistrationConstants.SYSTEM, "get acknowledgement download url",
+			"get acknowledgement download url", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url success",
+			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+
 	;
 
 	private final String eventId;

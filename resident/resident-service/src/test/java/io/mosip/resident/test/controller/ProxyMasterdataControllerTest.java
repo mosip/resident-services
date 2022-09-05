@@ -7,6 +7,8 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.controller.AcknowledgementController;
+import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +63,12 @@ public class ProxyMasterdataControllerTest {
 
 	@MockBean
 	private ResidentVidService vidService;
+
+	@MockBean
+	private AcknowledgementController acknowledgementController;
+
+	@MockBean
+	private AcknowledgementServiceImpl acknowledgementService;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
