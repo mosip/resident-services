@@ -32,6 +32,8 @@ public class ResidentCredentialRequestDtoV2 {
 	private String recepiant;
 
 	private String user;
+	
+	private String purpose;
 
 	private List<SharableAttributesDTO> sharableAttributes;
 
