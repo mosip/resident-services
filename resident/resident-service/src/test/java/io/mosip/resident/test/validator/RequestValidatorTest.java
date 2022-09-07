@@ -4,6 +4,8 @@ import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
+import io.mosip.preregistration.core.common.dto.MainRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
@@ -1538,5 +1540,23 @@ public class RequestValidatorTest {
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(baseVidRevokeRequestDTO);
 		requestValidator.validateRevokeVidRequestWrapper(requestWrapper, "v1");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "transliterateId", "mosip.resident.transliteration.transliterate");
+		MainRequestDTO<TransliterationRequestDTO> requestDTO = new MainRequestDTO<>();
+		TransliterationRequestDTO transliterationRequestDTO = new TransliterationRequestDTO();
+		requestDTO.setId(null);
+		requestValidator.validateId(requestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateTransliterationId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "transliterateId", "mosip.resident.transliteration.transliterate");
+		MainRequestDTO<TransliterationRequestDTO> requestDTO = new MainRequestDTO<>();
+		TransliterationRequestDTO transliterationRequestDTO = new TransliterationRequestDTO();
+		requestDTO.setId("mosip");
+		requestValidator.validateId(requestDTO);
 	}
 }
