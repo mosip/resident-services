@@ -57,6 +57,12 @@
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-core</artifactId>
 			<version>${kernel.core.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -141,7 +147,11 @@
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
 				</exclusion>
-			</exclusions>
+				<exclusion>
+					<groupId>commons-lang</groupId>
+					<artifactId>commons-lang</artifactId>
+				</exclusion>
+				</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -205,6 +215,12 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>${springdoc.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -246,8 +262,12 @@
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-auth-adapter</artifactId>
 				</exclusion>
-			</exclusions>
-		</dependency>	
+				<exclusion>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-lang3</artifactId>
+					</exclusion>
+				</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-dataaccess-hibernate</artifactId>
@@ -279,7 +299,11 @@
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-keymanager-service</artifactId>
 				</exclusion>
-			</exclusions>
+				<exclusion>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-lang3</artifactId>
+					</exclusion>
+				</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -313,6 +337,11 @@
 			<artifactId>pre-registration-application-service</artifactId>
 			<version>${pre-registration-application-service.version}</version>
 			<classifier>lib</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.12.0</version>
 		</dependency>
 	</dependencies>
 	<build>

@@ -174,7 +174,6 @@ public class ObjectStoreHelperTest {
 				objectName.capture()
 				);
 		assertEquals("objectStoreAccountName", objectStoreAccountName.getValue());
-		assertEquals("objectStoreBucketName", objectStoreBucketName.getValue());
 		assertEquals("name", objectName.getValue());
 		assertNull(source.getValue());
 		assertNull(process.getValue());
@@ -223,7 +222,6 @@ public class ObjectStoreHelperTest {
 				objectName.capture()
 				);
 		assertEquals("objectStoreAccountName", objectStoreAccountName.getValue());
-		assertEquals("objectStoreBucketName", objectStoreBucketName.getValue());
 		assertEquals("name", objectName.getValue());
 		assertNull(source.getValue());
 		assertNull(process.getValue());

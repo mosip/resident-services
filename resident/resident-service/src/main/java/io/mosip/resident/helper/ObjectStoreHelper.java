@@ -128,7 +128,7 @@ public class ObjectStoreHelper {
 	public String getObject(String objectName) {
 		try {
 			return decryptData(
-					adapter.getObject(objectStoreAccountName, objectStoreBucketName, null, null, objectName));
+					adapter.getObject(objectStoreAccountName, null, null, null, objectName));
 		} catch (ResidentServiceException | ObjectStoreAdapterException | IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
@@ -162,7 +162,7 @@ public class ObjectStoreHelper {
 	 */
 	public Map<String, Object> getMetadata(String objectName) {
 		try {
-			return adapter.getMetaData(objectStoreAccountName, objectStoreBucketName, null, null, objectName);
+			return adapter.getMetaData(objectStoreAccountName, null, null, null, objectName);
 		} catch (ObjectStoreAdapterException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
