@@ -134,6 +134,7 @@ public class DocumentController {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
+			validator.validateGetDocumentByDocumentIdInput(transactionId);
 			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setId(residentDocumentListId);
 			responseWrapper.setVersion(residentDocumentListVersion);

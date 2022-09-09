@@ -89,7 +89,7 @@ public class DocumentValidator implements Validator {
 	public void validateGetDocumentByDocumentIdInput(String transactionId) {
 		if(!isNumeric(transactionId)){
 			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
-					INVALID_INPUT.getErrorMessage() + "request/transactionId");
+					INVALID_INPUT.getErrorMessage() + "transactionId");
 		}
 	}
 	private boolean isNumeric(String transactionId) {

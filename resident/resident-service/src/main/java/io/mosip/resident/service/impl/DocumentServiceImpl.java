@@ -11,6 +11,7 @@ import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -89,6 +90,10 @@ public class DocumentServiceImpl implements DocumentService {
 	public List<DocumentResponseDTO> fetchAllDocumentsMetadata(String transactionId)
 			throws ResidentServiceCheckedException {
 		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
+		if(allObjects == null){
+			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId);
+		}
 		return allObjects.stream().map(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()))
 				.collect(Collectors.toList());
 	}
