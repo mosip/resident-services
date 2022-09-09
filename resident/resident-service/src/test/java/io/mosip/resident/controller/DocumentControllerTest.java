@@ -74,9 +74,13 @@ public class DocumentControllerTest {
 	@Test
 	public void testGetDocumentsByTransactionIdSuccess() throws ResidentServiceCheckedException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
+		ReflectionTestUtils.setField(controller, "residentDocumentListId", "mosip.resident.document.list");
+		ReflectionTestUtils.setField(controller, "residentDocumentListVersion", "v1");
 		when(service.fetchAllDocumentsMetadata(any())).thenReturn(List.of(response));
 		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
 		assertEquals(List.of(response), documentsByTransactionId.getResponse());
+		assertEquals("mosip.resident.document.list", documentsByTransactionId.getId());
+		assertEquals("v1", documentsByTransactionId.getVersion());
 	}
 	
 	@Test

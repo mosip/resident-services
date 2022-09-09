@@ -63,6 +63,12 @@ public class DocumentController {
 	@Value("${resident.document.get.version}")
 	private String residentGetDocumentVersion;
 
+	@Value("${resident.document.list.id}")
+	private String residentDocumentListId;
+
+	@Value("${resident.document.list.version}")
+	private String residentDocumentListVersion;
+
 	/**
 	 * This function uploads a document to a transaction.
 	 * 
@@ -129,6 +135,8 @@ public class DocumentController {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
 			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
+			responseWrapper.setId(residentDocumentListId);
+			responseWrapper.setVersion(residentDocumentListVersion);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_SUCCESS, transactionId));
