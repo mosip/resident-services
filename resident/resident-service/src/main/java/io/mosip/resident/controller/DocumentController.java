@@ -11,6 +11,7 @@ import io.mosip.resident.dto.ResponseDTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,12 @@ public class DocumentController {
 	
 	@Autowired
 	private AuditUtil audit;
+
+	@Value("${resident.document.get.id}")
+	private String residentGetDocumentId;
+
+	@Value("${resident.document.get.version}")
+	private String residentGetDocumentVersion;
 
 	/**
 	 * This function uploads a document to a transaction.
@@ -157,6 +164,8 @@ public class DocumentController {
 			validator.validateGetDocumentByDocumentIdInput(transactionId);
 			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
+			responseWrapper.setId(residentGetDocumentId);
+			responseWrapper.setVersion(residentGetDocumentVersion);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_SUCCESS, transactionId));
 		} catch (ResidentServiceCheckedException e) {

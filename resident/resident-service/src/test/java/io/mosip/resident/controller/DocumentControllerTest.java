@@ -24,6 +24,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.DocumentValidator;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * @author Manoj SP
@@ -89,10 +90,14 @@ public class DocumentControllerTest {
 	@Test
 	public void testGetDocumentByDocumentIdSuccess() throws ResidentServiceCheckedException {
 		DocumentDTO response = new DocumentDTO();
+		ReflectionTestUtils.setField(controller, "residentGetDocumentId", "mosip.resident.document.get");
+		ReflectionTestUtils.setField(controller, "residentGetDocumentVersion", "v1");
 		validator.validateGetDocumentByDocumentIdInput("123");
 		when(service.fetchDocumentByDocId(Mockito.anyString(), Mockito.anyString())).thenReturn(response);
 		ResponseWrapper<DocumentDTO> documentByDocumentId = controller.getDocumentByDocumentId("", "");
 		assertEquals(response, documentByDocumentId.getResponse());
+		assertEquals("mosip.resident.document.get", documentByDocumentId.getId());
+		assertEquals("v1", documentByDocumentId.getVersion());
 	}
 
 	@Test
