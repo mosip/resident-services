@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import io.mosip.commons.khazana.dto.ObjectDto;
+import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.UUIDUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -108,8 +109,15 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDTO fetchDocumentByDocId(String transactionId, String documentId) throws ResidentServiceCheckedException {
 		DocumentDTO document = new DocumentDTO();
 		String objectNameWithPath = transactionId + "/" + documentId;
-		String sourceFile = objectStoreHelper.getObject(objectNameWithPath);
-		document.setDocument(sourceFile.getBytes(StandardCharsets.UTF_8));
+		try {
+			String sourceFile = objectStoreHelper.getObject(objectNameWithPath);
+			document.setDocument(sourceFile.getBytes(StandardCharsets.UTF_8));
+		}catch (ResidentServiceException | ObjectStoreAdapterException e){
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId+ " documentId: "+documentId, e);
+		}
 		return document;
 	}
 

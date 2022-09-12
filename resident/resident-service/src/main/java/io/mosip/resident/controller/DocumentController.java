@@ -134,7 +134,7 @@ public class DocumentController {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
-			validator.validateGetDocumentByDocumentIdInput(transactionId);
+			validator.validateTransactionId(transactionId);
 			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setId(residentDocumentListId);
 			responseWrapper.setVersion(residentDocumentListVersion);
@@ -170,7 +170,7 @@ public class DocumentController {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
-			validator.validateGetDocumentByDocumentIdInput(transactionId);
+			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
 			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			responseWrapper.setId(residentGetDocumentId);

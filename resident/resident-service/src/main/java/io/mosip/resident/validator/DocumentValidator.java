@@ -86,7 +86,7 @@ public class DocumentValidator implements Validator {
 		}
 	}
 
-	public void validateGetDocumentByDocumentIdInput(String transactionId) {
+	public void validateTransactionId(String transactionId) {
 		if(!isNumeric(transactionId)){
 			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
 					INVALID_INPUT.getErrorMessage() + "transactionId");
@@ -94,5 +94,22 @@ public class DocumentValidator implements Validator {
 	}
 	private boolean isNumeric(String transactionId) {
 		return transactionId.matches("[0-9]*");
+	}
+
+	public void validateDocumentIdAndTransactionId(String documentId, String transactionId) {
+		if(!isNumeric(transactionId) && documentId.length() <20){
+			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
+					INVALID_INPUT.getErrorMessage() + "documentId/transactionId");
+		} else{
+			validateTransactionId(transactionId);
+			validateDocumentId(documentId);
+		}
+	}
+
+	public void validateDocumentId(String documentId) {
+		if(documentId == null || documentId.length() < 20){
+			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
+					INVALID_INPUT.getErrorMessage() + "documentId");
+		}
 	}
 }

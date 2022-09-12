@@ -96,7 +96,7 @@ public class DocumentControllerTest {
 		DocumentDTO response = new DocumentDTO();
 		ReflectionTestUtils.setField(controller, "residentGetDocumentId", "mosip.resident.document.get");
 		ReflectionTestUtils.setField(controller, "residentGetDocumentVersion", "v1");
-		validator.validateGetDocumentByDocumentIdInput("123");
+		validator.validateTransactionId("123");
 		when(service.fetchDocumentByDocId(Mockito.anyString(), Mockito.anyString())).thenReturn(response);
 		ResponseWrapper<DocumentDTO> documentByDocumentId = controller.getDocumentByDocumentId("", "");
 		assertEquals(response, documentByDocumentId.getResponse());
