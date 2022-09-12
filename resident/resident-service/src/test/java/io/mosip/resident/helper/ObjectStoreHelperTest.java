@@ -98,7 +98,6 @@ public class ObjectStoreHelperTest {
 				data.capture()
 				);
 		assertEquals("objectStoreAccountName", objectStoreAccountName.getValue());
-		assertEquals("objectStoreBucketName", objectStoreBucketName.getValue());
 		assertEquals("abc", IOUtils.toString(data.getValue(), Charset.defaultCharset()));
 		assertEquals("name", objectName.getValue());
 		assertNull(source.getValue());
@@ -124,7 +123,6 @@ public class ObjectStoreHelperTest {
 				data.capture()
 				);
 		assertEquals("objectStoreAccountName", objectStoreAccountName.getValue());
-		assertEquals("objectStoreBucketName", objectStoreBucketName.getValue());
 		assertEquals("abc", IOUtils.toString(data.getValue(), Charset.defaultCharset()));
 		assertEquals("name", objectName.getValue());
 		assertNull(source.getValue());

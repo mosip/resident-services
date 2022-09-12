@@ -106,9 +106,9 @@ public class ObjectStoreHelper {
 	 */
 	public void putObject(String objectName, InputStream data, Map<String, Object> metadata) {
 		try {
-			adapter.putObject(objectStoreAccountName, objectStoreBucketName, null, null, objectName, encryptData(data));
+			adapter.putObject(objectStoreAccountName, null, null, null, objectName, encryptData(data));
 			if (Objects.nonNull(metadata))
-				adapter.addObjectMetaData(objectStoreAccountName, objectStoreBucketName, null, null, objectName,
+				adapter.addObjectMetaData(objectStoreAccountName, null, null, null, objectName,
 						metadata);
 		} catch (ResidentServiceException | ObjectStoreAdapterException | IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
