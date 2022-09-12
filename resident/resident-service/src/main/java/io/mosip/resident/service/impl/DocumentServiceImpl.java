@@ -116,7 +116,7 @@ public class DocumentServiceImpl implements DocumentService {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
-					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId+ " documentId: "+documentId, e);
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId+ " & documentId: "+documentId, e);
 		}
 		return document;
 	}
