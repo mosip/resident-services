@@ -1599,6 +1599,7 @@ public class ResidentServiceImpl implements ResidentService {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
 			serviceHistoryResponseDto.setRequestType(residentTransactionEntity.getRequestTypeCode());
+			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
