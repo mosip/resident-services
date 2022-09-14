@@ -69,6 +69,12 @@ public class DocumentController {
 	@Value("${resident.document.list.version}")
 	private String residentDocumentListVersion;
 
+	@Value("${resident.document.delete.id}")
+	private String residentDeleteId;
+
+	@Value("${resident.document.delete.version}")
+	private String residentDeleteVersion;
+
 	/**
 	 * This function uploads a document to a transaction.
 	 * 
@@ -206,6 +212,9 @@ public class DocumentController {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
+			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
+			responseWrapper.setId(residentDeleteId);
+			responseWrapper.setVersion(residentDeleteVersion);
 			ResponseDTO documentResponse = service
 					.deleteDocument(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);

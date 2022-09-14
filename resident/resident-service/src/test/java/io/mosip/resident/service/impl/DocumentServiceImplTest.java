@@ -85,12 +85,14 @@ public class DocumentServiceImplTest {
 
 	@Test
 	public void testDeleteDocumentSuccess() throws Exception {
+		Mockito.when(objectStoreHelper.getObject(Mockito.anyString())).thenReturn("value");
 		Mockito.when(objectStoreHelper.deleteObject(Mockito.anyString())).thenReturn(true);
 		assertNotNull(documentServiceImpl.deleteDocument("transactionId", "documentId"));
 	}
 
 	@Test
 	public void testDeleteDocumentFailure() throws Exception {
+		Mockito.when(objectStoreHelper.getObject(Mockito.anyString())).thenReturn("value");
 		Mockito.when(objectStoreHelper.deleteObject(Mockito.anyString())).thenReturn(false);
 		assertNotNull(documentServiceImpl.deleteDocument("transactionId", "documentId"));
 	}

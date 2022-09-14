@@ -162,14 +162,17 @@ public class DocumentServiceImpl implements DocumentService {
 	 */
 	@Override
 	public ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException {
-		boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
+		DocumentDTO documentDTO = fetchDocumentByDocId(transactionId, documentId);
 		ResponseDTO response = new ResponseDTO();
-		if(status) {
-			response.setStatus(SUCCESS);
-			response.setMessage(DOCUMENT_DELETION_SUCCESS_MESSAGE);
-		} else {
-			response.setStatus(FAILURE);
-			response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
+		if(documentDTO != null){
+			boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
+			if(status) {
+				response.setStatus(SUCCESS);
+				response.setMessage(DOCUMENT_DELETION_SUCCESS_MESSAGE);
+			} else {
+				response.setStatus(FAILURE);
+				response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
+			}
 		}
 		return response;
 	}

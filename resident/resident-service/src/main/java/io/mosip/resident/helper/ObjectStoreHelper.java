@@ -236,7 +236,7 @@ public class ObjectStoreHelper {
 	 */
 	public boolean deleteObject(String objectName) {
 		try {
-			return adapter.deleteObject(objectStoreAccountName, objectStoreBucketName, null, null, objectName);
+			return adapter.deleteObject(objectStoreAccountName, null, null, null, objectName);
 		} catch (ResidentServiceException | ObjectStoreAdapterException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
