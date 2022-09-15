@@ -11,9 +11,11 @@ import lombok.Data;
 @Data
 public class ResidentDemographicUpdateRequestDTO {
 
-    private String transactionID;
+	private String transactionID;
 
-    private String individualId;
+	private String individualId;
 
-    private String identityJson;
+	private String identityJson;
+
+	private String consent;
 }

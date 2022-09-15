@@ -144,6 +144,9 @@ public class ResidentTransactionEntity {
 	@Column(name = "individual_id")
 	private String individualId;
 
+	@Column(name = "consent")
+	private String consent;
+
 	/**
 	 * The constructor used in retrieval of the specific fields.
 	 * 

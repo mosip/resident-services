@@ -19,4 +19,6 @@ public class ResidentUpdateRequestDto extends ResidentDemographicUpdateRequestDT
 
 	private List<ResidentDocuments> documents;
 
+	private String consent;
+
 }

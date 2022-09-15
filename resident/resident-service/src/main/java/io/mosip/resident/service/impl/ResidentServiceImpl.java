@@ -6,8 +6,15 @@ import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPT
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -256,10 +263,11 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public static String getAuthTypeBasedOnConfigV2(AuthTypeStatusDtoV2 authTypeStatus) {
 		String[] authTypesArray = authTypes.split(",");
-		for(String authType : authTypesArray) {
-			if(authTypeStatus.getAuthSubType()!=null) {
-				String authTypeConcat=authTypeStatus.getAuthType()+AUTH_TYPE_SEPERATOR+authTypeStatus.getAuthSubType();
-				if(authType.equalsIgnoreCase(authTypeConcat)){
+		for (String authType : authTypesArray) {
+			if (authTypeStatus.getAuthSubType() != null) {
+				String authTypeConcat = authTypeStatus.getAuthType() + AUTH_TYPE_SEPERATOR
+						+ authTypeStatus.getAuthSubType();
+				if (authType.equalsIgnoreCase(authTypeConcat)) {
 					return authType;
 				}
 			} else {
@@ -268,11 +276,11 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		return null;
 	}
-	
+
 	public static String getAuthTypeBasedOnConfig(String inputAuthType) {
 		String[] authTypesArray = authTypes.split(",");
-		for(String authType : authTypesArray) {
-			if(authType.equalsIgnoreCase(inputAuthType)){
+		for (String authType : authTypesArray) {
+			if (authType.equalsIgnoreCase(inputAuthType)) {
 				return authType;
 			}
 		}
@@ -563,17 +571,17 @@ public class ResidentServiceImpl implements ResidentService {
 				Long unlockForSeconds = null;
 				List<String> authTypes = new ArrayList<String>();
 				if (dto.getAuthType() != null && !dto.getAuthType().isEmpty()) {
-					for(String authType:dto.getAuthType()) {
+					for (String authType : dto.getAuthType()) {
 						String authTypeString = getAuthTypeBasedOnConfig(authType);
-						 authTypes.add(authTypeString);
+						authTypes.add(authTypeString);
 					}
 				}
 				if (authTypeStatus.equals(AuthTypeStatus.UNLOCK)) {
 					AuthUnLockRequestDTO authUnLockRequestDTO = (AuthUnLockRequestDTO) dto;
 					unlockForSeconds = Long.parseLong(authUnLockRequestDTO.getUnlockForSeconds());
 				}
-				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(),
-						authTypes, authTypeStatus, unlockForSeconds);
+				boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(dto.getIndividualId(), authTypes,
+						authTypeStatus, unlockForSeconds);
 				if (isAuthTypeStatusUpdated) {
 					isTransactionSuccessful = true;
 				} else {
@@ -749,7 +757,7 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity = createResidentTransEntity(dto);
 			}
 			if (Objects.nonNull(dto.getOtp())) {
@@ -799,7 +807,7 @@ public class ResidentServiceImpl implements ResidentService {
 					demographicIdentity);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
 			List<ResidentDocuments> documents;
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				documents = getResidentDocuments(dto, mappingDocument);
 			} else {
 				documents = dto.getDocuments();
@@ -828,11 +836,12 @@ public class ResidentServiceImpl implements ResidentService {
 			responseDto.setRegistrationId(response.getRegistrationId());
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				updateResidentTransaction(residentTransactionEntity, response);
 			}
 		} catch (OtpValidationFailedException e) {
-			if(Utilitiy.isSecureSession()) {
+
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 			}
@@ -846,7 +855,7 @@ public class ResidentServiceImpl implements ResidentService {
 					e);
 
 		} catch (ValidationFailedException e) {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 			}
@@ -859,7 +868,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(e.getErrorCode(), e.getMessage(), e);
 
 		} catch (ApisResourceAccessException e) {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 			}
@@ -883,7 +892,7 @@ public class ResidentServiceImpl implements ResidentService {
 						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
 			}
 		} catch (IOException e) {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 			}
@@ -896,7 +905,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} catch (BaseCheckedException e) {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 			}
@@ -908,8 +917,23 @@ public class ResidentServiceImpl implements ResidentService {
 					dto.getTransactionID(), "Request for UIN update"));
 			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
-		} finally {
-			if(Utilitiy.isSecureSession()) {
+
+		}
+
+		try {
+			if (dto.getConsent().equalsIgnoreCase("Denied") || dto.getConsent().isEmpty()
+					|| dto.getConsent().equals("null")) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+			}
+		} catch (Exception e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+					ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+		}
+
+		finally {
+			if (Utilitiy.isSecureSession()) {
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
 		}
@@ -981,15 +1005,17 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}).collect(Collectors.toList());
 
-			List<AuthTypeStatusDtoV2> authTypesStatusList=authLockOrUnLockRequestDtoV2.getAuthTypes();
-			String authType = authTypesStatusList.stream().map(ResidentServiceImpl::getAuthTypeBasedOnConfigV2).collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
+			List<AuthTypeStatusDtoV2> authTypesStatusList = authLockOrUnLockRequestDtoV2.getAuthTypes();
+			String authType = authTypesStatusList.stream().map(ResidentServiceImpl::getAuthTypeBasedOnConfigV2)
+					.collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
-					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2, dto -> dto.getLocked()?AuthTypeStatus.LOCK:AuthTypeStatus.UNLOCK));
-			
+					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2,
+							dto -> dto.getLocked() ? AuthTypeStatus.LOCK : AuthTypeStatus.UNLOCK));
+
 			Map<String, Long> unlockForSecondsMap = authTypesStatusList.stream()
-														.filter(dto -> dto.getUnlockForSeconds()!=null)
-														.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2, AuthTypeStatusDtoV2::getUnlockForSeconds));
+					.filter(dto -> dto.getUnlockForSeconds() != null).collect(Collectors.toMap(
+							ResidentServiceImpl::getAuthTypeBasedOnConfigV2, AuthTypeStatusDtoV2::getUnlockForSeconds));
 
 			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap,
 					unlockForSecondsMap);
