@@ -115,7 +115,7 @@ public class NotificationService {
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
-		if(channels == null || channels.isEmpty()) {
+		if(channels == null || channels.isEmpty() || channels.stream().collect(Collectors.joining(",")).isEmpty() || channels.stream().collect(Collectors.joining(",")).equals("null")) {
 			if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
 				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
 				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
