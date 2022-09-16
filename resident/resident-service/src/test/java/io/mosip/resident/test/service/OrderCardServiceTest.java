@@ -48,13 +48,13 @@ public class OrderCardServiceTest {
 
 	@Mock
 	private AuditUtil auditUtil;
-	
+
 	@Mock
 	private Utilitiy utility;
-	
+
 	@Mock
 	private IdentityServiceImpl identityServiceImpl;
-	
+
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
 
@@ -76,7 +76,7 @@ public class OrderCardServiceTest {
 		responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		
+
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
@@ -85,7 +85,7 @@ public class OrderCardServiceTest {
 		residentCredentialRequestDto = new ResidentCredentialRequestDto();
 		residentCredentialRequestDto.setTransactionID("1234327890");
 		residentCredentialRequestDto.setIndividualId("8251649601");
-
+		residentCredentialRequestDto.setConsent("Accepted");
 		residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setId("8251649601");
 		residentCredentialResponseDto.setRequestId("effc56cd-cf3b-4042-ad48-7277cf90f763");

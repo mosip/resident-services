@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,19 +87,19 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private IdAuthService idAuthService;
-	
+
 	@MockBean
 	private DocumentService docService;
-	
+
 	@MockBean
 	private ObjectStoreHelper objectStore;
 
 	@Mock
 	private UinValidator<String> uinValidator;
-	
+
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
-	
+
 	@Mock
 	private IdentityServiceImpl identityServiceImpl;
 
@@ -108,7 +107,7 @@ public class ResidentServiceResUpdateTest {
 	Environment env;
 
 	@Mock
-    NotificationService notificationService;
+	NotificationService notificationService;
 	@Mock
 	private Utilitiy utility;
 
@@ -117,7 +116,7 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private AuditUtil audit;
-	
+
 	@Mock
 	private ObjectMapper objectMapper;
 
@@ -142,19 +141,20 @@ public class ResidentServiceResUpdateTest {
 		dto.setIndividualIdType(IdType.UIN.name());
 		dto.setTransactionID("12345");
 		dto.setOtp("12345");
+		dto.setConsent("Accepted");
 		ReflectionTestUtils.setField(residentServiceImpl, "centerId", "10008");
 		ReflectionTestUtils.setField(residentServiceImpl, "machineId", "10008");
-		
-		Map identityResponse=new LinkedHashMap();
+
+		Map identityResponse = new LinkedHashMap();
 		Map identityMap = new LinkedHashMap();
 		identityMap.put("UIN", "8251649601");
 		identityMap.put("email", "manojvsp12@gmail.com");
 		identityResponse.put("identity", identityMap);
-		
+
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
-		byte[] str=CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
+		byte[] str = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 		when(objectMapper.readValue(str, Map.class)).thenReturn(identityResponse);
 
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -163,8 +163,8 @@ public class ResidentServiceResUpdateTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Mockito.when(utility.getMappingJson()).thenReturn(mappingJson);
 
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(true);
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(true);
 
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent");
@@ -182,21 +182,22 @@ public class ResidentServiceResUpdateTest {
 		machineDto.setPublicKey(publicKey);
 		machineDto.setSignPublicKey(publicKey);
 		machineDtos.add(machineDto);
-		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder().fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder()
+				.fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
 		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
 		machineSearchResponseDTO.setId("null");
 		machineSearchResponseDTO.setVersion("1.0");
 		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
 		machineSearchResponseDTO.setResponse(response);
 
-        PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
-        PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse publicKeyResponse = new PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse();
-        publicKeyResponse.setPublicKey(publicKey);
-        responseDto.setId(null);
-        responseDto.setVersion(null);
-        responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
-        responseDto.setResponse(publicKeyResponse);
-        responseDto.setErrors(new ArrayList<>());
+		PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
+		PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse publicKeyResponse = new PacketSignPublicKeyResponseDTO.PacketSignPublicKeyResponse();
+		publicKeyResponse.setPublicKey(publicKey);
+		responseDto.setId(null);
+		responseDto.setVersion(null);
+		responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
+		responseDto.setResponse(publicKeyResponse);
+		responseDto.setErrors(new ArrayList<>());
 
 		updateDto = new PacketGeneratorResDto();
 		updateDto.setRegistrationId("10008100670001720191120095702");
@@ -205,71 +206,76 @@ public class ResidentServiceResUpdateTest {
 		Mockito.when(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name())).thenReturn("PACKETSIGNPUBLICKEY");
 		Mockito.when(env.getProperty(ApiName.MACHINESEARCH.name())).thenReturn("MACHINESEARCH");
 
-		Mockito.when(residentServiceRestClient.postApi(eq("PACKETSIGNPUBLICKEY"), any(MediaType.class), 
-			any(HttpEntity.class), eq(PacketSignPublicKeyResponseDTO.class))).thenReturn(responseDto);
-		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
-			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+		Mockito.when(residentServiceRestClient.postApi(eq("PACKETSIGNPUBLICKEY"), any(MediaType.class),
+				any(HttpEntity.class), eq(PacketSignPublicKeyResponseDTO.class))).thenReturn(responseDto);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
 
 		when(utilities.getLanguageCode()).thenReturn("eng");
 	}
 
-    @Test(expected = ResidentServiceException.class)
-    public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsApiResourceExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        when(residentServiceRestClient.postApi(eq("PACKETSIGNPUBLICKEY"), any(MediaType.class), 
-			any(HttpEntity.class), eq(PacketSignPublicKeyResponseDTO.class))).thenThrow(new ApisResourceAccessException());
-        residentServiceImpl.reqUinUpdate(dto);
-    }
-
-    @Test(expected = ResidentServiceException.class)
-    public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsResidentServiceTPMSignKeyExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
-        PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
-        List<PacketSignPublicKeyErrorDTO> errorDTOS = new ArrayList<>();
-        PacketSignPublicKeyErrorDTO errorDTO = new PacketSignPublicKeyErrorDTO();
-        errorDTO.setErrorCode(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode());
-        errorDTO.setMessage(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-        errorDTOS.add(errorDTO);
-        responseDto.setId(null);
-        responseDto.setVersion(null);
-        responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
-        responseDto.setErrors(errorDTOS);
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(responseDto);
-        residentServiceImpl.reqUinUpdate(dto);
-    }
-
-    @Test(expected = ResidentServiceException.class)
-    public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsResidentServiceTPMSignKeyExceptionWithNullResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
-        PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
-        responseDto.setId(null);
-        responseDto.setVersion(null);
-        responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
-        responseDto.setResponse(null);
-        when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(responseDto);
-        residentServiceImpl.reqUinUpdate(dto);
-    }
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsApiResourceExceptionTest()
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		when(residentServiceRestClient.postApi(eq("PACKETSIGNPUBLICKEY"), any(MediaType.class), any(HttpEntity.class),
+				eq(PacketSignPublicKeyResponseDTO.class))).thenThrow(new ApisResourceAccessException());
+		residentServiceImpl.reqUinUpdate(dto);
+	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void reqUinUpdateSearchMachineInMasterServiceThrowsApisResourceAccessExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException, OtpValidationFailedException {
-		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
-			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenThrow(new ApisResourceAccessException());
+	public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsResidentServiceTPMSignKeyExceptionTest()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
+		List<PacketSignPublicKeyErrorDTO> errorDTOS = new ArrayList<>();
+		PacketSignPublicKeyErrorDTO errorDTO = new PacketSignPublicKeyErrorDTO();
+		errorDTO.setErrorCode(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode());
+		errorDTO.setMessage(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+		errorDTOS.add(errorDTO);
+		responseDto.setId(null);
+		responseDto.setVersion(null);
+		responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
+		responseDto.setErrors(errorDTOS);
+		when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(responseDto);
+		residentServiceImpl.reqUinUpdate(dto);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetPublicKeyFromKeyManagerThrowsResidentServiceTPMSignKeyExceptionWithNullResponseTest()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		PacketSignPublicKeyResponseDTO responseDto = new PacketSignPublicKeyResponseDTO();
+		responseDto.setId(null);
+		responseDto.setVersion(null);
+		responseDto.setResponsetime("2022-01-28T06:51:30.286Z");
+		responseDto.setResponse(null);
+		when(residentServiceRestClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(responseDto);
+		residentServiceImpl.reqUinUpdate(dto);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateSearchMachineInMasterServiceThrowsApisResourceAccessExceptionTest()
+			throws ApisResourceAccessException, ResidentServiceCheckedException, OtpValidationFailedException {
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenThrow(new ApisResourceAccessException());
 		residentServiceImpl.reqUinUpdate(dto);
 
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void reqUinUpdateSearchMachineInMasterServiceThrowsResidentMachineServiceExceptionTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public void reqUinUpdateSearchMachineInMasterServiceThrowsResidentMachineServiceExceptionTest()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		List<MachineErrorDTO> errorDTOS = new ArrayList<>();
 		MachineErrorDTO errorDTO = new MachineErrorDTO();
 		errorDTO.setErrorCode(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode());
 		errorDTO.setMessage(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
 		errorDTOS.add(errorDTO);
 
-        MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
-        machineSearchResponseDTO.setId("null");
-        machineSearchResponseDTO.setVersion("1.0");
-        machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
-        machineSearchResponseDTO.setErrors(errorDTOS);
-        when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
-			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
+		machineSearchResponseDTO.setId("null");
+		machineSearchResponseDTO.setVersion("1.0");
+		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
+		machineSearchResponseDTO.setErrors(errorDTOS);
+		when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
 		residentServiceImpl.reqUinUpdate(dto);
 	}
 
@@ -292,14 +298,15 @@ public class ResidentServiceResUpdateTest {
 		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
 		machineDto.setSignPublicKey("");
 		machineDtos.add(machineDto);
-		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder().fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder()
+				.fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
 		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
 		machineSearchResponseDTO.setId("null");
 		machineSearchResponseDTO.setVersion("1.0");
 		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
 		machineSearchResponseDTO.setResponse(response);
-		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), 
-			any(HttpEntity.class), eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
 
 		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
 		MachineDto newMachineDTO = new MachineDto();
@@ -312,8 +319,8 @@ public class ResidentServiceResUpdateTest {
 		newMachineDTO.setSignPublicKey(publicKey);
 		machineCreateResponseDTO.setResponse(newMachineDTO);
 		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
-		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), 
-			any(HttpEntity.class), eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
 		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
 		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
@@ -329,8 +336,8 @@ public class ResidentServiceResUpdateTest {
 	@Test(expected = ResidentServiceException.class)
 	public void validateOtpException()
 			throws OtpValidationFailedException, IOException, ResidentServiceCheckedException {
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(false);
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(false);
 		residentServiceImpl.reqUinUpdate(dto);
 
 	}
@@ -352,39 +359,41 @@ public class ResidentServiceResUpdateTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testApiResourceAccessExceptionServer() throws BaseCheckedException, IOException {
 		HttpServerErrorException exp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-		Mockito.when(residentUpdateService.createPacket(any())).thenThrow(new ApisResourceAccessException("badgateway", exp));
+		Mockito.when(residentUpdateService.createPacket(any()))
+				.thenThrow(new ApisResourceAccessException("badgateway", exp));
 		residentServiceImpl.reqUinUpdate(dto);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testBaseCheckedException() throws BaseCheckedException, IOException {
-		Mockito.when(residentUpdateService.createPacket(any())).thenThrow(new BaseCheckedException("erorcode", "badgateway", new RuntimeException()));
+		Mockito.when(residentUpdateService.createPacket(any()))
+				.thenThrow(new BaseCheckedException("erorcode", "badgateway", new RuntimeException()));
 		residentServiceImpl.reqUinUpdate(dto);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void otpValidationFailedException() throws OtpValidationFailedException, ResidentServiceCheckedException {
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenThrow(new OtpValidationFailedException());
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenThrow(new OtpValidationFailedException());
 		residentServiceImpl.reqUinUpdate(dto);
 
 	}
 
 	@Test
-	public void testValidationOfAuthIndividualIdWithUIN() throws ResidentServiceCheckedException, 
-			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+	public void testValidationOfAuthIndividualIdWithUIN() throws ResidentServiceCheckedException,
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
 		dto.setIndividualId("3527812407");
 		try {
 			residentServiceImpl.reqUinUpdate(dto);
-		} catch(ResidentServiceException e) {
-			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
-				((ValidationFailedException)e.getCause()).getErrorCode());
+		} catch (ResidentServiceException e) {
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+					((ValidationFailedException) e.getCause()).getErrorCode());
 		}
 	}
 
 	@Test
-	public void testValidationOfAuthIndividualIdWithVIDSuccess() throws ResidentServiceCheckedException, 
-			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+	public void testValidationOfAuthIndividualIdWithVIDSuccess() throws ResidentServiceCheckedException,
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
 		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812406");
 		dto.setIndividualIdType("VID");
 		dto.setIndividualId("4447812406");
@@ -392,18 +401,18 @@ public class ResidentServiceResUpdateTest {
 	}
 
 	@Test
-	public void testValidationOfAuthIndividualIdWithVIDFailure() throws ResidentServiceCheckedException, 
-			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException  {
+	public void testValidationOfAuthIndividualIdWithVIDFailure() throws ResidentServiceCheckedException,
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
 
 		Mockito.when(utilities.getUinByVid(anyString())).thenReturn("3527812407");
 		dto.setIndividualIdType("VID");
 		dto.setIndividualId("4447812406");
 		try {
 			residentServiceImpl.reqUinUpdate(dto);
-		} catch(ResidentServiceException e) {
+		} catch (ResidentServiceException e) {
 			e.printStackTrace();
-			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(), 
-				((ValidationFailedException)e.getCause()).getErrorCode());
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+					((ValidationFailedException) e.getCause()).getErrorCode());
 		}
 	}
 }
