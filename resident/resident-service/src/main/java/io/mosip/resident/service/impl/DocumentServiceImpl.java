@@ -132,7 +132,11 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public Map<DocumentResponseDTO, String> getDocumentsWithMetadata(String transactionId)
 			throws ResidentServiceCheckedException {
-		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
+		List<ObjectDto> allObjects= objectStoreHelper.getAllObjects(transactionId);
+		if(allObjects==null) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage() + transactionId);
+		}
 		return allObjects.stream()
 				.collect(Collectors.toMap(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()),
 						object -> objectStoreHelper.getObject(transactionId + "/" + object.getObjectName())));
