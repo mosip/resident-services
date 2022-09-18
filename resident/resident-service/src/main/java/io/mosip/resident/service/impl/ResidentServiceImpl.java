@@ -1065,17 +1065,12 @@ public class ResidentServiceImpl implements ResidentService {
 		} finally {
 			residentTransactionRepository.saveAll(residentTransactionEntities);
 
-			NotificationTemplateCode templateCode = null;
-			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
-				if (authTypeStatusDto.getLocked()) {
-					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
-							: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
-				} else {
-					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_UNLOCK_AUTH_SUCCESS
-							: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
-				}
-			}
-			NotificationResponseDTO notificationResponseDTO = sendNotification(individualId, templateCode, null);
+			RequestType requestType = RequestType.AUTH_TYPE_LOCK_UNLOCK;
+			TemplateType templateType = isTransactionSuccessful ? TemplateType.REQUEST_RECEIVED : TemplateType.FAILURE;
+
+			NotificationResponseDTO notificationResponseDTO = sendNotificationV2(individualId, requestType,
+					templateType, residentTransactionEntities.get(0).getEventId(), null);
+			
 			if (isTransactionSuccessful)
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock success"));

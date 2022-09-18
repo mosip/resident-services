@@ -75,7 +75,7 @@ public class WebSubUpdateAuthTypeServiceTest {
     }
 
     @Test
-    public void testWebSubUpdateAuthTypeService() throws ResidentServiceCheckedException {
+    public void testWebSubUpdateAuthTypeService() throws ResidentServiceCheckedException, ApisResourceAccessException {
         EventModel eventModel=new EventModel();
         Event event=new Event();
         event.setTransactionId("1234");

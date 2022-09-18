@@ -10,11 +10,17 @@ import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -61,12 +67,15 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
     @Autowired
     private IdentityServiceImpl identityServiceImpl;
+    
+    @Autowired
+	private NotificationService notificationService;
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Override
-    public void updateAuthTypeStatus(EventModel eventModel) throws ResidentServiceCheckedException {
+    public void updateAuthTypeStatus(EventModel eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::entry");
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
@@ -83,32 +92,35 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             subscriptionRequest.setHubURL(hubUrl);
             subscribe.subscribe(subscriptionRequest);
 
-            insertInResidentTransactionTable(eventModel,"COMPLETED");
+            ResidentTransactionEntity residentTransactionEntity = insertInResidentTransactionTable(eventModel,"COMPLETED");
+            sendNotificationV2(TemplateType.SUCCESS, residentTransactionEntity.getEventId());
 
         }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::exception");
-            insertInResidentTransactionTable(eventModel,"FAILED");
+            ResidentTransactionEntity residentTransactionEntity = insertInResidentTransactionTable(eventModel,"FAILED");
+            sendNotificationV2(TemplateType.FAILURE, residentTransactionEntity.getEventId());
             throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
                     ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
         }
     }
 
-    private void insertInResidentTransactionTable(EventModel eventModel,  String status) {
+    private ResidentTransactionEntity insertInResidentTransactionTable(EventModel eventModel,  String status) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
 
+        ResidentTransactionEntity residentTransactionEntity = null;
         try {
-            ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+            residentTransactionEntity = new ResidentTransactionEntity();
             residentTransactionEntity.setEventId(UUID.randomUUID().toString());
             String id = identityServiceImpl.getResidentIndvidualId();
             residentTransactionEntity.setAid(HMACUtils2.digestAsPlainText(id.getBytes(StandardCharsets.UTF_8)));
             residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
             residentTransactionEntity.setResponseDtime(LocalDateTime.now());
             residentTransactionEntity.setRequestTrnId(eventModel.getEvent().getTransactionId());
-            residentTransactionEntity.setRequestTypeCode("Requested for Subscribing to WebSub");
+            residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
             residentTransactionEntity.setRequestSummary("Requested for Subscribing to WebSub");
             residentTransactionEntity.setStatusCode(status);
             residentTransactionEntity.setStatusComment(status);
@@ -124,6 +136,18 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::exception");
         }
-
+        return residentTransactionEntity;
     }
+    
+    private NotificationResponseDTO sendNotificationV2(TemplateType templateType, String eventId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		String id = identityServiceImpl.getResidentIndvidualId();
+		notificationRequestDtoV2.setId(id);
+		notificationRequestDtoV2.setRequestType(RequestType.AUTH_TYPE_LOCK_UNLOCK);
+		notificationRequestDtoV2.setTemplateType(templateType);
+		notificationRequestDtoV2.setEventId(eventId);
+
+		return notificationService.sendNotification(notificationRequestDtoV2);
+	}
 }
