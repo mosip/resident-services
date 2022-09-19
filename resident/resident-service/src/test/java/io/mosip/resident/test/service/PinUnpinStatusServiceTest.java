@@ -1,5 +1,8 @@
 package io.mosip.resident.test.service;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.PinUnpinStatusService;
@@ -14,7 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Optional;
@@ -51,30 +53,30 @@ public class PinUnpinStatusServiceTest {
 
     @Test
     public void pinStatusSuccessTest(){
-        ResponseEntity<?> responseEntity = pinUnpinStatusService.pinStatus("eventId", true);
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        ResponseWrapper<ResponseDTO> responseDTO = pinUnpinStatusService.pinStatus("eventId", true);
+        assertEquals(responseDTO.getResponse().getStatus(), HttpStatus.OK.toString());
     }
 
     @Test
     public void pinStatusFailureTest(){
         residentTransactionEntity = Optional.empty();
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        ResponseEntity<?> responseEntity = pinUnpinStatusService.pinStatus("eventId", true);
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.BAD_REQUEST);
+        ResponseWrapper<ResponseDTO> responseDTO = pinUnpinStatusService.pinStatus("eventId", true);
+        assertEquals(responseDTO.getErrors().get(0).getErrorCode(), ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorCode());
     }
 
     @Test
     public void unPinStatusSuccessTest(){
-        ResponseEntity<?> responseEntity = pinUnpinStatusService.pinStatus("eventId", false);
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        ResponseWrapper<ResponseDTO> responseDTO = pinUnpinStatusService.pinStatus("eventId", false);
+        assertEquals(responseDTO.getResponse().getStatus(), HttpStatus.OK.toString());
     }
 
     @Test
     public void unPinStatusFailureTest(){
         residentTransactionEntity = Optional.empty();
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        ResponseEntity<?> responseEntity = pinUnpinStatusService.pinStatus("eventId", false);
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.BAD_REQUEST);
+        ResponseWrapper<ResponseDTO> responseDTO = pinUnpinStatusService.pinStatus("eventId", false);
+        assertEquals(responseDTO.getErrors().get(0).getErrorCode(), ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorCode());
     }
 
 }

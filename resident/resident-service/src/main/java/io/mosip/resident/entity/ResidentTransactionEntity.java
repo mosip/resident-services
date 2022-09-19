@@ -205,4 +205,7 @@ public class ResidentTransactionEntity {
 		this.requestTypeCode = requestTypeCode;
 	}
 
+	public boolean getPinnedStatus() {
+		return this.pinnedStatus;
+	}
 }

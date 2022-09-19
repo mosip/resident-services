@@ -1,5 +1,7 @@
 package io.mosip.resident.test.config;
 
+import io.mosip.preregistration.application.service.TransliterationService;
+import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,6 +35,12 @@ public class ResidentServiceConfigTest {
 
 	@MockBean
 	private PacketWriter packetWriter;
+
+	@MockBean
+	private TransliterationService transliterationService;
+
+	@MockBean
+	private TransliterationServiceUtil transliterationServiceUtil;
 
 	@Bean
 	@Primary

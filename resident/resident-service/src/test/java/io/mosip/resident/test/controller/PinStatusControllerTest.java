@@ -1,6 +1,8 @@
 package io.mosip.resident.test.controller;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.PinStatusController;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.service.PinUnpinStatusService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -11,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
 import static org.junit.Assert.assertEquals;
@@ -39,15 +40,23 @@ public class PinStatusControllerTest {
 
     @Test
     public void pinStatusControllerTest(){
-        Mockito.when(pinUnpinStatusService.pinStatus(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        ResponseEntity<?> responseEntity = pinStatusController.pinStatus("eventId");
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setStatus(HttpStatus.OK.toString());
+        responseWrapper.setResponse(responseDTO);
+        Mockito.when(pinUnpinStatusService.pinStatus(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
+        ResponseWrapper<ResponseDTO> resultResponseDTO = pinStatusController.pinStatus("eventId");
+        assertEquals(resultResponseDTO.getResponse().getStatus(), HttpStatus.OK.toString());
     }
 
     @Test
     public void unPinStatusControllerTest(){
-        Mockito.when(pinUnpinStatusService.pinStatus(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-        ResponseEntity<?> responseEntity = pinStatusController.unPinStatus("eventId");
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setStatus(HttpStatus.OK.toString());
+        responseWrapper.setResponse(responseDTO);
+        Mockito.when(pinUnpinStatusService.pinStatus(Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
+        ResponseWrapper<ResponseDTO> responseEntity = pinStatusController.unPinStatus("eventId");
+        assertEquals(responseEntity.getResponse().getStatus(), HttpStatus.OK.toString());
     }
 }

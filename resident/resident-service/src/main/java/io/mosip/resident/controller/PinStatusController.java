@@ -1,13 +1,14 @@
 package io.mosip.resident.controller;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.service.PinUnpinStatusService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class PinStatusController {
             + "@authorizedScopes.getPostPinStatus()"
             + ")")
     @PostMapping(path = "pinned/{eventId}")
-    public ResponseEntity<?> pinStatus(@PathVariable("eventId") String eventId){
+    public ResponseWrapper<ResponseDTO> pinStatus(@PathVariable("eventId") String eventId){
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Pin Status API"));
         requestValidator.validateIndividualId(eventId);
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS, eventId));
@@ -45,7 +46,7 @@ public class PinStatusController {
             + "@authorizedScopes.getPostUnPinStatus()"
             + ")")
     @PostMapping(path = "unpinned/{eventId}")
-    public ResponseEntity<?> unPinStatus(@PathVariable("eventId") String eventId){
+    public ResponseWrapper<ResponseDTO> unPinStatus(@PathVariable("eventId") String eventId){
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Pin Status API"));
         requestValidator.validateIndividualId(eventId);
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS, eventId));

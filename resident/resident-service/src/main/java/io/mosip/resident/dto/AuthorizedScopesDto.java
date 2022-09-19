@@ -68,5 +68,7 @@ public class AuthorizedScopesDto {
 
 	private List<String> getAcknowledgement;
 
+	private List<String> postTransliteration;
+
 
 }
