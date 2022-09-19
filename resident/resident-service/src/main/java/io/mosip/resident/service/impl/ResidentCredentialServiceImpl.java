@@ -270,7 +270,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		}
 
 		try {
-			if (dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name()) || dto.getConsent().equals("null")) {
+			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
+					|| dto.getConsent().equals("null")) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());

@@ -44,6 +44,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -921,8 +922,8 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 
 		try {
-			if (dto.getConsent().equalsIgnoreCase("Denied") || dto.getConsent().isEmpty()
-					|| dto.getConsent().equals("null")) {
+			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
+					|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
