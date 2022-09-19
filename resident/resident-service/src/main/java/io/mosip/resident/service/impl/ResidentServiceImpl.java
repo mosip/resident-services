@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -99,6 +101,7 @@ import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResidentUpdateResponseDTOV2;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
@@ -755,11 +758,14 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
-		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
+		ResidentUpdateResponseDTO responseDto;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utilitiy.isSecureSession()) {
+				responseDto = new ResidentUpdateResponseDTOV2();
 				residentTransactionEntity = createResidentTransEntity(dto);
+			} else {
+				responseDto = new ResidentUpdateResponseDTO();
 			}
 			if (Objects.nonNull(dto.getOtp())) {
 				if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
@@ -833,15 +839,28 @@ public class ResidentServiceImpl implements ResidentService {
 					EventEnum.getEventEnumWithValue(EventEnum.OBTAINED_RID_UIN_UPDATE, dto.getTransactionID()));
 			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(),
 					NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
-			responseDto.setMessage(notificationResponseDTO.getMessage());
-			responseDto.setRegistrationId(response.getRegistrationId());
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
 			if (Utilitiy.isSecureSession()) {
 				updateResidentTransaction(residentTransactionEntity, response);
+				ResidentUpdateResponseDTOV2 responseDTOV2 = new ResidentUpdateResponseDTOV2();
+				responseDTOV2.setEventId(residentTransactionEntity.getEventId());
+				responseDTOV2.setMessage(notificationResponseDTO.getMessage());
+				responseDto = responseDTOV2;
+			} else {
+				responseDto.setMessage(notificationResponseDTO.getMessage());
+				responseDto.setRegistrationId(response.getRegistrationId());
 			}
-		} catch (OtpValidationFailedException e) {
 
+			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
+					|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+			}
+		}
+
+		catch (OtpValidationFailedException e) {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
@@ -905,6 +924,21 @@ public class ResidentServiceImpl implements ResidentService {
 					dto.getTransactionID(), "Request for UIN update"));
 			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} catch (ResidentServiceCheckedException e) {
+			if (Utilitiy.isSecureSession()) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionEntity.setRequestSummary("failed");
+			}
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED,
+					dto.getTransactionID(), "Request for UIN update"));
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
+
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+					dto.getTransactionID(), "Request for UIN update"));
+			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage() + dto.getTransactionID(),
+					e);
+
 		} catch (BaseCheckedException e) {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -919,18 +953,6 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.BASE_EXCEPTION.getErrorMessage(), e);
 
-		}
-
-		try {
-			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-					|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
-						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
-			}
-		} catch (Exception e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
-					ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 		}
 
 		finally {
@@ -967,9 +989,13 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setRequestSummary("in-progress");
 	}
 
-	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument) {
+	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument)
+			throws ResidentServiceCheckedException {
 		if (Objects.nonNull(dto.getDocuments())) {
 			return dto.getDocuments();
+		}
+		if (dto.getTransactionID() == null) {
+			return Collections.emptyList();
 		}
 		try {
 			Map<DocumentResponseDTO, String> documentsWithMetadata = docService
@@ -978,8 +1004,8 @@ public class ResidentServiceImpl implements ResidentService {
 					.map(doc -> new ResidentDocuments(getDocumentName(mappingDocument, doc.getKey().getDocCatCode()),
 							doc.getValue()))
 					.collect(Collectors.toList());
-		} catch (ResidentServiceCheckedException e) {
-			throw new ResidentServiceException(ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorCode(),
+		} catch (ResidentServiceCheckedException | ObjectStoreAdapterException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorCode(),
 					ResidentErrorCode.FAILED_TO_RETRIEVE_DOC.getErrorMessage(), e);
 		}
 	}
@@ -1626,6 +1652,7 @@ public class ResidentServiceImpl implements ResidentService {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
 			serviceHistoryResponseDto.setRequestType(residentTransactionEntity.getRequestTypeCode());
+			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
