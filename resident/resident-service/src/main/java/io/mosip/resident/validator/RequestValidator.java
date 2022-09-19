@@ -1,15 +1,15 @@
 package io.mosip.resident.validator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
+import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
+import io.mosip.preregistration.core.common.dto.MainRequestDTO;
+import io.mosip.preregistration.core.errorcodes.ErrorCodes;
+import io.mosip.preregistration.core.errorcodes.ErrorMessages;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
@@ -27,6 +27,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import org.springframework.validation.Errors;
+
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
@@ -115,6 +117,9 @@ public class RequestValidator {
 
 	@Value("${mosip.optional-languages}")
 	private String optionalLanguages;
+
+	@Value("${mosip.resident.transliteration.transliterate.id}")
+	private String transliterateId;
 
 	@PostConstruct
 	public void setMap() {
@@ -818,4 +823,15 @@ public class RequestValidator {
 		}
 	}
 
+	public void validateId(MainRequestDTO<TransliterationRequestDTO> requestDTO) {
+		if (Objects.nonNull(requestDTO.getId())) {
+			if (!requestDTO.getId().equals(transliterateId)) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Invalid Transliterate id"));
+				throw new InvalidInputException("id");
+			}
+		} else {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
+			throw new InvalidInputException("id");
+		}
+	}
 }
