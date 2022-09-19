@@ -7,9 +7,11 @@ import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.WebSubUpdateAuthTypeServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -32,6 +34,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 
+import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,13 +68,20 @@ public class WebSubUpdateAuthTypeServiceTest {
 
     @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
+    
+    @Mock
+	private NotificationService notificationService;
 
+    private NotificationResponseDTO notificationResponseDTO;
 
     @Before
-    public void setup() throws ApisResourceAccessException {
+    public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
+        notificationResponseDTO = new NotificationResponseDTO();
+		notificationResponseDTO.setStatus("Notification success");
+		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
     }
 
     @Test

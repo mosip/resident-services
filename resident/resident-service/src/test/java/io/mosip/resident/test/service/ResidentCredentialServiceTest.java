@@ -256,7 +256,7 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode");
+        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
         assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
     }
 
@@ -285,7 +285,7 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode","Banking");
+        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER","Banking");
         assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
     }
 
@@ -315,7 +315,7 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode");
+        ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
         assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
     }
 
@@ -350,7 +350,7 @@ public class ResidentCredentialServiceTest {
         URI partnerUri = URI.create(partnerUrl);
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(ApisResourceAccessException.class);
-        residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode");
+        residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
     }
 
     @Test(expected = ResidentCredentialServiceException.class)
@@ -377,7 +377,7 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(partnerResponseDtoResponseWrapper);
 
-        residentCredentialService.shareCredential(residentCredentialRequestDto,"requestTypeCode");
+        residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
     }
     
     @Test

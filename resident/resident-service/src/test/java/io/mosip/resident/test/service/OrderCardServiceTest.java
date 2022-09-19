@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,12 +20,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -63,12 +66,17 @@ public class OrderCardServiceTest {
 
 	@Mock
 	private ResidentCredentialService residentCredentialService;
+	
+	@Mock
+	private NotificationService notificationService;
 
 	private ResponseWrapper<?> responseWrapper;
 
 	private ResidentCredentialResponseDto residentCredentialResponseDto;
 
 	private ResidentCredentialRequestDto residentCredentialRequestDto;
+	
+	private NotificationResponseDTO notificationResponseDTO;
 
 	@Before
 	public void setUp() throws Exception {
@@ -81,6 +89,9 @@ public class OrderCardServiceTest {
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("uin");
+		notificationResponseDTO = new NotificationResponseDTO();
+		notificationResponseDTO.setStatus("Notification success");
+		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
 
 		residentCredentialRequestDto = new ResidentCredentialRequestDto();
 		residentCredentialRequestDto.setTransactionID("1234327890");
