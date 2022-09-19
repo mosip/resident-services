@@ -82,9 +82,11 @@ public enum ResidentErrorCode {
 	PAYMENT_REQUIRED("RES-SER-402", "Payment is not made for this card"),
 	FAILED_TO_DELETE_DOC("RES-SER-458", "Failed to delete document"),
 	EVENT_STATUS_NOT_FOUND("RES-SER-459", "EID not available in database"),
+	CONSENT_DENIED("RES-SER-461",
+			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
 
-	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"), CONSENT_DENIED("RES-SER-461",
-			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed");
+	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"),
+	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: ");
 
 	private final String errorCode;
 	private final String errorMessage;

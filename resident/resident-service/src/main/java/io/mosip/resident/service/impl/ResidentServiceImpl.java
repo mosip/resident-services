@@ -756,7 +756,7 @@ public class ResidentServiceImpl implements ResidentService {
 	@Override
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
 		ResidentUpdateResponseDTO responseDto = new ResidentUpdateResponseDTO();
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity = createResidentTransEntity(dto);

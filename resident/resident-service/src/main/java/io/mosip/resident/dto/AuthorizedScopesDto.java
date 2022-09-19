@@ -72,5 +72,7 @@ public class AuthorizedScopesDto {
 
 	private List<String> postRequestShareCredWithPartner;
 
+	private List<String> postTransliteration;
+
 
 }

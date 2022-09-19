@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import io.mosip.commons.khazana.dto.ObjectDto;
+import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.UUIDUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -11,6 +12,7 @@ import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -89,6 +91,10 @@ public class DocumentServiceImpl implements DocumentService {
 	public List<DocumentResponseDTO> fetchAllDocumentsMetadata(String transactionId)
 			throws ResidentServiceCheckedException {
 		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
+		if(allObjects == null){
+			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId);
+		}
 		return allObjects.stream().map(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()))
 				.collect(Collectors.toList());
 	}
@@ -103,8 +109,15 @@ public class DocumentServiceImpl implements DocumentService {
 	public DocumentDTO fetchDocumentByDocId(String transactionId, String documentId) throws ResidentServiceCheckedException {
 		DocumentDTO document = new DocumentDTO();
 		String objectNameWithPath = transactionId + "/" + documentId;
-		String sourceFile = objectStoreHelper.getObject(objectNameWithPath);
-		document.setDocument(sourceFile.getBytes(StandardCharsets.UTF_8));
+		try {
+			String sourceFile = objectStoreHelper.getObject(objectNameWithPath);
+			document.setDocument(sourceFile.getBytes(StandardCharsets.UTF_8));
+		}catch (ResidentServiceException | ObjectStoreAdapterException e){
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId+ " & documentId: "+documentId, e);
+		}
 		return document;
 	}
 
@@ -119,7 +132,11 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public Map<DocumentResponseDTO, String> getDocumentsWithMetadata(String transactionId)
 			throws ResidentServiceCheckedException {
-		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
+		List<ObjectDto> allObjects= objectStoreHelper.getAllObjects(transactionId);
+		if(allObjects==null) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage() + transactionId);
+		}
 		return allObjects.stream()
 				.collect(Collectors.toMap(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()),
 						object -> objectStoreHelper.getObject(transactionId + "/" + object.getObjectName())));
@@ -149,14 +166,17 @@ public class DocumentServiceImpl implements DocumentService {
 	 */
 	@Override
 	public ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException {
-		boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
+		DocumentDTO documentDTO = fetchDocumentByDocId(transactionId, documentId);
 		ResponseDTO response = new ResponseDTO();
-		if(status) {
-			response.setStatus(SUCCESS);
-			response.setMessage(DOCUMENT_DELETION_SUCCESS_MESSAGE);
-		} else {
-			response.setStatus(FAILURE);
-			response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
+		if(documentDTO != null){
+			boolean status = objectStoreHelper.deleteObject(transactionId + "/" + documentId);
+			if(status) {
+				response.setStatus(SUCCESS);
+				response.setMessage(DOCUMENT_DELETION_SUCCESS_MESSAGE);
+			} else {
+				response.setStatus(FAILURE);
+				response.setMessage(DOCUMENT_DELETION_FAILURE_MESSAGE);
+			}
 		}
 		return response;
 	}

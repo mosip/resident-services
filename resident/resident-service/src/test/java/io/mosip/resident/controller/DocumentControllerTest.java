@@ -24,6 +24,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.DocumentValidator;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * @author Manoj SP
@@ -73,9 +74,13 @@ public class DocumentControllerTest {
 	@Test
 	public void testGetDocumentsByTransactionIdSuccess() throws ResidentServiceCheckedException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
+		ReflectionTestUtils.setField(controller, "residentDocumentListId", "mosip.resident.document.list");
+		ReflectionTestUtils.setField(controller, "residentDocumentListVersion", "v1");
 		when(service.fetchAllDocumentsMetadata(any())).thenReturn(List.of(response));
 		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
 		assertEquals(List.of(response), documentsByTransactionId.getResponse());
+		assertEquals("mosip.resident.document.list", documentsByTransactionId.getId());
+		assertEquals("v1", documentsByTransactionId.getVersion());
 	}
 	
 	@Test
@@ -89,10 +94,14 @@ public class DocumentControllerTest {
 	@Test
 	public void testGetDocumentByDocumentIdSuccess() throws ResidentServiceCheckedException {
 		DocumentDTO response = new DocumentDTO();
-		validator.validateGetDocumentByDocumentIdInput("123");
+		ReflectionTestUtils.setField(controller, "residentGetDocumentId", "mosip.resident.document.get");
+		ReflectionTestUtils.setField(controller, "residentGetDocumentVersion", "v1");
+		validator.validateTransactionId("123");
 		when(service.fetchDocumentByDocId(Mockito.anyString(), Mockito.anyString())).thenReturn(response);
 		ResponseWrapper<DocumentDTO> documentByDocumentId = controller.getDocumentByDocumentId("", "");
 		assertEquals(response, documentByDocumentId.getResponse());
+		assertEquals("mosip.resident.document.get", documentByDocumentId.getId());
+		assertEquals("v1", documentByDocumentId.getVersion());
 	}
 
 	@Test
