@@ -11,11 +11,11 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,13 @@ import java.util.Optional;
     private Utilitiy utilitiy;
 
     @Autowired
-	Environment env;
+	private Environment env;
+    
+    @Value("${resident.template.date.pattern}")
+	private String templateDatePattern;
+    
+    @Value("${resident.template.time.pattern}")
+	private String templateTimePattern;
 
     /**
      * Gets the ack template variables for authentication request.
@@ -189,13 +195,12 @@ import java.util.Optional;
      }
      
      public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {
- 		LocalDateTime myDateObj = DateUtils.getUTCCurrentDateTime();
  		Map<String, Object> templateVariables = new HashMap<>();
  		templateVariables.put(TemplateVariablesEnum.EVENT_ID, dto.getEventId());
  		templateVariables.put(TemplateVariablesEnum.NAME, getName(dto.getLangCode()));
  		templateVariables.put(TemplateVariablesEnum.EVENT_DETAILS, dto.getRequestType().name());
- 		templateVariables.put(TemplateVariablesEnum.DATE, getDate(myDateObj));
- 		templateVariables.put(TemplateVariablesEnum.TIME, getTime(myDateObj));
+ 		templateVariables.put(TemplateVariablesEnum.DATE, getDate());
+ 		templateVariables.put(TemplateVariablesEnum.TIME, getTime());
  		templateVariables.put(TemplateVariablesEnum.STATUS, dto.getTemplateType().getType());
  		if(TemplateType.FAILURE.getType().equals(dto.getTemplateType().getType())) {
  			templateVariables.put(TemplateVariablesEnum.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(dto.getEventId()));
@@ -203,16 +208,12 @@ import java.util.Optional;
  		return templateVariables;
  	}
      
-     private String getTime(LocalDateTime dateObj) {
-// 		DateTimeFormatter myFormatTime = DateTimeFormatter.ofPattern("HH:mm:ss");
-// 		return dateObj.format(myFormatTime);
- 		return DateUtils.getUTCCurrentDateTimeString("HH:mm:ss");
+     private String getTime() {
+ 		return DateUtils.getUTCCurrentDateTimeString(templateTimePattern);
  	}
      
-     private String getDate(LocalDateTime dateObj) {
-// 		DateTimeFormatter myFormatDate = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-// 		return dateObj.format(myFormatDate);
- 		return DateUtils.getUTCCurrentDateTimeString("dd-MM-yyyy");
+     private String getDate() {
+ 		return DateUtils.getUTCCurrentDateTimeString(templateDatePattern);
  	}
      
      private String getName(String language) {
@@ -255,26 +256,16 @@ import java.util.Optional;
      
      public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
-// 		if(TemplateType.SUCCESS.getType().equals(templateType.getType())) {
-// 			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, );
-// 		}
  		return templateVariables;
  	}
      
      public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
-// 		if(TemplateType.SUCCESS.getType().equals(templateType.getType())) {
-// 			templateVariables.put(TemplateVariablesEnum.TRANSACTION_ID, );
-// 			templateVariables.put(TemplateVariablesEnum.TRACKING_LINK, );
-// 		}
  		return templateVariables;
  	}
      
      public Map<String, Object> getNotificationTemplateVariablesForShareCredentialWithPartner(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
-// 		if(TemplateType.SUCCESS.getType().equals(templateType.getType())) {
-// 			templateVariables.put(TemplateVariablesEnum.PARTNER_ID, );
-// 		}
  		return templateVariables;
  	}
      
