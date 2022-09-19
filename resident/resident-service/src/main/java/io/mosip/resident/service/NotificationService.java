@@ -225,7 +225,7 @@ public class NotificationService {
 			List<TemplateDto> response = templateResponse.getTemplates();
 			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
 					"NotificationService::getTemplate()::exit");
-			return response.get(0).getFileText().replaceAll("(^\")|(\"$)", "").replaceAll("#", "");
+			return response.get(0).getFileText().replaceAll("(^\")|(\"$)", "");
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
@@ -406,15 +406,23 @@ public class NotificationService {
 		String[] mailTo = { String.valueOf(mailingAttributes.get(utilities.getEmailAttribute())) };
 		String[] mailCc = notificationEmails.split("\\|");
 
-		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);
+		for (String item : mailTo) {
+			params.add("mailTo", item);
+		}
+
+		if (mailCc != null) {
+			for (String item : mailCc) {
+				params.add("mailCc", item);
+			}
+		}
 
 		try {
-			builder.queryParam("mailSubject", mergedEmailSubject);
-			builder.queryParam("mailContent", mergedTemplate);
+			params.add("mailSubject", mergedEmailSubject);
+			params.add("mailContent", mergedTemplate);
 			params.add("attachments", attachment);
 			ResponseWrapper<NotificationResponseDTO> response;
 
-			response = restClient.postApi(builder.build().toUriString(), MediaType.MULTIPART_FORM_DATA, params,
+			response = restClient.postApi(env.getProperty(ApiName.EMAILNOTIFIER.name()), MediaType.MULTIPART_FORM_DATA, params,
 					ResponseWrapper.class);
 			if (nullCheckForResponse(response)) {
 				throw new ResidentServiceException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
@@ -460,10 +468,6 @@ public class NotificationService {
 		return false;
 
 	}
-	
-//	private String encodeValue(String value) throws UnsupportedEncodingException {
-//	    return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
-//	}
 
 	public boolean nullValueCheck(String value) {
 		if (value == null || value.isEmpty())
@@ -479,18 +483,4 @@ public class NotificationService {
 
 	}
 
-	public UriComponentsBuilder prepareBuilder(String[] mailTo, String[] mailCc) {
-		String apiHost = env.getProperty(ApiName.EMAILNOTIFIER.name());
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiHost);
-		for (String item : mailTo) {
-			builder.queryParam("mailTo", item);
-		}
-
-		if (mailCc != null) {
-			for (String item : mailCc) {
-				builder.queryParam("mailCc", item);
-			}
-		}
-		return builder;
-	}
 }
