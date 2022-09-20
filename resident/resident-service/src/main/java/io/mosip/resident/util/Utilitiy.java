@@ -92,6 +92,9 @@ public class Utilitiy {
 	
 	@Value("${resident.data.mask.function}")
 	private String maskingFunction;
+	
+	@Value("${resident.ui.track-service-request-url}")
+	private String trackServiceUrl;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -317,5 +320,9 @@ public class Utilitiy {
 
 	public static boolean isSecureSession(){
 		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .filter(obj -> !obj.equals(ANONYMOUS_USER)) .isPresent();
+	}
+	
+	public String createTrackServiceRequestLink(String eventId) {
+		return trackServiceUrl + eventId;
 	}
 }

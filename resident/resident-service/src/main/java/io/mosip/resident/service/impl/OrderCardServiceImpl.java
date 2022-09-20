@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,16 @@ import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
@@ -56,6 +61,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 	private Utilitiy utility;
 	
 	@Autowired
+	NotificationService notificationService;
+	
+	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Value("${mosip.resident.order.card.payment.enabled}")
@@ -76,6 +84,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 		}
 		residentCredentialResponseDto = residentCredentialService.reqCredentialV2(requestDto);
 		updateResidentTransaction(residentTransactionEntity, residentCredentialResponseDto);
+		sendNotificationV2(requestDto.getIndividualId(), RequestType.ORDER_PHYSICAL_CARD,
+				TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), null);
 		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::exit");
 		return residentCredentialResponseDto;
 	}
@@ -126,12 +136,25 @@ public class OrderCardServiceImpl implements OrderCardService {
 			
 			logger.error("Error occured in checking order status %s", e.getMessage());
 			auditUtil.setAuditRequestDto(EventEnum.CHECK_ORDER_STATUS_EXCEPTION);
+			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD,
+					TemplateType.FAILURE, residentTransactionEntity.getEventId(), null);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
 					ResidentErrorCode.PAYMENT_REQUIRED.getErrorMessage());
 		} finally {
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::exit");
+	}
+	
+	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
+			String eventId, Map<String, Object> additionalAttributes) throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId(id);
+		notificationRequestDtoV2.setRequestType(requestType);
+		notificationRequestDtoV2.setTemplateType(templateType);
+		notificationRequestDtoV2.setEventId(eventId);
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		return notificationService.sendNotification(notificationRequestDtoV2);
 	}
 
 }
