@@ -2,15 +2,20 @@ package io.mosip.resident.util;
 
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.*;
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +40,18 @@ import java.util.Optional;
 
     @Autowired
     private RequestValidator requestValidator;
+    
+    @Autowired
+    private Utilitiy utilitiy;
+
+    @Autowired
+	private Environment env;
+    
+    @Value("${resident.template.date.pattern}")
+	private String templateDatePattern;
+    
+    @Value("${resident.template.time.pattern}")
+	private String templateTimePattern;
 
     /**
      * Gets the ack template variables for authentication request.
@@ -176,6 +193,109 @@ import java.util.Optional;
      public  Map<String, String> getAckTemplateVariablesForVidCardDownload(String eventId) {
          return Collections.emptyMap();
      }
+     
+     public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = new HashMap<>();
+ 		templateVariables.put(TemplateVariablesEnum.EVENT_ID, dto.getEventId());
+ 		templateVariables.put(TemplateVariablesEnum.NAME, getName(dto.getLangCode()));
+ 		templateVariables.put(TemplateVariablesEnum.EVENT_DETAILS, dto.getRequestType().name());
+ 		templateVariables.put(TemplateVariablesEnum.DATE, getDate());
+ 		templateVariables.put(TemplateVariablesEnum.TIME, getTime());
+ 		templateVariables.put(TemplateVariablesEnum.STATUS, dto.getTemplateType().getType());
+ 		if(TemplateType.FAILURE.getType().equals(dto.getTemplateType().getType())) {
+ 			templateVariables.put(TemplateVariablesEnum.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(dto.getEventId()));
+ 		}
+ 		return templateVariables;
+ 	}
+     
+     private String getTime() {
+ 		return DateUtils.getUTCCurrentDateTimeString(templateTimePattern);
+ 	}
+     
+     private String getDate() {
+ 		return DateUtils.getUTCCurrentDateTimeString(templateDatePattern);
+ 	}
+     
+     private String getName(String language) {
+ 		String name = "";
+ 		try {
+ 			String id=identityServiceImpl.getResidentIndvidualId();
+ 			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id);
+ 			name=identityServiceImpl.getNameForNotification(idMap, language);
+ 		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException e) {
+ 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
+ 		}
+ 		return name;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForGenerateOrRevokeVid(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForAuthTypeLockUnlock(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForVerifyPhoneEmail(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForGetMyId(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForShareCredentialWithPartner(NotificationTemplateVariableDTO dto) {
+ 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		return templateVariables;
+ 	}
+     
+     public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto) {
+ 		return Collections.emptyMap();
+ 	}
+     
+     public String getEmailSubjectTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String emailSubjectTemplateCodeProperty = requestType.getEmailSubjectTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(emailSubjectTemplateCodeProperty);
+     }
+     
+     public String getEmailContentTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String emailContentTemplateCodeProperty = requestType.getEmailContentTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(emailContentTemplateCodeProperty);
+     }
+     
+     public String getSmsTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String smsTemplateCodeProperty = requestType.getSmsTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(smsTemplateCodeProperty);
+     }
+     
+     public String getBellIconTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String bellIconTemplateCodeProperty = requestType.getBellIconTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(bellIconTemplateCodeProperty);
+     }
+     
+     private String getTemplateTypeCode(String templateCodeProperty) {
+    	 return env.getProperty(templateCodeProperty);
+	}
 
      //ToDo: Need to change method implementation
      private String getVidNumber(String eventId) {

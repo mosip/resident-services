@@ -279,7 +279,7 @@ public class ResidentCredentialServiceTest {
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
 		ResidentCredentialResponseDto credentialResponseDto = residentCredentialService
-				.shareCredential(residentCredentialRequestDto, "requestTypeCode");
+				.shareCredential(residentCredentialRequestDto, "SHARE_CRED_WITH_PARTNER");
 		assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
 	}
 
@@ -312,7 +312,7 @@ public class ResidentCredentialServiceTest {
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
 		ResidentCredentialResponseDto credentialResponseDto = residentCredentialService
-				.shareCredential(residentCredentialRequestDto, "requestTypeCode", "Banking");
+				.shareCredential(residentCredentialRequestDto, "SHARE_CRED_WITH_PARTNER", "Banking");
 		assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
 	}
 
@@ -346,7 +346,7 @@ public class ResidentCredentialServiceTest {
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
 		ResidentCredentialResponseDto credentialResponseDto = residentCredentialService
-				.shareCredential(residentCredentialRequestDto, "requestTypeCode");
+				.shareCredential(residentCredentialRequestDto, "SHARE_CRED_WITH_PARTNER");
 		assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
 	}
 
@@ -385,7 +385,7 @@ public class ResidentCredentialServiceTest {
 				.thenReturn(partnerResponseDtoResponseWrapper);
 		when(residentServiceRestClient.postApi(any(), any(), any(), any()))
 				.thenThrow(ApisResourceAccessException.class);
-		residentCredentialService.shareCredential(residentCredentialRequestDto, "requestTypeCode");
+		residentCredentialService.shareCredential(residentCredentialRequestDto, "SHARE_CRED_WITH_PARTNER");
 	}
 
 	@Test(expected = ResidentCredentialServiceException.class)
@@ -416,7 +416,7 @@ public class ResidentCredentialServiceTest {
 		when(residentServiceRestClient.postApi(any(), any(), any(), any()))
 				.thenReturn(partnerResponseDtoResponseWrapper);
 
-		residentCredentialService.shareCredential(residentCredentialRequestDto, "requestTypeCode");
+		residentCredentialService.shareCredential(residentCredentialRequestDto, "SHARE_CRED_WITH_PARTNER");
 	}
 
 	@Test

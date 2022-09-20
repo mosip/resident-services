@@ -22,4 +22,14 @@ public class TemplateVariablesEnum {
     public static final String PAYMENT_STATUS = "paymentStatus";
     public static final String VID_TYPE = "vidType";
     public static final String VID = "vid";
+    public static final String EVENT_DETAILS = "eventDetails";
+    public static final String DATE = "date";
+    public static final String TIME = "time";
+    public static final String NAME = "name";
+    public static final String STATUS = "status";
+    public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
+    public static final String DOWNLOAD_LINK = "downloadLink";
+    public static final String TRACKING_LINK = "trackingLink";
+    public static final String TRANSACTION_ID = "transactionID";
+    public static final String PARTNER_ID = "partner";
 }

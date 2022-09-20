@@ -58,6 +58,7 @@ import io.mosip.resident.constant.RegistrationExternalStatusCode;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesEnum;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
@@ -66,7 +67,6 @@ import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthTypeStatusDto;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BellNotificationDto;
@@ -80,6 +80,7 @@ import io.mosip.resident.dto.MachineDto;
 import io.mosip.resident.dto.MachineSearchRequestDTO;
 import io.mosip.resident.dto.MachineSearchResponseDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.PacketGeneratorResDto;
 import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
@@ -172,10 +173,10 @@ public class ResidentServiceImpl implements ResidentService {
 	private IdAuthService idAuthService;
 
 	@Autowired
-	NotificationService notificationService;
+	private NotificationService notificationService;
 
 	@Autowired
-	PartnerService partnerService;
+	private PartnerService partnerService;
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -236,9 +237,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private DocumentService docService;
-
-	@Autowired
-	private PartnerService partnerServiceImpl;
 
 	@Autowired
 	private IdAuthService idAuthServiceImpl;
@@ -742,6 +740,18 @@ public class ResidentServiceImpl implements ResidentService {
 		return notificationService.sendNotification(notificationRequest);
 	}
 
+	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
+			String eventId, Map<String, Object> additionalAttributes) throws ResidentServiceCheckedException {
+
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId(id);
+		notificationRequestDtoV2.setRequestType(requestType);
+		notificationRequestDtoV2.setTemplateType(templateType);
+		notificationRequestDtoV2.setEventId(eventId);
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		return notificationService.sendNotification(notificationRequestDtoV2);
+	}
+
 	private NotificationResponseDTO trySendNotification(String id, NotificationTemplateCode templateTypeCode,
 			Map<String, Object> additionalAttributes) {
 		try {
@@ -837,20 +847,24 @@ public class ResidentServiceImpl implements ResidentService {
 			additionalAttributes.put("RID", response.getRegistrationId());
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.OBTAINED_RID_UIN_UPDATE, dto.getTransactionID()));
-			NotificationResponseDTO notificationResponseDTO = sendNotification(dto.getIndividualId(),
-					NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
-					dto.getTransactionID(), "Request for UIN update"));
+
+			NotificationResponseDTO notificationResponseDTO;
 			if (Utilitiy.isSecureSession()) {
 				updateResidentTransaction(residentTransactionEntity, response);
+				notificationResponseDTO = sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN,
+						TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), additionalAttributes);
 				ResidentUpdateResponseDTOV2 responseDTOV2 = new ResidentUpdateResponseDTOV2();
 				responseDTOV2.setEventId(residentTransactionEntity.getEventId());
 				responseDTOV2.setMessage(notificationResponseDTO.getMessage());
 				responseDto = responseDTOV2;
 			} else {
+				notificationResponseDTO = sendNotification(dto.getIndividualId(),
+						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
 				responseDto.setMessage(notificationResponseDTO.getMessage());
 				responseDto.setRegistrationId(response.getRegistrationId());
 			}
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
+					dto.getTransactionID(), "Request for UIN update"));
 
 			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
 					|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
@@ -864,10 +878,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
+				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), null);
+			} else {
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -878,10 +895,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
+				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), null);
+			} else {
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATION_FAILED_EXCEPTION,
 					e.getMessage() + " Transaction id: " + dto.getTransactionID(), "Request for UIN update"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -891,10 +911,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
+				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), null);
+			} else {
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_RESOURCE_UNACCESS,
 					dto.getTransactionID(), "Request for UIN update"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -915,10 +938,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
+				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), null);
+			} else {
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -928,10 +954,14 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
+				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), null);
+			} else {
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
+
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -943,10 +973,13 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
+				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), null);
+			} else {
+				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.BASE_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
-			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -1084,17 +1117,12 @@ public class ResidentServiceImpl implements ResidentService {
 		} finally {
 			residentTransactionRepository.saveAll(residentTransactionEntities);
 
-			NotificationTemplateCode templateCode = null;
-			for (AuthTypeStatusDto authTypeStatusDto : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
-				if (authTypeStatusDto.getLocked()) {
-					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_LOCK_AUTH_SUCCESS
-							: NotificationTemplateCode.RS_LOCK_AUTH_FAILURE;
-				} else {
-					templateCode = isTransactionSuccessful ? NotificationTemplateCode.RS_UNLOCK_AUTH_SUCCESS
-							: NotificationTemplateCode.RS_UNLOCK_AUTH_FAILURE;
-				}
-			}
-			NotificationResponseDTO notificationResponseDTO = sendNotification(individualId, templateCode, null);
+			RequestType requestType = RequestType.AUTH_TYPE_LOCK_UNLOCK;
+			TemplateType templateType = isTransactionSuccessful ? TemplateType.REQUEST_RECEIVED : TemplateType.FAILURE;
+
+			NotificationResponseDTO notificationResponseDTO = sendNotificationV2(individualId, requestType,
+					templateType, residentTransactionEntities.get(0).getEventId(), null);
+
 			if (isTransactionSuccessful)
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock success"));
