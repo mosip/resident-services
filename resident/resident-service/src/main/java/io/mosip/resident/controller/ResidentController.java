@@ -501,7 +501,6 @@ public class ResidentController {
 		return response;
 	}
 
-	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetupdatedttimes()" + ")")
 	@PutMapping(path = "/bell/updatedttime")
 	@Operation(summary = "updatebellClickdttimes", description = "updatedttimes")

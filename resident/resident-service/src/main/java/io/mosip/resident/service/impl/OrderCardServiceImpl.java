@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.RequestType;
@@ -46,7 +46,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
-	
+
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
 
@@ -56,13 +56,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	@Autowired
 	private AuditUtil auditUtil;
-	
+
 	@Autowired
 	private Utilitiy utility;
-	
+
 	@Autowired
 	NotificationService notificationService;
-	
+
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
@@ -71,37 +71,61 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardServiceImpl.class);
 
+	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public ResidentCredentialResponseDto sendPhysicalCard(ResidentCredentialRequestDto requestDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::entry");
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 
-		 ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto);
-		
-		if (isPaymentEnabled) {
-			checkOrderStatus(requestDto.getTransactionID(), requestDto.getIndividualId(), residentTransactionEntity);
+		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto);
+		if (requestDto.getConsent() == null || requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
+				|| requestDto.getConsent().isEmpty() || requestDto.getConsent().equals("null")) {
+			checkConsent(requestDto.getConsent(), residentTransactionEntity);
+		} else {
+
+			if (isPaymentEnabled) {
+				checkOrderStatus(requestDto.getTransactionID(), requestDto.getIndividualId(),
+						residentTransactionEntity);
+			}
+			residentCredentialResponseDto = residentCredentialService.reqCredentialV2(requestDto);
+			updateResidentTransaction(residentTransactionEntity, residentCredentialResponseDto);
+			sendNotificationV2(requestDto.getIndividualId(), RequestType.ORDER_PHYSICAL_CARD,
+					TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), null);
+			logger.debug("OrderCardServiceImpl::sendPhysicalCard()::exit");
+
 		}
-		residentCredentialResponseDto = residentCredentialService.reqCredentialV2(requestDto);
-		updateResidentTransaction(residentTransactionEntity, residentCredentialResponseDto);
-		sendNotificationV2(requestDto.getIndividualId(), RequestType.ORDER_PHYSICAL_CARD,
-				TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), null);
-		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::exit");
+
 		return residentCredentialResponseDto;
+	}
+
+	private void checkConsent(String consent, ResidentTransactionEntity residentTransactionEntity)
+			throws ResidentServiceCheckedException {
+		try {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+					ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+		} catch (Exception e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+					ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+		} finally {
+			residentTransactionRepository.save(residentTransactionEntity);
+		}
+
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto)
 			throws ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
-		String individualId=identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualId();
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
-		
-		//	TODO: need to fix transaction ID (need partner's end transactionId)
+		residentTransactionEntity.setConsent(requestDto.getConsent());
+		// TODO: need to fix transaction ID (need partner's end transactionId)
 		residentTransactionEntity.setRequestTrnId(requestDto.getTransactionID());
 		return residentTransactionEntity;
 	}
@@ -113,7 +137,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionRepository.save(residentTransEntity);
 	}
 
-	private void checkOrderStatus(String transactionId, String individualId, ResidentTransactionEntity residentTransactionEntity) throws ResidentServiceCheckedException {
+	private void checkOrderStatus(String transactionId, String individualId,
+			ResidentTransactionEntity residentTransactionEntity) throws ResidentServiceCheckedException {
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::entry");
 		List<String> pathsegments = null;
 
@@ -128,16 +153,16 @@ public class OrderCardServiceImpl implements OrderCardService {
 		try {
 			ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) restClientWithSelfTOkenRestTemplate.getApi(
 					ApiName.GET_ORDER_STATUS_URL, pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
-			
+
 			residentTransactionEntity.setStatusCode(EventStatusInProgress.PAYMENT_CONFIRMED.name());
 
 		} catch (ApisResourceAccessException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
-			
+
 			logger.error("Error occured in checking order status %s", e.getMessage());
 			auditUtil.setAuditRequestDto(EventEnum.CHECK_ORDER_STATUS_EXCEPTION);
-			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD,
-					TemplateType.FAILURE, residentTransactionEntity.getEventId(), null);
+			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD, TemplateType.FAILURE,
+					residentTransactionEntity.getEventId(), null);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
 					ResidentErrorCode.PAYMENT_REQUIRED.getErrorMessage());
 		} finally {
@@ -145,7 +170,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		}
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::exit");
 	}
-	
+
 	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
 			String eventId, Map<String, Object> additionalAttributes) throws ResidentServiceCheckedException {
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();

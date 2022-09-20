@@ -56,7 +56,6 @@ import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
-import io.mosip.resident.dto.AuthTypeStatusDto;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.PageDto;
@@ -98,9 +97,9 @@ import io.mosip.resident.validator.RequestValidator;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentControllerTest {
-	
-    @MockBean
-    private ProxyIdRepoService proxyIdRepoService;
+
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private ResidentServiceImpl residentService;
@@ -110,25 +109,25 @@ public class ResidentControllerTest {
 
 	@MockBean
 	private RequestValidator validator;
-	
+
 	@MockBean
 	private ResidentVidService vidService;
-	
+
 	@MockBean
 	private IdAuthServiceImpl idAuthServiceImpl;
-	
+
 	@MockBean
 	private IdentityServiceImpl identityServiceImpl;
-	
+
 	@MockBean
 	private DocumentService docService;
-	
+
 	@MockBean
 	private ScopeValidator scopeValidator;
-	
+
 	@MockBean
 	private ObjectStoreHelper objectStore;
-	
+
 	@Mock
 	private AuditUtil audit;
 
@@ -140,7 +139,7 @@ public class ResidentControllerTest {
 	private RestTemplate residentRestTemplate;
 
 	@InjectMocks
-    ResidentController residentController;
+	ResidentController residentController;
 
 	RequestWrapper<AuthLockOrUnLockRequestDto> authLockRequest;
 	RequestWrapper<EuinRequestDTO> euinRequest;
@@ -157,8 +156,6 @@ public class ResidentControllerTest {
 	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
-	
-
 
 	@Before
 	public void setUp() throws ApisResourceAccessException {
@@ -194,11 +191,9 @@ public class ResidentControllerTest {
 		authLockRequestToJson = gson.toJson(authLockRequest);
 		euinRequestToJson = gson.toJson(euinRequest);
 
-
-
 		authStatusRequestToJson = gson.toJson(authTypeStatusRequest);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-		
+
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("5734728510");
 	}
 
@@ -207,7 +202,7 @@ public class ResidentControllerTest {
 	public void testGetRidStatusSuccess() throws Exception {
 		RegStatusCheckResponseDTO dto = new RegStatusCheckResponseDTO();
 		dto.setRidStatus("PROCESSED");
-		Mockito.doReturn(dto).when(residentService).getRidStatus((RequestDTO)Mockito.any());
+		Mockito.doReturn(dto).when(residentService).getRidStatus((RequestDTO) Mockito.any());
 		this.mockMvc
 				.perform(post("/rid/check-status").contentType(MediaType.APPLICATION_JSON)
 						.content(authLockRequestToJson))
@@ -236,19 +231,17 @@ public class ResidentControllerTest {
 		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
 		residentController.reqAauthTypeStatusUpdateV2(authTypeStatusRequest);
 		validator.validateAuthLockOrUnlockRequestV2(authTypeStatusRequest);
-		this.mockMvc
-				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(authStatusRequestToJson))
+		this.mockMvc.perform(
+				post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(authStatusRequestToJson))
 				.andExpect(status().isOk()).andExpect(status().isOk());
 	}
-
-
 
 	@Test
 	@WithUserDetails("resident")
 	public void testReqAuthTypeLockBadRequest() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
-		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2( Mockito.any());
+		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
 
 		MvcResult result = this.mockMvc
 				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(""))
@@ -350,23 +343,23 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testGetServiceHistorySuccess() throws Exception {
 		io.mosip.kernel.core.http.ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new io.mosip.kernel.core.http.ResponseWrapper<>();
-		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(response);
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
 		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
 				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
 				ResidentTransactionType.AUTHENTICATION_REQUEST.toString(), null, null);
-		mockMvc.perform(MockMvcRequestBuilders.get("/service-history")
-						.contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(MockMvcRequestBuilders.get("/service-history").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetServiceRequestUpdateSuccess() throws Exception {
-		Mockito.when(residentService.getServiceRequestUpdate(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>(0));
+		Mockito.when(residentService.getServiceRequestUpdate(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>(0));
 		residentController.getServiceRequestUpdate(1, 12);
-		mockMvc.perform(MockMvcRequestBuilders.get("/get/service-request-update")
-						.contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/get/service-request-update").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
@@ -446,13 +439,14 @@ public class ResidentControllerTest {
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
 		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> resultRequestWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
-		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController.updateUinDemographics(requestDTO);
+		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController
+				.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
 	}
 
 	@Test
 	@WithUserDetails("reg-admin")
-	public void testAuthLockStatus() throws Exception{
+	public void testAuthLockStatus() throws Exception {
 		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
@@ -462,14 +456,15 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
-	public void testAuthLockStatusFailed() throws Exception{
+	public void testAuthLockStatusFailed() throws Exception {
 		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorCode(),
 				ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
 		responseWrapper.setResponsetime(null);
 
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
-		when(residentService.getAuthLockStatus(Mockito.any())).thenThrow(new ResidentServiceCheckedException("error", "error"));
+		when(residentService.getAuthLockStatus(Mockito.any()))
+				.thenThrow(new ResidentServiceCheckedException("error", "error"));
 		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
 		resultRequestWrapper.setResponsetime(null);
 		assertEquals(responseWrapper, resultRequestWrapper);
@@ -477,7 +472,7 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
-	public void testDownloadCardIndividualId() throws Exception{
+	public void testDownloadCardIndividualId() throws Exception {
 		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		responseWrapper.setResponsetime(null);
 		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
@@ -495,7 +490,8 @@ public class ResidentControllerTest {
 		resultResponseWrapper.setResponsetime(null);
 
 		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(list);
-		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultRequestWrapper = residentController.downloadCard("9876543210");
+		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultRequestWrapper = residentController
+				.downloadCard("9876543210");
 		resultRequestWrapper.setResponsetime(null);
 		assertEquals(resultResponseWrapper, resultRequestWrapper);
 	}
@@ -513,7 +509,9 @@ public class ResidentControllerTest {
 		requestWrapper.setVersion("v1");
 		Mockito.when(residentService.getAidStatus(Mockito.any())).thenReturn(new AidStatusResponseDTO());
 		String requestAsString = gson.toJson(requestWrapper);
-		this.mockMvc.perform(post("/aid/get-individual-id").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
+		this.mockMvc
+				.perform(
+						post("/aid/get-individual-id").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 	}
 
@@ -522,6 +520,7 @@ public class ResidentControllerTest {
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
 		residentController.checkAidStatus("17", "eng");
 		when(residentService.checkAidStatus("17")).thenReturn("PROCESSED");
-		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng")).andExpect(status().isOk());
+		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng"))
+				.andExpect(status().isOk());
 	}
 }

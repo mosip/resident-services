@@ -121,7 +121,7 @@ public class ResidentCredentialServiceTest {
         residentCredentialRequestDto.setEncrypt(true);
         residentCredentialRequestDto.setEncryptionKey("abc123");
         residentCredentialRequestDto.setSharableAttributes(attributeList);
-        
+        residentCredentialRequestDto.setConsent("Accepted");
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
