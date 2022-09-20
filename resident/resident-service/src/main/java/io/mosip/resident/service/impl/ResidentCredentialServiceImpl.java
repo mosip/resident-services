@@ -221,8 +221,12 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
 			}
 			residentTransactionEntity = createResidentTransactionEntity(dto, requestType);
-
-			// else {
+			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
+					|| dto.getConsent().equals("null")) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+			}
 			credentialReqestDto = prepareCredentialRequest(dto);
 			requestDto.setId("mosip.credential.request.service.id");
 			requestDto.setRequest(credentialReqestDto);
@@ -250,7 +254,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					residentTransactionEntity.getEventId(), additionalAttributes);
 
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
-			// }
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -274,18 +277,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-		}
-
-		try {
-			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-					|| dto.getConsent().equals("null")) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
-						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
-			}
-		} catch (Exception e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
-					ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 		}
 
 		finally {
