@@ -774,6 +774,12 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utilitiy.isSecureSession()) {
 				responseDto = new ResidentUpdateResponseDTOV2();
 				residentTransactionEntity = createResidentTransEntity(dto);
+				if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
+						|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+							ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
+				}
 			} else {
 				responseDto = new ResidentUpdateResponseDTO();
 			}
@@ -865,15 +871,7 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
-
-			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-					|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
-						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
-			}
 		}
-
 		catch (OtpValidationFailedException e) {
 			if (Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -1012,6 +1010,7 @@ public class ResidentServiceImpl implements ResidentService {
 		keys.remove("UIN");
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
+		residentTransactionEntity.setConsent(dto.getConsent());
 		return residentTransactionEntity;
 	}
 
