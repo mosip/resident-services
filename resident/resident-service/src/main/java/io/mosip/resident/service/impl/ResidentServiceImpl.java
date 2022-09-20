@@ -1010,6 +1010,7 @@ public class ResidentServiceImpl implements ResidentService {
 		keys.remove("UIN");
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
+		residentTransactionEntity.setConsent(dto.getConsent());
 		return residentTransactionEntity;
 	}
 
