@@ -19,4 +19,5 @@ public class ServiceHistoryResponseDto {
     private String eventStatus;
     private String timeStamp;
     private String requestType;
+    private String pinnedStatus;
 }

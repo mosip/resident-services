@@ -13,6 +13,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,7 +79,8 @@ public class ResidentCredentialController {
 	}
 	
 	@ResponseFilter
-	@PostMapping(value = "/req/download-personalized-card")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestDownloadPersonalizedCard()" + ")")
+	@PostMapping(value = "/download-personalized-card")
 	@Operation(summary = "requestDownloadPersonalizedCard", description = "requestDownloadPersonalizedCard", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -92,7 +94,10 @@ public class ResidentCredentialController {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
 		requestDTO.getRequest().setSharableAttributes(null);
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
+		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
+		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
+		requestDTOMap.remove("purpose");
+		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestMap,
 				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
 				});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
@@ -104,7 +109,8 @@ public class ResidentCredentialController {
 	}
 	
 	@ResponseFilter
-	@PostMapping(value = "/req/share-credential")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestShareCredWithPartner()" + ")")
+	@PostMapping(value = "/share-credential")
 	@Operation(summary = "requestShareCredWithPartner", description = "requestShareCredWithPartner", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -115,16 +121,25 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException {
+		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
 		requestDTO.getRequest().setSharableAttributes(null);
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestDTO,
+		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
+		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
+		requestDTOMap.remove("purpose");
+		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestMap,
 				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
 				});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
 		buildAdditionalMetadata(requestDTO, request);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name()));
+		if(purpose != null) {
+			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name(),purpose));
+		}else {
+			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name()));
+		}
+		
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}

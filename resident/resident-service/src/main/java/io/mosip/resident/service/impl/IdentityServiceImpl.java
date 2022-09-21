@@ -237,6 +237,10 @@ public class IdentityServiceImpl implements IdentityService {
 				.findAny()
 				.orElse(null);
 	}
+	
+	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
+		return getMappingValue(identity, NAME, langCode);
+	}
 
 	private String getMappingValue(Map<?, ?> identity, String mappingName)
             throws ResidentServiceCheckedException, IOException {

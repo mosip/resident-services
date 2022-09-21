@@ -10,6 +10,7 @@ import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
@@ -70,7 +71,7 @@ public class WebSubUpdateAuthTypeController {
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
                 webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
                 auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
-            } catch (ResidentServiceCheckedException e) {
+            } catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
                 logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(),
                         ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()

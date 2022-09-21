@@ -1,12 +1,9 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import io.mosip.commons.khazana.dto.ObjectDto;
+import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,9 +15,12 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 
-import io.mosip.commons.khazana.dto.ObjectDto;
-import io.mosip.resident.dto.DocumentRequestDTO;
-import io.mosip.resident.helper.ObjectStoreHelper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
  * 
@@ -60,6 +60,13 @@ public class DocumentServiceImplTest {
 		assertNotNull(documentServiceImpl.fetchAllDocumentsMetadata("transactionId"));
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void testFetchAllDocumentsMetadataFailure() throws Exception{
+		Map<String, Object> metaData = getMetaData();
+		Mockito.when(objectStoreHelper.getAllObjects("transactionId")).thenReturn(null);
+		assertNotNull(documentServiceImpl.fetchAllDocumentsMetadata("transactionId"));
+	}
+
 	@Test
 	public void getDocumentsWithMetadataTest() throws Exception {
 		List<ObjectDto> allObjects = getAllObjects();
@@ -78,12 +85,14 @@ public class DocumentServiceImplTest {
 
 	@Test
 	public void testDeleteDocumentSuccess() throws Exception {
+		Mockito.when(objectStoreHelper.getObject(Mockito.anyString())).thenReturn("value");
 		Mockito.when(objectStoreHelper.deleteObject(Mockito.anyString())).thenReturn(true);
 		assertNotNull(documentServiceImpl.deleteDocument("transactionId", "documentId"));
 	}
 
 	@Test
 	public void testDeleteDocumentFailure() throws Exception {
+		Mockito.when(objectStoreHelper.getObject(Mockito.anyString())).thenReturn("value");
 		Mockito.when(objectStoreHelper.deleteObject(Mockito.anyString())).thenReturn(false);
 		assertNotNull(documentServiceImpl.deleteDocument("transactionId", "documentId"));
 	}

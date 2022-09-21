@@ -40,7 +40,7 @@ public enum ResidentErrorCode {
 	MACHINE_MASTER_CREATE_EXCEPTION("RES-SER-431", "Machine is not created in master data"),
 	INDIVIDUAL_ID_TYPE_INVALID("RES-SER-432", "Individual Id type is invalid"),
 	INDIVIDUAL_ID_UIN_MISMATCH("RES-SER-433", "Individual Id in request and identity json UIN is not matching"),
-	
+
 	FAILED_TO_UPLOAD_DOC("RES-SER-434", "Failed to upload document"),
 	FAILED_TO_RETRIEVE_DOC("RES-SER-435", "Failed to retrieve document(s) from object store"),
 	ENCRYPT_DECRYPT_ERROR("RES-SER-436", "Failed to encrypt/decrypt data"),
@@ -51,9 +51,8 @@ public enum ResidentErrorCode {
 
 	NO_CHANNEL_IN_IDENTITY("RES-SER-440", "Identity data does not contain email/phone."),
 
-
 	PARTNER_SERVICE_EXCEPTION("RES-SER-441", "Exception while calling partner service"),
-  AUTH_LOCK_STATUS_FAILED("RES-SER-442", "Failed to retrieve auth lock status"),
+	AUTH_LOCK_STATUS_FAILED("RES-SER-442", "Failed to retrieve auth lock status"),
 
 	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-443", "Callback url is not available for auth type: %s"),
 	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type for resident websub"),
@@ -65,14 +64,13 @@ public enum ResidentErrorCode {
 	AID_STATUS_IS_NOT_READY("RES-SER-449", "AID is not ready"),
 
 	BIOMETRIC_MISSING("RES-SER-450", "Biometric data is not available in database"),
-	EMPTY_COLLECTION_FOUND("RES-SER-451","Collection is empty"),
+	EMPTY_COLLECTION_FOUND("RES-SER-451", "Collection is empty"),
 
 	IDVID_NOT_MATCH_TO_SESSION("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
 	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
-	RID_NOT_FOUND("RES-SER-456", "RID not found"),
-	AID_NOT_FOUND("RES-SER-457", "AID not found"),
+	RID_NOT_FOUND("RES-SER-456", "RID not found"), AID_NOT_FOUND("RES-SER-457", "AID not found"),
 	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-458", "Credential request id not found"),
 	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
 
@@ -80,12 +78,16 @@ public enum ResidentErrorCode {
 
 	REQUEST_ID_NOT_FOUND("RES-SER-456", "Request id not found"),
 	DIGITAL_CARD_RID_NOT_FOUND("RES-SER-457", "Digital Card Rid not found"),
-	
-	PAYMENT_REQUIRED("RES-SER-402","Payment is not made for this card"),
+
+	PAYMENT_REQUIRED("RES-SER-402", "Payment is not made for this card"),
 	FAILED_TO_DELETE_DOC("RES-SER-458", "Failed to delete document"),
 	EVENT_STATUS_NOT_FOUND("RES-SER-459", "EID not available in database"),
+	CONSENT_DENIED("RES-SER-461",
+			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
 
-	;
+	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"),
+	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: ");
+
 	private final String errorCode;
 	private final String errorMessage;
 

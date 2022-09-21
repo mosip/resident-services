@@ -172,12 +172,12 @@ public class DocumentValidatorTest {
 	@Test
 	public void testValidateGetDocumentByDocumentIdInputSuccess() {
 		String transactionId = "123";
-		validator.validateGetDocumentByDocumentIdInput(transactionId);
+		validator.validateTransactionId(transactionId);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testValidateGetDocumentByDocumentIdFailed() {
 		String transactionId = "123a";
-		validator.validateGetDocumentByDocumentIdInput(transactionId);
+		validator.validateTransactionId(transactionId);
 	}
 }

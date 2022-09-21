@@ -360,7 +360,7 @@ public class ResidentController {
 	 */
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPatchUpdateUin()" + ")")
 	@ResponseFilter
-	@PatchMapping(value = "/req/update-uin")
+	@PatchMapping(value = "/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -501,7 +501,6 @@ public class ResidentController {
 		return response;
 	}
 
-	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetupdatedttimes()" + ")")
 	@PutMapping(path = "/bell/updatedttime")
 	@Operation(summary = "updatebellClickdttimes", description = "updatedttimes")

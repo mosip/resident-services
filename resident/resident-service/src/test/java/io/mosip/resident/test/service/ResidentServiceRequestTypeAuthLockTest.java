@@ -93,7 +93,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	private String individualId;
 
 	@Before
-	public void setup() throws ApisResourceAccessException {
+	public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
@@ -105,7 +105,10 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		residentTransactionEntities.add(residentTransactionEntity);
-		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "individualId", "partnerId");
+		ArrayList<String> partnerIds = new ArrayList<>();
+		partnerIds.add("m-partner-default-auth");
+		when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
+		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "2157245364", "partnerId");
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 	}
 
@@ -120,8 +123,6 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
-		ArrayList<String> partnerIds = new ArrayList<>();
-		partnerIds.add("m-partner-default-auth");
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 			Mockito.when(idAuthService.authTypeStatusUpdate(any(), any(), any())).thenReturn(true);
 			ResponseDTO response = new ResponseDTO();
