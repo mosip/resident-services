@@ -105,8 +105,8 @@ public class ProxyConfigControllerTest {
 
 	@Test
 	public void testGetResidentUISchema() throws Exception {
-		Mockito.when(residentConfigService.getUISchema()).thenReturn("ui-schema-json");
-		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/config/ui-schema")).andExpect(status().isOk());
+		Mockito.when(residentConfigService.getUISchema("update-demographics")).thenReturn("ui-schema-json");
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/config/ui-schema/update-demographics")).andExpect(status().isOk());
 	}
 
 	@Test

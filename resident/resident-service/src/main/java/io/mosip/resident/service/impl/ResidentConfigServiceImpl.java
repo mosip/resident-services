@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -22,7 +23,9 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilitiy;
@@ -60,8 +63,11 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	private AuditUtil auditUtil;
 	
 	/** The resident ui schema json file. */
-	@Value("${resident-ui-schema-file-source}")
-	private Resource residentUiSchemaJsonFile;
+	@Value("${resident-ui-schema-file-source-prefix}")
+	private String residentUiSchemaJsonFilePrefix;
+	
+	@Autowired
+	private ResourceLoader resourceLoader;
 	
 	/** The identity mapping json file. */
 	@Value("${identity-mapping-file-source}")
@@ -105,9 +111,14 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 * @return the UI schema
 	 */
 	@Override
-	public String getUISchema() {
+	public String getUISchema(String schemaType) {
 		if(uiSchema == null) {
-			uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFile);
+			Resource residentUiSchemaJsonFileRes = resourceLoader.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
+			if(residentUiSchemaJsonFileRes.exists()) {
+				uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFileRes);
+			} else {
+				throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
+			}
 		}
 		return uiSchema;
 	}
@@ -122,7 +133,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 	
 	private List<String> doGetUiSchemaFilteredInputAttributes() throws JsonParseException, JsonMappingException, IOException {
-		String uiSchema = getUISchema();
+		String uiSchema = getUISchema(UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
 		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
 		Object identityObj = schemaMap.get(IDENTITY);
 		if(identityObj instanceof List) {
