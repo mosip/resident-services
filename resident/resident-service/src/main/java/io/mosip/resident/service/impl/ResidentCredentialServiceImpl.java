@@ -221,10 +221,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
 			}
 			residentTransactionEntity = createResidentTransactionEntity(dto, requestType);
-			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-					|| dto.getConsent().equals("null")) {
+			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name()) || dto.getConsent().trim().isEmpty()
+					|| dto.getConsent().equals("null") || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+				throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 			}
 			credentialReqestDto = prepareCredentialRequest(dto);

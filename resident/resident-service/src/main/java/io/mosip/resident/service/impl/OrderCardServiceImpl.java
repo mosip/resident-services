@@ -80,7 +80,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto);
 		if (requestDto.getConsent() == null || requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-				|| requestDto.getConsent().isEmpty() || requestDto.getConsent().equals("null")) {
+				|| requestDto.getConsent().trim().isEmpty() || requestDto.getConsent().equals("null") || !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 			checkConsent(requestDto.getConsent(), residentTransactionEntity);
 		} else {
 
