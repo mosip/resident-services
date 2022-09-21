@@ -775,9 +775,9 @@ public class ResidentServiceImpl implements ResidentService {
 				responseDto = new ResidentUpdateResponseDTOV2();
 				residentTransactionEntity = createResidentTransEntity(dto);
 				if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-						|| dto.getConsent().isEmpty() || dto.getConsent().equals("null")) {
+						|| dto.getConsent().trim().isEmpty() || dto.getConsent().equals("null") || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					throw new ResidentServiceCheckedException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
+					throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 							ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 				}
 			} else {
@@ -966,6 +966,8 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
 					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage() + dto.getTransactionID(),
 					e);
+			
+			
 
 		} catch (BaseCheckedException e) {
 			if (Utilitiy.isSecureSession()) {

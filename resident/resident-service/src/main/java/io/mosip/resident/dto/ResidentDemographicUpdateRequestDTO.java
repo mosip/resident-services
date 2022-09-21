@@ -16,5 +16,7 @@ public class ResidentDemographicUpdateRequestDTO {
 	private String individualId;
 
 	private String identityJson;
+	
+	private String consent;
 
 }
