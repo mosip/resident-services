@@ -777,6 +777,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
 						|| dto.getConsent().trim().isEmpty() || dto.getConsent().equals("null") || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary("failed");
 					throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 							ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 				}
