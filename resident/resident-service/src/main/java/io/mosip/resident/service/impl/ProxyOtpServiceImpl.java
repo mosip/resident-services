@@ -1,0 +1,129 @@
+package io.mosip.resident.service.impl;
+
+import io.mosip.kernel.core.authmanager.model.AuthNResponse;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.preregistration.application.constant.PreRegLoginConstant;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ExceptionJSONInfoDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.MainResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.OtpManager;
+import io.mosip.resident.service.ProxyOtpService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.validator.RequestValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @author  Kamesh Shekhar Prasad
+ * This class is used to implement opt service impl class.
+ */
+@Service
+public class ProxyOtpServiceImpl implements ProxyOtpService {
+
+    private Logger log = LoggerConfiguration.logConfig(ProxyOtpServiceImpl.class);
+
+    private List<String> otpChannel;
+
+    @Autowired
+    private OtpManager otpManager;
+
+    @Autowired
+    private AuditUtil audit;
+
+    @Autowired
+    RequestValidator requestValidator;
+
+    @Value("${mosip.mandatory-languages}")
+    private String mandatoryLanguage;
+
+    @Override
+    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+        MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
+        String userid = null;
+        boolean isSuccess = false;
+        String language = mandatoryLanguage;
+        log.info("In callsendOtp method of login service  with userID: {} and langCode",
+                userOtpRequest.getRequest().getUserId(), language);
+
+        try {
+            response = (MainResponseDTO<AuthNResponse>) getMainResponseDto(userOtpRequest);
+            log.info("Response after loginCommonUtil {}", response);
+
+            userid = userOtpRequest.getRequest().getUserId();
+            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionID());
+            boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language);
+            AuthNResponse authNResponse = null;
+            if (otpSent) {
+                if (otpChannel.get(0).equalsIgnoreCase(PreRegLoginConstant.PHONE_NUMBER))
+                    authNResponse = new AuthNResponse(PreRegLoginConstant.SMS_SUCCESS, PreRegLoginConstant.SUCCESS);
+                else
+                    authNResponse = new AuthNResponse(PreRegLoginConstant.EMAIL_SUCCESS, PreRegLoginConstant.SUCCESS);
+                response.setResponse(authNResponse);
+                isSuccess = true;
+            } else
+                isSuccess = false;
+
+            response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            log.error("In callsendOtp method of login service- ", ex.getResponseBodyAsString());
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
+                    userid, "Send OTP"));
+            if(ex instanceof HttpServerErrorException || ex instanceof HttpClientErrorException){
+                throw new ResidentServiceException(ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorCode(),
+                        ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorMessage());
+            }
+        }
+        catch (Exception ex) {
+            log.error("In callsendOtp method of login service- ", ex);
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
+                    userid, "Send OTP"));
+            throw new ResidentServiceException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
+                    ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage());
+        } finally {
+            if (isSuccess) {
+                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_SUCCESS,
+                        userid, "Send OTP"));
+            } else {
+
+                ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
+                        ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage());
+                List<ExceptionJSONInfoDTO> lst = new ArrayList<>();
+                lst.add(errors);
+                response.setErrors(lst);
+                response.setResponse(null);
+                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
+                        userid, "Send OTP"));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    /**
+     * This method will return the MainResponseDTO with id and version
+     *
+     * @param mainRequestDto
+     * @return MainResponseDTO<?>
+     */
+    public MainResponseDTO<?> getMainResponseDto(MainRequestDTO<?> mainRequestDto) {
+        log.info("In getMainResponseDTO method of ProxyOtpServiceImpl");
+        MainResponseDTO<?> response = new MainResponseDTO<>();
+        response.setId(mainRequestDto.getId());
+        response.setVersion(mainRequestDto.getVersion());
+        return response;
+    }
+
+}

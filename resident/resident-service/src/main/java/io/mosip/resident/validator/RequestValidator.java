@@ -7,9 +7,12 @@ import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
+import io.mosip.preregistration.application.errorcodes.LoginErrorCodes;
+import io.mosip.preregistration.application.errorcodes.LoginErrorMessages;
 import io.mosip.preregistration.core.common.dto.MainRequestDTO;
 import io.mosip.preregistration.core.errorcodes.ErrorCodes;
 import io.mosip.preregistration.core.errorcodes.ErrorMessages;
+import io.mosip.preregistration.core.exception.InvalidRequestException;
 import io.mosip.resident.constant.*;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
@@ -120,6 +123,12 @@ public class RequestValidator {
 
 	@Value("${mosip.resident.transliteration.transliterate.id}")
 	private String transliterateId;
+
+	@Value("${otpChannel.mobile}")
+	private String mobileChannel;
+
+	@Value("${otpChannel.email}")
+	private String emailChannel;
 
 	@PostConstruct
 	public void setMap() {
@@ -832,6 +841,31 @@ public class RequestValidator {
 		} else {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
 			throw new InvalidInputException("id");
+		}
+	}
+
+    public List<String> validateUserIdAndTransactionId(String userId, String transactionID) {
+		validateTransactionId(transactionID);
+		List<String> list = new ArrayList<>();
+		if (userId == null || userId.isEmpty()) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "userId", "userId is null"));
+			throw new InvalidInputException("userId");
+		}
+		if (phoneValidator(userId)) {
+			list.add(mobileChannel);
+			return list;
+		} else if (emailValidator(userId)) {
+			list.add(emailChannel);
+			return list;
+		}
+		throw new InvalidInputException("userId");
+    }
+
+	public void validateTransactionId(String transactionID) {
+		if(!isNumeric(transactionID) || transactionID.length()!=10 || transactionID.isEmpty() || transactionID == null){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"transactionID", "transactionID is invalid"));
+			throw new InvalidInputException("transactionID");
 		}
 	}
 }

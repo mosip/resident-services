@@ -29,7 +29,8 @@ public enum NotificationTemplateCode {
 	VID_CARD_DOWNLOAD_PRINTING(""),
 	VID_CARD_DOWNLOAD_FAILED(""),
 	ORDER_PHYSICAL_CARD_DISPATCHED("order-a-physical-card-request-received"),
-	ORDER_PHYSICAL_CARD_FAILED("order-a-physical-card-failure");
+	ORDER_PHYSICAL_CARD_FAILED("order-a-physical-card-failure"),
+	RECEIVE_OTP("receive-otp");
 	
 	private final String templateCode;
 

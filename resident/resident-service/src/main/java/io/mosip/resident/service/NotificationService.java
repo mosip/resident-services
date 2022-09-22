@@ -127,6 +127,13 @@ public class NotificationService {
 		RequestType notificationRequestType = getNotificationRequestType(dto);
 		TemplateType notificationTemplateType = getNotificationTemplateType(dto);
 		String notificationEventId=getNotificationEventId(dto);
+		String otp = getOtp(dto);
+		if(otp!=null){
+			notificationAttributes.put(TemplateVariablesEnum.OTP, otp);
+		}
+		if(phone!=null){
+			notificationAttributes.put(TemplateVariablesEnum.PHONE, phone);
+		}
 		if(notificationEventId!=null) {
 			notificationAttributes.put(TemplateVariablesEnum.EVENT_ID, notificationEventId);
 		}
@@ -134,10 +141,10 @@ public class NotificationService {
 			if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
 				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
 				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
-						templateLangauges);
+						templateLangauges, null);
 			} else if (notificationType.equalsIgnoreCase("EMAIL")) {
 					emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
-							templateLangauges);
+							templateLangauges, null);
 			} else if (notificationType.equalsIgnoreCase("SMS")) {
 					smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
 			}
@@ -146,12 +153,12 @@ public class NotificationService {
 			if (channelsLowerCase.contains(PHONE_CHANNEL) && channelsLowerCase.contains(EMAIL_CHANNEL)) {
 				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
 				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
-						templateLangauges);
+						templateLangauges, null);
 			} else if (channelsLowerCase.contains(PHONE_CHANNEL)) {
 				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
 			} else if (channelsLowerCase.contains(EMAIL_CHANNEL)) {
 				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
-						templateLangauges);
+						templateLangauges, email);
 			}
 		}
 
@@ -189,7 +196,11 @@ public class NotificationService {
 				"NotificationService::sendNotification()::exit");
 		return notificationResponse;
 	}
-	
+
+	private String getOtp(NotificationRequestDto notificationRequestDto) {
+		return notificationRequestDto instanceof NotificationRequestDtoV2?((NotificationRequestDtoV2) notificationRequestDto).getOtp():null;
+	}
+
 	private RequestType getNotificationRequestType(NotificationRequestDto notificationRequestDto) {
 		return notificationRequestDto instanceof NotificationRequestDtoV2?((NotificationRequestDtoV2) notificationRequestDto).getRequestType():null;
 	}
@@ -277,7 +288,13 @@ public class NotificationService {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendSMSNotification()::entry");
 		String eventId=(String) mailingAttributes.get(TemplateVariablesEnum.EVENT_ID);
-		String phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
+		String phone="";
+		if(mailingAttributes.get(TemplateVariablesEnum.PHONE)== null){
+			phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
+		} else{
+			phone =  (String) mailingAttributes.get(TemplateVariablesEnum.PHONE);
+		}
+
 		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
@@ -287,8 +304,14 @@ public class NotificationService {
 		for (String language : templateLangauges) {
 			String languageTemplate = "";
 			if(notificationTemplate==null) {
-				languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
-						requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+				if(mailingAttributes.get(TemplateVariablesEnum.PHONE)== null){
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+				} else{
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesEnum.OTP))));
+				}
+
 			} else {
 				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + SMS),
 						mailingAttributes);
@@ -366,12 +389,16 @@ public class NotificationService {
 	}
 
 	private boolean sendEmailNotification(Map<String, Object> mailingAttributes,
-			NotificationTemplateCode notificationTemplate, RequestType requestType, TemplateType templateType, MultipartFile[] attachment, Set<String> templateLangauges)
+			NotificationTemplateCode notificationTemplate, RequestType requestType, TemplateType templateType, MultipartFile[] attachment, Set<String> templateLangauges, String newEmail)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendEmailNotification()::entry");
 		String eventId=(String) mailingAttributes.get(TemplateVariablesEnum.EVENT_ID);
 		String email = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
+		String otp="";
+		if(newEmail!=null){
+			otp=(String) mailingAttributes.get(TemplateVariablesEnum.OTP);
+		}
 		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
@@ -383,11 +410,20 @@ public class NotificationService {
 			String emailSubject = "";
 			String languageTemplate = "";
 			if(notificationTemplate==null) {
-				emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
-						requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+				if(newEmail==null) {
+					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
 
-				languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
-						requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+				}
+				else {
+					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+				}
 			} else {
 				emailSubject = getTemplate(language, notificationTemplate + EMAIL + SUBJECT);
 				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + EMAIL),
@@ -403,7 +439,13 @@ public class NotificationService {
 			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String[] mailTo = { String.valueOf(mailingAttributes.get(utilities.getEmailAttribute())) };
+		String[] mailTo = new String[1];
+		if(newEmail==null){
+			mailTo[0] = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
+		} else{
+			mailTo[0] = newEmail;
+		}
+
 		String[] mailCc = notificationEmails.split("\\|");
 
 		for (String item : mailTo) {

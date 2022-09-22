@@ -65,7 +65,11 @@ public enum RequestType {
 	VID_CARD_DOWNLOAD(TemplateUtil::getAckTemplateVariablesForVidCardDownload,
 			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"",
-			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload);
+			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload),
+
+	SEND_OTP(null, List.of(), List.of(), List.of(),"send-otp", TemplateUtil::getNotificationSendOtpVariables),
+
+	VALIDATE_OTP(null, List.of(), List.of(), List.of(),"validate-otp", TemplateUtil::getNotificationCommonTemplateVariables);
 
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;

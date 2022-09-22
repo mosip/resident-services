@@ -86,7 +86,13 @@ public enum ResidentErrorCode {
 			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
 
 	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"),
-	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: ");
+	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: "),
+	CONFIG_FILE_NOT_FOUND_EXCEPTION("RES-SER-462","Config file not found in the config server"),
+	SEND_OTP_FAILED("RES-SER-463", "Send OTP failed."),
+	OTP_ALREADY_SENT("RES-SER-464", "OTP is already sent - Please use the Sent OTP or try again after sometime"),
+	BLOCKED_OTP_VALIDATE("RES-SER-465", "OTP is blocked" ),
+	UNABLE_TO_PROCESS("RES-SER-466", "Unable to process" ),
+	SERVER_ERROR("RES-SER-467", "Server error occurred" );
 
 	private final String errorCode;
 	private final String errorMessage;

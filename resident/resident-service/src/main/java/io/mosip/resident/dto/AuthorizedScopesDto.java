@@ -74,5 +74,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> postTransliteration;
 
+	private List<String> postSendOtp;
 
 }
