@@ -105,8 +105,7 @@ public class ResidentConfigServiceImplTest {
 		ResidentConfigServiceImpl testSubject;
 
 		testSubject = createTestSubject();
-		String uiSchema = "ui-schema-json";
-		ReflectionTestUtils.setField(testSubject, "uiSchema", uiSchema);
+		String uiSchema = "{\"name\":\"ui-schema\"}";
 		String result = testSubject.getUISchema("update-demographics");
 		assertTrue(result.contains(uiSchema));
 	}
@@ -117,7 +116,6 @@ public class ResidentConfigServiceImplTest {
 
 		testSubject = createTestSubject();
 		String uiSchema = null;
-		ReflectionTestUtils.setField(testSubject, "uiSchema", uiSchema);
 		uiSchema = "{\"name\":\"ui-schema\"}";
 		String result = testSubject.getUISchema("update-demographics");
 		assertTrue(result.contains(uiSchema));
