@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Loganathan. S
  */
 @RestController
-@RequestMapping("/proxy/config")
 @Tag(name = "proxy-config-controller", description = "Proxy Config Controller")
 public class ProxyConfigController {
 
@@ -49,7 +49,7 @@ public class ProxyConfigController {
 	 *                                         exception
 	 */
 	@ResponseFilter
-	@GetMapping("/ui-properties")
+	@GetMapping("/proxy/config/ui-properties")
 	@Operation(summary = "getResidentUIProperties", description = "Get the Resident-UI properties", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -66,7 +66,8 @@ public class ProxyConfigController {
 		return propertiesResponse;
 	}
 
-	@GetMapping("/ui-schema/{schemaType}")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUISchema()" + ")")
+	@GetMapping("/auth-proxy/config/ui-schema/{schemaType}")
 	@Operation(summary = "getResidentUISchema", description = "Get the Resident-UI Schema", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -84,7 +85,8 @@ public class ProxyConfigController {
 		return propertiesResponse;
 	}
 
-	@GetMapping("/identity-mapping")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetIdentityMapping()" + ")")
+	@GetMapping("/auth-proxy/config/identity-mapping")
 	@Operation(summary = "getIdentityMapping", description = "Get the identity-mapping", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -78,8 +79,6 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private String uiSchema;
-
 	private List<String> uiSchemaFilteredInputAttributes;
 	
 	/**
@@ -111,14 +110,15 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 * @return the UI schema
 	 */
 	@Override
+	@Cacheable("ui-schema")
 	public String getUISchema(String schemaType) {
-		if(uiSchema == null) {
-			Resource residentUiSchemaJsonFileRes = resourceLoader.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
-			if(residentUiSchemaJsonFileRes.exists()) {
-				uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFileRes);
-			} else {
-				throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
-			}
+		String uiSchema;
+		Resource residentUiSchemaJsonFileRes = resourceLoader
+				.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
+		if (residentUiSchemaJsonFileRes.exists()) {
+			uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFileRes);
+		} else {
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
 		}
 		return uiSchema;
 	}

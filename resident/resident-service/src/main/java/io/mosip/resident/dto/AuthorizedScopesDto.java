@@ -73,6 +73,10 @@ public class AuthorizedScopesDto {
 	private List<String> postRequestShareCredWithPartner;
 
 	private List<String> postTransliteration;
+	
+	private List<String> getIdentityMapping;
+	
+	private List<String> getUISchema;
 
 
 }
