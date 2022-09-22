@@ -28,7 +28,7 @@ public interface ResidentConfigService {
 	 *
 	 * @return the UI schema
 	 */
-	String getUISchema();
+	String getUISchema(String schemaType);
 
 	/**
 	 * Gets the ui schema filtered input attributes.
