@@ -70,4 +70,8 @@ public class ResidentConstants {
     
     public static final String RESIDENT = "RESIDENT";
 
+    public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
+
+    public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
+
 }

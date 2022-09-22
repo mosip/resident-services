@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,9 @@ public class ProxyOtpController {
 	@Autowired
 	private RequestValidator requestValidator;
 
+	@Autowired
+	private Environment environment;
+
 	/**
 	 * This Post api use to send otp to the user by email or sms
 	 *
@@ -66,6 +71,8 @@ public class ProxyOtpController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+		requestValidator.validateRequestId(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID));
+		requestValidator.validateDate(userOtpRequest.getRequesttime());
 		return proxyOtpService.sendOtp(userOtpRequest);
 	}
 
@@ -92,10 +99,6 @@ public class ProxyOtpController {
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 
 		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
-
-//		loginValidator.validateId(VALIDATEOTP, userIdOtpRequest.getId(), errors);
-		//loginCommonUtil.validateOtpAndUserid(user);
-//		DataValidationUtil.validate(errors, VALIDATEOTP);
 		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
 		return proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
 	}

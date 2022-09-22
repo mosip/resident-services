@@ -865,11 +865,43 @@ public class RequestValidator {
 	}
 
 	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
-		if(userIdOtpRequest.getId()==null || this.environment.getProperty("resident.contact.details.update.id")==userIdOtpRequest.getId()){
+		String inputRequestId = userIdOtpRequest.getId();
+		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
+		validateRequestId(inputRequestId, requestIdStoredInProperty);
+		validateDate(userIdOtpRequest.getRequesttime());
+		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionID());
+		validateOTP(userIdOtpRequest.getRequest().getOtp());
+	}
+
+	public void validateOTP(String otp) {
+		if(otp==null){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"otp", "otp must not be null"));
+			throw new InvalidInputException("otp");
+		} else if(!isNumeric(otp)){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"otp", "otp is invalid"));
+			throw new InvalidInputException("otp");
+		}
+	}
+
+	public void validateRequestId(String inputRequestId, String requestIdStoredInProperty) {
+		if(inputRequestId==null){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"request id", "requestId must not be null"));
+			throw new InvalidInputException("requestId");
+		} else if(!inputRequestId.equalsIgnoreCase(requestIdStoredInProperty)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"request id", "requestId is invalid"));
 			throw new InvalidInputException("requestId");
 		}
+	}
 
+	public void validateDate(Date requesttime) {
+		if(requesttime==null) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", "Request time invalid"));
+			throw new InvalidInputException("requesttime");
+		}
 	}
 }
