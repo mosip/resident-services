@@ -42,7 +42,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
+/**
+ * @author Kamesh Shekhar Prasad
+ * This class is used to generate otp and validate otp.
+ */
 @Service
 public class OtpManagerServiceImpl implements OtpManager {
 
