@@ -9,5 +9,5 @@ import java.io.IOException;
 
 public interface OtpManager {
     public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException;
-    public boolean validateOtp(String otp, String userId) ;
+    public boolean validateOtp(String otp, String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException;
 }

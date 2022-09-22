@@ -92,7 +92,9 @@ public enum ResidentErrorCode {
 	OTP_ALREADY_SENT("RES-SER-464", "OTP is already sent - Please use the Sent OTP or try again after sometime"),
 	BLOCKED_OTP_VALIDATE("RES-SER-465", "OTP is blocked" ),
 	UNABLE_TO_PROCESS("RES-SER-466", "Unable to process" ),
-	SERVER_ERROR("RES-SER-467", "Server error occurred" );
+	SERVER_ERROR("RES-SER-467", "Server error occurred" ),
+	VALIDATION_UNSUCCESS("RES-SER-468", "Validation un-success"),
+	EXPIRED_OTP("RES-SER-469", "OTP expired - Please send OTP again");
 
 	private final String errorCode;
 	private final String errorMessage;

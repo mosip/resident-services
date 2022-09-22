@@ -76,4 +76,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> postSendOtp;
 
+	private List<String> postValidateOtp;
+
 }

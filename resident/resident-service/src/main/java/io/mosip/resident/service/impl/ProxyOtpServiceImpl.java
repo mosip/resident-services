@@ -4,12 +4,12 @@ import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
+import io.mosip.preregistration.core.util.GenericUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.ExceptionJSONInfoDTO;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.MainResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ProxyOtpService;
@@ -108,6 +108,65 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
                         userid, "Send OTP"));
             }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity<MainResponseDTO<AuthNResponse>> validateWithUserIdOtp(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
+        log.info("In calluserIdOtp method of login service ");
+        MainResponseDTO<AuthNResponse> response = null;
+        response = (MainResponseDTO<AuthNResponse>) getMainResponseDto(userIdOtpRequest);
+        String userid = null;
+        boolean isSuccess = false;
+
+        try {
+            OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
+            userid = user.getUserId();
+            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionID());
+            AuthNResponse authresponse = new AuthNResponse();
+            if (validated) {
+                authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
+                authresponse.setStatus(PreRegLoginConstant.SUCCESS);
+
+            } else {
+                throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorCode(),
+                        ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorMessage());
+
+            }
+            response.setResponse(authresponse);
+            isSuccess = true;
+        } catch (ResidentServiceException ex) {
+            log.error("In calluserIdOtp method of login service- ", ex);
+            throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorCode(),
+                    ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorMessage());
+        } catch (RuntimeException ex) {
+            log.error("In calluserIdOtp method of login service- ", ex);
+            throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorCode(),
+                    ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorMessage());
+        } catch (ResidentServiceCheckedException e) {
+            throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorCode(),
+                    ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorMessage());
+        } catch (ApisResourceAccessException e) {
+            throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+                    ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+        } finally {
+            response.setResponsetime(GenericUtil.getCurrentResponseTime());
+
+            if (isSuccess) {
+                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
+                        userid, "Validate OTP Success"));
+            } else {
+                ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+                List<ExceptionJSONInfoDTO> lst = new ArrayList<>();
+                lst.add(errors);
+                response.setErrors(lst);
+                response.setResponse(null);
+                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
+                        userid, "Validate OTP Failed"));
+            }
+
         }
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

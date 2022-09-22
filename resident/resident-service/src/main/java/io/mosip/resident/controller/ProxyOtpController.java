@@ -6,7 +6,9 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.service.ProxyOtpService;
+import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,6 +42,9 @@ public class ProxyOtpController {
 	@Autowired
 	private ProxyOtpService proxyOtpService;
 
+	@Autowired
+	private RequestValidator requestValidator;
+
 	/**
 	 * This Post api use to send otp to the user by email or sms
 	 *
@@ -66,38 +71,32 @@ public class ProxyOtpController {
 
 
 
-//	/**
-//	 * This Post api use to validate userid and otp
-//	 *
-//	 * @param userIdOtpRequest
-//	 * @param errors
-//	 * @return AuthNResponse
-//	 */
-//	@PostMapping(value = "/validateOtp", produces = MediaType.APPLICATION_JSON_VALUE)
-//	@Operation(summary = "validateWithUserIdOtp", description = "Validate UserId and Otp", tags = "login-controller")
-//	@ApiResponses(value = {
-//			@ApiResponse(responseCode = "200", description = "OK"),
-//			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
-//			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
-//			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
-//			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-//	public ResponseEntity<MainResponseDTO<AuthNResponse>> validateWithUserIdOtp(
-//			@Validated @RequestBody MainRequestDTO<User> userIdOtpRequest, @ApiIgnore Errors errors,
-//			HttpServletResponse res, HttpServletRequest req) {
-//
-//		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
+	/**
+	 * This Post api use to validate userid and otp
+	 *
+	 * @param userIdOtpRequest
+	 * @return AuthNResponse
+	 */
+	@PreAuthorize("@scopeValidator.hasAllScopes("
+			+ "@authorizedScopes.getPostValidateOtp()"
+			+ ")")
+	@PostMapping(value = "/contact-details/update-data", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Operation(summary = "validateWithUserIdOtp", description = "Validate UserId and Otp", tags = "login-controller")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
+	public ResponseEntity<MainResponseDTO<AuthNResponse>> validateWithUserIdOtp(
+			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
+
+		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
+
 //		loginValidator.validateId(VALIDATEOTP, userIdOtpRequest.getId(), errors);
+		//loginCommonUtil.validateOtpAndUserid(user);
 //		DataValidationUtil.validate(errors, VALIDATEOTP);
-//		MainResponseDTO<AuthNResponse> responseBody = loginService.validateWithUserIdOtp(userIdOtpRequest);
-//		if (responseBody.getResponse() != null && responseBody.getErrors() == null) {
-//			Cookie responseCookie = new Cookie("Authorization",
-//					loginService.getLoginToken(userIdOtpRequest.getRequest().getUserId(), req.getRequestURI()));
-//			responseCookie.setMaxAge((int) -1);
-//			responseCookie.setHttpOnly(true);
-//			responseCookie.setSecure(true);
-//			responseCookie.setPath(cookieContextPath);
-//			res.addCookie(responseCookie);
-//		}
-//		return ResponseEntity.status(HttpStatus.OK).body(responseBody);
-//	}
+		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+		return proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+	}
 }

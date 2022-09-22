@@ -85,7 +85,7 @@ import java.util.Optional;
         return templateVariables;
     }
 
-    private String getIndividualIdType() throws ApisResourceAccessException {
+    public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
         if(requestValidator.validateUin(individualId)){
             return UIN;
