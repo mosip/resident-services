@@ -37,9 +37,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -116,18 +113,6 @@ public class OtpManagerServiceImpl implements OtpManager {
                 otpTxn.setStatusCode("active");
                 this.otpRepo.save(otpTxn);
             }
-
-            Map<String, Object> mp = new HashMap();
-            Integer validTime = this.environment.getProperty("mosip.kernel.otp.expiry-time", Integer.class) / 60;
-            LocalDateTime dateTime = LocalDateTime.now(ZoneId.of(this.environment.getProperty("mosip.notification.timezone")));
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-            mp.put("otp", otp);
-            mp.put("date", dateFormatter.format(dateTime));
-            mp.put("validTime", validTime);
-            mp.put("name", userId);
-            mp.put("username", userId);
-            mp.put("time", timeFormatter.format(dateTime));
             if (channelType.equalsIgnoreCase("phone")) {
                 this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking sms notification");
                 NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;

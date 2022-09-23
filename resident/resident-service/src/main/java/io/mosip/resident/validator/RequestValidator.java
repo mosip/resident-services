@@ -857,9 +857,13 @@ public class RequestValidator {
     }
 
 	public void validateTransactionId(String transactionID) {
-		if(!isNumeric(transactionID) || transactionID.length()!=10 || transactionID.isEmpty() || transactionID == null){
+		if(transactionID.isEmpty()){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"transactionID", "transactionID is invalid"));
+					"transactionID", "transactionID must not be null"));
+			throw new InvalidInputException("transactionID");
+		} else if(!isNumeric(transactionID) || transactionID.length()!=10){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"transactionID", "transactionID must be 10 digit containing numbers"));
 			throw new InvalidInputException("transactionID");
 		}
 	}
