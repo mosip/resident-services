@@ -635,6 +635,14 @@ public enum EventEnum {
 			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
+	SEND_OTP_FAILURE("RES-SER-259", RegistrationConstants.SYSTEM, "send otp failure",
+			"send otp is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+
+	SEND_OTP_SUCCESS("RES-SER-259", RegistrationConstants.SYSTEM, "send otp success",
+			"send otp is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+
 	;
 
 	private final String eventId;

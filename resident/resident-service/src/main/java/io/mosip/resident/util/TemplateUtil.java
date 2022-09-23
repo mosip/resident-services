@@ -85,7 +85,7 @@ import java.util.Optional;
         return templateVariables;
     }
 
-    private String getIndividualIdType() throws ApisResourceAccessException {
+    public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
         if(requestValidator.validateUin(individualId)){
             return UIN;
@@ -202,11 +202,17 @@ import java.util.Optional;
  		templateVariables.put(TemplateVariablesEnum.DATE, getDate());
  		templateVariables.put(TemplateVariablesEnum.TIME, getTime());
  		templateVariables.put(TemplateVariablesEnum.STATUS, dto.getTemplateType().getType());
- 		if(TemplateType.FAILURE.getType().equals(dto.getTemplateType().getType())) {
+         if(TemplateType.FAILURE.getType().equals(dto.getTemplateType().getType())) {
  			templateVariables.put(TemplateVariablesEnum.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(dto.getEventId()));
  		}
  		return templateVariables;
  	}
+
+     public Map<String, Object> getNotificationSendOtpVariables(NotificationTemplateVariableDTO dto){
+        Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+        templateVariables.put(TemplateVariablesEnum.OTP, dto.getOtp());
+        return templateVariables;
+     }
      
      private String getTime() {
  		return DateUtils.getUTCCurrentDateTimeString(templateTimePattern);
