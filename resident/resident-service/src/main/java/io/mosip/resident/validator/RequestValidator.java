@@ -1,33 +1,28 @@
 package io.mosip.resident.validator;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-
-import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
-import io.mosip.preregistration.core.common.dto.MainRequestDTO;
-import io.mosip.preregistration.core.errorcodes.ErrorCodes;
-import io.mosip.preregistration.core.errorcodes.ErrorMessages;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.dto.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.*;
+import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import org.springframework.validation.Errors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
@@ -43,6 +38,9 @@ public class RequestValidator {
 
 	@Autowired
 	private AuditUtil audit;
+
+	@Autowired
+	private Environment environment;
 
 	private String euinId;
 
@@ -120,6 +118,12 @@ public class RequestValidator {
 
 	@Value("${mosip.resident.transliteration.transliterate.id}")
 	private String transliterateId;
+
+	@Value("${otpChannel.mobile}")
+	private String mobileChannel;
+
+	@Value("${otpChannel.email}")
+	private String emailChannel;
 
 	@PostConstruct
 	public void setMap() {
@@ -823,7 +827,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateId(MainRequestDTO<TransliterationRequestDTO> requestDTO) {
+	public void validateId(io.mosip.preregistration.core.common.dto.MainRequestDTO<TransliterationRequestDTO> requestDTO) {
 		if (Objects.nonNull(requestDTO.getId())) {
 			if (!requestDTO.getId().equals(transliterateId)) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Invalid Transliterate id"));
@@ -832,6 +836,76 @@ public class RequestValidator {
 		} else {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
 			throw new InvalidInputException("id");
+		}
+	}
+
+    public List<String> validateUserIdAndTransactionId(String userId, String transactionID) {
+		validateTransactionId(transactionID);
+		List<String> list = new ArrayList<>();
+		if (userId == null || userId.isEmpty()) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "userId", "userId is null"));
+			throw new InvalidInputException("userId");
+		}
+		if (phoneValidator(userId)) {
+			list.add(mobileChannel);
+			return list;
+		} else if (emailValidator(userId)) {
+			list.add(emailChannel);
+			return list;
+		}
+		throw new InvalidInputException("userId");
+    }
+
+	public void validateTransactionId(String transactionID) {
+		if(transactionID.isEmpty()){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"transactionID", "transactionID must not be null"));
+			throw new InvalidInputException("transactionID");
+		} else if(!isNumeric(transactionID) || transactionID.length()!=10){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"transactionID", "transactionID must be 10 digit containing numbers"));
+			throw new InvalidInputException("transactionID");
+		}
+	}
+
+	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
+		String inputRequestId = userIdOtpRequest.getId();
+		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
+		validateRequestId(inputRequestId, requestIdStoredInProperty);
+		validateDate(userIdOtpRequest.getRequesttime());
+		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionID());
+		validateOTP(userIdOtpRequest.getRequest().getOtp());
+	}
+
+	public void validateOTP(String otp) {
+		if(otp==null){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"otp", "otp must not be null"));
+			throw new InvalidInputException("otp");
+		} else if(!isNumeric(otp)){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"otp", "otp is invalid"));
+			throw new InvalidInputException("otp");
+		}
+	}
+
+	public void validateRequestId(String inputRequestId, String requestIdStoredInProperty) {
+		if(inputRequestId==null){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"request id", "requestId must not be null"));
+			throw new InvalidInputException("requestId");
+		} else if(!inputRequestId.equalsIgnoreCase(requestIdStoredInProperty)){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					"request id", "requestId is invalid"));
+			throw new InvalidInputException("requestId");
+		}
+	}
+
+	public void validateDate(Date requesttime) {
+		if(requesttime==null) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", "Request time invalid"));
+			throw new InvalidInputException("requesttime");
 		}
 	}
 }

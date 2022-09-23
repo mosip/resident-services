@@ -16,9 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,6 +36,9 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private Environment env;
+	
+	@Mock
+	private ResourceLoader resourceLoader;
 
 	@Mock
 	private Resource residentUiSchemaJsonFile;
@@ -46,10 +51,15 @@ public class ResidentConfigServiceImplTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Mockito.when(residentUiSchemaJsonFile.getInputStream())
-				.thenReturn(new ByteArrayInputStream("{\"name\":\"ui-schema\"}".getBytes()));
 		Mockito.when(identityMappingJsonFile.getInputStream())
 				.thenReturn(new ByteArrayInputStream("{\"name\":\"identity-mapping\"}".getBytes()));
+		ReflectionTestUtils.setField(configServiceImpl, "resourceLoader", resourceLoader);
+		ReflectionTestUtils.setField(configServiceImpl, "residentUiSchemaJsonFilePrefix", "classpath:resident-ui");
+		Resource resource = Mockito.mock(Resource.class);
+		Mockito.when(resourceLoader.getResource(Mockito.anyString())).thenReturn(resource);
+		when(resource.exists()).thenReturn(true);
+		String uiSchema = "{\"name\":\"ui-schema\"}";
+		when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(uiSchema.getBytes()));
 	}
 
 	private ResidentConfigServiceImpl createTestSubject() {
@@ -95,9 +105,8 @@ public class ResidentConfigServiceImplTest {
 		ResidentConfigServiceImpl testSubject;
 
 		testSubject = createTestSubject();
-		String uiSchema = "ui-schema-json";
-		ReflectionTestUtils.setField(testSubject, "uiSchema", uiSchema);
-		String result = testSubject.getUISchema();
+		String uiSchema = "{\"name\":\"ui-schema\"}";
+		String result = testSubject.getUISchema("update-demographics");
 		assertTrue(result.contains(uiSchema));
 	}
 
@@ -107,9 +116,8 @@ public class ResidentConfigServiceImplTest {
 
 		testSubject = createTestSubject();
 		String uiSchema = null;
-		ReflectionTestUtils.setField(testSubject, "uiSchema", uiSchema);
 		uiSchema = "{\"name\":\"ui-schema\"}";
-		String result = testSubject.getUISchema();
+		String result = testSubject.getUISchema("update-demographics");
 		assertTrue(result.contains(uiSchema));
 	}
 
