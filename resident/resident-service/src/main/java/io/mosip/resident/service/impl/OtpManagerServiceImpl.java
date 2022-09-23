@@ -205,7 +205,6 @@ public class OtpManagerServiceImpl implements OtpManager {
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
-        residentUpdateRequestDto.setTransactionID(transactionId);
         residentUpdateRequestDto.setIdentityJson(getIdentityJson(individualId, transactionId, userId, individualIdType));
         residentUpdateRequestDto.setIndividualIdType(individualIdType);
         residentService.reqUinUpdate(residentUpdateRequestDto);
