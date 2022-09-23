@@ -211,7 +211,7 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostAuthTypeStatus()" + ")")
 	@ResponseFilter
-	@PostMapping(value = "/req/auth-type-status")
+	@PostMapping(value = "/auth-lock-unlock")
 	@Operation(summary = "reqAuthTypeStatus", description = "reqAuthTypeStatus", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -337,12 +337,12 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResidentUpdateResponseDTO> updateUin(
+	public ResponseWrapper<Object> updateUin(
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update Uin API"));
 		validator.validateUpdateRequest(requestDTO, false);
-		ResponseWrapper<ResidentUpdateResponseDTO> response = new ResponseWrapper<>();
+		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()));
@@ -367,7 +367,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResidentUpdateResponseDTO> updateUinDemographics(
+	public ResponseWrapper<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
@@ -380,7 +380,7 @@ public class ResidentController {
 		}
 		requestWrapper.getRequest().setIndividualIdType(getIdType(requestWrapper.getRequest().getIndividualId()));
 		validator.validateUpdateRequest(requestWrapper, true);
-		ResponseWrapper<ResidentUpdateResponseDTO> response = new ResponseWrapper<>();
+		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestWrapper.getRequest()));
