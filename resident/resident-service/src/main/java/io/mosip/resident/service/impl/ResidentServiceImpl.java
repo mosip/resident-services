@@ -767,12 +767,15 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
-		ResidentUpdateResponseDTO responseDto;
+	public Object reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
+		Object responseDto;
+		ResidentUpdateResponseDTO residentUpdateResponseDTO = null;
+		ResidentUpdateResponseDTOV2 residentUpdateResponseDTOV2 = null;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utilitiy.isSecureSession()) {
-				responseDto = new ResidentUpdateResponseDTOV2();
+				residentUpdateResponseDTOV2 = new ResidentUpdateResponseDTOV2();
+				responseDto=residentUpdateResponseDTOV2;
 				residentTransactionEntity = createResidentTransEntity(dto);
 				if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
 						|| dto.getConsent().trim().isEmpty() || dto.getConsent().equals("null") || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
@@ -782,7 +785,8 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 				}
 			} else {
-				responseDto = new ResidentUpdateResponseDTO();
+				residentUpdateResponseDTO = new ResidentUpdateResponseDTO();
+				responseDto=residentUpdateResponseDTO;
 			}
 			if (Objects.nonNull(dto.getOtp())) {
 				if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
@@ -860,15 +864,13 @@ public class ResidentServiceImpl implements ResidentService {
 				updateResidentTransaction(residentTransactionEntity, response);
 				notificationResponseDTO = sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN,
 						TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), additionalAttributes);
-				ResidentUpdateResponseDTOV2 responseDTOV2 = new ResidentUpdateResponseDTOV2();
-				responseDTOV2.setEventId(residentTransactionEntity.getEventId());
-				responseDTOV2.setMessage(notificationResponseDTO.getMessage());
-				responseDto = responseDTOV2;
+				residentUpdateResponseDTOV2.setEventId(residentTransactionEntity.getEventId());
+				residentUpdateResponseDTOV2.setMessage(notificationResponseDTO.getMessage());
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
-				responseDto.setMessage(notificationResponseDTO.getMessage());
-				responseDto.setRegistrationId(response.getRegistrationId());
+				residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
+				residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
