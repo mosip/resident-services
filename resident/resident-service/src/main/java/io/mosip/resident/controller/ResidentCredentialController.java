@@ -34,6 +34,7 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
@@ -90,7 +91,7 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> requestDownloadPersonalizedCard(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
 		requestDTO.getRequest().setSharableAttributes(null);
@@ -120,7 +121,7 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
-			throws ResidentServiceCheckedException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();

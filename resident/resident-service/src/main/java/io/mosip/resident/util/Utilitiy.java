@@ -309,7 +309,7 @@ public class Utilitiy {
 		return maskData(maskData, maskingFunction);
 	}
 	
-	public ResidentTransactionEntity createEntity() throws ApisResourceAccessException {
+	public ResidentTransactionEntity createEntity() {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());

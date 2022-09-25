@@ -77,20 +77,19 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::entry");
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
-
-		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto);
+		String individualId = identityServiceImpl.getResidentIndvidualId();
+		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto, individualId);
 		if (requestDto.getConsent() == null || requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
 				|| requestDto.getConsent().trim().isEmpty() || requestDto.getConsent().equals("null") || !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 			checkConsent(requestDto.getConsent(), residentTransactionEntity);
 		} else {
 
 			if (isPaymentEnabled) {
-				checkOrderStatus(requestDto.getTransactionID(), requestDto.getIndividualId(),
-						residentTransactionEntity);
+				checkOrderStatus(requestDto.getTransactionID(), individualId, residentTransactionEntity);
 			}
-			residentCredentialResponseDto = residentCredentialService.reqCredentialV2(requestDto);
+			residentCredentialResponseDto = residentCredentialService.reqCredential(requestDto, individualId);
 			updateResidentTransaction(residentTransactionEntity, residentCredentialResponseDto);
-			sendNotificationV2(requestDto.getIndividualId(), RequestType.ORDER_PHYSICAL_CARD,
+			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD,
 					TemplateType.REQUEST_RECEIVED, residentTransactionEntity.getEventId(), null);
 			logger.debug("OrderCardServiceImpl::sendPhysicalCard()::exit");
 
@@ -114,12 +113,11 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto)
+	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto, String individualId)
 			throws ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
-		String individualId = identityServiceImpl.getResidentIndvidualId();
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
