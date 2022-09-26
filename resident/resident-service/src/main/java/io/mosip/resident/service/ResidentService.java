@@ -3,6 +3,8 @@ package io.mosip.resident.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.AidStatusRequestDTO;
@@ -44,6 +46,8 @@ public interface ResidentService {
 	public AuthHistoryResponseDTO reqAuthHistory(AuthHistoryRequestDTO dto) throws ResidentServiceCheckedException;
 
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
+	
+	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException;
 
 	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;

@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,6 +86,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -427,9 +429,8 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testUpdateUinDemographics() throws Exception {
 		ResidentDemographicUpdateRequestDTO request = new ResidentDemographicUpdateRequestDTO();
-		request.setIndividualId("9876543210");
-		request.setIdentityJson("sdgfdgsfhfh");
 		request.setTransactionID("12345");
+		request.setIdentity(JsonUtil.readValue("{\"name\":\"My Name\"}", JSONObject.class));
 
 		RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO = new RequestWrapper<>();
 		requestDTO.setRequest(request);
@@ -437,7 +438,7 @@ public class ResidentControllerTest {
 		requestDTO.setVersion("v1");
 
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
-		when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
+		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
 		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> resultRequestWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController
 				.updateUinDemographics(requestDTO);

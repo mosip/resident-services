@@ -765,9 +765,27 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		return null;
 	}
-
+	
 	@Override
 	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
+		byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
+		JSONObject demographicJsonObject;
+		try {
+			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
+			return reqUinUpdate(dto, demographicJsonObject);
+		}  catch (IOException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
+					"Request for UIN update"));
+
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+					dto.getTransactionID(), "Request for UIN update"));
+			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} 
+	}
+
+	@Override
+	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException {
 		ResidentUpdateResponseDTO responseDto;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
@@ -815,8 +833,6 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setCenterId(centerId);
 			regProcReqUpdateDto.setMachineId(machineId);
 			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
-			byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
-			JSONObject demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
 			String mappingJson = utility.getMappingJson();
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
