@@ -45,10 +45,10 @@ public interface ResidentService {
 
 	public AuthHistoryResponseDTO reqAuthHistory(AuthHistoryRequestDTO dto) throws ResidentServiceCheckedException;
 
-	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
+	public Object reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 	
-	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException;
-
+	public Object reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException;
+	
 	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 

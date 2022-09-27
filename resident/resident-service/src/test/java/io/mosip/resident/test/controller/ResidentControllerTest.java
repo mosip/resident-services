@@ -234,7 +234,7 @@ public class ResidentControllerTest {
 		residentController.reqAauthTypeStatusUpdateV2(authTypeStatusRequest);
 		validator.validateAuthLockOrUnlockRequestV2(authTypeStatusRequest);
 		this.mockMvc.perform(
-				post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(authStatusRequestToJson))
+				post("/auth-lock-unlock").contentType(MediaType.APPLICATION_JSON).content(authStatusRequestToJson))
 				.andExpect(status().isOk()).andExpect(status().isOk());
 	}
 
@@ -246,7 +246,7 @@ public class ResidentControllerTest {
 		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
 
 		MvcResult result = this.mockMvc
-				.perform(post("/req/auth-type-status").contentType(MediaType.APPLICATION_JSON).content(""))
+				.perform(post("/auth-lock-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
 				.andExpect(status().isOk()).andReturn();
 		assertTrue(result.getResponse().getContentAsString().contains("RES-SER-418"));
 	}
@@ -418,7 +418,7 @@ public class ResidentControllerTest {
 		reqWrapper.setRequest(dto);
 		reqWrapper.setId("mosip.resident.uin");
 		reqWrapper.setVersion("v1");
-		Mockito.when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
+		Mockito.when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new Object());
 		String requestAsString = gson.toJson(reqWrapper);
 		this.mockMvc.perform(post("/req/update-uin").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
@@ -439,8 +439,7 @@ public class ResidentControllerTest {
 
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
-		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> resultRequestWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
-		io.mosip.kernel.core.http.ResponseWrapper<ResidentUpdateResponseDTO> requestWrapper = residentController
+		io.mosip.kernel.core.http.ResponseWrapper<Object> requestWrapper = residentController
 				.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
 	}
