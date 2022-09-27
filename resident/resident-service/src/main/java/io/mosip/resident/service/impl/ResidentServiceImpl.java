@@ -993,6 +993,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 		finally {
 			if (Utilitiy.isSecureSession()) {
+				//if the status code will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode()==null) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
 		}
