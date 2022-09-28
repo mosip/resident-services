@@ -94,7 +94,8 @@ public enum ResidentErrorCode {
 	UNABLE_TO_PROCESS("RES-SER-466", "Unable to process" ),
 	SERVER_ERROR("RES-SER-467", "Server error occurred" ),
 	VALIDATION_UNSUCCESS("RES-SER-468", "Validation un-success"),
-	EXPIRED_OTP("RES-SER-469", "OTP expired - Please send OTP again");
+	EXPIRED_OTP("RES-SER-469", "OTP expired - Please send OTP again"),
+	NO_RECORDS_FOUND("RES-SER-470", "No Record(s) found");
 
 	private final String errorCode;
 	private final String errorMessage;

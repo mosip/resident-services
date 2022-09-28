@@ -19,8 +19,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyIdRepoServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
@@ -35,27 +37,32 @@ public class ProxyIdRepoServiceTest {
 
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
+	
+	@Mock
+	private IdentityServiceImpl identityServiceImpl;
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<Map<String, Integer>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of());
+		responseWrapper.setResponse(Map.of("fullName", 1));
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), any(List.class), any(String.class), any(String.class), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<Map<String, Integer>> response = service.getRemainingUpdateCountByIndividualId("", "",
+		List<UpdateCountDto> response = service.getRemainingUpdateCountByIndividualId("",
 				List.of());
-		assertEquals(Map.of(), response.getResponse());
+		assertEquals(new UpdateCountDto("fullName", 1), response.get(0));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRemainingUpdateCountByIndividualIdException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), any(List.class), any(String.class), any(String.class), any()))
 				.thenThrow(new ApisResourceAccessException());
-		service.getRemainingUpdateCountByIndividualId("", "",
+		service.getRemainingUpdateCountByIndividualId("",
 				List.of());
 	}
 }
