@@ -168,11 +168,16 @@ public class ResidentVidController {
 		return revokeVid(requestDto, vid, false);
 	}
 
+	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVid(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
 			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to revoke VID"));
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
+		if (residentIndividualId.equals(vid)) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_VALIDATION);
+			
+		}
 		if(residentIndividualId == null && requestDto.getRequest() != null) {
 			residentIndividualId = getResidentIndividualId();
 		}
