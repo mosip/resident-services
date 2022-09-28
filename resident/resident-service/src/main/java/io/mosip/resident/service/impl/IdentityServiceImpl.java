@@ -1,26 +1,23 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -80,52 +77,55 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
-	
+
 	@Autowired
 	@Qualifier("restClientWithPlainRestTemplate")
 	private ResidentServiceRestClient restClientWithPlainRestTemplate;
-	
+
 	@Autowired
 	private AuditUtil auditUtil;
 
 	@Autowired
 	private Utilitiy utility;
-	
+
 	@Autowired
 	private CbeffUtil cbeffUtil;
-	
+
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
-	
+
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
 
 	@Autowired
 	private ResidentConfigService residentConfigService;
-	
+
 	@Value("${mosip.iam.userinfo_endpoint}")
 	private String usefInfoEndpointUrl;
-	
+
 	@Value("${mosip.resident.identity.claim.individual-id}")
 	private String individualIdClaim;
-	
+
 	@Value("${mosip.resident.identity.claim.ida-token}")
 	private String idaTokenClaim;
-	
+
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
-	
+
 	@Value("${resident.documents.category}")
 	private String individualDocs;
 
 	@Autowired
 	private ResidentVidService residentVidService;
-	
+
+	@Autowired
+	private Environment environment;
+
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
-	
+
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
-	
+
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
     	return getIdentity(id, false, null);
@@ -168,7 +168,7 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
 			if(bdbBasedOnType.isEmpty()) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
+				throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(),
 						ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
 			}
 			identityDTO.setFace(bdbBasedOnType.values().iterator().next());
@@ -178,12 +178,12 @@ public class IdentityServiceImpl implements IdentityService {
 					ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException {
 		return getIdentityAttributes(id, null, false);
 	}
-	
+
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
 		return getIdentityAttributes(id, null, includeUin);
@@ -194,13 +194,13 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
-		
+
 		List<String> queryParamName = new ArrayList<String>();
 		queryParamName.add("type");
-		
+
 		List<Object> queryParamValue = new ArrayList<>();
 		queryParamValue.add(type);
-		
+
 		try {
 			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
 					pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
@@ -230,14 +230,14 @@ public class IdentityServiceImpl implements IdentityService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-	
+
 	private Map<String, String> getIndividualBiometrics(List<Map<String, String>> documents) {
 		return documents.stream()
 				.filter(map -> map.get("category") instanceof String && ((String)map.get("category")).equalsIgnoreCase(individualDocs))
 				.findAny()
 				.orElse(null);
 	}
-	
+
 	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
 		return getMappingValue(identity, NAME, langCode);
 	}
@@ -274,7 +274,7 @@ public class IdentityServiceImpl implements IdentityService {
                     return null;
                 }).collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));
 	}
-	
+
 	private String getValueForLang(List<Map<String, Object>> attributeValue, String langCode) {
         return attributeValue.stream()
                     .filter(map -> map.get(LANGUAGE) instanceof String && ((String)map.get(LANGUAGE)).equalsIgnoreCase(langCode))
@@ -290,22 +290,22 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return name;
 	}
-	
+
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 		IdentityDTO identityDTO = getIdentity(idvid);
 		return identityDTO.getUIN();
 	}
-	
+
 	@Override
 	public String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException {
 		return getIDAToken(getUinForIndividualId(idvid));
 	}
-	
+
 	public String getIDAToken(String uin) {
 		return getIDAToken(uin, onlineVerificationPartnerId);
 	}
-	
+
 	public String getIDAToken(String uin, String olvPartnerId) {
 		return tokenIDGenerator.generateTokenID(uin, olvPartnerId);
 	}
@@ -321,7 +321,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public Map<String, String> getResidentIdentity() throws ApisResourceAccessException {
 		return getClaims(Set.of(INDIVIDUAL_ID, IDA_TOKEN));
 	}
-	
+
 	private Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
 		return getClaims(Set.of(claims));
 	}
@@ -343,7 +343,7 @@ public class IdentityServiceImpl implements IdentityService {
 		if(claimValue == null) {
 			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
 		}
-		
+
 		return String.valueOf(claimValue);
 	}
 
@@ -374,7 +374,7 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
-	
+
 	public String getResidentIdaToken() throws ApisResourceAccessException {
 		return  getClaimValue(IDA_TOKEN);
 	}
@@ -397,5 +397,44 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 
+	public String getClaimFromIdToken() throws ApisResourceAccessException {
+		AuthUserDetails authUserDetails= getAuthUserDetails();
+		String claim = this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME);
+		String claimValue = "";
+		String idToken = authUserDetails.getIdToken();
+		if(idToken!=null){
+			String payLoad = decodeTokenParts(idToken);
+			System.out.println(payLoad);
+			Map<String, Object> payLoadMap=convertStringToMap(payLoad);
+			if(claim!=null){
+				claimValue = (String) payLoadMap.get(claim);
+			}
+		}
+		return  claimValue;
+	}
+
+	private Map<String, Object> convertStringToMap(String payLoad) {
+		payLoad = payLoad.replace("{", "");
+		payLoad = payLoad.replace("}", "");
+		payLoad = payLoad.replace("\"", "");
+		Map<String, Object> result = new HashMap<>();
+		List<String> payLoadString = List.of(payLoad.split(","));
+		for(String mapKeyValue: payLoadString){
+			String[] keyValue=mapKeyValue.split(":");
+			if(keyValue.length!=2){
+				continue;
+			}
+			result.put(keyValue[0], keyValue[1]);
+		}
+		return result;
+	}
+
+	public String decodeTokenParts(String token)
+	{
+		String[] parts = token.split("\\.", 0);
+		byte[] bytes = Base64.getUrlDecoder().decode(parts[1]);
+		String decodedString = new String(bytes, StandardCharsets.UTF_8);
+		return decodedString;
+	}
 
 }
