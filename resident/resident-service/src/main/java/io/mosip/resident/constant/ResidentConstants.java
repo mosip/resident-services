@@ -6,10 +6,8 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
-    public static final String IDA_TOKEN_CLAIMS = "mosip.resident.oidc.id_token.ida_token.claim-name";
-
-    private ResidentConstants() {
+	
+	private ResidentConstants() {
 	}
 
     public static final String OBJECT_STORE_ACCOUNT_NAME = "mosip.resident.object.store.account-name";
