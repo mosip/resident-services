@@ -3,11 +3,10 @@ package io.mosip.resident.controller;
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -51,20 +51,20 @@ public class ProxyIdRepoControllerTest {
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId() throws ResidentServiceCheckedException {
-		ResponseWrapper<Map<String, Integer>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of());
-		when(service.getRemainingUpdateCountByIndividualId(anyString(), any(), any())).thenReturn(responseWrapper);
-		ResponseEntity<ResponseWrapper<Map<String, Integer>>> response = controller
-				.getRemainingUpdateCountByIndividualId("", "", List.of());
-		assertEquals(Map.of(), response.getBody().getResponse());
+		List<UpdateCountDto> responseWrapper = new ArrayList<>();
+		responseWrapper.add(new UpdateCountDto());
+		when(service.getRemainingUpdateCountByIndividualId(any(), any())).thenReturn(responseWrapper);
+		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
+				.getRemainingUpdateCountByIndividualId("", List.of());
+		assertEquals(new UpdateCountDto(), response.getBody().getResponse().get(0));
 	}
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualIdException() throws ResidentServiceCheckedException {
-		when(service.getRemainingUpdateCountByIndividualId(anyString(), any(), any()))
+		when(service.getRemainingUpdateCountByIndividualId(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION));
-		ResponseEntity<ResponseWrapper<Map<String, Integer>>> response = controller
-				.getRemainingUpdateCountByIndividualId("", "", List.of());
+		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
+				.getRemainingUpdateCountByIndividualId("", List.of());
 		assertEquals(List.of(new ServiceError(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 				API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage())), response.getBody().getErrors());
 	}

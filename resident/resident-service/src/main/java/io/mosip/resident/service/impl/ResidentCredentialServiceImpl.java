@@ -51,6 +51,7 @@ import io.mosip.resident.dto.PartnerResponseDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -208,15 +209,17 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return residentCredentialResponseDto;
 	}
 
-	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto dto, String requestType)
+	@Override
+	public ResidentCredentialResponseDtoV2 shareCredential(ResidentCredentialRequestDto dto, String requestType)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		return shareCredential(dto, requestType, null);
 	}
 
 	@Override
-	public ResidentCredentialResponseDto shareCredential(ResidentCredentialRequestDto dto, String requestType,
+	public ResidentCredentialResponseDtoV2 shareCredential(ResidentCredentialRequestDto dto, String requestType,
 			String purpose) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+		ResidentCredentialResponseDtoV2 residentCredentialResponseDtoV2=new ResidentCredentialResponseDtoV2();
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
 		ResponseWrapper<PartnerResponseDto> parResponseDto = new ResponseWrapper<PartnerResponseDto>();
 		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
@@ -262,6 +265,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					residentTransactionEntity.getEventId(), additionalAttributes);
 
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
+			residentCredentialResponseDtoV2.setEventId(residentTransactionEntity.getEventId());
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -290,7 +294,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		finally {
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
-		return residentCredentialResponseDto;
+		return residentCredentialResponseDtoV2;
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto dto,
