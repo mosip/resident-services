@@ -16,11 +16,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -76,6 +78,7 @@ public class IdentityServiceImpl implements IdentityService {
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
     private static final String DOCUMENTS = "documents";
+	private static final String ID_TOKEN = "idToken";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -120,6 +123,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private ResidentVidService residentVidService;
+
+	@Autowired
+	private Environment environment;
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
@@ -197,7 +203,7 @@ public class IdentityServiceImpl implements IdentityService {
 		
 		List<String> queryParamName = new ArrayList<String>();
 		queryParamName.add("type");
-		
+
 		List<Object> queryParamValue = new ArrayList<>();
 		queryParamValue.add(type);
 		
@@ -328,9 +334,17 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
 		AuthUserDetails authUserDetails = getAuthUserDetails();
+		String idaTokenClaim = this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIMS);
 		if (authUserDetails != null) {
 			String token = authUserDetails.getToken();
-				Map<String, Object> userInfo = getUserInfo(token);
+			String idToken = authUserDetails.getIdToken();
+			Map<String, Object> userInfo;
+			if(idaTokenClaim==null){
+				userInfo = getUserInfo(token);
+			} else {
+				userInfo = getUserInfo(token, idToken);
+			}
+
 				return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
 						.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
@@ -355,6 +369,26 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, Object> responseMap;
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
+			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
+		} catch (ApisResourceAccessException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
+					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
+		}
+		return responseMap;
+	}
+
+	private Map<String, Object> getUserInfo(String token, String idToken) throws ApisResourceAccessException {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
+		UriComponents uriComponent = builder.build(false).encode();
+
+		Map<String, Object> responseMap;
+		try {
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
+			headers.add(ID_TOKEN, idToken);
 			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
 		} catch (ApisResourceAccessException e) {
 			throw e;
