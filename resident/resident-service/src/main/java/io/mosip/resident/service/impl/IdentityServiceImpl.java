@@ -76,7 +76,6 @@ public class IdentityServiceImpl implements IdentityService {
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
     private static final String DOCUMENTS = "documents";
-	private static final String ID_TOKEN = "idToken";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -356,7 +355,6 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, Object> responseMap;
 		try {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
-			headers.add(ID_TOKEN, getResidentIdToken());
 			responseMap = (Map<String, Object>) restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), Map.class, headers);
 		} catch (ApisResourceAccessException e) {
 			throw e;
@@ -379,10 +377,6 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	public String getResidentIdaToken() throws ApisResourceAccessException {
 		return  getClaimValue(IDA_TOKEN);
-	}
-
-	public String getResidentIdToken() throws ApisResourceAccessException{
-		return getClaimValue(ID_TOKEN);
 	}
 
 	String getIndividualIdForAid(String aid)
