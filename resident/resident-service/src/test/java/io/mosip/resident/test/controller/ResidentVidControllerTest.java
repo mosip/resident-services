@@ -272,7 +272,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(getRevokeRequest());
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -290,7 +290,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -307,7 +307,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -324,7 +324,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -346,7 +346,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-471")));
 	}
 
 	@Test
@@ -373,7 +373,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -390,7 +390,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -407,7 +407,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 

@@ -33,6 +33,7 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -103,7 +104,7 @@ public class ResidentCredentialController {
 				});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
 		buildAdditionalMetadata(requestDTO, request);
-		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
+		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.DOWNLOAD_PERSONALIZED_CARD.name()));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -134,7 +135,7 @@ public class ResidentCredentialController {
 				});
 		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
 		buildAdditionalMetadata(requestDTO, request);
-		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
+		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		if(purpose != null) {
 			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name(),purpose));
 		}else {

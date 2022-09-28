@@ -6,15 +6,14 @@ import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTI
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +22,7 @@ import io.mosip.idrepository.core.exception.IdRepoAppException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -49,7 +49,8 @@ public class ProxyIdRepoController {
 	@Autowired
 	private AuditUtil auditUtil;
 
-	@GetMapping(path = "/proxy/update-count/{individualId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetRemainingUpdateCount()" + ")")
+	@GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get Remaining update count by Individual Id Request", description = "Get Remaining update count by Individual Id Request", tags = {
 			"proxy-id-repo-identity-update-controller" })
 	@ApiResponses(value = {
@@ -58,20 +59,20 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ResponseWrapper<Map<String, Integer>>> getRemainingUpdateCountByIndividualId(
-			@PathVariable String individualId,
+	public ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> getRemainingUpdateCountByIndividualId(
 			@RequestParam(name = ID_TYPE, required = false) @Nullable String idType,
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
-			ResponseWrapper<Map<String, Integer>> responseWrapper = proxySerivce
-					.getRemainingUpdateCountByIndividualId(individualId, idType, filterAttributeList);
+			ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
+			responseWrapper.setResponse(proxySerivce
+					.getRemainingUpdateCountByIndividualId(idType, filterAttributeList));
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_EXCEPTION);
 			ExceptionUtils.logRootCause(e);
-			ResponseWrapper<Map<String, Integer>> responseWrapper = new ResponseWrapper<>();
+			ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 			return ResponseEntity.ok(responseWrapper);
 		}
