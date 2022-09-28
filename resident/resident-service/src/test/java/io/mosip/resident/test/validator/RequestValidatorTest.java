@@ -1219,6 +1219,7 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
 		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
 		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
@@ -1229,7 +1230,7 @@ public class RequestValidatorTest {
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setId("mosip.resident.auth.lock.unlock");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
@@ -1268,6 +1269,7 @@ public class RequestValidatorTest {
 	
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2NullUnlockForSeconds() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
 		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
 		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
@@ -1278,7 +1280,7 @@ public class RequestValidatorTest {
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setId("mosip.resident.auth.lock.unlock");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
@@ -1287,6 +1289,7 @@ public class RequestValidatorTest {
 	
 	@Test
 	public void testValidateAuthLockOrUnlockRequestV2PositiveUnlockForSeconds() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
 		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
 		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
@@ -1297,7 +1300,7 @@ public class RequestValidatorTest {
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setId("mosip.resident.auth.lock.unlock");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);

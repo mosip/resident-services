@@ -281,8 +281,8 @@ public class ResidentServiceResUpdateTest {
 
 	@Test
 	public void reqUinUpdateGetMachineIdTest() throws BaseCheckedException, IOException {
-		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
-		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
+		Object residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO).getRegistrationId(), updateDto.getRegistrationId());
 	}
 
 	@Test
@@ -321,15 +321,15 @@ public class ResidentServiceResUpdateTest {
 		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
 		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
 				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
-		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
-		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
+		Object residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
 	}
 
 	@Test
 	public void reqUinUpdateGetMachineIdReturnsTest() throws BaseCheckedException, IOException {
-		ResidentUpdateResponseDTO residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
-		assertEquals(residentUpdateResponseDTO.getRegistrationId(), updateDto.getRegistrationId());
+		Object residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(2)).postApi(any(), any(), any(), any(Class.class));
 	}
 

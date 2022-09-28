@@ -88,14 +88,13 @@ public class OrderCardServiceTest {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("uin");
+		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
 
 		residentCredentialRequestDto = new ResidentCredentialRequestDto();
 		residentCredentialRequestDto.setTransactionID("1234327890");
-		residentCredentialRequestDto.setIndividualId("8251649601");
 		residentCredentialRequestDto.setConsent("Accepted");
 		residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		residentCredentialResponseDto.setId("8251649601");
@@ -105,7 +104,7 @@ public class OrderCardServiceTest {
 	@Test
 	public void testSendPhysicalCard() throws Exception {
 		ReflectionTestUtils.setField(orderCardService, "isPaymentEnabled", false);
-		when(residentCredentialService.reqCredentialV2(any())).thenReturn(residentCredentialResponseDto);
+		when(residentCredentialService.reqCredential(any(), any())).thenReturn(residentCredentialResponseDto);
 
 		ResidentCredentialResponseDto result = orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 		assertEquals("effc56cd-cf3b-4042-ad48-7277cf90f763", result.getRequestId());
@@ -115,7 +114,7 @@ public class OrderCardServiceTest {
 	public void testSendPhysicalCardIf() throws Exception {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
 				any(), any())).thenReturn(responseWrapper);
-		when(residentCredentialService.reqCredentialV2(any())).thenReturn(residentCredentialResponseDto);
+		when(residentCredentialService.reqCredential(any(), any())).thenReturn(residentCredentialResponseDto);
 
 		ResidentCredentialResponseDto result = orderCardService.sendPhysicalCard(residentCredentialRequestDto);
 		assertEquals("effc56cd-cf3b-4042-ad48-7277cf90f763", result.getRequestId());
