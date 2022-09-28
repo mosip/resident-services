@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -87,9 +88,13 @@ public class AuditUtil {
 		auditRequestDto.setHostName(hostName);
 		auditRequestDto.setApplicationId(eventEnum.getApplicationId());
 		auditRequestDto.setApplicationName(eventEnum.getApplicationName());
-		auditRequestDto.setSessionUserId(SecurityContextHolder.getContext().getAuthentication().getName());
-		auditRequestDto.setSessionUserName(SecurityContextHolder.getContext().getAuthentication().getName());
-		auditRequestDto.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication != null) {
+			String name = authentication.getName();
+			auditRequestDto.setSessionUserId(name);
+			auditRequestDto.setSessionUserName(name);
+			auditRequestDto.setCreatedBy(name);
+		}
 		auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
 		auditRequestDto.setDescription(eventEnum.getDescription());
 		auditRequestDto.setEventType(eventEnum.getType());

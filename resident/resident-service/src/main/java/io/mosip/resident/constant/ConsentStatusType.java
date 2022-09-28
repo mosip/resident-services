@@ -10,7 +10,7 @@ public enum ConsentStatusType {
 
 	public static boolean containsStatus(String status) {
 		for (ConsentStatusType consentStatus : ConsentStatusType.values()) {
-			if (consentStatus.name().equals(status)) {
+			if (consentStatus.name().equalsIgnoreCase(status)) {
 				return true;
 			}
 		}
