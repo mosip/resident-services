@@ -767,7 +767,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 	
 	@Override
-	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
+	public Object reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
 		byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 		JSONObject demographicJsonObject;
 		try {
@@ -785,7 +785,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResidentUpdateResponseDTO reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException {
+	public Object reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException {
 		Object responseDto;
 		ResidentUpdateResponseDTO residentUpdateResponseDTO = null;
 		ResidentUpdateResponseDTOV2 residentUpdateResponseDTOV2 = null;
