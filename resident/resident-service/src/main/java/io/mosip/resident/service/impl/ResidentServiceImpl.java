@@ -772,7 +772,8 @@ public class ResidentServiceImpl implements ResidentService {
 		JSONObject demographicJsonObject;
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
-			return reqUinUpdate(dto, demographicJsonObject);
+			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
+			return reqUinUpdate(dto, demographicIdentity);
 		}  catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
@@ -785,7 +786,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public Object reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException {
+	public Object reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity) throws ResidentServiceCheckedException {
 		Object responseDto;
 		ResidentUpdateResponseDTO residentUpdateResponseDTO = null;
 		ResidentUpdateResponseDTOV2 residentUpdateResponseDTOV2 = null;
@@ -837,7 +838,6 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setCenterId(centerId);
 			regProcReqUpdateDto.setMachineId(machineId);
 			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
-			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
 			String mappingJson = utility.getMappingJson();
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
 					|| mappingJson.trim().isEmpty()) {
@@ -1008,7 +1008,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 
 		finally {
-			if (Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession() &&  residentTransactionEntity != null) {
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
 		}
@@ -1023,8 +1023,9 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		byte[] decodedIdJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
-		Map<String, Object> identityResponse = objectMapper.readValue(decodedIdJson, Map.class);
-		Map<String, ?> identityMap = (Map<String, ?>) identityResponse.get(IDENTITY);
+		Map<String, ?> identityMap = decodedIdJson != null
+				? (Map<String, ?>) objectMapper.readValue(decodedIdJson, Map.class).get(IDENTITY)
+				: dto.getIdentity();
 
 		Set<String> keys = identityMap.keySet();
 		keys.remove("IDSchemaVersion");
@@ -1342,8 +1343,12 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ValidationFailedException(ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorCode(),
 					ResidentErrorCode.INDIVIDUAL_ID_TYPE_INVALID.getErrorMessage());
 		}
+		
 		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 		String uinMapping = getDocumentName(identityMappingJsonObject, UIN);
+		if(Utilitiy.isSecureSession()) {
+			demographicIdentity.put(uinMapping, uin);
+		}
 		String identityJsonUIN = JsonUtil.getJSONValue(demographicIdentity, uinMapping);
 		if (!identityJsonUIN.equals(uin)) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
