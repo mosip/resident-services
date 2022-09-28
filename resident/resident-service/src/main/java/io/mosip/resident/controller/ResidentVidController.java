@@ -174,7 +174,8 @@ public class ResidentVidController {
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to revoke VID"));
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
-		if (residentIndividualId.equals(vid)) {
+		
+		if (residentIndividualId !=null && residentIndividualId.equals(vid)) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_VALIDATION);
 			
 		}

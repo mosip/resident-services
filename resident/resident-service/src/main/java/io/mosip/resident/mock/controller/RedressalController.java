@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class RedressalController {
-	@RequestMapping("/external/grievance/redressel")
+	@GetMapping("/external/grievance/redressel")
 	public String grievence(Model model, @RequestParam("name") String name, @RequestParam("emailId") String emailId,
 			@RequestParam("phoneNo") String phoneNo, @RequestParam("eventId") String eventId)
 			throws MalformedURLException {
