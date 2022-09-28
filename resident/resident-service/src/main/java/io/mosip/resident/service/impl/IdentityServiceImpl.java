@@ -1,26 +1,23 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -120,6 +117,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private ResidentVidService residentVidService;
+
+	@Autowired
+	private Environment environment;
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
@@ -395,6 +395,46 @@ public class IdentityServiceImpl implements IdentityService {
 				individualId = uin;
 			}
 			return individualId;
+	}
+
+	public String getClaimFromIdToken() throws ApisResourceAccessException {
+		AuthUserDetails authUserDetails= getAuthUserDetails();
+		String claim = this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME);
+		String claimValue = "";
+		String idToken = authUserDetails.getIdToken();
+		if(idToken!=null){
+			String payLoad = decodeTokenParts(idToken);
+			System.out.println(payLoad);
+			Map<String, Object> payLoadMap=convertStringToMap(payLoad);
+			if(claim!=null){
+				claimValue = (String) payLoadMap.get(claim);
+			}
+		}
+		return  claimValue;
+	}
+
+	private Map<String, Object> convertStringToMap(String payLoad) {
+		payLoad = payLoad.replace("{", "");
+		payLoad = payLoad.replace("}", "");
+		payLoad = payLoad.replace("\"", "");
+		Map<String, Object> result = new HashMap<>();
+		List<String> payLoadString = List.of(payLoad.split(","));
+		for(String mapKeyValue: payLoadString){
+			String[] keyValue=mapKeyValue.split(":");
+			if(keyValue.length!=2){
+				continue;
+			}
+			result.put(keyValue[0], keyValue[1]);
+		}
+		return result;
+	}
+
+	public String decodeTokenParts(String token)
+	{
+		String[] parts = token.split("\\.", 0);
+		byte[] bytes = Base64.getUrlDecoder().decode(parts[1]);
+		String decodedString = new String(bytes, StandardCharsets.UTF_8);
+		return decodedString;
 	}
 
 
