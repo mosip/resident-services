@@ -95,8 +95,9 @@ public enum ResidentErrorCode {
 	SERVER_ERROR("RES-SER-467", "Server error occurred" ),
 	VALIDATION_UNSUCCESS("RES-SER-468", "Validation un-success"),
 	EXPIRED_OTP("RES-SER-469", "OTP expired - Please send OTP again"),
-	NO_RECORDS_FOUND("RES-SER-470", "No Record(s) found");
-
+	NO_RECORDS_FOUND("RES-SER-470", "No Record(s) found"),
+	VID_VALIDATION("RES-SER-471","This VID cannot be revoked since you have logged in using same VID");
+	
 	private final String errorCode;
 	private final String errorMessage;
 
