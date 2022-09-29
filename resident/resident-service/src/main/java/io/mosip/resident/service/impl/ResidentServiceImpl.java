@@ -1680,7 +1680,7 @@ public class ResidentServiceImpl implements ResidentService {
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-			serviceHistoryResponseDto.setPurpose(residentTransactionEntity.getPurpose());
+			serviceHistoryResponseDto.setDescription(residentTransactionEntity.getPurpose());
 			serviceHistoryResponseDto.setEventStatus(getEventStatusCode(residentTransactionEntity.getStatusCode()));
 			if (residentTransactionEntity.getUpdDtimes() != null
 					&& residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
