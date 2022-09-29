@@ -3,11 +3,6 @@ package io.mosip.resident.service.impl;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.websub.model.EventModel;
-import io.mosip.kernel.core.websub.spi.PublisherClient;
-import io.mosip.kernel.core.websub.spi.SubscriptionClient;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
-import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
@@ -25,9 +20,6 @@ import io.mosip.resident.service.WebSubUpdateAuthTypeService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -41,29 +33,6 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
     @Autowired
     private AuditUtil auditUtil;
-
-    /** The publisher. */
-    @Autowired
-    private PublisherClient<String, Object, HttpHeaders> publisher;
-
-    @Autowired
-    SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
-
-
-    @Value("${resident.websub.authtype-status.topic}")
-    private String topic;
-
-    @Value("${websub.publish.url}")
-    private String publishUrl;
-
-    @Value("${websub.hub.url}")
-    private String hubUrl;
-
-    @Value("${resident.websub.authtype-status.secret}")
-    private String secret;
-
-    @Value("${resident.websub.callback.authtype-status.url}")
-    private String callbackUrl;
 
     @Autowired
     private IdentityServiceImpl identityServiceImpl;
@@ -81,20 +50,8 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try{
             logger.info( "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
-
-            publisher.publishUpdate(topic, eventModel, MediaType.APPLICATION_JSON_VALUE, null, publishUrl);
-
-            SubscriptionChangeRequest subscriptionRequest = new SubscriptionChangeRequest();
-            logger.info(callbackUrl, "", "", "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::callbackUrl");
-            subscriptionRequest.setCallbackURL(callbackUrl);
-            subscriptionRequest.setSecret(secret);
-            subscriptionRequest.setTopic(topic);
-            subscriptionRequest.setHubURL(hubUrl);
-            subscribe.subscribe(subscriptionRequest);
-
             ResidentTransactionEntity residentTransactionEntity = insertInResidentTransactionTable(eventModel,"COMPLETED");
             sendNotificationV2(TemplateType.SUCCESS, residentTransactionEntity.getEventId());
-
         }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
