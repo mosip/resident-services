@@ -422,22 +422,6 @@ public class IdentityServiceImpl implements IdentityService {
 		return  claimValue;
 	}
 
-	private Map<String, Object> convertStringToMap(String payLoad) {
-		payLoad = payLoad.replace("{", "");
-		payLoad = payLoad.replace("}", "");
-		payLoad = payLoad.replace("\"", "");
-		Map<String, Object> result = new HashMap<>();
-		List<String> payLoadString = List.of(payLoad.split(","));
-		for(String mapKeyValue: payLoadString){
-			String[] keyValue=mapKeyValue.split(":");
-			if(keyValue.length!=2){
-				continue;
-			}
-			result.put(keyValue[0], keyValue[1]);
-		}
-		return result;
-	}
-
 	public String decodeTokenParts(String token)
 	{
 		String[] parts = token.split("\\.", 0);
