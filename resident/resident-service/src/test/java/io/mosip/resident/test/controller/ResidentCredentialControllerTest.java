@@ -43,6 +43,7 @@ import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
@@ -189,7 +190,7 @@ public class ResidentCredentialControllerTest {
 
     @Test
     public void testRequestDownloadPersonalizedCard() throws Exception {
-        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
+        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(new ResidentCredentialResponseDtoV2());
         ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");
@@ -203,7 +204,7 @@ public class ResidentCredentialControllerTest {
     
     @Test
     public void testRequestShareCredWithPartner() throws Exception {
-        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(credentialReqResponse);
+        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(new ResidentCredentialResponseDtoV2());
         ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");

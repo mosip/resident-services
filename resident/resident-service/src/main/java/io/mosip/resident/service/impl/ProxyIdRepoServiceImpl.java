@@ -15,6 +15,8 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -33,15 +35,32 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
+	
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
 
 	@Override
-	public ResponseWrapper<Map<String, Integer>> getRemainingUpdateCountByIndividualId(String individualId,
-			String idType, List<String> attributeList) throws ResidentServiceCheckedException {
+	public List<UpdateCountDto> getRemainingUpdateCountByIndividualId(String idType,
+			List<String> attributeList) throws ResidentServiceCheckedException {
 		try {
-			return JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
+			String individualId=identityServiceImpl.getResidentIndvidualId();
+			ResponseWrapper<Map<String, Integer>> responseWrapper = JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					List.of(individualId), "attribute_list", attributeList.stream().collect(Collectors.joining(",")),
 					ResponseWrapper.class), new TypeReference<ResponseWrapper<Map<String, Integer>>>() {
 					});
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
+			}
+			if(responseWrapper.getResponse()!=null && !responseWrapper.getResponse().isEmpty()) {
+				List<UpdateCountDto> dtoList = responseWrapper.getResponse().entrySet().stream()
+						.map(map -> new UpdateCountDto(map.getKey(),map.getValue()))
+						.collect(Collectors.toList());
+				return dtoList;
+			} else {
+				return List.of();
+			}
+			
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),

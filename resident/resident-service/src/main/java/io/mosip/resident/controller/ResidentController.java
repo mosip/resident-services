@@ -375,15 +375,16 @@ public class ResidentController {
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
 		String individualId = identityServiceImpl.getResidentIndvidualId();
-		if (requestDTO.getRequest() != null) {
-			requestDTO.getRequest().setIndividualId(individualId);
+		ResidentUpdateRequestDto request = requestWrapper.getRequest();
+		if (request != null) {
+			request.setIndividualId(individualId);
 		}
-		requestWrapper.getRequest().setIndividualIdType(getIdType(requestWrapper.getRequest().getIndividualId()));
+		request.setIndividualIdType(getIdType(individualId));
 		validator.validateUpdateRequest(requestWrapper, true);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
-		response.setResponse(residentService.reqUinUpdate(requestWrapper.getRequest()));
+		response.setResponse(residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		return response;
