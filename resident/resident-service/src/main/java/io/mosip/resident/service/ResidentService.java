@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,8 +24,8 @@ import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
 import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ServiceHistoryRequestDto;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
@@ -87,4 +88,8 @@ public interface ResidentService {
 	int updatebellClickdttimes(String individualId);
 
 	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
+	
+	byte[] getServiceHistoryPDF(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
+			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
+			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
 }

@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,8 +52,8 @@ import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
 import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ServiceHistoryRequestDto;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
@@ -537,4 +538,37 @@ public class ResidentController {
 		return unreadServiceNotificationDtoList;
 	}
 
+	@GetMapping(path = "/service-history-pdf")
+	public ResponseEntity<Object> getServiceHistoryPDF(
+			@RequestParam(name = "pageStart", required = false) Integer pageStart,
+			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
+			@RequestParam(name = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
+			@RequestParam(name = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+			@RequestParam(name = "sortType", required = false) String sortType,
+			@RequestParam(name = "serviceType", required = false) String serviceType,
+			@RequestParam(name = "statusFilter", required = false) String statusFilter,
+			@RequestParam(name = "searchText", required = false) String searchText,
+			@RequestParam(name = "languageCode", required = false) String languageCode)
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+		logger.debug("ResidentController::serviceHistory::pdf");
+		audit.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY_PDF_URL, "acknowledgement"));
+		validator.validateOnlyLanguageCode(languageCode);
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
+				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText);
+		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
+		byte[] pdfBytes = residentService.getServiceHistoryPDF(responseWrapper, languageCode, eventReqDateTime,
+				fromDateTime, toDateTime, serviceType, statusFilter);
+		System.out.println("after pdf bytes " + pdfBytes);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		audit.setAuditRequestDto(EventEnum.GET_SERVICE_HISTORY_PDF_SUCCESS);
+		System.out.println("after get service history pdf success");
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
+				.body(resource);
+	}
+
+	
 }
