@@ -11,6 +11,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -93,6 +95,9 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -376,7 +381,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return  getClaimValue(IDA_TOKEN);
+		return  getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -397,15 +402,19 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 
-	public String getClaimFromIdToken() throws ApisResourceAccessException {
+	public String getClaimFromIdToken(String claim) throws ApisResourceAccessException {
 		AuthUserDetails authUserDetails= getAuthUserDetails();
-		String claim = this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME);
 		String claimValue = "";
 		String idToken = authUserDetails.getIdToken();
 		if(idToken!=null){
 			String payLoad = decodeTokenParts(idToken);
 			System.out.println(payLoad);
-			Map<String, Object> payLoadMap=convertStringToMap(payLoad);
+			Map<String, Object> payLoadMap= null;
+			try {
+				payLoadMap = objectMapper.readValue(payLoad, Map.class);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
 			if(claim!=null){
 				claimValue = (String) payLoadMap.get(claim);
 			}
