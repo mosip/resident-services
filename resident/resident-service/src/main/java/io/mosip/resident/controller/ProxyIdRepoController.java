@@ -22,7 +22,6 @@ import io.mosip.idrepository.core.exception.IdRepoAppException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -59,19 +58,19 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> getRemainingUpdateCountByIndividualId(
+	public ResponseEntity<ResponseWrapper<List<?>>> getRemainingUpdateCountByIndividualId(
 			@RequestParam(name = ID_TYPE, required = false) @Nullable String idType,
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
-			ResponseWrapper<List<UpdateCountDto>> responseWrapper = proxySerivce
+			ResponseWrapper<List<?>> responseWrapper = proxySerivce
 					.getRemainingUpdateCountByIndividualId(idType, filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_EXCEPTION);
 			ExceptionUtils.logRootCause(e);
-			ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
+			ResponseWrapper<List<?>> responseWrapper = new ResponseWrapper<>();
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 			return ResponseEntity.ok(responseWrapper);
 		}

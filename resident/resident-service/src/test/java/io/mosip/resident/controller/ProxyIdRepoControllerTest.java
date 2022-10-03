@@ -23,7 +23,6 @@ import org.springframework.web.context.WebApplicationContext;
 import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -50,10 +49,10 @@ public class ProxyIdRepoControllerTest {
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId() throws ResidentServiceCheckedException {
-		ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
+		ResponseWrapper<List<?>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(List.of());
 		when(service.getRemainingUpdateCountByIndividualId(any(), any())).thenReturn(responseWrapper);
-		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
+		ResponseEntity<ResponseWrapper<List<?>>> response = controller
 				.getRemainingUpdateCountByIndividualId("", List.of());
 		assertEquals(List.of(), response.getBody().getResponse());
 	}
@@ -62,7 +61,7 @@ public class ProxyIdRepoControllerTest {
 	public void testGetRemainingUpdateCountByIndividualIdException() throws ResidentServiceCheckedException {
 		when(service.getRemainingUpdateCountByIndividualId(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION));
-		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
+		ResponseEntity<ResponseWrapper<List<?>>> response = controller
 				.getRemainingUpdateCountByIndividualId("", List.of());
 		assertEquals(List.of(new ServiceError(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 				API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage())), response.getBody().getErrors());

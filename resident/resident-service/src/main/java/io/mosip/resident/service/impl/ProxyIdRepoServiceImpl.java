@@ -16,7 +16,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -39,13 +38,13 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Override
-	public ResponseWrapper<List<UpdateCountDto>> getRemainingUpdateCountByIndividualId(String idType,
+	public ResponseWrapper<List<?>> getRemainingUpdateCountByIndividualId(String idType,
 			List<String> attributeList) throws ResidentServiceCheckedException {
 		try {
 			String individualId=identityServiceImpl.getResidentIndvidualId();
-			ResponseWrapper<List<UpdateCountDto>> responseWrapper = JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
+			ResponseWrapper<List<?>> responseWrapper = JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					List.of(individualId), "attribute_list", attributeList.stream().collect(Collectors.joining(",")),
-					ResponseWrapper.class), new TypeReference<ResponseWrapper<List<UpdateCountDto>>>() {
+					ResponseWrapper.class), new TypeReference<ResponseWrapper<List<?>>>() {
 					});
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
