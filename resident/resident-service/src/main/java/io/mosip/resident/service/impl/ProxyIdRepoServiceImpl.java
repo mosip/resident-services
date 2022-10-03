@@ -3,11 +3,11 @@ package io.mosip.resident.service.impl;
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -22,7 +22,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import org.springframework.stereotype.Service;
 
 /**
  * @author Manoj SP
@@ -40,26 +39,19 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Override
-	public List<UpdateCountDto> getRemainingUpdateCountByIndividualId(String idType,
+	public ResponseWrapper<List<UpdateCountDto>> getRemainingUpdateCountByIndividualId(String idType,
 			List<String> attributeList) throws ResidentServiceCheckedException {
 		try {
 			String individualId=identityServiceImpl.getResidentIndvidualId();
-			ResponseWrapper<Map<String, Integer>> responseWrapper = JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
+			ResponseWrapper<List<UpdateCountDto>> responseWrapper = JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					List.of(individualId), "attribute_list", attributeList.stream().collect(Collectors.joining(",")),
-					ResponseWrapper.class), new TypeReference<ResponseWrapper<Map<String, Integer>>>() {
+					ResponseWrapper.class), new TypeReference<ResponseWrapper<List<UpdateCountDto>>>() {
 					});
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 			}
-			if(responseWrapper.getResponse()!=null && !responseWrapper.getResponse().isEmpty()) {
-				List<UpdateCountDto> dtoList = responseWrapper.getResponse().entrySet().stream()
-						.map(map -> new UpdateCountDto(map.getKey(),map.getValue()))
-						.collect(Collectors.toList());
-				return dtoList;
-			} else {
-				return List.of();
-			}
+			return responseWrapper;
 			
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));

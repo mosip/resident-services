@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,14 +44,14 @@ public class ProxyIdRepoServiceTest {
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<Map<String, Integer>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of("fullName", 1));
+		ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(List.of());
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), any(List.class), any(String.class), any(String.class), any()))
 				.thenReturn(responseWrapper);
-		List<UpdateCountDto> response = service.getRemainingUpdateCountByIndividualId("",
+		ResponseWrapper<List<UpdateCountDto>> response = service.getRemainingUpdateCountByIndividualId("",
 				List.of());
-		assertEquals(new UpdateCountDto("fullName", 1), response.get(0));
+		assertEquals(List.of(), response.getResponse());
 	}
 
 	@SuppressWarnings("unchecked")

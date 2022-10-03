@@ -64,9 +64,8 @@ public class ProxyIdRepoController {
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
-			ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
-			responseWrapper.setResponse(proxySerivce
-					.getRemainingUpdateCountByIndividualId(idType, filterAttributeList));
+			ResponseWrapper<List<UpdateCountDto>> responseWrapper = proxySerivce
+					.getRemainingUpdateCountByIndividualId(idType, filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {

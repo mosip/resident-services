@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -51,12 +50,12 @@ public class ProxyIdRepoControllerTest {
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId() throws ResidentServiceCheckedException {
-		List<UpdateCountDto> responseWrapper = new ArrayList<>();
-		responseWrapper.add(new UpdateCountDto());
+		ResponseWrapper<List<UpdateCountDto>> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(List.of());
 		when(service.getRemainingUpdateCountByIndividualId(any(), any())).thenReturn(responseWrapper);
 		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
 				.getRemainingUpdateCountByIndividualId("", List.of());
-		assertEquals(new UpdateCountDto(), response.getBody().getResponse().get(0));
+		assertEquals(List.of(), response.getBody().getResponse());
 	}
 
 	@Test
