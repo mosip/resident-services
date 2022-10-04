@@ -7,7 +7,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 public interface ProxyIdRepoService {
 
-	ResponseWrapper<List<?>> getRemainingUpdateCountByIndividualId(String idType,
+	ResponseWrapper<?> getRemainingUpdateCountByIndividualId(String idType,
 			List<String> attributeList) throws ResidentServiceCheckedException;
 
 }

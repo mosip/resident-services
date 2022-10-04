@@ -1,6 +1,6 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -43,14 +43,14 @@ public class ProxyIdRepoServiceTest {
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<?>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(List.of());
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setVersion("v1");
+		responseWrapper.setId("1");
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), any(List.class), any(String.class), any(String.class), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<List<?>> response = service.getRemainingUpdateCountByIndividualId("",
-				List.of());
-		assertEquals(List.of(), response.getResponse());
+		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId("", List.of());
+		assertNotNull(response);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -60,7 +60,6 @@ public class ProxyIdRepoServiceTest {
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), any(List.class), any(String.class), any(String.class), any()))
 				.thenThrow(new ApisResourceAccessException());
-		service.getRemainingUpdateCountByIndividualId("",
-				List.of());
+		service.getRemainingUpdateCountByIndividualId("", List.of());
 	}
 }

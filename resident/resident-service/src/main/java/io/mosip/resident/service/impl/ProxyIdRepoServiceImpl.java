@@ -9,8 +9,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -19,7 +17,6 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
@@ -38,14 +35,13 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Override
-	public ResponseWrapper<List<?>> getRemainingUpdateCountByIndividualId(String idType,
+	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(String idType,
 			List<String> attributeList) throws ResidentServiceCheckedException {
 		try {
 			String individualId=identityServiceImpl.getResidentIndvidualId();
-			ResponseWrapper<List<?>> responseWrapper = JsonUtil.convertValue(residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
+			ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					List.of(individualId), "attribute_list", attributeList.stream().collect(Collectors.joining(",")),
-					ResponseWrapper.class), new TypeReference<ResponseWrapper<List<?>>>() {
-					});
+					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);

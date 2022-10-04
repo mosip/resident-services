@@ -58,19 +58,19 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ResponseWrapper<List<?>>> getRemainingUpdateCountByIndividualId(
+	public ResponseEntity<ResponseWrapper<?>> getRemainingUpdateCountByIndividualId(
 			@RequestParam(name = ID_TYPE, required = false) @Nullable String idType,
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
-			ResponseWrapper<List<?>> responseWrapper = proxySerivce
+			ResponseWrapper<?> responseWrapper = proxySerivce
 					.getRemainingUpdateCountByIndividualId(idType, filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_EXCEPTION);
 			ExceptionUtils.logRootCause(e);
-			ResponseWrapper<List<?>> responseWrapper = new ResponseWrapper<>();
+			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 			return ResponseEntity.ok(responseWrapper);
 		}
