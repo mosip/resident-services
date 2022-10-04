@@ -539,7 +539,7 @@ public class ResidentController {
 	}
 
 	@GetMapping(path = "/download/service-history")
-	public ResponseEntity<Object> getServiceHistoryPDF(
+	public ResponseEntity<Object> downLoadServiceHistory(
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
@@ -558,7 +558,7 @@ public class ResidentController {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
 				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
-		byte[] pdfBytes = residentService.getServiceHistoryPDF(responseWrapper, languageCode, eventReqDateTime,
+		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
 				fromDateTime, toDateTime, serviceType, statusFilter);
 		System.out.println("after pdf bytes " + pdfBytes);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));

@@ -1933,7 +1933,7 @@ public class ResidentServiceImpl implements ResidentService {
 	/**
 	 * create the template for service history PDF and converted template into PDF
 	 */
-	public byte[] getServiceHistoryPDF(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
+	public byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
 			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
 

@@ -89,7 +89,7 @@ public interface ResidentService {
 
 	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
 	
-	byte[] getServiceHistoryPDF(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
+	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
 			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
 }
