@@ -643,11 +643,11 @@ public enum EventEnum {
 			"send otp is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	GET_SERVICE_HISTORY_PDF_URL("RES-SER-260", RegistrationConstants.SYSTEM, "get service history pdf",
+	DOWNLOAD_SERVICE_HISTORY("RES-SER-260", RegistrationConstants.SYSTEM, "download service histor",
 			"get service history pdf", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	GET_SERVICE_HISTORY_PDF_SUCCESS("RES-SER-266", RegistrationConstants.SYSTEM, "service history pdf  success", "service history pdf  success based on language code", "RES-SER",
+	DOWNLOAD_SERVICE_HISTORY_SUCCESS("RES-SER-266", RegistrationConstants.SYSTEM, "down load service history success", "download service history success based on language code", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
 
 	;

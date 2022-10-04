@@ -538,7 +538,7 @@ public class ResidentController {
 		return unreadServiceNotificationDtoList;
 	}
 
-	@GetMapping(path = "/service-history-pdf")
+	@GetMapping(path = "/download/service-history")
 	public ResponseEntity<Object> getServiceHistoryPDF(
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
@@ -553,7 +553,7 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::serviceHistory::pdf");
 		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY_PDF_URL, "acknowledgement"));
+				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		validator.validateOnlyLanguageCode(languageCode);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
 				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText);
@@ -562,7 +562,7 @@ public class ResidentController {
 				fromDateTime, toDateTime, serviceType, statusFilter);
 		System.out.println("after pdf bytes " + pdfBytes);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		audit.setAuditRequestDto(EventEnum.GET_SERVICE_HISTORY_PDF_SUCCESS);
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		System.out.println("after get service history pdf success");
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
