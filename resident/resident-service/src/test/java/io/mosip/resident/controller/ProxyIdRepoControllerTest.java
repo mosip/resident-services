@@ -2,10 +2,10 @@ package io.mosip.resident.controller;
 
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -24,7 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.UpdateCountDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -51,19 +50,20 @@ public class ProxyIdRepoControllerTest {
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualId() throws ResidentServiceCheckedException {
-		List<UpdateCountDto> responseWrapper = new ArrayList<>();
-		responseWrapper.add(new UpdateCountDto());
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setVersion("v1");
+		responseWrapper.setId("1");
 		when(service.getRemainingUpdateCountByIndividualId(any(), any())).thenReturn(responseWrapper);
-		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
+		ResponseEntity<ResponseWrapper<?>> response = controller
 				.getRemainingUpdateCountByIndividualId("", List.of());
-		assertEquals(new UpdateCountDto(), response.getBody().getResponse().get(0));
+		assertNotNull(response);
 	}
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualIdException() throws ResidentServiceCheckedException {
 		when(service.getRemainingUpdateCountByIndividualId(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION));
-		ResponseEntity<ResponseWrapper<List<UpdateCountDto>>> response = controller
+		ResponseEntity<ResponseWrapper<?>> response = controller
 				.getRemainingUpdateCountByIndividualId("", List.of());
 		assertEquals(List.of(new ServiceError(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 				API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage())), response.getBody().getErrors());

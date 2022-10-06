@@ -598,12 +598,13 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionId");
 		}
 
-		if (requestDTO.getRequest().getIdentityJson() == null || requestDTO.getRequest().getIdentityJson().isEmpty()) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
-			throw new InvalidInputException("identityJson");
+		if(!isPatch) {
+			if (requestDTO.getRequest().getIdentityJson() == null || requestDTO.getRequest().getIdentityJson().isEmpty()) {
+				audit.setAuditRequestDto(
+						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
+				throw new InvalidInputException("identityJson");
+			}
 		}
-
 	}
 
 	public void validateRidCheckStatusRequestDTO(RequestWrapper<RequestDTO> requestDTO) {
@@ -821,6 +822,10 @@ public class RequestValidator {
 		validateLanguageCode(languageCode);
 	}
 
+	public void validateOnlyLanguageCode(String languageCode) {
+		validateLanguageCode(languageCode);
+	}
+	
 	private void validateLanguageCode(String languageCode) {
 		List<String> allowedMandatoryLanguage = List.of(mandatoryLanguages.split(","));
 		List<String> allowedOptionalLanguage = List.of(optionalLanguages.split(","));
