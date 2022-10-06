@@ -379,8 +379,11 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
-	
+
 	public String getResidentIdaToken() throws ApisResourceAccessException {
+		return getClaimValue(IDA_TOKEN);
+	}
+	public String getResidentIdToken() throws ApisResourceAccessException {
 		return  getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
