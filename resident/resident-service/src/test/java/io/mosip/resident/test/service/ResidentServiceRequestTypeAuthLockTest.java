@@ -3,7 +3,6 @@ package io.mosip.resident.test.service;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
-import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -20,7 +19,6 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilitiy;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,7 +36,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 
@@ -124,7 +121,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
-			Mockito.when(idAuthService.authTypeStatusUpdate(any(), any(), any())).thenReturn(true);
+			Mockito.when(idAuthService.authTypeStatusUpdateForRequestId(any(), any(), any())).thenReturn("123");
 			ResponseDTO response = new ResponseDTO();
 			response.setMessage("Notification success");
 			Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
@@ -179,10 +176,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
-		Mockito.when(idAuthService.authTypeStatusUpdate(any(), any(), any())).thenThrow(new ApisResourceAccessException());
-
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
-
 	}
 
 	@Test(expected = ResidentServiceException.class)
