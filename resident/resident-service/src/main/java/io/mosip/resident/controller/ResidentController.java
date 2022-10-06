@@ -568,6 +568,5 @@ public class ResidentController {
 				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
 				.body(resource);
 	}
-
 	
 }
