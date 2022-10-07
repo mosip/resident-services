@@ -413,16 +413,16 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
-	@GetMapping(path = "/download-card/individualId/{individualId}")
+	@GetMapping(path = "/download-card/event/{eventId}")
 	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> downloadCard(
-			@PathVariable("individualId") String individualId) throws ResidentServiceCheckedException {
+			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
-		validator.validateIndividualId(individualId);
+		validator.validateIndividualId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, individualId));
-		response.setResponse(residentService.downloadCard(individualId, getIdType(individualId)));
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, individualId));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
+		response.setResponse(residentService.downloadCard(eventId, getIdType(eventId)));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		return response;
 	}
 
