@@ -96,7 +96,7 @@ public class NotificationService {
 	@Autowired
 	private TemplateUtil templateUtil;
 
-	private static final String LINE_SEPARATOR = new  StringBuilder().append('\n').append('\n').append('\n').toString();
+	private static final String LINE_SEPARATOR = new  StringBuilder().append("<br>").append("<br>").append("<br>").toString();
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
 	private static final String SUBJECT = "_SUB";
