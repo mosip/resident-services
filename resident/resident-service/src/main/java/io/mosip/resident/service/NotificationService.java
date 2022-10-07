@@ -63,6 +63,7 @@ import io.mosip.resident.validator.RequestValidator;
  */
 @Component
 public class NotificationService {
+	private static final String LINE_BREAK = "<br>";
 	private static final String EMAIL_CHANNEL = "email";
 	private static final String PHONE_CHANNEL = "phone";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
@@ -96,7 +97,7 @@ public class NotificationService {
 	@Autowired
 	private TemplateUtil templateUtil;
 
-	private static final String LINE_SEPARATOR = new  StringBuilder().append("<br>").append("<br>").toString();
+	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
 	private static final String SUBJECT = "_SUB";
@@ -316,8 +317,8 @@ public class NotificationService {
 				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + SMS),
 						mailingAttributes);
 			}
-			if(languageTemplate.trim().endsWith("<br>")) {
-				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - 4).trim();
+			if(languageTemplate.trim().endsWith(LINE_BREAK)) {
+				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - LINE_BREAK.length()).trim();
 			}
 			if (mergedTemplate.isBlank()) {
 				mergedTemplate = languageTemplate;
@@ -431,8 +432,8 @@ public class NotificationService {
 				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + EMAIL),
 						mailingAttributes);
 			}
-			if(languageTemplate.trim().endsWith("<br>")) {
-				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - 4).trim();
+			if(languageTemplate.trim().endsWith(LINE_BREAK)) {
+				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - LINE_BREAK.length()).trim();
 			}
 			if (mergedTemplate.isBlank() || mergedEmailSubject.isBlank()) {
 				mergedTemplate = languageTemplate;
