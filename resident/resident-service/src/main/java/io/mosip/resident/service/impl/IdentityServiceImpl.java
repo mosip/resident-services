@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,6 +129,9 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -428,10 +432,15 @@ public class IdentityServiceImpl implements IdentityService {
 	public String decodeTokenParts(String token)
 	{
 		String[] parts = token.split("\\.", 0);
-		byte[] bytes = Base64.getUrlDecoder().decode(parts[1]);
-		String decodedString = new String(bytes, StandardCharsets.UTF_8);
-		return decodedString;
+		String payload = parts[1];
+		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			payload = decryptPayload(payload);
+		}
+		byte[] bytes = Base64.getUrlDecoder().decode(payload);
+		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-
+	public String decryptPayload(String payload) {
+		return objectStoreHelper.decryptPayload(payload, this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+	}
 }
