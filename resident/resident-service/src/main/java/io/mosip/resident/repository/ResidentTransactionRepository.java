@@ -80,4 +80,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
 	List<ResidentTransactionEntity> findByIdandStatus(@Param("tokenId") String tokenId);
 
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashrefid AND auth_type_code !='OTP_REQUESTED'")
+	Integer findByrefIdandauthtype(@Param("hashrefid") String hashrefid);
+
 }
