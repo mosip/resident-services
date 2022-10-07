@@ -96,7 +96,7 @@ public class NotificationService {
 	@Autowired
 	private TemplateUtil templateUtil;
 
-	private static final String LINE_SEPARATOR = new  StringBuilder().append("<br>").append("<br>").append("<br>").toString();
+	private static final String LINE_SEPARATOR = new  StringBuilder().append("<br>").append("<br>").toString();
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
 	private static final String SUBJECT = "_SUB";
@@ -316,7 +316,9 @@ public class NotificationService {
 				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + SMS),
 						mailingAttributes);
 			}
-			
+			if(languageTemplate.trim().endsWith("<br>")) {
+				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - 4).trim();
+			}
 			if (mergedTemplate.isBlank()) {
 				mergedTemplate = languageTemplate;
 			}else {
@@ -429,7 +431,9 @@ public class NotificationService {
 				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + EMAIL),
 						mailingAttributes);
 			}
-			
+			if(languageTemplate.trim().endsWith("<br>")) {
+				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - 4).trim();
+			}
 			if (mergedTemplate.isBlank() || mergedEmailSubject.isBlank()) {
 				mergedTemplate = languageTemplate;
 				mergedEmailSubject = emailSubject;
