@@ -99,6 +99,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 	
 	private String thumbprint=null;
 
+	private String requestIdForAuthLockUnLock=null;
+
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
@@ -253,6 +255,13 @@ public class IdAuthServiceImpl implements IdAuthService {
 	}
 
 	@Override
+	public String authTypeStatusUpdateForRequestId(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap) throws ApisResourceAccessException {
+		if(authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap)){
+			return requestIdForAuthLockUnLock;
+		}
+		return "";
+	}
+	@Override
 	public boolean authTypeStatusUpdate(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap)
 			throws ApisResourceAccessException {
 		boolean isAuthTypeStatusSuccess = false;
@@ -269,6 +278,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 			io.mosip.resident.dto.AuthTypeStatus authTypeStatus = new io.mosip.resident.dto.AuthTypeStatus();
 			String requestId = UUID.randomUUID().toString();
 			authTypeStatus.setRequestId(requestId);
+			if(requestIdForAuthLockUnLock==null){
+				requestIdForAuthLockUnLock = requestId;
+			}
 			if (types.length == 1) {
 				authTypeStatus.setAuthType(types[0]);
 			} else {
