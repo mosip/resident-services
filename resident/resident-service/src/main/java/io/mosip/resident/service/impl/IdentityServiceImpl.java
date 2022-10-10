@@ -352,7 +352,9 @@ public class IdentityServiceImpl implements IdentityService {
 		if(claimValue == null) {
 			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
 		}
-		
+		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			claimValue = decodeString(decryptPayload((String) claimValue));
+		}
 		return String.valueOf(claimValue);
 	}
 
@@ -385,10 +387,26 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return getClaimValue(IDA_TOKEN);
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
-	public String getResidentIdToken() throws ApisResourceAccessException {
-		return  getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+
+	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
+		return getClaimFromJwt(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	}
+
+	public String getClaimFromJwt(String idToken, String claim) {
+		String claimValue = "";
+		String[] parts = idToken.split("\\.", 0);
+		Map payLoadMap;
+		try {
+			payLoadMap = objectMapper.readValue(parts[1], Map.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		if (claim != null) {
+			claimValue = (String) payLoadMap.get(claim);
+		}
+		return claimValue;
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -409,18 +427,17 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 
-	public String getClaimFromIdToken(String claim) throws ApisResourceAccessException {
+	public String getClaimFromIdToken(String claim) {
 		AuthUserDetails authUserDetails= getAuthUserDetails();
-		String claimValue = "";
 		String idToken = authUserDetails.getIdToken();
+		String claimValue = "";
 		String payLoad = "";
 		if(idToken!=null){
 			if(idToken.contains("\\.")){
 				String[] parts = idToken.split("\\.", 0);
-				String payloadPart = parts[1];
-				payLoad = decryptToken(payloadPart);
+				payLoad = decodeString(parts[1]);
 			} else{
-				payLoad = decryptToken(idToken);
+				payLoad = decodeString(idToken);
 			}
 			Map payLoadMap;
 			try {
@@ -435,11 +452,8 @@ public class IdentityServiceImpl implements IdentityService {
 		return  claimValue;
 	}
 
-	public String decryptToken(String payload)
+	public String decodeString(String payload)
 	{
-		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
-			payload = decryptPayload(payload);
-		}
 		byte[] bytes = Base64.getUrlDecoder().decode(payload);
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
