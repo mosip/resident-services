@@ -413,10 +413,16 @@ public class IdentityServiceImpl implements IdentityService {
 		AuthUserDetails authUserDetails= getAuthUserDetails();
 		String claimValue = "";
 		String idToken = authUserDetails.getIdToken();
+		String payLoad = "";
 		if(idToken!=null){
-			String payLoad = decodeTokenParts(idToken);
-			System.out.println(payLoad);
-			Map<String, Object> payLoadMap= null;
+			if(idToken.contains("\\.")){
+				String[] parts = idToken.split("\\.", 0);
+				String payloadPart = parts[1];
+				payLoad = decryptToken(payloadPart);
+			} else{
+				payLoad = decryptToken(idToken);
+			}
+			Map payLoadMap;
 			try {
 				payLoadMap = objectMapper.readValue(payLoad, Map.class);
 			} catch (JsonProcessingException e) {
@@ -429,10 +435,8 @@ public class IdentityServiceImpl implements IdentityService {
 		return  claimValue;
 	}
 
-	public String decodeTokenParts(String token)
+	public String decryptToken(String payload)
 	{
-		String[] parts = token.split("\\.", 0);
-		String payload = parts[1];
 		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
 			payload = decryptPayload(payload);
 		}
