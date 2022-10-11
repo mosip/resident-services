@@ -18,6 +18,11 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
 
+/**
+ * Aspect class for login redirect API
+ * 
+ * @author Ritik Jain
+ */
 @Component
 @Aspect
 @EnableAspectJAutoProxy
@@ -56,31 +61,24 @@ public class LoginCheck {
 			if (cookie.contains(ID_TOKEN)) {
 				Optional<String> cookieIdToken = getCookieValueFromHeader(cookie);
 				if (cookieIdToken.isPresent()) {
-					idaToken = getIdaTokenFromIdToken(cookieIdToken.get()); // call a method to get ida token from
-																			// id_token
+					idaToken = getIdaTokenFromIdToken(cookieIdToken.get()); // call a method to get ida token from id_token
 				}
-				System.out.println("================================" + cookie); // remove this
 			}
 		}
-
-		System.out.println("ip address: " + getClientIp(req)); // remove this
-		System.out.println("OS type: " + getMachineType(req)); // remove this
-		System.out.println("Hostname: " + req.getRemoteHost()); // remove this
-		System.out.println("Date/Time: " + DateUtils.getUTCCurrentDateTimeString()); // remove this
 
 		Optional<ResidentUserEntity> userData = residentUserRepository.findById(idaToken);
 		if (userData.isPresent()) {
 			residentUserRepository.updateUserData(idaToken, DateUtils.getUTCCurrentDateTime(), getClientIp(req),
 					req.getRemoteHost(), getMachineType(req));
 		} else {
-			residentUserRepository.save(new ResidentUserEntity(idaToken, null, DateUtils.getUTCCurrentDateTime(),
+			residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
 					getClientIp(req), req.getRemoteHost(), getMachineType(req)));
 		}
 	}
 
 	private String getIdaTokenFromIdToken(String cookieIdToken) {
 		// TODO Auto-generated method stub
-		return "268279069952256300388531046337488801";
+		return "283806899483626793628536705744577345";
 	}
 
 	private Optional<String> getCookieValueFromHeader(String cookie) {
@@ -115,9 +113,19 @@ public class LoginCheck {
 	}
 
 	public String getClientIp(HttpServletRequest req) {
-		String[] IP_HEADERS = { X_FORWARDED_FOR, PROXY_CLIENT_IP, WL_PROXY_CLIENT_IP, HTTP_X_FORWARDED_FOR,
-				HTTP_X_FORWARDED, HTTP_X_CLUSTER_CLIENT_IP, HTTP_CLIENT_IP, HTTP_FORWARDED_FOR, HTTP_FORWARDED,
-				HTTP_VIA, REMOTE_ADDR };
+		String[] IP_HEADERS = {
+				X_FORWARDED_FOR,
+				PROXY_CLIENT_IP,
+				WL_PROXY_CLIENT_IP,
+				HTTP_X_FORWARDED_FOR,
+				HTTP_X_FORWARDED,
+				HTTP_X_CLUSTER_CLIENT_IP,
+				HTTP_CLIENT_IP,
+				HTTP_FORWARDED_FOR,
+				HTTP_FORWARDED,
+				HTTP_VIA,
+				REMOTE_ADDR
+		};
 		for (String header : IP_HEADERS) {
 			String value = req.getHeader(header);
 			if (value == null || value.isEmpty()) {

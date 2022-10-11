@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import lombok.Builder;
 import lombok.Data;
@@ -61,9 +60,18 @@ public class ResidentUserEntity {
 
 	}
 
-	public ResidentUserEntity(String idaToken, LocalDateTime lastbellnotifDtimes, LocalDateTime lastloginDtime, 
+	public ResidentUserEntity(String idaToken, LocalDateTime lastloginDtime, String ipAddress, String host, String machineType) {
+		this.idaToken = idaToken;
+		this.lastloginDtime = lastloginDtime;
+		this.ipAddress = ipAddress;
+		this.host = host;
+		this.machineType = machineType;
+	}
+
+	public ResidentUserEntity(String idaToken, LocalDateTime lastbellnotifDtimes, LocalDateTime lastloginDtime,
 			String ipAddress, String host, String machineType) {
 		this.idaToken = idaToken;
+		this.lastbellnotifDtimes = lastbellnotifDtimes;
 		this.lastloginDtime = lastloginDtime;
 		this.ipAddress = ipAddress;
 		this.host = host;
