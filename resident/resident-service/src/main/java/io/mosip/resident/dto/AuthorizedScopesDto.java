@@ -83,5 +83,7 @@ public class AuthorizedScopesDto {
 	private List<String> postValidateOtp;
 	
 	private List<String> getRemainingUpdateCount;
+	
+	private List<String> getGenderTypeByLandCode;
 
 }
