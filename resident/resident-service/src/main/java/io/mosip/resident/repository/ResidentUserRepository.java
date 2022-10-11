@@ -31,4 +31,11 @@ public interface ResidentUserRepository extends JpaRepository<ResidentUserEntity
 	@Query("update ResidentUserEntity res set res.lastloginDtime =:datetime, res.ipAddress =:ipAddress, res.host =:host, res.machineType =:machineType where res.idaToken =:tokenId")
 	void updateUserData(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime,
 			@Param("ipAddress") String ipAddress, @Param("host") String host, @Param("machineType") String machineType);
+
+	@Modifying
+    @Transactional
+	@Query(value = "INSERT INTO resident.resident_user_actions(\r\n"
+			+ "	ida_token, last_bell_notif_click_dtimes)\r\n"
+			+ "	VALUES (:tokenId, :datetime);" , nativeQuery=true)
+	int saveandupdateByIdandTime(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
 }
