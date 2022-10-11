@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.mosip.resident.entity.ResidentUserEntity;
 
 /**
- * The Interface ResidentTransactionRepository.
+ * The Interface ResidentUserRepository.
  * 
  * @author Neha Farheen
  * @since 1.2.0.1
@@ -26,4 +26,9 @@ public interface ResidentUserRepository extends JpaRepository<ResidentUserEntity
 	@Modifying
 	@Query("update ResidentUserEntity res set res.lastbellnotifDtimes =:datetime where res.idaToken =:tokenId")
 	int updateByIdandTime(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
+	
+	@Modifying
+	@Query("update ResidentUserEntity res set res.lastloginDtime =:datetime, res.ipAddress =:ipAddress, res.host =:host, res.machineType =:machineType where res.idaToken =:tokenId")
+	void updateUserData(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime,
+			@Param("ipAddress") String ipAddress, @Param("host") String host, @Param("machineType") String machineType);
 }
