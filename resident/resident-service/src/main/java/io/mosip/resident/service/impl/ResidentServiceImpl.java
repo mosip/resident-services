@@ -1910,7 +1910,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if (idtoken.isPresent()) {
 			return residentUserRepository.updateByIdandTime(Id, dt);
 		}else {
-			return residentUserRepository.saveandupdateByIdandTime(Id, dt);
+			return residentUserRepository.insertRecordByIdAndNotificationClickTime(Id, dt);
 		}
 		
 	}

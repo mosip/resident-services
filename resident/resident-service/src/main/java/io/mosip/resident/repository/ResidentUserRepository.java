@@ -37,5 +37,5 @@ public interface ResidentUserRepository extends JpaRepository<ResidentUserEntity
 	@Query(value = "INSERT INTO resident.resident_user_actions(\r\n"
 			+ "	ida_token, last_bell_notif_click_dtimes)\r\n"
 			+ "	VALUES (:tokenId, :datetime);" , nativeQuery=true)
-	int saveandupdateByIdandTime(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
+	int insertRecordByIdAndNotificationClickTime(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
 }
