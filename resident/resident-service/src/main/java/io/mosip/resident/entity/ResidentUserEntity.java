@@ -32,9 +32,8 @@ public class ResidentUserEntity {
 	private String idaToken;
 
 	@Column(name = "last_bell_notif_click_dtimes")
-	LocalDateTime lastbellnotifDtimes;
+	private LocalDateTime lastbellnotifDtimes;
 
-	@NotNull
 	@Column(name = "last_login_dtimes")
 	private LocalDateTime lastloginDtime;
 	
