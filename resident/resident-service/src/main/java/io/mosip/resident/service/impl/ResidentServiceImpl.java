@@ -3,13 +3,19 @@ package io.mosip.resident.service.impl;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,9 +24,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +49,9 @@ import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -126,6 +137,7 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -162,6 +174,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String PRINTING = "PRINTING";
+	private static final String CLASSPATH = "classpath";
+	private static final String ENCODE_TYPE = "UTF-8";
+
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -257,12 +272,31 @@ public class ResidentServiceImpl implements ResidentService {
 	private String unreadnotificationlist;
 
 	private static String authTypes;
+	
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
+	
+	private TemplateManager templateManager;
+
+	@Autowired
+	private TemplateManagerBuilder templateManagerBuilder;
+
+	@PostConstruct
+	public void idTemplateManagerPostConstruct() {
+		templateManager = templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH)
+				.build();
+	}
+
+	@Autowired
+	private PDFGenerator pdfGenerator;
+	
 
 	@Value("${auth.types.allowed}")
 	public void setAuthTypes(String authType) {
 		authTypes = authType;
 	}
 
+	
 	public static String getAuthTypeBasedOnConfigV2(AuthTypeStatusDtoV2 authTypeStatus) {
 		String[] authTypesArray = authTypes.split(",");
 		for (String authType : authTypesArray) {
@@ -1103,20 +1137,22 @@ public class ResidentServiceImpl implements ResidentService {
 					.filter(dto -> dto.getUnlockForSeconds() != null).collect(Collectors.toMap(
 							ResidentServiceImpl::getAuthTypeBasedOnConfigV2, AuthTypeStatusDtoV2::getUnlockForSeconds));
 
-			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap,
+			String requestId = idAuthService
+					.authTypeStatusUpdateForRequestId(individualId, authTypeStatusMap,
 					unlockForSecondsMap);
 
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
-				if (isAuthTypeStatusUpdated) {
+				if (requestId!=null) {
 					residentTransactionEntity.setRequestSummary("in-progress");
 					residentTransactionEntity.setPurpose(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary("failed");
 				}
+				residentTransactionEntity.setRequestTrnId(requestId);
 			});
 
-			if (isAuthTypeStatusUpdated) {
+			if (requestId!=null) {
 				isTransactionSuccessful = true;
 			} else {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
@@ -1545,7 +1581,6 @@ public class ResidentServiceImpl implements ResidentService {
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
 				.getResultList();
-
 		String[] split = nativeQueryString.split("order by");
 		String nativeQueryStringWithoutOrderBy = split[0];
 		nativeQueryStringWithoutOrderBy = nativeQueryStringWithoutOrderBy.replace("*", "count(*)");
@@ -1894,7 +1929,44 @@ public class ResidentServiceImpl implements ResidentService {
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponse(unreadServiceNotificationDto);
 		return responseWrapper;
-
 	}
+	
+	@Override
+	/**
+	 * create the template for service history PDF and converted template into PDF
+	 */
+	public byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
+			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
+			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
 
+		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
+		String requestProperty = "service-history-type";
+		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
+		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
+		Map<String, Object> templateResponse = new LinkedHashMap<>(
+				(Map<String, Object>) proxyResponseWrapper.getResponse());
+		String fileText = (String) templateResponse.get("fileText");
+		// for avoiding null values in PDF
+		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
+		for (ServiceHistoryResponseDto dto : serviceHistoryDtlsList) {
+			if (dto.getDescription() == null)
+				dto.setDescription("");
+		}
+		Map<String, Object> servHistoryMap = new HashMap<>();
+		servHistoryMap.put("eventReqTimeStamp", eventReqDateTime);
+		servHistoryMap.put("fromDateTime", fromDateTime);
+		servHistoryMap.put("toDateTime", toDateTime);
+		servHistoryMap.put("statusFilter", statusFilter);
+		servHistoryMap.put("serviceType", serviceType);
+		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
+
+		InputStream serviceHistTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
+		InputStream serviceHistTemplateData = templateManager.merge(serviceHistTemplate, servHistoryMap);
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(serviceHistTemplateData, writer, "UTF-8");
+		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
+		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
+		return pdfValue.toByteArray();
+	}
 }

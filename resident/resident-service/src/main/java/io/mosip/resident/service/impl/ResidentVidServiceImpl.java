@@ -3,6 +3,7 @@ package io.mosip.resident.service.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.JsonUtils;
 import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -618,15 +620,37 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 		List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
 				.map(map -> new LinkedHashMap<String, Object>(map))
+				.map(lhm1 -> getRefIdHash(lhm1))
 				.map(lhm -> {
-					lhm.remove(HASH_ATTRIBUTES);
 					return lhm;
-				}).collect(Collectors.toList());
+				})
+				.collect(Collectors.toList());
 		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
 		res.setResponse(filteredList);
 		return res;
 		
 	}
+	
+	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
+		try {
+			String hashrefid = HMACUtils2.digestAsPlainText(map.get("vid").toString().getBytes());
+			int countdb = residentTransactionRepository.findByrefIdandauthtype(hashrefid);
+			if(map.get("transactionLimit") != null) {
+				int limitCount =  (int) map.get("transactionLimit");
+				int leftcount = limitCount - countdb;
+			    map.put("transactionsLeftCount", leftcount);
+			    if(leftcount < 0) {
+			    	map.put("transactionsLeftCount", 0);
+			    }
+			}else  {
+				map.put("transactionsLeftCount", map.get("transactionLimit"));	
+			}
+			map.remove(HASH_ATTRIBUTES);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}	
 	
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVids(uin);

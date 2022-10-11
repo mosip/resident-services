@@ -21,6 +21,8 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 public interface ResidentTransactionRepository extends JpaRepository<ResidentTransactionEntity, String> {
 	List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
 
+	List<ResidentTransactionEntity> findByRequestTrnId(String requestTrnId);
+
 	ResidentTransactionEntity findByAid(String aid);
 
 	List<ResidentTransactionEntity> findByTokenId(String token);
@@ -77,5 +79,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	@Query(value = "Select new ResidentTransactionEntity(eventId, requestSummary, statusCode,requestDtimes,requestTypeCode) "
 			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
 	List<ResidentTransactionEntity> findByIdandStatus(@Param("tokenId") String tokenId);
+
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashrefid AND auth_type_code !='OTP_REQUESTED'")
+	Integer findByrefIdandauthtype(@Param("hashrefid") String hashrefid);
 
 }
