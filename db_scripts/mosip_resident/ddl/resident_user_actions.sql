@@ -14,8 +14,8 @@
 
 CREATE TABLE resident.resident_user_actions(
     ida_token character varying(128) NOT NULL,
-    last_bell_notif_click_dtimes timestamp NOT NULL,
-    last_login_dtimes timestamp NOT NULL,
+    last_bell_notif_click_dtimes timestamp,
+    last_login_dtimes timestamp,
 	ip_address character varying(128),
 	host character varying(128),
 	machine_type character varying(30),
