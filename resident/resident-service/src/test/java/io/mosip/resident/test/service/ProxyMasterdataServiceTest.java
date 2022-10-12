@@ -536,5 +536,42 @@ public class ProxyMasterdataServiceTest {
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng", "otp-template");
 	}
+	
+	@Test
+	public void testGetGenderTypesByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getGenderTypesByLangCode("eng");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetGenderTypesByLangCodeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		ServiceError error = new ServiceError();
+		error.setErrorCode("101");
+		error.setMessage("errors");
+
+		List<ServiceError> errorList = new ArrayList<ServiceError>();
+		errorList.add(error);
+
+		responseWrapper.setErrors(errorList);
+		proxyMasterdataService.getGenderTypesByLangCode("xyz");
+	}
+
+	@Test
+	public void testGetGenderTypesByLangCodeElse() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		ResponseWrapper<?> result = proxyMasterdataService.getGenderTypesByLangCode("eng");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetGenderTypesByLangCodeWithApisResourceAccessException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any()))
+				.thenThrow(new ApisResourceAccessException());
+		proxyMasterdataService.getGenderTypesByLangCode("eng");
+	}
 
 }

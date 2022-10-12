@@ -391,4 +391,27 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 	}
 
+	@Override
+	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getGenderTypesByLangCode()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("langcode", langCode);
+		try {
+			responseWrapper=residentServiceRestClient.getApi(ApiName.GENDER_TYPE_BY_LANGCODE, pathsegments, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_EXCEPTION);
+			logger.error("Error occured in accessing gender types %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getGenderTypesByLangCode()::exit");
+		return responseWrapper;
+	}
+
 }
