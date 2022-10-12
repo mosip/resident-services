@@ -1906,7 +1906,13 @@ public class ResidentServiceImpl implements ResidentService {
 	@Override
 	public int updatebellClickdttimes(String Id) {
 		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
-		return residentUserRepository.updateByIdandTime(Id, dt);
+		Optional<ResidentUserEntity> idtoken = residentUserRepository.findById(Id);
+		if (idtoken.isPresent()) {
+			return residentUserRepository.updateByIdandTime(Id, dt);
+		}else {
+			return residentUserRepository.insertRecordByIdAndNotificationClickTime(Id, dt);
+		}
+		
 	}
 
 	@Override

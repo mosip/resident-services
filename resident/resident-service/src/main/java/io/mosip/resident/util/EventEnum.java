@@ -650,6 +650,15 @@ public enum EventEnum {
 	DOWNLOAD_SERVICE_HISTORY_SUCCESS("RES-SER-266", RegistrationConstants.SYSTEM, "down load service history success", "download service history success based on language code", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
 
+	GET_GENDER_TYPES("RES-SER-261", RegistrationConstants.SYSTEM, "get gender types",
+			"get gender types by langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_TYPES_SUCCESS("RES-SER-262", RegistrationConstants.SYSTEM, "get gender types success",
+			"get gender types by langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_TYPES_EXCEPTION("RES-SER-263", RegistrationConstants.SYSTEM, "get gender types failure",
+			"get gender types by langCode is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
 	;
 
 	private final String eventId;
