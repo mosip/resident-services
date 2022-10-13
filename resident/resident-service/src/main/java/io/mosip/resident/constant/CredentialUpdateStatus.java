@@ -25,4 +25,8 @@ public class CredentialUpdateStatus {
 	
 	public static final String STORED = "STORED";
 	
+	public static final String IN_TRANSIT = "IN_TRANSIT";
+	
+	public static final String PAYMENT_CONFIRMED = "PAYMENT_CONFIRMED";
+	
 }
