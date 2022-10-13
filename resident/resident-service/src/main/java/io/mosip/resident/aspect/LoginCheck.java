@@ -2,7 +2,10 @@ package io.mosip.resident.aspect;
 
 import java.net.HttpCookie;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +41,7 @@ public class LoginCheck {
 	private static final String ANDROID = "Android";
 	private static final String IPHONE = "IPhone";
 	private static final String X_FORWARDED_FOR = "X-Forwarded-For";
+	private static final String X_REAL_IP = "x-real-ip";
 	private static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
 	private static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
 	private static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
@@ -74,6 +78,7 @@ public class LoginCheck {
 			residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
 					getClientIp(req), req.getRemoteHost(), getMachineType(req)));
 		}
+		getRequestHeadersInMap(req);
 	}
 
 	private String getIdaTokenFromIdToken(String cookieIdToken) {
@@ -115,6 +120,7 @@ public class LoginCheck {
 	public String getClientIp(HttpServletRequest req) {
 		String[] IP_HEADERS = {
 				X_FORWARDED_FOR,
+				X_REAL_IP,
 				PROXY_CLIENT_IP,
 				WL_PROXY_CLIENT_IP,
 				HTTP_X_FORWARDED_FOR,
@@ -132,9 +138,25 @@ public class LoginCheck {
 				continue;
 			}
 			String[] parts = value.split("\\s*,\\s*");
-			return parts[0];
+			System.out.println("Header============================= "+header);
+			System.out.println("Value=============================== "+value);
+			System.out.println("ip-address======================= "+parts[0]);
+//			return parts[0];
 		}
 		return req.getRemoteAddr();
 	}
+	
+	private void getRequestHeadersInMap(HttpServletRequest request) {
+
+        Map<String, String> result = new HashMap<>();
+
+        Enumeration headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String key = (String) headerNames.nextElement();
+            String value = request.getHeader(key);
+            result.put(key, value);
+        }
+        System.out.println("Extra request headers======================="+result.toString());
+    }
 
 }
