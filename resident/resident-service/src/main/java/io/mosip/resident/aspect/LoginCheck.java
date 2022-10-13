@@ -2,10 +2,7 @@ package io.mosip.resident.aspect;
 
 import java.net.HttpCookie;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
 
@@ -55,10 +54,13 @@ public class LoginCheck {
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
+	
+	private static final Logger logger = LoggerConfiguration.logConfig(LoginCheck.class);
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..)) && args(redirectURI,state,sessionState,code,stateCookie,req,res)")
 	public void getUserDetails(String redirectURI, String state, String sessionState, String code, String stateCookie,
 			HttpServletRequest req, HttpServletResponse res) {
+		logger.debug("LoginCheck::getUserDetails()::entry");
 		String idaToken = "";
 		Collection<String> cookies = res.getHeaders(SET_COOKIE);
 		for (String cookie : cookies) {
@@ -78,7 +80,7 @@ public class LoginCheck {
 			residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
 					getClientIp(req), req.getRemoteHost(), getMachineType(req)));
 		}
-		getRequestHeadersInMap(req);
+		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
 
 	private String getIdaTokenFromIdToken(String cookieIdToken) {
@@ -87,16 +89,20 @@ public class LoginCheck {
 	}
 
 	private Optional<String> getCookieValueFromHeader(String cookie) {
+		logger.debug("LoginCheck::getCookieValueFromHeader()::entry");
 		List<HttpCookie> httpCookieList = HttpCookie.parse(cookie);
 		if (!httpCookieList.isEmpty()) {
 			HttpCookie httpCookie = httpCookieList.get(0);
 			String value = httpCookie.getValue();
+			logger.debug("LoginCheck::getCookieValueFromHeader()::exit");
 			return Optional.of(value);
 		}
+		logger.debug("LoginCheck::getCookieValueFromHeader()::exit - cookie is empty");
 		return Optional.empty();
 	}
 
 	private String getMachineType(HttpServletRequest req) {
+		logger.debug("LoginCheck::getMachineType()::entry");
 		String browserDetails = req.getHeader(USER_AGENT);
 		String userAgent = browserDetails;
 
@@ -114,10 +120,12 @@ public class LoginCheck {
 		} else {
 			os = "UnKnown, More-Info: " + userAgent;
 		}
+		logger.debug("LoginCheck::getMachineType()::exit");
 		return os;
 	}
 
 	public String getClientIp(HttpServletRequest req) {
+		logger.debug("LoginCheck::getClientIp()::entry");
 		String[] IP_HEADERS = {
 				X_FORWARDED_FOR,
 				X_REAL_IP,
@@ -138,25 +146,11 @@ public class LoginCheck {
 				continue;
 			}
 			String[] parts = value.split("\\s*,\\s*");
-			System.out.println("Header============================= "+header);
-			System.out.println("Value=============================== "+value);
-			System.out.println("ip-address======================= "+parts[0]);
-//			return parts[0];
+			logger.debug("LoginCheck::getClientIp()::exit");
+			return parts[0];
 		}
+		logger.debug("LoginCheck::getClientIp()::exit - excecuted till end");
 		return req.getRemoteAddr();
 	}
-	
-	private void getRequestHeadersInMap(HttpServletRequest request) {
-
-        Map<String, String> result = new HashMap<>();
-
-        Enumeration headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String key = (String) headerNames.nextElement();
-            String value = request.getHeader(key);
-            result.put(key, value);
-        }
-        System.out.println("Extra request headers======================="+result.toString());
-    }
 
 }
