@@ -1,8 +1,6 @@
 package io.mosip.resident.test.service;
 
-import com.amazonaws.services.apigateway.model.Op;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
@@ -28,12 +26,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -146,7 +142,7 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri),String.class)).thenReturn("data");
         byte[] response = residentServiceImpl.downloadCard(eventId, idType);
-        assertEquals(response.toString(), "[B@322ba549");
+        assertNotNull(response);
     }
 
     @Test(expected = EventIdNotPresentException.class)
