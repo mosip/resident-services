@@ -1524,14 +1524,13 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private DigitalCardStatusResponseDto getDigitalCardStatus(String individualId)
 			throws ApisResourceAccessException, IOException {
-		String digitialCardStatusUrl = env.getProperty(ApiName.DIGITAL_CARD_STATUS_URL.name()) +
+		String digitalCardStatusUrl = env.getProperty(ApiName.DIGITAL_CARD_STATUS_URL.name()) +
 				individualId;
-		URI digitialCardStatusUri = URI.create(digitialCardStatusUrl);
+		URI digitalCardStatusUri = URI.create(digitalCardStatusUrl);
 		ResponseWrapper<DigitalCardStatusResponseDto> responseDto =
-				residentServiceRestClient.getApi(digitialCardStatusUri, ResponseWrapper.class);
-		DigitalCardStatusResponseDto digitalCardStatusResponseDto = JsonUtil.readValue(
+				residentServiceRestClient.getApi(digitalCardStatusUri, ResponseWrapper.class);
+		return JsonUtil.readValue(
 				JsonUtil.writeValueAsString(responseDto.getResponse()), DigitalCardStatusResponseDto.class);
-		return digitalCardStatusResponseDto;
 	}
 
 	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto)
