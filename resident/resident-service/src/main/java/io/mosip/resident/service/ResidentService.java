@@ -84,7 +84,7 @@ public interface ResidentService {
 
 	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id);
 
-	int updatebellClickdttimes(String individualId);
+	 public int updatebellClickdttimes(String individualId);
 
 	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
 	

@@ -46,6 +46,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 /**
@@ -95,6 +96,9 @@ public class Utilitiy {
 	
 	@Value("${resident.ui.track-service-request-url}")
 	private String trackServiceUrl;
+	
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -324,5 +328,14 @@ public class Utilitiy {
 	
 	public String createTrackServiceRequestLink(String eventId) {
 		return trackServiceUrl + eventId;
+	}
+	
+	public String createDownloadLink(String eventId) {
+		Optional<ResidentTransactionEntity> residentData=	residentTransactionRepository.findById(eventId);
+		if(residentData.isPresent()) {
+			return residentData.get().getReferenceLink();
+		}
+		return "NA";
+		
 	}
 }
