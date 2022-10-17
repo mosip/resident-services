@@ -144,6 +144,15 @@ public interface ProxyMasterdataService {
 	 */
 	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
 			throws ResidentServiceCheckedException;
+	
+	/**
+	 * Get gender types by language code.
+	 * 
+	 * @param langCode
+	 * @return ResponseWrapper object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException;
 
 	/**
 	 * 

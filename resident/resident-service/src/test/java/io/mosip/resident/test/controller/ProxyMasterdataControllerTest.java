@@ -191,5 +191,12 @@ public class ProxyMasterdataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/templates/eng/OTP-sms-template"))
 				.andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testGetGenderTypesByLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getGenderTypesByLangCode(Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/gendertypes/langcode"))
+				.andExpect(status().isOk());
+	}
 
 }

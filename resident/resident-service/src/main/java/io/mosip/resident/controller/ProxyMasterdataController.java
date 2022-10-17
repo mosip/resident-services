@@ -411,6 +411,31 @@ public class ProxyMasterdataController {
 				.header("Content-Disposition", "attachment; filename=\"" + "downloadRegistrationCentersByHierarchyLevel" + ".pdf\"")
 				.body(resource);
 	}
-	
-
+  
+	/*
+	 * Get gender types by language code.
+	 * 
+	 * @param langCode
+	 * @return ResponseWrapper object
+	 * @throws ResidentServiceCheckedException
+	 */
+	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetGenderTypeByLandCode()" + ")")
+	@GetMapping("/auth-proxy/masterdata/gendertypes/{langcode}")
+	@Operation(summary = "getGenderTypesByLangCode", description = "getGenderTypesByLangCode", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getGenderTypesByLangCode(@PathVariable("langcode") String langCode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getGenderTypesByLangCode(langCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_SUCCESS);
+		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::exit");
+		return responseWrapper;
+	}
 }

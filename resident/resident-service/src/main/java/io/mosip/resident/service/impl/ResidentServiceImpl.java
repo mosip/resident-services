@@ -1137,20 +1137,22 @@ public class ResidentServiceImpl implements ResidentService {
 					.filter(dto -> dto.getUnlockForSeconds() != null).collect(Collectors.toMap(
 							ResidentServiceImpl::getAuthTypeBasedOnConfigV2, AuthTypeStatusDtoV2::getUnlockForSeconds));
 
-			boolean isAuthTypeStatusUpdated = idAuthService.authTypeStatusUpdate(individualId, authTypeStatusMap,
+			String requestId = idAuthService
+					.authTypeStatusUpdateForRequestId(individualId, authTypeStatusMap,
 					unlockForSecondsMap);
 
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
-				if (isAuthTypeStatusUpdated) {
+				if (requestId!=null) {
 					residentTransactionEntity.setRequestSummary("in-progress");
 					residentTransactionEntity.setPurpose(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary("failed");
 				}
+				residentTransactionEntity.setRequestTrnId(requestId);
 			});
 
-			if (isAuthTypeStatusUpdated) {
+			if (requestId!=null) {
 				isTransactionSuccessful = true;
 			} else {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
@@ -1904,7 +1906,13 @@ public class ResidentServiceImpl implements ResidentService {
 	@Override
 	public int updatebellClickdttimes(String Id) {
 		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
-		return residentUserRepository.updateByIdandTime(Id, dt);
+		Optional<ResidentUserEntity> idtoken = residentUserRepository.findById(Id);
+		if (idtoken.isPresent()) {
+			return residentUserRepository.updateByIdandTime(Id, dt);
+		}else {
+			return residentUserRepository.insertRecordByIdAndNotificationClickTime(Id, dt);
+		}
+		
 	}
 
 	@Override
