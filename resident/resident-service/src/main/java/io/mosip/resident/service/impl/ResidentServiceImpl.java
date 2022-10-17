@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigInteger;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +29,13 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.resident.constant.*;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.dto.*;
+import io.mosip.resident.exception.*;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -55,90 +63,12 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.ConsentStatusType;
-import io.mosip.resident.constant.EventStatus;
-import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
-import io.mosip.resident.constant.EventStatusSuccess;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.RegistrationExternalStatusCode;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.constant.TemplateVariablesEnum;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
-import io.mosip.resident.dto.AuthTxnDetailsDTO;
-import io.mosip.resident.dto.AuthTypeStatusDtoV2;
-import io.mosip.resident.dto.AuthUnLockRequestDTO;
-import io.mosip.resident.dto.BellNotificationDto;
-import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.EventStatusResponseDTO;
-import io.mosip.resident.dto.MachineCreateRequestDTO;
-import io.mosip.resident.dto.MachineCreateResponseDTO;
-import io.mosip.resident.dto.MachineDto;
-import io.mosip.resident.dto.MachineSearchRequestDTO;
-import io.mosip.resident.dto.MachineSearchResponseDTO;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationRequestDtoV2;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PacketGeneratorResDto;
-import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
-import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
-import io.mosip.resident.dto.PageDto;
-import io.mosip.resident.dto.RegProcRePrintRequestDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusRequestDTO;
-import io.mosip.resident.dto.RegistrationStatusResponseDTO;
-import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
-import io.mosip.resident.dto.RegistrationType;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentIndividialIDType;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
-import io.mosip.resident.dto.ResidentTransactionType;
-import io.mosip.resident.dto.ResidentUpdateDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResidentUpdateResponseDTOV2;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ServiceHistoryResponseDto;
-import io.mosip.resident.dto.SortType;
-import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.RIDInvalidException;
-import io.mosip.resident.exception.ResidentMachineServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
-import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.PartnerService;
-import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
@@ -213,6 +143,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private Utilitiy utility;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 
 	@Autowired
 	private Utilities utilities;
@@ -1513,9 +1446,92 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType)
+	public byte[] downloadCard(String eventId, String idType)
 			throws ResidentServiceCheckedException {
-		return getServiceRequestUpdate(null, null, individualId);
+		try{
+			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+			if(residentTransactionEntity.isPresent()){
+				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
+				RequestType requestType = RequestType.valueOf(requestTypeCode);
+				if(requestType.name().equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())
+				|| requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
+					String requestId = residentTransactionEntity.get().getAid();
+					if(requestId!=null){
+						return residentCredentialServiceImpl.getCard(requestId);
+					}
+				} else if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())){
+					String rid = residentTransactionEntity.get().getAid();
+					if(rid!=null){
+						return getUINCard(rid);
+					}
+				} else{
+					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
+							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
+				}
+			}else{
+				throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.toString(),
+						ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
+			}
+		}catch (EventIdNotPresentException e){
+			audit.setAuditRequestDto(EventEnum.IDA_TOKEN_NOT_FOUND);
+			throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorCode(),
+					ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
+		}catch (InvalidRequestTypeCodeException e){
+			audit.setAuditRequestDto(EventEnum.INVALID_REQUEST_TYPE_CODE);
+			throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
+					ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
+		} catch (Exception e) {
+			throw new ResidentServiceException(
+					ResidentErrorCode.CARD_NOT_FOUND.getErrorCode(),
+					ResidentErrorCode.CARD_NOT_FOUND.getErrorMessage(), e);
+		}
+		return new byte[0];
+	}
+
+	private byte[] getUINCard(String rid) {
+		try {
+			DigitalCardStatusResponseDto digitalCardStatusResponseDto = getDigitalCardStatus(rid);
+			if(digitalCardStatusResponseDto!=null){
+				if(!digitalCardStatusResponseDto.getStatusCode().equals(AVAILABLE)) {
+					audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+					throw new ResidentServiceException(
+							ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorCode(),
+							ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
+				}
+				URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
+				String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class);
+				return decryptDataShareData(encryptedData);
+			}
+		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+			throw new ResidentServiceException(
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+			throw new ResidentServiceException(
+					ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+		return new byte[0];
+	}
+
+	private byte[] decryptDataShareData(String encryptedData) {
+		String decryptedData = objectStoreHelper.decryptData(encryptedData, env.getProperty(ResidentConstants.DATA_SHARE_APPLICATION_ID),
+				env.getProperty(ResidentConstants.DATA_SHARE_REFERENCE_ID));
+		return HMACUtils2.decodeBase64(decryptedData);
+	}
+
+	private DigitalCardStatusResponseDto getDigitalCardStatus(String individualId)
+			throws ApisResourceAccessException, IOException {
+		String digitialCardStatusUrl = env.getProperty(ApiName.DIGITAL_CARD_STATUS_URL.name()) +
+				individualId;
+		URI digitialCardStatusUri = URI.create(digitialCardStatusUrl);
+		ResponseWrapper<DigitalCardStatusResponseDto> responseDto =
+				residentServiceRestClient.getApi(digitialCardStatusUri, ResponseWrapper.class);
+		DigitalCardStatusResponseDto digitalCardStatusResponseDto = JsonUtil.readValue(
+				JsonUtil.writeValueAsString(responseDto.getResponse()), DigitalCardStatusResponseDto.class);
+		return digitalCardStatusResponseDto;
 	}
 
 	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto)

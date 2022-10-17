@@ -5,12 +5,10 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.constant.*;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +25,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.ConsentStatusType;
-import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialReqestDto;
 import io.mosip.resident.dto.CredentialRequestStatusDto;
@@ -77,6 +66,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String ENG = "eng";
 	private static final String RESIDENT = "RESIDENT";
 	private static final String NEW = "new";
+	private static final String DATASHAREGENERICURL = "http://datashare.datashare";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -333,7 +323,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
 					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
-			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
+			URI dataShareUri = URI.create(getEnvironmentSpecificDataShareUrl(credentialRequestStatusResponseDto.getUrl()));
 			String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class);
 			RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
 			CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
@@ -363,6 +353,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
 
+	}
+
+	private String getEnvironmentSpecificDataShareUrl(String url) {
+		if (url!=null && url.startsWith(DATASHAREGENERICURL)){
+			return url.replace(DATASHAREGENERICURL, Objects.requireNonNull(env.getProperty(ResidentConstants.DATA_SHARE_URL)));
+		}
+		return url;
 	}
 
 	@Override
