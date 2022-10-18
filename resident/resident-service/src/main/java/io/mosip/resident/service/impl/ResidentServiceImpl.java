@@ -1978,17 +1978,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 	
 	/**
-	 * 
-	 * @param responseWrapper
-	 * @param languageCode
-	 * @param eventReqDateTime
-	 * @param fromDateTime
-	 * @param toDateTime
-	 * @param serviceType
-	 * @param statusFilter
-	 * @return
-	 * @throws ResidentServiceCheckedException
-	 * @throws IOException
+	 * download supporting documents based on language code
 	 */
 	public byte[] downLoadSupportingDocuments(String languageCode) throws ResidentServiceCheckedException, IOException {
 
