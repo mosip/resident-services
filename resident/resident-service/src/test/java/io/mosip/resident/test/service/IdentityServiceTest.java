@@ -11,6 +11,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -22,8 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -74,6 +77,12 @@ public class IdentityServiceTest {
 
 	@Mock
 	private ResidentConfigService residentConfigService;
+
+	@Mock
+	private Environment environment;
+
+	@Mock
+	private ObjectStoreHelper objectStoreHelper;
 
 	private ResponseWrapper responseWrapper;
 
@@ -283,6 +292,8 @@ public class IdentityServiceTest {
 	public void testGetClaimFromUserInfoSuccess() {
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
+		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("dmFsdWU=");
 		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getClaimFromUserInfo", userInfo, "claim");
 		assertEquals("value", result);
 	}

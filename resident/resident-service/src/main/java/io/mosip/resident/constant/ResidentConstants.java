@@ -6,11 +6,6 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
-    public static final String IDA_TOKEN_CLAIM_NAME = "mosip.resident.oidc.id_token.ida_token.claim-name";
-    public static final String MOSIP_OIDC_ENCRYPTION_ENABLED = "mosip.resident.oidc.userinfo.encryption.enabled";
-    public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
-
     private ResidentConstants() {
 	}
 
@@ -77,5 +72,10 @@ public class ResidentConstants {
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
 
     public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
+
+    public static final String IDA_TOKEN_CLAIM_NAME = "mosip.resident.oidc.id_token.ida_token.claim-name";
+    public static final String MOSIP_OIDC_ENCRYPTION_ENABLED = "mosip.resident.oidc.userinfo.encryption.enabled";
+    public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
+    public static final String RESIDENT_APP_ID = "resident.appid";
 
 }

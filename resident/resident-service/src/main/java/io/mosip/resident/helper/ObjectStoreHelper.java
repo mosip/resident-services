@@ -178,7 +178,7 @@ public class ObjectStoreHelper {
 	 * @return The decrypted data.
 	 */
 	private String decryptData(InputStream data) throws IOException {
-		return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false,  null);
+		return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false,  applicationId, referenceId);
 	}
 
 	/**
@@ -192,11 +192,10 @@ public class ObjectStoreHelper {
 	 */
 	private InputStream encryptData(InputStream data) throws IOException {
 		return new ByteArrayInputStream(
-				(encryptDecryptData(CryptoUtil.encodeToURLSafeBase64(IOUtils.toByteArray(data)), true,  null).getBytes()));
+				(encryptDecryptData(CryptoUtil.encodeToURLSafeBase64(IOUtils.toByteArray(data)), true,  applicationId, referenceId).getBytes()));
 	}
-
-	public String decryptPayload(String data, String residentReferenceId){
-		return encryptDecryptData(data, false, residentReferenceId);
+	public String decryptData(String data, String applicationId, String referenceId){
+		return encryptDecryptData(data, false, applicationId, referenceId);
 	}
 
 	/**
@@ -206,15 +205,11 @@ public class ObjectStoreHelper {
 	 * @param toEncrypt true if you want to encrypt, false if you want to decrypt
 	 * @return ResponseWrapper<Map<String, Object>>
 	 */
-	private String encryptDecryptData(String data, boolean toEncrypt, String residentReferenceId) {
+	private String encryptDecryptData(String data, boolean toEncrypt, String applicationId, String referenceId) {
 		try {
 			CryptomanagerRequestDto request = new CryptomanagerRequestDto();
 			request.setApplicationId(applicationId);
-			if(residentReferenceId == null){
-				request.setReferenceId(referenceId);
-			} else{
-				request.setReferenceId(residentReferenceId);
-			}
+			request.setReferenceId(referenceId);
 			request.setData(data);
 			request.setTimeStamp(DateUtils.getUTCCurrentDateTime());
 			RequestWrapper<CryptomanagerRequestDto> requestWrapper = new RequestWrapper<>();

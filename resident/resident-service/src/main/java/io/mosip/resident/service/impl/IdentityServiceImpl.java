@@ -459,6 +459,6 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String decryptPayload(String payload) {
-		return objectStoreHelper.decryptPayload(payload, this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+		return objectStoreHelper.decryptData(payload, this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID), this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
 	}
 }
