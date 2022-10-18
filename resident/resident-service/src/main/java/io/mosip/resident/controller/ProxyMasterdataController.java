@@ -398,13 +398,9 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);	
 		validator.validateOnlyLanguageCode(langCode);
-		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode,
-				hierarchyLevel, name);
-		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().toString());
 		byte[] pdfBytes =  proxyMasterdataService.downloadRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
-		System.out.println("after pdf bytes " + pdfBytes);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
 		System.out.println("after get service history pdf success");
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
