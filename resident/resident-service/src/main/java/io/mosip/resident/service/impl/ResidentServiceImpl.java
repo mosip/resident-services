@@ -12,6 +12,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -77,6 +79,8 @@ import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
+import io.mosip.resident.dto.AuthLockTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
@@ -1402,14 +1406,35 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException {
+	public ResponseWrapper<AuthLockStatusResponseDtoV2> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException {
 		try {
-			ResponseWrapper<Object> response = (ResponseWrapper<Object>) residentServiceRestClient.getApi(
-					ApiName.AUTHTYPESTATUSUPDATE, List.of(individualId), List.of(), List.of(), ResponseWrapper.class);
-			if (Objects.nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
+			ResponseWrapper<AuthLockStatusResponseDtoV2> responseWrapper = JsonUtil.convertValue(
+					residentServiceRestClient.getApi(ApiName.AUTHTYPESTATUSUPDATE, List.of(individualId), List.of(),
+							List.of(), ResponseWrapper.class),
+					new TypeReference<ResponseWrapper<AuthLockStatusResponseDtoV2>>() {
+					});
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED);
 			}
-			return response;
+			
+			if (responseWrapper.getResponse().getAuthTypes().isEmpty()) {
+				List<AuthLockTypeStatusDtoV2> dtoListV2 = new ArrayList<>();
+				AuthLockTypeStatusDtoV2 dtoV2;
+				String[] authTypesArray = authTypes.split(",");
+				for (String authType : authTypesArray) {
+					String[] authSplitArray = authType.split("-");
+					List<String> authTypeList = new ArrayList<String>(Arrays.asList(authSplitArray));
+					dtoV2 = new AuthLockTypeStatusDtoV2();
+					
+					dtoV2.setAuthType(authTypeList.get(0));
+					dtoV2.setAuthSubType(authTypeList.size()>1?authTypeList.get(1):null);
+					dtoV2.setLocked(Boolean.FALSE);
+					dtoV2.setUnlockForSeconds(null);
+					dtoListV2.add(dtoV2);
+				}
+				responseWrapper.getResponse().setAuthTypes(dtoListV2);
+			};
+			return responseWrapper;
 		} catch (ApisResourceAccessException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

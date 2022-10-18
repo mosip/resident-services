@@ -14,6 +14,7 @@ import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
@@ -52,7 +53,7 @@ public interface ResidentService {
 	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
+	public ResponseWrapper<AuthLockStatusResponseDtoV2> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
 	RegStatusCheckResponseDTO getRidStatus(String rid);
 

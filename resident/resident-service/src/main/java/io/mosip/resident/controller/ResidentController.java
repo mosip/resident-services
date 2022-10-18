@@ -39,6 +39,7 @@ import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.EuinRequestDTO;
@@ -392,10 +393,10 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
 	@GetMapping(path = "/auth-lock-status")
-	public ResponseWrapper<Object> getAuthLockStatus() throws ApisResourceAccessException {
+	public ResponseWrapper<AuthLockStatusResponseDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		ResponseWrapper<AuthLockStatusResponseDtoV2> responseWrapper = new ResponseWrapper<>();
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));
