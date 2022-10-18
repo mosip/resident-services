@@ -658,7 +658,16 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_GENDER_TYPES_EXCEPTION("RES-SER-263", RegistrationConstants.SYSTEM, "get gender types failure",
 			"get gender types by langCode is failed", "RES-SER", "Residence service", "NO_ID",
-			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	DOWNLOAD_SUPPORTING_DOCUMENTS("RES-SER-268", RegistrationConstants.SYSTEM, "download supporting documents",
+			"download supporting documents by langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	DOWNLOAD_SUPPORTING_DOCUMENTS_SUCCESS("RES-SER-269", RegistrationConstants.SYSTEM, "download supporting documents success",
+			"download supporting documents by langCode is success", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+
 	;
 
 	private final String eventId;

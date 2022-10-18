@@ -168,6 +168,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 	private static final String UIN = "uin";
+	private static final String REQUEST_PROPERTY="supporting-docs-list";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
@@ -1975,4 +1976,45 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
 		return pdfValue.toByteArray();
 	}
+	
+	/**
+	 * 
+	 * @param responseWrapper
+	 * @param languageCode
+	 * @param eventReqDateTime
+	 * @param fromDateTime
+	 * @param toDateTime
+	 * @param serviceType
+	 * @param statusFilter
+	 * @return
+	 * @throws ResidentServiceCheckedException
+	 * @throws IOException
+	 */
+	public byte[] downLoadSupportingDocuments(String languageCode) throws ResidentServiceCheckedException, IOException {
+
+		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
+
+		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, REQUEST_PROPERTY);
+		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
+		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
+		String fileText = (String) templateResponse.get("fileText");		
+		Map<String, Object> supportingsDocsMap = new HashMap<>();
+		supportingsDocsMap.put("supportingsDocMap", supportingsDocsMap);
+		
+		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
+		InputStream supportingDocsTemplateData = templateManager.merge(supportingDocsTemplate, supportingsDocsMap);
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
+		System.out.println("supproting documents:  "+writer.toString());
+		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
+		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
+		return pdfValue.toByteArray();
+	}
+	
+	
+	
+	
+	
+	
 }

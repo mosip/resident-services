@@ -567,6 +567,28 @@ public class ResidentController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
 				.body(resource);
+	}	
+	/**
+	 * download supporting docs based on language code
+	 * @param langCode
+	 * @return
+	 * @throws ResidentServiceCheckedException
+	 */
+	@GetMapping("/download/supportingDocs/{langcode}")
+	public ResponseEntity<Object> downLoadSupportingDocuments(@PathVariable("langcode") String langCode)
+			throws ResidentServiceCheckedException,IOException {
+		logger.debug("ResidentController::downLoadSupportingDocuments::pdf");
+		audit.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SUPPORTING_DOCUMENTS, "supporting Documents"));
+		validator.validateOnlyLanguageCode(langCode);
+		byte[] pdfBytes = residentService.downLoadSupportingDocuments(langCode);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCUMENTS_SUCCESS);
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + "supporting documents" + ".pdf\"")
+				.body(resource);
 	}
+	
 	
 }
