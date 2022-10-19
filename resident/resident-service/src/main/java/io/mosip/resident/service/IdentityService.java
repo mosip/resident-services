@@ -49,7 +49,7 @@ public interface IdentityService {
 	 * @return Map
 	 * @throws ResidentServiceCheckedException
 	 */
-	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
+	Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException;
 
 	/**
 	 * Get ID-Repo api data by id, type and includeUin.
@@ -60,7 +60,7 @@ public interface IdentityService {
 	 * @return Map
 	 * @throws ResidentServiceCheckedException
 	 */
-	Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin)
+	Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin,String schemaType)
 			throws ResidentServiceCheckedException;
 			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;

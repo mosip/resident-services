@@ -139,7 +139,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -159,7 +159,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -178,7 +178,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -196,7 +196,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -242,7 +242,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -262,7 +262,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -310,7 +310,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
@@ -331,7 +331,7 @@ public class IdentityServiceTest {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes())
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());

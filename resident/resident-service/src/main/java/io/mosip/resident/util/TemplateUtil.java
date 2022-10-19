@@ -9,6 +9,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -226,7 +227,7 @@ import java.util.Optional;
  		String name = "";
  		try {
  			String id=identityServiceImpl.getResidentIndvidualId();
- 			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id);
+ 			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
  			name=identityServiceImpl.getNameForNotification(idMap, language);
  		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException e) {
  			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),

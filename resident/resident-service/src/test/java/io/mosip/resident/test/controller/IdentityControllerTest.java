@@ -107,8 +107,8 @@ public class IdentityControllerTest {
 
 	@Test
 	public void testGetInputAttributeValues() throws Exception {
-		Mockito.when(idServiceImpl.getIdentityAttributes(Mockito.anyString())).thenReturn(identityMap);
-		mockMvc.perform(MockMvcRequestBuilders.get("/identity/info")).andExpect(status().isOk());
+		Mockito.when(idServiceImpl.getIdentityAttributes(Mockito.anyString(),Mockito.anyString())).thenReturn(identityMap);
+		mockMvc.perform(MockMvcRequestBuilders.get("/identity/info/type/schemaType")).andExpect(status().isOk());
 	}
 
 }

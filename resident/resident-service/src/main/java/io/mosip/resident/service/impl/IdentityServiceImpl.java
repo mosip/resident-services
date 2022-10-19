@@ -137,7 +137,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true);
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -180,17 +180,17 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, null, false);
+	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException {
+		return getIdentityAttributes(id, null, false,schemaType);
 	}
 	
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, null, includeUin);
+		return getIdentityAttributes(id, null, includeUin,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
 	}
 
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin) throws ResidentServiceCheckedException {
+	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -213,7 +213,7 @@ public class IdentityServiceImpl implements IdentityService {
 			List<Map<String,String>> documents=(List<Map<String, String>>) identityResponse.get(DOCUMENTS);
 			Map<String,String> individualBio=getIndividualBiometrics(documents);
 
-			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes().stream()
+			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
