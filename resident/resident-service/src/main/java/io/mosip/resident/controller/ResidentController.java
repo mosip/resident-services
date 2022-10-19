@@ -392,10 +392,10 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
 	@GetMapping(path = "/auth-lock-status")
-	public ResponseWrapper<Object> getAuthLockStatus() throws ApisResourceAccessException {
+	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));

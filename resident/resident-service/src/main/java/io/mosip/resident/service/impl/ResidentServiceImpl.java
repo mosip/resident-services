@@ -13,6 +13,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -63,6 +65,71 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.ConsentStatusType;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.RegistrationExternalStatusCode;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.constant.TemplateVariablesEnum;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
+import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BellNotificationDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.EventStatusResponseDTO;
+import io.mosip.resident.dto.MachineCreateRequestDTO;
+import io.mosip.resident.dto.MachineCreateResponseDTO;
+import io.mosip.resident.dto.MachineDto;
+import io.mosip.resident.dto.MachineSearchRequestDTO;
+import io.mosip.resident.dto.MachineSearchResponseDTO;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.PacketSignPublicKeyRequestDTO;
+import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
+import io.mosip.resident.dto.PageDto;
+import io.mosip.resident.dto.RegProcRePrintRequestDto;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusRequestDTO;
+import io.mosip.resident.dto.RegistrationStatusResponseDTO;
+import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentIndividialIDType;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
+import io.mosip.resident.dto.ResidentTransactionType;
+import io.mosip.resident.dto.ResidentUpdateDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResidentUpdateResponseDTOV2;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.dto.SortType;
+import io.mosip.resident.dto.UnreadNotificationDto;
+import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.handler.service.ResidentUpdateService;
@@ -1335,13 +1402,46 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException {
+	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException {
+		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> response = new ResponseWrapper<>();
 		try {
-			ResponseWrapper<Object> response = (ResponseWrapper<Object>) residentServiceRestClient.getApi(
-					ApiName.AUTHTYPESTATUSUPDATE, List.of(individualId), List.of(), List.of(), ResponseWrapper.class);
-			if (Objects.nonNull(response.getErrors()) && !response.getErrors().isEmpty()) {
+			ResponseWrapper<AuthLockStatusResponseDtoV2> responseWrapper = JsonUtil.convertValue(
+					residentServiceRestClient.getApi(ApiName.AUTHTYPESTATUSUPDATE, List.of(individualId), List.of(),
+							List.of(), ResponseWrapper.class),
+					new TypeReference<ResponseWrapper<AuthLockStatusResponseDtoV2>>() {
+					});
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.AUTH_LOCK_STATUS_FAILED);
 			}
+			AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2=new AuthLockOrUnLockRequestDtoV2();
+			List<AuthTypeStatusDtoV2> dtoListV2;
+			if (responseWrapper.getResponse().getAuthTypes().isEmpty()) {
+				dtoListV2 = new ArrayList<>();
+				AuthTypeStatusDtoV2 dtoV2;
+				String[] authTypesArray = authTypes.split(",");
+				for (String authType : authTypesArray) {
+					String[] authSplitArray = authType.split("-");
+					List<String> authTypeList = new ArrayList<String>(Arrays.asList(authSplitArray));
+					dtoV2 = new AuthTypeStatusDtoV2();
+					dtoV2.setAuthType(authTypeList.get(0));
+					dtoV2.setAuthSubType(authTypeList.size()>1?authTypeList.get(1):null);
+					dtoV2.setLocked(Boolean.FALSE);
+					dtoV2.setUnlockForSeconds(null);
+					dtoListV2.add(dtoV2);
+				}
+			} else {
+				dtoListV2 = responseWrapper.getResponse().getAuthTypes().stream()
+						.map(dto -> {
+							AuthTypeStatusDtoV2 dtoV2 = new AuthTypeStatusDtoV2();
+							dtoV2.setAuthType(dto.getAuthType());
+							dtoV2.setAuthSubType(dto.getAuthSubType());
+							dtoV2.setLocked(dto.getLocked());
+							dtoV2.setUnlockForSeconds(dto.getUnlockForSeconds());
+							return dtoV2;
+						}).collect(Collectors.toList());
+			}
+			authLockOrUnLockRequestDtoV2.setAuthTypes(dtoListV2);
+			response.setResponse(authLockOrUnLockRequestDtoV2);
 			return response;
 		} catch (ApisResourceAccessException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),

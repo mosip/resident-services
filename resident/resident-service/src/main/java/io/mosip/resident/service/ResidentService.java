@@ -52,7 +52,7 @@ public interface ResidentService {
 	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
+	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
 	RegStatusCheckResponseDTO getRidStatus(String rid);
 
