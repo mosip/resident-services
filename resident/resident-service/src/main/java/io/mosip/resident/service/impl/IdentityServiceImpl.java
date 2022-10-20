@@ -179,9 +179,18 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 	
+	private Map<String, ?> extractFaceBdb(Map<String, Object> identity)
+			throws ResidentServiceCheckedException, IOException {
+		IdentityDTO identityDTO = new IdentityDTO();
+		 extractFaceBdb(identityDTO,identity);
+		 identity.put("photo", identityDTO.getFace());
+		 identity.remove("individualBiometrics");
+		 return identity;
+	}
+	
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, null, false,schemaType);
+	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
+		return 	extractFaceBdb((Map<String, Object>) getIdentityAttributes(id, RETRIEVE_IDENTITY_PARAM_TYPE_BIO, false,schemaType));
 	}
 	
 	@Override

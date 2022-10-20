@@ -1,5 +1,6 @@
 package io.mosip.resident.controller;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.websocket.server.PathParam;
@@ -55,7 +56,7 @@ public class IdentityController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<Object> getInputAttributeValues(@PathVariable("schemaType") String schemaType)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("IdentityController::getInputAttributeValues()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES);
 		String id = getIdFromUser();

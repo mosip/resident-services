@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -48,8 +49,9 @@ public interface IdentityService {
 	 * @param id
 	 * @return Map
 	 * @throws ResidentServiceCheckedException
+	 * @throws IOException 
 	 */
-	Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException;
+	Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException;
 
 	/**
 	 * Get ID-Repo api data by id, type and includeUin.
