@@ -920,4 +920,20 @@ public class RequestValidator {
 			throw new InvalidInputException("requesttime");
 		}
 	}
+
+	public void validateDownloadCardRequest(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
+		validateRequestId(downloadCardRequestDTOMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID));
+		validateDate(downloadCardRequestDTOMainRequestDTO.getRequesttime());
+		validateTransactionId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
+		validateOTP(downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
+		validateIndividualIdV2(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
+	}
+
+	private void validateIndividualIdV2(String individualId) {
+		if (individualId == null || StringUtils.isEmpty(individualId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request service history API"));
+			throw new InvalidInputException("individualId");
+		}
+	}
 }
