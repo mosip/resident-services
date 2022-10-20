@@ -34,4 +34,14 @@ public enum ServiceType {
         }
         return Optional.empty();
     }
+    
+    public static String getServiceTypeFromRequestType(RequestType requestType) {
+        for (ServiceType serviceType : values()) {
+        	List<RequestType> requestTypesList = serviceType.getRequestType();
+            if (requestTypesList.contains(requestType)) {
+                return serviceType.name();
+            }
+        }
+        return null;
+    }
 }

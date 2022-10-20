@@ -346,11 +346,11 @@ public class ResidentControllerTest {
 	public void testGetServiceHistorySuccess() throws Exception {
 		io.mosip.kernel.core.http.ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
-		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
+		residentController.getServiceHistory("eng", 1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
 				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
 				ResidentTransactionType.AUTHENTICATION_REQUEST.toString(), null, null);
-		mockMvc.perform(MockMvcRequestBuilders.get("/service-history").contentType(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 

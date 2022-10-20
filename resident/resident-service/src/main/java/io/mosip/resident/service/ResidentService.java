@@ -61,7 +61,7 @@ public interface ResidentService {
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
-			String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException;
+			String searchColumn, String searchText, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch)
 			throws ResidentServiceCheckedException;

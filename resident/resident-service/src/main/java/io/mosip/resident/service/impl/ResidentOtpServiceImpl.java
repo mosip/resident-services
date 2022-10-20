@@ -14,6 +14,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -102,7 +103,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
-		residentTransactionEntity.setRequestTypeCode("OTP");
+		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
 		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.AUTHENTICATION_REQUEST.toString());
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode("OTP_REQUESTED");

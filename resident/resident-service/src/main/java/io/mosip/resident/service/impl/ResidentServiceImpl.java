@@ -1419,7 +1419,7 @@ public class ResidentServiceImpl implements ResidentService {
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
-			String statusFilter, String searchText)
+			String statusFilter, String searchText, String langCode)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {
@@ -1442,7 +1442,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
-				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText);
+				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText, langCode);
 		return serviceHistoryResponseDtoList;
 	}
 
@@ -1560,12 +1560,12 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
 			Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime,
-			String serviceType, String statusFilter, String searchText)
+			String serviceType, String statusFilter, String searchText, String langCode)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType));
+				searchText, fromDateTime, toDateTime, serviceType, langCode));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
 		responseWrapper.setResponsetime(LocalDateTime.now());
@@ -1575,7 +1575,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
 			Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDateTime fromDateTime,
-			LocalDateTime toDateTime, String serviceType) {
+			LocalDateTime toDateTime, String serviceType, String langCode) throws ResidentServiceCheckedException {
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
@@ -1588,7 +1588,7 @@ public class ResidentServiceImpl implements ResidentService {
 		BigInteger count = (BigInteger) nativeQuery.getSingleResult();
 		int size = count.intValue();
 		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1,
-				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList));
+				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList, langCode));
 	}
 
 	public String getDynamicNativeQueryString(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
@@ -1731,24 +1731,48 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private List<ServiceHistoryResponseDto> convertResidentEntityListToServiceHistoryDto(
-			List<ResidentTransactionEntity> residentTransactionEntityList) {
+			List<ResidentTransactionEntity> residentTransactionEntityList, String langCode) throws ResidentServiceCheckedException {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
+			String statusCode = getEventStatusCode(residentTransactionEntity.getStatusCode());
+			RequestType requestType = RequestType.valueOf(residentTransactionEntity.getRequestTypeCode());
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-			serviceHistoryResponseDto.setDescription(residentTransactionEntity.getPurpose());
-			serviceHistoryResponseDto.setEventStatus(getEventStatusCode(residentTransactionEntity.getStatusCode()));
+			serviceHistoryResponseDto.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+			serviceHistoryResponseDto.setEventStatus(statusCode);
 			if (residentTransactionEntity.getUpdDtimes() != null
 					&& residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getUpdDtimes().toString());
 			} else {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
-			serviceHistoryResponseDto.setRequestType(residentTransactionEntity.getRequestTypeCode());
+			serviceHistoryResponseDto.setServiceType(getServiceTypeCode(requestType));
 			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
+	}
+
+	private String getServiceTypeCode(RequestType requestType) {
+		String serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
+		return serviceType;
+	}
+
+	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType)
+			throws ResidentServiceCheckedException {
+		TemplateType templateType;
+		if (statusCode.equalsIgnoreCase(EventStatus.FAILED.toString())) {
+			templateType = TemplateType.FAILURE;
+		} else {
+			templateType = TemplateType.SUCCESS;
+		}
+		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
+		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
+		Map<String, String> templateResponse = new LinkedHashMap<>(
+				(Map<String, String>) proxyResponseWrapper.getResponse());
+		String fileText = templateResponse.get("fileText");
+		return fileText;
 	}
 
 	public String getEventStatusCode(String statusCode) {

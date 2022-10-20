@@ -258,7 +258,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			if (purpose != null) {
 				String requestSummaryMsg = prepareReqSummaryMsg(dto.getSharableAttributes());
 				insertCredentialreqInDB(Boolean.TRUE, purpose, residentCredentialResponseDto.getRequestId(),
-						requestSummaryMsg);
+						requestSummaryMsg, requestType);
 			}
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.REQUEST_RECEIVED,
@@ -552,7 +552,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@SuppressWarnings("unused")
 	private void insertCredentialreqInDB(boolean isCredReqSuccess, String purpose, String credentialRequestId,
-			String requestSummary)
+			String requestSummary, String requestType)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		LocalDateTime now = LocalDateTime.now();
@@ -560,7 +560,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setPurpose(purpose);
 		residentTransactionEntity.setRequestDtimes(now);
 		residentTransactionEntity.setResponseDtime(now);
-		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestTypeCode(requestType);
 		residentTransactionEntity.setRequestSummary(requestSummary);
 		residentTransactionEntity.setCredentialRequestId(credentialRequestId);
 		residentTransactionEntity.setStatusCode(NEW);
