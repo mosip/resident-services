@@ -392,10 +392,10 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
 	@GetMapping(path = "/auth-lock-status")
-	public ResponseWrapper<Object> getAuthLockStatus() throws ApisResourceAccessException {
+	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));
@@ -413,17 +413,20 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
-	@GetMapping(path = "/download-card/individualId/{individualId}")
-	public ResponseWrapper<List<ResidentServiceHistoryResponseDto>> downloadCard(
-			@PathVariable("individualId") String individualId) throws ResidentServiceCheckedException {
+	@GetMapping(path = "/download-card/event/{eventId}")
+	public ResponseEntity<Object> downloadCard(
+			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
-		validator.validateIndividualId(individualId);
+				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
+		validator.validateIndividualId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, individualId));
-		response.setResponse(residentService.downloadCard(individualId, getIdType(individualId)));
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, individualId));
-		return response;
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
+		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + eventId + ".pdf\"")
+				.body(resource);
 	}
 
 	/**

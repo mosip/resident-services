@@ -247,6 +247,9 @@ import java.util.Optional;
      
      public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
+    			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+    		}
  		return templateVariables;
  	}
      
@@ -262,11 +265,17 @@ import java.util.Optional;
      
      public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
+   			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+   		}
  		return templateVariables;
  	}
      
      public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+ 		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
+ 			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+ 		}
  		return templateVariables;
  	}
      
@@ -276,9 +285,14 @@ import java.util.Optional;
  	}
      
      public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto) {
- 		return Collections.emptyMap();
- 	}
+    	 Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+    	 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
+    			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+    		}
+    	 return templateVariables;
+  	}
      
+       
      public String getEmailSubjectTemplateTypeCode(RequestType requestType, TemplateType templateType) {
     	 String emailSubjectTemplateCodeProperty = requestType.getEmailSubjectTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(emailSubjectTemplateCodeProperty);
@@ -298,7 +312,7 @@ import java.util.Optional;
     	 String bellIconTemplateCodeProperty = requestType.getBellIconTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(bellIconTemplateCodeProperty);
      }
-     
+    
      private String getTemplateTypeCode(String templateCodeProperty) {
     	 return env.getProperty(templateCodeProperty);
 	}
