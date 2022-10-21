@@ -21,6 +21,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -59,6 +60,7 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
+	private static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
@@ -76,6 +78,7 @@ public class IdentityServiceImpl implements IdentityService {
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
     private static final String DOCUMENTS = "documents";
+    private static final String PHOTO = "photo";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -102,6 +105,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private ResidentConfigService residentConfigService;
+	
+	@Autowired
+	private Environment env;
 	
 	@Value("${mosip.iam.userinfo_endpoint}")
 	private String usefInfoEndpointUrl;
@@ -137,7 +143,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(RESIDENT_IDENTITY_SCHEMATYPE));
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -183,7 +189,7 @@ public class IdentityServiceImpl implements IdentityService {
 			throws ResidentServiceCheckedException, IOException {
 		IdentityDTO identityDTO = new IdentityDTO();
 		 extractFaceBdb(identityDTO,identity);
-		 identity.put("photo", identityDTO.getFace());
+		 identity.put(PHOTO, identityDTO.getFace());
 		 identity.remove("individualBiometrics");
 		 return identity;
 	}

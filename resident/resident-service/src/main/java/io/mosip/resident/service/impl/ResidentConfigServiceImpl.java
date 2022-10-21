@@ -133,12 +133,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 	
 	private List<String> doGetUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
-		String uiSchema = null;
-		if(schemaType.equalsIgnoreCase(UISchemaTypes.PERSONALIZED_CARD.getFileIdentifier())) {
-			uiSchema = getUISchema(UISchemaTypes.PERSONALIZED_CARD.getFileIdentifier());
-		}else{
-			uiSchema = getUISchema(UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
-		}
+		String uiSchema = getUISchema(schemaType);
 		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
 		Object identityObj = schemaMap.get(IDENTITY);
 		if(identityObj instanceof List) {
