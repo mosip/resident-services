@@ -69,7 +69,7 @@ public interface ResidentService {
 	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch,
 			String individualId) throws ResidentServiceCheckedException;
 
-	List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType)
+	byte[] downloadCard(String individualId, String idType)
 			throws ResidentServiceCheckedException;
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
