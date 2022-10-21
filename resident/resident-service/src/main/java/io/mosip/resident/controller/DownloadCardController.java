@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,7 +40,6 @@ public class DownloadCardController {
 
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardController.class);
 
-    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostDownloadCard()" + ")")
     @PostMapping("/download-card")
     public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO){
         logger.debug("DownloadCardController::downloadCard()::entry");
