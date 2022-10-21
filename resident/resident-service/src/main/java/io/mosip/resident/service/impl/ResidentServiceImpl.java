@@ -112,7 +112,6 @@ import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
 import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
-import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
@@ -1516,7 +1515,7 @@ public class ResidentServiceImpl implements ResidentService {
 			PageRequest pageRequest = PageRequest.of(pageStart, pageFetch);
 			String idaToken = identityServiceImpl.getResidentIdaToken();
 			List<ResidentTransactionEntity> residentTransactionEntities = residentTransactionRepository
-					.findRequestIdByToken(idaToken, ResidentTransactionType.SERVICE_REQUEST.toString(), pageRequest);
+					.findRequestIdByToken(idaToken, ServiceType.SERVICE_REQUEST.name(), pageRequest);
 			if (residentTransactionEntities != null) {
 				for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntities) {
 					String requestId = residentTransactionEntity.getAid();
@@ -1562,8 +1561,8 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
-		residentTransactionEntity.setRequestSummary(ResidentTransactionType.SERVICE_REQUEST.toString());
-		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestSummary(ServiceType.SERVICE_REQUEST.name());
+		residentTransactionEntity.setAuthTypeCode(ServiceType.SERVICE_REQUEST.name());
 		residentTransactionEntity.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
 		residentTransactionEntity.setStatusComment(credentialRequestStatusResponseDto.getStatusCode());
 		residentTransactionEntity.setLangCode("eng");
@@ -1744,16 +1743,16 @@ public class ResidentServiceImpl implements ResidentService {
 				if (service.equalsIgnoreCase(ServiceType.AUTHENTICATION_REQUEST.toString())) {
 					residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(
 							ServiceType.AUTHENTICATION_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())) {
+				} else if (service.equalsIgnoreCase(ServiceType.SERVICE_REQUEST.name())) {
 					residentTransactionTypeList.addAll(
 							convertListOfRequestTypeToListOfString(ServiceType.SERVICE_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())) {
+				} else if (service.equalsIgnoreCase(ServiceType.DATA_UPDATE_REQUEST.name())) {
 					residentTransactionTypeList.addAll(
 							convertListOfRequestTypeToListOfString(ServiceType.DATA_UPDATE_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())) {
+				} else if (service.equalsIgnoreCase(ServiceType.ID_MANAGEMENT_REQUEST.name())) {
 					residentTransactionTypeList.addAll(
 							convertListOfRequestTypeToListOfString(ServiceType.ID_MANAGEMENT_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ResidentTransactionType.DATA_SHARE_REQUEST.toString())) {
+				} else if (service.equalsIgnoreCase(ServiceType.DATA_SHARE_REQUEST.name())) {
 					residentTransactionTypeList.addAll(
 							convertListOfRequestTypeToListOfString(ServiceType.DATA_SHARE_REQUEST.getRequestType()));
 				}
