@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DigitalCardStatusResponseDto {
 
-    private String id;
+	private String id;
 
-    private String statusCode;
+	private String statusCode;
 
-    private String url;
+	private String url;
 }

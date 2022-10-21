@@ -67,18 +67,20 @@ public class LoginCheck {
 			if (cookie.contains(ID_TOKEN)) {
 				Optional<String> cookieIdToken = getCookieValueFromHeader(cookie);
 				if (cookieIdToken.isPresent()) {
-					idaToken = getIdaTokenFromIdToken(cookieIdToken.get()); // call a method to get ida token from id_token
+					idaToken = getIdaTokenFromIdToken(cookieIdToken.get()); // FIXME call a method to get ida token from id_token
 				}
 			}
 		}
 
-		Optional<ResidentUserEntity> userData = residentUserRepository.findById(idaToken);
-		if (userData.isPresent()) {
-			residentUserRepository.updateUserData(idaToken, DateUtils.getUTCCurrentDateTime(), getClientIp(req),
-					req.getRemoteHost(), getMachineType(req));
-		} else {
-			residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
-					getClientIp(req), req.getRemoteHost(), getMachineType(req)));
+		if(idaToken!=null && !idaToken.isEmpty()) {
+			Optional<ResidentUserEntity> userData = residentUserRepository.findById(idaToken);
+			if (userData.isPresent()) {
+				residentUserRepository.updateUserData(idaToken, DateUtils.getUTCCurrentDateTime(), getClientIp(req),
+						req.getRemoteHost(), getMachineType(req));
+			} else {
+				residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
+						getClientIp(req), req.getRemoteHost(), getMachineType(req)));
+			}
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
@@ -103,8 +105,7 @@ public class LoginCheck {
 
 	private String getMachineType(HttpServletRequest req) {
 		logger.debug("LoginCheck::getMachineType()::entry");
-		String browserDetails = req.getHeader(USER_AGENT);
-		String userAgent = browserDetails;
+		String userAgent = req.getHeader(USER_AGENT);
 
 		String os = "";
 		if (userAgent.toLowerCase().indexOf(WINDOWS.toLowerCase()) >= 0) {
@@ -124,7 +125,7 @@ public class LoginCheck {
 		return os;
 	}
 
-	public String getClientIp(HttpServletRequest req) {
+	private String getClientIp(HttpServletRequest req) {
 		logger.debug("LoginCheck::getClientIp()::entry");
 		String[] IP_HEADERS = {
 				X_FORWARDED_FOR,

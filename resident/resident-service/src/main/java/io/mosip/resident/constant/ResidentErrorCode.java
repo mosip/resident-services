@@ -97,8 +97,10 @@ public enum ResidentErrorCode {
 	EXPIRED_OTP("RES-SER-469", "OTP expired - Please send OTP again"),
 	NO_RECORDS_FOUND("RES-SER-470", "No Record(s) found"),
 	VID_VALIDATION("RES-SER-471","This VID cannot be revoked since you have logged in using same VID"),
-	INVALID_INDIVIDUAL_ID("RES-SER-472", "Individual id is invalid.");
-	
+	CARD_NOT_FOUND("RES-SER-472", "Card not found." ),
+	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
+			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN");
+
 	private final String errorCode;
 	private final String errorMessage;
 

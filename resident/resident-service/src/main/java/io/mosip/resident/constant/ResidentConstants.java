@@ -74,8 +74,6 @@ public class ResidentConstants {
 
     public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
 
-    public static final String DOWNLOAD_UIN_CARD_ID = "mosip.resident.download.uin.card";
-
     public static final String DATA_SHARE_URL = "mosip.datashare.url";
     public static final String DATA_SHARE_APPLICATION_ID = "mosip.datashare.application.id";
     public static final String DATA_SHARE_REFERENCE_ID = "mosip.datashare.reference.id";
