@@ -1561,7 +1561,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+		residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
 		residentTransactionEntity.setRequestSummary(ResidentTransactionType.SERVICE_REQUEST.toString());
 		residentTransactionEntity.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
 		residentTransactionEntity.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
