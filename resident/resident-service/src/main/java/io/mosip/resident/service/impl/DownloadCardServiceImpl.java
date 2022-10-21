@@ -21,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * @author Kamesh Shekhar Prasad
+ * This class is used to create service class implementation of download card api.
+ */
 @Service
 public class DownloadCardServiceImpl implements DownloadCardService {
 

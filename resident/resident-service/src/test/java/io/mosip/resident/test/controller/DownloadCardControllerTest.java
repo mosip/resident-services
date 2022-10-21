@@ -39,6 +39,10 @@ import java.security.PublicKey;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ * This class is used to test download card api.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
