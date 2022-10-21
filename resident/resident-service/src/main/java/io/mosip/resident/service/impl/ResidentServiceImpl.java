@@ -31,12 +31,26 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import io.mosip.kernel.core.util.HMACUtils2;
-import io.mosip.resident.constant.*;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.*;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.DigitalCardStatusResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EventIdNotPresentException;
+import io.mosip.resident.exception.InvalidRequestTypeCodeException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.RIDInvalidException;
+import io.mosip.resident.exception.ResidentMachineServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
+import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.*;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.PartnerService;
+import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ResidentService;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -1554,7 +1568,7 @@ public class ResidentServiceImpl implements ResidentService {
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
 				if(requestType.name().equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())
 				|| requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
-					String requestId = residentTransactionEntity.get().getAid();
+					String requestId = residentTransactionEntity.get().getCredentialRequestId();
 					if(requestId!=null){
 						return residentCredentialServiceImpl.getCard(requestId);
 					}

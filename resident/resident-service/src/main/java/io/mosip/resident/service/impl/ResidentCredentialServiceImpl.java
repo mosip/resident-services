@@ -316,6 +316,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setAid(residentCredentialResponseDto.getRequestId());
+		residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
 	}
 
 	@Override
