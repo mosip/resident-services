@@ -198,11 +198,6 @@ public class IdentityServiceImpl implements IdentityService {
 	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
 		return 	extractFaceBdb((Map<String, Object>) getIdentityAttributes(id, RETRIEVE_IDENTITY_PARAM_TYPE_BIO, false,schemaType));
 	}
-	
-	@Override
-	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, null, includeUin,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
-	}
 
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {

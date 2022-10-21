@@ -41,8 +41,6 @@ public interface IdentityService {
 
 	public String getIDAToken(String uin, String olvPartnerId);
 
-	Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException;
-
 	/**
 	 * Get ID-Repo api data by id.
 	 * 
