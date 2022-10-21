@@ -1832,22 +1832,8 @@ public class ResidentServiceImpl implements ResidentService {
 			List<String> serviceTypeList = List.of(serviceType.split(",")).stream().map(String::toUpperCase)
 					.collect(Collectors.toList());
 			for (String service : serviceTypeList) {
-				if (service.equalsIgnoreCase(ServiceType.AUTHENTICATION_REQUEST.toString())) {
-					residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(
-							ServiceType.AUTHENTICATION_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ServiceType.SERVICE_REQUEST.name())) {
-					residentTransactionTypeList.addAll(
-							convertListOfRequestTypeToListOfString(ServiceType.SERVICE_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ServiceType.DATA_UPDATE_REQUEST.name())) {
-					residentTransactionTypeList.addAll(
-							convertListOfRequestTypeToListOfString(ServiceType.DATA_UPDATE_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ServiceType.ID_MANAGEMENT_REQUEST.name())) {
-					residentTransactionTypeList.addAll(
-							convertListOfRequestTypeToListOfString(ServiceType.ID_MANAGEMENT_REQUEST.getRequestType()));
-				} else if (service.equalsIgnoreCase(ServiceType.DATA_SHARE_REQUEST.name())) {
-					residentTransactionTypeList.addAll(
-							convertListOfRequestTypeToListOfString(ServiceType.DATA_SHARE_REQUEST.getRequestType()));
-				}
+				ServiceType type = ServiceType.valueOf(service);
+				residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(type.getRequestType()));
 			}
 		}
 		return residentTransactionTypeList;
@@ -1863,6 +1849,7 @@ public class ResidentServiceImpl implements ResidentService {
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
 			String statusCode = getEventStatusCode(residentTransactionEntity.getStatusCode());
 			RequestType requestType = RequestType.valueOf(residentTransactionEntity.getRequestTypeCode());
+			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
 			serviceHistoryResponseDto.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
@@ -1873,16 +1860,13 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
-			serviceHistoryResponseDto.setServiceType(getServiceTypeCode(requestType));
+			if(serviceType.isPresent()) {
+				serviceHistoryResponseDto.setServiceType(serviceType.get());
+			}
 			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
-	}
-
-	private String getServiceTypeCode(RequestType requestType) {
-		String serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
-		return serviceType;
 	}
 
 	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType)

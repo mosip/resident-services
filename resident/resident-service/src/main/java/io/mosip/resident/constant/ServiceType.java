@@ -17,16 +17,18 @@ public enum ServiceType {
     ID_MANAGEMENT_REQUEST(List.of(RequestType.GENERATE_VID, RequestType.REVOKE_VID,
             RequestType.VERIFY_PHONE_EMAIL, RequestType.AUTH_TYPE_LOCK_UNLOCK)),
     DATA_SHARE_REQUEST(List.of(RequestType.SHARE_CRED_WITH_PARTNER));
-    ;
+	
     private List<RequestType> subTypes;
 
     ServiceType(List<RequestType> subTypes) {
         this.subTypes = Collections.unmodifiableList(subTypes);
     }
+    
     public List<RequestType> getRequestType() {
         return subTypes;
     }
-    public static Optional<ServiceType> getServiceType(String serviceTypeString) {
+    
+    public static Optional<ServiceType> getServiceTypeFromString(String serviceTypeString) {
         for (ServiceType serviceType : values()) {
             if (serviceType.name().equalsIgnoreCase(serviceTypeString)) {
                 return Optional.of(serviceType);
@@ -35,13 +37,13 @@ public enum ServiceType {
         return Optional.empty();
     }
     
-    public static String getServiceTypeFromRequestType(RequestType requestType) {
+    public static Optional<String> getServiceTypeFromRequestType(RequestType requestType) {
         for (ServiceType serviceType : values()) {
         	List<RequestType> requestTypesList = serviceType.getRequestType();
             if (requestTypesList.contains(requestType)) {
-                return serviceType.name();
+                return Optional.of(serviceType.name());
             }
         }
-        return null;
+        return Optional.empty();
     }
 }

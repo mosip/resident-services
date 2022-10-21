@@ -796,12 +796,8 @@ public class RequestValidator {
 		if(serviceType!=null) {
 			List<String> serviceTypes = List.of(serviceType.split(","));
 			for (String service : serviceTypes) {
-				if (!service.equalsIgnoreCase(ServiceType.DATA_SHARE_REQUEST.name())
-						&& !service.equalsIgnoreCase(ServiceType.SERVICE_REQUEST.name())
-						&& !service.equalsIgnoreCase(ServiceType.ID_MANAGEMENT_REQUEST.name())
-						&& !service.equalsIgnoreCase(ServiceType.DATA_UPDATE_REQUEST.name())
-						&& !service.equalsIgnoreCase(ServiceType.AUTHENTICATION_REQUEST.name())
-						&& !service.equalsIgnoreCase("ALL")) {
+				Optional<ServiceType> serviceOptional = ServiceType.getServiceTypeFromString(service);
+				if(serviceOptional.isEmpty()) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
 							requestServiceHistoryApi));
 					throw new InvalidInputException("serviceType");
