@@ -60,7 +60,7 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype";
+	private static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
