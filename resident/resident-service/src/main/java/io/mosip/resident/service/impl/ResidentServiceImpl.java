@@ -884,14 +884,7 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));
 			regProcReqUpdateDto.setCenterId(centerId);
 			regProcReqUpdateDto.setMachineId(machineId);
-			if (Utilitiy.isSecureSession()) {
-				JSONObject jsonObject = new JSONObject();
-				jsonObject.put(IDENTITY, demographicIdentity);
-				String identityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
-				regProcReqUpdateDto.setIdentityJson(identityJson);
-			} else {
-				regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
-			}
+			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
 			String mappingJson = utility.getMappingJson();
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
 					|| mappingJson.trim().isEmpty()) {

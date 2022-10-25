@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import io.mosip.kernel.core.util.CryptoUtil;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -95,6 +97,7 @@ public class ResidentController {
 	private String authLockStatusUpdateV2Version;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
+	private static final String IDENTITY= "identity";
 
 	@ResponseFilter
 	@PostMapping(value = "/rid/check-status")
@@ -371,9 +374,13 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put(IDENTITY, requestDTO.getRequest().getIdentity());
+		String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
+		requestWrapper.getRequest().setIdentityJson(encodedIdentityJson);
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
 		if (request != null) {
