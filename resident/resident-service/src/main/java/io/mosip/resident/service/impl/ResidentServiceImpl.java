@@ -883,7 +883,10 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setIdType(ResidentIndividialIDType.valueOf(dto.getIndividualIdType().toUpperCase()));
 			regProcReqUpdateDto.setCenterId(centerId);
 			regProcReqUpdateDto.setMachineId(machineId);
-			regProcReqUpdateDto.setIdentityJson(dto.getIdentityJson());
+			JSONObject jsonObject = new JSONObject();
+		    jsonObject.put(IDENTITY, demographicIdentity);
+			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
+			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
 					|| mappingJson.trim().isEmpty()) {
@@ -1067,17 +1070,19 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
-			throws ApisResourceAccessException, IOException, JsonParseException, JsonMappingException {
+			throws ApisResourceAccessException, IOException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		byte[] decodedIdJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
-		Map<String, ?> identityMap = decodedIdJson != null
-				? (Map<String, ?>) objectMapper.readValue(decodedIdJson, Map.class).get(IDENTITY)
-				: dto.getIdentity();
-
+		Map<String, ?> identityMap;
+		if(dto.getIdentityJson()!=null){
+			byte[] decodedIdJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
+			identityMap = (Map<String, ?>) objectMapper.readValue(decodedIdJson, Map.class).get(IDENTITY);
+		}else{
+			identityMap = dto.getIdentity();
+		}
 		Set<String> keys = identityMap.keySet();
 		keys.remove("IDSchemaVersion");
 		keys.remove("UIN");
