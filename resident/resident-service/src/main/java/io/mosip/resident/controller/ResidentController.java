@@ -374,13 +374,9 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put(IDENTITY, requestDTO.getRequest().getIdentity());
-		String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
-		requestWrapper.getRequest().setIdentityJson(encodedIdentityJson);
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
 		if (request != null) {
