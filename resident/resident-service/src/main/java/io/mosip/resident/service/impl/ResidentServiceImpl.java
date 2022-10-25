@@ -1601,7 +1601,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return new byte[0];
 	}
 
-	private byte[] getUINCard(String rid) {
+	public byte[] getUINCard(String rid) {
 		try {
 			DigitalCardStatusResponseDto digitalCardStatusResponseDto = getDigitalCardStatus(rid);
 			if(digitalCardStatusResponseDto!=null){
