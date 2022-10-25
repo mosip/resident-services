@@ -85,6 +85,11 @@ import java.util.Optional;
         return templateVariables;
     }
 
+    public String getFeatureName(String eventId){
+        Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+        return templateVariables.get(TemplateVariablesEnum.EVENT_TYPE);
+    }
+
     public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
         if(requestValidator.validateUin(individualId)){
