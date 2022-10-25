@@ -1071,7 +1071,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
-			throws ApisResourceAccessException, IOException, JsonParseException, JsonMappingException {
+			throws ApisResourceAccessException, IOException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
