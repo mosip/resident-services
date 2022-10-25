@@ -297,7 +297,6 @@ import java.util.Optional;
     	 return templateVariables;
   	}
      
-       
      public String getEmailSubjectTemplateTypeCode(RequestType requestType, TemplateType templateType) {
     	 String emailSubjectTemplateCodeProperty = requestType.getEmailSubjectTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(emailSubjectTemplateCodeProperty);
@@ -316,6 +315,11 @@ import java.util.Optional;
      public String getBellIconTemplateTypeCode(RequestType requestType, TemplateType templateType) {
     	 String bellIconTemplateCodeProperty = requestType.getBellIconTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(bellIconTemplateCodeProperty);
+     }
+     
+     public String getPurposeTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(purposeTemplateCodeProperty);
      }
     
      private String getTemplateTypeCode(String templateCodeProperty) {

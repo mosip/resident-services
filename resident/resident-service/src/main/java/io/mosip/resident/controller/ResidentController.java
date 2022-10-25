@@ -274,14 +274,14 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetServiceAuthHistoryRoles()" + ")")
-	@GetMapping(path = "/service-history")
+	@GetMapping(path = "/service-history/{langcode}")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langcode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
@@ -292,11 +292,11 @@ public class ResidentController {
 			@RequestParam(name = "searchText", required = false) String searchText)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
+		validator.validateOnlyLanguageCode(langCode);
 		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, statusFilter);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText);
-		;
+				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText, langCode);
 		return responseWrapper;
 	}
 
@@ -555,7 +555,7 @@ public class ResidentController {
 				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		validator.validateOnlyLanguageCode(languageCode);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText);
+				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText, languageCode);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
 				fromDateTime, toDateTime, serviceType, statusFilter);
