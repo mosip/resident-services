@@ -1,6 +1,7 @@
 package io.mosip.resident.handler.service;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -38,7 +39,7 @@ public interface ResidentConfigService {
 	 * @throws JsonMappingException the json mapping exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	List<String> getUiSchemaFilteredInputAttributes() throws JsonParseException, JsonMappingException, IOException;
+	List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException;
 	
 	/**
 	 * Gets the Identity Mapping json

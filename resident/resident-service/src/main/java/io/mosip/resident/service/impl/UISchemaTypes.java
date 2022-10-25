@@ -1,7 +1,8 @@
 package io.mosip.resident.service.impl;
 
 public enum UISchemaTypes {
-	UPDATE_DEMOGRAPHICS("update-demographics");
+	UPDATE_DEMOGRAPHICS("update-demographics"),
+	PERSONALIZED_CARD("personalized-card");
 	;
 	
 	private String fileIdentifier;

@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -40,16 +41,15 @@ public interface IdentityService {
 
 	public String getIDAToken(String uin, String olvPartnerId);
 
-	Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException;
-
 	/**
 	 * Get ID-Repo api data by id.
 	 * 
 	 * @param id
 	 * @return Map
 	 * @throws ResidentServiceCheckedException
+	 * @throws IOException 
 	 */
-	Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException;
+	Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException;
 
 	/**
 	 * Get ID-Repo api data by id, type and includeUin.
@@ -60,7 +60,7 @@ public interface IdentityService {
 	 * @return Map
 	 * @throws ResidentServiceCheckedException
 	 */
-	Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin)
+	Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin,String schemaType)
 			throws ResidentServiceCheckedException;
 			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;
