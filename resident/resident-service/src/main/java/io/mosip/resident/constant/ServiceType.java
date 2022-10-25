@@ -16,7 +16,8 @@ public enum ServiceType {
     DATA_UPDATE_REQUEST(List.of(RequestType.UPDATE_MY_UIN)),
     ID_MANAGEMENT_REQUEST(List.of(RequestType.GENERATE_VID, RequestType.REVOKE_VID,
             RequestType.VERIFY_PHONE_EMAIL, RequestType.AUTH_TYPE_LOCK_UNLOCK)),
-    DATA_SHARE_REQUEST(List.of(RequestType.SHARE_CRED_WITH_PARTNER));
+    DATA_SHARE_REQUEST(List.of(RequestType.SHARE_CRED_WITH_PARTNER)),
+    ALL(List.of(RequestType.values()));
 	
     private List<RequestType> subTypes;
 
