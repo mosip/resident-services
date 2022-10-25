@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -74,6 +75,9 @@ public class IdentityServiceTest {
 
 	@Mock
 	private ResidentConfigService residentConfigService;
+	
+	@Mock
+	private Environment env;
 
 	private ResponseWrapper responseWrapper;
 
@@ -132,6 +136,8 @@ public class IdentityServiceTest {
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
 		responseWrapper.setResponse(responseMap);
+		
+		when(env.getProperty(anyString())).thenReturn("property");
 	}
 
 	@Test
