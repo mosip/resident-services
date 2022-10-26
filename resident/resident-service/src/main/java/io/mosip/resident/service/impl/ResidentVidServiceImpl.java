@@ -283,7 +283,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to generate VID"));
 			throw e;
 		} finally {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+				//if the status code will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode()==null) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary("failed");
+				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
 		}
@@ -511,7 +516,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					requestDto.getTransactionID(), "Request to revoke VID"));
 			throw e;
 		} finally {
-			if(Utilitiy.isSecureSession()) {
+			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+				//if the status code will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode()==null) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary("failed");
+				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
 		}
