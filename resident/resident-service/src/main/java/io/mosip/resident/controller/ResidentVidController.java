@@ -174,13 +174,12 @@ public class ResidentVidController {
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to revoke VID"));
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
-		
-		if (residentIndividualId !=null && residentIndividualId.equals(vid)) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_VALIDATION);
-			
-		}
+				
 		if(residentIndividualId == null && requestDto.getRequest() != null) {
 			residentIndividualId = getResidentIndividualId();
+		}
+		if (residentIndividualId !=null && residentIndividualId.equals(vid)) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_VALIDATION);
 		}
 		validator.validateVidRevokeRequest(requestDto, isOtpValidationRequired, residentIndividualId);
 		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
