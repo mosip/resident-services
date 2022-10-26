@@ -280,7 +280,14 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		} finally {
-			residentTransactionRepository.save(residentTransactionEntity);
+			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+				//if the status code will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode()==null) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary("failed");
+				}
+				residentTransactionRepository.save(residentTransactionEntity);
+			}
 		}
 		return residentCredentialResponseDtoV2;
 	}
@@ -292,6 +299,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRequestTypeCode(requestType);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setRequestSummary("in-progress");
 		String attributeList = dto.getSharableAttributes().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
