@@ -159,7 +159,7 @@ public class ResidentConfigServiceImplTest {
 		byte[] src = "{\"name\":\"ui-schema\"}".getBytes();
 		Mockito.when(objectMapper.readValue(src, Map.class)).thenReturn(uiSchema);
 		testSubject = createTestSubject();
-		result = testSubject.getUiSchemaFilteredInputAttributes();
+		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
 		assertNotNull(result);
 	}
 
@@ -172,7 +172,7 @@ public class ResidentConfigServiceImplTest {
 		byte[] src = "{\"name\":\"ui-schema\"}".getBytes();
 		Mockito.when(objectMapper.readValue(src, Map.class)).thenReturn(uiSchema);
 		testSubject = createTestSubject();
-		result = testSubject.getUiSchemaFilteredInputAttributes();
+		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
 		assertNull(result);
 	}
 
@@ -183,7 +183,7 @@ public class ResidentConfigServiceImplTest {
 		List<String> uiSchemaFilteredInputAttributes = new ArrayList<>();
 		testSubject = createTestSubject();
 		ReflectionTestUtils.setField(testSubject, "uiSchemaFilteredInputAttributes", uiSchemaFilteredInputAttributes);
-		result = testSubject.getUiSchemaFilteredInputAttributes();
+		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
 		assertNotNull(result);
 	}
 }

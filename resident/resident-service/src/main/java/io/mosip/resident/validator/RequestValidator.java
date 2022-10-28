@@ -796,12 +796,8 @@ public class RequestValidator {
 		if(serviceType!=null) {
 			List<String> serviceTypes = List.of(serviceType.split(","));
 			for (String service : serviceTypes) {
-				if (!service.equalsIgnoreCase(ResidentTransactionType.DATA_SHARE_REQUEST.toString())
-						&& !service.equalsIgnoreCase(ResidentTransactionType.SERVICE_REQUEST.toString())
-						&& !service.equalsIgnoreCase(ResidentTransactionType.ID_MANAGEMENT_REQUEST.toString())
-						&& !service.equalsIgnoreCase(ResidentTransactionType.DATA_UPDATE_REQUEST.toString())
-						&& !service.equalsIgnoreCase(ResidentTransactionType.AUTHENTICATION_REQUEST.toString())
-						&& !service.equalsIgnoreCase("ALL")) {
+				Optional<ServiceType> serviceOptional = ServiceType.getServiceTypeFromString(service);
+				if(serviceOptional.isEmpty()) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "serviceType",
 							requestServiceHistoryApi));
 					throw new InvalidInputException("serviceType");
@@ -918,6 +914,22 @@ public class RequestValidator {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", "Request time invalid"));
 			throw new InvalidInputException("requesttime");
+		}
+	}
+
+	public void validateDownloadCardRequest(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
+		validateRequestId(downloadCardRequestDTOMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID));
+		validateDate(downloadCardRequestDTOMainRequestDTO.getRequesttime());
+		validateTransactionId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
+		validateOTP(downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
+		validateIndividualIdV2(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
+	}
+
+	private void validateIndividualIdV2(String individualId) {
+		if (individualId == null || StringUtils.isEmpty(individualId)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
+					"Request service history API"));
+			throw new InvalidInputException("individualId");
 		}
 	}
 }

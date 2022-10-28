@@ -49,7 +49,6 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
-import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -253,9 +252,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
 					ResidentCredentialResponseDto.class);
 			if (purpose != null) {
-				String requestSummaryMsg = prepareReqSummaryMsg(dto.getSharableAttributes());
-				insertCredentialreqInDB(Boolean.TRUE, purpose, residentCredentialResponseDto.getRequestId(),
-						requestSummaryMsg);
+				String requestSummary = prepareReqSummaryMsg(dto.getSharableAttributes());
+				residentTransactionEntity.setPurpose(purpose);
+				residentTransactionEntity.setRequestSummary(requestSummary);
 			}
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.REQUEST_RECEIVED,
@@ -280,16 +279,15 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (NoSuchAlgorithmException e) {
-			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-		}
-
-		finally {
-			residentTransactionRepository.save(residentTransactionEntity);
+		} finally {
+			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+				//if the status code will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode()==null) {
+					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary("failed");
+				}
+				residentTransactionRepository.save(residentTransactionEntity);
+			}
 		}
 		return residentCredentialResponseDtoV2;
 	}
@@ -546,28 +544,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
 		return notificationService.sendNotification(notificationRequestDtoV2);
-	}
-
-	@SuppressWarnings("unused")
-	private void insertCredentialreqInDB(boolean isCredReqSuccess, String purpose, String credentialRequestId,
-			String requestSummary)
-			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		LocalDateTime now = LocalDateTime.now();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		residentTransactionEntity.setPurpose(purpose);
-		residentTransactionEntity.setRequestDtimes(now);
-		residentTransactionEntity.setResponseDtime(now);
-		residentTransactionEntity.setRequestTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
-		residentTransactionEntity.setRequestSummary(requestSummary);
-		residentTransactionEntity.setCredentialRequestId(credentialRequestId);
-		residentTransactionEntity.setStatusCode(NEW);
-		residentTransactionEntity.setStatusComment(isCredReqSuccess ? "Success" : "Failure");
-		residentTransactionEntity.setLangCode(ENG);
-		residentTransactionEntity.setCrBy(RESIDENT);
-		residentTransactionEntity.setCrDtimes(now);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		residentTransactionRepository.save(residentTransactionEntity);
 	}
 
 	/**

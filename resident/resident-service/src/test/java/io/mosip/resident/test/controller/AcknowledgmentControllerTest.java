@@ -1,5 +1,6 @@
 package io.mosip.resident.test.controller;
 
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.controller.AcknowledgementController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.AcknowledgementService;
@@ -7,6 +8,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +60,9 @@ public class AcknowledgmentControllerTest {
     @Mock
     private ResidentVidServiceImpl residentVidService;
 
+    @Mock
+    private TemplateUtil templateUtil;
+
     @MockBean
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
@@ -80,6 +85,7 @@ public class AcknowledgmentControllerTest {
 
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
+        Mockito.when(templateUtil.getFeatureName(Mockito.anyString())).thenReturn(RequestType.AUTHENTICATION_REQUEST.toString());
         Mockito.when(acknowledgementService.getAcknowledgementPDF(Mockito.anyString(), Mockito.anyString())).thenReturn("test".getBytes());
         ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng");
         assertEquals(response.getStatusCode(), responseEntity.getStatusCode());

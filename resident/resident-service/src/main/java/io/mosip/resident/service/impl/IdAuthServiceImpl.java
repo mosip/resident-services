@@ -50,7 +50,9 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
@@ -131,11 +133,11 @@ public class IdAuthServiceImpl implements IdAuthService {
 			ResidentTransactionEntity residentTransaction = residentTransactionEntity.get(0);
 			if (residentTransaction != null) {
 				if(residentTransaction.getStatusCode().equalsIgnoreCase("OTP_REQUESTED")) {
-					residentTransaction.setRequestTypeCode(verified ? "OTP_VERIFIED" : "OTP_VERIFICATION_FAILED");
+					residentTransaction.setRequestTypeCode(RequestType.VALIDATE_OTP.name());
 					residentTransaction.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 					residentTransaction.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
 					residentTransaction.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
-					residentTransaction.setAuthTypeCode(ResidentTransactionType.SERVICE_REQUEST.toString());
+					residentTransaction.setAuthTypeCode(ServiceType.SERVICE_REQUEST.name());
 					residentTransactionRepository.save(residentTransaction);
 				}
 			}
