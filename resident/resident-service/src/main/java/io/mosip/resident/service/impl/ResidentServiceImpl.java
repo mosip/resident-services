@@ -30,9 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.EventIdNotPresentException;
@@ -44,7 +42,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
 import io.mosip.resident.exception.ValidationFailedException;
-import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
@@ -64,9 +61,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
@@ -222,9 +217,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private Utilitiy utility;
-
-	@Autowired
-	private ObjectStoreHelper objectStoreHelper;
 
 	@Autowired
 	private Utilities utilities;
@@ -1616,8 +1608,7 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
 				}
 				URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
-				String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class);
-				return decryptDataShareData(encryptedData);
+				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
 			}
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
@@ -1631,12 +1622,6 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
 		return new byte[0];
-	}
-
-	private byte[] decryptDataShareData(String encryptedData) {
-		String decryptedData = objectStoreHelper.decryptData(encryptedData, env.getProperty(ResidentConstants.DATA_SHARE_APPLICATION_ID),
-				env.getProperty(ResidentConstants.DATA_SHARE_REFERENCE_ID));
-		return HMACUtils2.decodeBase64(decryptedData);
 	}
 
 	private DigitalCardStatusResponseDto getDigitalCardStatus(String individualId)
