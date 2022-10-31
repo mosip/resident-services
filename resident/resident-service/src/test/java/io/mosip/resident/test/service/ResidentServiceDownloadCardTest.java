@@ -140,7 +140,8 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
-        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri),String.class)).thenReturn("data");
+        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
+                .thenReturn("data".getBytes());
         byte[] response = residentServiceImpl.downloadCard(eventId, idType);
         assertNotNull(response);
     }

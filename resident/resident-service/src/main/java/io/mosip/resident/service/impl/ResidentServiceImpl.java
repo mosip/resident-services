@@ -64,9 +64,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
@@ -224,9 +222,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private Utilitiy utility;
 
 	@Autowired
-	private ObjectStoreHelper objectStoreHelper;
-
-	@Autowired
 	private Utilities utilities;
 
 	@Value("${resident.center.id}")
@@ -259,6 +254,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.service.event.version}")
 	private String serviceEventVersion;
 
+	@Value("${digital.card.pdf.encryption.enabled:false}")
+	private boolean isDigitalCardPdfEncryptionEnabled;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -279,6 +277,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
@@ -1616,8 +1617,10 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
 				}
 				URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
-				String encryptedData = residentServiceRestClient.getApi(dataShareUri, String.class);
-				return decryptDataShareData(encryptedData);
+				if(isDigitalCardPdfEncryptionEnabled){
+					return decryptDataShareData(residentServiceRestClient.getApi(dataShareUri, String.class));
+				}
+				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
 			}
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
