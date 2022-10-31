@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,12 @@ public class IdentityController {
 	@Autowired
 	private IdentityService idServiceImpl;
 	
+	@Value("${resident.identity.info.id}")
+	private String residentIdentityInfoId;
+
+	@Value("${resident.identity.info.version}")
+	private String residentIdentityInfoVersion;
+	
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes("
     				+ "@authorizedScopes.getGetinputattributevalues()"
@@ -64,6 +71,8 @@ public class IdentityController {
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setId(residentIdentityInfoId);
+		responseWrapper.setVersion(residentIdentityInfoVersion);
 		responseWrapper.setResponse(propertiesResponse);
 		return responseWrapper;
 	}
