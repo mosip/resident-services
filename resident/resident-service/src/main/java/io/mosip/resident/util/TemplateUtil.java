@@ -69,7 +69,6 @@ import java.util.Optional;
         if(residentTransactionEntity.isPresent()) {
             ResidentTransactionEntity residentTransaction = residentTransactionEntity.get();
             templateVariables.put(TemplateVariablesEnum.EVENT_TYPE, residentTransaction.getRequestTypeCode());
-            templateVariables.put(TemplateVariablesEnum.PURPOSE, residentTransaction.getPurpose());
             templateVariables.put(TemplateVariablesEnum.EVENT_STATUS, getEventStatusForRequestType(residentTransaction.getStatusCode()));
             templateVariables.put(TemplateVariablesEnum.SUMMARY, residentTransaction.getRequestSummary());
             templateVariables.put(TemplateVariablesEnum.TIMESTAMP, DateUtils.formatToISOString(residentTransaction.getCrDtimes()));
