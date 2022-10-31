@@ -92,6 +92,10 @@ import java.util.Optional;
 
     public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
+        return getIndividualIdType(individualId);
+    }
+
+    public String getIndividualIdType(String individualId){
         if(requestValidator.validateUin(individualId)){
             return UIN;
         } else if(requestValidator.validateVid(individualId)){

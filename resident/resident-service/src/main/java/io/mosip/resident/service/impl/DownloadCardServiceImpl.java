@@ -2,21 +2,28 @@ package io.mosip.resident.service.impl;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.DataNotFoundException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utilitiy;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -52,6 +59,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Autowired
     private ResidentServiceImpl residentService;
 
+    @Autowired
+    private Utilitiy utilitiy;
+
+    @Autowired
+    private TemplateUtil templateUtil;
+
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
@@ -59,7 +72,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String rid = null;
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
-                    downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId(), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+                    getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
                 rid = utilities.getRidByIndividualId(individualId);
             } else {
@@ -81,6 +94,24 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     e);
         }
         return residentService.getUINCard(rid);
+    }
+
+    private String getUINForIndividualId(String individualId)  {
+        String idType = templateUtil.getIndividualIdType(individualId);
+        if(idType.equalsIgnoreCase(IdType.UIN.toString())){
+            return individualId;
+        } else {
+            return getUINForId(individualId);
+        }
+    }
+
+    private String getUINForId(String rid) {
+        try {
+            JSONObject jsonObject = utilitiy.retrieveIdrepoJson(rid);
+            return JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
+        } catch (ResidentServiceCheckedException e) {
+            throw new DataNotFoundException(e.getErrorCode(),e.getMessage());
+        }
     }
 
 }

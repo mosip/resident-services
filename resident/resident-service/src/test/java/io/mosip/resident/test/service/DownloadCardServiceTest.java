@@ -10,6 +10,7 @@ import io.mosip.resident.service.impl.DownloadCardServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +55,9 @@ public class DownloadCardServiceTest {
     @Mock
     private ResidentServiceImpl residentService;
 
+    @Mock
+    private TemplateUtil templateUtil;
+
     private MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO;
 
     private String result;
@@ -76,7 +80,7 @@ public class DownloadCardServiceTest {
         Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
         Mockito.when(residentService.getUINCard(Mockito.anyString())).thenReturn(pdfbytes);
-
+        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
     }
 
     @Test
