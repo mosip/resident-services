@@ -65,7 +65,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
-        String eventId=null;
+        String eventId="";
         List<ResidentTransactionEntity> residentTransactionEntity = null;
         try {
             List<AuthtypeStatus> authTypeStatusList = (List<AuthtypeStatus>) eventModel.getEvent().getData().get(AUTH_TYPES);
