@@ -1976,8 +1976,10 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
 			String requestTypeCode;
+			String statusCode;
 			if (residentTransactionEntity.isPresent()) {
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
+				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
 			} else {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 			}
@@ -2005,6 +2007,7 @@ public class ResidentServiceImpl implements ResidentService {
 				eventStatusMap.remove(TemplateVariablesEnum.SUMMARY);
 				eventStatusMap.remove(TemplateVariablesEnum.TIMESTAMP);
 
+				eventStatusMap.put(TemplateVariablesEnum.DESCRIPTION, getDescriptionForLangCode(languageCode, statusCode, requestType));
 				eventStatusResponseDTO.setInfo(eventStatusMap);
 				responseWrapper.setId(serviceEventId);
 				responseWrapper.setVersion(serviceEventVersion);
