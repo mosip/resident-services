@@ -30,7 +30,9 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.EventIdNotPresentException;
@@ -42,6 +44,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
 import io.mosip.resident.exception.ValidationFailedException;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
@@ -251,6 +254,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.service.event.version}")
 	private String serviceEventVersion;
 
+	@Value("${digital.card.pdf.encryption.enabled:false}")
+	private boolean isDigitalCardPdfEncryptionEnabled;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -271,6 +277,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
@@ -1608,6 +1617,9 @@ public class ResidentServiceImpl implements ResidentService {
 							ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
 				}
 				URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
+				if(isDigitalCardPdfEncryptionEnabled){
+					return decryptDataShareData(residentServiceRestClient.getApi(dataShareUri, String.class));
+				}
 				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
 			}
 		} catch (ApisResourceAccessException e) {
@@ -1622,6 +1634,12 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
 		return new byte[0];
+	}
+
+	private byte[] decryptDataShareData(String encryptedData) {
+		String decryptedData = objectStoreHelper.decryptData(encryptedData, env.getProperty(ResidentConstants.DATA_SHARE_APPLICATION_ID),
+				env.getProperty(ResidentConstants.DATA_SHARE_REFERENCE_ID));
+		return HMACUtils2.decodeBase64(decryptedData);
 	}
 
 	private DigitalCardStatusResponseDto getDigitalCardStatus(String individualId)
