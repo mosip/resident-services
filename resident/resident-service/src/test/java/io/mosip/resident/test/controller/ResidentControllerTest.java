@@ -360,17 +360,6 @@ public class ResidentControllerTest {
 
 	@Test
 	@WithUserDetails("reg-admin")
-	public void testGetServiceRequestUpdateSuccess() throws Exception {
-		Mockito.when(residentService.getServiceRequestUpdate(Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>(0));
-		residentController.getServiceRequestUpdate(1, 12);
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/get/service-request-update").contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	@WithUserDetails("reg-admin")
 	public void testRequestAuthHistorySuccess() throws Exception {
 		authHistoryRequest = new RequestWrapper<AuthHistoryRequestDTO>();
 		AuthHistoryRequestDTO hisdto = new AuthHistoryRequestDTO();

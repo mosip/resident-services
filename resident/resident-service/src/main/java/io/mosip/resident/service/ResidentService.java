@@ -63,12 +63,6 @@ public interface ResidentService {
 			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
 			String searchColumn, String searchText, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch)
-			throws ResidentServiceCheckedException;
-
-	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch,
-			String individualId) throws ResidentServiceCheckedException;
-
 	byte[] downloadCard(String individualId, String idType)
 			throws ResidentServiceCheckedException;
 
