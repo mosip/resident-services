@@ -57,7 +57,6 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -103,7 +102,6 @@ import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BellNotificationDto;
-import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
@@ -130,7 +128,6 @@ import io.mosip.resident.dto.ResidentDocuments;
 import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
@@ -180,7 +177,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final Integer DEFAULT_PAGE_START = 0;
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
-	private static final String PRINTING = "PRINTING";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 
@@ -1498,72 +1494,6 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch)
-			throws ResidentServiceCheckedException {
-		return getServiceRequestUpdate(pageStart, pageFetch, null);
-	}
-
-	@Override
-	public List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch,
-			String individualId) throws ResidentServiceCheckedException {
-		logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getServiceRequestUpdate()::entry");
-		List<ResidentServiceHistoryResponseDto> residentServiceHistoryResponseDtoList = new ArrayList<>();
-
-		try {
-			if (pageStart == null) {
-				if (pageFetch == null) {
-					pageStart = DEFAULT_PAGE_START;
-					pageFetch = DEFAULT_PAGE_COUNT;
-				} else {
-					pageStart = DEFAULT_PAGE_START;
-				}
-			} else {
-				if (pageFetch == null) {
-					pageFetch = DEFAULT_PAGE_COUNT;
-				}
-			}
-			if (pageStart < 0) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
-			} else if (pageFetch < 0) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
-			}
-			PageRequest pageRequest = PageRequest.of(pageStart, pageFetch);
-			String idaToken = identityServiceImpl.getResidentIdaToken();
-			List<ResidentTransactionEntity> residentTransactionEntities = residentTransactionRepository
-					.findRequestIdByToken(idaToken, ServiceType.SERVICE_REQUEST.name(), pageRequest);
-			if (residentTransactionEntities != null) {
-				for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntities) {
-					String requestId = residentTransactionEntity.getAid();
-					CredentialRequestStatusResponseDto credentialRequestStatusResponseDto = residentCredentialServiceImpl
-							.getStatus(requestId);
-					if (credentialRequestStatusResponseDto != null) {
-						if (credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase("NEW")) {
-							insertServiceRequestInDb(credentialRequestStatusResponseDto);
-						}
-						residentServiceHistoryResponseDtoList
-								.add(convertCredentialResponseDtoToServiceHistoryResponseDto(
-										credentialRequestStatusResponseDto, individualId));
-					}
-
-				}
-			}
-		} catch (ResidentServiceCheckedException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::getServiceRequestUpdate()::Exception");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.REQUEST_ID_NOT_FOUND.getErrorCode(),
-					ResidentErrorCode.REQUEST_ID_NOT_FOUND.getErrorMessage());
-
-		} catch (ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.IDA_TOKEN_NOT_FOUND);
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		return residentServiceHistoryResponseDtoList;
-	}
-
-	@Override
 	public byte[] downloadCard(String eventId, String idType)
 			throws ResidentServiceCheckedException {
 		try{
@@ -1651,46 +1581,6 @@ public class ResidentServiceImpl implements ResidentService {
 				residentServiceRestClient.getApi(digitalCardStatusUri, ResponseWrapper.class);
 		return JsonUtil.readValue(
 				JsonUtil.writeValueAsString(responseDto.getResponse()), DigitalCardStatusResponseDto.class);
-	}
-
-	private void insertServiceRequestInDb(CredentialRequestStatusResponseDto credentialRequestStatusResponseDto)
-			throws ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		residentTransactionEntity.setAid(credentialRequestStatusResponseDto.getRequestId());
-		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
-		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-		residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
-		residentTransactionEntity.setRequestSummary(ServiceType.SERVICE_REQUEST.name());
-		residentTransactionEntity.setAuthTypeCode(ServiceType.SERVICE_REQUEST.name());
-		residentTransactionEntity.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
-		residentTransactionEntity.setStatusComment(credentialRequestStatusResponseDto.getStatusCode());
-		residentTransactionEntity.setLangCode("eng");
-		residentTransactionEntity.setRefIdType("");
-		residentTransactionEntity
-				.setTokenId(identityServiceImpl.getIDAToken(identityServiceImpl.getResidentIndvidualId()));
-		residentTransactionEntity.setCrBy("RESIDENT");
-		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
-		residentTransactionEntity.setOlvPartnerId("");
-		residentTransactionRepository.save(residentTransactionEntity);
-	}
-
-	public ResidentServiceHistoryResponseDto convertCredentialResponseDtoToServiceHistoryResponseDto(
-			CredentialRequestStatusResponseDto credentialRequestStatusResponseDto, String individualId) {
-		ResidentServiceHistoryResponseDto residentServiceHistoryResponseDto = new ResidentServiceHistoryResponseDto();
-		residentServiceHistoryResponseDto.setRequestId(credentialRequestStatusResponseDto.getRequestId());
-		residentServiceHistoryResponseDto.setStatusCode(credentialRequestStatusResponseDto.getStatusCode());
-		residentServiceHistoryResponseDto.setId(credentialRequestStatusResponseDto.getId());
-		if (credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase(PRINTING)) {
-			residentServiceHistoryResponseDto.setCardUrl(env.getProperty(ApiName.RESIDENT_REQ_CREDENTIAL_URL.name())
-					+ credentialRequestStatusResponseDto.getRequestId());
-		} else if (credentialRequestStatusResponseDto.getStatusCode().equalsIgnoreCase(AVAILABLE)) {
-			residentServiceHistoryResponseDto
-					.setCardUrl(env.getProperty(ApiName.DIGITAL_CARD_STATUS_URL.name()) + individualId);
-		} else {
-			residentServiceHistoryResponseDto.setCardUrl("");
-		}
-		return residentServiceHistoryResponseDto;
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
