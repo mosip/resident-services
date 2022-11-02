@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
@@ -41,6 +44,7 @@ import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.dto.WorkingDaysResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -462,34 +466,29 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	/**
 	 * download registration centers based on language code, hierarchyLevel and center names
 	 */
-	public byte[] downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
+	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
 			List<String> name) throws ResidentServiceCheckedException,IOException,Exception {		
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
 				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, REGISTRATION_CENTER_TEMPLATE_NAME);		
 		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
 		Map<String,Object> regCentersMap = new LinkedHashMap<>();
-		List<RegistrationCenterDto >regCentersDtlsList=Collections.EMPTY_LIST;
-		int serialNumber = 1;
+		List<RegistrationCenterDto >regCentersDtlsList=Collections.emptyList();		
 		if (regCentResponseWrapper != null) {
 			RegistrationCenterResponseDto registrationCentersDtls = mapper.readValue(
 					mapper.writeValueAsString(regCentResponseWrapper.getResponse()), RegistrationCenterResponseDto.class);
-			regCentersDtlsList = registrationCentersDtls.getRegistrationCenters();
-			for (RegistrationCenterDto regCenterDto : regCentersDtlsList) {
-				List<WorkingDaysDto> workingDaysList = Collections.EMPTY_LIST;
-				String workingHours = "";
-				String fullAddress = getFullAddress(regCenterDto.getAddressLine1(), regCenterDto.getAddressLine2(),
-						regCenterDto.getAddressLine3());
-				regCenterDto.setSerialNumber(serialNumber++);
-				regCenterDto.setFullAddress(fullAddress);				
-				workingDaysList = getRegCenterWorkingDays(regCenterDto.getId(), regCenterDto.getLangCode());
-				workingHours = workingDaysList.get(0).getName() + "-" + workingDaysList.get(1).getName() + "|"
-						+ regCenterDto.getCenterStartTime().substring(0, 5) + " " + "am" + "-"
-						+ regCenterDto.getCenterEndTime().substring(0, 5) + " " + "pm";
-				regCenterDto.setWorkingHours(workingHours);
+			List<RegistrationCenterDto> regCenterIntialList = registrationCentersDtls.getRegistrationCenters();
+			if(regCenterIntialList!=null && !regCenterIntialList.isEmpty()) {
+				IntStream.range(0, regCenterIntialList.size()).forEach(i-> {
+					try {
+						addRegistrationCenterDtls(i, regCenterIntialList.get(i));
+					} catch (Exception e) {
+						throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS,e);
+					}
+				});
 			}
-		}				
-		regCentersMap.put("regCentersDtlsList", regCentersDtlsList);
+			regCentersMap.put("regCenterIntialList", regCenterIntialList);
+		}
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
 		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
 		String fileText = (String) templateResponse.get("fileText");
@@ -500,9 +499,43 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
 		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return pdfValue.toByteArray();
+		return convertOutputStreamToInputStream(pdfValue);
 	}
 	
+	/**
+	 * update the registrationcenter details
+	 */
+	private void addRegistrationCenterDtls(int index, RegistrationCenterDto regCenterDto)
+			throws ResidentServiceCheckedException, Exception {
+		String workingHours = "";
+		String fullAddress = getFullAddress(regCenterDto.getAddressLine1(), regCenterDto.getAddressLine2(),
+				regCenterDto.getAddressLine3());
+		regCenterDto.setSerialNumber(index+1);
+		regCenterDto.setFullAddress(fullAddress);
+		List<WorkingDaysDto>  workingDaysList = getRegCenterWorkingDays(regCenterDto.getId(), regCenterDto.getLangCode());
+		workingHours = workingDaysList.get(0).getName() + "-" + workingDaysList.get(1).getName() + "|"
+				+ regCenterDto.getCenterStartTime().substring(0, 5) + " " + "am" + "-"
+				+ regCenterDto.getCenterEndTime().substring(0, 5) + " " + "pm";
+		regCenterDto.setWorkingHours(workingHours);
+	}
+	/**
+	 * convert output stream to input stream
+	 * @param orgByteOutStream
+	 * @return
+	 */
+	private static InputStream convertOutputStreamToInputStream(ByteArrayOutputStream orgByteOutStream) {
+		PipedInputStream in = new PipedInputStream();
+		new Thread(new Runnable() {
+			public void run() {
+				try (final PipedOutputStream out = new PipedOutputStream(in)) {
+					orgByteOutStream.writeTo(out);
+				} catch (IOException e) {
+					logger.debug("convert Output stream to input stream" +e.getMessage());
+				}
+			}
+		}).start();
+		return in;
+	}
 	/**
 	 * return the full address
 	 * @param address1
@@ -541,5 +574,6 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		workingDaysHoursList.add(endDay);
 		return workingDaysHoursList;
 	}
+	
 
 }
