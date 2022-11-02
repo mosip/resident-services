@@ -9,7 +9,6 @@ public class ResidentConstants {
 
     public static final String DOWNLOAD_UIN_CARD_ID = "mosip.resident.download.uin.card";
 
-
     private ResidentConstants() {
 	}
 
