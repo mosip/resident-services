@@ -79,7 +79,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
                 });
                 residentTransactionRepository.saveAll(residentTransactionEntity);
             }
-            if(residentTransactionEntity!=null){
+            if(!residentTransactionEntity.isEmpty()||residentTransactionEntity!=null){
                 eventId = residentTransactionEntity.get(0).getEventId();
             }
         }
