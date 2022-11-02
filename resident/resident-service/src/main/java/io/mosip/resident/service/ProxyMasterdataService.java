@@ -1,6 +1,7 @@
 package io.mosip.resident.service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -162,6 +163,6 @@ public interface ProxyMasterdataService {
 	 * @return
 	 * @throws ResidentServiceCheckedException
 	 */
-	 public byte[] downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
+	 public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
 			List<String> name) throws ResidentServiceCheckedException,IOException,Exception;
 	 }
