@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,10 +399,9 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);	
 		validator.validateOnlyLanguageCode(langCode);
-		byte[] pdfBytes =  proxyMasterdataService.downloadRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		InputStream pdfInputStream =  proxyMasterdataService.downloadRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
+		InputStreamResource resource = new InputStreamResource(pdfInputStream);
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
-		System.out.println("after get service history pdf success");
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + "downloadRegistrationCentersByHierarchyLevel" + ".pdf\"")
