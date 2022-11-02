@@ -73,13 +73,13 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
             if(authTypeStatusList!=null){
                 residentTransactionEntity = residentTransactionRepository.findByRequestTrnId(authTypeStatusList.get(0).getRequestId());
             }
-            if(!residentTransactionEntity.isEmpty()){
+            if(residentTransactionEntity!=null){
                 residentTransactionEntity.stream().forEach(residentTransactionEntity1 -> {
                     residentTransactionEntity1.setStatusCode(status);
                 });
                 residentTransactionRepository.saveAll(residentTransactionEntity);
             }
-            if(!residentTransactionEntity.isEmpty()){
+            if(residentTransactionEntity!=null){
                 eventId = residentTransactionEntity.get(0).getEventId();
             }
         }
