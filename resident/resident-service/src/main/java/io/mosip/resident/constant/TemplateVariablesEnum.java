@@ -8,6 +8,7 @@ public class TemplateVariablesEnum {
     public static final String EVENT_ID = "eventId";
     public static final String EVENT_TYPE = "eventType";
     public static final String PURPOSE = "purpose";
+    public static final String DESCRIPTION = "description";
     public static final String EVENT_STATUS = "eventStatus";
     public static final String INDIVIDUAL_ID = "individualId";
     public static final String AUTHENTICATION_MODE = "authenticationMode";

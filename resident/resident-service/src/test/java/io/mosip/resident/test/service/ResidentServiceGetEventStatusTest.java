@@ -1,5 +1,18 @@
 package io.mosip.resident.test.service;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -9,24 +22,14 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * This class is used to test the get Status service
@@ -53,6 +56,12 @@ public class ResidentServiceGetEventStatusTest {
 
     @Mock
     private TemplateUtil templateUtil;
+    
+    @Mock
+	private ResidentServiceRestClient restClient;
+    
+    @Mock
+    private ProxyMasterdataService proxyMasterdataService;
 
     private String eventId;
     private String langCode;
@@ -89,6 +98,11 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString())).thenReturn(templateVariables);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("123456789");
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+        Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
+        ResponseWrapper primaryLangResp = new ResponseWrapper<>();
+		primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
+		Mockito.when(proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(primaryLangResp);
     }
 
     @Test

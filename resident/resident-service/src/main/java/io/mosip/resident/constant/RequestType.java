@@ -121,6 +121,10 @@ public enum RequestType {
 	public String getBellIconTemplateCodeProperty(TemplateType templateType) {
 		return "resident.template.bell-icon." + templateType.getType() + "." + getFeatureName();
 	}
+	
+	public String getPurposeTemplateCodeProperty(TemplateType templateType) {
+		return "resident.template.purpose." + templateType.getType() + "." + getFeatureName();
+	}
 
 	public Map<String, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId) {
 		return ackTemplateVariablesFunction.apply(templateUtil, eventId);

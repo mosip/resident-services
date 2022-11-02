@@ -10,6 +10,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.LocalDateTime;
@@ -31,7 +33,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -50,6 +54,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
@@ -68,7 +73,6 @@ import io.mosip.resident.dto.ResidentDocuments;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
 import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
-import io.mosip.resident.dto.ResidentTransactionType;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
@@ -346,22 +350,11 @@ public class ResidentControllerTest {
 	public void testGetServiceHistorySuccess() throws Exception {
 		io.mosip.kernel.core.http.ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
-		residentController.getServiceHistory(1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
+		residentController.getServiceHistory("eng", 1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
 				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
-				ResidentTransactionType.AUTHENTICATION_REQUEST.toString(), null, null);
-		mockMvc.perform(MockMvcRequestBuilders.get("/service-history").contentType(MediaType.APPLICATION_JSON_VALUE))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	@WithUserDetails("reg-admin")
-	public void testGetServiceRequestUpdateSuccess() throws Exception {
-		Mockito.when(residentService.getServiceRequestUpdate(Mockito.any(), Mockito.any()))
-				.thenReturn(new ArrayList<>(0));
-		residentController.getServiceRequestUpdate(1, 12);
-		mockMvc.perform(
-				MockMvcRequestBuilders.get("/get/service-request-update").contentType(MediaType.APPLICATION_JSON_VALUE))
+				ServiceType.AUTHENTICATION_REQUEST.name(), null, null);
+		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
 
@@ -447,10 +440,10 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testAuthLockStatus() throws Exception {
-		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+		io.mosip.kernel.core.http.ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
-		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
+		io.mosip.kernel.core.http.ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();
 		assertEquals(responseWrapper, resultRequestWrapper);
 	}
 
@@ -465,7 +458,7 @@ public class ResidentControllerTest {
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException("error", "error"));
-		io.mosip.kernel.core.http.ResponseWrapper<Object> resultRequestWrapper = residentController.getAuthLockStatus();
+		io.mosip.kernel.core.http.ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();
 		resultRequestWrapper.setResponsetime(null);
 		assertEquals(responseWrapper, resultRequestWrapper);
 	}
@@ -473,6 +466,13 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testDownloadCardIndividualId() throws Exception {
+		ResponseEntity<Object> responseEntity;
+		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" +
+						"abc" + ".pdf\"")
+				.body(resource);
 		io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
 		responseWrapper.setResponsetime(null);
 		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
@@ -488,12 +488,11 @@ public class ResidentControllerTest {
 		list.add(dto);
 		resultResponseWrapper.setResponse(list);
 		resultResponseWrapper.setResponsetime(null);
-
-		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(list);
-		io.mosip.kernel.core.http.ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultRequestWrapper = residentController
+		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
+		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(bytes);
+		ResponseEntity<Object> resultRequestWrapper = residentController
 				.downloadCard("9876543210");
-		resultRequestWrapper.setResponsetime(null);
-		assertEquals(resultResponseWrapper, resultRequestWrapper);
+		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
 	@Test

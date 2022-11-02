@@ -6,6 +6,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
+import static io.mosip.resident.constant.RegistrationConstants.UNDER_SCORE;
 
 /**
  * This class is used to create api for getting acknowledgement.
@@ -39,6 +42,9 @@ public class AcknowledgementController {
     @Autowired
     private AcknowledgementService acknowledgementService;
 
+    @Autowired
+    private TemplateUtil templateUtil;
+
     @PreAuthorize("@scopeValidator.hasAllScopes("
             + "@authorizedScopes.getGetAcknowledgement()"
             + ")")
@@ -52,9 +58,10 @@ public class AcknowledgementController {
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
         logger.debug("AcknowledgementController::acknowledgement()::exit");
+        String featureName = templateUtil.getFeatureName(eventId);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        eventId + ".pdf\"")
+                        featureName+UNDER_SCORE+eventId + ".pdf\"")
                 .body(resource);
     }
 }

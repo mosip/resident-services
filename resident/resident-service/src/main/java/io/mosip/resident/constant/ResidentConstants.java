@@ -6,8 +6,10 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-	
-	private ResidentConstants() {
+
+    public static final String DOWNLOAD_UIN_CARD_ID = "mosip.resident.download.uin.card";
+
+    private ResidentConstants() {
 	}
 
     public static final String OBJECT_STORE_ACCOUNT_NAME = "mosip.resident.object.store.account-name";
@@ -73,5 +75,9 @@ public class ResidentConstants {
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
 
     public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
+
+    public static final String DATA_SHARE_URL = "mosip.datashare.url";
+    public static final String DATA_SHARE_APPLICATION_ID = "mosip.datashare.application.id";
+    public static final String DATA_SHARE_REFERENCE_ID = "mosip.datashare.reference.id";
 
 }

@@ -18,6 +18,6 @@ public class ServiceHistoryResponseDto {
     private String description;
     private String eventStatus;
     private String timeStamp;
-    private String requestType;
+    private String serviceType;
     private String pinnedStatus;
 }
