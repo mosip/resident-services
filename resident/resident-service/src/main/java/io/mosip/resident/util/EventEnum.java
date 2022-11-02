@@ -662,7 +662,7 @@ public enum EventEnum {
 
 	
 	DOWNLOAD_REGISTRATION_CENTER_SUCCESS("RES-SER-268", RegistrationConstants.SYSTEM, "down load registration center success", "download registration center success based on language code", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME)
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
 
 	INVALID_REQUEST_TYPE_CODE("RES-SER-269", RegistrationConstants.SYSTEM, "Invalid request type code", "\"Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD,\" +\n" +
 			"\t\t\t\"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN", "RES-SER",
