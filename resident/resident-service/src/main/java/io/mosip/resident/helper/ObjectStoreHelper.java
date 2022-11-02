@@ -178,7 +178,8 @@ public class ObjectStoreHelper {
 	 * @return The decrypted data.
 	 */
 	private String decryptData(InputStream data) throws IOException {
-		return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false, applicationId, referenceId);
+    return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false, applicationId, referenceId);
+
 	}
 
 	/**
@@ -192,8 +193,10 @@ public class ObjectStoreHelper {
 	 */
 	private InputStream encryptData(InputStream data) throws IOException {
 		return new ByteArrayInputStream(
+
 				(encryptDecryptData(CryptoUtil.encodeToURLSafeBase64(IOUtils.toByteArray(data)), true, applicationId, referenceId).getBytes()));
 	}
+
 
 	public String decryptData(String data, String applicationId, String referenceId){
 		return encryptDecryptData(data, false, applicationId, referenceId);
