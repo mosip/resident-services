@@ -42,6 +42,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateEnum;
 import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.constant.TemplateVariablesEnum;
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.IdentityDTO;
@@ -306,7 +307,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
-		residentTransactionEntity.setRefIdType(requestDto.getVidType());
+		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
 		return residentTransactionEntity;
 	}
 
@@ -395,7 +396,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		ResidentTransactionEntity residentTransactionEntity = null;
 		if(Utilitiy.isSecureSession()) {
-			residentTransactionEntity = createResidentTransEntity(vid);
+			residentTransactionEntity = createResidentTransEntity(vid, indivudalId);
 		}
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(indivudalId);
 		String uin = identityDTO.getUIN();
@@ -533,14 +534,24 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return responseDto;
 	}
 
-	private ResidentTransactionEntity createResidentTransEntity(String vid) throws ApisResourceAccessException {
+	private ResidentTransactionEntity createResidentTransEntity(String vid, String indivudalId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
+		residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		return residentTransactionEntity;
+	}
+
+	private String getVidTypeFromVid(String vid, String indivudalId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId);
+		return vids.getResponse().stream()
+				.filter(map -> ((String)map.get(TemplateVariablesEnum.VID)).equals(vid))
+				.map(map -> (String)map.get(TemplateVariablesEnum.VID_TYPE))
+				.findAny()
+				.orElse(null);
 	}
 
 	private VidGeneratorResponseDto vidDeactivator(BaseVidRevokeRequestDTO requestDto, String uin, String vid)
