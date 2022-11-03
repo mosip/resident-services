@@ -13,6 +13,8 @@ import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.exception.IndividualIdNotFoundException;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -206,6 +208,29 @@ public class Utilities {
 			uin = response.getResponse().getUin();
 		}
 		return uin;
+	}
+
+	public String getRidByIndividualId(String individualId) throws ApisResourceAccessException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
+				"Utilities::getRidByIndividualId():: entry");
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("individualId", individualId);
+		String rid = null;
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
+				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
+
+		ResponseWrapper<?> response = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.GET_RID_BY_INDIVIDUAL_ID,
+				pathsegments, ResponseWrapper.class);
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
+
+		if (!response.getErrors().isEmpty()) {
+			throw new IndividualIdNotFoundException("Individual ID not found exception");
+
+		} else {
+			rid = (String) response.getResponse();
+		}
+		return rid;
 	}
 
     public String getJson(String configServerFileStorageURL, String uri) {

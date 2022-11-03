@@ -658,7 +658,10 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_GENDER_TYPES_EXCEPTION("RES-SER-263", RegistrationConstants.SYSTEM, "get gender types failure",
 			"get gender types by langCode is failed", "RES-SER", "Residence service", "NO_ID",
-			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	INVALID_REQUEST_TYPE_CODE("RES-SER-267", RegistrationConstants.SYSTEM, "Invalid request type code", "\"Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD,\" +\n" +
+			"\t\t\t\"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME);
 	;
 
 	private final String eventId;

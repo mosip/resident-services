@@ -52,7 +52,7 @@ public interface ResidentService {
 	ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	public ResponseWrapper<Object> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
+	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus(String individualId) throws ResidentServiceCheckedException;;
 
 	RegStatusCheckResponseDTO getRidStatus(String rid);
 
@@ -61,15 +61,9 @@ public interface ResidentService {
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
-			String searchColumn, String searchText) throws ResidentServiceCheckedException, ApisResourceAccessException;
+			String searchColumn, String searchText, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch)
-			throws ResidentServiceCheckedException;
-
-	List<ResidentServiceHistoryResponseDto> getServiceRequestUpdate(Integer pageStart, Integer pageFetch,
-			String individualId) throws ResidentServiceCheckedException;
-
-	List<ResidentServiceHistoryResponseDto> downloadCard(String individualId, String idType)
+	byte[] downloadCard(String individualId, String idType)
 			throws ResidentServiceCheckedException;
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)

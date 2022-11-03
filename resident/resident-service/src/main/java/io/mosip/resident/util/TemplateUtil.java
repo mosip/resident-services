@@ -9,6 +9,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,7 +69,6 @@ import java.util.Optional;
         if(residentTransactionEntity.isPresent()) {
             ResidentTransactionEntity residentTransaction = residentTransactionEntity.get();
             templateVariables.put(TemplateVariablesEnum.EVENT_TYPE, residentTransaction.getRequestTypeCode());
-            templateVariables.put(TemplateVariablesEnum.PURPOSE, residentTransaction.getPurpose());
             templateVariables.put(TemplateVariablesEnum.EVENT_STATUS, getEventStatusForRequestType(residentTransaction.getStatusCode()));
             templateVariables.put(TemplateVariablesEnum.SUMMARY, residentTransaction.getRequestSummary());
             templateVariables.put(TemplateVariablesEnum.TIMESTAMP, DateUtils.formatToISOString(residentTransaction.getCrDtimes()));
@@ -85,8 +85,17 @@ import java.util.Optional;
         return templateVariables;
     }
 
+    public String getFeatureName(String eventId){
+        Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+        return templateVariables.get(TemplateVariablesEnum.EVENT_TYPE);
+    }
+
     public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
+        return getIndividualIdType(individualId);
+    }
+
+    public String getIndividualIdType(String individualId){
         if(requestValidator.validateUin(individualId)){
             return UIN;
         } else if(requestValidator.validateVid(individualId)){
@@ -226,7 +235,7 @@ import java.util.Optional;
  		String name = "";
  		try {
  			String id=identityServiceImpl.getResidentIndvidualId();
- 			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id);
+ 			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
  			name=identityServiceImpl.getNameForNotification(idMap, language);
  		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException e) {
  			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
@@ -292,7 +301,6 @@ import java.util.Optional;
     	 return templateVariables;
   	}
      
-       
      public String getEmailSubjectTemplateTypeCode(RequestType requestType, TemplateType templateType) {
     	 String emailSubjectTemplateCodeProperty = requestType.getEmailSubjectTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(emailSubjectTemplateCodeProperty);
@@ -311,6 +319,11 @@ import java.util.Optional;
      public String getBellIconTemplateTypeCode(RequestType requestType, TemplateType templateType) {
     	 String bellIconTemplateCodeProperty = requestType.getBellIconTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(bellIconTemplateCodeProperty);
+     }
+     
+     public String getPurposeTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(purposeTemplateCodeProperty);
      }
     
      private String getTemplateTypeCode(String templateCodeProperty) {

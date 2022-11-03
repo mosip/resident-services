@@ -21,6 +21,7 @@ import io.mosip.resident.util.EventEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -65,8 +66,8 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
-        String eventId=null;
-        List<ResidentTransactionEntity> residentTransactionEntity = null;
+        String eventId="";
+        List<ResidentTransactionEntity> residentTransactionEntity = new ArrayList<>();
         try {
             List<AuthtypeStatus> authTypeStatusList = (List<AuthtypeStatus>) eventModel.getEvent().getData().get(AUTH_TYPES);
             if(authTypeStatusList!=null){
@@ -78,7 +79,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
                 });
                 residentTransactionRepository.saveAll(residentTransactionEntity);
             }
-            if(residentTransactionEntity==null){
+            if(residentTransactionEntity!=null&&!residentTransactionEntity.isEmpty()){
                 eventId = residentTransactionEntity.get(0).getEventId();
             }
         }

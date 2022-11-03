@@ -1,26 +1,26 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -59,6 +59,7 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
+	private static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
@@ -76,6 +77,7 @@ public class IdentityServiceImpl implements IdentityService {
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
     private static final String DOCUMENTS = "documents";
+    private static final String PHOTO = "photo";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -96,12 +98,18 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
 
 	@Autowired
 	private ResidentConfigService residentConfigService;
+	
+	@Autowired
+	private Environment env;
 	
 	@Value("${mosip.iam.userinfo_endpoint}")
 	private String usefInfoEndpointUrl;
@@ -120,9 +128,15 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private ResidentVidService residentVidService;
+
+	@Autowired
+	private Environment environment;
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -137,7 +151,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true);
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(RESIDENT_IDENTITY_SCHEMATYPE));
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -179,18 +193,22 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 	
-	@Override
-	public Map<String, ?> getIdentityAttributes(String id) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, null, false);
+	private Map<String, ?> extractFaceBdb(Map<String, Object> identity)
+			throws ResidentServiceCheckedException, IOException {
+		IdentityDTO identityDTO = new IdentityDTO();
+		 extractFaceBdb(identityDTO,identity);
+		 identity.put(PHOTO, identityDTO.getFace());
+		 identity.remove("individualBiometrics");
+		 return identity;
 	}
 	
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id, boolean includeUin) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, null, includeUin);
+	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
+		return 	extractFaceBdb((Map<String, Object>) getIdentityAttributes(id, RETRIEVE_IDENTITY_PARAM_TYPE_BIO, false,schemaType));
 	}
 
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin) throws ResidentServiceCheckedException {
+	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -213,7 +231,7 @@ public class IdentityServiceImpl implements IdentityService {
 			List<Map<String,String>> documents=(List<Map<String, String>>) identityResponse.get(DOCUMENTS);
 			Map<String,String> individualBio=getIndividualBiometrics(documents);
 
-			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes().stream()
+			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
@@ -343,7 +361,9 @@ public class IdentityServiceImpl implements IdentityService {
 		if(claimValue == null) {
 			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
 		}
-		
+		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			claimValue = decodeString(decryptPayload((String) claimValue));
+		}
 		return String.valueOf(claimValue);
 	}
 
@@ -374,9 +394,28 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
-	
+
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return  getClaimValue(IDA_TOKEN);
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	}
+
+	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
+		return getClaimFromJwt(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	}
+
+	public String getClaimFromJwt(String idToken, String claim) {
+		String claimValue = "";
+		String[] parts = idToken.split("\\.", 0);
+		Map payLoadMap;
+		try {
+			payLoadMap = objectMapper.readValue(parts[1], Map.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		if (claim != null) {
+			claimValue = (String) payLoadMap.get(claim);
+		}
+		return claimValue;
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -397,5 +436,38 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 
+	public String getClaimFromIdToken(String claim) {
+		AuthUserDetails authUserDetails= getAuthUserDetails();
+		String idToken = authUserDetails.getIdToken();
+		String claimValue = "";
+		String payLoad = "";
+		if(idToken!=null){
+			if(idToken.contains("\\.")){
+				String[] parts = idToken.split("\\.", 0);
+				payLoad = decodeString(parts[1]);
+			} else{
+				payLoad = decodeString(idToken);
+			}
+			Map payLoadMap;
+			try {
+				payLoadMap = objectMapper.readValue(payLoad, Map.class);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+			if(claim!=null){
+				claimValue = (String) payLoadMap.get(claim);
+			}
+		}
+		return  claimValue;
+	}
 
+	public String decodeString(String payload)
+	{
+		byte[] bytes = Base64.getUrlDecoder().decode(payload);
+		return new String(bytes, StandardCharsets.UTF_8);
+	}
+
+	public String decryptPayload(String payload) {
+		return objectStoreHelper.decryptData(payload, this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID), this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+	}
 }
