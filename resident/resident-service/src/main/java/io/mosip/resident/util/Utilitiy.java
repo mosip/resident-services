@@ -96,9 +96,6 @@ public class Utilitiy {
 	private Environment env;
 
 	@Autowired
-	private Environment environment;
-
-	@Autowired
 	private PDFGenerator pdfGenerator;
 
 	@Autowired
@@ -374,17 +371,17 @@ public class Utilitiy {
 		try {
 			ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(in);
 			PDFSignatureRequestDto request = new PDFSignatureRequestDto(
-					Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.LOWER_LEFT_X))),
-					Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.LOWER_LEFT_Y))),
-					Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.UPPER_RIGHT_X))),
-					Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.UPPER_RIGHT_Y))),
-					environment.getProperty(ResidentConstants.REASON), 1, password);
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_X))),
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_Y))),
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_X))),
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_Y))),
+					env.getProperty(ResidentConstants.REASON), 1, password);
 			request.setApplicationId("KERNEL");
 			request.setReferenceId("SIGN");
 			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));
-			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(environment.getProperty(DATETIME_PATTERN)));
+			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			LocalDateTime localdatetime = LocalDateTime
-					.parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(environment.getProperty(DATETIME_PATTERN))), format);
+					.parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN))), format);
 
 			request.setTimeStamp(DateUtils.getUTCCurrentDateTimeString());
 			RequestWrapper<PDFSignatureRequestDto> requestWrapper = new RequestWrapper<>();
@@ -394,7 +391,7 @@ public class Utilitiy {
 			ResponseWrapper<?> responseWrapper;
 			SignatureResponseDto signatureResponseDto;
 
-			responseWrapper= residentServiceRestClient.postApi(environment.getProperty(ApiName.PDFSIGN.name())
+			responseWrapper= residentServiceRestClient.postApi(env.getProperty(ApiName.PDFSIGN.name())
 					, MediaType.APPLICATION_JSON,requestWrapper, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
