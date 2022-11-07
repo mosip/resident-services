@@ -1,52 +1,34 @@
 package io.mosip.resident.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
-import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.AuthResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import io.mosip.resident.util.Utilitiy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 
 /**
  * This class is used to create service class implementation for getting acknowledgement API.
@@ -108,10 +90,10 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     }
 
     @Autowired
-    private PDFGenerator pdfGenerator;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private Utilitiy utilitiy;
 
     @Override
     public byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException, IOException {
@@ -135,9 +117,8 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             Map<String, String> templateVariables = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId);
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
-            ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(templateValue);
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return signAcknowledgementPdf(pdfValue, null);
+            return utilitiy.signPdf(templateValue, null);
 
     }
 
@@ -167,53 +148,6 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             templateMapObject.put(entry.getKey(), entry.getValue());
         }
         return templateMapObject;
-    }
-
-    public byte[] signAcknowledgementPdf(ByteArrayOutputStream out, String password) {
-        logger.debug("UinCardGeneratorImpl::generateUinCard()::entry");
-        byte[] pdfSignatured=null;
-        try {
-            PDFSignatureRequestDto request = new PDFSignatureRequestDto(
-                    Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.LOWER_LEFT_X))),
-                    Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.LOWER_LEFT_Y))),
-                    Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.UPPER_RIGHT_X))),
-                    Integer.parseInt(Objects.requireNonNull(environment.getProperty(ResidentConstants.UPPER_RIGHT_Y))),
-                    environment.getProperty(ResidentConstants.REASON), 1, password);
-            request.setApplicationId("KERNEL");
-            request.setReferenceId("SIGN");
-            request.setData(Base64.encodeBase64String(out.toByteArray()));
-            DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(environment.getProperty(DATETIME_PATTERN)));
-            LocalDateTime localdatetime = LocalDateTime
-                    .parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(environment.getProperty(DATETIME_PATTERN))), format);
-
-            request.setTimeStamp(DateUtils.getUTCCurrentDateTimeString());
-            RequestWrapper<PDFSignatureRequestDto> requestWrapper = new RequestWrapper<>();
-
-            requestWrapper.setRequest(request);
-            requestWrapper.setRequesttime(localdatetime);
-            ResponseWrapper<?> responseWrapper;
-            SignatureResponseDto signatureResponseDto;
-
-            responseWrapper= residentServiceRestClient.postApi(environment.getProperty(ApiName.PDFSIGN.name())
-                    , MediaType.APPLICATION_JSON,requestWrapper, ResponseWrapper.class);
-
-            if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-                ServiceError error = responseWrapper.getErrors().get(0);
-                throw new ResidentServiceException(ResidentErrorCode.valueOf(error.getMessage()));
-            }
-            String signatureData= objectMapper.writeValueAsString(responseWrapper.getResponse());
-            signatureResponseDto = objectMapper.readValue(signatureData,
-                    SignatureResponseDto.class);
-
-            pdfSignatured = Base64.decodeBase64(signatureResponseDto.getData());
-
-        } catch (Exception e) {
-            logger.error(io.mosip.kernel.pdfgenerator.itext.constant.PDFGeneratorExceptionCodeConstant.PDF_EXCEPTION.getErrorMessage(),e.getMessage()
-                    + ExceptionUtils.getStackTrace(e));
-        }
-        logger.debug("UinCardGeneratorImpl::generateUinCard()::exit");
-
-        return pdfSignatured;
     }
 
 }

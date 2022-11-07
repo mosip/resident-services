@@ -17,6 +17,7 @@ import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
 import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilitiy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -75,6 +76,9 @@ public class AcknowledgmentServiceTest {
     @Mock
     private ResidentServiceRestClient residentServiceRestClient;
 
+    @Mock
+    private Utilitiy utilitiy;
+
     private byte[] result;
     private String eventId;
     private String languageCode;
@@ -114,14 +118,6 @@ public class AcknowledgmentServiceTest {
         Mockito.when(templateManager.merge(any(), Mockito.anyMap())).thenReturn(stream);
         OutputStream outputStream = new ByteArrayOutputStream(1024);
         outputStream.write("test".getBytes(StandardCharsets.UTF_8));
-        Mockito.when(pdfGenerator.generate(stream)).thenReturn(outputStream);
-        Mockito.when(environment.getProperty(ResidentConstants.LOWER_LEFT_X)).thenReturn("4");
-        Mockito.when(environment.getProperty(ResidentConstants.LOWER_LEFT_Y)).thenReturn("4");
-        Mockito.when(environment.getProperty(ResidentConstants.UPPER_RIGHT_X)).thenReturn("4");
-        Mockito.when(environment.getProperty(ResidentConstants.UPPER_RIGHT_Y)).thenReturn("4");
-        Mockito.when(environment.getProperty(ResidentConstants.REASON)).thenReturn("4");
-        Mockito.when(environment.getProperty(DATETIME_PATTERN)).thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        Mockito.when(environment.getProperty(ApiName.PDFSIGN.name())).thenReturn("http://resident/v1");
 
         ReflectionTestUtils.setField(acknowledgementService, "shareCredWithPartnerTemplate", "acknowledgement-share-cred-with-partner");
         ReflectionTestUtils.setField(acknowledgementService, "manageMyVidTemplate", "manageMyVidTemplate");
@@ -134,9 +130,7 @@ public class AcknowledgmentServiceTest {
         signatureResponseDto.setData("data");
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
-        Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("data");
-        Mockito.when(objectMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
-        Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        Mockito.when(utilitiy.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
     }
 
     @Test
