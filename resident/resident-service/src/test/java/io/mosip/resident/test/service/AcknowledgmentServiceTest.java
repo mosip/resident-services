@@ -1,16 +1,21 @@
 package io.mosip.resident.test.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
+import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
 import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -29,7 +35,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * This class is used to create service class test  for getting acknowledgement API.
@@ -58,7 +66,14 @@ public class AcknowledgmentServiceTest {
     @Mock
     private PDFGenerator pdfGenerator;
 
+    @Mock
+    private Environment environment;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
+    @Mock
+    private ResidentServiceRestClient residentServiceRestClient;
 
     private byte[] result;
     private String eventId;
@@ -96,10 +111,17 @@ public class AcknowledgmentServiceTest {
         ReflectionTestUtils.setField(acknowledgementService, "templateManagerBuilder", templateManagerBuilder);
         templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
         InputStream stream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
-        Mockito.when(templateManager.merge(Mockito.any(), Mockito.anyMap())).thenReturn(stream);
+        Mockito.when(templateManager.merge(any(), Mockito.anyMap())).thenReturn(stream);
         OutputStream outputStream = new ByteArrayOutputStream(1024);
         outputStream.write("test".getBytes(StandardCharsets.UTF_8));
         Mockito.when(pdfGenerator.generate(stream)).thenReturn(outputStream);
+        Mockito.when(environment.getProperty(ResidentConstants.LOWER_LEFT_X)).thenReturn("4");
+        Mockito.when(environment.getProperty(ResidentConstants.LOWER_LEFT_Y)).thenReturn("4");
+        Mockito.when(environment.getProperty(ResidentConstants.UPPER_RIGHT_X)).thenReturn("4");
+        Mockito.when(environment.getProperty(ResidentConstants.UPPER_RIGHT_Y)).thenReturn("4");
+        Mockito.when(environment.getProperty(ResidentConstants.REASON)).thenReturn("4");
+        Mockito.when(environment.getProperty(DATETIME_PATTERN)).thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Mockito.when(environment.getProperty(ApiName.PDFSIGN.name())).thenReturn("http://resident/v1");
 
         ReflectionTestUtils.setField(acknowledgementService, "shareCredWithPartnerTemplate", "acknowledgement-share-cred-with-partner");
         ReflectionTestUtils.setField(acknowledgementService, "manageMyVidTemplate", "manageMyVidTemplate");
@@ -108,6 +130,13 @@ public class AcknowledgmentServiceTest {
         ReflectionTestUtils.setField(acknowledgementService, "verifyEmailIdOrPhoneNumber", "verifyEmailIdOrPhoneNumber");
         ReflectionTestUtils.setField(acknowledgementService, "secureMyId", "secureMyId");
         ReflectionTestUtils.setField(acknowledgementService, "downloadAPersonalizedCard", "downloadAPersonalizedCard");
+        SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
+        signatureResponseDto.setData("data");
+        ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setResponse(signatureResponseDto);
+        Mockito.when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("data");
+        Mockito.when(objectMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
+        Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
     }
 
     @Test

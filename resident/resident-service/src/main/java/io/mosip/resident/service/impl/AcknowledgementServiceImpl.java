@@ -201,7 +201,8 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
                 ServiceError error = responseWrapper.getErrors().get(0);
                 throw new ResidentServiceException(ResidentErrorCode.valueOf(error.getMessage()));
             }
-            signatureResponseDto = objectMapper.readValue(objectMapper.writeValueAsString(responseWrapper.getResponse()),
+            String signatureData= objectMapper.writeValueAsString(responseWrapper.getResponse());
+            signatureResponseDto = objectMapper.readValue(signatureData,
                     SignatureResponseDto.class);
 
             pdfSignatured = Base64.decodeBase64(signatureResponseDto.getData());
