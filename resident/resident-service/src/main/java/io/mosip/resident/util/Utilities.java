@@ -213,15 +213,14 @@ public class Utilities {
 	public String getRidByIndividualId(String individualId) throws ApisResourceAccessException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Utilities::getRidByIndividualId():: entry");
-		List<String> pathSegments = new ArrayList<>();
-		pathSegments.add(individualId);
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("individualId", individualId);
 		String rid = null;
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
 
 		ResponseWrapper<?> response = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.GET_RID_BY_INDIVIDUAL_ID,
-				pathSegments, "", "",
-				ResponseWrapper.class);
+				pathsegments, ResponseWrapper.class);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
 

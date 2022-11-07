@@ -1,21 +1,20 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +98,9 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -126,9 +128,15 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private ResidentVidService residentVidService;
+
+	@Autowired
+	private Environment environment;
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -353,7 +361,9 @@ public class IdentityServiceImpl implements IdentityService {
 		if(claimValue == null) {
 			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
 		}
-		
+		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			claimValue = decodeString(decryptPayload((String) claimValue));
+		}
 		return String.valueOf(claimValue);
 	}
 
@@ -384,9 +394,28 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
-	
+
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return  getClaimValue(IDA_TOKEN);
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	}
+
+	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
+		return getClaimFromJwt(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	}
+
+	public String getClaimFromJwt(String idToken, String claim) {
+		String claimValue = "";
+		String[] parts = idToken.split("\\.", 0);
+		Map payLoadMap;
+		try {
+			payLoadMap = objectMapper.readValue(parts[1], Map.class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		if (claim != null) {
+			claimValue = (String) payLoadMap.get(claim);
+		}
+		return claimValue;
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -407,5 +436,38 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 
+	public String getClaimFromIdToken(String claim) {
+		AuthUserDetails authUserDetails= getAuthUserDetails();
+		String idToken = authUserDetails.getIdToken();
+		String claimValue = "";
+		String payLoad = "";
+		if(idToken!=null){
+			if(idToken.contains("\\.")){
+				String[] parts = idToken.split("\\.", 0);
+				payLoad = decodeString(parts[1]);
+			} else{
+				payLoad = decodeString(idToken);
+			}
+			Map payLoadMap;
+			try {
+				payLoadMap = objectMapper.readValue(payLoad, Map.class);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+			if(claim!=null){
+				claimValue = (String) payLoadMap.get(claim);
+			}
+		}
+		return  claimValue;
+	}
 
+	public String decodeString(String payload)
+	{
+		byte[] bytes = Base64.getUrlDecoder().decode(payload);
+		return new String(bytes, StandardCharsets.UTF_8);
+	}
+
+	public String decryptPayload(String payload) {
+		return objectStoreHelper.decryptData(payload, this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID), this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+	}
 }
