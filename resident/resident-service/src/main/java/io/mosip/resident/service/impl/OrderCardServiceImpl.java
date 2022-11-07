@@ -44,6 +44,9 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class OrderCardServiceImpl implements OrderCardService {
 
+	private static final String PARTNER_TYPE = "partnerType";
+	private static final String ORGANIZATION_NAME = "organizationName";
+
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
 
@@ -62,6 +65,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	@Autowired
 	NotificationService notificationService;
+	
+	@Autowired
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -120,6 +126,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
+		List<Map<String, ?>> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(requestDto.getIssuer());
+		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(0).get(ORGANIZATION_NAME));
+		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(0).get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		residentTransactionEntity.setConsent(requestDto.getConsent());

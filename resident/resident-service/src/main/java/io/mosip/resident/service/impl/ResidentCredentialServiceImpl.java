@@ -69,10 +69,9 @@ import io.mosip.resident.util.Utilitiy;
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
+	private static final String PARTNER_TYPE = "partnerType";
+	private static final String ORGANIZATION_NAME = "organizationName";
 	private static final String INDIVIDUAL_ID = "individualId";
-	private static final String ENG = "eng";
-	private static final String RESIDENT = "RESIDENT";
-	private static final String NEW = "new";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -117,6 +116,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Autowired
 	NotificationService notificationService;
+	
+	@Autowired
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
 	private SecureRandom random;
 	
@@ -303,6 +305,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		String attributeList = dto.getSharableAttributes().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
+		List<Map<String, ?>> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(dto.getIssuer());
+		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(0).get(ORGANIZATION_NAME));
+		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(0).get(PARTNER_TYPE));
 		residentTransactionEntity.setConsent(dto.getConsent());
 		return residentTransactionEntity;
 	}

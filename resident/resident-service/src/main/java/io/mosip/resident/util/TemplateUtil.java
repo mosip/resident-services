@@ -9,6 +9,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,6 +35,8 @@ import java.util.Optional;
     private static final String UIN = "UIN";
     private static final String VID = "VID";
     private static final String AID = "AID";
+    private static final String LOGO_URL = "logoUrl";
+    
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
 
@@ -41,6 +45,9 @@ import java.util.Optional;
 
     @Autowired
     private RequestValidator requestValidator;
+    
+    @Autowired
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
     
     @Autowired
     private Utilitiy utilitiy;
@@ -125,10 +132,10 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesEnum.PURPOSE, residentTransactionEntity.getPurpose());
-        templateVariables.put(TemplateVariablesEnum.TRACKING_ID, getTrackingId(eventId));
+        templateVariables.put(TemplateVariablesEnum.TRACKING_ID, residentTransactionEntity.getTrackingId());
         templateVariables.put(TemplateVariablesEnum.ORDER_TRACKING_LINK, residentTransactionEntity.getReferenceLink());
-        templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, getPartnerName(eventId));
-        templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(eventId));
+        templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
+        templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         templateVariables.put(TemplateVariablesEnum.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
         return templateVariables;
     }
@@ -137,8 +144,8 @@ import java.util.Optional;
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
-        templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, getPartnerName(eventId));
-        templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(eventId));
+        templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
+        templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         return templateVariables;
      }
 
@@ -156,10 +163,10 @@ import java.util.Optional;
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
          templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
          templateVariables.put(TemplateVariablesEnum.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
-         templateVariables.put(TemplateVariablesEnum.TRACKING_ID, getTrackingId(eventId));
+         templateVariables.put(TemplateVariablesEnum.TRACKING_ID, residentTransactionEntity.getTrackingId());
          templateVariables.put(TemplateVariablesEnum.ORDER_TRACKING_LINK, residentTransactionEntity.getReferenceLink());
-         templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, getPartnerName(eventId));
-         templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(eventId));
+         templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
+         templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
          templateVariables.put(TemplateVariablesEnum.PAYMENT_STATUS, getPaymentStatus(residentTransactionEntity.getStatusCode()));
          templateVariables.put(TemplateVariablesEnum.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
          return templateVariables;
@@ -358,18 +365,9 @@ import java.util.Optional;
 		}
 	}
 
-    //TODO: Need to change the method implementation
-    private String getPartnerLogo(String eventId) {
-        return "partnerLogo";
-    }
+	private String getPartnerLogo(String partnerId) {
+		List<Map<String, ?>> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+		return (String) partnerDetail.get(0).get(LOGO_URL);
+	}
 
-    //ToDo: Need to change the logic to get the partner name from the partner id
-    private String getPartnerName(String eventId) {
-        return "partnerName";
-    }
-
-    //TODO: Need to change the implementation of this method
-    private String getTrackingId(String eventId) {
-        return "trackingId";
-    }
  }
