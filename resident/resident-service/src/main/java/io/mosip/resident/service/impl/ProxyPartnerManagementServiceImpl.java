@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +16,7 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -80,18 +80,20 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Map<String, ?>> getPartnerDetailFromPartnerId(String partnerId) {
+	public Map<String, ?> getPartnerDetailFromPartnerId(String partnerId) {
 		ResponseWrapper<?> response = null;
 		try {
 			response = getPartnersByPartnerType(Optional.of(""), ApiName.PARTNER_DETAILS_NEW_URL);
 		} catch (ResidentServiceCheckedException e) {
-			e.printStackTrace();
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		Map<String, Object> partnerResponse = new LinkedHashMap<>((Map<String, Object>) response.getResponse());
         List<Map<String,?>> partners = (List<Map<String, ?>>) partnerResponse.get("partners");
         return partners.stream()
         		.filter(map -> ((String)map.get("partnerID")).equals(partnerId))
-        		.collect(Collectors.toList());
+        		.findAny()
+        		.orElse(Map.of());
 	}
 
 }

@@ -366,8 +366,8 @@ import java.util.Optional;
 	}
 
 	private String getPartnerLogo(String partnerId) {
-		List<Map<String, ?>> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
-		return (String) partnerDetail.get(0).get(LOGO_URL);
+		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+		return (String) partnerDetail.get(LOGO_URL);
 	}
 
  }
