@@ -59,6 +59,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -97,6 +98,9 @@ public class ResidentCredentialServiceTest {
     
     @Mock
     private IdentityServiceImpl identityServiceImpl;
+    
+    @Mock
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
     private ResidentCredentialRequestDto residentCredentialRequestDto;
     
