@@ -71,36 +71,28 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     public byte[] getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
         String rid = null;
         try {
-            //if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
-            // getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
-            String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
-            String idType = templateUtil.getIndividualIdType(individualId);
-            if (idType.equalsIgnoreCase(IdType.RID.toString())) {
-                rid = individualId;
-            } else {
+            if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
+                    getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+                String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
                 rid = utilities.getRidByIndividualId(individualId);
+            } else {
+                logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+                        LoggerFileConstant.APPLICATIONID.toString(),
+                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+                audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+                throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
             }
-//            } else {
-//                logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-//                        LoggerFileConstant.APPLICATIONID.toString(),
-//                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-//                audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-//                throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-//                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-//            }
-            //}
-        }
-        catch (ApisResourceAccessException e) {
+        } catch (ApisResourceAccessException e) {
             audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
             throw new ResidentServiceException(
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+        } catch (OtpValidationFailedException e) {
+            audit.setAuditRequestDto(EventEnum.REQ_CARD);
+            throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
+                    e);
         }
-//        catch (OtpValidationFailedException e) {
-//            audit.setAuditRequestDto(EventEnum.REQ_CARD);
-//            throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
-//                    e);
-//        }
         return residentService.getUINCard(rid);
     }
 
