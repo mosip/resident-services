@@ -395,6 +395,12 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		if(pdfBytes.length==0){
+			return ResponseEntity.badRequest().contentType(MediaType.parseMediaType("application/pdf"))
+					.header("Content-Disposition", "attachment; filename=\"" +
+							eventId + ".pdf\"")
+					.body(resource);
+		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + eventId + ".pdf\"")

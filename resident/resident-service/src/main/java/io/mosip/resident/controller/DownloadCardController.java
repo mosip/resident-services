@@ -47,6 +47,12 @@ public class DownloadCardController {
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
         byte[] pdfBytes = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+        if(pdfBytes.length==0){
+            return ResponseEntity.badRequest().contentType(MediaType.parseMediaType("application/pdf"))
+                    .header("Content-Disposition", "attachment; filename=\"" +
+                            downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
+                    .body(resource);
+        }
         auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
         logger.debug("AcknowledgementController::acknowledgement()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
