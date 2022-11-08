@@ -21,7 +21,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 public interface ResidentTransactionRepository extends JpaRepository<ResidentTransactionEntity, String> {
 	List<ResidentTransactionEntity> findByRequestTrnIdAndRefIdOrderByCrDtimesDesc(String requestTrnId, String refId);
 
-	List<ResidentTransactionEntity> findByRequestTrnId(String requestTrnId);
+	List<ResidentTransactionEntity> findByCredentialRequestId(String credentialRequestId);
 
 	ResidentTransactionEntity findByAid(String aid);
 

@@ -1,6 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.idrepository.core.dto.AuthtypeStatus;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeService {
@@ -30,6 +30,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
     private static final Logger logger = LoggerConfiguration.logConfig(WebSubUpdateAuthTypeServiceImpl.class);
 
     private static final String AUTH_TYPES = "authTypes";
+    private static final String REQUEST_ID = "requestId";
     @Autowired
     private AuditUtil auditUtil;
 
@@ -69,16 +70,17 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         String eventId="";
         List<ResidentTransactionEntity> residentTransactionEntity = new ArrayList<>();
         try {
-            List<AuthtypeStatus> authTypeStatusList = (List<AuthtypeStatus>) eventModel.getEvent().getData().get(AUTH_TYPES);
-            if(authTypeStatusList!=null){
-                residentTransactionEntity = residentTransactionRepository.findByRequestTrnId(authTypeStatusList.get(0).getRequestId());
+            List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) eventModel.getEvent().getData().get(AUTH_TYPES);
+            for(Map<String, Object> authType:authTypeStatusList){
+                residentTransactionEntity = residentTransactionRepository.findByCredentialRequestId((String)authType.get(REQUEST_ID));
+                if(residentTransactionEntity!=null){
+                    residentTransactionEntity.stream().forEach(residentTransactionEntity1 -> {
+                        residentTransactionEntity1.setStatusCode(status);
+                    });
+                    residentTransactionRepository.saveAll(residentTransactionEntity);
+                }
             }
-            if(residentTransactionEntity!=null){
-                residentTransactionEntity.stream().forEach(residentTransactionEntity1 -> {
-                    residentTransactionEntity1.setStatusCode(status);
-                });
-                residentTransactionRepository.saveAll(residentTransactionEntity);
-            }
+
             if(residentTransactionEntity!=null&&!residentTransactionEntity.isEmpty()){
                 eventId = residentTransactionEntity.get(0).getEventId();
             }
