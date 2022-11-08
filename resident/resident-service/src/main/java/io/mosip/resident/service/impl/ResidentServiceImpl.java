@@ -1770,10 +1770,10 @@ public class ResidentServiceImpl implements ResidentService {
 	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
-		if (statusCode.equalsIgnoreCase(EventStatus.FAILED.toString())) {
-			templateType = TemplateType.FAILURE;
-		} else {
+		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
 			templateType = TemplateType.SUCCESS;
+		} else {
+			templateType = TemplateType.FAILURE;
 		}
 		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
@@ -1782,6 +1782,23 @@ public class ResidentServiceImpl implements ResidentService {
 				(Map<String, String>) proxyResponseWrapper.getResponse());
 		String fileText = templateResponse.get("fileText");
 		return fileText;
+	}
+	
+	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType)
+			throws ResidentServiceCheckedException {
+		TemplateType templateType;
+		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+			templateType = TemplateType.SUCCESS;
+			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
+			ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
+					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
+			Map<String, String> templateResponse = new LinkedHashMap<>(
+					(Map<String, String>) proxyResponseWrapper.getResponse());
+			return templateResponse.get("fileText");
+		} else {
+			return getDescriptionForLangCode(langCode, statusCode, requestType);
+		}
+		
 	}
 
 	public String getEventStatusCode(String statusCode) {
@@ -1883,7 +1900,7 @@ public class ResidentServiceImpl implements ResidentService {
 				eventStatusResponseDTO.setEventType(eventStatusMap.get(TemplateVariablesEnum.EVENT_TYPE));
 				eventStatusResponseDTO.setEventStatus(eventStatusMap.get(TemplateVariablesEnum.EVENT_STATUS));
 				eventStatusResponseDTO.setIndividualId(eventStatusMap.get(TemplateVariablesEnum.INDIVIDUAL_ID));
-				eventStatusResponseDTO.setSummary(eventStatusMap.get(TemplateVariablesEnum.SUMMARY));
+				eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
 				eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesEnum.TIMESTAMP));
 
 				/**

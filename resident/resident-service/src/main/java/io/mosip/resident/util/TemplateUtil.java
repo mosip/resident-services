@@ -352,6 +352,11 @@ import java.util.Optional;
     	 String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(purposeTemplateCodeProperty);
      }
+     
+     public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(summaryTemplateCodeProperty);
+     }
     
      private String getTemplateTypeCode(String templateCodeProperty) {
     	 return env.getProperty(templateCodeProperty);
