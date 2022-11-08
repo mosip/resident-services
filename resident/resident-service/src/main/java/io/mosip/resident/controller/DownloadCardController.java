@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,5 +55,15 @@ public class DownloadCardController {
                 .header("Content-Disposition", "attachment; filename=\"" +
                         downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
                 .body(resource);
+    }
+
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostDownloadCardHtml2Pdf()" + ")")
+    @PostMapping("/download/card/html2pdf")
+    public ResponseEntity<Object> downloadHtml2pdf(@Validated @RequestBody MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO){
+        logger.debug("DownloadCardController::downloadHtml2pdf()::entry");
+        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
+        requestValidator.validateDownloadHtml2pdfRequest(downloadHtml2PdfRequestDTOMainRequestDTO);
+        byte[] pdfBytes = downloadCardService.getDownloadHtml2pdf(downloadHtml2PdfRequestDTOMainRequestDTO);
+        return null;
     }
 }

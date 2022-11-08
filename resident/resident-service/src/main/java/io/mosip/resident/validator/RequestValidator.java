@@ -3,6 +3,7 @@ package io.mosip.resident.validator;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
@@ -930,6 +931,30 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request service history API"));
 			throw new InvalidInputException("individualId");
+		}
+	}
+
+    public void validateDownloadHtml2pdfRequest(MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO) {
+		validateRequestId(downloadHtml2PdfRequestDTOMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.DOWNLOAD_HTML_2_PDF_ID));
+		validateDate(downloadHtml2PdfRequestDTOMainRequestDTO.getRequesttime());
+		validateString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml(), "html");
+		validateEncodedString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml());
+		validateString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType(), "schemaType");
+    }
+
+	private void validateEncodedString(String html) {
+		try{
+			CryptoUtil.decodeURLSafeBase64(html);
+		}catch (Exception e){
+			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
+			throw new InvalidInputException("html");
+		}
+	}
+
+	private void validateString(String string, String variableName) {
+		if(string == null){
+			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
+			throw new InvalidInputException(variableName);
 		}
 	}
 }

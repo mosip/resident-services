@@ -6,6 +6,7 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
+
     private ResidentConstants() {
 	}
 
@@ -93,5 +94,8 @@ public class ResidentConstants {
     public static final String SIGN_PDF_APPLICATION_ID = "mosip.resident.sign.pdf.application.id";
     public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
 
+    public static final String DOWNLOAD_HTML_2_PDF_ID = "mosip.resident.download.html2pdf";
+
+    public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
 
 }

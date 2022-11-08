@@ -1,14 +1,21 @@
 package io.mosip.resident.service.impl;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -25,6 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Kamesh Shekhar Prasad
  * This class is used to create service class implementation of download card api.
@@ -32,6 +44,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DownloadCardServiceImpl implements DownloadCardService {
 
+    private static final String AID = "AID";
     @Autowired
     private ResidentController residentController;
 
@@ -65,6 +78,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Autowired
     private TemplateUtil templateUtil;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private Environment environment;
+
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
@@ -72,10 +91,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String rid = null;
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
-                    getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+                    getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
+                            , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
                 String idType=templateUtil.getIndividualIdType(individualId);
-                if(idType.equalsIgnoreCase(IdType.RID.toString())){
+                if(idType.equalsIgnoreCase(AID)){
                     rid = individualId;
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
@@ -93,12 +113,38 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             throw new ResidentServiceException(
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-        } catch (OtpValidationFailedException e) {
+        }
+        catch (OtpValidationFailedException e) {
             audit.setAuditRequestDto(EventEnum.REQ_CARD);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
         }
         return residentService.getUINCard(rid);
+    }
+
+    @Override
+    public byte[] getDownloadHtml2pdf(MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO) {
+        String encodeHtml = downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml();
+        try {
+            byte[] decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
+            Map<String, Object> identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(identityService.getResidentIndvidualId(), downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType());
+            String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
+            List<String> attributeList = List.of(attributeProperty.split("\\|"));
+            List<String> attributeValues = new ArrayList<>();
+            for(String attribute: attributeValues){
+                Object attributeObject = identityAttributes.get(attribute);
+                if(attributeObject instanceof List){
+                    List<Map<String, Object>> attributeMapObject = (List<Map<String, Object>>) attributeObject;
+
+                } else{
+                    attributeValues.add((String) attributeObject);
+                }
+            }
+        } catch (Exception e){
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
+            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_CARD_HTML_2_PDF);
+        }
+        return new byte[0];
     }
 
     private String getUINForIndividualId(String individualId)  {
