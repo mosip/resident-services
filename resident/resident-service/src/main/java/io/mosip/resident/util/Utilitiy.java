@@ -1,6 +1,7 @@
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfReader;
 import com.nimbusds.jose.util.IOUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
@@ -370,14 +371,16 @@ public class Utilitiy {
 		byte[] pdfSignatured=null;
 		try {
 			ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(in);
+			PdfReader pdfReader = new PdfReader(pdfValue.toByteArray());
+			int pageNumber = pdfReader.getNumberOfPages();
 			PDFSignatureRequestDto request = new PDFSignatureRequestDto(
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_X))),
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_Y))),
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_X))),
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_Y))),
-					env.getProperty(ResidentConstants.REASON), 1, password);
-			request.setApplicationId("KERNEL");
-			request.setReferenceId("SIGN");
+					env.getProperty(ResidentConstants.REASON), pageNumber, password);
+			request.setApplicationId(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID));
+			request.setReferenceId(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID));
 			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));
 			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			LocalDateTime localdatetime = LocalDateTime

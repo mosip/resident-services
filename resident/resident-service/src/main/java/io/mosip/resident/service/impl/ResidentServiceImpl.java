@@ -2007,8 +2007,7 @@ public class ResidentServiceImpl implements ResidentService {
 		InputStream serviceHistTemplateData = templateManager.merge(serviceHistTemplate, servHistoryMap);
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(serviceHistTemplateData, writer, "UTF-8");
-		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return pdfValue.toByteArray();
+		return utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null);
 	}
 }
