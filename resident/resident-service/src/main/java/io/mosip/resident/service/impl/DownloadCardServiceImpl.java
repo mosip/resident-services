@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DownloadCardServiceImpl implements DownloadCardService {
 
+    private static final String AID = "AID";
     @Autowired
     private ResidentController residentController;
 
@@ -75,7 +76,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
                 String idType=templateUtil.getIndividualIdType(individualId);
-                if(idType.equalsIgnoreCase(IdType.RID.toString())){
+                if(idType.equalsIgnoreCase(AID)){
                     rid = individualId;
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
