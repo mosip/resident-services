@@ -41,17 +41,14 @@ public class DownloadCardController {
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardController.class);
 
     @PostMapping("/download-card")
-    public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO){
+    public ResponseEntity<?> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO){
         logger.debug("DownloadCardController::downloadCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
         byte[] pdfBytes = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         if(pdfBytes.length==0){
-            return ResponseEntity.badRequest().contentType(MediaType.parseMediaType("application/pdf"))
-                    .header("Content-Disposition", "attachment; filename=\"" +
-                            downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
-                    .body(resource);
+            return (ResponseEntity<?>) ResponseEntity.badRequest();
         }
         auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
         logger.debug("AcknowledgementController::acknowledgement()::exit");
