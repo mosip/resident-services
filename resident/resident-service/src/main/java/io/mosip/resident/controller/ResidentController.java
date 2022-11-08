@@ -386,7 +386,7 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
 	@GetMapping(path = "/download-card/event/{eventId}")
-	public ResponseEntity<?> downloadCard(
+	public ResponseEntity<Object> downloadCard(
 			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
@@ -396,7 +396,7 @@ public class ResidentController {
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		if(pdfBytes.length==0){
-			return (ResponseEntity<?>) ResponseEntity.badRequest();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
