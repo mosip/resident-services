@@ -442,7 +442,7 @@ public class IdentityServiceImpl implements IdentityService {
 		String claimValue = "";
 		String payLoad = "";
 		if(idToken!=null){
-			if(idToken.contains("\\.")){
+			if(idToken.contains(".")){
 				String[] parts = idToken.split("\\.", 0);
 				payLoad = decodeString(parts[1]);
 			} else{

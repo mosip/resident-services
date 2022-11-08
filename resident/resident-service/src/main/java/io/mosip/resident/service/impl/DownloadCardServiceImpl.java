@@ -9,7 +9,6 @@ import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.DataNotFoundException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -18,12 +17,10 @@ import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -63,6 +60,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private Utilitiy utilitiy;
 
     @Autowired
+    private IdentityServiceImpl identityService;
+
+    @Autowired
     private TemplateUtil templateUtil;
 
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
@@ -74,7 +74,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
-                rid = utilities.getRidByIndividualId(individualId);
+                String idType=templateUtil.getIndividualIdType(individualId);
+                if(idType.equalsIgnoreCase(IdType.RID.toString())){
+                    rid = individualId;
+                } else {
+                    rid = utilities.getRidByIndividualId(individualId);
+                }
             } else {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(),
@@ -98,19 +103,22 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     private String getUINForIndividualId(String individualId)  {
         String idType = templateUtil.getIndividualIdType(individualId);
-        if(idType.equalsIgnoreCase(IdType.UIN.toString())){
+        if(idType.equalsIgnoreCase(IdType.UIN.toString()) || idType.equalsIgnoreCase(IdType.VID.toString())){
             return individualId;
         } else {
-            return getUINForId(individualId);
-        }
-    }
-
-    private String getUINForId(String rid) {
-        try {
-            JSONObject jsonObject = utilitiy.retrieveIdrepoJson(rid);
-            return JsonUtil.getJSONValue(jsonObject, IdType.UIN.name());
-        } catch (ResidentServiceCheckedException e) {
-            throw new DataNotFoundException(e.getErrorCode(),e.getMessage());
+            try {
+                return identityService.getIndividualIdForAid(individualId);
+            } catch (ResidentServiceCheckedException e) {
+                audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+                throw new ResidentServiceException(
+                        ResidentErrorCode.AID_NOT_FOUND.getErrorCode(),
+                        ResidentErrorCode.AID_NOT_FOUND.getErrorMessage(), e);
+            } catch (ApisResourceAccessException e) {
+                audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+                throw new ResidentServiceException(
+                        ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+                        ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+            }
         }
     }
 
