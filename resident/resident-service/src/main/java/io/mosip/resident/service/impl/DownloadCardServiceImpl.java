@@ -74,7 +74,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()), downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
-                rid = utilities.getRidByIndividualId(individualId);
+                String idType=templateUtil.getIndividualIdType(individualId);
+                if(idType.equalsIgnoreCase(IdType.RID.toString())){
+                    rid = individualId;
+                } else {
+                    rid = utilities.getRidByIndividualId(individualId);
+                }
             } else {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(),

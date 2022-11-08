@@ -53,7 +53,6 @@ public class JsonUtilTest {
 	@Test
 	public void testJsonUtilWriteValue() throws IOException {
 		String result = JsonUtil.writeValueAsString(jsonObject);
-		System.out.println(result);
 		assertTrue(jsonString.trim().equals(result));
 	}
 

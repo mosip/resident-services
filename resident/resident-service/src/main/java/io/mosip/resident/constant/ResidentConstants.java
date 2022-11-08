@@ -6,7 +6,6 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
     private ResidentConstants() {
 	}
 
@@ -90,6 +89,9 @@ public class ResidentConstants {
     public static final String UPPER_RIGHT_X = "mosip.resident.service.uincard.upperrightx";
     public static final String UPPER_RIGHT_Y = "mosip.resident.service.uincard.upperrighty";
     public static final String REASON = "mosip.resident.service.uincard.signature.reason";
+
+    public static final String SIGN_PDF_APPLICATION_ID = "mosip.resident.sign.pdf.application.id";
+    public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
 
 
 }
