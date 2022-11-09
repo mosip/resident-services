@@ -306,6 +306,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
 		return residentTransactionEntity;
@@ -541,6 +542,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
 		residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		return residentTransactionEntity;
 	}

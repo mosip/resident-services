@@ -130,6 +130,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		residentTransactionEntity.setConsent(requestDto.getConsent());
 		// TODO: need to fix transaction ID (need partner's end transactionId)
