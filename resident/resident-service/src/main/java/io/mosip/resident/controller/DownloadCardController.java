@@ -12,6 +12,7 @@ import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,6 +50,9 @@ public class DownloadCardController {
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
         byte[] pdfBytes = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+        if(pdfBytes.length==0){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
         logger.debug("AcknowledgementController::acknowledgement()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
