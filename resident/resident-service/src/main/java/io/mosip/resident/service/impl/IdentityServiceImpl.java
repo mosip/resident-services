@@ -422,7 +422,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
-		return getClaimFromAccessToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 	}
 	
 	public String getClaimFromAccessToken(String claim) {

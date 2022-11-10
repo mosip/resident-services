@@ -21,6 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import io.mosip.resident.aspect.LoginCheck;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 /**
  * Aspect test class for login redirect API
@@ -37,6 +38,9 @@ public class LoginCheckTest {
 
 	@Mock
 	private ResidentUserRepository residentUserRepository;
+	
+	@Mock
+	private IdentityServiceImpl identityServiceImpl;
 
 	@Mock
 	private HttpServletRequest request;
@@ -53,6 +57,7 @@ public class LoginCheckTest {
 				"Authorization=eyJhbGciOiJSUzI1NiIsInR5cCIgO; Max-Age=1800000; Expires=Thu, 10-Nov-2022 05:05:02 GMT; Path=/; HttpOnly");
 		cookies.add("id_token=eyJhbGciOiJSUzI1NiIsInR5cCIg; Path=/; Secure; HttpOnly");
 		Mockito.when(response.getHeaders(Mockito.anyString())).thenReturn(cookies);
+		Mockito.when(identityServiceImpl.getResidentIdaTokenFromIdTokenJwt(Mockito.anyString())).thenReturn("282452929935769234295");
 		Mockito.when(residentUserRepository.findById(Mockito.anyString()))
 				.thenReturn(Optional.of(new ResidentUserEntity()));
 	}
