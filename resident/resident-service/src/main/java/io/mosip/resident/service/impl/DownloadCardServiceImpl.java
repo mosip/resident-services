@@ -1,8 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -15,7 +13,6 @@ import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -32,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +42,8 @@ import java.util.Map;
 public class DownloadCardServiceImpl implements DownloadCardService {
 
     private static final String AID = "AID";
+    private static final String LANGUAGE = "language";
+    private static final String VALUE = "value";
     @Autowired
     private ResidentController residentController;
 
@@ -92,10 +91,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
-                            , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+                    , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
-                String idType=templateUtil.getIndividualIdType(individualId);
-                if(idType.equalsIgnoreCase(AID)){
+                String idType = templateUtil.getIndividualIdType(individualId);
+                if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
@@ -113,8 +112,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             throw new ResidentServiceException(
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-        }
-        catch (OtpValidationFailedException e) {
+        } catch (OtpValidationFailedException e) {
             audit.setAuditRequestDto(EventEnum.REQ_CARD);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
@@ -125,26 +123,60 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Override
     public byte[] getDownloadHtml2pdf(MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO) {
         String encodeHtml = downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml();
+        byte[] decodedData;
+        String password;
         try {
-            byte[] decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
-            Map<String, Object> identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(identityService.getResidentIndvidualId(), downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType());
+            decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
+            Map<String, Object> identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(
+                    identityService.getResidentIndvidualId(), downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType());
             String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
             List<String> attributeList = List.of(attributeProperty.split("\\|"));
             List<String> attributeValues = new ArrayList<>();
-            for(String attribute: attributeValues){
+            for (String attribute : attributeList) {
                 Object attributeObject = identityAttributes.get(attribute);
-                if(attributeObject instanceof List){
+                if (attributeObject instanceof List) {
                     List<Map<String, Object>> attributeMapObject = (List<Map<String, Object>>) attributeObject;
-
-                } else{
+                    for (Map<String, Object> attributeInLanguage : attributeMapObject) {
+                        String languageCode = utilities.getLanguageCode();
+                        if (attributeInLanguage.containsKey(LANGUAGE) &&
+                                attributeInLanguage.get(LANGUAGE).toString().equalsIgnoreCase(languageCode)) {
+                            attributeValues.add((String) attributeInLanguage.get(VALUE));
+                        }
+                    }
+                } else {
                     attributeValues.add((String) attributeObject);
                 }
             }
-        } catch (Exception e){
-            audit.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
-            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_CARD_HTML_2_PDF);
+            password = getPassword(attributeValues);
+
         }
-        return new byte[0];
+        catch (Exception e) {
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
+            logger.error("Unable to convert html to pdf RootCause- "+e);
+            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_CARD_HTML_2_PDF, e);
+        }
+        return utilitiy.signPdf(new ByteArrayInputStream(decodedData), password);
+    }
+
+    private String getPassword(List<String> attributeValues) {
+        String pdfPwd = "";
+        for(String attribute:attributeValues) {
+            attribute = getFormattedPasswordAttribute(attribute);
+            pdfPwd = pdfPwd.concat(attribute.substring(0, 4));
+        }
+        return pdfPwd;
+    }
+
+    private String getFormattedPasswordAttribute(String password){
+        if(password.length()==3){
+            return password=password.concat(password.substring(0,1));
+        }else if(password.length()==2){
+            return password=password.repeat(2);
+        }else if(password.length()==1) {
+            return password=password.repeat(4);
+        }else {
+            return password;
+        }
     }
 
     private String getUINForIndividualId(String individualId)  {

@@ -98,4 +98,6 @@ public class ResidentConstants {
 
     public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
 
+    public static final String CREATE_PASSWORD_METHOD_NAME = "resident.create.password.method.name";
+
 }

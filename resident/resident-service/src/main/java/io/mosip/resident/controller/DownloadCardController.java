@@ -68,6 +68,13 @@ public class DownloadCardController {
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
         requestValidator.validateDownloadHtml2pdfRequest(downloadHtml2PdfRequestDTOMainRequestDTO);
         byte[] pdfBytes = downloadCardService.getDownloadHtml2pdf(downloadHtml2PdfRequestDTOMainRequestDTO);
-        return null;
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+        if(pdfBytes.length==0){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+                .header("Content-Disposition", "attachment; filename=\"" +
+                        downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType() + ".pdf\"")
+                .body(resource);
     }
 }

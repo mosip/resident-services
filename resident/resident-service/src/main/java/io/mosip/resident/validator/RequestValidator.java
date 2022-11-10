@@ -12,6 +12,7 @@ import io.mosip.resident.constant.*;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -42,6 +43,9 @@ public class RequestValidator {
 
 	@Autowired
 	private Environment environment;
+
+	@Autowired
+	private IdentityServiceImpl identityService;
 
 	private String euinId;
 
@@ -944,7 +948,7 @@ public class RequestValidator {
 
 	private void validateEncodedString(String html) {
 		try{
-			CryptoUtil.decodeURLSafeBase64(html);
+			identityService.decodeString(html);
 		}catch (Exception e){
 			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
 			throw new InvalidInputException("html");

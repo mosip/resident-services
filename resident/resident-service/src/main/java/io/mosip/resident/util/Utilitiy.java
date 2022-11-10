@@ -339,7 +339,17 @@ public class Utilitiy {
 	public String convertToMaskDataFormat(String maskData) {
 		return maskData(maskData, maskingFunction);
 	}
-	
+
+	public String getPassword(List<String> attributeValues) {
+		Map<String, List<String>> context = new HashMap<>();
+		context.put("attributeValues", attributeValues);
+		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
+		myVarFactory.setNextFactory(functionFactory);
+		Serializable serializable = MVEL.compileExpression("getPassword(attributeValues);");
+		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
+	}
+
+
 	public ResidentTransactionEntity createEntity() {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
