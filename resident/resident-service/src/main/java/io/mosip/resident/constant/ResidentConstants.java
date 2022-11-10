@@ -92,6 +92,7 @@ public class ResidentConstants {
 
     public static final String SIGN_PDF_APPLICATION_ID = "mosip.resident.sign.pdf.application.id";
     public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
-
+    
+    public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
 
 }

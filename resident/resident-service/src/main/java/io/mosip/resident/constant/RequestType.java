@@ -67,9 +67,9 @@ public enum RequestType {
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload),
 
-	SEND_OTP(null, List.of(), List.of(), List.of(),"send-otp", TemplateUtil::getNotificationSendOtpVariables),
+	SEND_OTP(TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(),"send-otp", TemplateUtil::getNotificationSendOtpVariables),
 
-	VALIDATE_OTP(null, List.of(), List.of(), List.of(),"validate-otp", TemplateUtil::getNotificationCommonTemplateVariables);
+	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(), List.of(), List.of(),"validate-otp", TemplateUtil::getNotificationCommonTemplateVariables);
 
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
@@ -124,6 +124,10 @@ public enum RequestType {
 	
 	public String getPurposeTemplateCodeProperty(TemplateType templateType) {
 		return "resident.template.purpose." + templateType.getType() + "." + getFeatureName();
+	}
+	
+	public String getSummaryTemplateCodeProperty(TemplateType templateType) {
+		return "resident.template.summary." + templateType.getType() + "." + getFeatureName();
 	}
 
 	public Map<String, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId) {

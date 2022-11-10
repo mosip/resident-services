@@ -44,6 +44,9 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class OrderCardServiceImpl implements OrderCardService {
 
+	private static final String PARTNER_TYPE = "partnerType";
+	private static final String ORGANIZATION_NAME = "organizationName";
+
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
 
@@ -62,6 +65,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	@Autowired
 	NotificationService notificationService;
+	
+	@Autowired
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -120,7 +126,11 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
+		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(requestDto.getIssuer());
+		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
+		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary("in-progress");
 		residentTransactionEntity.setConsent(requestDto.getConsent());
 		// TODO: need to fix transaction ID (need partner's end transactionId)

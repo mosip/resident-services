@@ -32,6 +32,7 @@ import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.OrderCardServiceImpl;
+import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
@@ -69,6 +70,9 @@ public class OrderCardServiceTest {
 	
 	@Mock
 	private NotificationService notificationService;
+	
+	@Mock
+	private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
 	private ResponseWrapper<?> responseWrapper;
 

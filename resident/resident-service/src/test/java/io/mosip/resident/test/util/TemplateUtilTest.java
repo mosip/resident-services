@@ -7,6 +7,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
@@ -42,6 +43,9 @@ public class TemplateUtilTest {
 
     @Mock
     private RequestValidator validator;
+    
+    @Mock
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
@@ -55,6 +59,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setPurpose("Test");
         residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.name());
         residentTransactionEntity.setRequestSummary("Test");
+        residentTransactionEntity.setAuthTypeCode("otp");
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(eventId);
