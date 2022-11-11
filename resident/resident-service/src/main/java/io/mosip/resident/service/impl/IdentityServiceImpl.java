@@ -399,22 +399,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
-		return getClaimFromJwt(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
-	}
-
-	public String getClaimFromJwt(String idToken, String claim) {
-		String claimValue = "";
-		String[] parts = idToken.split("\\.", 0);
-		Map payLoadMap;
-		try {
-			payLoadMap = objectMapper.readValue(parts[1], Map.class);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
-		if (claim != null) {
-			claimValue = (String) payLoadMap.get(claim);
-		}
-		return claimValue;
+		return getClaimValueFromJwtToken(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -434,18 +419,32 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			return individualId;
 	}
+	
+	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+	}
+	
+	public String getClaimFromAccessToken(String claim) {
+		AuthUserDetails authUserDetails = getAuthUserDetails();
+		String accessToken = authUserDetails.getToken();
+		return getClaimValueFromJwtToken(accessToken, claim);
+	}
 
 	public String getClaimFromIdToken(String claim) {
 		AuthUserDetails authUserDetails= getAuthUserDetails();
 		String idToken = authUserDetails.getIdToken();
+		return getClaimValueFromJwtToken(idToken, claim);
+	}
+
+	private String getClaimValueFromJwtToken(String jwtToken, String claim) {
 		String claimValue = "";
 		String payLoad = "";
-		if(idToken!=null){
-			if(idToken.contains(".")){
-				String[] parts = idToken.split("\\.", 0);
+		if(jwtToken!=null){
+			if(jwtToken.contains(".")){
+				String[] parts = jwtToken.split("\\.", 0);
 				payLoad = decodeString(parts[1]);
 			} else{
-				payLoad = decodeString(idToken);
+				payLoad = decodeString(jwtToken);
 			}
 			Map payLoadMap;
 			try {
@@ -457,7 +456,7 @@ public class IdentityServiceImpl implements IdentityService {
 				claimValue = (String) payLoadMap.get(claim);
 			}
 		}
-		return  claimValue;
+		return claimValue;
 	}
 
 	public String decodeString(String payload)

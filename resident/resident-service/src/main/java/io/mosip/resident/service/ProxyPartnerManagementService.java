@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -23,6 +24,9 @@ public interface ProxyPartnerManagementService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType)
+			throws ResidentServiceCheckedException;
+	
+	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl)
 			throws ResidentServiceCheckedException;
 
 }

@@ -19,6 +19,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 /**
  * Aspect class for login redirect API
@@ -55,6 +56,9 @@ public class LoginCheck {
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
 	
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(LoginCheck.class);
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..)) && args(redirectURI,state,sessionState,code,stateCookie,req,res)")
@@ -67,7 +71,7 @@ public class LoginCheck {
 			if (cookie.contains(ID_TOKEN)) {
 				Optional<String> cookieIdToken = getCookieValueFromHeader(cookie);
 				if (cookieIdToken.isPresent()) {
-					idaToken = getIdaTokenFromIdToken(cookieIdToken.get()); // FIXME call a method to get ida token from id_token
+					idaToken = identityServiceImpl.getResidentIdaTokenFromIdTokenJwt(cookieIdToken.get());
 				}
 			}
 		}
@@ -83,11 +87,6 @@ public class LoginCheck {
 			}
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
-	}
-
-	private String getIdaTokenFromIdToken(String cookieIdToken) {
-		// TODO Auto-generated method stub
-		return "283806899483626793628536705744577345";
 	}
 
 	private Optional<String> getCookieValueFromHeader(String cookie) {
