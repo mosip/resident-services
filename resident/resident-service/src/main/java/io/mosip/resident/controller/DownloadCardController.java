@@ -3,7 +3,7 @@ package io.mosip.resident.controller;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCard;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
@@ -63,11 +63,11 @@ public class DownloadCardController {
 
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
-    public ResponseEntity<Object> downloadHtml2pdf(@Validated @RequestBody MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO){
-        logger.debug("DownloadCardController::downloadHtml2pdf()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
-        requestValidator.validateDownloadHtml2pdfRequest(downloadHtml2PdfRequestDTOMainRequestDTO);
-        byte[] pdfBytes = downloadCardService.getDownloadHtml2pdf(downloadHtml2PdfRequestDTOMainRequestDTO);
+    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCard> downloadPersonalizedCardMainRequestDTO){
+        logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
+        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+        requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+        byte[] pdfBytes = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         if(pdfBytes.length==0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -22,7 +22,7 @@ import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCard;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -936,12 +936,12 @@ public class RequestValidator {
 	public void validateRequestId(String inputRequestId, String requestIdStoredInProperty) {
 		if(inputRequestId==null){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"request id", "requestId must not be null"));
-			throw new InvalidInputException("requestId");
+					"request id", "Id must not be null"));
+			throw new InvalidInputException("Id");
 		} else if(!inputRequestId.equalsIgnoreCase(requestIdStoredInProperty)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"request id", "requestId is invalid"));
-			throw new InvalidInputException("requestId");
+					"request id", "Id is invalid"));
+			throw new InvalidInputException("Id");
 		}
 	}
 
@@ -969,11 +969,11 @@ public class RequestValidator {
 		}
 	}
 
-    public void validateDownloadHtml2pdfRequest(MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO) {
-		validateRequestId(downloadHtml2PdfRequestDTOMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.DOWNLOAD_HTML_2_PDF_ID));
-		validateDate(downloadHtml2PdfRequestDTOMainRequestDTO.getRequesttime());
-		validateString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml(), "html");
-		validateEncodedString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml());
+    public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadPersonalizedCardMainRequestDTO) {
+		validateRequestId(downloadPersonalizedCardMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD));
+		validateDate(downloadPersonalizedCardMainRequestDTO.getRequesttime());
+		validateString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml(), "html");
+		validateEncodedString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml());
     }
 
 	private void validateEncodedString(String html) {

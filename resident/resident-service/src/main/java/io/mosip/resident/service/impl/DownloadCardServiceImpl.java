@@ -11,7 +11,7 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCard;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -132,7 +132,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public byte[] getDownloadHtml2pdf(MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO) {
+    public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadHtml2PdfRequestDTOMainRequestDTO) {
         String encodeHtml = downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password;
@@ -162,9 +162,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
         }
         catch (Exception e) {
-            audit.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
             logger.error("Unable to convert html to pdf RootCause- "+e);
-            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_CARD_HTML_2_PDF, e);
+            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
         }
         return utilitiy.signPdf(new ByteArrayInputStream(decodedData), password);
     }

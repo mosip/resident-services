@@ -661,9 +661,12 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	INVALID_REQUEST_TYPE_CODE("RES-SER-267", RegistrationConstants.SYSTEM, "Invalid request type code", "\"Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD,\" +\n" +
 			"\t\t\t\"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME),
-	DOWNLOAD_CARD_HTML_2_PDF("RES-SER-268", RegistrationConstants.SYSTEM, "Download card Html to pdf", "Download card Html to pdf", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME);
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	DOWNLOAD_PERSONALIZED_CARD("RES-SER-268", RegistrationConstants.SYSTEM, "Download personalized card",
+			"Download card Html to pdf", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME);
 	;
 
 	private final String eventId;

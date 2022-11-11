@@ -7,7 +7,7 @@ import lombok.Data;
  * This class is used a request DTO for download html 2 pdf API.
  */
 @Data
-public class DownloadHtml2PdfRequestDTO {
+public class DownloadPersonalizedCard {
 
     private String html;
 
