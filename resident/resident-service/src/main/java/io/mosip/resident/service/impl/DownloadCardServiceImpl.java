@@ -6,17 +6,20 @@ import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
@@ -25,6 +28,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,10 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
+import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -83,6 +91,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private ResidentTransactionRepository residentTransactionRepository;
+
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
@@ -128,7 +139,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         try {
             decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
             Map<String, Object> identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(
-                    identityService.getResidentIndvidualId(), downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType());
+                    identityService.getResidentIndvidualId(), this.environment.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
             String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
             List<String> attributeList = List.of(attributeProperty.split("\\|"));
             List<String> attributeValues = new ArrayList<>();
@@ -147,7 +158,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     attributeValues.add((String) attributeObject);
                 }
             }
-            password = getPassword(attributeValues);
+            password = utilitiy.getPassword(attributeValues);
 
         }
         catch (Exception e) {
@@ -158,25 +169,29 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return utilitiy.signPdf(new ByteArrayInputStream(decodedData), password);
     }
 
-    private String getPassword(List<String> attributeValues) {
-        String pdfPwd = "";
-        for(String attribute:attributeValues) {
-            attribute = getFormattedPasswordAttribute(attribute);
-            pdfPwd = pdfPwd.concat(attribute.substring(0, 4));
+    @Override
+    public String getFileName() {
+        ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
+        String eventId = UUID.randomUUID().toString();
+        residentTransactionEntity.setEventId(eventId);
+        residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
+        try {
+            residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(identityService.getResidentIndvidualId()));
+            residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
+        } catch (ApisResourceAccessException e) {
+            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+                    LoggerFileConstant.APPLICATIONID.toString(),
+                    ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
+                            + ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
+                            + ExceptionUtils.getStackTrace(e));
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
+                    eventId, "Download personalized card"));
+            throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
+                    ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
         }
-        return pdfPwd;
-    }
-
-    private String getFormattedPasswordAttribute(String password){
-        if(password.length()==3){
-            return password=password.concat(password.substring(0,1));
-        }else if(password.length()==2){
-            return password=password.repeat(2);
-        }else if(password.length()==1) {
-            return password=password.repeat(4);
-        }else {
-            return password;
-        }
+        residentTransactionEntity.setRequestSummary(SUCCESS);
+        return utilitiy.getFileName(eventId, Objects.requireNonNull(this.environment.getProperty
+                (ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)));
     }
 
     private String getUINForIndividualId(String individualId)  {

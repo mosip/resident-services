@@ -11,6 +11,4 @@ public class DownloadHtml2PdfRequestDTO {
 
     private String html;
 
-    private String schemaType;
-
 }

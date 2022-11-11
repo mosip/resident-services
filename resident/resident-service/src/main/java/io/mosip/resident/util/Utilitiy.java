@@ -345,7 +345,8 @@ public class Utilitiy {
 		context.put("attributeValues", attributeValues);
 		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
 		myVarFactory.setNextFactory(functionFactory);
-		Serializable serializable = MVEL.compileExpression("getPassword(attributeValues);");
+		String maskingFunctionName = this.env.getProperty(ResidentConstants.CREATE_PASSWORD_METHOD_NAME);
+		Serializable serializable = MVEL.compileExpression(maskingFunctionName+"(attributeValues);");
 		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
 	}
 
@@ -425,4 +426,18 @@ public class Utilitiy {
 
 		return pdfSignatured;
 	}
+
+	public String getFileName(String eventId, String propertyName){
+		List<String> propertyList = List.of(propertyName.split("\\{"));
+		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
+		if(propertyList.size()==1){
+			return propertyName;
+		} else if(propertyList.size()==2 && propertyList.get(1).contains(Objects.requireNonNull(dateTimePattern))){
+			return propertyList.get(0)+eventId+"_"+DateUtils
+					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern));
+		} else{
+			return propertyList.get(0)+eventId;
+		}
+	}
+
 }

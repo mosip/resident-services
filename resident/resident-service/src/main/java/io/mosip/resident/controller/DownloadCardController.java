@@ -62,7 +62,7 @@ public class DownloadCardController {
     }
 
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostDownloadCardHtml2Pdf()" + ")")
-    @PostMapping("/download/card/html2pdf")
+    @PostMapping("/download/personalized-card")
     public ResponseEntity<Object> downloadHtml2pdf(@Validated @RequestBody MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO){
         logger.debug("DownloadCardController::downloadHtml2pdf()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_CARD_HTML_2_PDF);
@@ -74,7 +74,7 @@ public class DownloadCardController {
         }
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType() + ".pdf\"")
+                        downloadCardService.getFileName() + ".pdf\"")
                 .body(resource);
     }
 }

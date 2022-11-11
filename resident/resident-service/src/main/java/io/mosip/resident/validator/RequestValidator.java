@@ -974,7 +974,6 @@ public class RequestValidator {
 		validateDate(downloadHtml2PdfRequestDTOMainRequestDTO.getRequesttime());
 		validateString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml(), "html");
 		validateEncodedString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml());
-		validateString(downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getSchemaType(), "schemaType");
     }
 
 	private void validateEncodedString(String html) {

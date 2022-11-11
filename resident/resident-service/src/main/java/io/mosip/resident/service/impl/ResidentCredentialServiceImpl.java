@@ -345,9 +345,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			String response = residentServiceRestClient.postApi(env.getProperty(ApiName.DECRYPT_API_URL.name()),
 					MediaType.APPLICATION_JSON, request, String.class);
 			CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
-			String data = responseObject.getResponse().getData();
-			byte[] bytes = CryptoUtil.decodeURLSafeBase64(data);
-			return utility.signPdf(new ByteArrayInputStream(bytes), null);
+			return CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
