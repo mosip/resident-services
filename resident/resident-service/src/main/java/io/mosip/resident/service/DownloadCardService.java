@@ -11,7 +11,7 @@ import io.mosip.resident.dto.MainRequestDTO;
 public interface DownloadCardService {
     byte[] getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO);
 
-    byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadHtml2PdfRequestDTOMainRequestDTO);
+    byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadPersonalizedCardMainRequestDTO);
 
     String getFileName();
 }

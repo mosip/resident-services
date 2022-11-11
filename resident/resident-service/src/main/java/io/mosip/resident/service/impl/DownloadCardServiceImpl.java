@@ -132,8 +132,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadHtml2PdfRequestDTOMainRequestDTO) {
-        String encodeHtml = downloadHtml2PdfRequestDTOMainRequestDTO.getRequest().getHtml();
+    public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadPersonalizedCardMainRequestDTO) {
+        String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password;
         try {
