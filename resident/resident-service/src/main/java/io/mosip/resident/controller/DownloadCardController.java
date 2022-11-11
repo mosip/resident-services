@@ -61,7 +61,7 @@ public class DownloadCardController {
                 .body(resource);
     }
 
-    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostDownloadCardHtml2Pdf()" + ")")
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
     public ResponseEntity<Object> downloadHtml2pdf(@Validated @RequestBody MainRequestDTO<DownloadHtml2PdfRequestDTO> downloadHtml2PdfRequestDTOMainRequestDTO){
         logger.debug("DownloadCardController::downloadHtml2pdf()::entry");
