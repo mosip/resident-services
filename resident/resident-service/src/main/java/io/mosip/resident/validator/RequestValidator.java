@@ -3,13 +3,37 @@ package io.mosip.resident.validator;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
-import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BaseVidRequestDto;
+import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadHtml2PdfRequestDTO;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.IVidRequestDto;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.SortType;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -24,7 +48,14 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
@@ -951,7 +982,7 @@ public class RequestValidator {
 			identityService.decodeString(html);
 		}catch (Exception e){
 			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
-			throw new InvalidInputException("html");
+			throw new InvalidInputException("html", e);
 		}
 	}
 
