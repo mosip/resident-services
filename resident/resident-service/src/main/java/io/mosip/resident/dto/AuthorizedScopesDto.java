@@ -87,5 +87,7 @@ public class AuthorizedScopesDto {
 	private List<String> getGenderTypeByLandCode;
 
 	private List<String> postDownloadCard;
+	
+	private List<String> getOrderPaymentStatus;
 
 }
