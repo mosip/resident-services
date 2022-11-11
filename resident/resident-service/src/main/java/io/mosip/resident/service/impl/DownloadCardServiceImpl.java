@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -138,28 +139,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String password;
         try {
             decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
-            Map<String, Object> identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(
-                    identityService.getResidentIndvidualId(), this.environment.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
-            String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
-            List<String> attributeList = List.of(attributeProperty.split("\\|"));
-            List<String> attributeValues = new ArrayList<>();
-            for (String attribute : attributeList) {
-                Object attributeObject = identityAttributes.get(attribute);
-                if (attributeObject instanceof List) {
-                    List<Map<String, Object>> attributeMapObject = (List<Map<String, Object>>) attributeObject;
-                    for (Map<String, Object> attributeInLanguage : attributeMapObject) {
-                        String languageCode = utilities.getLanguageCode();
-                        if (attributeInLanguage.containsKey(LANGUAGE) &&
-                                attributeInLanguage.get(LANGUAGE).toString().equalsIgnoreCase(languageCode)) {
-                            attributeValues.add((String) attributeInLanguage.get(VALUE));
-                        }
-                    }
-                } else {
-                    attributeValues.add((String) attributeObject);
-                }
-            }
+            List<String> attributeValues = getAttributeList();
             password = utilitiy.getPassword(attributeValues);
-
         }
         catch (Exception e) {
             audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
@@ -167,6 +148,49 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
         }
         return utilitiy.signPdf(new ByteArrayInputStream(decodedData), password);
+    }
+
+    private List<String> getAttributeList() throws IOException, ApisResourceAccessException {
+        Map<String, Object> identityAttributes = null;
+        List<String> attributeValues = new ArrayList<>();
+        try {
+            identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(
+                    identityService.getResidentIndvidualId(), this.environment.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+        } catch (ResidentServiceCheckedException e) {
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            logger.error("Unable to get attributes- "+e);
+            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
+        } catch (IOException e) {
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            logger.error("Unable to get attributes- "+e);
+            throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
+        } catch (ApisResourceAccessException e) {
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            logger.error("Unable to get attributes- "+e);
+            throw new ApisResourceAccessException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
+        }
+        String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
+        List<String> attributeList = List.of(attributeProperty.split("\\|"));
+
+        for (String attribute : attributeList) {
+            Object attributeObject = identityAttributes.get(attribute);
+            if (attributeObject instanceof List) {
+                List<Map<String, Object>> attributeMapObject = (List<Map<String, Object>>) attributeObject;
+                for (Map<String, Object> attributeInLanguage : attributeMapObject) {
+                    /**
+                     * 1st language code is taken from mosip.template.language.
+                     */
+                    String languageCode = utilities.getLanguageCode();
+                    if (attributeInLanguage.containsKey(LANGUAGE) &&
+                            attributeInLanguage.get(LANGUAGE).toString().equalsIgnoreCase(languageCode)) {
+                        attributeValues.add((String) attributeInLanguage.get(VALUE));
+                    }
+                }
+            } else {
+                attributeValues.add((String) attributeObject);
+            }
+        }
+        return attributeValues;
     }
 
     @Override

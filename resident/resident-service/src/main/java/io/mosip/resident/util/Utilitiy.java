@@ -18,6 +18,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateVariablesEnum;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.JsonValue;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -428,16 +429,21 @@ public class Utilitiy {
 	}
 
 	public String getFileName(String eventId, String propertyName){
-		List<String> propertyList = List.of(propertyName.split("\\{"));
 		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
-		if(propertyList.size()==1){
-			return propertyName;
-		} else if(propertyList.size()==2 && propertyList.get(1).contains(Objects.requireNonNull(dateTimePattern))){
-			return propertyList.get(0)+eventId+"_"+DateUtils
-					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern));
-		} else{
-			return propertyList.get(0)+eventId;
+		if(propertyName.contains(TemplateVariablesEnum.EVENT_ID)){
+			propertyName = propertyName.replace(TemplateVariablesEnum.EVENT_ID, eventId);
 		}
+		if(propertyName.contains(TemplateVariablesEnum.TIMESTAMP)){
+			propertyName = propertyName.replace(TemplateVariablesEnum.TIMESTAMP, DateUtils
+					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
+		}
+		if(propertyName.contains("{")){
+			propertyName = propertyName.replace("{", "");
+		}
+		if(propertyName.contains("}")){
+			propertyName = propertyName.replace("}", "");
+		}
+		return propertyName;
 	}
 
 }
