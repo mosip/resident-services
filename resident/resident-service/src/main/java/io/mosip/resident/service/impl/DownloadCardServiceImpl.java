@@ -11,7 +11,7 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadPersonalizedCard;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -132,7 +132,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadPersonalizedCardMainRequestDTO) {
+    public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password;

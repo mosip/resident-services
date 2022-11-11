@@ -22,7 +22,7 @@ import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadPersonalizedCard;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -969,7 +969,7 @@ public class RequestValidator {
 		}
 	}
 
-    public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCard> downloadPersonalizedCardMainRequestDTO) {
+    public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
 		validateRequestId(downloadPersonalizedCardMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD));
 		validateDate(downloadPersonalizedCardMainRequestDTO.getRequesttime());
 		validateString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml(), "html");
