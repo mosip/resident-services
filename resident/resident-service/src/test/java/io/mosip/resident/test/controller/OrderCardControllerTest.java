@@ -125,5 +125,11 @@ public class OrderCardControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.post("/sendCard").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testPhysicalCardOrder() throws Exception {
+		Mockito.when(orderCardService.getRedirectUrl(Mockito.any(),Mockito.any())).thenReturn("URL");
+		mockMvc.perform(MockMvcRequestBuilders.get("/physical-card/order?partnerId=mosip_partnerorg1667786709933&redirectUri=vdsvdvds")).andExpect(status().isOk());
+	}
 
 }
