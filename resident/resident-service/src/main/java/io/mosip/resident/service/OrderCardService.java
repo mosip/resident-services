@@ -25,4 +25,6 @@ public interface OrderCardService {
 	public ResidentCredentialResponseDto sendPhysicalCard(ResidentCredentialRequestDto requestDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
+	public String getRedirectUrl(String partnerId, String redirectUri) throws ResidentServiceCheckedException;
+
 }

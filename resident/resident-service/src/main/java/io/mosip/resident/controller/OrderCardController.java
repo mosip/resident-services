@@ -2,8 +2,10 @@ package io.mosip.resident.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
@@ -69,6 +71,25 @@ public class OrderCardController {
 		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_SUCCESS);
 		logger.debug("OrderCardController::sendPhysicalCard()::exit");
 		return responseWrapper;
+	}
+	
+	@ResponseFilter 
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getOrderRedirect()" + ")")
+	@GetMapping("/physical-card/order")
+	@Operation(summary = "get", description = "Get redirect-url", tags = { "order-card-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+
+	public String physicalCardOrder(@RequestParam(name = "partnerId") String partnerId ,
+			@RequestParam(name = "redirectUri") String redirectUri )
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentController::getphysicalCardOrder()::entry");
+		String redirectURL = orderCardService.getRedirectUrl(partnerId,redirectUri);
+		logger.debug("ResidentController::getphysicalCardOrder()::exit");
+		return redirectURL;
 	}
 
 }
