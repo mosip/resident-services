@@ -100,7 +100,8 @@ public enum ResidentErrorCode {
 	CARD_NOT_FOUND("RES-SER-472", "Card not found." ),
 	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
 			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN"),
-	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." );
+	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
+	DOWNLOAD_PERSONALIZED_CARD("RES-SER-475", "Error in downloading personalized card" );
 
 	private final String errorCode;
 	private final String errorMessage;

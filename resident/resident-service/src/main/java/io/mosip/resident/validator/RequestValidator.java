@@ -7,10 +7,36 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.*;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.constant.CardType;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BaseVidRequestDto;
+import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.IVidRequestDto;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.SortType;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -22,7 +48,14 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
@@ -41,6 +74,9 @@ public class RequestValidator {
 
 	@Autowired
 	private Environment environment;
+
+	@Autowired
+	private IdentityServiceImpl identityService;
 
 	private String euinId;
 
@@ -397,11 +433,11 @@ public class RequestValidator {
 
 		if (!(StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
 				|| StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()))) {
-			if (!isNumeric(requestDTO.getRequest().getPageStart())) {
+			if (isNumeric(requestDTO.getRequest().getPageStart())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageStart", msg));
 				throw new InvalidInputException("pageStart");
 			}
-			if (!isNumeric(requestDTO.getRequest().getPageFetch())) {
+			if (isNumeric(requestDTO.getRequest().getPageFetch())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageFetch", msg));
 				throw new InvalidInputException("pageFetch");
 			}
@@ -521,12 +557,7 @@ public class RequestValidator {
 	}
 
 	public static boolean isNumeric(String strNum) {
-		try {
-			Integer.parseInt(strNum);
-		} catch (NumberFormatException nfe) {
-			return false;
-		}
-		return true;
+		return !strNum.matches(("[0-9]+"));
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
@@ -675,7 +706,7 @@ public class RequestValidator {
 		}
 		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
+		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
@@ -869,7 +900,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must not be null"));
 			throw new InvalidInputException("transactionID");
-		} else if(!isNumeric(transactionID) || transactionID.length()!=10){
+		} else if(isNumeric(transactionID) || transactionID.length()!=10){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must be 10 digit containing numbers"));
 			throw new InvalidInputException("transactionID");
@@ -890,7 +921,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp must not be null"));
 			throw new InvalidInputException("otp");
-		} else if(!isNumeric(otp)){
+		} else if(isNumeric(otp)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp is invalid"));
 			throw new InvalidInputException("otp");
@@ -900,12 +931,12 @@ public class RequestValidator {
 	public void validateRequestId(String inputRequestId, String requestIdStoredInProperty) {
 		if(inputRequestId==null){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"request id", "requestId must not be null"));
-			throw new InvalidInputException("requestId");
+					"request id", "Id must not be null"));
+			throw new InvalidInputException("Id");
 		} else if(!inputRequestId.equalsIgnoreCase(requestIdStoredInProperty)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"request id", "requestId is invalid"));
-			throw new InvalidInputException("requestId");
+					"request id", "Id is invalid"));
+			throw new InvalidInputException("Id");
 		}
 	}
 
@@ -930,6 +961,29 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request service history API"));
 			throw new InvalidInputException("individualId");
+		}
+	}
+
+    public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
+		validateRequestId(downloadPersonalizedCardMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD));
+		validateDate(downloadPersonalizedCardMainRequestDTO.getRequesttime());
+		validateString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml(), "html");
+		validateEncodedString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml());
+    }
+
+	private void validateEncodedString(String html) {
+		try{
+			identityService.decodeString(html);
+		}catch (Exception e){
+			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
+			throw new InvalidInputException("html", e);
+		}
+	}
+
+	private void validateString(String string, String variableName) {
+		if(string == null){
+			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
+			throw new InvalidInputException(variableName);
 		}
 	}
 }
