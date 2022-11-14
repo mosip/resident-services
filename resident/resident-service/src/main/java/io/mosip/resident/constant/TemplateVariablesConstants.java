@@ -1,7 +1,7 @@
 package io.mosip.resident.constant;
 
 /**
- * The Enum TemplateVariablesEnum.
+ * The Constant used here is to be used in template variables.
  * @author Kamesh Shekhar Prasad
  */
 public class TemplateVariablesConstants {
