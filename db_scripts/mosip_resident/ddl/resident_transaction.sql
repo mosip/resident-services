@@ -47,6 +47,7 @@ CREATE TABLE resident.resident_transaction(
     attribute_list character varying(255),
     individual_id character varying(500),
     consent character varying(50),
+    tracking_id character varying(50),
     CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
 );
 
