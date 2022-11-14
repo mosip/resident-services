@@ -193,14 +193,14 @@ public class OrderCardServiceImpl implements OrderCardService {
 	@Override
 	public String getRedirectUrl(String partnerId, String redirectUri) throws ResidentServiceCheckedException {
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
- 		if(partnerDetail.isEmpty()) {
-			throw new ResidentServiceCheckedException("RES-SER-650","Partner not found");
+		if (partnerDetail.isEmpty()) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.PATNER_NOT_FOUND.getErrorCode(),
+					ResidentErrorCode.PATNER_NOT_FOUND.getErrorMessage());
 		} else {
-			List<Map<String,?>> info = (List<Map<String, ?>>) partnerDetail.get("additionalInfo");
-			String redirectUrl = info.stream()
-	 		.map(map -> (String)map.get("orderRedirectUrl")).findAny().orElse("");
-			if(redirectUrl.isEmpty()) {
-				throw new ResidentServiceCheckedException("RES-SER-651","Redirect url not found");
+			List<Map<String, ?>> info = (List<Map<String, ?>>) partnerDetail.get("additionalInfo");
+			String redirectUrl = info.stream().map(map -> (String) map.get("orderRedirectUrl")).findAny().orElse("");
+			if (redirectUrl.isEmpty()) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorCode(), ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorMessage());
 			}
 			return redirectUrl;
 		}

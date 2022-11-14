@@ -100,7 +100,10 @@ public enum ResidentErrorCode {
 	CARD_NOT_FOUND("RES-SER-472", "Card not found." ),
 	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
 			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN"),
-	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." );
+	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
+	PATNER_NOT_FOUND("RES-SER-475","Partner not found."),
+	REDIRECT_URL_NOT_FOUND("RES-SER-476","Redirect url not found.");
+
 
 	private final String errorCode;
 	private final String errorMessage;

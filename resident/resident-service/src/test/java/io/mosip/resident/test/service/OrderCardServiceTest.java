@@ -2,9 +2,12 @@ package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -15,8 +18,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
@@ -81,6 +86,9 @@ public class OrderCardServiceTest {
 	private ResidentCredentialRequestDto residentCredentialRequestDto;
 	
 	private NotificationResponseDTO notificationResponseDTO;
+	
+	private Map partnerDetail = new HashMap<>();
+
 
 	@Before
 	public void setUp() throws Exception {
@@ -130,6 +138,34 @@ public class OrderCardServiceTest {
 				any(), any())).thenThrow(new ApisResourceAccessException());
 
 		orderCardService.sendPhysicalCard(residentCredentialRequestDto);
+	}
+	
+	@Test
+	public void testGetRedirectUrl() throws Exception {
+		Map detail = new HashMap<>();
+		detail.put("orderRedirectUrl", "http://resident-partner-details.com");
+		partnerDetail.put("additionalInfo", List.of(detail));
+		when(proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(anyString())).thenReturn(partnerDetail);
+		String  result = orderCardService.getRedirectUrl("12345","URI");
+		assertEquals("http://resident-partner-details.com", result);
+	}
+	
+	
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRedirectUrlNull() throws Exception {
+		Map detail = new HashMap<>();
+		detail.put("orderRedirectUrl", "");
+		partnerDetail.put("additionalInfo", List.of(detail));
+		when(proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(anyString())).thenReturn(partnerDetail);
+		orderCardService.getRedirectUrl("12345","URI");
+		
+	}
+	
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRedirectUrlEmpty() throws Exception {
+		when(proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(anyString())).thenReturn(partnerDetail);
+		orderCardService.getRedirectUrl("12345","URI");
+		
 	}
 
 }
