@@ -4,7 +4,6 @@ import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -90,7 +89,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.constant.TemplateVariablesEnum;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
@@ -1899,24 +1898,24 @@ public class ResidentServiceImpl implements ResidentService {
 
 				EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
 				eventStatusResponseDTO.setEventId(eventId);
-				eventStatusResponseDTO.setEventType(eventStatusMap.get(TemplateVariablesEnum.EVENT_TYPE));
-				eventStatusResponseDTO.setEventStatus(eventStatusMap.get(TemplateVariablesEnum.EVENT_STATUS));
-				eventStatusResponseDTO.setIndividualId(eventStatusMap.get(TemplateVariablesEnum.INDIVIDUAL_ID));
+				eventStatusResponseDTO.setEventType(eventStatusMap.get(TemplateVariablesConstants.EVENT_TYPE));
+				eventStatusResponseDTO.setEventStatus(eventStatusMap.get(TemplateVariablesConstants.EVENT_STATUS));
+				eventStatusResponseDTO.setIndividualId(eventStatusMap.get(TemplateVariablesConstants.INDIVIDUAL_ID));
 				eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
-				eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesEnum.TIMESTAMP));
+				eventStatusResponseDTO.setTimestamp(eventStatusMap.get(TemplateVariablesConstants.TIMESTAMP));
 
 				/**
 				 * Removed map value from eventStatusMap to put outside of info in
 				 * EventStatusResponseDTO
 				 */
-				eventStatusMap.remove(TemplateVariablesEnum.EVENT_ID);
-				eventStatusMap.remove(TemplateVariablesEnum.EVENT_TYPE);
-				eventStatusMap.remove(TemplateVariablesEnum.EVENT_STATUS);
-				eventStatusMap.remove(TemplateVariablesEnum.INDIVIDUAL_ID);
-				eventStatusMap.remove(TemplateVariablesEnum.SUMMARY);
-				eventStatusMap.remove(TemplateVariablesEnum.TIMESTAMP);
+				eventStatusMap.remove(TemplateVariablesConstants.EVENT_ID);
+				eventStatusMap.remove(TemplateVariablesConstants.EVENT_TYPE);
+				eventStatusMap.remove(TemplateVariablesConstants.EVENT_STATUS);
+				eventStatusMap.remove(TemplateVariablesConstants.INDIVIDUAL_ID);
+				eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
+				eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 
-				eventStatusMap.put(TemplateVariablesEnum.DESCRIPTION, getDescriptionForLangCode(languageCode, statusCode, requestType));
+				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, getDescriptionForLangCode(languageCode, statusCode, requestType));
 				eventStatusResponseDTO.setInfo(eventStatusMap);
 				responseWrapper.setId(serviceEventId);
 				responseWrapper.setVersion(serviceEventVersion);

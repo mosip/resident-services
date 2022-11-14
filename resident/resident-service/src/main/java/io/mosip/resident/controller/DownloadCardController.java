@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
@@ -14,6 +15,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +58,23 @@ public class DownloadCardController {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
                         downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
+                .body(resource);
+    }
+
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
+    @PostMapping("/download/personalized-card")
+    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO){
+        logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
+        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+        requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+        byte[] pdfBytes = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+        if(pdfBytes.length==0){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+                .header("Content-Disposition", "attachment; filename=\"" +
+                        downloadCardService.getFileName() + ".pdf\"")
                 .body(resource);
     }
 }

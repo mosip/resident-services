@@ -88,4 +88,6 @@ public class AuthorizedScopesDto {
 
 	private List<String> postDownloadCard;
 
+	private List<String> postPersonalizedCard;
+
 }
