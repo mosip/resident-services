@@ -433,11 +433,11 @@ public class RequestValidator {
 
 		if (!(StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
 				|| StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()))) {
-			if (!isNumeric(requestDTO.getRequest().getPageStart())) {
+			if (isNumeric(requestDTO.getRequest().getPageStart())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageStart", msg));
 				throw new InvalidInputException("pageStart");
 			}
-			if (!isNumeric(requestDTO.getRequest().getPageFetch())) {
+			if (isNumeric(requestDTO.getRequest().getPageFetch())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageFetch", msg));
 				throw new InvalidInputException("pageFetch");
 			}
@@ -557,7 +557,7 @@ public class RequestValidator {
 	}
 
 	public static boolean isNumeric(String strNum) {
-		return strNum.matches(("[0-9]+"));
+		return !strNum.matches(("[0-9]+"));
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
@@ -706,7 +706,7 @@ public class RequestValidator {
 		}
 		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
+		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
@@ -900,7 +900,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must not be null"));
 			throw new InvalidInputException("transactionID");
-		} else if(!isNumeric(transactionID) || transactionID.length()!=10){
+		} else if(isNumeric(transactionID) || transactionID.length()!=10){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must be 10 digit containing numbers"));
 			throw new InvalidInputException("transactionID");
@@ -921,7 +921,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp must not be null"));
 			throw new InvalidInputException("otp");
-		} else if(!isNumeric(otp)){
+		} else if(isNumeric(otp)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp is invalid"));
 			throw new InvalidInputException("otp");
