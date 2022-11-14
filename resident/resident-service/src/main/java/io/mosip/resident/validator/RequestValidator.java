@@ -905,7 +905,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must not be null"));
 			throw new InvalidInputException("transactionID");
-		} else if(!isNumeric(transactionID)){
+		} else if(!isNumeric(transactionID) || transactionID.length()!=10){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must be 10 digit containing numbers"));
 			throw new InvalidInputException("transactionID");
