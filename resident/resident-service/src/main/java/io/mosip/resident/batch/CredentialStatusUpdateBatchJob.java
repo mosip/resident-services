@@ -1,71 +1,15 @@
 package io.mosip.resident.batch;
 
-import static io.mosip.resident.constant.CredentialUpdateStatus.*;
-import static io.mosip.resident.constant.NotificationTemplateCode.DOWNLOAD_PERSONALIZED_CARD_FAILED;
-import static io.mosip.resident.constant.NotificationTemplateCode.DOWNLOAD_PERSONALIZED_CARD_SUCCESS;
-import static io.mosip.resident.constant.NotificationTemplateCode.ORDER_PHYSICAL_CARD_FAILED;
-import static io.mosip.resident.constant.NotificationTemplateCode.SHARE_CREDENTIAL_FAILED;
-import static io.mosip.resident.constant.NotificationTemplateCode.UIN_UPDATE_FAILED;
-import static io.mosip.resident.constant.NotificationTemplateCode.UIN_UPDATE_PRINTING;
-import static io.mosip.resident.constant.NotificationTemplateCode.VID_CARD_DOWNLOAD_FAILED;
-import static io.mosip.resident.constant.NotificationTemplateCode.DOWNLOAD_PERSONALIZED_CARD_RECEIVED;
-import static io.mosip.resident.constant.RequestType.DOWNLOAD_PERSONALIZED_CARD;
-import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
-import static io.mosip.resident.constant.RequestType.SHARE_CRED_WITH_PARTNER;
-import static io.mosip.resident.constant.RequestType.UPDATE_MY_UIN;
-import static io.mosip.resident.constant.RequestType.VID_CARD_DOWNLOAD;
-import static io.mosip.resident.constant.ResidentConstants.*;
-import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT;
-import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL;
-import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL_DEFAULT;
-import static io.mosip.resident.constant.ResidentConstants.DATE;
-import static io.mosip.resident.constant.ResidentConstants.DOWNLOAD_CARD;
-import static io.mosip.resident.constant.ResidentConstants.DOWNLOAD_LINK;
-import static io.mosip.resident.constant.ResidentConstants.EVENT_DETAILS;
-import static io.mosip.resident.constant.ResidentConstants.EVENT_ID;
-import static io.mosip.resident.constant.ResidentConstants.IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED;
-import static io.mosip.resident.constant.ResidentConstants.NAME;
-import static io.mosip.resident.constant.ResidentConstants.NOTIFICATION_ZONE;
-import static io.mosip.resident.constant.ResidentConstants.PUBLIC_URL;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
-import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
-import static io.mosip.resident.constant.ResidentConstants.TIME;
-import static io.mosip.resident.constant.ResidentConstants.TRACK_SERVICE_REQUEST_LINK;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.transaction.Transactional;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TemplateEnum;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.constant.TemplateVariablesEnum;
-import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -76,8 +20,52 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static io.mosip.resident.constant.CredentialUpdateStatus.DELIVERED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.FAILED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.IN_TRANSIT;
+import static io.mosip.resident.constant.CredentialUpdateStatus.ISSUED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.NEW;
+import static io.mosip.resident.constant.CredentialUpdateStatus.PAYMENT_CONFIRMED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.PRINTING;
+import static io.mosip.resident.constant.CredentialUpdateStatus.PROCESSING;
+import static io.mosip.resident.constant.CredentialUpdateStatus.RECEIVED;
+import static io.mosip.resident.constant.RequestType.DOWNLOAD_PERSONALIZED_CARD;
+import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
+import static io.mosip.resident.constant.RequestType.SHARE_CRED_WITH_PARTNER;
+import static io.mosip.resident.constant.RequestType.UPDATE_MY_UIN;
+import static io.mosip.resident.constant.RequestType.VID_CARD_DOWNLOAD;
+import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY;
+import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT;
+import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL;
+import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL_DEFAULT;
+import static io.mosip.resident.constant.ResidentConstants.DOWNLOAD_CARD;
+import static io.mosip.resident.constant.ResidentConstants.IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED;
+import static io.mosip.resident.constant.ResidentConstants.NOTIFICATION_DATE_PATTERN;
+import static io.mosip.resident.constant.ResidentConstants.NOTIFICATION_TIME_PATTERN;
+import static io.mosip.resident.constant.ResidentConstants.NOTIFICATION_ZONE;
+import static io.mosip.resident.constant.ResidentConstants.PUBLIC_URL;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
 
 /**
  * @author Manoj SP
@@ -338,7 +326,7 @@ public class CredentialStatusUpdateBatchJob {
 	private String getTrackingId(String transactionId, String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Object object = residentServiceRestClient.getApi(ApiName.GET_ORDER_STATUS_URL, List.of(),
-				List.of(TemplateVariablesEnum.TRANSACTION_ID, TemplateVariablesEnum.INDIVIDUAL_ID), List.of(transactionId, individualId), ResponseWrapper.class);
+				List.of(TemplateVariablesConstants.TRANSACTION_ID, TemplateVariablesConstants.INDIVIDUAL_ID), List.of(transactionId, individualId), ResponseWrapper.class);
 		ResponseWrapper<Map<String, String>> responseWrapper = JsonUtil.convertValue(object,
 				new TypeReference<ResponseWrapper<Map<String, String>>>() {
 				});
@@ -346,7 +334,7 @@ public class CredentialStatusUpdateBatchJob {
 			logger.error("ORDER_STATUS_URL returned error " + responseWrapper.getErrors());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 		}
-		return responseWrapper.getResponse().get(TemplateVariablesEnum.TRACKING_ID);
+		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
 	}
 
 }
