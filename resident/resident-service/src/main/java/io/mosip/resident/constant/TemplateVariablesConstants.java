@@ -4,7 +4,7 @@ package io.mosip.resident.constant;
  * The Enum TemplateVariablesEnum.
  * @author Kamesh Shekhar Prasad
  */
-public class TemplateVariablesEnum {
+public class TemplateVariablesConstants {
     public static final String EVENT_ID = "eventId";
     public static final String EVENT_TYPE = "eventType";
     public static final String PURPOSE = "purpose";

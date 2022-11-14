@@ -18,7 +18,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TemplateVariablesEnum;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.JsonValue;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -430,18 +430,12 @@ public class Utilitiy {
 
 	public String getFileName(String eventId, String propertyName){
 		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
-		if(propertyName.contains(TemplateVariablesEnum.EVENT_ID)){
-			propertyName = propertyName.replace(TemplateVariablesEnum.EVENT_ID, eventId);
+		if(propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
+			propertyName = propertyName.replace(TemplateVariablesConstants.EVENT_ID, eventId);
 		}
-		if(propertyName.contains(TemplateVariablesEnum.TIMESTAMP)){
-			propertyName = propertyName.replace(TemplateVariablesEnum.TIMESTAMP, DateUtils
+		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			propertyName = propertyName.replace(TemplateVariablesConstants.TIMESTAMP, DateUtils
 					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
-		}
-		if(propertyName.contains("{")){
-			propertyName = propertyName.replace("{", "");
-		}
-		if(propertyName.contains("}")){
-			propertyName = propertyName.replace("}", "");
 		}
 		return propertyName;
 	}

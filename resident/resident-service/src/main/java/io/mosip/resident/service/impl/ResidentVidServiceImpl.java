@@ -42,7 +42,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateEnum;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.constant.TemplateVariablesEnum;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.IdentityDTO;
@@ -550,8 +550,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private String getVidTypeFromVid(String vid, String indivudalId) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId);
 		return vids.getResponse().stream()
-				.filter(map -> ((String)map.get(TemplateVariablesEnum.VID)).equals(vid))
-				.map(map -> (String)map.get(TemplateVariablesEnum.VID_TYPE))
+				.filter(map -> ((String)map.get(TemplateVariablesConstants.VID)).equals(vid))
+				.map(map -> (String)map.get(TemplateVariablesConstants.VID_TYPE))
 				.findAny()
 				.orElse(null);
 	}

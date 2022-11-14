@@ -136,11 +136,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
-        String password;
+        String password=null;
         try {
             decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
             List<String> attributeValues = getAttributeList();
-            password = utilitiy.getPassword(attributeValues);
+            if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))){
+                password = utilitiy.getPassword(attributeValues);
+            }
         }
         catch (Exception e) {
             audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
@@ -178,7 +180,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 List<Map<String, Object>> attributeMapObject = (List<Map<String, Object>>) attributeObject;
                 for (Map<String, Object> attributeInLanguage : attributeMapObject) {
                     /**
-                     * 1st language code is taken from mosip.template.language.
+                     * 1st language code is taken from mandatory/optional languages properties
                      */
                     String languageCode = utilities.getLanguageCode();
                     if (attributeInLanguage.containsKey(LANGUAGE) &&
