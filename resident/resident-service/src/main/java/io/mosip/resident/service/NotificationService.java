@@ -23,7 +23,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -36,7 +35,7 @@ import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.constant.TemplateVariablesEnum;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
@@ -130,13 +129,13 @@ public class NotificationService {
 		String notificationEventId=getNotificationEventId(dto);
 		String otp = getOtp(dto);
 		if(otp!=null){
-			notificationAttributes.put(TemplateVariablesEnum.OTP, otp);
+			notificationAttributes.put(TemplateVariablesConstants.OTP, otp);
 		}
 		if(phone!=null){
-			notificationAttributes.put(TemplateVariablesEnum.PHONE, phone);
+			notificationAttributes.put(TemplateVariablesConstants.PHONE, phone);
 		}
 		if(notificationEventId!=null) {
-			notificationAttributes.put(TemplateVariablesEnum.EVENT_ID, notificationEventId);
+			notificationAttributes.put(TemplateVariablesConstants.EVENT_ID, notificationEventId);
 		}
 		if(channels == null || channels.isEmpty() || channels.stream().collect(Collectors.joining(",")).isEmpty() || channels.stream().collect(Collectors.joining(",")).equals("null")) {
 			if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
@@ -288,12 +287,12 @@ public class NotificationService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendSMSNotification()::entry");
-		String eventId=(String) mailingAttributes.get(TemplateVariablesEnum.EVENT_ID);
+		String eventId=(String) mailingAttributes.get(TemplateVariablesConstants.EVENT_ID);
 		String phone="";
-		if(mailingAttributes.get(TemplateVariablesEnum.PHONE)== null){
+		if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
 			phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
 		} else{
-			phone =  (String) mailingAttributes.get(TemplateVariablesEnum.PHONE);
+			phone =  (String) mailingAttributes.get(TemplateVariablesConstants.PHONE);
 		}
 
 		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
@@ -305,12 +304,12 @@ public class NotificationService {
 		for (String language : templateLangauges) {
 			String languageTemplate = "";
 			if(notificationTemplate==null) {
-				if(mailingAttributes.get(TemplateVariablesEnum.PHONE)== null){
+				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
 							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
 				} else{
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesEnum.OTP))));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP))));
 				}
 
 			} else {
@@ -396,11 +395,11 @@ public class NotificationService {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendEmailNotification()::entry");
-		String eventId=(String) mailingAttributes.get(TemplateVariablesEnum.EVENT_ID);
+		String eventId=(String) mailingAttributes.get(TemplateVariablesConstants.EVENT_ID);
 		String email = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
 		String otp="";
 		if(newEmail!=null){
-			otp=(String) mailingAttributes.get(TemplateVariablesEnum.OTP);
+			otp=(String) mailingAttributes.get(TemplateVariablesConstants.OTP);
 		}
 		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",

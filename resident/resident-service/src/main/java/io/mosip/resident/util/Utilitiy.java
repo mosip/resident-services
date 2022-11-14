@@ -18,6 +18,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.JsonValue;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -339,7 +340,18 @@ public class Utilitiy {
 	public String convertToMaskDataFormat(String maskData) {
 		return maskData(maskData, maskingFunction);
 	}
-	
+
+	public String getPassword(List<String> attributeValues) {
+		Map<String, List<String>> context = new HashMap<>();
+		context.put("attributeValues", attributeValues);
+		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
+		myVarFactory.setNextFactory(functionFactory);
+		String maskingFunctionName = this.env.getProperty(ResidentConstants.CREATE_PASSWORD_METHOD_NAME);
+		Serializable serializable = MVEL.compileExpression(maskingFunctionName+"(attributeValues);");
+		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
+	}
+
+
 	public ResidentTransactionEntity createEntity() {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
@@ -415,4 +427,17 @@ public class Utilitiy {
 
 		return pdfSignatured;
 	}
+
+	public String getFileName(String eventId, String propertyName){
+		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
+		if(propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
+			propertyName = propertyName.replace(TemplateVariablesConstants.EVENT_ID, eventId);
+		}
+		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			propertyName = propertyName.replace(TemplateVariablesConstants.TIMESTAMP, DateUtils
+					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
+		}
+		return propertyName;
+	}
+
 }

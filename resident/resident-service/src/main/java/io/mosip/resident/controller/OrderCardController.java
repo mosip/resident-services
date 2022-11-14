@@ -74,7 +74,7 @@ public class OrderCardController {
 	}
 	
 	@ResponseFilter 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getOrderRedirect()" + ")")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetOrderRedirect()" + ")")
 	@GetMapping("/physical-card/order")
 	@Operation(summary = "get", description = "Get redirect-url", tags = { "order-card-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

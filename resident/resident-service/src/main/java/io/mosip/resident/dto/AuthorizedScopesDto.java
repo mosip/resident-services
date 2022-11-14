@@ -88,7 +88,8 @@ public class AuthorizedScopesDto {
 
 	private List<String> postDownloadCard;
 	
-	private List<String> OrderRedirect;
+	private List<String> getOrderRedirect;
 
+	private List<String> postPersonalizedCard;
 
 }
