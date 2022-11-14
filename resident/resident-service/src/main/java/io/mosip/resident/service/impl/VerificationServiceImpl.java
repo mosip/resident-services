@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -50,25 +50,11 @@ public class VerificationServiceImpl implements VerificationService {
         ResidentTransactionEntity residentTransEntity = createResidentTransactionEntity(individualId);
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
-        IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 
-        String uin ="";
-        String email ="";
-        String phone ="";
-
-        if (identityDTO != null) {
-            uin = identityDTO.getUIN();
-            email = identityDTO.getEmail();
-            phone = identityDTO.getPhone();
-        }
-        
-        String id = getIdForResidentTransaction(uin, email, phone, residentTransEntity);
         residentTransEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        byte[] idBytes = id.getBytes();
-        String hash = HMACUtils2.digestAsPlainText(idBytes);
-        Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(hash);
-        if (residentTransactionEntity.isPresent()) {
-            if(residentTransactionEntity.get().getStatusCode().equalsIgnoreCase("OTP_VERIFIED")){
+        List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRefIdOrderByCrDtimesDesc(getRefIdHash(individualId));
+        if (!residentTransactionEntity.isEmpty()) {
+            if(residentTransactionEntity.get(0).getStatusCode().equalsIgnoreCase("OTP_VERIFIED")){
                 verificationStatus = true;
                 residentTransEntity.setStatusCode(EventStatusInProgress.NEW.name());
             }
@@ -82,6 +68,10 @@ public class VerificationServiceImpl implements VerificationService {
         residentTransactionRepository.save(residentTransEntity);
 
         return verificationResponseDTO;
+    }
+
+    private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
+        return HMACUtils2.digestAsPlainText(individualId.getBytes());
     }
 
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId) throws ApisResourceAccessException {

@@ -25,6 +25,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	ResidentTransactionEntity findByAid(String aid);
 
+	List<ResidentTransactionEntity> findByRefIdOrderByCrDtimesDesc(String refId);
+
 	List<ResidentTransactionEntity> findByTokenId(String token);
 
 	@Query(value = "Select new ResidentTransactionEntity( eventId, statusComment , crDtimes, statusCode, updDtimes, requestTypeCode) "
