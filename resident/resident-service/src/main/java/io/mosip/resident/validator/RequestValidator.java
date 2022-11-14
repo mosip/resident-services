@@ -557,12 +557,7 @@ public class RequestValidator {
 	}
 
 	public static boolean isNumeric(String strNum) {
-		try {
-			Integer.parseInt(strNum);
-		} catch (NumberFormatException nfe) {
-			return false;
-		}
-		return true;
+		return strNum.matches(("[0-9]+"));
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
