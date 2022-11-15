@@ -133,8 +133,6 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             return downloadAPersonalizedCard;
         }else if(requestTypeCode.equals(RequestType.UPDATE_MY_UIN.toString())){
             return updateDemographicData;
-        }else if(requestTypeCode.equals(RequestType.VERIFY_PHONE_EMAIL.toString())){
-            return verifyEmailIdOrPhoneNumber;
         }else if(requestTypeCode.equals(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
             return secureMyId;
         }else {
