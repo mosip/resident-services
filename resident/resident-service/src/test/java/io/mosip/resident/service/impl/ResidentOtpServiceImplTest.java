@@ -82,6 +82,7 @@ public class ResidentOtpServiceImplTest {
 	@Test
 	public void generateOtpMailTest() throws Exception {
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
+		otpRequestDTO.setOtpChannel(List.of("EMAIL"));
 		assertNotNull(residentOtpServiceImpl.generateOtp(otpRequestDTO));
 	}
 
@@ -90,6 +91,7 @@ public class ResidentOtpServiceImplTest {
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
 		IdentityDTO identityDTO = getIdentityDTO();
 		identityDTO.setEmail(null);
+		otpRequestDTO.setOtpChannel(List.of("EMAIL"));
 		assertNotNull(residentOtpServiceImpl.generateOtp(otpRequestDTO));
 	}
 
@@ -97,6 +99,7 @@ public class ResidentOtpServiceImplTest {
 	public void generateOtpForAid() throws Exception {
 		AidOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
+		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL"));
 		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
 		assertNotNull(residentOtpServiceImpl.generateOtpForAid(aidOtpRequestDTO));
 	}
