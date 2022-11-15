@@ -180,14 +180,6 @@ public class AcknowledgmentServiceTest {
     }
 
     @Test
-    public void testAcknowledgementServiceRequestTypeVerifyPhoneOrEmailTest() throws ResidentServiceCheckedException, IOException {
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VERIFY_PHONE_EMAIL.toString());
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
-        assertNotNull(actualResult);
-    }
-
-    @Test
     public void testAcknowledgementServiceRequestTypeSecureMyIdTest() throws ResidentServiceCheckedException, IOException {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);

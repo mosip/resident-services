@@ -60,7 +60,6 @@ public class ResidentVerificationServiceTest {
     public void setup() throws Exception {
     	ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
     }
 
     @Test

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import io.mosip.resident.dto.*;
+import io.mosip.resident.util.Utilitiy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -52,6 +53,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	
 	@Autowired
 	private ResidentServiceImpl residentServiceImpl;
+
+	@Autowired
+	private Utilitiy utilitiy;
 	
 	@Override
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
@@ -88,18 +92,6 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-
-		IdentityDTO identityDTO = identityServiceImpl.getIdentity(otpRequestDTO.getIndividualId());
-
-		String uin = identityDTO.getUIN();
-		String email = identityDTO.getEmail();
-		String phone = identityDTO.getPhone();
-
-		String id = getIdForResidentTransaction(uin, email, phone);
-
-		byte[] idBytes = id.getBytes();
-		String hash = HMACUtils2.digestAsPlainText(idBytes);
-		residentTransactionEntity.setAid(hash);
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
@@ -111,25 +103,15 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
 		residentTransactionEntity.setLangCode("eng");
 		residentTransactionEntity.setRefIdType("UIN");
-		residentTransactionEntity.setRefId(getRefIdHash(otpRequestDTO.getIndividualId()));
+		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
+			residentTransactionEntity.setRefId(utilitiy.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
+		} else{
+			residentTransactionEntity.setRefId(getRefIdHash(otpRequestDTO.getIndividualId()));
+		}
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setCrBy("mosip");
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
-
 		residentTransactionRepository.save(residentTransactionEntity);
-	}
-
-	private String getIdForResidentTransaction(String uin, String email, String phone) throws ResidentServiceCheckedException {
-		String idaToken= identityServiceImpl.getIDAToken(uin);
-		String id;
-		if(email != null) {
-			id= email+idaToken;
-		} else if(phone != null) {
-			id= phone+idaToken;
-		} else {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
-		}
-		return id;
 	}
 
 	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
