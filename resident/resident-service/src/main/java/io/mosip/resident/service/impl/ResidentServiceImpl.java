@@ -1747,8 +1747,9 @@ public class ResidentServiceImpl implements ResidentService {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
 			String statusCode = getEventStatusCode(residentTransactionEntity.getStatusCode());
-			RequestType requestType = RequestType.valueOf(residentTransactionEntity.getRequestTypeCode());
-			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
+			Optional<RequestType> requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
+			Optional<String> serviceType = requestType.flatMap(ServiceType::getServiceTypeFromRequestType);
+
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
 			serviceHistoryResponseDto.setEventStatus(statusCode);
@@ -1758,13 +1759,12 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
-			if(serviceType.isPresent()) {
+			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
 				serviceHistoryResponseDto.setServiceType(serviceType.get());
-				if(serviceType.get()!=ServiceType.ALL.name()) {
-					serviceHistoryResponseDto.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
-				} else {
-					serviceHistoryResponseDto.setDescription(requestType.name());
-				}
+				serviceHistoryResponseDto
+						.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType.get()));
+			} else {
+				serviceHistoryResponseDto.setDescription(requestType.map(RequestType::name).orElse(null));
 			}
 			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);

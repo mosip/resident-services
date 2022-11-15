@@ -3,6 +3,7 @@ package io.mosip.resident.constant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
@@ -84,6 +85,15 @@ public enum RequestType {
 		this.featureName = featureName;
 		this.notificationTemplateVariablesFunction=notificationTemplateVariablesFunction;
 	}
+	
+	public static Optional<RequestType> getRequestTypeFromString(String requestTypeString) {
+        for (RequestType requestType : values()) {
+            if (requestType.name().equalsIgnoreCase(requestTypeString)) {
+                return Optional.of(requestType);
+            }
+        }
+        return Optional.empty();
+    }
 
 	public List<EventStatusSuccess> getSuccessStatusList() {
 		return successStatusList;
