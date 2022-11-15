@@ -32,11 +32,10 @@ public enum RequestType {
 			List.of(EventStatusInProgress.PAYMENT_CONFIRMED, EventStatusInProgress.NEW, EventStatusInProgress.ISSUED,
 					EventStatusInProgress.PRINTING, EventStatusInProgress.IN_TRANSIT),"order-a-physical-card",
 			TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard),
-	GET_MY_ID(TemplateUtil::getAckTemplateVariablesForGetMyId, List.of(EventStatusSuccess.CARD_DOWNLOADED),
-			List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED,
-					EventStatusInProgress.OTP_VERIFIED),"get-my-uin-card",
-			TemplateUtil::getNotificationTemplateVariablesForGetMyId),
+	GET_MY_ID(TemplateUtil::getAckTemplateVariablesForGetMyId,
+			List.of(EventStatusSuccess.CARD_DOWNLOADED, EventStatusSuccess.OTP_VERIFIED),
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED),
+			"get-my-uin-card", TemplateUtil::getNotificationTemplateVariablesForGetMyId),
 	BOOK_AN_APPOINTMENT(TemplateUtil::getAckTemplateVariablesForBookAnAppointment, List.of(), List.of(), List.of(),"", null),
 	UPDATE_MY_UIN(TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			List.of(EventStatusSuccess.PROCESSED, EventStatusSuccess.DATA_UPDATED),
@@ -69,7 +68,9 @@ public enum RequestType {
 
 	SEND_OTP(TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(),"send-otp", TemplateUtil::getNotificationSendOtpVariables),
 
-	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(), List.of(), List.of(),"validate-otp", TemplateUtil::getNotificationCommonTemplateVariables);
+	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(EventStatusSuccess.OTP_VERIFIED),
+			List.of(EventStatusFailure.OTP_VERIFICATION_FAILED), List.of(EventStatusInProgress.OTP_REQUESTED),
+			"verify-my-phone-email", TemplateUtil::getNotificationCommonTemplateVariables);
 
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;

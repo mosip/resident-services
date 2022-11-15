@@ -1751,7 +1751,6 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-			serviceHistoryResponseDto.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
 			serviceHistoryResponseDto.setEventStatus(statusCode);
 			if (residentTransactionEntity.getUpdDtimes() != null
 					&& residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
@@ -1761,6 +1760,11 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 			if(serviceType.isPresent()) {
 				serviceHistoryResponseDto.setServiceType(serviceType.get());
+				if(serviceType.get()!=ServiceType.ALL.name()) {
+					serviceHistoryResponseDto.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+				} else {
+					serviceHistoryResponseDto.setDescription(requestType.name());
+				}
 			}
 			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
