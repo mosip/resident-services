@@ -461,11 +461,9 @@ public class Utilitiy {
 		}
 		String idaToken= identityService.getIDAToken(uin);
 		String id;
-		if(email != null && phone !=null && channel.size()==2) {
-			id= email+phone+idaToken;
-		}else if(email != null && channel.get(0).equalsIgnoreCase(EMAIL)) {
+		if(email != null && channel.size()==1 && channel.get(0).equalsIgnoreCase(EMAIL)) {
 			id= email+idaToken;
-		} else if(phone != null && channel.get(0).equalsIgnoreCase(PHONE)) {
+		} else if(phone != null && channel.size()==1 && channel.get(0).equalsIgnoreCase(PHONE)) {
 			id= phone+idaToken;
 		}
 		else {
