@@ -99,7 +99,6 @@ public class ResidentOtpServiceImplTest {
 	public void generateOtpForAid() throws Exception {
 		AidOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
-		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL"));
 		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
 		assertNotNull(residentOtpServiceImpl.generateOtpForAid(aidOtpRequestDTO));
 	}
