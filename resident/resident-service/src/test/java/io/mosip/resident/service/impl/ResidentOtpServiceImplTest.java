@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.mosip.resident.util.Utilitiy;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,6 +63,9 @@ public class ResidentOtpServiceImplTest {
 	@Mock
 	private ResidentServiceImpl residentServiceImpl;
 
+	@Mock
+	private Utilitiy utility;
+
 	@InjectMocks
 	private ResidentOtpServiceImpl residentOtpServiceImpl;
 
@@ -73,8 +77,6 @@ public class ResidentOtpServiceImplTest {
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseDto);
 		when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
-		when(identityServiceImpl.getIdentity(any())).thenReturn(identityDTO);
-		when(identityServiceImpl.getIDAToken(any())).thenReturn(identityDTO.getUIN());
 	}
 
 	@Test

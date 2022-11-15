@@ -1,17 +1,11 @@
 package io.mosip.resident.service.impl;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.dto.VerificationStatusDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
@@ -23,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 public class VerificationServiceImpl implements VerificationService {
@@ -44,20 +37,16 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Override
 	public VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId)
-			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
+			throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::Start");
-
-        ResidentTransactionEntity residentTransEntity = createResidentTransactionEntity(individualId);
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
-
-        residentTransEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        List<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findByRefIdOrderByCrDtimesDesc(getRefIdHash(individualId));
-        if (!residentTransactionEntity.isEmpty()) {
-            if(residentTransactionEntity.get(0).getStatusCode().equalsIgnoreCase("OTP_VERIFIED")){
-                verificationStatus = true;
-                residentTransEntity.setStatusCode(EventStatusInProgress.NEW.name());
-            }
+        ResidentTransactionEntity residentTransactionEntity =
+                residentTransactionRepository.findTopByRefIdAndStatusCodeOrderByCrDtimesDesc
+                        (utility.getIdForResidentTransaction(individualId, List.of(channel)), EventStatusInProgress.OTP_VERIFIED.toString());
+        if (residentTransactionEntity!=null) {
+            verificationStatus = true;
+            residentTransactionRepository.save(residentTransactionEntity);
         }
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);
@@ -65,39 +54,7 @@ public class VerificationServiceImpl implements VerificationService {
         verificationResponseDTO.setId("mosip.resident.channel.verification.status");
         verificationResponseDTO.setVersion("v1");
         verificationResponseDTO.setResponseTime(DateTime.now().toString());
-        residentTransactionRepository.save(residentTransEntity);
-
         return verificationResponseDTO;
     }
-
-    private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
-        return HMACUtils2.digestAsPlainText(individualId.getBytes());
-    }
-
-	private ResidentTransactionEntity createResidentTransactionEntity(String individualId) throws ApisResourceAccessException {
-		ResidentTransactionEntity residentTransEntity=utility.createEntity();
-        residentTransEntity.setEventId(UUID.randomUUID().toString());
-        residentTransEntity.setRequestTypeCode(RequestType.VERIFY_PHONE_EMAIL.name());
-        residentTransEntity.setRefId(utility.convertToMaskDataFormat(individualId));
-        residentTransEntity.setTokenId(identityServiceImpl.getIDAToken(individualId));
-		residentTransEntity.setRequestSummary("in-progress");
-		return residentTransEntity;
-	}
-
-	private String getIdForResidentTransaction(String uin, String email, String phone, ResidentTransactionEntity residentTransEntity) throws ResidentServiceCheckedException {
-		String idaToken= identityServiceImpl.getIDAToken(uin);
-		String id;
-		if(email != null) {
-			id= email+idaToken;
-		} else if(phone != null) {
-			id= phone+idaToken;
-		} else {
-			residentTransEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			residentTransactionRepository.save(residentTransEntity);
-			
-			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
-		}
-		return id;
-	}
 }
 

@@ -9,6 +9,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
@@ -20,6 +21,7 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.IdRepoResponseDto;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.JsonValue;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -27,6 +29,7 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.util.Lists;
@@ -56,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -69,6 +73,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 
 /**
@@ -127,6 +133,9 @@ public class Utilitiy {
 	
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
+
+	@Autowired
+	private IdentityServiceImpl identityService;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -438,6 +447,31 @@ public class Utilitiy {
 					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
 		}
 		return propertyName;
+	}
+
+	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		IdentityDTO identityDTO = identityService.getIdentity(individualId);
+		String uin ="";
+		String email ="";
+		String phone ="";
+		if (identityDTO != null) {
+			uin = identityDTO.getUIN();
+			email = identityDTO.getEmail();
+			phone = identityDTO.getPhone();
+		}
+		String idaToken= identityService.getIDAToken(uin);
+		String id;
+		if(email != null && phone !=null && channel.size()==2) {
+			id= email+phone+idaToken;
+		}else if(email != null && channel.get(0).equalsIgnoreCase(EMAIL)) {
+			id= email+idaToken;
+		} else if(phone != null && channel.get(0).equalsIgnoreCase(PHONE)) {
+			id= phone+idaToken;
+		}
+		else {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
+		}
+		return HMACUtils2.digestAsPlainText(id.getBytes());
 	}
 
 }

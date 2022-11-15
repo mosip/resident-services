@@ -23,9 +23,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	List<ResidentTransactionEntity> findByCredentialRequestId(String credentialRequestId);
 
+	ResidentTransactionEntity findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc
+	(String requestTrnId, String tokenId, String statusCode);
 	ResidentTransactionEntity findByAid(String aid);
 
-	List<ResidentTransactionEntity> findByRefIdOrderByCrDtimesDesc(String refId);
+	ResidentTransactionEntity findTopByRefIdAndStatusCodeOrderByCrDtimesDesc(String refId, String statusCode);
 
 	List<ResidentTransactionEntity> findByTokenId(String token);
 
@@ -83,6 +85,9 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	List<ResidentTransactionEntity> findByIdandStatus(@Param("tokenId") String tokenId);
 
 	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashrefid AND auth_type_code !='OTP_REQUESTED'")
+	/**
+	 * AuthTransaction entries only will be expected here. This wouldn't fetch the otp Requested performed in resident service.
+	 */
 	Integer findByrefIdandauthtype(@Param("hashrefid") String hashrefid);
 
 }
