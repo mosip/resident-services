@@ -48,7 +48,6 @@ public class ProxyIdRepoController {
 	@Autowired
 	private AuditUtil auditUtil;
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetRemainingUpdateCount()" + ")")
 	@GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get Remaining update count by Individual Id Request", description = "Get Remaining update count by Individual Id Request", tags = {
 			"proxy-id-repo-identity-update-controller" })

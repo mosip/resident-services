@@ -45,9 +45,6 @@ public class AcknowledgementController {
     @Autowired
     private TemplateUtil templateUtil;
 
-    @PreAuthorize("@scopeValidator.hasAllScopes("
-            + "@authorizedScopes.getGetAcknowledgement()"
-            + ")")
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
                                                   @PathVariable("languageCode") String languageCode) throws ResidentServiceCheckedException, IOException {
