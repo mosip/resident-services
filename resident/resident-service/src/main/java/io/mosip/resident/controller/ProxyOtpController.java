@@ -57,9 +57,6 @@ public class ProxyOtpController {
 	 * @return AuthNResponse
 	 */
 
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getPostSendOtp()"
-			+ ")")
 	@PostMapping(value = "/contact-details/send-otp", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "sendOTP", description = "Send Otp to UserId", tags = "login-controller")
 	@ApiResponses(value = {
@@ -84,9 +81,6 @@ public class ProxyOtpController {
 	 * @param userIdOtpRequest
 	 * @return AuthNResponse
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getPostValidateOtp()"
-			+ ")")
 	@PostMapping(value = "/contact-details/update-data", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "validateWithUserIdOtp", description = "Validate UserId and Otp", tags = "login-controller")
 	@ApiResponses(value = {

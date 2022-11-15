@@ -253,7 +253,6 @@ public class ResidentController {
 		return response;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetEventIdStatus()" + ")")
 	@GetMapping(path = "/events/{event-id}")
 	@Operation(summary = "getGetCheckEventIdStatus", description = "checkEventIdStatus", tags = {
 			"resident-controller" })

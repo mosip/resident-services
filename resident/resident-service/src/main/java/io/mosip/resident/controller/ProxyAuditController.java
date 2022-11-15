@@ -43,7 +43,6 @@ public class ProxyAuditController {
 	 *                                         exception
 	 */
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostAuditLog()" + ")")
 	@PostMapping("/log")
 	@Operation(summary = "auditLog", description = "audit log", tags = { "proxy-audit-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

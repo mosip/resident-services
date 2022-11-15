@@ -50,7 +50,6 @@ public class ProxyPartnerManagementController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetPartnersByPartnerType()" + ")")
 	@RequestMapping(method = RequestMethod.GET)
 	@Operation(summary = "getPartnersByPartnerType", description = "getPartnersByPartnerType", tags = {
 			"proxy-partner-management-controller" })

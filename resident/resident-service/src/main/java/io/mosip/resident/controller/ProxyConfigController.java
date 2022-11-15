@@ -66,7 +66,6 @@ public class ProxyConfigController {
 		return propertiesResponse;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUISchema()" + ")")
 	@GetMapping("/auth-proxy/config/ui-schema/{schemaType}")
 	@Operation(summary = "getResidentUISchema", description = "Get the Resident-UI Schema", tags = {
 			"proxy-config-controller" })
@@ -85,7 +84,6 @@ public class ProxyConfigController {
 		return propertiesResponse;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetIdentityMapping()" + ")")
 	@GetMapping("/auth-proxy/config/identity-mapping")
 	@Operation(summary = "getIdentityMapping", description = "Get the identity-mapping", tags = {
 			"proxy-config-controller" })

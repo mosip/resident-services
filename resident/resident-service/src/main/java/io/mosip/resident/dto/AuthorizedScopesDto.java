@@ -30,29 +30,11 @@ public class AuthorizedScopesDto {
 
 	private List<String> patchUpdateUin;
 
-	private List<String> postUploadDocuments;
-
-	private List<String> getUploadedDocuments;
-
-	private List<String> getUploadedDocument;
-
 	private List<String> getServiceAuthHistoryRoles;
-
-	private List<String> getServiceRequestUpdate;
-
-	private List<String> getEventIdStatus;
-
-	private List<String> getPartnersByPartnerType;
 
 	private List<String> getDownloadCard;
 
 	private List<String> postSendPhysicalCard;
-
-	private List<String> deleteUploadDocuments;
-
-	private List<String> getAllTemplateBylangCodeAndTemplateTypeCode;
-
-	private List<String> postAuditLog;
 
 	private List<String> getUnreadServiceList;
 
@@ -65,29 +47,11 @@ public class AuthorizedScopesDto {
 	private List<String> postPinStatus;
 
 	private List<String> postUnPinStatus;
-
-	private List<String> getAcknowledgement;
 	
 	private List<String> postRequestDownloadPersonalizedCard;
 
 	private List<String> postRequestShareCredWithPartner;
 
-	private List<String> postTransliteration;
-	
-	private List<String> getIdentityMapping;
-	
-	private List<String> getUISchema;
-
-	private List<String> postSendOtp;
-
-	private List<String> postValidateOtp;
-	
-	private List<String> getRemainingUpdateCount;
-	
-	private List<String> getGenderTypeByLandCode;
-
 	private List<String> postDownloadCard;
-
-	private List<String> postPersonalizedCard;
 
 }
