@@ -138,6 +138,12 @@ public class RequestValidator {
 
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusID;
+	
+	@Value("${resident.share.credential.id}")
+	private String shareCredentialId;
+	
+	@Value("${mosip.resident.request.response.version}")
+	private String reqResVersion;
 
 	private Map<RequestIdType, String> map;
 
@@ -174,7 +180,7 @@ public class RequestValidator {
 		map.put(RequestIdType.AUTH_HISTORY_ID, authHstoryId);
 		map.put(RequestIdType.RES_UPDATE, uinUpdateId);
 		map.put(RequestIdType.CHECK_STATUS, checkStatusID);
-
+		map.put(RequestIdType.SHARE_CREDENTIAL, shareCredentialId);
 	}
 
 	public void validateVidCreateRequest(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
@@ -282,11 +288,6 @@ public class RequestValidator {
 
 		validateAuthorUnlockId(requestDTO, authTypeStatus);
 
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-
 		String individualId = requestDTO.getRequest().getIndividualId();
 		if (StringUtils.isEmpty(individualId)
 				|| !validateIndividualIdvIdWithoutIdType(individualId)) {
@@ -329,11 +330,6 @@ public class RequestValidator {
 	public void validateEuinRequest(RequestWrapper<EuinRequestDTO> requestDTO) {
 		validateRequest(requestDTO, RequestIdType.E_UIN_ID);
 
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for EUIN");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
@@ -364,11 +360,6 @@ public class RequestValidator {
 
 	public void validateAuthHistoryRequest(@Valid RequestWrapper<AuthHistoryRequestDTO> requestDTO) {
 		validateRequest(requestDTO, RequestIdType.AUTH_HISTORY_ID);
-
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId()))
 			throw new InvalidInputException("individualId");
@@ -550,8 +541,13 @@ public class RequestValidator {
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(version))
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(reqResVersion))
 			throw new InvalidInputException("version");
+		
+		if (request.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("request");
+		}
 		return true;
 
 	}
@@ -561,11 +557,6 @@ public class RequestValidator {
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-
 		validateRequest(requestDTO, RequestIdType.RE_PRINT_ID);
 
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for print UIN API");
@@ -599,11 +590,6 @@ public class RequestValidator {
 	}
 
 	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-
 		validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 
 		if (!isPatch) {
@@ -639,11 +625,6 @@ public class RequestValidator {
 	}
 
 	public void validateRidCheckStatusRequestDTO(RequestWrapper<RequestDTO> requestDTO) {
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-
 		validateRequest(requestDTO, RequestIdType.CHECK_STATUS);
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualIdType())
@@ -671,13 +652,7 @@ public class RequestValidator {
 
 	public void validateAuthUnlockRequest(RequestWrapper<AuthUnLockRequestDTO> requestDTO,
 			AuthTypeStatus authTypeStatus) {
-
 		validateRequest(requestDTO, RequestIdType.AUTH_UNLOCK_ID);
-
-		if (requestDTO.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
 
 		String individualId = requestDTO.getRequest().getIndividualId();
 		if (StringUtils.isEmpty(individualId)
@@ -738,10 +713,7 @@ public class RequestValidator {
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		validateRequest(reqDto, RequestIdType.CHECK_STATUS);
-		
-		if(reqDto.getRequest() == null) {
-			throw new InvalidInputException("request");
-		}
+
 		if(reqDto.getRequest().getAid() == null) {
 			throw new InvalidInputException("aid");
 		}
