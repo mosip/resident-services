@@ -7,5 +7,6 @@ public enum RequestIdType {
 	RE_PRINT_ID,
 	RES_UPDATE,
 	CHECK_STATUS,
+	SHARE_CREDENTIAL,
 	VERSION;
 }
