@@ -51,9 +51,6 @@ public class TransliterationController {
 	 * @param requestDTO
 	 * @return responseDto with transliterated toFieldValue.
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getPostTransliteration()"
-			+ ")")
 	@PostMapping(path = "/transliterate", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary  = "Get Pre-Registartion-Translitration data", description = "Get Pre-Registartion-Translitration data", tags = "Transliteration Controller")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Given key is translitrated successfully"),

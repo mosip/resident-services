@@ -83,9 +83,6 @@ public class DocumentController {
 	 * @param request       DocumentRequestDTO
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getPostUploadDocuments()"
-		+ ")")
 	@PostMapping(path = "/documents/{transaction-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentResponseDTO> uploadDocuments(@PathVariable("transaction-id") String transactionId,
 			@RequestPart(value = "file", required = true) MultipartFile file,
@@ -129,9 +126,6 @@ public class DocumentController {
 	 * @param transactionId The transaction ID of the document
 	 * @return ResponseWrapper<List<DocumentResponseDTO>>
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getGetUploadedDocuments()"
-		+ ")")
 	@GetMapping(path = "/documents/{transaction-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<List<DocumentResponseDTO>> getDocumentsByTransactionId(
 			@PathVariable("transaction-id") String transactionId) {
@@ -164,9 +158,6 @@ public class DocumentController {
 	 * @param documentId    The document ID of the document should be passed as Path Variable
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getGetUploadedDocuments()"
-			+ ")")
 	@GetMapping(path = "/document/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentDTO> getDocumentByDocumentId(
 			@RequestParam("transactionId") String transactionId,
@@ -200,9 +191,6 @@ public class DocumentController {
 	 * @param documentId    The document ID of the document
 	 * @return ResponseWrapper<ResponseDTO>
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes("
-			+ "@authorizedScopes.getDeleteUploadDocuments()"
-			+ ")")
 	@DeleteMapping(path = "/documents/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<ResponseDTO> deleteDocument(
 			@RequestParam("transactionId") String transactionId,

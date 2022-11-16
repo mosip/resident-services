@@ -60,7 +60,6 @@ public class DownloadCardController {
                         downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
                 .body(resource);
     }
-
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
     public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO){
