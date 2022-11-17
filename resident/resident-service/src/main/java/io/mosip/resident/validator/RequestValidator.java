@@ -958,4 +958,11 @@ public class RequestValidator {
 			throw new InvalidInputException(variableName);
 		}
 	}
+
+	public void validateDownloadCardVid(String vid) {
+		if(!validateVid(vid)){
+			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
+			throw new InvalidInputException("VID");
+		}
+	}
 }
