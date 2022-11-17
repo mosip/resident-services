@@ -107,4 +107,12 @@ public class ResidentConstants {
 
     public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
 
+    public static final String CREDENTIAL_TYPE_PROPERTY = "mosip.resident.request.credential.credentialType";
+    public static final String CREDENTIAL_ISSUER = "mosip.credential.issuer";
+    public static final String CREDENTIAL_ENCRYPTION_FLAG = "mosip.resident.request.credential.isEncrypt";
+    public static final String CREDENTIAL_ENCRYPTION_KEY = "mosip.resident.request.credential.encryption.key";
+    public static final String VID_DOWNLOAD_CARD_ID = "mosip.resident.request.vid.card.id";
+    public static final String VID_DOWNLOAD_CARD_VERSION = "mosip.resident.request.vid.card.version";
+
+    public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
 }

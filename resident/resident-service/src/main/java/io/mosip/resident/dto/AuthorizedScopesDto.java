@@ -53,6 +53,8 @@ public class AuthorizedScopesDto {
 	private List<String> postRequestShareCredWithPartner;
 
 	private List<String> postDownloadCard;
+	
+	private List<String> getOrderRedirect;
 
 	private List<String> postPersonalizedCard;
 
