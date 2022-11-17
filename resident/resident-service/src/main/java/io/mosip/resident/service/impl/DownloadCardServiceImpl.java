@@ -74,6 +74,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String TRANSACTION_LIMIT = "transactionLimit";
     private static final String TRANSACTION_COUNT = "transactionCount";
     private static final String NEW = "NEW";
+    private static final String FIRST_NAME = "firstName";
+    private static final String DATE_OF_BIRTH = "dateOfBirth";
     @Autowired
     private ResidentController residentController;
 
@@ -261,6 +263,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             credentialReqestDto.setEncryptionKey(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid);
             credentialReqestDto.setAdditionalData(additionalAttributes);
+            credentialReqestDto.setSharableAttributes(List.of(FIRST_NAME, DATE_OF_BIRTH));
             requestDto.setRequest(credentialReqestDto);
             requestDto.setId("mosip.credential.request.service.id");
             requestDto.setRequest(credentialReqestDto);
