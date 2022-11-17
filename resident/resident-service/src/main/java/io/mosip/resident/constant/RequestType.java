@@ -61,11 +61,13 @@ public enum RequestType {
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload),
 
-	SEND_OTP(TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(),"send-otp", TemplateUtil::getNotificationSendOtpVariables),
-
+	SEND_OTP(TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(), "send-otp",
+			TemplateUtil::getNotificationSendOtpVariables),
 	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(EventStatusSuccess.OTP_VERIFIED),
 			List.of(EventStatusFailure.OTP_VERIFICATION_FAILED), List.of(EventStatusInProgress.OTP_REQUESTED),
-			"verify-my-phone-email", TemplateUtil::getNotificationCommonTemplateVariables);
+			"verify-my-phone-email", TemplateUtil::getNotificationCommonTemplateVariables),
+	DEFAULT(TemplateUtil::getCommonTemplateVariables, List.of(), List.of(), List.of(), "",
+			TemplateUtil::getNotificationCommonTemplateVariables);
 
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
@@ -86,13 +88,13 @@ public enum RequestType {
 		this.notificationTemplateVariablesFunction=notificationTemplateVariablesFunction;
 	}
 	
-	public static Optional<RequestType> getRequestTypeFromString(String requestTypeString) {
+	public static RequestType getRequestTypeFromString(String requestTypeString) {
         for (RequestType requestType : values()) {
             if (requestType.name().equalsIgnoreCase(requestTypeString)) {
-                return Optional.of(requestType);
+                return requestType;
             }
         }
-        return Optional.empty();
+        return RequestType.DEFAULT;
     }
 
 	public List<EventStatusSuccess> getSuccessStatusList() {
