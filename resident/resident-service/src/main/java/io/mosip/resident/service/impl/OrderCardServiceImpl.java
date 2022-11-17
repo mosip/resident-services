@@ -157,15 +157,19 @@ public class OrderCardServiceImpl implements OrderCardService {
 	
 	private void checkOrderStatus(String transactionId, String individualId,
 			ResidentTransactionEntity residentTransactionEntity) throws ResidentServiceCheckedException {
-		 checkOrderStatus(transactionId,individualId,null,residentTransactionEntity,null,null,null,null);
+		 checkOrderStatus(transactionId,individualId,null,residentTransactionEntity,null,null,null);
 	}
 
 	private String checkOrderStatus(String transactionId, String individualId, String redirectUrl,
-			ResidentTransactionEntity residentTransactionEntity, String eventId, String errorCode, String errorMessage,
+			ResidentTransactionEntity residentTransactionEntity, String errorCode, String errorMessage,
 			String address) throws ResidentServiceCheckedException {
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::entry");
-		String url = new String(Base64.decodeBase64(redirectUrl.getBytes()));
-		String newUrl = url.contains("?") ? url + "&" : url + "?";
+		String url;
+		String newUrl = null;
+		if(redirectUrl != null) {
+		 url = new String(Base64.decodeBase64(redirectUrl.getBytes()));
+		 newUrl = url.contains("?") ? url + "&" : url + "?";
+		}
 		StringBuilder builder = new StringBuilder();
 		Map<String, String> queryParams = new HashMap<>();
 		String orderRedirectURL = null;
@@ -212,13 +216,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 						residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
 					}
 				} else {
-					ResponseWrapper<UrlRedirectRequestDTO> responseDto = new ResponseWrapper<UrlRedirectRequestDTO>();
-					responseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
+					UrlRedirectRequestDTO responseDto = new UrlRedirectRequestDTO();
+					responseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseWrapper.getResponse()),
 							UrlRedirectRequestDTO.class);
-					queryParams.put("trackingId", responseDto.getResponse().getTrackingId());
-					queryParams.put("paymentTransactionId", responseDto.getResponse().getTransactionId());
+					queryParams.put("trackingId", responseDto.getTrackingId());
+					queryParams.put("paymentTransactionId", responseDto.getTransactionId());
 					queryParams.put("residentFullAddress", address);
-					queryParams.put("eventId", eventId);
+					queryParams.put("eventId", residentTransactionEntity.getEventId());
 					for (Map.Entry<String, String> entry : queryParams.entrySet()) {
 						String keyValueParam = entry.getKey() + "=" + entry.getValue();
 						if (!builder.toString().isEmpty()) {
@@ -264,9 +268,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 	public String getRedirectUrl(String partnerId, String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
-		String eventId = UUID.randomUUID().toString();
+		 
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntityOrderCard(partnerId,
-				individualId, eventId);
+				individualId);
 		if (partnerDetail.isEmpty()) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 			residentTransactionRepository.save(residentTransactionEntity);
@@ -287,7 +291,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 			String newUrl = redirectUrl.contains("?") ? redirectUrl + "&" : redirectUrl + "?";
 			StringBuilder builder = new StringBuilder();
 			Map<String, String> queryParams = new HashMap<>();
-			queryParams.put("eventId", eventId);
+			queryParams.put("eventId", residentTransactionEntity.getEventId());
 			for (Map.Entry<String, String> entry : queryParams.entrySet()) {
 				String keyValueParam = entry.getKey() + "=" + entry.getValue();
 				if (!builder.toString().isEmpty()) {
@@ -299,10 +303,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 		}
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId,
-			String eventId) throws ApisResourceAccessException {
+	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(eventId);
+		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(partnerId);
@@ -326,7 +329,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		String reponse = null;
 		if (isPaymentEnabled) {
 			reponse = checkOrderStatus(paymentTransactionId, individualId, redirectUrl, residentTransactionEntity.get(),
-					eventId, errorCode, errorMessage, residentFullAddress);
+					 errorCode, errorMessage, residentFullAddress);
 		}
 		residentCredentialResponseDto = residentCredentialService.reqCredential(requestDto, individualId);
 		updateResidentTransaction(residentTransactionEntity.get(), residentCredentialResponseDto);

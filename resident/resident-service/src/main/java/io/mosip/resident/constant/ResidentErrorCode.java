@@ -102,8 +102,8 @@ public enum ResidentErrorCode {
 			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN"),
 	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
 	DOWNLOAD_PERSONALIZED_CARD("RES-SER-475", "Error in downloading personalized card" ),
-	PATNER_NOT_FOUND("RES-SER-475","Partner not found."),
-	REDIRECT_URL_NOT_FOUND("RES-SER-476","Redirect url not found.");
+	PATNER_NOT_FOUND("RES-SER-479","Partner not found."),
+	REDIRECT_URL_NOT_FOUND("RES-SER-480","Redirect url not found.");
 	
 
 	private final String errorCode;

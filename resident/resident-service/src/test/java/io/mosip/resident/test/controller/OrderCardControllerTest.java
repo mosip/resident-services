@@ -134,7 +134,7 @@ public class OrderCardControllerTest {
 	@Test
 	public void testPhysicalCardOrder() throws Exception {
 		Mockito.when(orderCardService.getRedirectUrl(Mockito.any(),Mockito.any())).thenReturn("URL");
-		mockMvc.perform(MockMvcRequestBuilders.get("/physical-card/order?partnerId=mosip_partnerorg1667786709933&redirectUri=vdsvdvds")).andExpect(status().isOk());
+		mockMvc.perform(MockMvcRequestBuilders.get("/physical-card/order?partnerId=mosip_partnerorg1667786709933&redirectUri=vdsvdvds")).andExpect(status().isFound());
 	}
 	
 	@Test
@@ -142,7 +142,7 @@ public class OrderCardControllerTest {
 		Mockito.when(orderCardService.physicalCardOrder(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.any(), Mockito.any(), Mockito.any())).thenReturn("URL");
 		mockMvc.perform(MockMvcRequestBuilders.get(
-				"/physical-card/order-redirect?redirectUrl=aHR0cHM6Ly93d3cubWFkZWludGV4dC5jb20v&paymentTransactionId=12345dsvdvds&eventId=123456&residentFullAddress=fgfhfghgf")).andReturn();
+				"/physical-card/order-redirect?redirectUrl=aHR0cHM6Ly93d3cubWFkZWludGV4dC5jb20v&paymentTransactionId=12345dsvdvds&eventId=123456&residentFullAddress=fgfhfghgf")).andExpect(status().isFound());
 	}
 
 }
