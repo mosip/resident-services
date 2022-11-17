@@ -243,8 +243,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
 					ResidentErrorCode.PAYMENT_REQUIRED.getErrorMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} finally {
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
