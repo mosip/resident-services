@@ -101,8 +101,13 @@ public enum ResidentErrorCode {
 	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
 			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN"),
 	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
-	DOWNLOAD_PERSONALIZED_CARD("RES-SER-475", "Error in downloading personalized card" ),
-	VID_REQUEST_CARD_FAILED("RES-SER-476", "Error in Request card from vid");
+
+	PAYMENT_FAILED("RES-SER-475", "Payment has failed"),
+	PAYMENT_CANCELED("RES-SER-476", "Payment has been cancelled"),
+	TECHNICAL_ERROR("RES-SER-477", "Technical error has occurred"),
+	CAN_T_PLACE_ORDER("RES-SER-478", "Cannot place order at the moment"),
+	DOWNLOAD_PERSONALIZED_CARD("RES-SER-479", "Error in downloading personalized card" ),
+	VID_REQUEST_CARD_FAILED("RES-SER-480", "Error in Request card from vid"),;
 
 	private final String errorCode;
 	private final String errorMessage;
