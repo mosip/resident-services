@@ -255,7 +255,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
             credentialReqestDto.setCredentialType(env.getProperty(ResidentConstants.CREDENTIAL_TYPE_PROPERTY));
-            credentialReqestDto.setIssuer(env.getProperty(ResidentConstants.PARTNER_REFERENCE_ID));
+            credentialReqestDto.setIssuer(env.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
             credentialReqestDto.setEncrypt(Boolean.parseBoolean(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
             credentialReqestDto.setEncryptionKey(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid);
