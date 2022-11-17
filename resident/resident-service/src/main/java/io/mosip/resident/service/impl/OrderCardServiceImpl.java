@@ -1,14 +1,20 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -20,10 +26,13 @@ import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PartnerResponseDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.UrlRedirectRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -33,6 +42,7 @@ import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
 
@@ -74,7 +84,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	@Value("${mosip.resident.order.card.payment.enabled}")
 	private boolean isPaymentEnabled;
-
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardServiceImpl.class);
 
 	@SuppressWarnings("unlikely-arg-type")
@@ -144,12 +154,22 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionRepository.save(residentTransEntity);
 	}
-
+	
 	private void checkOrderStatus(String transactionId, String individualId,
 			ResidentTransactionEntity residentTransactionEntity) throws ResidentServiceCheckedException {
-		logger.debug("OrderCardServiceImpl::checkOrderStatus()::entry");
-		List<String> pathsegments = null;
+		 checkOrderStatus(transactionId,individualId,null,residentTransactionEntity,null,null,null,null);
+	}
 
+	private String checkOrderStatus(String transactionId, String individualId, String redirectUrl,
+			ResidentTransactionEntity residentTransactionEntity, String eventId, String errorCode, String errorMessage,
+			String address) throws ResidentServiceCheckedException {
+		logger.debug("OrderCardServiceImpl::checkOrderStatus()::entry");
+		String url = new String(Base64.decodeBase64(redirectUrl.getBytes()));
+		String newUrl = url.contains("?") ? url + "&" : url + "?";
+		StringBuilder builder = new StringBuilder();
+		Map<String, String> queryParams = new HashMap<>();
+		String orderRedirectURL = null;
+		List<String> pathsegments = null;
 		List<String> queryParamName = new ArrayList<String>();
 		queryParamName.add("transactionId");
 		queryParamName.add("individualId");
@@ -159,24 +179,74 @@ public class OrderCardServiceImpl implements OrderCardService {
 		queryParamValue.add(individualId);
 
 		try {
-			ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) restClientWithSelfTOkenRestTemplate.getApi(
-					ApiName.GET_ORDER_STATUS_URL, pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
+			if (errorCode != null && !errorCode.isEmpty()) {
+				queryParams.put("error_code", errorCode);
+				queryParams.put("error_message", errorMessage);
+				for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+					String keyValueParam = entry.getKey() + "=" + entry.getValue();
+					if (!builder.toString().isEmpty()) {
+						builder.append("&");
+					}
+					builder.append(keyValueParam);
+					orderRedirectURL = newUrl + builder.toString();
+					residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
+				}
+			} else {
+				ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) restClientWithSelfTOkenRestTemplate.getApi(
+						ApiName.GET_ORDER_STATUS_URL, pathsegments, queryParamName, queryParamValue,
+						ResponseWrapper.class);
 
-			residentTransactionEntity.setStatusCode(EventStatusInProgress.PAYMENT_CONFIRMED.name());
-
+				if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+					residentTransactionEntity.setStatusCode(responseWrapper.getErrors().get(0).getErrorCode() + "->"
+							+ responseWrapper.getErrors().get(0).getMessage());
+					queryParams.put("paymentTransactionId", transactionId);
+					queryParams.put("error_code", responseWrapper.getErrors().get(0).getErrorCode());
+					queryParams.put("error_message", responseWrapper.getErrors().get(0).getMessage());
+					for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+						String keyValueParam = entry.getKey() + "=" + entry.getValue();
+						if (!builder.toString().isEmpty()) {
+							builder.append("&");
+						}
+						builder.append(keyValueParam);
+						orderRedirectURL = newUrl + builder.toString();
+						residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
+					}
+				} else {
+					ResponseWrapper<UrlRedirectRequestDTO> responseDto = new ResponseWrapper<UrlRedirectRequestDTO>();
+					responseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
+							UrlRedirectRequestDTO.class);
+					queryParams.put("trackingId", responseDto.getResponse().getTrackingId());
+					queryParams.put("paymentTransactionId", responseDto.getResponse().getTransactionId());
+					queryParams.put("residentFullAddress", address);
+					queryParams.put("eventId", eventId);
+					for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+						String keyValueParam = entry.getKey() + "=" + entry.getValue();
+						if (!builder.toString().isEmpty()) {
+							builder.append("&");
+						}
+						builder.append(keyValueParam);
+						orderRedirectURL = newUrl + builder.toString();
+					}
+					residentTransactionEntity.setStatusCode(EventStatusInProgress.PAYMENT_CONFIRMED.name());
+				}
+			}
 		} catch (ApisResourceAccessException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
-
 			logger.error("Error occured in checking order status %s", e.getMessage());
 			auditUtil.setAuditRequestDto(EventEnum.CHECK_ORDER_STATUS_EXCEPTION);
 			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD, TemplateType.FAILURE,
 					residentTransactionEntity.getEventId(), null);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
 					ResidentErrorCode.PAYMENT_REQUIRED.getErrorMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} finally {
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 		logger.debug("OrderCardServiceImpl::checkOrderStatus()::exit");
+		return orderRedirectURL;
+
 	}
 
 	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
@@ -191,19 +261,76 @@ public class OrderCardServiceImpl implements OrderCardService {
 	}
 
 	@Override
-	public String getRedirectUrl(String partnerId, String redirectUri) throws ResidentServiceCheckedException {
+	public String getRedirectUrl(String partnerId, String individualId)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+		String eventId = UUID.randomUUID().toString();
+		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntityOrderCard(partnerId,
+				individualId, eventId);
 		if (partnerDetail.isEmpty()) {
+			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			residentTransactionRepository.save(residentTransactionEntity);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PATNER_NOT_FOUND.getErrorCode(),
 					ResidentErrorCode.PATNER_NOT_FOUND.getErrorMessage());
 		} else {
 			List<Map<String, ?>> info = (List<Map<String, ?>>) partnerDetail.get("additionalInfo");
 			String redirectUrl = info.stream().map(map -> (String) map.get("orderRedirectUrl")).findAny().orElse("");
 			if (redirectUrl.isEmpty()) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorCode(), ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorMessage());
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				residentTransactionRepository.save(residentTransactionEntity);
+
+				throw new ResidentServiceCheckedException(ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorCode(),
+						ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorMessage());
 			}
-			return redirectUrl;
+			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			residentTransactionRepository.save(residentTransactionEntity);
+			String newUrl = redirectUrl.contains("?") ? redirectUrl + "&" : redirectUrl + "?";
+			StringBuilder builder = new StringBuilder();
+			Map<String, String> queryParams = new HashMap<>();
+			queryParams.put("eventId", eventId);
+			for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+				String keyValueParam = entry.getKey() + "=" + entry.getValue();
+				if (!builder.toString().isEmpty()) {
+					builder.append("&");
+				}
+				builder.append(keyValueParam);
+			}
+			return newUrl + builder.toString();
 		}
+	}
+
+	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId,
+			String eventId) throws ApisResourceAccessException {
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		residentTransactionEntity.setEventId(eventId);
+		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setRequestedEntityId(partnerId);
+		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
+		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
+		residentTransactionEntity.setRequestSummary("in-progress");
+		return residentTransactionEntity;
+	}
+
+	@Override
+	public String physicalCardOrder(String redirectUrl, String paymentTransactionId, String eventId,
+			String residentFullAddress, String individualId, String errorCode, String errorMessage)
+			throws ResidentServiceCheckedException {
+		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+		ResidentCredentialRequestDto requestDto = null;
+		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
+		String reponse = null;
+		if (isPaymentEnabled) {
+			reponse = checkOrderStatus(paymentTransactionId, individualId, redirectUrl, residentTransactionEntity.get(),
+					eventId, errorCode, errorMessage, residentFullAddress);
+		}
+		residentCredentialResponseDto = residentCredentialService.reqCredential(requestDto, individualId);
+		updateResidentTransaction(residentTransactionEntity.get(), residentCredentialResponseDto);
+		return reponse;
 	}
 
 }

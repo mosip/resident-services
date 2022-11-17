@@ -1,6 +1,10 @@
 package io.mosip.resident.controller;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +22,7 @@ import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.OrderCardService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +46,9 @@ public class OrderCardController {
 
 	@Autowired
 	private AuditUtil auditUtil;
+	
+	@Autowired
+	private IdentityServiceImpl identityServiceImpl;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardController.class);
 
@@ -82,14 +90,38 @@ public class OrderCardController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-
-	public String physicalCardOrder(@RequestParam(name = "partnerId") String partnerId ,
+	public ResponseEntity<Object> physicalCardOrder(@RequestParam(name = "partnerId") String partnerId ,
 			@RequestParam(name = "redirectUri") String redirectUri )
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		logger.debug("ResidentController::getphysicalCardOrder()::entry");
-		String redirectURL = orderCardService.getRedirectUrl(partnerId,redirectUri);
-		logger.debug("ResidentController::getphysicalCardOrder()::exit");
-		return redirectURL;
+		logger.debug("OrderCardController::getphysicalCardOrder()::entry");
+		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String redirectURL = orderCardService.getRedirectUrl(partnerId,individualId);
+		logger.debug("OrderCardController::getphysicalCardOrder()::exit");
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectURL)).build();
+	}
+	
+	@ResponseFilter
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetOrderRedirect()" + ")")
+	@GetMapping("/physical-card/order-redirect")
+	@Operation(summary = "get", description = "Get redirect-url", tags = { "resident-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseEntity<Object> physicalCardOrderRedirect(@RequestParam(name = "redirectUrl",required = false) String redirectUrl,
+			@RequestParam(name = "paymentTransactionId",required = false) String paymentTransactionId,
+			@RequestParam(name = "eventId",required = false) String eventId,
+			@RequestParam(name = "residentFullAddress",required = false) String residentFullAddress,
+			@RequestParam(name = "error_code",required = false) String errorCode,
+			@RequestParam(name = "error_message",required = false) String errorMessage)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("OrderCardController::physicalCardOrderRedirect()::entry");
+		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String response = orderCardService.physicalCardOrder(redirectUrl, paymentTransactionId, eventId,
+				residentFullAddress,individualId,errorCode,errorMessage);
+		logger.debug("OrderCardController::physicalCardOrderRedirect()::exit");
+		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(response)).build();
 	}
 
 }
