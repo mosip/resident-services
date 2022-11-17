@@ -1,10 +1,13 @@
 package io.mosip.resident.controller;
 
+import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -17,6 +20,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +65,6 @@ public class DownloadCardController {
                         downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
                 .body(resource);
     }
-
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
     public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO){
@@ -76,5 +80,12 @@ public class DownloadCardController {
                 .header("Content-Disposition", "attachment; filename=\"" +
                         downloadCardService.getFileName() + ".pdf\"")
                 .body(resource);
+    }
+
+    @GetMapping("/request-card/vid/{VID}")
+    public ResponseWrapper<VidDownloadCardResponseDto> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
+        requestValidator.validateDownloadCardVid(vid);
+        ResponseWrapper<VidDownloadCardResponseDto> downloadCardResponseDtoResponseWrapper = downloadCardService.getVidCardEventId(vid);
+        return downloadCardResponseDtoResponseWrapper;
     }
 }

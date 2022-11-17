@@ -1,8 +1,16 @@
 package io.mosip.resident.mock.controller;
 
 import io.mosip.kernel.core.http.ResponseFilter;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.mock.dto.PaymentSuccessResponseDto;
+import io.mosip.resident.mock.exception.CantPlaceOrderException;
+import io.mosip.resident.mock.exception.PaymentCanceledException;
+import io.mosip.resident.mock.exception.PaymentFailedException;
+import io.mosip.resident.mock.exception.TechnicalErrorException;
 import io.mosip.resident.mock.service.MockService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -20,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.util.UUID;
 
 /**
  * Mock API Controller class.
@@ -55,15 +64,24 @@ public class MockApiController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<?> getOrderStatus(@RequestParam("transactionId") String transactionId,
-			@RequestParam("individualId") String individualId) {
-		logger.debug("MockApiController::getOrderStatus()::entry");
-		if (Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) >= 6
-				&& Character.getNumericValue(transactionId.charAt(transactionId.length() - 1)) <= 9) {
-			logger.debug("payment is required for this id");
-			return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).build();
+											@RequestParam("individualId") String individualId) throws ResidentServiceCheckedException {
+		int lastDigit = Character.getNumericValue(transactionId.charAt(transactionId.length() - 1));
+		ResponseWrapper<PaymentSuccessResponseDto> responseWrapper = new ResponseWrapper<>();
+		if (lastDigit >= 0 && lastDigit < 6) {
+			PaymentSuccessResponseDto paymentSuccessResponseDto = new PaymentSuccessResponseDto();
+			paymentSuccessResponseDto.setTrackingId(UUID.randomUUID().toString());
+			paymentSuccessResponseDto.setTransactionID(transactionId);
+			responseWrapper.setResponse(paymentSuccessResponseDto);
+			return ResponseEntity.ok().body(responseWrapper);
+		} else if (lastDigit == 6) {
+			throw new PaymentFailedException();
+		} else if(lastDigit ==7){
+			throw new PaymentCanceledException();
+		} else if (lastDigit ==8) {
+			throw new TechnicalErrorException();
+		}else {
+			throw new CantPlaceOrderException();
 		}
-		logger.debug("MockApiController::getOrderStatus()::exit");
-		return ResponseEntity.ok().build();
 	}
     @GetMapping(path= "/rid-digital-card/{rid}")
     public ResponseEntity<Object> getRIDDigitalCard(

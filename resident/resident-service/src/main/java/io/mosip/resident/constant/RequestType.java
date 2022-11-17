@@ -3,6 +3,7 @@ package io.mosip.resident.constant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
@@ -32,11 +33,10 @@ public enum RequestType {
 			List.of(EventStatusInProgress.PAYMENT_CONFIRMED, EventStatusInProgress.NEW, EventStatusInProgress.ISSUED,
 					EventStatusInProgress.PRINTING, EventStatusInProgress.IN_TRANSIT),"order-a-physical-card",
 			TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard),
-	GET_MY_ID(TemplateUtil::getAckTemplateVariablesForGetMyId, List.of(EventStatusSuccess.CARD_DOWNLOADED),
-			List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED,
-					EventStatusInProgress.OTP_VERIFIED),"get-my-uin-card",
-			TemplateUtil::getNotificationTemplateVariablesForGetMyId),
+	GET_MY_ID(TemplateUtil::getAckTemplateVariablesForGetMyId,
+			List.of(EventStatusSuccess.CARD_DOWNLOADED, EventStatusSuccess.OTP_VERIFIED),
+			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED),
+			"get-my-uin-card", TemplateUtil::getNotificationTemplateVariablesForGetMyId),
 	BOOK_AN_APPOINTMENT(TemplateUtil::getAckTemplateVariablesForBookAnAppointment, List.of(), List.of(), List.of(),"", null),
 	UPDATE_MY_UIN(TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			List.of(EventStatusSuccess.PROCESSED, EventStatusSuccess.DATA_UPDATED),
@@ -51,12 +51,6 @@ public enum RequestType {
 	REVOKE_VID(TemplateUtil::getAckTemplateVariablesForRevokeVid, List.of(EventStatusSuccess.VID_REVOKED),
 			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid),
-	VERIFY_PHONE_EMAIL(TemplateUtil::getAckTemplateVariablesForVerifyPhoneEmail,
-			List.of(EventStatusSuccess.EMAIL_VERIFIED, EventStatusSuccess.PHONE_VERIFIED),
-			List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED,
-					EventStatusInProgress.OTP_VERIFIED),"verify-my-phone-email",
-			TemplateUtil::getNotificationTemplateVariablesForVerifyPhoneEmail),
 	AUTH_TYPE_LOCK_UNLOCK(TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			List.of(EventStatusSuccess.LOCKED, EventStatusSuccess.UNLOCKED,
 					EventStatusSuccess.AUTHENTICATION_TYPE_LOCKED, EventStatusSuccess.AUTHENTICATION_TYPE_UNLOCKED),
@@ -69,7 +63,9 @@ public enum RequestType {
 
 	SEND_OTP(TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(),"send-otp", TemplateUtil::getNotificationSendOtpVariables),
 
-	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(), List.of(), List.of(),"validate-otp", TemplateUtil::getNotificationCommonTemplateVariables);
+	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(EventStatusSuccess.OTP_VERIFIED),
+			List.of(EventStatusFailure.OTP_VERIFICATION_FAILED), List.of(EventStatusInProgress.OTP_REQUESTED),
+			"verify-my-phone-email", TemplateUtil::getNotificationCommonTemplateVariables);
 
 	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
@@ -89,6 +85,15 @@ public enum RequestType {
 		this.featureName = featureName;
 		this.notificationTemplateVariablesFunction=notificationTemplateVariablesFunction;
 	}
+	
+	public static Optional<RequestType> getRequestTypeFromString(String requestTypeString) {
+        for (RequestType requestType : values()) {
+            if (requestType.name().equalsIgnoreCase(requestTypeString)) {
+                return Optional.of(requestType);
+            }
+        }
+        return Optional.empty();
+    }
 
 	public List<EventStatusSuccess> getSuccessStatusList() {
 		return successStatusList;
