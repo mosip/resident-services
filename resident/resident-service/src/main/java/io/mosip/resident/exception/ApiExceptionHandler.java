@@ -9,6 +9,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.mosip.resident.mock.exception.CantPlaceOrderException;
+import io.mosip.resident.mock.exception.PaymentCanceledException;
+import io.mosip.resident.mock.exception.PaymentFailedException;
+import io.mosip.resident.mock.exception.TechnicalErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -152,6 +156,38 @@ public class ApiExceptionHandler {
 			errorResponse.getErrors().add(error);
 		});
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+	}
+
+	@ExceptionHandler(PaymentFailedException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final PaymentFailedException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.PAYMENT_REQUIRED);
+	}
+
+	@ExceptionHandler(PaymentCanceledException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final PaymentCanceledException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.PAYMENT_REQUIRED);
+	}
+
+	@ExceptionHandler(TechnicalErrorException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final TechnicalErrorException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(CantPlaceOrderException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final CantPlaceOrderException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)

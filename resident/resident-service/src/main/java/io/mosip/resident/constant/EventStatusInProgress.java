@@ -16,8 +16,7 @@ public enum EventStatusInProgress {
 	RESUMABLE,
 	REPROCESS,
 	PAUSED_FOR_ADDITIONAL_INFO,
-	OTP_REQUESTED,
-	OTP_VERIFIED;
+	OTP_REQUESTED;
 	
 	public static boolean containsStatus(String status) {
         for (EventStatusInProgress eventStatusInProgress : EventStatusInProgress.values()) {

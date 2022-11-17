@@ -9,6 +9,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ import java.util.Optional;
     private static final String UIN = "UIN";
     private static final String VID = "VID";
     private static final String AID = "AID";
+    private static final String LOGO_URL = "logoUrl";
+    
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
 
@@ -41,6 +44,9 @@ import java.util.Optional;
 
     @Autowired
     private RequestValidator requestValidator;
+    
+    @Autowired
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
     
     @Autowired
     private Utilitiy utilitiy;
@@ -63,31 +69,34 @@ import java.util.Optional;
 
     private Map<String, String> getCommonTemplateVariables(String eventId) {
         Map<String, String> templateVariables = new HashMap<>();
-        templateVariables.put(TemplateVariablesEnum.EVENT_ID, eventId);
-        Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
-                .findById(eventId);
-        if(residentTransactionEntity.isPresent()) {
-            ResidentTransactionEntity residentTransaction = residentTransactionEntity.get();
-            templateVariables.put(TemplateVariablesEnum.EVENT_TYPE, residentTransaction.getRequestTypeCode());
-            templateVariables.put(TemplateVariablesEnum.EVENT_STATUS, getEventStatusForRequestType(residentTransaction.getStatusCode()));
-            templateVariables.put(TemplateVariablesEnum.SUMMARY, residentTransaction.getRequestSummary());
-            templateVariables.put(TemplateVariablesEnum.TIMESTAMP, DateUtils.formatToISOString(residentTransaction.getCrDtimes()));
-        } else{
-            throw new ResidentServiceException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND,
-                    ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
-        }
+        templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, residentTransactionEntity.getRequestTypeCode());
+        templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
+        templateVariables.put(TemplateVariablesConstants.SUMMARY, residentTransactionEntity.getRequestSummary());
+        templateVariables.put(TemplateVariablesConstants.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
         try {
-            templateVariables.put(TemplateVariablesEnum.INDIVIDUAL_ID, getIndividualIdType());
+            templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
         }
         return templateVariables;
     }
+    
+	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
+		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+		if (residentTransactionEntity.isPresent()) {
+			return residentTransactionEntity.get();
+		} else {
+			throw new ResidentServiceException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND,
+					ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
+		}
+	}
 
     public String getFeatureName(String eventId){
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-        return templateVariables.get(TemplateVariablesEnum.EVENT_TYPE);
+        return templateVariables.get(TemplateVariablesConstants.EVENT_TYPE);
     }
 
     public String getIndividualIdType() throws ApisResourceAccessException {
@@ -119,41 +128,46 @@ import java.util.Optional;
 
     public Map<String, String> getAckTemplateVariablesForCredentialShare(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-        templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-        templateVariables.put(TemplateVariablesEnum.TRACKING_ID, getTrackingId(eventId));
-        templateVariables.put(TemplateVariablesEnum.ORDER_TRACKING_LINK, getOrderTrackingLink(eventId));
-        templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, getPartnerName(eventId));
-        templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(eventId));
-        templateVariables.put(TemplateVariablesEnum.ATTRIBUTE_LIST, getAttributeList(eventId));
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
+        templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
+        templateVariables.put(TemplateVariablesConstants.ORDER_TRACKING_LINK, residentTransactionEntity.getReferenceLink());
+        templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
+        templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
         return templateVariables;
     }
 
     public Map<String, String> getAckTemplateVariablesForAuthenticationRequest(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-        templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-        templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, getPartnerName(eventId));
-        templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(eventId));
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+        templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
+        templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         return templateVariables;
      }
 
     public Map<String, String> getAckTemplateVariablesForDownloadPersonalizedCard(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-        templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-        templateVariables.put(TemplateVariablesEnum.ATTRIBUTE_LIST, getAttributeList(eventId));
-        templateVariables.put(TemplateVariablesEnum.DOWNLOAD_CARD_LINK, getDownloadCardLink(eventId));
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
+        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
         return templateVariables;
     }
 
      public  Map<String, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-         templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-         templateVariables.put(TemplateVariablesEnum.ATTRIBUTE_LIST, getAttributeList(eventId));
-         templateVariables.put(TemplateVariablesEnum.TRACKING_ID, getTrackingId(eventId));
-         templateVariables.put(TemplateVariablesEnum.ORDER_TRACKING_LINK, getOrderTrackingLink(eventId));
-         templateVariables.put(TemplateVariablesEnum.PARTNER_NAME, getPartnerName(eventId));
-         templateVariables.put(TemplateVariablesEnum.PARTNER_LOGO, getPartnerLogo(eventId));
-         templateVariables.put(TemplateVariablesEnum.PAYMENT_STATUS, getPaymentStatus(eventId));
-         templateVariables.put(TemplateVariablesEnum.DOWNLOAD_CARD_LINK, getDownloadCardLink(eventId));
+         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
+         templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
+         templateVariables.put(TemplateVariablesConstants.ORDER_TRACKING_LINK, residentTransactionEntity.getReferenceLink());
+         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
+         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
+         templateVariables.put(TemplateVariablesConstants.PAYMENT_STATUS, getPaymentStatus(residentTransactionEntity.getStatusCode()));
+         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
          return templateVariables;
      }
 
@@ -167,25 +181,28 @@ import java.util.Optional;
 
     public Map<String, String> getAckTemplateVariablesForUpdateMyUin(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-        templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-        templateVariables.put(TemplateVariablesEnum.ATTRIBUTE_LIST, getAttributeList(eventId));
-        templateVariables.put(TemplateVariablesEnum.DOWNLOAD_CARD_LINK, getDownloadCardLink(eventId));
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
+        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
         return templateVariables;
     }
 
      public  Map<String, String> getAckTemplateVariablesForGenerateVid(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-         templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-         templateVariables.put(TemplateVariablesEnum.VID_TYPE, getVidType(eventId));
-         templateVariables.put(TemplateVariablesEnum.VID, getVidNumber(eventId));
+         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+         templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
+         templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
          return templateVariables;
      }
 
     public Map<String, String> getAckTemplateVariablesForRevokeVid(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-        templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
-        templateVariables.put(TemplateVariablesEnum.VID_TYPE, getVidType(eventId));
-        templateVariables.put(TemplateVariablesEnum.VID, getVidNumber(eventId));
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+        templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
+        templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
         return templateVariables;
     }
 
@@ -195,7 +212,8 @@ import java.util.Optional;
 
      public  Map<String, String> getAckTemplateVariablesForAuthTypeLockUnlock(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
-         templateVariables.put(TemplateVariablesEnum.AUTHENTICATION_MODE, getAuthenticationMode(eventId));
+         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
          return templateVariables;
      }
 
@@ -203,23 +221,31 @@ import java.util.Optional;
          return Collections.emptyMap();
      }
      
+     public Map<String, String> getAckTemplateVariablesForSendOtp(String eventId) {
+         return getCommonTemplateVariables(eventId);
+     }
+     
+     public Map<String, String> getAckTemplateVariablesForValidateOtp(String eventId) {
+         return getCommonTemplateVariables(eventId);
+     }
+     
      public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = new HashMap<>();
- 		templateVariables.put(TemplateVariablesEnum.EVENT_ID, dto.getEventId());
- 		templateVariables.put(TemplateVariablesEnum.NAME, getName(dto.getLangCode()));
- 		templateVariables.put(TemplateVariablesEnum.EVENT_DETAILS, dto.getRequestType().name());
- 		templateVariables.put(TemplateVariablesEnum.DATE, getDate());
- 		templateVariables.put(TemplateVariablesEnum.TIME, getTime());
- 		templateVariables.put(TemplateVariablesEnum.STATUS, dto.getTemplateType().getType());
+ 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
+ 		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode()));
+ 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().name());
+ 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
+ 		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
+ 		templateVariables.put(TemplateVariablesConstants.STATUS, dto.getTemplateType().getType());
          if(TemplateType.FAILURE.getType().equals(dto.getTemplateType().getType())) {
- 			templateVariables.put(TemplateVariablesEnum.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(dto.getEventId()));
+ 			templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(dto.getEventId()));
  		}
  		return templateVariables;
  	}
 
      public Map<String, Object> getNotificationSendOtpVariables(NotificationTemplateVariableDTO dto){
         Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
-        templateVariables.put(TemplateVariablesEnum.OTP, dto.getOtp());
+        templateVariables.put(TemplateVariablesConstants.OTP, dto.getOtp());
         return templateVariables;
      }
      
@@ -257,7 +283,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
  		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-    			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
     		}
  		return templateVariables;
  	}
@@ -275,7 +301,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
  		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-   			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+   			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
    		}
  		return templateVariables;
  	}
@@ -283,7 +309,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
  		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
- 			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+ 			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
  		}
  		return templateVariables;
  	}
@@ -296,7 +322,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto) {
     	 Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
     	 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-    			templateVariables.put(TemplateVariablesEnum.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
+    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utilitiy.createDownloadLink(dto.getEventId()));
     		}
     	 return templateVariables;
   	}
@@ -325,56 +351,27 @@ import java.util.Optional;
     	 String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(purposeTemplateCodeProperty);
      }
+     
+     public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
+    	 String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
+    	 return getTemplateTypeCode(summaryTemplateCodeProperty);
+     }
     
      private String getTemplateTypeCode(String templateCodeProperty) {
     	 return env.getProperty(templateCodeProperty);
 	}
 
-     //ToDo: Need to change method implementation
-     private String getVidNumber(String eventId) {
-         return "vid";
-     }
-     //ToDo: Need to change method implementation
-     private String getVidType(String eventId) {
-         return "vidType";
-     }
-     //TODO: Need to change the method implementation
-     private String getPaymentStatus(String eventId) {
-        return "paymentStatus";
-     }
+	private String getPaymentStatus(String statusCode) {
+		if (statusCode.equalsIgnoreCase(EventStatusFailure.PAYMENT_FAILED.name())) {
+			return EventStatusFailure.PAYMENT_FAILED.name();
+		} else {
+			return EventStatusInProgress.PAYMENT_CONFIRMED.name();
+		}
+	}
 
-     //TODO: Need to change the method implementation
-     private String getDownloadCardLink(String eventId) {
-         return "downloadCardLink";
-     }
+	private String getPartnerLogo(String partnerId) {
+		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+		return (String) partnerDetail.get(LOGO_URL);
+	}
 
-    //TODO: Need to change the method implementation
-    private String getAttributeList(String eventId) {
-        return "attributeList";
-    }
-
-    //TODO: Need to change the method implementation
-    private String getPartnerLogo(String eventId) {
-        return "partnerLogo";
-    }
-
-    //ToDo: Need to change the logic to get the partner name from the partner id
-    private String getPartnerName(String eventId) {
-        return "partnerName";
-    }
-
-    //TODO: Need to change the method implementation
-    private String getOrderTrackingLink(String eventId) {
-        return "orderTrackingLink";
-    }
-
-    //TODO: Need to change the implementation of this method
-    private String getTrackingId(String eventId) {
-        return "trackingId";
-    }
-
-    //TODO: Need to change the implementation of this method
-    private String getAuthenticationMode(String eventId) {
-        return "otp";
-    }
  }

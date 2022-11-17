@@ -364,7 +364,6 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAllTemplateBylangCodeAndTemplateTypeCode()" + ")")
 	@GetMapping("/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}")
 	@Operation(summary = "getAllTemplateBylangCodeAndTemplateTypeCode", description = "getAllTemplateBylangCodeAndTemplateTypeCode", tags = {
 			"proxy-masterdata-controller" })
@@ -416,7 +415,6 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetGenderTypeByLandCode()" + ")")
 	@GetMapping("/auth-proxy/masterdata/gendertypes/{langcode}")
 	@Operation(summary = "getGenderTypesByLangCode", description = "getGenderTypesByLangCode", tags = {
 			"proxy-masterdata-controller" })

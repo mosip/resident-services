@@ -1,8 +1,8 @@
 package io.mosip.resident.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -12,14 +12,16 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilitiy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -45,6 +47,12 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
 
     @Autowired
     private TemplateUtil templateUtil;
+
+    @Autowired
+    private Environment environment;
+
+    @Autowired
+    private ResidentServiceRestClient residentServiceRestClient;
 
     @Value("${resident.template.ack.share-cred-with-partner}")
     private String shareCredWithPartnerTemplate;
@@ -82,7 +90,10 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     }
 
     @Autowired
-    private PDFGenerator pdfGenerator;
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private Utilitiy utilitiy;
 
     @Override
     public byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException, IOException {
@@ -100,15 +111,14 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
 
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
                     getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
-            System.out.println(responseWrapper.getResponse());
+
             Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
             String fileText = (String) templateResponse.get("fileText");
             Map<String, String> templateVariables = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId);
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
-            ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(templateValue);
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return pdfValue.toByteArray();
+            return utilitiy.signPdf(templateValue, null);
 
     }
 
@@ -123,8 +133,6 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             return downloadAPersonalizedCard;
         }else if(requestTypeCode.equals(RequestType.UPDATE_MY_UIN.toString())){
             return updateDemographicData;
-        }else if(requestTypeCode.equals(RequestType.VERIFY_PHONE_EMAIL.toString())){
-            return verifyEmailIdOrPhoneNumber;
         }else if(requestTypeCode.equals(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
             return secureMyId;
         }else {

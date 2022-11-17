@@ -20,7 +20,8 @@ public enum EventStatusSuccess {
     VID_GENERATED,
     VID_REVOKED,
     EMAIL_VERIFIED,
-    PHONE_VERIFIED;
+    PHONE_VERIFIED,
+    OTP_VERIFIED;
 
     public static boolean containsStatus(String status) {
         for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {

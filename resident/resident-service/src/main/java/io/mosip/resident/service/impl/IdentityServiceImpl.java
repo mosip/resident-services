@@ -1,21 +1,20 @@
 package io.mosip.resident.service.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +59,6 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
@@ -99,6 +97,9 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -126,9 +127,18 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private ResidentVidService residentVidService;
+
+	@Autowired
+	private Environment environment;
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
+	
+	@Value("${resident.flag.use-old-ida-token:false}")
+	private boolean useOldIdaToken;
+
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -143,7 +153,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(RESIDENT_IDENTITY_SCHEMATYPE));
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -353,7 +363,9 @@ public class IdentityServiceImpl implements IdentityService {
 		if(claimValue == null) {
 			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
 		}
-		
+		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			claimValue = decodeString(decryptPayload((String) claimValue));
+		}
 		return String.valueOf(claimValue);
 	}
 
@@ -384,9 +396,14 @@ public class IdentityServiceImpl implements IdentityService {
 	private String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
-	
+
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return  getClaimValue(IDA_TOKEN);
+		return useOldIdaToken ? getClaimValue(IDA_TOKEN)
+				: getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	}
+
+	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
+		return getClaimValueFromJwtToken(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -406,6 +423,53 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			return individualId;
 	}
+	
+	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+	}
+	
+	public String getClaimFromAccessToken(String claim) {
+		AuthUserDetails authUserDetails = getAuthUserDetails();
+		String accessToken = authUserDetails.getToken();
+		return getClaimValueFromJwtToken(accessToken, claim);
+	}
 
+	public String getClaimFromIdToken(String claim) {
+		AuthUserDetails authUserDetails= getAuthUserDetails();
+		String idToken = authUserDetails.getIdToken();
+		return getClaimValueFromJwtToken(idToken, claim);
+	}
 
+	private String getClaimValueFromJwtToken(String jwtToken, String claim) {
+		String claimValue = "";
+		String payLoad = "";
+		if(jwtToken!=null){
+			if(jwtToken.contains(".")){
+				String[] parts = jwtToken.split("\\.", 0);
+				payLoad = decodeString(parts[1]);
+			} else{
+				payLoad = decodeString(jwtToken);
+			}
+			Map payLoadMap;
+			try {
+				payLoadMap = objectMapper.readValue(payLoad, Map.class);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+			if(claim!=null){
+				claimValue = (String) payLoadMap.get(claim);
+			}
+		}
+		return claimValue;
+	}
+
+	public String decodeString(String payload)
+	{
+		byte[] bytes = Base64.getUrlDecoder().decode(payload);
+		return new String(bytes, StandardCharsets.UTF_8);
+	}
+
+	public String decryptPayload(String payload) {
+		return objectStoreHelper.decryptData(payload, this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID), this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+	}
 }

@@ -9,7 +9,8 @@ public enum EventStatusFailure {
     FAILED,
     PAYMENT_FAILED,
     REJECTED,
-    REPROCESS_FAILED;
+    REPROCESS_FAILED,
+    OTP_VERIFICATION_FAILED;
 	
     public static boolean containsStatus(String status) {
         for (EventStatusFailure eventStatusFailure : EventStatusFailure.values()) {

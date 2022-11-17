@@ -6,9 +6,6 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
-    public static final String DOWNLOAD_UIN_CARD_ID = "mosip.resident.download.uin.card";
-
     private ResidentConstants() {
 	}
 
@@ -76,8 +73,46 @@ public class ResidentConstants {
 
     public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
 
+
+    public static final String IDA_TOKEN_CLAIM_NAME = "mosip.resident.oidc.id_token.ida_token.claim-name";
+    public static final String MOSIP_OIDC_ENCRYPTION_ENABLED = "mosip.resident.oidc.userinfo.encryption.enabled";
+    public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
+    public static final String RESIDENT_APP_ID = "resident.appid";
+
     public static final String DATA_SHARE_URL = "mosip.datashare.url";
     public static final String DATA_SHARE_APPLICATION_ID = "mosip.datashare.application.id";
     public static final String DATA_SHARE_REFERENCE_ID = "mosip.datashare.reference.id";
 
+    public static final String DOWNLOAD_UIN_CARD_ID = "mosip.resident.download.uin.card";
+    public static final String LOWER_LEFT_X = "mosip.resident.service.uincard.lowerleftx";
+    public static final String LOWER_LEFT_Y = "mosip.resident.service.uincard.lowerlefty";
+    public static final String UPPER_RIGHT_X = "mosip.resident.service.uincard.upperrightx";
+    public static final String UPPER_RIGHT_Y = "mosip.resident.service.uincard.upperrighty";
+    public static final String REASON = "mosip.resident.service.uincard.signature.reason";
+
+    public static final String SIGN_PDF_APPLICATION_ID = "mosip.resident.sign.pdf.application.id";
+    public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
+    
+    public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
+
+    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD = "mosip.resident.download.personalized.card";
+
+    public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
+
+    public static final String CREATE_PASSWORD_METHOD_NAME = "resident.create.password.method.name";
+
+    public static final String DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.personalized.card.naming.convention";
+
+    public static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
+
+    public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
+
+    public static final String CREDENTIAL_TYPE_PROPERTY = "mosip.resident.request.credential.credentialType";
+    public static final String CREDENTIAL_ISSUER = "mosip.credential.issuer";
+    public static final String CREDENTIAL_ENCRYPTION_FLAG = "mosip.resident.request.credential.isEncrypt";
+    public static final String CREDENTIAL_ENCRYPTION_KEY = "mosip.resident.request.credential.encryption.key";
+    public static final String VID_DOWNLOAD_CARD_ID = "mosip.resident.request.vid.card.id";
+    public static final String VID_DOWNLOAD_CARD_VERSION = "mosip.resident.request.vid.card.version";
+
+    public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
 }
