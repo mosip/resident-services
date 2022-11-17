@@ -3,6 +3,10 @@ package io.mosip.resident.mock.exception;
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ * This class is used to throw exception for payment canceled use case.
+ */
 public class PaymentCanceledException extends BaseUncheckedException {
 
     /** The Constant serialVersionUID. */

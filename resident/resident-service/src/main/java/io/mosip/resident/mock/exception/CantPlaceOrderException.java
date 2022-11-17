@@ -3,6 +3,10 @@ package io.mosip.resident.mock.exception;
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ * This class is used to throw exception for can't place order use case.
+ */
 public class CantPlaceOrderException extends BaseUncheckedException {
 
     /** The Constant serialVersionUID. */
