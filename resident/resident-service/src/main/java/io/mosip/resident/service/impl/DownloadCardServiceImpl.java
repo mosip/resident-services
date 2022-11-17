@@ -33,6 +33,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
@@ -268,8 +269,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
                     env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
                     ResponseWrapper.class);
-            if(responseDto.getErrors()==null){
-                eventId =insertDataForVidCard(responseDto, vid);
+            if(responseDto.getErrors().size()==0){
+                ResidentCredentialResponseDto residentCredentialResponseDto =
+                        JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
+                        ResidentCredentialResponseDto.class);
+                eventId =insertDataForVidCard(residentCredentialResponseDto, vid);
                 vidDownloadCardResponseDto.setEventId(eventId);
             }else{
                 throw new ResidentServiceCheckedException(String.valueOf(ResidentErrorCode.VID_REQUEST_CARD_FAILED),
@@ -290,15 +294,17 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return responseWrapper;
     }
 
-    private String insertDataForVidCard(ResponseWrapper<ResidentCredentialResponseDto> responseDto, String vid) throws ApisResourceAccessException, IOException {
+    private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
         String eventId = UUID.randomUUID().toString();
+        String uin = utilities.getUinByVid(vid);
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(identityService.getResidentIndvidualId()));
-        residentTransactionEntity.setTokenId(identityService.getIDAToken(utilities.getUinByVid(vid)));
-        residentTransactionEntity.setCredentialRequestId(responseDto.getResponse().getRequestId());
+        residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(uin));
+        residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
+        residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
         residentTransactionEntity.setStatusCode(NEW);
+        residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionRepository.save(residentTransactionEntity);
         return eventId;
     }
