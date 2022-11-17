@@ -43,6 +43,7 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -97,6 +98,9 @@ public class OrderCardControllerTest {
 	private MockMvc mockMvc;
 
 	private ResponseWrapper responseWrapper;
+	
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
 
 	Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -116,6 +120,7 @@ public class OrderCardControllerTest {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(orderCardController).build();
 		Mockito.doNothing().when(auditUtil).setAuditRequestDto(Mockito.any());
+		Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234Id");
 	}
 
 	@Test
@@ -124,6 +129,20 @@ public class OrderCardControllerTest {
 				.thenReturn((ResidentCredentialResponseDto) responseWrapper.getResponse());
 		mockMvc.perform(MockMvcRequestBuilders.post("/sendCard").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testPhysicalCardOrder() throws Exception {
+		Mockito.when(orderCardService.getRedirectUrl(Mockito.any(),Mockito.any())).thenReturn("URL");
+		mockMvc.perform(MockMvcRequestBuilders.get("/physical-card/order?partnerId=mosip_partnerorg1667786709933&redirectUri=vdsvdvds")).andExpect(status().isFound());
+	}
+	
+	@Test
+	public void testPhysicalCardOrderRedirect() throws Exception {
+		Mockito.when(orderCardService.physicalCardOrder(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.any(), Mockito.any())).thenReturn("URL");
+		mockMvc.perform(MockMvcRequestBuilders.get(
+				"/physical-card/order-redirect?redirectUrl=aHR0cHM6Ly93d3cubWFkZWludGV4dC5jb20v&paymentTransactionId=12345dsvdvds&eventId=123456&residentFullAddress=fgfhfghgf")).andExpect(status().isFound());
 	}
 
 }
