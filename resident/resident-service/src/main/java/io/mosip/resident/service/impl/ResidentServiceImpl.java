@@ -2004,7 +2004,7 @@ public class ResidentServiceImpl implements ResidentService {
 			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
-		String requestProperty = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY);
+		String requestProperty = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
 				.getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
