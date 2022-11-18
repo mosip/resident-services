@@ -7,8 +7,6 @@ package io.mosip.resident.constant;
  */
 public class ResidentConstants {
 
-    public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
-
     private ResidentConstants() {
 	}
 
@@ -120,4 +118,7 @@ public class ResidentConstants {
     public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
     public static final String PHOTO_ATTRIBUTE_NAME = "mosip.resident.photo.attribute.name";
     public static final String APPLICANT_NAME_PROPERTY = "mosip.resident.applicant.name.property";
+
+    public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
+    public static final String MOSIP_CREDENTIAL_TYPE_PROPERTY="mosip.digital.card.credential.type";
 }

@@ -101,17 +101,6 @@ public class ResidentServiceDownloadCardTest {
         assertNotNull(response);
     }
 
-    @Test
-    public void testVidCardDownloadSuccess() throws ResidentServiceCheckedException {
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
-        assertNotNull(response);
-    }
-
     @Test(expected = ResidentServiceException.class)
     public void testUpdateMyUinException() throws ResidentServiceCheckedException{
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
