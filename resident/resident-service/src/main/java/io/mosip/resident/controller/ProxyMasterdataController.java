@@ -1,14 +1,8 @@
 package io.mosip.resident.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,13 +14,10 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.OrderEnum;
-import io.mosip.resident.dto.PageDto;
-import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.validator.RequestValidator;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,12 +40,6 @@ public class ProxyMasterdataController {
 
 	@Autowired
 	private AuditUtil auditUtil;
-	
-	@Autowired
-	private RequestValidator validator;
-	
-	@Autowired
-	private AuditUtil audit;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
@@ -384,30 +369,6 @@ public class ProxyMasterdataController {
 	}
 	
 	/**
-	 * download registration centers based on language code and selected names of registration centers
-	 * @param langCode
-	 * @param hierarchyLevel
-	 * @param name
-	 * @return
-	 * @throws ResidentServiceCheckedException
-	 */
-	@GetMapping("download/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names")	
-	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@PathVariable("langcode") String langCode,
-			@PathVariable("hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name)
-			throws ResidentServiceCheckedException,IOException,Exception {
-		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);	
-		validator.validateOnlyLanguageCode(langCode);
-		InputStream pdfInputStream =  proxyMasterdataService.downloadRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
-		InputStreamResource resource = new InputStreamResource(pdfInputStream);
-		audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
-		logger.debug("AcknowledgementController::acknowledgement()::exit");
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + "downloadRegistrationCentersByHierarchyLevel" + ".pdf\"")
-				.body(resource);
-	}
-  
-	/*
 	 * Get gender types by language code.
 	 * 
 	 * @param langCode
