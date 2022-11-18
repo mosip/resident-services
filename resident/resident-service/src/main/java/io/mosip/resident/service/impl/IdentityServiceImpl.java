@@ -163,7 +163,7 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
 			if(fetchFace) {
-				identity.put(PHOTO, getClaimFromIdToken(env.getProperty(IMAGE)));
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimFromIdToken(env.getProperty(IMAGE)));
 				identity.remove("individualBiometrics");
 			}
 
