@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String REGISTRATION_CENTER_TEMPLATE_NAME = "registration-centers-list";
+	private static final String SUPPORTING_DOCS_TEMPLATE_NAME = "supporting-docs-list";
 
 	@Autowired
 	Environment env;
@@ -89,7 +91,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 */
 	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
 			List<String> name) throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
+		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
 				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, REGISTRATION_CENTER_TEMPLATE_NAME);
 		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService
@@ -121,6 +123,29 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
+		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
+		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
+		return convertOutputStreamToInputStream(pdfValue);
+	}
+	
+	
+	/**
+	 * download registration centers based on language code, hierarchyLevel and
+	 * center names
+	 */
+	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception {
+		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
+		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, SUPPORTING_DOCS_TEMPLATE_NAME);
+		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
+		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
+		String fileText = (String) templateResponse.get("fileText");		
+		Map<String, Object> supportingsDocsMap = new HashMap<>();
+		supportingsDocsMap.put("supportingsDocMap", supportingsDocsMap);
+		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
+		InputStream supportingDocsTemplateData = templateManager.merge(supportingDocsTemplate, supportingsDocsMap);		
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
 		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
 		return convertOutputStreamToInputStream(pdfValue);

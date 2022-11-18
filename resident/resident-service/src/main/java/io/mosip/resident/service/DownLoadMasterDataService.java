@@ -26,5 +26,15 @@ public interface DownLoadMasterDataService {
 	 */
 	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
 			List<String> name) throws ResidentServiceCheckedException, IOException, Exception;
+	
+	/**
+	 * 
+	 * @param langCode
+	 * @return
+	 * @throws ResidentServiceCheckedException
+	 * @throws IOException
+	 * @throws Exception
+	 */
+	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception; 
 
 }

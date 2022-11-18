@@ -34,6 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class DownLoadMasterDataController {
 
 	private static String DOWNLOADABLE_REGCEN_FILENAME = "";
+	private static String DOWNLOADABLE_SUPPORTING_FILENAME = "";
 
 	@Autowired
 	private DownLoadMasterDataService downLoadMasterDataService;
@@ -59,14 +60,14 @@ public class DownLoadMasterDataController {
 	 * @return
 	 * @throws ResidentServiceCheckedException
 	 */
-	@GetMapping("download/proxy/masterdata/registrationcenters/{langcode}/{hierarchylevel}/names")
+	@GetMapping("/download/registrationcenters/{langcode}/{hierarchylevel}/names")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@PathVariable("langcode") String langCode,
 			@PathVariable("hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
-		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);
+		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER);
 		validator.validateOnlyLanguageCode(langCode);
 		InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
 				hierarchyLevel, name);
@@ -78,7 +79,24 @@ public class DownLoadMasterDataController {
 				.header("Content-Disposition", "attachment; filename=\"" + DOWNLOADABLE_REGCEN_FILENAME + ".pdf\"")
 				.body(resource);
 	}
-
+	
+	@GetMapping("/download/supportingDocs/{langcode}")
+	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@PathVariable("langcode") String langCode)
+			throws ResidentServiceCheckedException, IOException, Exception {
+		logger.debug("DownLoadMasterDataController::getSupportingDocsByLanguageCode()::entry");
+		DOWNLOADABLE_SUPPORTING_FILENAME = "supportingDocs-";
+		DOWNLOADABLE_SUPPORTING_FILENAME = DOWNLOADABLE_SUPPORTING_FILENAME + getCurrentDateAndTime();
+		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS);
+		validator.validateOnlyLanguageCode(langCode);
+		InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
+		InputStreamResource resource = new InputStreamResource(pdfInputStream);
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
+		logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + DOWNLOADABLE_SUPPORTING_FILENAME + ".pdf\"")
+				.body(resource);
+	}
 	/**
 	 * this method return the current date and time
 	 * 
