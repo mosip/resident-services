@@ -67,7 +67,7 @@ import java.util.Optional;
      * @return the ack template variables for authentication request
      */
 
-    private Map<String, String> getCommonTemplateVariables(String eventId) {
+    public Map<String, String> getCommonTemplateVariables(String eventId) {
         Map<String, String> templateVariables = new HashMap<>();
         templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);

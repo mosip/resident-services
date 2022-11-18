@@ -148,6 +148,9 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
+	
+	@Value("${resident.flag.use-old-ida-token:false}")
+	private boolean useOldIdaToken;
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
@@ -431,7 +434,8 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+		return useOldIdaToken ? getClaimValue(IDA_TOKEN)
+				: getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
 	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
