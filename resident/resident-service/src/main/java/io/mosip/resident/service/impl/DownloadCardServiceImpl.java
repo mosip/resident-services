@@ -240,6 +240,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     eventId, "Download personalized card"));
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
+        } catch (ResidentServiceCheckedException e) {
+            throw new RuntimeException(e);
         }
         residentTransactionEntity.setRequestSummary(SUCCESS);
         residentTransactionEntity.setStatusCode(NEW);

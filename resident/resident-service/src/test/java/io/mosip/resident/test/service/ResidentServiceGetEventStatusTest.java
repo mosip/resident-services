@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -63,6 +64,9 @@ public class ResidentServiceGetEventStatusTest {
     @Mock
     private ProxyMasterdataService proxyMasterdataService;
 
+    @Mock
+    private Environment environment;
+
     private String eventId;
     private String langCode;
     private ResponseWrapper<EventStatusResponseDTO> responseWrapper;
@@ -104,6 +108,7 @@ public class ResidentServiceGetEventStatusTest {
 		primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
 		Mockito.when(proxyMasterdataService
 				.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(primaryLangResp);
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
     @Test
