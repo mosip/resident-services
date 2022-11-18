@@ -173,8 +173,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 	private static final String UIN = "uin";
-	private static final String NAME = "name";
-	private static final String IMAGE = "photo";
+	private static final String NAME = "mosip.resident.name.token.claim-name";
+	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
@@ -2049,8 +2049,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) {
-		String name = identityServiceImpl.getClaimFromIdToken(NAME);
-		String photo = identityServiceImpl.getClaimFromIdToken(IMAGE);
+		String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+		String photo = identityServiceImpl.getClaimFromIdToken(env.getProperty(IMAGE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

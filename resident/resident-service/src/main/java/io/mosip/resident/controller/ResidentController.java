@@ -557,7 +557,7 @@ public class ResidentController {
 	public ResponseWrapper<UserInfoDto> userinfo()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
-		String Id = identityServiceImpl.getClaimFromIdToken("sub");
+		String Id = identityServiceImpl.getResidentIdaToken();
 		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
