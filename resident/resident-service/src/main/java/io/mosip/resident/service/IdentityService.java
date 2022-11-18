@@ -55,7 +55,6 @@ public interface IdentityService {
 	 * Get ID-Repo api data by id, type and includeUin.
 	 * 
 	 * @param id
-	 * @param type
 	 * @param includeUin
 	 * @return Map
 	 * @throws ResidentServiceCheckedException
