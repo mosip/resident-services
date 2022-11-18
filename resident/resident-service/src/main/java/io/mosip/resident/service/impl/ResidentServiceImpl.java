@@ -1071,7 +1071,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
-			throws ApisResourceAccessException, IOException {
+			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
@@ -1141,6 +1141,8 @@ public class ResidentServiceImpl implements ResidentService {
 				} catch (ApisResourceAccessException e) {
 					logger.error("Error occured in creating entities %s", e.getMessage());
 					throw new ResidentServiceException(ResidentErrorCode.UNKNOWN_EXCEPTION, e);
+				} catch (ResidentServiceCheckedException e) {
+					throw new RuntimeException(e);
 				}
 			}).collect(Collectors.toList());
 
@@ -1220,7 +1222,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
-			throws ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());

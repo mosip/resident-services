@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +51,7 @@ public class LoginCheckTest {
 	private HttpServletResponse response;
 
 	@Before
-	public void setup() {
+	public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		request = Mockito.mock(HttpServletRequest.class);
 		response = Mockito.mock(HttpServletResponse.class);
 		Collection<String> cookies = new ArrayList<>();
@@ -57,13 +59,13 @@ public class LoginCheckTest {
 				"Authorization=eyJhbGciOiJSUzI1NiIsInR5cCIgO; Max-Age=1800000; Expires=Thu, 10-Nov-2022 05:05:02 GMT; Path=/; HttpOnly");
 		cookies.add("id_token=eyJhbGciOiJSUzI1NiIsInR5cCIg; Path=/; Secure; HttpOnly");
 		Mockito.when(response.getHeaders(Mockito.anyString())).thenReturn(cookies);
-		Mockito.when(identityServiceImpl.getResidentIdaTokenFromIdTokenJwt(Mockito.anyString())).thenReturn("282452929935769234295");
+		Mockito.when(identityServiceImpl.getResidentIdaTokenFromAccessToken(Mockito.anyString())).thenReturn("282452929935769234295");
 		Mockito.when(residentUserRepository.findById(Mockito.anyString()))
 				.thenReturn(Optional.of(new ResidentUserEntity()));
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		loginCheck.getUserDetails("aHR0cHM6Ly9yZXNpZGVudC5kZ", "ce0dfae2-5dc3-4c2b", "733d8aa0-a53b-42e1",
 				"51a3f4c2-c029-490b.730-0c60476d94f2", "ce0dfae2-5dc3-4c2b", request, response);
 	}

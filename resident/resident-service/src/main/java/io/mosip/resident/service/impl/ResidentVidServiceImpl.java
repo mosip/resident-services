@@ -301,7 +301,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return responseDto;
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException {
+	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());

@@ -7,6 +7,8 @@ package io.mosip.resident.constant;
  */
 public class ResidentConstants {
 
+    public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
+
     private ResidentConstants() {
 	}
 

@@ -321,12 +321,15 @@ public class IdentityServiceImpl implements IdentityService {
 		AuthUserDetails authUserDetails = getAuthUserDetails();
 		if (authUserDetails != null) {
 			String token = authUserDetails.getToken();
-				Map<String, Object> userInfo = getUserInfo(token);
-				return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
-						.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
+				return getClaimsFromToken(claims, token);
 		}
 		return Map.of();
+	}
+
+	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
+		Map<String, Object> userInfo = getUserInfo(token);
+		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
 
 	private String getClaimFromUserInfo(Map<String, Object> userInfo, String claim) {
@@ -368,13 +371,19 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaims(claim).get(claim);
 	}
 
-	public String getResidentIdaToken() throws ApisResourceAccessException {
+	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		return useOldIdaToken ? getClaimValue(IDA_TOKEN)
-				: getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+				: getIDATokenForIndividualId(getResidentIndvidualId());
 	}
 
-	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
-		return getClaimValueFromJwtToken(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
+		Map<String, ?> claims = getClaimsFromToken(Set.of(claimName), accessToken);
+		String individualId = (String) claims.get(claimName);
+		if(individualId==null){
+			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claimName);
+		}
+		return getIDATokenForIndividualId(individualId);
 	}
 
 	String getIndividualIdForAid(String aid)
