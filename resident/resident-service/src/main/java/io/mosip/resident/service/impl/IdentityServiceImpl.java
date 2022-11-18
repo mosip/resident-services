@@ -1,20 +1,29 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.biometrics.spi.CbeffUtil;
+import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,28 +37,23 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.biometrics.constant.BiometricType;
-import io.mosip.kernel.biometrics.spi.CbeffUtil;
-import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Resident identity service implementation class.
@@ -74,7 +78,6 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
-	private static final String PHOTO = "photo";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 
 	@Autowired
