@@ -307,7 +307,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto dto,
-			String requestType, String individualId) throws ApisResourceAccessException {
+			String requestType, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(requestType);

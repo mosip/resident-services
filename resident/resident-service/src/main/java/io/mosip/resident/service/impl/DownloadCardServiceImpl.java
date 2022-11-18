@@ -164,7 +164,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         byte[] decodedData;
         String password=null;
         try {
-            decodedData = CryptoUtil.decodeURLSafeBase64(encodeHtml);
+            decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
             List<String> attributeValues = getAttributeList();
             if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))){
                 password = utilitiy.getPassword(attributeValues);
@@ -240,6 +240,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     eventId, "Download personalized card"));
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
+        } catch (ResidentServiceCheckedException e) {
+            throw new RuntimeException(e);
         }
         residentTransactionEntity.setRequestSummary(SUCCESS);
         residentTransactionEntity.setStatusCode(NEW);

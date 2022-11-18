@@ -92,6 +92,7 @@ import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthError;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -136,6 +137,7 @@ import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
+import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.handler.service.ResidentUpdateService;
@@ -171,13 +173,16 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 	private static final String UIN = "uin";
-
+	private static final String NAME = "mosip.resident.name.token.claim-name";
+	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
+	
 
 
 	@Autowired
@@ -1066,7 +1071,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
-			throws ApisResourceAccessException, IOException {
+			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
@@ -1136,6 +1141,8 @@ public class ResidentServiceImpl implements ResidentService {
 				} catch (ApisResourceAccessException e) {
 					logger.error("Error occured in creating entities %s", e.getMessage());
 					throw new ResidentServiceException(ResidentErrorCode.UNKNOWN_EXCEPTION, e);
+				} catch (ResidentServiceCheckedException e) {
+					throw new RuntimeException(e);
 				}
 			}).collect(Collectors.toList());
 
@@ -1215,7 +1222,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
-			throws ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
@@ -1919,6 +1926,9 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 
+			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
+
 			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
 				eventStatusResponseDTO
 						.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
@@ -2039,5 +2049,34 @@ public class ResidentServiceImpl implements ResidentService {
 		IOUtils.copy(serviceHistTemplateData, writer, "UTF-8");
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
 		return utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null);
+	}
+
+
+	@Override
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) {
+		String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+		String photo = identityServiceImpl.getClaimFromIdToken(env.getProperty(IMAGE));
+		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
+		UserInfoDto user = new UserInfoDto();
+		Map<String, Object> data = new HashMap<>();
+		responseWrapper.setId(serviceEventId);
+		responseWrapper.setVersion(serviceEventVersion);
+		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+		Optional<ResidentUserEntity> response = residentUserRepository.findById(Id);
+		if(response.isPresent()){
+			data.put("data", photo);
+			user.setFullName(name);
+			user.setIp(response.get().getIpAddress());
+			user.setMachineType(response.get().getMachineType());
+			user.setHost(response.get().getHost());
+			user.setLastLogin(response.get().getLastloginDtime());
+			user.setPhoto(data);
+			responseWrapper.setResponse(user);
+			return responseWrapper;
+		}else {
+			throw new ResidentServiceException(ResidentErrorCode.NO_RECORDS_FOUND.getErrorCode(),
+					ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
+		}
+		
 	}
 }

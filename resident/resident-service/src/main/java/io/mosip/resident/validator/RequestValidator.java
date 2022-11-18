@@ -3,6 +3,7 @@ package io.mosip.resident.validator;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
@@ -945,7 +946,7 @@ public class RequestValidator {
 
 	private void validateEncodedString(String html) {
 		try{
-			identityService.decodeString(html);
+			CryptoUtil.decodePlainBase64(html);
 		}catch (Exception e){
 			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
 			throw new InvalidInputException("html", e);

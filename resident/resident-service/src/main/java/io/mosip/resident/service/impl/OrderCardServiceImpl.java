@@ -130,7 +130,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto, String individualId)
-			throws ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
@@ -303,7 +303,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		}
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException {
+	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
@@ -324,9 +324,10 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ResidentServiceCheckedException {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
-		ResidentCredentialRequestDto requestDto = null;
-		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
 		String reponse = null;
+		ResidentCredentialRequestDto requestDto = new ResidentCredentialRequestDto();
+		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
+
 		if (isPaymentEnabled) {
 			reponse = checkOrderStatus(paymentTransactionId, individualId, redirectUrl, residentTransactionEntity.get(),
 					 errorCode, errorMessage, residentFullAddress);
