@@ -31,6 +31,7 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
+import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -475,7 +476,6 @@ public class ResidentController {
 		String individualId = identityServiceImpl.getResidentIdaToken();
 		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(individualId);
 		logger.debug("ResidentController::getnotificationclickdttimes::exit");
-
 		return response;
 	}
 
@@ -542,6 +542,25 @@ public class ResidentController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
 				.body(resource);
+	}
+	
+	
+	@ResponseFilter
+	@GetMapping("/profile")
+	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+
+	public ResponseWrapper<UserInfoDto> userinfo()
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentController::getuserinfo()::entry");
+		String Id = identityServiceImpl.getClaimFromIdToken("sub");
+		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id);
+		logger.debug("ResidentController::getuserinfo()::exit");
+		return userInfoDto;
 	}
 	
 }

@@ -324,9 +324,10 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ResidentServiceCheckedException {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
-		ResidentCredentialRequestDto requestDto = null;
-		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
 		String reponse = null;
+		ResidentCredentialRequestDto requestDto = new ResidentCredentialRequestDto();
+		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
+		
 		if (isPaymentEnabled) {
 			reponse = checkOrderStatus(paymentTransactionId, individualId, redirectUrl, residentTransactionEntity.get(),
 					 errorCode, errorMessage, residentFullAddress);
