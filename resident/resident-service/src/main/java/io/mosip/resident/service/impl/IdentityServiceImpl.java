@@ -379,7 +379,7 @@ public class IdentityServiceImpl implements IdentityService {
 		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))){
 			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
 			tokenValidationHelper.verifyUserInfoSignature(decodedJWT);
-			userInfoStr = getPayload(decodedJWT);
+			userInfoStr = decodeString(getPayload(decodedJWT));
 		} else {
 			userInfoStr = userInfoResponseStr;
 		}
