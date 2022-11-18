@@ -162,7 +162,7 @@ public class IdentityServiceTest {
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
-		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
 		assertEquals("Rahul Singh Kumar", result.getFullName());
@@ -182,7 +182,7 @@ public class IdentityServiceTest {
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
-		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
 	}
@@ -218,7 +218,7 @@ public class IdentityServiceTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		identityService.getIdentity("6", true, "eng");
+		identityService.getIdentity("6", false, "eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
