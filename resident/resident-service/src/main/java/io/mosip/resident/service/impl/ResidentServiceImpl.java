@@ -1924,6 +1924,9 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 
+			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
+
 			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
 				eventStatusResponseDTO
 						.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
