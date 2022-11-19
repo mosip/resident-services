@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.authcodeflowproxy.api.constants.AuthErrorCode;
 import io.mosip.kernel.authcodeflowproxy.api.service.validator.ValidateTokenHelper;
 import io.mosip.kernel.biometrics.spi.CbeffUtil;
 import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
@@ -30,6 +31,7 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -378,8 +380,12 @@ public class IdentityServiceImpl implements IdentityService {
 		String userInfoStr;
 		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))){
 			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
-			tokenValidationHelper.verifyUserInfoSignature(decodedJWT);
-			userInfoStr = decodeString(getPayload(decodedJWT));
+			ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper.verifyJWTSignagure(decodedJWT);
+			if(verifySignagure.left) {
+				userInfoStr = decodeString(getPayload(decodedJWT));
+			} else {
+				throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), "User info signature validation failed."));
+			}
 		} else {
 			userInfoStr = userInfoResponseStr;
 		}
@@ -412,7 +418,7 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, ?> claims = getClaimsFromToken(Set.of(claimName), accessToken);
 		String individualId = (String) claims.get(claimName);
 		if(individualId==null){
-			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claimName);
+			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), claimName));
 		}
 		return getIDATokenForIndividualId(individualId);
 	}
