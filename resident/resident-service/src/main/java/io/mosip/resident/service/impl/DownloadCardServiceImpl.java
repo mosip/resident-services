@@ -259,13 +259,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
-            credentialReqestDto.setCredentialType(env.getProperty(ResidentConstants.CREDENTIAL_TYPE_PROPERTY));
+            credentialReqestDto.setCredentialType(env.getProperty(ResidentConstants.MOSIP_CREDENTIAL_TYPE_PROPERTY));
             credentialReqestDto.setIssuer(env.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
             credentialReqestDto.setEncrypt(Boolean.parseBoolean(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
             credentialReqestDto.setEncryptionKey(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid);
             credentialReqestDto.setAdditionalData(additionalAttributes);
-            credentialReqestDto.setSharableAttributes(List.of(FIRST_NAME, DATE_OF_BIRTH));
             requestDto.setRequest(credentialReqestDto);
             requestDto.setId("mosip.credential.request.service.id");
             requestDto.setRequest(credentialReqestDto);
@@ -310,6 +309,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
         residentTransactionEntity.setStatusCode(NEW);
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
+        /**
+         * Here we are setting vid in aid column.
+         */
+        residentTransactionEntity.setAid(vid);
         residentTransactionRepository.save(residentTransactionEntity);
         return eventId;
     }
