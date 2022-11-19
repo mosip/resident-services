@@ -1,6 +1,8 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.RequestIdType;
@@ -36,6 +41,8 @@ import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
+import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
@@ -55,6 +62,9 @@ public class ResidentCredentialController {
 
 	@Autowired
 	private ResidentCredentialService residentCredentialService;
+	
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
 	private AuditUtil audit;
@@ -95,7 +105,7 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ShareCredentialRequestDto> requestDTO)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
 		validator.validateRequest(requestDTO, RequestIdType.SHARE_CREDENTIAL);
 		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
@@ -201,10 +211,12 @@ public class ResidentCredentialController {
 	}
 
 	private void buildAdditionalMetadata(RequestWrapper<ShareCredentialRequestDto> requestDTO,
-			RequestWrapper<ResidentCredentialRequestDto> request) {
+			RequestWrapper<ResidentCredentialRequestDto> request)
+			throws JsonParseException, JsonMappingException, ResidentServiceCheckedException, IOException {
+		List<String> sharableAttr = residentConfigService.getSharableAttributesList(
+				requestDTO.getRequest().getSharableAttributes(), UISchemaTypes.SHARE_CREDENTIAL.getFileIdentifier());
 		if (Objects.nonNull(requestDTO.getRequest().getSharableAttributes())) {
-			request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()
-					.map(attr -> attr.getAttributeName()).collect(Collectors.toList()));
+			request.getRequest().setSharableAttributes(sharableAttr);
 			request.getRequest()
 					.setAdditionalData(Map.of("formatingAttributes", requestDTO.getRequest().getSharableAttributes(),
 							"maskingAttributes",
