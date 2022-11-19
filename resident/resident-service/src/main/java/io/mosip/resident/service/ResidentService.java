@@ -28,6 +28,7 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
+import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -85,4 +86,6 @@ public interface ResidentService {
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
 			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
+
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id);
 }

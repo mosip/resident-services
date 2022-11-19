@@ -1,20 +1,29 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.biometrics.spi.CbeffUtil;
+import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,28 +37,23 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.biometrics.constant.BiometricType;
-import io.mosip.kernel.biometrics.spi.CbeffUtil;
-import io.mosip.kernel.core.authmanager.authadapter.model.AuthUserDetails;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Resident identity service implementation class.
@@ -59,7 +63,6 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
 	private static final String BEARER_PREFIX = "Bearer ";
@@ -75,8 +78,7 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
-    private static final String DOCUMENTS = "documents";
-    private static final String PHOTO = "photo";
+	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -152,8 +154,8 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
-			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+			Map<String, Object> identity =
+					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -164,7 +166,8 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
 			if(fetchFace) {
-				extractFaceBdb(identityDTO, identity);
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimFromIdToken(env.getProperty(IMAGE)));
+				identity.remove("individualBiometrics");
 			}
 
 		} catch (IOException e) {
@@ -175,42 +178,15 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::exit");
 		return identityDTO;
 	}
-
-	private void extractFaceBdb(IdentityDTO identityDTO, Map<?, ?> identity)
-			throws ResidentServiceCheckedException, IOException {
-		String encodedDocValue=getMappingValue(identity, individualDocs);
-		byte[] decodedDoc=CryptoUtil.decodeURLSafeBase64(encodedDocValue);
-		Map<String, String> bdbBasedOnType;
-		try {
-			bdbBasedOnType=cbeffUtil.getBDBBasedOnType(decodedDoc, BiometricType.FACE.name(), null);
-			if(bdbBasedOnType.isEmpty()) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorCode(), 
-						ResidentErrorCode.EMPTY_COLLECTION_FOUND.getErrorMessage());
-			}
-			identityDTO.setFace(bdbBasedOnType.values().iterator().next());
-		} catch (Exception e) {
-			logger.error("Error occured in accessing biometric data %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.BIOMETRIC_MISSING.getErrorCode(),
-					ResidentErrorCode.BIOMETRIC_MISSING.getErrorMessage(), e);
-		}
-	}
-	
-	private Map<String, ?> extractFaceBdb(Map<String, Object> identity)
-			throws ResidentServiceCheckedException, IOException {
-		IdentityDTO identityDTO = new IdentityDTO();
-		 extractFaceBdb(identityDTO,identity);
-		 identity.put(PHOTO, identityDTO.getFace());
-		 identity.remove("individualBiometrics");
-		 return identity;
-	}
 	
 	@Override
 	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
-		return 	extractFaceBdb((Map<String, Object>) getIdentityAttributes(id, RETRIEVE_IDENTITY_PARAM_TYPE_BIO, false,schemaType));
+		Map<String, ?> identityAttributes =  getIdentityAttributes(id, false,schemaType);
+		return 	identityAttributes;
 	}
 
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id, String type, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
+	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -219,7 +195,7 @@ public class IdentityServiceImpl implements IdentityService {
 		queryParamName.add("type");
 		
 		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(type);
+		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
 		
 		try {
 			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
@@ -230,8 +206,6 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
-			List<Map<String,String>> documents=(List<Map<String, String>>) identityResponse.get(DOCUMENTS);
-			Map<String,String> individualBio=getIndividualBiometrics(documents);
 
 			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
 					.filter(attrib -> identity.containsKey(attrib))
@@ -239,9 +213,6 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
-			}
-			if(individualBio != null && !individualBio.isEmpty()) {
-				response.put(individualDocs, individualBio);
 			}
 			return response;
 		} catch (ApisResourceAccessException | IOException e) {
@@ -350,12 +321,15 @@ public class IdentityServiceImpl implements IdentityService {
 		AuthUserDetails authUserDetails = getAuthUserDetails();
 		if (authUserDetails != null) {
 			String token = authUserDetails.getToken();
-				Map<String, Object> userInfo = getUserInfo(token);
-				return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
-						.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
+				return getClaimsFromToken(claims, token);
 		}
 		return Map.of();
+	}
+
+	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
+		Map<String, Object> userInfo = getUserInfo(token);
+		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
 
 	private String getClaimFromUserInfo(Map<String, Object> userInfo, String claim) {
@@ -397,13 +371,19 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaims(claim).get(claim);
 	}
 
-	public String getResidentIdaToken() throws ApisResourceAccessException {
+	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		return useOldIdaToken ? getClaimValue(IDA_TOKEN)
-				: getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+				: getIDATokenForIndividualId(getResidentIndvidualId());
 	}
 
-	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
-		return getClaimValueFromJwtToken(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String claimName = env.getProperty(ResidentConstants.INDIVIDUALID_CLAIM_NAME);
+		Map<String, ?> claims = getClaimsFromToken(Set.of(claimName), accessToken);
+		String individualId = (String) claims.get(claimName);
+		if(individualId==null){
+			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claimName);
+		}
+		return getIDATokenForIndividualId(individualId);
 	}
 
 	String getIndividualIdForAid(String aid)
