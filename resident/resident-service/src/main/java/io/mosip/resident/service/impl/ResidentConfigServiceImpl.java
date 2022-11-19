@@ -177,12 +177,14 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(ID)))
 				.collect(Collectors.toList());
 
+		// attribute list from format present in both identity-mapping & ui-schema json
 		List<String> sharableList1 = sharableAttrList.stream()
 				.filter(map -> identityMap.containsKey(map.getAttributeName()) && map.getFormat()!=null)
 				.flatMap(attr -> Stream.of(attr.getFormat().split(",")))
 				.filter(idsListFromUISchema::contains)
 				.collect(Collectors.toList());
 
+		// attribute list from format not present in identity-mapping & but in ui-schema json
 		List<String> sharableList2 = sharableAttrList.stream()
 				.filter(map -> !identityMap.containsKey(map.getAttributeName()) && map.getFormat()!=null)
 				.map(map -> map.getFormat())
