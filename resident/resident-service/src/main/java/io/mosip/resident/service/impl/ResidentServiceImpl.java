@@ -1509,12 +1509,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if(residentTransactionEntity.isPresent()){
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
-				if(requestType.name().equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())){
-					String requestId = residentTransactionEntity.get().getCredentialRequestId();
-					if(requestId!=null){
-						return residentCredentialServiceImpl.getCard(requestId);
-					}
-				} else if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ||
+				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ||
 						requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
 					String rid = residentTransactionEntity.get().getAid();
 					if(rid!=null){

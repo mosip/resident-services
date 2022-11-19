@@ -99,7 +99,7 @@ public enum ResidentErrorCode {
 	VID_VALIDATION("RES-SER-471","This VID cannot be revoked since you have logged in using same VID"),
 	CARD_NOT_FOUND("RES-SER-472", "Card not found." ),
 	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
-			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN"),
+			"UPDATE_MY_UIN"),
 	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
 	PAYMENT_FAILED("RES-SER-475", "Payment has failed"),
 	PAYMENT_CANCELED("RES-SER-476", "Payment has been cancelled"),

@@ -309,6 +309,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
         residentTransactionEntity.setStatusCode(NEW);
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
+        /**
+         * Here we are setting vid in aid column.
+         */
         residentTransactionEntity.setAid(vid);
         residentTransactionRepository.save(residentTransactionEntity);
         return eventId;
