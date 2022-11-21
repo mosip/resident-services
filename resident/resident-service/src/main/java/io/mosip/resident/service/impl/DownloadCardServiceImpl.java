@@ -224,7 +224,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Override
     public String getFileName() {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = UUID.randomUUID().toString();
+        String eventId = utilitiy.getEventId();
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         try {
@@ -300,7 +300,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = UUID.randomUUID().toString();
+        String eventId = utilitiy.getEventId();
         String uin = utilities.getUinByVid(vid);
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());

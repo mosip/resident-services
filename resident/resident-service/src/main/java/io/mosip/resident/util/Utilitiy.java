@@ -72,6 +72,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
@@ -368,6 +369,16 @@ public class Utilitiy {
 		residentTransactionEntity.setCrBy("resident-services");
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		return residentTransactionEntity;
+	}
+
+	public String getEventId() {
+		/* return a random long of 16 length */
+		long smallest = 1000_0000_0000_0000L;
+		long biggest =  9999_9999_9999_9999L;
+
+		// return a long between smallest and biggest (+1 to include biggest as well with the upper bound)
+		long random = ThreadLocalRandom.current().nextLong(smallest, biggest+1);
+		return String.valueOf(random);
 	}
 
 	public static boolean isSecureSession(){
