@@ -384,7 +384,8 @@ public class IdentityServiceImpl implements IdentityService {
 			if(verifySignagure.left) {
 				userInfoStr = decodeString(getPayload(decodedJWT));
 			} else {
-				throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), "User info signature validation failed."));
+				throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), 
+						String.format("User info signature validation failed. Error: %s: %s", verifySignagure.getRight().getErrorCode(), verifySignagure.getRight().getErrorMessage())));
 			}
 		} else {
 			userInfoStr = userInfoResponseStr;
