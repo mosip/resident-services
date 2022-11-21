@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -129,6 +128,7 @@ public class ResidentCredentialServiceTest {
 		residentTransactionEntity.setEventId("e65c86f5-8929-4547-a156-9b349c29ab8b");
 		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234567890");
+        when(utilitiy.getEventId()).thenReturn("1111111111111111");
     }
 
     @Test
