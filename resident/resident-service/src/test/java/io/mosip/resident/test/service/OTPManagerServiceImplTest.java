@@ -4,6 +4,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.entity.OtpTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.OtpTransactionRepository;
@@ -130,4 +131,28 @@ public class OTPManagerServiceImplTest {
     public void testSendOtpSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testSendOtpAlreadyOtpSendError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        when(otpTransactionRepository.checkotpsent(any(), any(), any())).thenReturn(3);
+        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+    }
+
+    @Test
+    public void testSendOtpOtpSendWithinLessTime() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
+        when(otpTransactionRepository.findByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
+        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+    }
+
+    @Test
+    public void testSendOtpPhoneSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        assertEquals(true, otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+    }
+
+//    @Test(expected = ResidentServiceCheckedException.class)
+//    public void testUserBlocked() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+//        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+//    }
 }
