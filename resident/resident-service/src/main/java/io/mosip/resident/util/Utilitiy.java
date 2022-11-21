@@ -371,7 +371,7 @@ public class Utilitiy {
 		return residentTransactionEntity;
 	}
 
-	public String getEventId() {
+	public String createEventId() {
 		/* return a random long of 16 length */
 		long smallest = 1000_0000_0000_0000L;
 		long biggest =  9999_9999_9999_9999L;

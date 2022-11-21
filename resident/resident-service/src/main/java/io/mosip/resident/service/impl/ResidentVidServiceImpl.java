@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -303,7 +302,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
-		residentTransactionEntity.setEventId(utility.getEventId());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
@@ -537,7 +536,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private ResidentTransactionEntity createResidentTransEntity(String vid, String indivudalId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
-		residentTransactionEntity.setEventId(utility.getEventId());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
 		residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
