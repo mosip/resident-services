@@ -151,8 +151,9 @@ public class OTPManagerServiceImplTest {
         assertEquals(true, otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
     }
 
-//    @Test(expected = ResidentServiceCheckedException.class)
-//    public void testUserBlocked() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-//        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
-//    }
+    @Test
+    public void testValidateOtpSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
+    }
+
 }
