@@ -1,19 +1,24 @@
 package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.entity.OtpTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.OtpTransactionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.OtpManagerServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,8 +42,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -98,6 +102,15 @@ public class OTPManagerServiceImplTest {
 
     private ResponseEntity<ResponseWrapper> response1;
 
+    @Mock
+    private TemplateUtil templateUtil;
+
+    @Mock
+    private RequestValidator requestValidator;
+
+    @Mock
+    private ResidentService residentService;
+
     @Before
     public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
         MockitoAnnotations.initMocks(this);
@@ -125,7 +138,8 @@ public class OTPManagerServiceImplTest {
                         Mockito.eq(ResponseWrapper.class)))
                 .thenReturn(response1);
         Mockito.when(environment.getProperty(any())).thenReturn("http://localhost:8099");
-    }
+        Mockito.when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("EMAIL"));
+}
 
     @Test
     public void testSendOtpSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
@@ -153,6 +167,19 @@ public class OTPManagerServiceImplTest {
 
     @Test
     public void testValidateOtpSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
+        otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds(120));
+        when(otpTransactionRepository.findByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
+        assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testValidateOtpFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
+        otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime());
+        when(otpTransactionRepository.findByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
         assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }
 
