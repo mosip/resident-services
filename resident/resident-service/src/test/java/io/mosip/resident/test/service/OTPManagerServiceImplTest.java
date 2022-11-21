@@ -51,6 +51,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * This class is used to test Otp Manger service impl class.
+ * @author Kamesh Shekhar Prasad
  */
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
