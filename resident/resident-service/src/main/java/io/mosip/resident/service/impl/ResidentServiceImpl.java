@@ -1231,6 +1231,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
+		residentTransactionEntity.setStatusComment("Updating auth type lock status");
 		return residentTransactionEntity;
 	}
 
