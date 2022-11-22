@@ -406,7 +406,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return getIDATokenForIndividualId(individualId);
 	}
 
-	String getIndividualIdForAid(String aid)
+	public String getIndividualIdForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 			IdentityDTO identity = getIdentity(aid);
 			String uin = identity.getUIN();
