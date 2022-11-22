@@ -2,7 +2,6 @@ package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -10,7 +9,6 @@ import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
-import io.mosip.resident.entity.OtpTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -20,7 +18,6 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.OtpManagerServiceImpl;
 import io.mosip.resident.service.impl.ProxyOtpServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -29,7 +26,6 @@ import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -39,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
@@ -57,7 +52,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * This class is used to test proxy otp service impl class.
@@ -254,6 +248,19 @@ public class ProxyOtpServiceImpllTest {
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
                 thenThrow(new ResidentServiceCheckedException());
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testValidateOtpFailureApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        MainRequestDTO<OtpRequestDTOV3> requestDTO1 = new MainRequestDTO<>();
+        OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
+        otpRequestDTOV3.setOtp("11111");
+        otpRequestDTOV3.setUserId("ka@gm.com");
+        otpRequestDTOV3.setTransactionID("122222222");
+        requestDTO1.setRequest(otpRequestDTOV3);
+        Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
+                thenThrow(new ApisResourceAccessException());
         assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
     }
 
