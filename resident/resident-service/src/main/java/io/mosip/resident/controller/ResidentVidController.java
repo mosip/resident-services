@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
@@ -71,6 +73,12 @@ public class ResidentVidController {
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
 	
+	@Value("${resident.vid.policy.id}")
+	private String vidPolicyId;
+	
+	@Value("${resident.vid.version}")
+	private String version;
+	
 	@GetMapping(path = "/vid/policy")
 	@Operation(summary = "Retrieve VID policy", description = "Retrieve VID policy", tags = { "Resident Service" })
 	@ApiResponses(value = {
@@ -81,6 +89,9 @@ public class ResidentVidController {
 	public ResponseEntity<ResponseWrapper<String>> getVidPolicy() {
 		ResponseWrapper<String> response = new ResponseWrapper<>();
 		try {
+			response.setId(vidPolicyId);
+			response.setVersion(version);
+			response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 			response.setResponse(residentVidService.getVidPolicy());
 		} catch (ResidentServiceCheckedException e) {
 			response.setErrors(List.of(new ServiceError(ResidentErrorCode.POLICY_EXCEPTION.getErrorCode(),
