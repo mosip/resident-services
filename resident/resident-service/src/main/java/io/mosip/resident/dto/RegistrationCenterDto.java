@@ -56,6 +56,12 @@ public class RegistrationCenterDto extends MasterSyncBaseDto {
 	private String lunchEndTime;
 
 	private Boolean isActive;
+	
+	private String fullAddress;
+	
+	private int serialNumber;
+	
+	
 
 	/**
 	 * @return the langCode
@@ -378,5 +384,33 @@ public class RegistrationCenterDto extends MasterSyncBaseDto {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+
+	/**
+	 * @return the fullAddress
+	 */
+	public String getFullAddress() {
+		return fullAddress;
+	}
+
+	/**
+	 * @param fullAddress the fullAddress to set
+	 */
+	public void setFullAddress(String fullAddress) {
+		this.fullAddress = fullAddress;
+	}
+
+	/**
+	 * @return the serialNumber
+	 */
+	public int getSerialNumber() {
+		return serialNumber;
+	}
+
+	/**
+	 * @param serialNumber the serialNumber to set
+	 */
+	public void setSerialNumber(int serialNumber) {
+		this.serialNumber = serialNumber;
+	}	
 
 }

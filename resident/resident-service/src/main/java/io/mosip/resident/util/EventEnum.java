@@ -666,7 +666,24 @@ public enum EventEnum {
 	DOWNLOAD_PERSONALIZED_CARD("RES-SER-268", RegistrationConstants.SYSTEM, "Download personalized card",
 			"Download card Html to pdf", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME);
+			RegistrationConstants.APPLICATION_NAME),
+	DOWNLOAD_REGISTRATION_CENTER("RES-SER-269", RegistrationConstants.SYSTEM, "download registration center",
+			"download registration center", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	DOWNLOAD_REGISTRATION_CENTER_SUCCESS("RES-SER-270", RegistrationConstants.SYSTEM,
+			"download registration center success",
+			"download registration center success based on language code and hierarchy level", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	DOWNLOAD_SUPPORTING_DOCS("RES-SER-271", RegistrationConstants.SYSTEM, "download supporting docs",
+			"ownload supporting docs", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+
+	DOWNLOAD_SUPPORTING_DOCS_SUCCESS("RES-SER-272", RegistrationConstants.SYSTEM, "download supporting docs success",
+			"download supporting docs success based on language code", "RES-SER", "Resident service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATION_ID, RegistrationConstants.APPLICATION_NAME)
 	;
 
 	private final String eventId;
