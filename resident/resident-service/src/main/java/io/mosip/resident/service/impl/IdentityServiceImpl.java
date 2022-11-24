@@ -59,7 +59,6 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_BIO = "bio";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
@@ -134,6 +133,9 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
+	
+	@Value("${resident.flag.use-old-ida-token:false}")
+	private boolean useOldIdaToken;
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
@@ -151,7 +153,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			String type = fetchFace ? RETRIEVE_IDENTITY_PARAM_TYPE_BIO : RETRIEVE_IDENTITY_PARAM_TYPE_DEMO;
-			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(RESIDENT_IDENTITY_SCHEMATYPE));
+			Map<?, ?> identity = (Map<?, ?>) getIdentityAttributes(id, type, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -396,26 +398,12 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
+		return useOldIdaToken ? getClaimValue(IDA_TOKEN)
+				: getClaimFromIdToken(this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
 	public String getResidentIdaTokenFromIdTokenJwt(String idTokenJwt) {
-		return getClaimFromJwt(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
-	}
-
-	public String getClaimFromJwt(String idToken, String claim) {
-		String claimValue = "";
-		String[] parts = idToken.split("\\.", 0);
-		Map payLoadMap;
-		try {
-			payLoadMap = objectMapper.readValue(parts[1], Map.class);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
-		}
-		if (claim != null) {
-			claimValue = (String) payLoadMap.get(claim);
-		}
-		return claimValue;
+		return getClaimValueFromJwtToken(idTokenJwt, this.environment.getProperty(ResidentConstants.IDA_TOKEN_CLAIM_NAME));
 	}
 
 	String getIndividualIdForAid(String aid)
@@ -435,18 +423,32 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			return individualId;
 	}
+	
+	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
+		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+	}
+	
+	public String getClaimFromAccessToken(String claim) {
+		AuthUserDetails authUserDetails = getAuthUserDetails();
+		String accessToken = authUserDetails.getToken();
+		return getClaimValueFromJwtToken(accessToken, claim);
+	}
 
 	public String getClaimFromIdToken(String claim) {
 		AuthUserDetails authUserDetails= getAuthUserDetails();
 		String idToken = authUserDetails.getIdToken();
+		return getClaimValueFromJwtToken(idToken, claim);
+	}
+
+	private String getClaimValueFromJwtToken(String jwtToken, String claim) {
 		String claimValue = "";
 		String payLoad = "";
-		if(idToken!=null){
-			if(idToken.contains("\\.")){
-				String[] parts = idToken.split("\\.", 0);
+		if(jwtToken!=null){
+			if(jwtToken.contains(".")){
+				String[] parts = jwtToken.split("\\.", 0);
 				payLoad = decodeString(parts[1]);
 			} else{
-				payLoad = decodeString(idToken);
+				payLoad = decodeString(jwtToken);
 			}
 			Map payLoadMap;
 			try {
@@ -458,7 +460,7 @@ public class IdentityServiceImpl implements IdentityService {
 				claimValue = (String) payLoadMap.get(claim);
 			}
 		}
-		return  claimValue;
+		return claimValue;
 	}
 
 	public String decodeString(String payload)

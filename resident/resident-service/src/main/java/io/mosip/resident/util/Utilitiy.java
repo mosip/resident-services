@@ -1,12 +1,37 @@
 package io.mosip.resident.util;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfReader;
+import com.nimbusds.jose.util.IOUtils;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.RequestWrapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
+import io.mosip.kernel.signature.dto.SignatureResponseDto;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateVariablesConstants;
+import io.mosip.resident.dto.IdRepoResponseDto;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.JsonValue;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,6 +43,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,27 +53,29 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.nimbusds.jose.util.IOUtils;
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdRepoResponseDto;
-import io.mosip.resident.dto.JsonValue;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 
 /**
  * @author Girish Yarru
@@ -75,6 +103,12 @@ public class Utilitiy {
 	@Autowired
 	private Environment env;
 
+	@Autowired
+	private PDFGenerator pdfGenerator;
+
+	@Autowired
+	private ObjectMapper objectMapper;
+
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static String regProcessorIdentityJson = "";
@@ -99,6 +133,9 @@ public class Utilitiy {
 	
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
+
+	@Autowired
+	private IdentityServiceImpl identityService;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -312,7 +349,18 @@ public class Utilitiy {
 	public String convertToMaskDataFormat(String maskData) {
 		return maskData(maskData, maskingFunction);
 	}
-	
+
+	public String getPassword(List<String> attributeValues) {
+		Map<String, List<String>> context = new HashMap<>();
+		context.put("attributeValues", attributeValues);
+		VariableResolverFactory myVarFactory = new MapVariableResolverFactory(context);
+		myVarFactory.setNextFactory(functionFactory);
+		String maskingFunctionName = this.env.getProperty(ResidentConstants.CREATE_PASSWORD_METHOD_NAME);
+		Serializable serializable = MVEL.compileExpression(maskingFunctionName+"(attributeValues);");
+		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
+	}
+
+
 	public ResidentTransactionEntity createEntity() {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
@@ -338,4 +386,92 @@ public class Utilitiy {
 		return "NA";
 		
 	}
+
+	public byte[] signPdf(InputStream in, String password) {
+		logger.debug("UinCardGeneratorImpl::generateUinCard()::entry");
+		byte[] pdfSignatured=null;
+		try {
+			ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(in);
+			PdfReader pdfReader = new PdfReader(pdfValue.toByteArray());
+			int pageNumber = pdfReader.getNumberOfPages();
+			PDFSignatureRequestDto request = new PDFSignatureRequestDto(
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_X))),
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_Y))),
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_X))),
+					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_Y))),
+					env.getProperty(ResidentConstants.REASON), pageNumber, password);
+			request.setApplicationId(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID));
+			request.setReferenceId(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID));
+			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));
+			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
+			LocalDateTime localdatetime = LocalDateTime
+					.parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN))), format);
+
+			request.setTimeStamp(DateUtils.getUTCCurrentDateTimeString());
+			RequestWrapper<PDFSignatureRequestDto> requestWrapper = new RequestWrapper<>();
+
+			requestWrapper.setRequest(request);
+			requestWrapper.setRequesttime(localdatetime);
+			ResponseWrapper<?> responseWrapper;
+			SignatureResponseDto signatureResponseDto;
+
+			responseWrapper= residentServiceRestClient.postApi(env.getProperty(ApiName.PDFSIGN.name())
+					, MediaType.APPLICATION_JSON,requestWrapper, ResponseWrapper.class);
+
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				ServiceError error = responseWrapper.getErrors().get(0);
+				throw new ResidentServiceException(ResidentErrorCode.valueOf(error.getMessage()));
+			}
+			String signatureData= objectMapper.writeValueAsString(responseWrapper.getResponse());
+			signatureResponseDto = objectMapper.readValue(signatureData,
+					SignatureResponseDto.class);
+
+			pdfSignatured = Base64.decodeBase64(signatureResponseDto.getData());
+
+		} catch (Exception e) {
+			logger.error(io.mosip.kernel.pdfgenerator.itext.constant.PDFGeneratorExceptionCodeConstant.PDF_EXCEPTION.getErrorMessage(),e.getMessage()
+					+ ExceptionUtils.getStackTrace(e));
+		}
+		logger.debug("UinCardGeneratorImpl::generateUinCard()::exit");
+
+		return pdfSignatured;
+	}
+
+	public String getFileName(String eventId, String propertyName){
+		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
+		if(propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
+		}
+		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", DateUtils
+					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
+		}
+		return propertyName;
+	}
+
+	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		IdentityDTO identityDTO = identityService.getIdentity(individualId);
+		String uin ="";
+		String email ="";
+		String phone ="";
+		if (identityDTO != null) {
+			uin = identityDTO.getUIN();
+			email = identityDTO.getEmail();
+			phone = identityDTO.getPhone();
+		}
+		String idaToken= identityService.getIDAToken(uin);
+		String id;
+		if(email != null && phone !=null && channel.size()==2) {
+			id= email+phone+idaToken;
+		} else if(email != null && channel.size()==1 && channel.get(0).equalsIgnoreCase(EMAIL)) {
+			id= email+idaToken;
+		} else if(phone != null && channel.size()==1 && channel.get(0).equalsIgnoreCase(PHONE)) {
+			id= phone+idaToken;
+		}
+		else {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_CHANNEL_IN_IDENTITY);
+		}
+		return HMACUtils2.digestAsPlainText(id.getBytes());
+	}
+
 }

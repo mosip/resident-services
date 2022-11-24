@@ -1,7 +1,6 @@
 package io.mosip.resident.controller;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -9,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,10 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
@@ -31,16 +30,14 @@ import io.mosip.resident.dto.CredentialTypeResponse;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
-import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
-import io.mosip.resident.dto.SharableAttributesDTO;
+import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -61,6 +58,12 @@ public class ResidentCredentialController {
 
 	@Autowired
 	private AuditUtil audit;
+	
+	@Value("${resident.share.credential.id}")
+	private String shareCredentialId;
+	
+	@Value("${resident.share.credential.version}")
+	private String shareCredentialVersion;
 
 	@ResponseFilter
 	@PostMapping(value = "/req/credential")
@@ -81,36 +84,6 @@ public class ResidentCredentialController {
 	}
 	
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestDownloadPersonalizedCard()" + ")")
-	@PostMapping(value = "/download-personalized-card")
-	@Operation(summary = "requestDownloadPersonalizedCard", description = "requestDownloadPersonalizedCard", tags = { "resident-credential-controller" })
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public ResponseEntity<Object> requestDownloadPersonalizedCard(
-			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
-		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
-		requestDTO.getRequest().setSharableAttributes(null);
-		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
-		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
-		requestDTOMap.remove("purpose");
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestMap,
-				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
-				});
-		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
-		buildAdditionalMetadata(requestDTO, request);
-		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.DOWNLOAD_PERSONALIZED_CARD.name()));
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
-	}
-	
-	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestShareCredWithPartner()" + ")")
 	@PostMapping(value = "/share-credential")
 	@Operation(summary = "requestShareCredWithPartner", description = "requestShareCredWithPartner", tags = { "resident-credential-controller" })
@@ -121,19 +94,16 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> requestShareCredWithPartner(
-			@RequestBody RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO)
+			@RequestBody RequestWrapper<ShareCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		validator.validateRequest(requestDTO, RequestIdType.SHARE_CREDENTIAL);
 		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
-		List<SharableAttributesDTO> sharableAttributes = requestDTO.getRequest().getSharableAttributes();
-		requestDTO.getRequest().setSharableAttributes(null);
-		Map<String, Object> requestMap = JsonUtil.convertValue(requestDTO, Map.class);
-		Map<String, Object> requestDTOMap = (Map) requestMap.get("request");
-		requestDTOMap.remove("purpose");
-		RequestWrapper<ResidentCredentialRequestDto> request = JsonUtil.convertValue(requestMap,
-				new TypeReference<RequestWrapper<ResidentCredentialRequestDto>>() {
-				});
-		requestDTO.getRequest().setSharableAttributes(sharableAttributes);
+		RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();
+		ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
+		credentialRequestDto.setIssuer(requestDTO.getRequest().getPartnerId());
+		credentialRequestDto.setConsent(requestDTO.getRequest().getConsent());
+		request.setRequest(credentialRequestDto);
 		buildAdditionalMetadata(requestDTO, request);
 		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		if(purpose != null) {
@@ -141,7 +111,8 @@ public class ResidentCredentialController {
 		}else {
 			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name()));
 		}
-		
+		response.setId(shareCredentialId);
+		response.setVersion(shareCredentialVersion);
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -229,7 +200,7 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	private void buildAdditionalMetadata(RequestWrapper<ResidentCredentialRequestDtoV2> requestDTO,
+	private void buildAdditionalMetadata(RequestWrapper<ShareCredentialRequestDto> requestDTO,
 			RequestWrapper<ResidentCredentialRequestDto> request) {
 		if (Objects.nonNull(requestDTO.getRequest().getSharableAttributes())) {
 			request.getRequest().setSharableAttributes(requestDTO.getRequest().getSharableAttributes().stream()

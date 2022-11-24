@@ -1,10 +1,10 @@
 package io.mosip.resident.constant;
 
 /**
- * The Enum TemplateVariablesEnum.
+ * The Constant used here is to be used in template variables.
  * @author Kamesh Shekhar Prasad
  */
-public class TemplateVariablesEnum {
+public class TemplateVariablesConstants {
     public static final String EVENT_ID = "eventId";
     public static final String EVENT_TYPE = "eventType";
     public static final String PURPOSE = "purpose";
@@ -31,7 +31,7 @@ public class TemplateVariablesEnum {
     public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
     public static final String DOWNLOAD_LINK = "downloadLink";
     public static final String TRACKING_LINK = "trackingLink";
-    public static final String TRANSACTION_ID = "transactionID";
+    public static final String TRANSACTION_ID = "transactionId";
     public static final String PARTNER_ID = "partner";
     public static final String OTP = "otp";
     public static final String PHONE = "phone";

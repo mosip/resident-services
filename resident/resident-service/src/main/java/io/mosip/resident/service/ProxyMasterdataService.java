@@ -153,15 +153,5 @@ public interface ProxyMasterdataService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException;
-
-	/**
-	 * 
-	 * @param langCode
-	 * @param hierarchyLevel
-	 * @param name
-	 * @return
-	 * @throws ResidentServiceCheckedException
-	 */
-	 public byte[] downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
-			List<String> name) throws ResidentServiceCheckedException,IOException,Exception;
-	 }
+	
+}

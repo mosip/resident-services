@@ -99,6 +99,7 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("123456789");
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         ResponseWrapper primaryLangResp = new ResponseWrapper<>();
 		primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
 		Mockito.when(proxyMasterdataService

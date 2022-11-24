@@ -253,7 +253,6 @@ public class ResidentController {
 		return response;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetEventIdStatus()" + ")")
 	@GetMapping(path = "/events/{event-id}")
 	@Operation(summary = "getGetCheckEventIdStatus", description = "checkEventIdStatus", tags = {
 			"resident-controller" })
@@ -395,6 +394,9 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		if(pdfBytes.length==0){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + eventId + ".pdf\"")
@@ -534,10 +536,8 @@ public class ResidentController {
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
 				fromDateTime, toDateTime, serviceType, statusFilter);
-		System.out.println("after pdf bytes " + pdfBytes);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
-		System.out.println("after get service history pdf success");
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
