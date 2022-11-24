@@ -124,11 +124,18 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		String fileText = (String) templateResponse.get("fileText");
 		InputStream downLoadRegCenterTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream downLoadRegCenterTemplateData = templateManager.merge(downLoadRegCenterTemplate, regCentersMap);
-
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
+		return new ByteArrayInputStream(utilitiy.signPdf(convertStringToInputStream(writer.toString()), null));
+	}
+
+	public InputStream convertStringToInputStream(String writer){
+		byte[] bytes = writer.getBytes();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
+		baos.write(bytes, 0, bytes.length);
+		InputStream inputStream = convertOutputStreamToInputStream(baos);
+		return inputStream;
 	}
 	
 	
@@ -150,7 +157,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
+		return new ByteArrayInputStream(utilitiy.signPdf(convertStringToInputStream(writer.toString()), null));
 	}
 
 	/**
