@@ -85,9 +85,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private AuditUtil audit;
 
     @Autowired
-    private Environment env;
-
-    @Autowired
     private ObjectStoreHelper objectStoreHelper;
 
     @Autowired
@@ -258,19 +255,19 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
-            credentialReqestDto.setCredentialType(env.getProperty(ResidentConstants.MOSIP_CREDENTIAL_TYPE_PROPERTY));
-            credentialReqestDto.setIssuer(env.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
-            credentialReqestDto.setEncrypt(Boolean.parseBoolean(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
-            credentialReqestDto.setEncryptionKey(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
+            credentialReqestDto.setCredentialType(environment.getProperty(ResidentConstants.MOSIP_CREDENTIAL_TYPE_PROPERTY));
+            credentialReqestDto.setIssuer(environment.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
+            credentialReqestDto.setEncrypt(Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
+            credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid);
             credentialReqestDto.setAdditionalData(additionalAttributes);
             requestDto.setRequest(credentialReqestDto);
-            requestDto.setId("mosip.credential.request.service.id");
+            requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
             requestDto.setRequest(credentialReqestDto);
             requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-            requestDto.setVersion("1.0");
+            requestDto.setVersion(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_VERSION);
             ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
-                    env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
+                    environment.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
                     ResponseWrapper.class);
             if(responseDto.getErrors().size()==0){
                 ResidentCredentialResponseDto residentCredentialResponseDto =
@@ -290,8 +287,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         }catch (IOException exception){
             throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(), exception.getMessage(), exception);
         }
-        responseWrapper.setId(env.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
-        responseWrapper.setVersion(env.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
+        responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
+        responseWrapper.setVersion(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
         responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         responseWrapper.setResponse(vidDownloadCardResponseDto);
         return responseWrapper;

@@ -123,4 +123,7 @@ public class ResidentConstants {
 
     public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
     public static final String MOSIP_CREDENTIAL_TYPE_PROPERTY="mosip.digital.card.credential.type";
+
+    public static final String CREDENTIAL_REQUEST_SERVICE_ID = "mosip.credential.request.service.id";
+    public static final String CREDENTIAL_REQUEST_SERVICE_VERSION = "mosip.credential.request.service.version";
 }
