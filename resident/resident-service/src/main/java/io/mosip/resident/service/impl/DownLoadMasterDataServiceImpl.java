@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -77,6 +78,9 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	@Autowired
 	private ObjectMapper mapper;
 
+	@Autowired
+	private Utilitiy utilitiy;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@PostConstruct
@@ -123,9 +127,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
-		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return convertOutputStreamToInputStream(pdfValue);
+		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
 	
 	
@@ -146,9 +149,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		InputStream supportingDocsTemplateData = templateManager.merge(supportingDocsTemplate, supportingsDocsMap);		
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
-		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return convertOutputStreamToInputStream(pdfValue);
+		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
 
 	/**

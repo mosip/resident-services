@@ -126,4 +126,6 @@ public class ResidentConstants {
 
     public static final String CREDENTIAL_REQUEST_SERVICE_ID = "mosip.credential.request.service.id";
     public static final String CREDENTIAL_REQUEST_SERVICE_VERSION = "mosip.credential.request.service.version";
+    public static final String DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.registration.centre.file.name.convention";
+    public static final String DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.supporting.document.file.name.convention";
 }
