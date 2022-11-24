@@ -393,5 +393,4 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::exit");
 		return responseWrapper;
 	}
-
 }

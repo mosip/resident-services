@@ -104,6 +104,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Value("${mosip.resident.vid-policy-url}")
 	private String vidPolicyUrl;
+	
+	@Value("${resident.vid.get.id}")
+	private String residentVidGetId;
+	
+	@Value("${mosip.resident.create.vid.version}")
+	private String residentCreateVidVersion;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -320,7 +326,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		vidRequestDto.setUIN(uin);
 		vidRequestDto.setVidType(requestDto.getVidType());
 		request.setId(vidCreateId);
-		request.setVersion(version);
+		request.setVersion(residentCreateVidVersion);
 		request.setRequest(vidRequestDto);
 		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
@@ -648,6 +654,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				})
 				.collect(Collectors.toList());
 		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
+		res.setId(residentVidGetId);
+		res.setVersion(version);
+		res.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 		res.setResponse(filteredList);
 		return res;
 		
