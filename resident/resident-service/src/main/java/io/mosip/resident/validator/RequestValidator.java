@@ -542,7 +542,7 @@ public class RequestValidator {
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(reqResVersion))
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(version))
 			throw new InvalidInputException("version");
 		
 		if (request.getRequest() == null) {
