@@ -88,4 +88,6 @@ public interface ResidentService {
 			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
 
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id);
+
+	public String getFileName(String eventId);
 }
