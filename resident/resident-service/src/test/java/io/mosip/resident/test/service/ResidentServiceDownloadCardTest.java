@@ -15,6 +15,7 @@ import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,6 +62,9 @@ public class ResidentServiceDownloadCardTest {
     @Mock
     private ObjectStoreHelper objectStoreHelper;
 
+    @Mock
+    private TemplateUtil templateUtil;
+
     private byte[] result;
     private String eventId;
     private String idType;
@@ -78,7 +82,7 @@ public class ResidentServiceDownloadCardTest {
 
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
         residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString());
+        residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.toString());
         residentTransactionEntity.get().setAid(eventId);
         digitalCardStatusResponseDto = new DigitalCardStatusResponseDto();
         responseDto = new ResponseWrapper<>();
@@ -94,24 +98,6 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
     }
-
-    @Test
-    public void testDownloadPersonalizedCardSuccess() throws ResidentServiceCheckedException {
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
-        assertNotNull(response);
-    }
-
-    @Test
-    public void testVidCardDownloadSuccess() throws ResidentServiceCheckedException {
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
-        assertNotNull(response);
-    }
-
     @Test(expected = ResidentServiceException.class)
     public void testUpdateMyUinException() throws ResidentServiceCheckedException{
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());

@@ -25,12 +25,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,9 +54,6 @@ public class IdentityServiceTest {
 
 	@InjectMocks
 	private io.mosip.resident.service.IdentityService identityService = new IdentityServiceImpl();
-
-	@InjectMocks
-	private IdentityServiceImpl identityServiceImpl = new IdentityServiceImpl();
 
 	@Mock
 	private AuditUtil auditUtil;
@@ -95,10 +96,14 @@ public class IdentityServiceTest {
 
 	private Map bdbFaceMap;
 
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
+	
 	@Before
 	public void setUp() throws Exception {
 		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
 		ReflectionTestUtils.setField(identityService, "individualDocs", "individualBiometrics");
+		ReflectionTestUtils.setField(identityService, "objectMapper", objectMapper);
 
 		Map identityMap = new LinkedHashMap();
 		identityMap.put("UIN", "8251649601");
@@ -160,9 +165,7 @@ public class IdentityServiceTest {
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
-		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
-		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
 		assertEquals("Rahul Singh Kumar", result.getFullName());
@@ -181,8 +184,7 @@ public class IdentityServiceTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		when(cbeffUtil.getBDBBasedOnType(any(), anyString(), any())).thenReturn(bdbFaceMap);
-		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
 	}
@@ -203,22 +205,6 @@ public class IdentityServiceTest {
 		IdentityDTO result = identityService.getIdentity("6");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testExtractFaceBdb() throws Exception {
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
-				.thenReturn(responseWrapper);
-		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
-				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
-		ClassLoader classLoader = getClass().getClassLoader();
-		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
-		InputStream is = new FileInputStream(idJson);
-		String mappingJson = IOUtils.toString(is, "UTF-8");
-		when(utility.getMappingJson()).thenReturn(mappingJson);
-		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		identityService.getIdentity("6", true, "eng");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -290,39 +276,37 @@ public class IdentityServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testGetClaimFromUserInfoFailure(){
 		Map<String, Object> userInfo = new HashMap<>();
-		ReflectionTestUtils.invokeMethod(identityServiceImpl, "getClaimFromUserInfo", userInfo, "claim");
+		ReflectionTestUtils.invokeMethod(identityService, "getClaimFromUserInfo", userInfo, "claim");
 	}
 
 	@Test
 	public void testGetClaimFromUserInfoSuccess() {
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
-		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("dmFsdWU=");
-		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getClaimFromUserInfo", userInfo, "claim");
+		String result = ReflectionTestUtils.invokeMethod(identityService, "getClaimFromUserInfo", userInfo, "claim");
 		assertEquals("value", result);
 	}
 
 	@Test
-	public void testGetUserInfoSuccess() throws ApisResourceAccessException {
+	public void testGetUserInfoSuccess() throws ApisResourceAccessException, JsonProcessingException {
 		String token = "1234";
-		ReflectionTestUtils.setField(identityServiceImpl, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
+		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
 		URI uri = URI.create("http://localhost:8080/userinfo");
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", "Bearer " + token);
 
-		when(restClientWithPlainRestTemplate.getApi(uri, Map.class, headers))
-				.thenReturn(userInfo);
-		Map<String, Object> result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getUserInfo", token);
+		when(restClientWithPlainRestTemplate.getApi(uri, String.class, headers))
+				.thenReturn(objectMapper.writeValueAsString(userInfo));
+		Map<String, Object> result = ReflectionTestUtils.invokeMethod(identityService, "getUserInfo", token);
 		assertEquals("value", result.get("claim"));
 	}
 
 	@Test
 	public void testGetIndividualIdForAid() throws Exception{
 		String aid = "123456789";
-		ReflectionTestUtils.setField(identityServiceImpl, "dateFormat", "yyyy/MM/dd");
+		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
@@ -333,7 +317,7 @@ public class IdentityServiceTest {
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
-		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getIndividualIdForAid", aid);
+		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
 		assertEquals("8251649601", result);
 	}
 
@@ -342,8 +326,8 @@ public class IdentityServiceTest {
 		String aid = "123456789";
 		Optional<String> perpVid = Optional.of("8251649601");
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
-		ReflectionTestUtils.setField(identityServiceImpl, "dateFormat", "yyyy/MM/dd");
-		ReflectionTestUtils.setField(identityServiceImpl,"useVidOnly", true);
+		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
+		ReflectionTestUtils.setField(identityService,"useVidOnly", true);
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
@@ -354,7 +338,7 @@ public class IdentityServiceTest {
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
-		String result = ReflectionTestUtils.invokeMethod(identityServiceImpl, "getIndividualIdForAid", aid);
+		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
 		assertEquals("8251649601", result);
 	}
 }

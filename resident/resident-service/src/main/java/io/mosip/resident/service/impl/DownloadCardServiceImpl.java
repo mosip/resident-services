@@ -51,7 +51,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
@@ -84,9 +83,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     @Autowired
     private AuditUtil audit;
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private ObjectStoreHelper objectStoreHelper;
@@ -224,7 +220,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Override
     public String getFileName() {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = UUID.randomUUID().toString();
+        String eventId = utilitiy.createEventId();
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         try {
@@ -240,6 +236,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     eventId, "Download personalized card"));
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
+        } catch (ResidentServiceCheckedException e) {
+            throw new RuntimeException(e);
         }
         residentTransactionEntity.setRequestSummary(SUCCESS);
         residentTransactionEntity.setStatusCode(NEW);
@@ -257,20 +255,19 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
-            credentialReqestDto.setCredentialType(env.getProperty(ResidentConstants.CREDENTIAL_TYPE_PROPERTY));
-            credentialReqestDto.setIssuer(env.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
-            credentialReqestDto.setEncrypt(Boolean.parseBoolean(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
-            credentialReqestDto.setEncryptionKey(env.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
+            credentialReqestDto.setCredentialType(environment.getProperty(ResidentConstants.MOSIP_CREDENTIAL_TYPE_PROPERTY));
+            credentialReqestDto.setIssuer(environment.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
+            credentialReqestDto.setEncrypt(Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
+            credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid);
             credentialReqestDto.setAdditionalData(additionalAttributes);
-            credentialReqestDto.setSharableAttributes(List.of(FIRST_NAME, DATE_OF_BIRTH));
             requestDto.setRequest(credentialReqestDto);
-            requestDto.setId("mosip.credential.request.service.id");
+            requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
             requestDto.setRequest(credentialReqestDto);
             requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-            requestDto.setVersion("1.0");
+            requestDto.setVersion(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_VERSION);
             ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
-                    env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
+                    environment.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
                     ResponseWrapper.class);
             if(responseDto.getErrors().size()==0){
                 ResidentCredentialResponseDto residentCredentialResponseDto =
@@ -290,8 +287,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         }catch (IOException exception){
             throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(), exception.getMessage(), exception);
         }
-        responseWrapper.setId(env.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
-        responseWrapper.setVersion(env.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
+        responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
+        responseWrapper.setVersion(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
         responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         responseWrapper.setResponse(vidDownloadCardResponseDto);
         return responseWrapper;
@@ -299,7 +296,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = UUID.randomUUID().toString();
+        String eventId = utilitiy.createEventId();
         String uin = utilities.getUinByVid(vid);
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
@@ -308,6 +305,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
         residentTransactionEntity.setStatusCode(NEW);
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
+        /**
+         * Here we are setting vid in aid column.
+         */
+        residentTransactionEntity.setAid(vid);
         residentTransactionRepository.save(residentTransactionEntity);
         return eventId;
     }

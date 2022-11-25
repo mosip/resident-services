@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,15 +39,17 @@ import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
-import io.mosip.resident.dto.ResidentCredentialRequestDtoV2;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.SharableAttributesDTO;
+import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -83,6 +83,9 @@ public class ResidentCredentialControllerTest {
 
     @MockBean
     private ResidentServiceImpl residentService;
+    
+    @MockBean
+	private ResidentConfigServiceImpl residentConfigService;
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
@@ -191,13 +194,13 @@ public class ResidentCredentialControllerTest {
     @Test
     public void testRequestShareCredWithPartner() throws Exception {
         Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(new ResidentCredentialResponseDtoV2());
-        ResidentCredentialRequestDtoV2 request = new ResidentCredentialRequestDtoV2();
+        ShareCredentialRequestDto request = new ShareCredentialRequestDto();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");
         attr.setMasked(false);
 		request.setSharableAttributes(List.of(attr));
 		request.setPurpose("banking");
-		RequestWrapper<ResidentCredentialRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		RequestWrapper<ShareCredentialRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(request);
         mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -92,7 +91,6 @@ import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthError;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -182,7 +180,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
-	
+	private static String  cardType= "UIN";
+
 
 
 	@Autowired
@@ -1071,9 +1070,9 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
-			throws ApisResourceAccessException, IOException {
+			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
@@ -1141,6 +1140,8 @@ public class ResidentServiceImpl implements ResidentService {
 				} catch (ApisResourceAccessException e) {
 					logger.error("Error occured in creating entities %s", e.getMessage());
 					throw new ResidentServiceException(ResidentErrorCode.UNKNOWN_EXCEPTION, e);
+				} catch (ResidentServiceCheckedException e) {
+					throw new RuntimeException(e);
 				}
 			}).collect(Collectors.toList());
 
@@ -1220,10 +1221,10 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
-			throws ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
@@ -1231,6 +1232,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
+		residentTransactionEntity.setStatusComment("Updating auth type lock status");
 		return residentTransactionEntity;
 	}
 
@@ -1500,6 +1502,17 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
+	public String getFileName(String eventId){
+		if(cardType.equalsIgnoreCase(IdType.UIN.toString())){
+			return utility.getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.UIN_CARD_NAMING_CONVENTION_PROPERTY)));
+		}else{
+			return utility.getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.VID_CARD_NAMING_CONVENTION_PROPERTY)));
+		}
+	}
+
+	@Override
 	public byte[] downloadCard(String eventId, String idType)
 			throws ResidentServiceCheckedException {
 		try{
@@ -1507,16 +1520,18 @@ public class ResidentServiceImpl implements ResidentService {
 			if(residentTransactionEntity.isPresent()){
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
-				if(requestType.name().equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())
-				|| requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
-					String requestId = residentTransactionEntity.get().getCredentialRequestId();
-					if(requestId!=null){
-						return residentCredentialServiceImpl.getCard(requestId);
-					}
-				} else if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())){
+				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ){
+					cardType =IdType.UIN.name();
 					String rid = residentTransactionEntity.get().getAid();
+					cardType =templateUtil.getIndividualIdType(rid);
 					if(rid!=null){
 						return getUINCard(rid);
+					}
+				} else if(requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
+					cardType =IdType.VID.name();
+					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
+					if(credentialRequestId!=null){
+						return residentCredentialServiceImpl.getCard(credentialRequestId, null, null);
 					}
 				} else{
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
@@ -1924,6 +1939,9 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.INDIVIDUAL_ID);
 			eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
+
+			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 
 			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
 				eventStatusResponseDTO
