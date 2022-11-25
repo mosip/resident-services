@@ -511,8 +511,6 @@ public class ResidentCredentialServiceTest {
     	
     	when(residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class)).thenReturn(responseWrapper);
     	URI dataShareUri = URI.create(credentialRequestStatusDto.getUrl());
-		
-    	//when(residentServiceRestClient.getApi(dataShareUri, String.class)).thenReturn(str);
     	when(residentServiceRestClient.getApi(dataShareUri, byte[].class)).thenReturn("str".getBytes());
 
     	RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
@@ -529,7 +527,6 @@ public class ResidentCredentialServiceTest {
     	CryptomanagerResponseDto responseObject=new CryptomanagerResponseDto();
     	responseObject.setResponse(new EncryptResponseDto(str));
         ReflectionTestUtils.setField(residentCredentialService, "applicationId", "resident");
-        //when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn("responseObject");
         when(mapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(cryptomanagerRequestDto);
     	byte[] card=residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763", null,null);
     	assertNotNull(card);
