@@ -339,7 +339,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return getCard(requestId, applicationId, partnerReferenceId);
 	}
 	@Override
-	public byte[] getCard(String requestId, String applicationId, String partnerReferenceId) throws Exception {
+	public byte[] getCard(String requestId, String appId, String partnerRefId) throws Exception {
 		// TODO Auto-generated method stub
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
 		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
@@ -351,13 +351,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
 					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
 			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
-			String downloadedData = residentServiceRestClient.getApi(dataShareUri, String.class);
-			if(applicationId!=null){
+			if(appId!=null){
+				String downloadedData = residentServiceRestClient.getApi(dataShareUri, String.class);
 				RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
 				CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
-				cryptomanagerRequestDto.setApplicationId(applicationId);
+				cryptomanagerRequestDto.setApplicationId(appId);
 				cryptomanagerRequestDto.setData(downloadedData);
-				cryptomanagerRequestDto.setReferenceId(partnerReferenceId);
+				cryptomanagerRequestDto.setReferenceId(partnerRefId);
 				cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
 				LocalDateTime localdatetime = DateUtils.getUTCCurrentDateTime();
 				request.setRequesttime(DateUtils.formatToISOString(localdatetime));
@@ -367,8 +367,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 						MediaType.APPLICATION_JSON, request, String.class);
 				CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
 				downloadedData=responseObject.getResponse().getData();
+				return CryptoUtil.decodeURLSafeBase64(downloadedData);
+			}else {
+				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
 			}
-			return CryptoUtil.decodeURLSafeBase64(downloadedData);
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
