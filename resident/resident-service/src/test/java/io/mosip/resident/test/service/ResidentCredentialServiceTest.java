@@ -527,7 +527,6 @@ public class ResidentCredentialServiceTest {
     	CryptomanagerResponseDto responseObject=new CryptomanagerResponseDto();
     	responseObject.setResponse(new EncryptResponseDto(str));
         ReflectionTestUtils.setField(residentCredentialService, "applicationId", "resident");
-        when(mapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(cryptomanagerRequestDto);
     	byte[] card=residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763", null,null);
     	assertNotNull(card);
     }
