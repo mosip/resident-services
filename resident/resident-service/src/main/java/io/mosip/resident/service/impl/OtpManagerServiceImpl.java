@@ -11,6 +11,7 @@ import io.mosip.preregistration.application.dto.OTPGenerateRequestDTO;
 import io.mosip.preregistration.application.dto.RequestDTO;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.dto.*;
@@ -98,7 +99,8 @@ public class OtpManagerServiceImpl implements OtpManager {
                 otpTxn.setOtpHash(otpHash);
                 otpTxn.setUpdBy(this.environment.getProperty("resident.clientId"));
                 otpTxn.setUpdDTimes(DateUtils.getUTCCurrentDateTime());
-                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)this.environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)));
+                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
+                        this.environment.getProperty(ResidentConstants.RESIDENT_OTP_EXPIRY_TIME, Long.class)));
                 otpTxn.setStatusCode("active");
                 this.otpRepo.save(otpTxn);
             } else {
