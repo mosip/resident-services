@@ -1520,12 +1520,18 @@ public class ResidentServiceImpl implements ResidentService {
 			if(residentTransactionEntity.isPresent()){
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
-				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ||
-						requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
+				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ){
+					cardType =IdType.UIN.name();
 					String rid = residentTransactionEntity.get().getAid();
 					cardType =templateUtil.getIndividualIdType(rid);
 					if(rid!=null){
 						return getUINCard(rid);
+					}
+				} else if(requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
+					cardType =IdType.VID.name();
+					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
+					if(credentialRequestId!=null){
+						residentCredentialServiceImpl.getCard(credentialRequestId);
 					}
 				} else{
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
