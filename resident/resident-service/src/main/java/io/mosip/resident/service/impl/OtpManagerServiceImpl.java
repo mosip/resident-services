@@ -86,24 +86,27 @@ public class OtpManagerServiceImpl implements OtpManager {
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
         notificationRequestDto.setId(identityService.getResidentIndvidualId());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionID());
-        if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime()) > 0) {
+        if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
+                .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
+        this.environment.getProperty("otp.request.flooding.max-count", Integer.class)) {
             this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_ALREADY_SENT.getErrorCode(), "OTP_ALREADY_SENT");
             throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_ALREADY_SENT.getErrorCode(), ResidentErrorCode.OTP_ALREADY_SENT.getErrorMessage());
         } else {
             String otp = this.generateOTP(requestDTO);
             this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
-            String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp).getBytes());
+            String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+
+                    requestDTO.getRequest().getTransactionID()).getBytes());
             OtpTransactionEntity otpTxn;
-            if (this.otpRepo.existsByOtpHashAndStatusCode(otpHash, "active")) {
-                otpTxn = this.otpRepo.findByOtpHashAndStatusCode(otpHash, "active");
-                otpTxn.setOtpHash(otpHash);
-                otpTxn.setUpdBy(this.environment.getProperty("resident.clientId"));
-                otpTxn.setUpdDTimes(DateUtils.getUTCCurrentDateTime());
-                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
-                        this.environment.getProperty(ResidentConstants.RESIDENT_OTP_EXPIRY_TIME, Long.class)));
-                otpTxn.setStatusCode("active");
-                this.otpRepo.save(otpTxn);
-            } else {
+//            if (this.otpRepo.existsByOtpHashAndStatusCode(otpHash, "active")) {
+//                otpTxn = this.otpRepo.findByOtpHashAndStatusCode(otpHash, "active");
+//                otpTxn.setOtpHash(otpHash);
+//                otpTxn.setUpdBy(this.environment.getProperty("resident.clientId"));
+//                otpTxn.setUpdDTimes(DateUtils.getUTCCurrentDateTime());
+//                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
+//                        this.environment.getProperty(ResidentConstants.RESIDENT_OTP_EXPIRY_TIME, Long.class)));
+//                otpTxn.setStatusCode("active");
+//                this.otpRepo.save(otpTxn);
+//            } else {
                 otpTxn = new OtpTransactionEntity();
                 otpTxn.setId(UUID.randomUUID().toString());
                 otpTxn.setRefId(this.hash(userId+requestDTO.getRequest().getTransactionID()));
@@ -111,10 +114,11 @@ public class OtpManagerServiceImpl implements OtpManager {
                 otpTxn.setCrBy(this.environment.getProperty("resident.clientId"));
                 otpTxn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
                 otpTxn.setGeneratedDtimes(DateUtils.getUTCCurrentDateTime());
-                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)this.environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)));
+                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
+                        this.environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)));
                 otpTxn.setStatusCode("active");
                 this.otpRepo.save(otpTxn);
-            }
+            //}
             if (channelType.equalsIgnoreCase("phone")) {
                 this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking sms notification");
                 NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
@@ -184,7 +188,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         logger.info("sessionId", "idType", "id", "In validateOtp method of otpmanager service ");
         String otpHash;
         otpHash = digestAsPlainText(
-                (userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp).getBytes());
+                (userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+transactionId).getBytes());
 
         if (!otpRepo.existsByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS))
             return false;

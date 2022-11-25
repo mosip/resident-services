@@ -127,7 +127,7 @@ public class OTPManagerServiceImplTest {
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("2123456");
-        when(otpTransactionRepository.checkotpsent(any(), any(), any())).thenReturn(0);
+        when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(0);
         ResponseWrapper<Map<String, String>> responseMap1=new ResponseWrapper<>();
         responseMap1.setResponse(responseMap);
         response1 = new ResponseEntity<>(responseMap1, HttpStatus.ACCEPTED);
@@ -149,7 +149,7 @@ public class OTPManagerServiceImplTest {
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testSendOtpAlreadyOtpSendError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        when(otpTransactionRepository.checkotpsent(any(), any(), any())).thenReturn(3);
+        when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(3);
         assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
 
