@@ -7,6 +7,7 @@ import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class AcknowledgementController {
     @Autowired
     private TemplateUtil templateUtil;
 
+    @Autowired
+    private Utilitiy utilitiy;
+
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
                                                   @PathVariable("languageCode") String languageCode) throws ResidentServiceCheckedException, IOException {
@@ -58,7 +62,7 @@ public class AcknowledgementController {
         String featureName = templateUtil.getFeatureName(eventId);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        featureName+UNDER_SCORE+eventId + ".pdf\"")
+                        utilitiy.getFileNameAsPerFeatureName(eventId, featureName) + ".pdf\"")
                 .body(resource);
     }
 }

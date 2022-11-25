@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -77,6 +78,9 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	@Autowired
 	private ObjectMapper mapper;
 
+	@Autowired
+	private Utilitiy utilitiy;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@PostConstruct
@@ -120,12 +124,15 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		String fileText = (String) templateResponse.get("fileText");
 		InputStream downLoadRegCenterTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream downLoadRegCenterTemplateData = templateManager.merge(downLoadRegCenterTemplate, regCentersMap);
-
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
-		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return convertOutputStreamToInputStream(pdfValue);
+		return convertByteArrayToInputStream(utilitiy.signPdf(downLoadRegCenterTemplateData, null));
+	}
+
+	public InputStream convertByteArrayToInputStream(byte[] bytes){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
+		baos.write(bytes, 0, bytes.length);
+		InputStream inputStream = convertOutputStreamToInputStream(baos);
+		return inputStream;
 	}
 	
 	
@@ -144,11 +151,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		supportingsDocsMap.put("supportingsDocMap", supportingsDocsMap);
 		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream supportingDocsTemplateData = templateManager.merge(supportingDocsTemplate, supportingsDocsMap);		
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
-		ByteArrayOutputStream pdfValue = (ByteArrayOutputStream) pdfGenerator.generate(writer.toString());
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
-		return convertOutputStreamToInputStream(pdfValue);
+		return convertByteArrayToInputStream(utilitiy.signPdf(supportingDocsTemplateData, null));
 	}
 
 	/**
