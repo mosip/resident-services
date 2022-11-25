@@ -108,7 +108,8 @@ public enum ResidentErrorCode {
 	DOWNLOAD_PERSONALIZED_CARD("RES-SER-479", "Error in downloading personalized card" ),
 	VID_REQUEST_CARD_FAILED("RES-SER-480", "Error in Request card from vid"),
 	PATNER_NOT_FOUND("RES-SER-481","Partner not found."),
-	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found.");
+	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found."),
+	CARD_NOT_READY("RES_SER_509", "The card is not ready for download.");
 
 	private final String errorCode;
 	private final String errorMessage;
