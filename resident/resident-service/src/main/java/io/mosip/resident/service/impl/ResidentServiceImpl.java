@@ -180,7 +180,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
-	
+	private static String  cardType= "UIN";
+
 
 
 	@Autowired
@@ -1501,6 +1502,17 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
+	public String getFileName(String eventId){
+		if(cardType.equalsIgnoreCase(IdType.UIN.toString())){
+			return utility.getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.UIN_CARD_NAMING_CONVENTION_PROPERTY)));
+		}else{
+			return utility.getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.VID_CARD_NAMING_CONVENTION_PROPERTY)));
+		}
+	}
+
+	@Override
 	public byte[] downloadCard(String eventId, String idType)
 			throws ResidentServiceCheckedException {
 		try{
@@ -1511,6 +1523,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ||
 						requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())){
 					String rid = residentTransactionEntity.get().getAid();
+					cardType =templateUtil.getIndividualIdType(rid);
 					if(rid!=null){
 						return getUINCard(rid);
 					}
