@@ -1531,7 +1531,7 @@ public class ResidentServiceImpl implements ResidentService {
 					cardType =IdType.VID.name();
 					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
 					if(credentialRequestId!=null){
-						residentCredentialServiceImpl.getCard(credentialRequestId);
+						residentCredentialServiceImpl.getCard(credentialRequestId, null, null);
 					}
 				} else{
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),

@@ -524,11 +524,9 @@ public class ResidentCredentialServiceTest {
 		cryptomanagerRequestDto.setTimeStamp(localdatetime);
 		request.setRequest(cryptomanagerRequestDto);
 		
-    	when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(str);
     	CryptomanagerResponseDto responseObject=new CryptomanagerResponseDto();
     	responseObject.setResponse(new EncryptResponseDto(str));
     	
-    	when(mapper.readValue(str, CryptomanagerResponseDto.class)).thenReturn(responseObject);
     	byte[] card=residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763");
     	assertNotNull(card);
     }
