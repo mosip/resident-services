@@ -8,6 +8,7 @@ import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
+import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -56,7 +57,7 @@ public class DownloadCardController {
         byte[] pdfBytes = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         if(pdfBytes.length==0){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new CardNotReadyException();
         }
         auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
         logger.debug("AcknowledgementController::acknowledgement()::exit");
