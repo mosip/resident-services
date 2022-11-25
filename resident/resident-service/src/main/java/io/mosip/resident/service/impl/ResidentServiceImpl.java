@@ -1895,6 +1895,7 @@ public class ResidentServiceImpl implements ResidentService {
 			String requestTypeCode;
 			String statusCode;
 			if (residentTransactionEntity.isPresent()) {
+				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
 			} else {
