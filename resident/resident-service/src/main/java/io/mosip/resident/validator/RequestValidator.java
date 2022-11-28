@@ -99,13 +99,13 @@ public class RequestValidator {
 	@Value("${resident.vid.id}")
 	private String id;
 
-	@Value("${resident.revokevid.id}")
+	@Value("${mosip.resident.revokevid.id}")
 	private String revokeVidId;
 
 	@Value("${resident.vid.version}")
 	private String version;
 	
-	@Value("${resident.revokevid.version}")
+	@Value("${resident.revokevid.version.new}")
 	private String revokeVidVersion;
 
 	@Value("${resident.authlock.id}")
