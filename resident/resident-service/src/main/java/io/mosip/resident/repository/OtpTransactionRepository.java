@@ -35,8 +35,9 @@ public interface OtpTransactionRepository extends JpaRepository<OtpTransactionEn
 								 @Param("oneMinuteBeforeTime") LocalDateTime oneMinuteBeforeTime, @Param("refId") String refId);
 
 	@Query("Select count(1) from OtpTransactionEntity  where refId = :refId and " + "statusCode = :statusCode and "
-			+ "expiryDtimes > :currenttime")
+			+ "expiryDtimes > :currenttime and" +
+			" crDtimes > :allowedTimeDuration")
 	int checkotpsent(@Param("refId") String userid, @Param("statusCode") String statusCode,
-					 @Param("currenttime") LocalDateTime currenttime);
+					 @Param("currenttime") LocalDateTime currenttime, @Param("allowedTimeDuration") LocalDateTime allowedTimeDuration);
 
 }
