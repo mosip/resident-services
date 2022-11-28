@@ -106,7 +106,7 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ShareCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
-		validator.validateRequest(requestDTO, RequestIdType.SHARE_CREDENTIAL);
+		validator.validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
 		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();
