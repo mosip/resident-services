@@ -1910,6 +1910,10 @@ public class ResidentServiceImpl implements ResidentService {
 			String requestTypeCode;
 			String statusCode;
 			if (residentTransactionEntity.isPresent()) {
+				String idaToken = identityServiceImpl.getResidentIdaToken();
+				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
+				}
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
@@ -1939,6 +1943,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.INDIVIDUAL_ID);
 			eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
+			eventStatusMap.remove(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK);
 
 			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
@@ -1957,11 +1962,12 @@ public class ResidentServiceImpl implements ResidentService {
 			responseWrapper.setVersion(serviceEventVersion);
 			responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 			responseWrapper.setResponse(eventStatusResponseDTO);
-				
-		} catch (Exception e) {
+
+		} catch (ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::getEventStatus():: Exception");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		return responseWrapper;
 	}
