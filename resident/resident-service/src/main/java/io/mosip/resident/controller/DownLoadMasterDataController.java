@@ -61,7 +61,7 @@ public class DownLoadMasterDataController {
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
 	/**
-	 * download registration centers based on language code and selected names of
+	 * download registration centers based on language code and selected names  of
 	 * registration centers
 	 * 
 	 * @param langCode
