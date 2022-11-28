@@ -109,7 +109,8 @@ public enum ResidentErrorCode {
 	VID_REQUEST_CARD_FAILED("RES-SER-480", "Error in Request card from vid"),
 	PATNER_NOT_FOUND("RES-SER-481","Partner not found."),
 	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found."),
-	CARD_NOT_READY("RES_SER_509", "The card is not ready for download.");
+	CARD_NOT_READY("RES_SER_509", "The card is not ready for download."),
+	EID_NOT_BELONG_TO_SESSION("RES-SER-510", "The entered EID is not associated with the UIN/VID used to log in.");
 
 	private final String errorCode;
 	private final String errorMessage;
