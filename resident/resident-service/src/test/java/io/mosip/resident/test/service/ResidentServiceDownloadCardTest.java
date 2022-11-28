@@ -8,6 +8,7 @@ import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -281,5 +282,46 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(bellNotificationDto);
         assertEquals(LocalDateTime.of(2015, 12, 3, 4, 4, 4),
                 residentServiceImpl.getbellClickdttimes("123").getResponse().getLastbellnotifclicktime());
+    }
+
+    @Test
+    public void testGetnotificationCount(){
+        ResidentUserEntity residentUserEntity = new ResidentUserEntity();
+        residentUserEntity.setHost("localhost");
+        residentUserEntity.setIdaToken("123");
+        residentUserEntity.setIpAddress("http");
+        residentUserEntity.setLastloginDtime(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
+        Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
+        ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
+        UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
+        unreadServiceNotificationDto.setUnreadCount(4L);
+        responseWrapper.setResponse(unreadServiceNotificationDto);
+        Mockito.when(residentTransactionRepository.findByIdandcount(Mockito.anyString())).thenReturn(4L);
+        assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
+                getnotificationCount("123").getResponse().getUnreadCount()));
+    }
+
+    @Test
+    public void testGetnotificationCountLastLoginTime(){
+        ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
+        UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
+        unreadServiceNotificationDto.setUnreadCount(4L);
+        responseWrapper.setResponse(unreadServiceNotificationDto);
+        ResidentUserEntity residentUserEntity = new ResidentUserEntity();
+        residentUserEntity.setHost("localhost");
+        residentUserEntity.setIdaToken("123");
+        residentUserEntity.setIpAddress("http");
+        residentUserEntity.setLastbellnotifDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
+        Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
+        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
+        Mockito.when(residentTransactionRepository.findByIdandcount(Mockito.anyString())).thenReturn(4L);
+        assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
+                getnotificationCount("123").getResponse().getUnreadCount()));
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetCheckAidStatusFailed() throws ResidentServiceCheckedException {
+        Mockito.when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn(null);
+        residentServiceImpl.checkAidStatus("123");
     }
 }
