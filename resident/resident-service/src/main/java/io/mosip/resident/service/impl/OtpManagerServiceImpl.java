@@ -97,28 +97,17 @@ public class OtpManagerServiceImpl implements OtpManager {
             String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+
                     requestDTO.getRequest().getTransactionID()).getBytes());
             OtpTransactionEntity otpTxn;
-//            if (this.otpRepo.existsByOtpHashAndStatusCode(otpHash, "active")) {
-//                otpTxn = this.otpRepo.findByOtpHashAndStatusCode(otpHash, "active");
-//                otpTxn.setOtpHash(otpHash);
-//                otpTxn.setUpdBy(this.environment.getProperty("resident.clientId"));
-//                otpTxn.setUpdDTimes(DateUtils.getUTCCurrentDateTime());
-//                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
-//                        this.environment.getProperty(ResidentConstants.RESIDENT_OTP_EXPIRY_TIME, Long.class)));
-//                otpTxn.setStatusCode("active");
-//                this.otpRepo.save(otpTxn);
-//            } else {
-                otpTxn = new OtpTransactionEntity();
-                otpTxn.setId(UUID.randomUUID().toString());
-                otpTxn.setRefId(this.hash(userId+requestDTO.getRequest().getTransactionID()));
-                otpTxn.setOtpHash(otpHash);
-                otpTxn.setCrBy(this.environment.getProperty("resident.clientId"));
-                otpTxn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
-                otpTxn.setGeneratedDtimes(DateUtils.getUTCCurrentDateTime());
-                otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
-                        this.environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)));
-                otpTxn.setStatusCode("active");
-                this.otpRepo.save(otpTxn);
-            //}
+            otpTxn = new OtpTransactionEntity();
+            otpTxn.setId(UUID.randomUUID().toString());
+            otpTxn.setRefId(this.hash(userId + requestDTO.getRequest().getTransactionID()));
+            otpTxn.setOtpHash(otpHash);
+            otpTxn.setCrBy(this.environment.getProperty("resident.clientId"));
+            otpTxn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+            otpTxn.setGeneratedDtimes(DateUtils.getUTCCurrentDateTime());
+            otpTxn.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds((Long)
+                    this.environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)));
+            otpTxn.setStatusCode("active");
+            this.otpRepo.save(otpTxn);
             if (channelType.equalsIgnoreCase("phone")) {
                 this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking sms notification");
                 NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
