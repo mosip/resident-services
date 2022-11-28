@@ -89,8 +89,8 @@ public class OtpManagerServiceImpl implements OtpManager {
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
         this.environment.getProperty("otp.request.flooding.max-count", Integer.class)) {
-            this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_ALREADY_SENT.getErrorCode(), "OTP_ALREADY_SENT");
-            throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_ALREADY_SENT.getErrorCode(), ResidentErrorCode.OTP_ALREADY_SENT.getErrorMessage());
+            this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
+            throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorMessage());
         } else {
             String otp = this.generateOTP(requestDTO);
             this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
