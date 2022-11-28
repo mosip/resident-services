@@ -4,13 +4,17 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
+import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.repository.ResidentUserRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -64,6 +68,12 @@ public class ResidentServiceDownloadCardTest {
 
     @Mock
     private TemplateUtil templateUtil;
+
+    @Mock
+    private IdentityServiceImpl identityServiceImpl;
+
+    @Mock
+    private ResidentUserRepository residentUserRepository;
 
     private byte[] result;
     private String eventId;
@@ -148,5 +158,27 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         byte[] response = residentServiceImpl.downloadCard(eventId, idType);
         assertEquals(response, result);
+    }
+
+    @Test
+    public void testGetUserInfo(){
+        Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
+        ResidentUserEntity residentUserEntity = new ResidentUserEntity();
+        residentUserEntity.setHost("localhost");
+        residentUserEntity.setIdaToken("123");
+        residentUserEntity.setIpAddress("http");
+        Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
+        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123");
+        assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetUserInfoFailed(){
+        Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
+        Optional<ResidentUserEntity> response = Optional.empty();
+        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123");
+        assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 }
