@@ -80,10 +80,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	private ObjectMapper mapper;
 	
 	@Autowired
-    private Utilitiy utilitiy;
-
-	@Autowired
-	private Utilitiy utilitiy;
+    	private Utilitiy utilitiy;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
