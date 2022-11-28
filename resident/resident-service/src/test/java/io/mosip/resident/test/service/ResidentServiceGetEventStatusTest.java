@@ -94,6 +94,7 @@ public class ResidentServiceGetEventStatusTest {
         residentTransactionEntity.get().setRequestSummary("requestSummary");
         residentTransactionEntity.get().setRequestTypeCode(requestType.name());
         residentTransactionEntity.get().setCrDtimes(LocalDateTime.now());
+        residentTransactionEntity.get().setTokenId("123456789");
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         templateVariables.put("eventId", eventId);
         templateVariables.put("authenticationMode", "OTP");
@@ -101,6 +102,7 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put("purpose", "authentication");
         Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString())).thenReturn(templateVariables);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
@@ -151,5 +153,24 @@ public class ResidentServiceGetEventStatusTest {
     public void getEventStatusTestException() throws ResidentServiceCheckedException {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
         residentService.getEventStatus(eventId, langCode);
+    }
+    
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void getEventStatusNestedIfTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+    	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("abcd");
+        residentService.getEventStatus(eventId, langCode);
+    }
+    
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void getEventStatusThrowsExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+    	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+        residentService.getEventStatus(eventId, langCode);
+    }
+    
+    @Test
+    public void getEventStatusServiceTypeNotMappedTest() throws ResidentServiceCheckedException {
+    	residentTransactionEntity.get().setRequestTypeCode(RequestType.SEND_OTP.name());
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 }
