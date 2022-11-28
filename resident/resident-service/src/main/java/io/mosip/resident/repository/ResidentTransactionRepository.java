@@ -3,8 +3,11 @@ package io.mosip.resident.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -89,5 +92,10 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	 * AuthTransaction entries only will be expected here. This wouldn't fetch the otp Requested performed in resident service.
 	 */
 	Integer findByrefIdandauthtype(@Param("hashrefid") String hashrefid);
+	
+	@Modifying
+    @Transactional
+	@Query("update ResidentTransactionEntity set read_status='true' where event_id=:eventId")
+	int updateReadStatus(@Param("eventId") String eventId);
 
 }
