@@ -542,7 +542,7 @@ public class RequestValidator {
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(reqResVersion))
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(version))
 			throw new InvalidInputException("version");
 		
 		if (request.getRequest() == null) {
@@ -965,5 +965,23 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
 			throw new InvalidInputException("VID");
 		}
+	}
+	
+	public boolean validateRequestNewApi(RequestWrapper<?> request, RequestIdType requestIdType) {
+		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+			throw new InvalidInputException("id");
+		try {
+			DateUtils.parseToLocalDateTime(request.getRequesttime());
+		} catch (Exception e) {
+			throw new InvalidInputException("requesttime");
+		}
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(reqResVersion))
+			throw new InvalidInputException("version");
+		
+		if (request.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("request");
+		}
+		return true;
 	}
 }

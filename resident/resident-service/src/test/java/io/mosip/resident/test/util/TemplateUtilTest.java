@@ -9,6 +9,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +44,9 @@ public class TemplateUtilTest {
 
     @Mock
     private RequestValidator validator;
+    
+    @Mock
+    private Utilitiy utilitiy;
     
     @Mock
     private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;

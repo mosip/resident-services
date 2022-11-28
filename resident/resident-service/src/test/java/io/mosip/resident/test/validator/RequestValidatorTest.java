@@ -244,7 +244,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authLockRequestDto);
 		requestValidator.validateAuthLockOrUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
 	}
@@ -261,7 +261,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authunlock");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authLockRequestDto);
 		requestValidator.validateAuthLockOrUnlockRequest(requestWrapper, AuthTypeStatus.UNLOCK);
 	}
@@ -518,7 +518,7 @@ public class RequestValidatorTest {
 		reqWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		reqWrapper.setRequest(request);
 		reqWrapper.setId("mosip.resident.print");
-		reqWrapper.setVersion("1.0");
+		reqWrapper.setVersion("v1");
 		requestValidator.validateRequest(reqWrapper, RequestIdType.RE_PRINT_ID);
 
 	}
@@ -624,7 +624,7 @@ public class RequestValidatorTest {
 		RequestWrapper<EuinRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(euinRequestDTO);
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setId("mosip.resident.euin");
 		requestValidator.validateEuinRequest(requestWrapper);
 	}
@@ -708,7 +708,7 @@ public class RequestValidatorTest {
 		RequestWrapper<RequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateRidCheckStatusRequestDTO(requestWrapper);
 	}
@@ -857,7 +857,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, true);
 	}
@@ -873,7 +873,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, false);
 	}
@@ -889,7 +889,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, false);
 	}
@@ -946,7 +946,7 @@ public class RequestValidatorTest {
 		requestDTO.setTransactionID("11111");
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.print");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateReprintRequest(requestWrapper);
 	}
@@ -1042,7 +1042,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthHistoryRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(authRequestDTO);
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setId("mosip.resident.authhistory");
 		requestValidator.validateAuthHistoryRequest(requestWrapper);
 	}
@@ -1103,7 +1103,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthUnLockRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authunlock");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(authUnLockRequestDto);
 		requestValidator.validateAuthUnlockRequest(requestWrapper, AuthTypeStatus.LOCK);
 	}
@@ -1372,7 +1372,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestValidator.validateAidStatusRequestDto(requestWrapper);
 	}

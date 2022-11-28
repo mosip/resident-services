@@ -5,8 +5,12 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.util.Utilitiy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +52,12 @@ public class DownLoadMasterDataController {
 	@Autowired
 	private AuditUtil audit;
 
+	@Autowired
+	private Utilitiy utilitiy;
+
+	@Autowired
+	private Environment environment;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
 	/**
@@ -75,7 +85,9 @@ public class DownLoadMasterDataController {
 		logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + DOWNLOADABLE_REGCEN_FILENAME + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
+						Objects.requireNonNull(this.environment.getProperty(
+								ResidentConstants.DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY))) + ".pdf\"")
 				.body(resource);
 	}
 	
@@ -113,7 +125,9 @@ public class DownLoadMasterDataController {
 		logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + DOWNLOADABLE_SUPPORTING_FILENAME + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
+						Objects.requireNonNull(this.environment.getProperty(
+								ResidentConstants.DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY))) + ".pdf\"")
 				.body(resource);
 	}
 	/**
