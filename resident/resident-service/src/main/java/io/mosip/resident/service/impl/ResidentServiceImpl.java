@@ -1910,10 +1910,12 @@ public class ResidentServiceImpl implements ResidentService {
 			String requestTypeCode;
 			String statusCode;
 			if (residentTransactionEntity.isPresent()) {
+
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
+
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
@@ -1973,9 +1975,17 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String id) {
+	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
-		Long residentTransactionEntity = residentTransactionRepository.findByIdandcount(id);
+		LocalDateTime time = null;
+		Long residentTransactionEntity;
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(Id);
+		if (residentUserEntity.isPresent()) {
+			time = residentUserEntity.get().getLastloginDtime();
+			residentTransactionEntity = residentTransactionRepository.findByIdandlastlogincount(Id, time);
+		} else {
+			residentTransactionEntity = residentTransactionRepository.findByIdandcount(Id);
+		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
 		notification.setUnreadCount(residentTransactionEntity);
 		responseWrapper.setId(serviceEventId);
