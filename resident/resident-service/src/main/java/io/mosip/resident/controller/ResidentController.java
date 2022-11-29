@@ -357,6 +357,7 @@ public class ResidentController {
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
+		requestDTO.getRequest().getIdentity().put("UIN", identityServiceImpl.getUinForIndividualId(individualId));
 		response.setResponse(residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
