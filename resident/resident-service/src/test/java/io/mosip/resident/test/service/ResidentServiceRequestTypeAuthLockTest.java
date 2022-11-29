@@ -3,7 +3,11 @@ package io.mosip.resident.test.service;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDto;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -215,5 +219,12 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatus.setAuthType("bio");
 		authTypeStatus.setAuthSubType("FIR");
 		assertEquals("bio-FIR",ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
+
+	@Test
+	public void testTrySendNotificationFailure() throws ResidentServiceCheckedException {
+		Mockito.when(notificationService.sendNotification(any())).thenThrow(new ResidentServiceCheckedException());
+		ReflectionTestUtils.invokeMethod(residentService,
+				"trySendNotification", "123", null, null);
 	}
 }
