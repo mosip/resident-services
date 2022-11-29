@@ -93,4 +93,13 @@ public class ResidentServiceGetCredentialRequestTest {
         String result = residentService.checkAidStatus("10006100435989220191202104224");
         assertEquals("PROCESSED", result);
     }
+
+    @Test
+    public void getAidStatusTest() throws ResidentServiceException, ResidentServiceCheckedException, ApisResourceAccessException {
+        Mockito.when(identityServiceImpl.getUinForIndividualId(any())).thenReturn("10006100435989220191202104224");
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenThrow(new ApisResourceAccessException());
+        String result = residentService.checkAidStatus("10006100435989220191202104224");
+        assertEquals("PROCESSED", result);
+    }
+
 }

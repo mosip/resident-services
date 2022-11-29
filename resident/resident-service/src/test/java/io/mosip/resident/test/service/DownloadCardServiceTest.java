@@ -121,7 +121,7 @@ public class DownloadCardServiceTest {
         Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
         Mockito.when(residentService.getUINCard(Mockito.anyString())).thenReturn(pdfbytes);
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenReturn("7841261580");
 
         downloadPersonalizedCardMainRequestDTO=
@@ -155,14 +155,14 @@ public class DownloadCardServiceTest {
 
     @Test
     public void testGetDownloadCardPdfVID(){
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
 
     @Test
     public void testGetDownloadCardPdfAID(){
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -171,7 +171,7 @@ public class DownloadCardServiceTest {
     public void testGetDownloadCardPdfResidentServiceExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenThrow(
                 new ResidentServiceCheckedException());
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -180,7 +180,7 @@ public class DownloadCardServiceTest {
     public void testGetDownloadCardPdfApisResourceAccessExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenThrow(
                 new ApisResourceAccessException());
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
