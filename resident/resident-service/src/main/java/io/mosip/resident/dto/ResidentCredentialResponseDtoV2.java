@@ -11,5 +11,6 @@ import lombok.Data;
 public class ResidentCredentialResponseDtoV2 {
 	
 	private String eventId;
+	private String status;
 
 }
