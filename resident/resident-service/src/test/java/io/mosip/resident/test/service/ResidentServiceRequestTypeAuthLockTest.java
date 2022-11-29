@@ -193,4 +193,27 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 
 	}
+
+	@Test
+	public void testGetAuthTypeBasedOnConfigV2(){
+		AuthTypeStatusDtoV2 authTypeStatus = new AuthTypeStatusDtoV2();
+		authTypeStatus.setAuthType("demo");
+		assertEquals("demo",ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
+
+	@Test
+	public void testGetAuthTypeBasedOnConfigV2WithSubType(){
+		AuthTypeStatusDtoV2 authTypeStatus = new AuthTypeStatusDtoV2();
+		authTypeStatus.setAuthType("demo");
+		authTypeStatus.setAuthSubType("demo");
+		assertEquals(null,ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
+
+	@Test
+	public void testGetAuthTypeBasedOnConfigV2WithoutSubType(){
+		AuthTypeStatusDtoV2 authTypeStatus = new AuthTypeStatusDtoV2();
+		authTypeStatus.setAuthType("bio");
+		authTypeStatus.setAuthSubType("FIR");
+		assertEquals("bio-FIR",ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
 }
