@@ -986,7 +986,7 @@ public class RequestValidator {
     }
 
 	public void validateTransactionId(String transactionID) {
-		if(transactionID== null){
+		if(transactionID== null || transactionID.isEmpty()){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must not be null"));
 			throw new InvalidInputException("transactionID");
