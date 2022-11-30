@@ -14,6 +14,7 @@ import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.function.RunnableWithException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
@@ -110,6 +111,16 @@ public class CredentialStatusUpdateBatchJob {
 	@Autowired
 	private IdentityService identityService;
 
+	private void handleWithTryCatch(RunnableWithException runnableWithException) {
+		try {
+			runnableWithException.run();
+		} catch (ApisResourceAccessException e) {
+			logger.error(ExceptionUtils.getStackTrace(e));
+		} catch (ResidentServiceCheckedException e){
+			logger.error(ExceptionUtils.getStackTrace(e));
+		}
+	}
+
 	@Scheduled(initialDelayString = "${" + CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY + ":"
 			+ CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT + "}", fixedDelayString = "${"
 					+ CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL + ":" + CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL_DEFAULT
@@ -117,35 +128,14 @@ public class CredentialStatusUpdateBatchJob {
 	public void scheduleCredentialStatusUpdateJob() throws ResidentServiceCheckedException {
 		List<ResidentTransactionEntity> residentTxnList = repo
 				.findByStatusCodeIn(List.of(NEW, ISSUED, RECEIVED, PRINTING, FAILED, DELIVERED,PAYMENT_CONFIRMED,IN_TRANSIT));
-		for (ResidentTransactionEntity txn : residentTxnList) {
-			logger.info("Processing event:" + txn.getEventId());
-
-			try {
-				updateDownloadPersonalizedCardTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
+			for (ResidentTransactionEntity txn : residentTxnList) {
+				logger.info("Processing event:" + txn.getEventId());
+				handleWithTryCatch( () -> updateDownloadPersonalizedCardTxnStatus(txn));
+				handleWithTryCatch( () -> updateVidCardDownloadTxnStatus(txn));
+				handleWithTryCatch( () -> updateOrderPhysicalCardTxnStatus(txn));
+				handleWithTryCatch( () -> updateShareCredentialWithPartnerTxnStatus(txn));
+				handleWithTryCatch( () -> updateUinDemoDataUpdateTxnStatus(txn));
 			}
-			try {
-				updateVidCardDownloadTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-			try {
-				updateOrderPhysicalCardTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-			try {
-				updateShareCredentialWithPartnerTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-			try {
-				updateUinDemoDataUpdateTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-		}
 		repo.saveAll(residentTxnList);
 	}
 
