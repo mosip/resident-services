@@ -24,8 +24,11 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -164,6 +167,13 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
 
+	public InputStream convertByteArrayToInputStream(byte[] bytes){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
+		baos.write(bytes, 0, bytes.length);
+		InputStream inputStream = convertOutputStreamToInputStream(baos);
+		return inputStream;
+	}
+
 
 	/**
 	 * download registration centers based on language code, hierarchyLevel and
@@ -201,6 +211,26 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		workingHours = workingDaysList.get(0).getName() + "-" + workingDaysList.get(1).getName() + "|"
 				+ getTime(regCenterDto.getCenterStartTime()) + "-" + getTime(regCenterDto.getCenterEndTime());
 		regCenterDto.setWorkingHours(workingHours);
+	}
+
+	/**
+	 * convert output stream to input stream
+	 *
+	 * @param orgByteOutStream
+	 * @return
+	 */
+	private static InputStream convertOutputStreamToInputStream(ByteArrayOutputStream orgByteOutStream) {
+		PipedInputStream in = new PipedInputStream();
+		new Thread(new Runnable() {
+			public void run() {
+				try (final PipedOutputStream out = new PipedOutputStream(in)) {
+					orgByteOutStream.writeTo(out);
+				} catch (IOException e) {
+					logger.error("convert Output stream to input stream" + e.getMessage());
+				}
+			}
+		}).start();
+		return in;
 	}
 
 	/**
