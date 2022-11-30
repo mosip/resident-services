@@ -35,6 +35,11 @@ jobs:
         sed -i 's/branch=[^\&]*)]/branch=${{ env.BRANCH_NAME }}\)]/g'  README.md
         sed -i 's/branch=[^\&]*\&/branch=${{ env.BRANCH_NAME }}\&/g'  README.md
         
+    - name: update Branch name in badges
+      run: |
+        sed -i 's/branch=[^\&]*)]/branch=${{ env.BRANCH_NAME }}\)]/g'  README.md
+        sed -i 's/branch=[^\&]*\&/branch=${{ env.BRANCH_NAME }}\&/g'  README.md
+        
     - name: Updating the Release URL in POM 
       run: |
           cd .github/workflows
