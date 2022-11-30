@@ -1,36 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.stream.IntStream;
-
-import javax.annotation.PostConstruct;
-
-import io.mosip.resident.util.Utilitiy;
-import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
@@ -47,6 +17,29 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 
 /**
  * 
@@ -171,14 +164,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
 
-	public InputStream convertByteArrayToInputStream(byte[] bytes){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
-		baos.write(bytes, 0, bytes.length);
-		InputStream inputStream = convertOutputStreamToInputStream(baos);
-		return inputStream;
-	}
-	
-	
+
 	/**
 	 * download registration centers based on language code, hierarchyLevel and
 	 * center names
@@ -215,26 +201,6 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		workingHours = workingDaysList.get(0).getName() + "-" + workingDaysList.get(1).getName() + "|"
 				+ getTime(regCenterDto.getCenterStartTime()) + "-" + getTime(regCenterDto.getCenterEndTime());
 		regCenterDto.setWorkingHours(workingHours);
-	}
-
-	/**
-	 * convert output stream to input stream
-	 * 
-	 * @param orgByteOutStream
-	 * @return
-	 */
-	private static InputStream convertOutputStreamToInputStream(ByteArrayOutputStream orgByteOutStream) {
-		PipedInputStream in = new PipedInputStream();
-		new Thread(new Runnable() {
-			public void run() {
-				try (final PipedOutputStream out = new PipedOutputStream(in)) {
-					orgByteOutStream.writeTo(out);
-				} catch (IOException e) {
-					logger.error("convert Output stream to input stream" + e.getMessage());
-				}
-			}
-		}).start();
-		return in;
 	}
 
 	/**
