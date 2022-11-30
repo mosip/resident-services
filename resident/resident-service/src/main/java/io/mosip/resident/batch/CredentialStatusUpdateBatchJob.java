@@ -14,6 +14,7 @@ import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.function.RunnableException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
@@ -110,14 +111,9 @@ public class CredentialStatusUpdateBatchJob {
 	@Autowired
 	private IdentityService identityService;
 
-	@FunctionalInterface
-	public interface RunnableWithException {
-		void run() throws ApisResourceAccessException, ResidentServiceCheckedException;
-	}
-
-	private void hanldeWithTryCatch(RunnableWithException runnable) {
+	private void handleWithTryCatch(RunnableException.RunnableWithException runnableException) {
 		try {
-			runnable.run();
+			runnableException.run();
 		} catch (ApisResourceAccessException e) {
 			logger.error(ExceptionUtils.getStackTrace(e));
 		} catch (ResidentServiceCheckedException e){
@@ -134,11 +130,11 @@ public class CredentialStatusUpdateBatchJob {
 				.findByStatusCodeIn(List.of(NEW, ISSUED, RECEIVED, PRINTING, FAILED, DELIVERED,PAYMENT_CONFIRMED,IN_TRANSIT));
 			for (ResidentTransactionEntity txn : residentTxnList) {
 				logger.info("Processing event:" + txn.getEventId());
-				hanldeWithTryCatch( () -> updateDownloadPersonalizedCardTxnStatus(txn));
-				hanldeWithTryCatch( () -> updateVidCardDownloadTxnStatus(txn));
-				hanldeWithTryCatch( () -> updateOrderPhysicalCardTxnStatus(txn));
-				hanldeWithTryCatch( () -> updateShareCredentialWithPartnerTxnStatus(txn));
-				hanldeWithTryCatch( () -> updateUinDemoDataUpdateTxnStatus(txn));
+				handleWithTryCatch( () -> updateDownloadPersonalizedCardTxnStatus(txn));
+				handleWithTryCatch( () -> updateVidCardDownloadTxnStatus(txn));
+				handleWithTryCatch( () -> updateOrderPhysicalCardTxnStatus(txn));
+				handleWithTryCatch( () -> updateShareCredentialWithPartnerTxnStatus(txn));
+				handleWithTryCatch( () -> updateUinDemoDataUpdateTxnStatus(txn));
 			}
 		repo.saveAll(residentTxnList);
 	}
