@@ -128,7 +128,7 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> generateVidV2(@RequestBody(required = true) ResidentVidRequestDtoV2 requestDto)
 			throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
-		return generateVid(requestDto, false);
+		return generateVidV2Version(requestDto, false);
 	}
 
 	private ResponseEntity<Object> generateVid(IVidRequestDto<?> requestDto, boolean isOtpValidationRequired)
@@ -140,6 +140,23 @@ public class ResidentVidController {
 			residentIndividualId = getResidentIndividualId();
 		}
 		validator.validateVidCreateRequest(requestDto, isOtpValidationRequired, residentIndividualId);
+		auditUtil.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, residentIndividualId));
+		ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest(), residentIndividualId);
+		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
+				residentIndividualId));
+		return ResponseEntity.ok().body(vidResponseDto);
+	}
+	
+	private ResponseEntity<Object> generateVidV2Version(IVidRequestDto<?> requestDto, boolean isOtpValidationRequired)
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		auditUtil.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to generate VID"));
+		String residentIndividualId = !(requestDto.getRequest() instanceof VidRequestDto)? null : ((VidRequestDto)requestDto.getRequest()).getIndividualId();
+		if(residentIndividualId == null && requestDto.getRequest() != null) {
+			residentIndividualId = getResidentIndividualId();
+		}
+		validator.validateVidCreateV2Request(requestDto, isOtpValidationRequired, residentIndividualId);
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, residentIndividualId));
 		ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest(), residentIndividualId);
@@ -176,7 +193,7 @@ public class ResidentVidController {
 	public ResponseEntity<Object> revokeVidV2(
 			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTOV2> requestDto, @PathVariable String vid)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
-		return revokeVid(requestDto, vid, false);
+		return revokeVidV2Version(requestDto, vid, false);
 	}
 
 	@SuppressWarnings("unused")
@@ -193,6 +210,30 @@ public class ResidentVidController {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_VALIDATION);
 		}
 		validator.validateVidRevokeRequest(requestDto, isOtpValidationRequired, residentIndividualId);
+		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
+		auditUtil.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
+		ResponseWrapper<VidRevokeResponseDTO> vidResponseDto = residentVidService.revokeVid(requestDto.getRequest(),
+				vid, residentIndividualId);
+		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
+				residentIndividualId));
+		return ResponseEntity.ok().body(vidResponseDto);
+	}
+	
+	@SuppressWarnings("unused")
+	private ResponseEntity<Object> revokeVidV2Version(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
+			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		auditUtil.setAuditRequestDto(
+				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Request to revoke VID"));
+		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
+				
+		if(residentIndividualId == null && requestDto.getRequest() != null) {
+			residentIndividualId = getResidentIndividualId();
+		}
+		if (residentIndividualId !=null && residentIndividualId.equals(vid)) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_VALIDATION);
+		}
+		validator.validateVidRevokeV2Request(requestDto, isOtpValidationRequired, residentIndividualId);
 		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
