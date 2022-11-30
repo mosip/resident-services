@@ -439,8 +439,8 @@ public class ResidentVidControllerTest {
 		vidRevokeRequestDTO.setVidStatus("REVOKED");
 
 		RequestWrapper request = new RequestWrapper();
-		request.setId("mosip.resident.vid.revoke");
-		request.setVersion("1.0");
+		request.setId("mosip.resident.vidstatus");
+		request.setVersion("v1");
 		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRevokeRequestDTO);
 		return request;
