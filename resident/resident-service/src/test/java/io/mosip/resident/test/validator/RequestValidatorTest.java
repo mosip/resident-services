@@ -1,5 +1,6 @@
 package io.mosip.resident.test.validator;
 
+import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
@@ -10,6 +11,7 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.service.ResidentService;
@@ -33,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -1900,5 +1903,20 @@ public class RequestValidatorTest {
 				false, "123");
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidatePageFetchAndPageStartFormat(){
+		RequestWrapper<AuthHistoryRequestDTO> requestDTO = new RequestWrapper<>();
+		AuthHistoryRequestDTO authHistoryRequestDTO = new AuthHistoryRequestDTO();
+		authHistoryRequestDTO.setPageStart(String.valueOf(0));
+		authHistoryRequestDTO.setPageFetch("0");
+		requestDTO.setRequest(authHistoryRequestDTO);
+		requestValidator.validatePageFetchAndPageStartFormat(requestDTO, "request");
+	}
 
+	@Test
+	public void testValidateVid(){
+		Mockito.when(vidValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_VID.getErrorCode(),
+				ResidentErrorCode.INVALID_VID.getErrorMessage()));
+		assertEquals(false,requestValidator.validateVid("123"));
+	}
 }
