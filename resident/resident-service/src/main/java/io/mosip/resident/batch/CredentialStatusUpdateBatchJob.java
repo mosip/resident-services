@@ -117,35 +117,45 @@ public class CredentialStatusUpdateBatchJob {
 	public void scheduleCredentialStatusUpdateJob() throws ResidentServiceCheckedException {
 		List<ResidentTransactionEntity> residentTxnList = repo
 				.findByStatusCodeIn(List.of(NEW, ISSUED, RECEIVED, PRINTING, FAILED, DELIVERED,PAYMENT_CONFIRMED,IN_TRANSIT));
-		for (ResidentTransactionEntity txn : residentTxnList) {
-			logger.info("Processing event:" + txn.getEventId());
+			for (ResidentTransactionEntity txn : residentTxnList) {
+				logger.info("Processing event:" + txn.getEventId());
 
-			try {
-				updateDownloadPersonalizedCardTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
+				try {
+					updateDownloadPersonalizedCardTxnStatus(txn);
+				} catch (ApisResourceAccessException e) {
+					logger.error(ExceptionUtils.getStackTrace(e));
+				} catch (ResidentServiceCheckedException e){
+					logger.error(ExceptionUtils.getStackTrace(e));
+				}
+				try {
+					updateVidCardDownloadTxnStatus(txn);
+				} catch (ApisResourceAccessException e) {
+					logger.error(ExceptionUtils.getStackTrace(e));
+				} catch (ResidentServiceCheckedException e){
+					logger.error(ExceptionUtils.getStackTrace(e));
+				}
+				try {
+					updateOrderPhysicalCardTxnStatus(txn);
+				} catch (ApisResourceAccessException e) {
+					logger.error(ExceptionUtils.getStackTrace(e));
+				} catch (ResidentServiceCheckedException e){
+					logger.error(ExceptionUtils.getStackTrace(e));
+				}
+				try {
+					updateShareCredentialWithPartnerTxnStatus(txn);
+				} catch (ApisResourceAccessException e) {
+					logger.error(ExceptionUtils.getStackTrace(e));
+				} catch (ResidentServiceCheckedException e){
+					logger.error(ExceptionUtils.getStackTrace(e));
+				}
+				try {
+					updateUinDemoDataUpdateTxnStatus(txn);
+				} catch (ApisResourceAccessException e) {
+					logger.error(ExceptionUtils.getStackTrace(e));
+				} catch (ResidentServiceCheckedException e){
+					logger.error(ExceptionUtils.getStackTrace(e));
+				}
 			}
-			try {
-				updateVidCardDownloadTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-			try {
-				updateOrderPhysicalCardTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-			try {
-				updateShareCredentialWithPartnerTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-			try {
-				updateUinDemoDataUpdateTxnStatus(txn);
-			} catch (ApisResourceAccessException e) {
-				logger.error(ExceptionUtils.getStackTrace(e));
-			}
-		}
 		repo.saveAll(residentTxnList);
 	}
 
