@@ -22,11 +22,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,9 @@ public class RequestValidatorTest {
 
 	@Mock
 	private AuditUtil audit;
+
+	@Mock
+	private Environment environment;
 
 	String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -83,6 +88,7 @@ public class RequestValidatorTest {
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
 
 	}
 
@@ -1563,4 +1569,239 @@ public class RequestValidatorTest {
 		requestDTO.setId("mosip");
 		requestValidator.validateId(requestDTO);
 	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestNewApi() throws Exception{
+		RequestWrapper<?> request = new RequestWrapper<>();
+		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
+		requestValidator.validateRequestNewApi(request, requestIdType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestNewApiInvalidId() throws Exception{
+		RequestWrapper<?> request = new RequestWrapper<>();
+		RequestIdType requestIdType = RequestIdType.VERSION;
+		requestValidator.validateRequestNewApi(request, requestIdType);
+	}
+
+	@Test
+	public void testValidateDownloadCardVid() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "reprintId", "mosip.resident.print");
+		requestValidator.validateDownloadCardVid("12345");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardVidFailed() throws Exception{
+		Mockito.when(vidValidator.validateId(Mockito.any())).thenReturn(false);
+		ReflectionTestUtils.setField(requestValidator, "reprintId", "mosip.resident.print");
+		requestValidator.validateDownloadCardVid("12345");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCard() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("id");
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCardNullId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId(null);
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCardNullRequestTime() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("property");
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCardNullString() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("property");
+		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test
+	public void testValidateDownloadPersonalizedCardSuccess() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("property");
+		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		downloadPersonalizedCardDto.setHtml("html");
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCardBadHtml() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("property");
+		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		downloadPersonalizedCardDto.setHtml("`1&`");
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardNullTransactionId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardNonNumericTransactionId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("ab");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardLessThan10DigitTransactionId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("1234");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardNullOtp() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("1234343434");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardNonNumericOtp() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("1234343434");
+		downloadCardRequestDTO.setOtp("abc");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardInvalidIndividualId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("1234343434");
+		downloadCardRequestDTO.setOtp("111111");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test
+	public void testValidateDownloadCardSuccess() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("1234343434");
+		downloadCardRequestDTO.setOtp("111111");
+		downloadCardRequestDTO.setIndividualId("123");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateUpdateDataRequestInvalidUserId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
+		otpRequestDTOV3.setOtp("111111");
+		otpRequestDTOV3.setTransactionID("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV3);
+		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateUpdateDataRequestInvalidPhoneUserId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
+		otpRequestDTOV3.setOtp("111111");
+		otpRequestDTOV3.setTransactionID("1232323232");
+		userIdOtpRequest.setId("property");
+		otpRequestDTOV3.setUserId("k");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV3);
+		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+	}
+
+	@Test
+	public void testValidateUpdateDataRequestCorrectPhoneUserId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
+		otpRequestDTOV3.setOtp("111111");
+		otpRequestDTOV3.setTransactionID("1232323232");
+		userIdOtpRequest.setId("property");
+		otpRequestDTOV3.setUserId("8878787878");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV3);
+		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+	}
+
+	@Test
+	public void testValidateUpdateDataRequestCorrectEmailId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
+		otpRequestDTOV3.setOtp("111111");
+		otpRequestDTOV3.setTransactionID("1232323232");
+		userIdOtpRequest.setId("property");
+		otpRequestDTOV3.setUserId("test@g.com");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV3);
+		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+	}
+
 }
