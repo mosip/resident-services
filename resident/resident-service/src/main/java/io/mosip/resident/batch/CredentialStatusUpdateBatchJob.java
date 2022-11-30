@@ -110,6 +110,21 @@ public class CredentialStatusUpdateBatchJob {
 	@Autowired
 	private IdentityService identityService;
 
+	@FunctionalInterface
+	public interface RunnableWithException {
+		void run() throws ApisResourceAccessException, ResidentServiceCheckedException;
+	}
+
+	private void hanldeWithTryCatch(RunnableWithException runnable) {
+		try {
+			runnable.run();
+		} catch (ApisResourceAccessException e) {
+			logger.error(ExceptionUtils.getStackTrace(e));
+		} catch (ResidentServiceCheckedException e){
+			logger.error(ExceptionUtils.getStackTrace(e));
+		}
+	}
+
 	@Scheduled(initialDelayString = "${" + CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY + ":"
 			+ CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT + "}", fixedDelayString = "${"
 					+ CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL + ":" + CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL_DEFAULT
@@ -119,42 +134,11 @@ public class CredentialStatusUpdateBatchJob {
 				.findByStatusCodeIn(List.of(NEW, ISSUED, RECEIVED, PRINTING, FAILED, DELIVERED,PAYMENT_CONFIRMED,IN_TRANSIT));
 			for (ResidentTransactionEntity txn : residentTxnList) {
 				logger.info("Processing event:" + txn.getEventId());
-
-				try {
-					updateDownloadPersonalizedCardTxnStatus(txn);
-				} catch (ApisResourceAccessException e) {
-					logger.error(ExceptionUtils.getStackTrace(e));
-				} catch (ResidentServiceCheckedException e){
-					logger.error(ExceptionUtils.getStackTrace(e));
-				}
-				try {
-					updateVidCardDownloadTxnStatus(txn);
-				} catch (ApisResourceAccessException e) {
-					logger.error(ExceptionUtils.getStackTrace(e));
-				} catch (ResidentServiceCheckedException e){
-					logger.error(ExceptionUtils.getStackTrace(e));
-				}
-				try {
-					updateOrderPhysicalCardTxnStatus(txn);
-				} catch (ApisResourceAccessException e) {
-					logger.error(ExceptionUtils.getStackTrace(e));
-				} catch (ResidentServiceCheckedException e){
-					logger.error(ExceptionUtils.getStackTrace(e));
-				}
-				try {
-					updateShareCredentialWithPartnerTxnStatus(txn);
-				} catch (ApisResourceAccessException e) {
-					logger.error(ExceptionUtils.getStackTrace(e));
-				} catch (ResidentServiceCheckedException e){
-					logger.error(ExceptionUtils.getStackTrace(e));
-				}
-				try {
-					updateUinDemoDataUpdateTxnStatus(txn);
-				} catch (ApisResourceAccessException e) {
-					logger.error(ExceptionUtils.getStackTrace(e));
-				} catch (ResidentServiceCheckedException e){
-					logger.error(ExceptionUtils.getStackTrace(e));
-				}
+				hanldeWithTryCatch( () -> updateDownloadPersonalizedCardTxnStatus(txn));
+				hanldeWithTryCatch( () -> updateVidCardDownloadTxnStatus(txn));
+				hanldeWithTryCatch( () -> updateOrderPhysicalCardTxnStatus(txn));
+				hanldeWithTryCatch( () -> updateShareCredentialWithPartnerTxnStatus(txn));
+				hanldeWithTryCatch( () -> updateUinDemoDataUpdateTxnStatus(txn));
 			}
 		repo.saveAll(residentTxnList);
 	}
