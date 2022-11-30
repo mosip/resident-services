@@ -1804,4 +1804,101 @@ public class RequestValidatorTest {
 		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateRequest(){
+		requestValidator.validateVidCreateRequest(null, false, null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2Request(){
+		ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2RequestInvalidVersion(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
+		requestDto.setId("generate");
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2RequestInvalidRequest(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
+		requestDto.setId("generate");
+		requestDto.setVersion("newVersion");
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2RequestInvalidIndividualId(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
+		requestDto.setId("generate");
+		requestDto.setVersion("newVersion");
+		VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
+		vidRequestDtoV2.setVidType("PERPETUAL");
+		requestDto.setRequest(vidRequestDtoV2);
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2RequestInvalidTransactionId(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ResidentVidRequestDtoV2 requestDto = new ResidentVidRequestDtoV2();
+		requestDto.setId("generate");
+		requestDto.setVersion("newVersion");
+		VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
+		vidRequestDtoV2.setVidType("PERPETUAL");
+		requestDto.setRequest(vidRequestDtoV2);
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, "123");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2RequestInvalidRequestDto(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ResidentVidRequestDto requestDto = new ResidentVidRequestDto();
+		requestDto.setId("generate");
+		requestDto.setVersion("newVersion");
+		VidRequestDto vidRequestDtoV2 = new VidRequestDto();
+		vidRequestDtoV2.setVidType("PERPETUAL");
+		requestDto.setRequest(vidRequestDtoV2);
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				true, "123");
+	}
+
+	@Test
+	public void testValidateVidCreateV2RequestSuccess(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ResidentVidRequestDto requestDto = new ResidentVidRequestDto();
+		requestDto.setId("generate");
+		requestDto.setVersion("newVersion");
+		VidRequestDto vidRequestDtoV2 = new VidRequestDto();
+		vidRequestDtoV2.setVidType("PERPETUAL");
+		vidRequestDtoV2.setTransactionID("1232323232");
+		requestDto.setRequest(vidRequestDtoV2);
+		requestDto.setRequesttime(String.valueOf(LocalDateTime.now()));
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, "123");
+	}
+
+
 }

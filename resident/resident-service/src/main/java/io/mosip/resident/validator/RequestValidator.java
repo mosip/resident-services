@@ -304,13 +304,13 @@ public class RequestValidator {
 	}
 
 	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDto) {
-		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(authLockStatusUpdateV2Id)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "request to auth lock or unlock"));
-			throw new InvalidInputException("id");
-		}
 		if (requestDto.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
 			throw new InvalidInputException("request");
+		}
+		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(authLockStatusUpdateV2Id)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "request to auth lock or unlock"));
+			throw new InvalidInputException("id");
 		}
 		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
