@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -36,5 +37,17 @@ public interface DownLoadMasterDataService {
 	 * @throws Exception
 	 */
 	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception; 
+	
+	/**
+	 * 
+	 * @param langCode
+	 * @param longitude
+	 * @param latitude
+	 * @param proximityDistance
+	 * @return
+	 * @throws ResidentServiceCheckedException
+	 */
+	public InputStream getNearestRegistrationcenters(String langCode, double longitude, double latitude,
+			int proximityDistance) throws ResidentServiceCheckedException, IOException, Exception;
 
 }

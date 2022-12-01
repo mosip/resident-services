@@ -1,10 +1,16 @@
 package io.mosip.resident.test.util;
 
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
@@ -17,7 +23,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -51,8 +59,13 @@ public class TemplateUtilTest {
     @Mock
     private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
+    @Mock
+    private Environment environment;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
+
+    private NotificationTemplateVariableDTO dto;
 
     @Before
     public void setUp() throws ApisResourceAccessException {
@@ -68,6 +81,10 @@ public class TemplateUtilTest {
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(eventId);
         Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
+        ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
+        ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
+        dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS, "eng", "111111");
     }
 
     @Test
@@ -90,6 +107,14 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForOrderPhysicalCard() {
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId);
+        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+    }
+
+    @Test
+    public void getAckTemplateVariablesForOrderPhysicalCardPaymentFailed() {
+        residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
+        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId);
         assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
@@ -134,5 +159,159 @@ public class TemplateUtilTest {
     public void getAckTemplateVariablesForAuthLock() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock( eventId);
         assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void getCommonTemplateVariablesTest() throws ApisResourceAccessException {
+        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
+        templateUtil.getCommonTemplateVariables(eventId);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void getCommonTemplateVariablesTestBadEventId() {
+        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.empty());
+        templateUtil.getCommonTemplateVariables(eventId);
+    }
+
+    @Test
+    public void getFeatureNameTest() {
+        assertEquals(RequestType.AUTHENTICATION_REQUEST.name(),templateUtil.getFeatureName(eventId));
+    }
+
+    @Test
+    public void getCommonTemplateVariablesTestFailedEventStatus() {
+        residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
+        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
+        assertEquals(EventStatus.FAILED.name(),templateUtil.getCommonTemplateVariables(eventId).get(
+                TemplateVariablesConstants.EVENT_STATUS
+        ));
+    }
+
+    @Test
+    public void getCommonTemplateVariablesTestInProgressEventStatus() {
+        residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
+        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
+        assertEquals(EventStatus.IN_PROGRESS.name(),templateUtil.getCommonTemplateVariables(eventId).get(
+                TemplateVariablesConstants.EVENT_STATUS
+        ));
+    }
+
+    @Test
+    public void getAckTemplateVariablesForVidCardDownloadTest() {
+        assertEquals(0,templateUtil.getAckTemplateVariablesForVidCardDownload(eventId).size());
+    }
+
+    @Test
+    public void getAckTemplateVariablesForSendOtpTest() {
+        assertEquals(eventId,templateUtil.getAckTemplateVariablesForSendOtp(eventId).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getAckTemplateVariablesForValidateOtpTest() {
+        assertEquals(eventId,templateUtil.getAckTemplateVariablesForValidateOtp(eventId).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationCommonTemplateVariablesTest() {
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationCommonTemplateVariablesTestFailed() {
+        dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationSendOtpVariablesTest() {
+        assertEquals(eventId,templateUtil.getNotificationSendOtpVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void getNotificationCommonTemplateVariablesTestFailedApiResourceException() throws ApisResourceAccessException {
+        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
+        dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForGenerateOrRevokeVidTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForGenerateOrRevokeVid(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForAuthTypeLockUnlockTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForAuthTypeLockUnlock(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForUpdateMyUinTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForUpdateMyUin(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForVerifyPhoneEmailTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForVerifyPhoneEmail(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForGetMyIdTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForGetMyId(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForDownloadPersonalizedCardTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForDownloadPersonalizedCard(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForOrderPhysicalCardTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForOrderPhysicalCard(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForShareCredentialWithPartnerTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForShareCredentialWithPartner(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getNotificationTemplateVariablesForVidCardDownloadTest() {
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForVidCardDownload(dto).get(TemplateVariablesConstants.EVENT_ID));
+    }
+
+    @Test
+    public void getEmailSubjectTemplateTypeCodeTest() {
+        assertEquals("property",
+                templateUtil.getEmailSubjectTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+    }
+
+    @Test
+    public void getEmailContentTemplateTypeCodeTest() {
+        assertEquals("property",
+                templateUtil.getEmailContentTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+    }
+
+    @Test
+    public void getSmsTemplateTypeCodeTest() {
+        assertEquals("property",
+                templateUtil.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+    }
+
+    @Test
+    public void getBellIconTemplateTypeCodeTest() {
+        assertEquals("property",
+                templateUtil.getBellIconTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+    }
+
+    @Test
+    public void getPurposeTemplateTypeCodeTest() {
+        assertEquals("property",
+                templateUtil.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+    }
+
+    @Test
+    public void getSummaryTemplateTypeCodeTest() {
+        assertEquals("property",
+                templateUtil.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 }

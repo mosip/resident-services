@@ -127,7 +127,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
                     , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
-                String idType = templateUtil.getIndividualIdType(individualId);
+                String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
                 } else {
@@ -354,7 +354,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private String getUINForIndividualId(String individualId)  {
-        String idType = templateUtil.getIndividualIdType(individualId);
+        String idType = identityService.getIndividualIdType(individualId);
         if(idType.equalsIgnoreCase(IdType.UIN.toString()) || idType.equalsIgnoreCase(IdType.VID.toString())){
             return individualId;
         } else {
