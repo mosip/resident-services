@@ -98,11 +98,8 @@ public class RequestValidator {
 
 	@Value("${resident.vid.id}")
 	private String id;
-	
-	@Value("${resident.vid.id.generate}")
-	private String generateId;
 
-	@Value("${resident.revokevid.id}")
+	@Value("${mosip.resident.revokevid.id}")
 	private String revokeVidId;
 	
 	@Value("${mosip.resident.revokevid.id}")
@@ -110,9 +107,6 @@ public class RequestValidator {
 
 	@Value("${resident.vid.version}")
 	private String version;
-	
-	@Value("${resident.vid.version.new}")
-	private String newVersion;
 	
 	@Value("${resident.revokevid.version.new}")
 	private String revokeVidVersion;
@@ -204,18 +198,18 @@ public class RequestValidator {
 			throw new InvalidInputException("requesttime");
 		}
 
-		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(generateId)) {
+		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(id)) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "generateId", "Request to generate VID"));
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Request to generate VID"));
 
-			throw new InvalidInputException("generateId");
+			throw new InvalidInputException("id");
 		}
 		
-		if (StringUtils.isEmpty(requestDto.getVersion()) || !requestDto.getVersion().equalsIgnoreCase(newVersion)) {
+		if (StringUtils.isEmpty(requestDto.getVersion()) || !requestDto.getVersion().equalsIgnoreCase(version)) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "version", "Request to generate VID"));
 
-			throw new InvalidInputException("newVersion");
+			throw new InvalidInputException("version");
 		}
 
 		if (requestDto.getRequest() == null) {
@@ -578,8 +572,8 @@ public class RequestValidator {
 	public void validateRevokeVidRequestWrapper(RequestWrapper<?> request,String msg) {
 
 		if (StringUtils.isEmpty(request.getId()) || !request.getId().equalsIgnoreCase(revokeVidId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", msg));
-			throw new InvalidInputException("id");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "revokeVidId", msg));
+			throw new InvalidInputException("revokeVidId");
 		}
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());
