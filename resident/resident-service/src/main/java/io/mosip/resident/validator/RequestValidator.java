@@ -99,7 +99,10 @@ public class RequestValidator {
 	@Value("${resident.vid.id}")
 	private String id;
 
-	@Value("${mosip.resident.revokevid.id}")
+	@Value("${resident.vid.id.generate}")
+	private String generateId;
+
+	@Value("${resident.revokevid.id}")
 	private String revokeVidId;
 	
 	@Value("${mosip.resident.revokevid.id}")
@@ -107,6 +110,9 @@ public class RequestValidator {
 
 	@Value("${resident.vid.version}")
 	private String version;
+	
+	@Value("${resident.vid.version.new}")
+	private String newVersion;
 	
 	@Value("${resident.revokevid.version.new}")
 	private String revokeVidVersion;

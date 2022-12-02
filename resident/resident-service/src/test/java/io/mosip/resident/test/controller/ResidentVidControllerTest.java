@@ -423,8 +423,8 @@ public class ResidentVidControllerTest {
 		vidRequestDto.setVidType("Temporary");
 
 		ResidentVidRequestDto request = new ResidentVidRequestDto();
-		request.setId("mosip.resident.vid.generate");
-		request.setVersion("1.0");
+		request.setId("mosip.resident.vid");
+		request.setVersion("v1");
 
 		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRequestDto);
