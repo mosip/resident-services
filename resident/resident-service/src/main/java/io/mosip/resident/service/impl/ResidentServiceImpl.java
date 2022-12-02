@@ -2083,9 +2083,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 
 	@Override
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) {
-		String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
-		String photo = identityServiceImpl.getClaimFromIdToken(env.getProperty(IMAGE));
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
+		String name = identityServiceImpl.getClaimValue(env.getProperty(NAME));
+		String photo = identityServiceImpl.getClaimValue(env.getProperty(IMAGE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

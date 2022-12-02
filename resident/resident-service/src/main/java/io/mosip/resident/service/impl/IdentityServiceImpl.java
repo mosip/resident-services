@@ -319,7 +319,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return null;
 	}
 
-	private Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
+	public Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
 		return getClaims(Set.of(claims));
 	}
 
@@ -396,7 +396,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return  getClaimValue(INDIVIDUAL_ID);
 	}
 
-	private String getClaimValue(String claim) throws ApisResourceAccessException {
+	public String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
 
