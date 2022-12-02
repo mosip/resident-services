@@ -98,7 +98,7 @@ public class RequestValidator {
 
 	@Value("${resident.vid.id}")
 	private String id;
-	
+
 	@Value("${resident.vid.id.generate}")
 	private String generateId;
 

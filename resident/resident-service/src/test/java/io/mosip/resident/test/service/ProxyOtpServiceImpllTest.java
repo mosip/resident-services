@@ -196,7 +196,7 @@ public class ProxyOtpServiceImpllTest {
         otpRequestDTOV3.setUserId("ka@gm.com");
         otpRequestDTOV3.setTransactionID("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1));
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
     }
 
     @Test
