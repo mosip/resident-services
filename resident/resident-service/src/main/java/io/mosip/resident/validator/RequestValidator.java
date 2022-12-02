@@ -883,8 +883,7 @@ public class RequestValidator {
 		if(statusFilter != null) {
 			List<String> statusFilterList = Arrays.asList(statusFilter.split(","));
 			for (String status : statusFilterList) {
-				if (!status.equalsIgnoreCase(EventStatus.FAILED.toString()) && !status.equalsIgnoreCase(EventStatus.IN_PROGRESS.toString())
-						&& !status.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+				if (EventStatus.getEventStatusForText(status).isEmpty()) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "statusFilter",
 							request_service_history_api));
 					throw new InvalidInputException("statusFilter");

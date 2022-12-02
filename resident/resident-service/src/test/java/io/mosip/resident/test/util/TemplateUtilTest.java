@@ -90,7 +90,7 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForAuthenticationRequest() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(eventId);
-        assertEquals("SUCCESS",ackTemplateVariables.get(TemplateVariablesConstants.EVENT_STATUS));
+        assertEquals(EventStatus.SUCCESS.getStatus(),ackTemplateVariables.get(TemplateVariablesConstants.EVENT_STATUS));
     }
 
     @Test
@@ -182,7 +182,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        assertEquals(EventStatus.FAILED.name(),templateUtil.getCommonTemplateVariables(eventId).get(
+        assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -191,7 +191,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        assertEquals(EventStatus.IN_PROGRESS.name(),templateUtil.getCommonTemplateVariables(eventId).get(
+        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
