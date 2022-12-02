@@ -1087,8 +1087,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}else{
 			identityMap = dto.getIdentity();
 		}
-		Set<String> keys = new HashSet<String>();
-		keys = identityMap.keySet();
+		HashSet<String> keys = new HashSet<String>(identityMap.keySet());
 		keys.remove("IDSchemaVersion");
 		keys.remove("UIN");
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
