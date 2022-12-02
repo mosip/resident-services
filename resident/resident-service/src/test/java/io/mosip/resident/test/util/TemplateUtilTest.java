@@ -182,7 +182,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        assertEquals(EventStatus.FAILED.name(),templateUtil.getCommonTemplateVariables(eventId).get(
+        assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }

@@ -1717,13 +1717,13 @@ public class ResidentServiceImpl implements ResidentService {
 		String statusFilterListString = "";
 		List<String> statusFilterListContainingALlStatus = new ArrayList<>();
 		for (String status : statusFilterList) {
-			if (status.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+			if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
 				statusFilterListContainingALlStatus.addAll(
 						List.of(EventStatusSuccess.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.FAILED.toString())) {
+			} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
 				statusFilterListContainingALlStatus.addAll(
 						List.of(EventStatusFailure.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.toString())) {
+			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
 				statusFilterListContainingALlStatus.addAll(List.of(EventStatusInProgress.values()).stream()
 						.map(Enum::toString).collect(Collectors.toList()));
 			}
@@ -1833,11 +1833,11 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public String getEventStatusCode(String statusCode) {
 		if (EventStatusSuccess.containsStatus(statusCode)) {
-			return EventStatus.SUCCESS.toString();
+			return EventStatus.SUCCESS.getStatus();
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
-			return EventStatus.FAILED.toString();
+			return EventStatus.FAILED.getStatus();
 		} else {
-			return EventStatus.IN_PROGRESS.toString();
+			return EventStatus.IN_PROGRESS.getStatus();
 		}
 	}
 
