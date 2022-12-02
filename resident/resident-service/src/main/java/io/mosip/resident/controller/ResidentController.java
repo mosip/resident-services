@@ -352,8 +352,8 @@ public class ResidentController {
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
 		if (request != null) {
 			request.setIndividualId(individualId);
+			request.setIndividualIdType(getIdType(individualId));
 		}
-		request.setIndividualIdType(getIdType(individualId));
 		validator.validateUpdateRequest(requestWrapper, true);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(

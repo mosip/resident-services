@@ -193,7 +193,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             logger.error("Unable to get attributes- "+e);
             throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
         }
-        String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
+        String attributeProperty = null;
+        attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
+        if (attributeProperty!=null) {
         List<String> attributeList = List.of(attributeProperty.split("\\|"));
 
         for (String attribute : attributeList) {
@@ -213,6 +215,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             } else {
                 attributeValues.add((String) attributeObject);
             }
+        }
         }
         return attributeValues;
     }

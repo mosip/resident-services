@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -934,7 +935,9 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
-				residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
+				if (residentUpdateResponseDTO != null) {
+					residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
+				}
 				residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
@@ -1084,7 +1087,8 @@ public class ResidentServiceImpl implements ResidentService {
 		}else{
 			identityMap = dto.getIdentity();
 		}
-		Set<String> keys = identityMap.keySet();
+		Set<String> keys = new HashSet<String>();
+		keys = identityMap.keySet();
 		keys.remove("IDSchemaVersion");
 		keys.remove("UIN");
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
@@ -1779,10 +1783,12 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
-			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
-				serviceHistoryResponseDto.setServiceType(serviceType.get());
-				serviceHistoryResponseDto
-						.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+			if (serviceType.isPresent()) {
+				if (!serviceType.get().equals(ServiceType.ALL.name())) {
+					serviceHistoryResponseDto.setServiceType(serviceType.get());
+					serviceHistoryResponseDto
+							.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+				}
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
 			}
@@ -1950,11 +1956,13 @@ public class ResidentServiceImpl implements ResidentService {
 			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 
-			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
-				eventStatusResponseDTO
-						.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
-				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-						getDescriptionForLangCode(languageCode, statusCode, requestType));
+			if (serviceType.isPresent()) {
+				if (!serviceType.get().equals(ServiceType.ALL.name())) {
+					eventStatusResponseDTO
+							.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
+					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
+							getDescriptionForLangCode(languageCode, statusCode, requestType));
+				}
 			} else {
 				eventStatusResponseDTO.setSummary(requestType.name());
 				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, requestType.name());
