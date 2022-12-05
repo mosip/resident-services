@@ -323,13 +323,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 		ResidentCredentialRequestDto requestDto = new ResidentCredentialRequestDto();
 		if (residentTransactionEntity.isPresent()) {
 		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
-		}
 		if (isPaymentEnabled) {
 			reponse = checkOrderStatus(paymentTransactionId, individualId, redirectUrl, residentTransactionEntity.get(),
 					 errorCode, errorMessage, residentFullAddress);
 		}
 		residentCredentialResponseDto = residentCredentialService.reqCredential(requestDto, individualId);
 		updateResidentTransaction(residentTransactionEntity.get(), residentCredentialResponseDto);
+		}
 		return reponse;
 	}
 
