@@ -7,6 +7,7 @@ import io.mosip.resident.controller.DownloadCardController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.ResidentVidService;
@@ -124,5 +125,15 @@ public class DownloadCardControllerTest {
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
 
+    @Test
+    public void testRequestVidCard() throws Exception {
+        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
+        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
+        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any())).thenReturn(vidDownloadCardResponseDtoResponseWrapper);
+        mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
+    }
 
 }
