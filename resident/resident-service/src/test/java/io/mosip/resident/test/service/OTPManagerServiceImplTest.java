@@ -127,18 +127,20 @@ public class OTPManagerServiceImplTest {
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("2123456");
-        when(otpTransactionRepository.checkotpsent(any(), any(), any())).thenReturn(0);
+        when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(0);
         ResponseWrapper<Map<String, String>> responseMap1=new ResponseWrapper<>();
         responseMap1.setResponse(responseMap);
         response1 = new ResponseEntity<>(responseMap1, HttpStatus.ACCEPTED);
         Mockito.when(environment.getProperty(Mockito.any())).thenReturn("https://dev.mosip.net/v1/otpmanager/otp/generate");
-        Mockito.when(environment.getProperty((String) any(), (Class<Object>) any())).thenReturn((Long.valueOf(60)));
         Mockito.when(restTemplate.exchange(ArgumentMatchers.anyString(),
                         ArgumentMatchers.any(HttpMethod.class),
                         ArgumentMatchers.any(),
                         Mockito.eq(ResponseWrapper.class)))
                 .thenReturn(response1);
         Mockito.when(environment.getProperty(any())).thenReturn("http://localhost:8099");
+        Mockito.when(environment.getProperty("otp.request.flooding.duration", Long.class)).thenReturn(45L);
+        Mockito.when(environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)).thenReturn(45L);
+        Mockito.when(environment.getProperty("otp.request.flooding.max-count", Integer.class)).thenReturn(8);
         Mockito.when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("EMAIL"));
 }
 
@@ -149,15 +151,13 @@ public class OTPManagerServiceImplTest {
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testSendOtpAlreadyOtpSendError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        when(otpTransactionRepository.checkotpsent(any(), any(), any())).thenReturn(3);
+        when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(9);
         assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
 
     @Test
     public void testSendOtpOtpSendWithinLessTime() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
-        when(otpTransactionRepository.findByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
         assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
 

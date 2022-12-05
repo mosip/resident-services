@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -935,7 +936,9 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				notificationResponseDTO = sendNotification(dto.getIndividualId(),
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
-				residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
+				if (residentUpdateResponseDTO != null) {
+					residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
+				}
 				residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
@@ -1085,7 +1088,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}else{
 			identityMap = dto.getIdentity();
 		}
-		Set<String> keys = identityMap.keySet();
+		HashSet<String> keys = new HashSet<String>(identityMap.keySet());
 		keys.remove("IDSchemaVersion");
 		keys.remove("UIN");
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
@@ -1526,7 +1529,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ){
 					cardType =IdType.UIN.name();
 					String rid = residentTransactionEntity.get().getAid();
-					cardType =templateUtil.getIndividualIdType(rid);
+					cardType = identityServiceImpl.getIndividualIdType(rid);
 					if(rid!=null){
 						return getUINCard(rid);
 					}
@@ -1717,13 +1720,13 @@ public class ResidentServiceImpl implements ResidentService {
 		String statusFilterListString = "";
 		List<String> statusFilterListContainingALlStatus = new ArrayList<>();
 		for (String status : statusFilterList) {
-			if (status.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+			if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
 				statusFilterListContainingALlStatus.addAll(
 						List.of(EventStatusSuccess.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.FAILED.toString())) {
+			} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
 				statusFilterListContainingALlStatus.addAll(
 						List.of(EventStatusFailure.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.toString())) {
+			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
 				statusFilterListContainingALlStatus.addAll(List.of(EventStatusInProgress.values()).stream()
 						.map(Enum::toString).collect(Collectors.toList()));
 			}
@@ -1782,10 +1785,12 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				serviceHistoryResponseDto.setTimeStamp(residentTransactionEntity.getCrDtimes().toString());
 			}
-			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
-				serviceHistoryResponseDto.setServiceType(serviceType.get());
-				serviceHistoryResponseDto
-						.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+			if (serviceType.isPresent()) {
+				if (!serviceType.get().equals(ServiceType.ALL.name())) {
+					serviceHistoryResponseDto.setServiceType(serviceType.get());
+					serviceHistoryResponseDto
+							.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+				}
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
 			}
@@ -1831,11 +1836,11 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public String getEventStatusCode(String statusCode) {
 		if (EventStatusSuccess.containsStatus(statusCode)) {
-			return EventStatus.SUCCESS.toString();
+			return EventStatus.SUCCESS.getStatus();
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
-			return EventStatus.FAILED.toString();
+			return EventStatus.FAILED.getStatus();
 		} else {
-			return EventStatus.IN_PROGRESS.toString();
+			return EventStatus.IN_PROGRESS.getStatus();
 		}
 	}
 
@@ -1951,11 +1956,13 @@ public class ResidentServiceImpl implements ResidentService {
 			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 
-			if (serviceType.isPresent() && serviceType.get() != ServiceType.ALL.name()) {
-				eventStatusResponseDTO
-						.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
-				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-						getDescriptionForLangCode(languageCode, statusCode, requestType));
+			if (serviceType.isPresent()) {
+				if (!serviceType.get().equals(ServiceType.ALL.name())) {
+					eventStatusResponseDTO
+							.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
+					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
+							getDescriptionForLangCode(languageCode, statusCode, requestType));
+				}
 			} else {
 				eventStatusResponseDTO.setSummary(requestType.name());
 				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, requestType.name());
@@ -1976,9 +1983,17 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String id) {
+	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
-		Long residentTransactionEntity = residentTransactionRepository.findByIdandcount(id);
+		LocalDateTime time = null;
+		Long residentTransactionEntity;
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(Id);
+		if (residentUserEntity.isPresent()) {
+			time = residentUserEntity.get().getLastloginDtime();
+			residentTransactionEntity = residentTransactionRepository.findByIdandlastlogincount(Id, time);
+		} else {
+			residentTransactionEntity = residentTransactionRepository.findByIdandcount(Id);
+		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
 		notification.setUnreadCount(residentTransactionEntity);
 		responseWrapper.setId(serviceEventId);
@@ -2076,9 +2091,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 
 	@Override
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) {
-		String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
-		String photo = identityServiceImpl.getClaimFromIdToken(env.getProperty(IMAGE));
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
+		String name = identityServiceImpl.getClaimValue(env.getProperty(NAME));
+		String photo = identityServiceImpl.getClaimValue(env.getProperty(IMAGE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();

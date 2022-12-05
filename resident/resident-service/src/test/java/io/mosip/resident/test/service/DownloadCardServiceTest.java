@@ -1,6 +1,7 @@
 package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -18,6 +19,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.DownloadCardServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -37,7 +39,11 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -85,6 +91,9 @@ public class DownloadCardServiceTest {
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
 
+    @Mock
+    private ResidentVidService vidService;
+
     private MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO;
 
     private String result;
@@ -112,7 +121,7 @@ public class DownloadCardServiceTest {
         Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
         Mockito.when(residentService.getUINCard(Mockito.anyString())).thenReturn(pdfbytes);
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenReturn("7841261580");
 
         downloadPersonalizedCardMainRequestDTO=
@@ -146,14 +155,14 @@ public class DownloadCardServiceTest {
 
     @Test
     public void testGetDownloadCardPdfVID(){
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
 
     @Test
     public void testGetDownloadCardPdfAID(){
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -162,7 +171,7 @@ public class DownloadCardServiceTest {
     public void testGetDownloadCardPdfResidentServiceExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenThrow(
                 new ResidentServiceCheckedException());
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -171,7 +180,7 @@ public class DownloadCardServiceTest {
     public void testGetDownloadCardPdfApisResourceAccessExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenThrow(
                 new ApisResourceAccessException());
-        Mockito.when(templateUtil.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
+        Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -183,8 +192,42 @@ public class DownloadCardServiceTest {
         assertEquals(pdfbytes, actualResult);
     }
 
+    @Test(expected = ResidentServiceException.class)
+    public void testGetDownloadCardPdfApiResourceException() throws OtpValidationFailedException, ApisResourceAccessException {
+        Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+        byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+        assertEquals(pdfbytes, actualResult);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetDownloadCardPdfOtpValidationException() throws OtpValidationFailedException, ApisResourceAccessException {
+        Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenThrow(new OtpValidationFailedException());
+        byte[] actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+        assertEquals(pdfbytes, actualResult);
+    }
+
     @Test
     public void testDownloadPersonalizedCardSuccess() {
+        byte[] actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+        assertEquals(pdfbytes, actualResult);
+    }
+
+    @Test
+    public void testDownloadPersonalizedCardSuccessWithListAttributes() throws ResidentServiceCheckedException, IOException {
+        Mockito.when(environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE)).thenReturn("firstName");
+        identityMap = new LinkedHashMap();
+        Map<String, Object> name = new HashMap<>();
+        name.put("language", "eng");
+        name.put("value", "kamesh");
+        identityMap.put("UIN", "8251649601");
+        identityMap.put("email", "manojvsp12@gmail.com");
+        identityMap.put("phone", "9395910872");
+        identityMap.put("dateOfBirth", "1970");
+        identityMap.put("firstName", List.of(name));
+        Mockito.when(utilities.getLanguageCode()).thenReturn("eng");
+        Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(),Mockito.anyString())).thenReturn(identityMap);
         byte[] actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -201,6 +244,22 @@ public class DownloadCardServiceTest {
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
         Mockito.when(utilitiy.getPassword(Mockito.anyList())).thenThrow(
                 new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD));
+        byte[] actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+        assertEquals(pdfbytes, actualResult);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testDownloadPersonalizedCardResidentServiceCheckedException() throws ResidentServiceCheckedException, IOException {
+        Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), Mockito.anyString())).thenThrow(
+                new ResidentServiceCheckedException());
+        byte[] actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+        assertEquals(pdfbytes, actualResult);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testDownloadPersonalizedCardIOException() throws ResidentServiceCheckedException, IOException {
+        Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), Mockito.anyString())).thenThrow(
+                new IOException());
         byte[] actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
         assertEquals(pdfbytes, actualResult);
     }
@@ -243,6 +302,91 @@ public class DownloadCardServiceTest {
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utilitiy.createEventId()).thenReturn("123");
+        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
+                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testGetVidCardEventIdFailed() throws BaseCheckedException {
+        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
+        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
+        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+        residentCredentialResponseDto.setId("123");
+        residentCredentialResponseDto.setRequestId("123");
+        responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorCode(),
+                ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage())));
+        responseWrapper.setResponse(residentCredentialResponseDto);
+        Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
+                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+    }
+
+    @Test(expected = ApisResourceAccessException.class)
+    public void testGetVidCardEventIdApisResourceAccessException() throws BaseCheckedException {
+        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
+        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
+        Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
+        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
+                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+    }
+
+    @Test(expected = BaseCheckedException.class)
+    public void testGetVidCardEventIdResidentServiceCheckedException() throws BaseCheckedException, IOException {
+        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
+        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
+        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+        residentCredentialResponseDto.setId("123");
+        residentCredentialResponseDto.setRequestId("123");
+        responseWrapper.setResponse(residentCredentialResponseDto);
+        Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
+        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
+                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+    }
+
+    @Test
+    public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException, IOException {
+        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
+        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
+        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
+                new io.mosip.resident.dto.ResponseWrapper<>();
+        ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+        residentCredentialResponseDto.setId("123");
+        residentCredentialResponseDto.setRequestId("123");
+        responseWrapper.setResponse(residentCredentialResponseDto);
+        Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        io.mosip.resident.dto.ResponseWrapper<List<Map<String,?>>> vidResponse = new io.mosip.resident.dto.ResponseWrapper<>();
+        Map<String, Object> vidDetails = new HashMap<>();
+        vidDetails.put("vidType", "perpetual");
+        List<Map<String, ?>> vidList = new ArrayList<>();
+        vidDetails.put("vid", "123");
+        vidDetails.put("maskedVid", "1******4");
+        vidDetails.put("expiryTimeStamp", "1234343434");
+        vidDetails.put("expiryTimeStamp", "1234343434");
+        vidDetails.put("genratedOnTimestamp", "1234343434");
+        vidDetails.put("transactionLimit", "1234343434");
+        vidDetails.put("transactionCount", "1234343434");
+        vidList.add(vidDetails);
+        vidResponse.setResponse(vidList);
+        Mockito.when(vidService.retrieveVids(Mockito.anyString())).thenReturn(vidResponse);
+        Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
         Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utilitiy.createEventId()).thenReturn("123");
         assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),

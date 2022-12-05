@@ -89,9 +89,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Value("${resident.vid.id}")
 	private String id;
+	
+	@Value("${resident.vid.id.generate}")
+	private String generateId;
 
 	@Value("${resident.vid.version}")
 	private String version;
+
+	@Value("${resident.vid.version.new}")
+	private String newVersion;
 
 	@Value("${vid.create.id}")
 	private String vidCreateId;
@@ -101,6 +107,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Value("${resident.revokevid.id}")
 	private String revokeVidId;
+	
+	@Value("${mosip.resident.revokevid.id}")
+	private String revokeVidIdNew;
 
 	@Value("${mosip.resident.vid-policy-url}")
 	private String vidPolicyUrl;
@@ -298,9 +307,16 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
 		}
-
-		responseDto.setId(id);
-		responseDto.setVersion(version);
+		if (isV2Request)
+		{
+			responseDto.setId(generateId);
+			responseDto.setVersion(newVersion);
+		}
+		else
+		{
+			responseDto.setId(id);
+			responseDto.setVersion(version);
+		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		return responseDto;
@@ -533,8 +549,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 		}
 
-		responseDto.setId(revokeVidId);
-		responseDto.setVersion(version);
+		if (isV2Request) {
+			responseDto.setId(revokeVidIdNew);
+			responseDto.setVersion(newVersion);
+		}
+		else
+		{
+			responseDto.setId(revokeVidId);
+			responseDto.setVersion(version);
+		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		return responseDto;
@@ -655,7 +678,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				.collect(Collectors.toList());
 		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
 		res.setId(residentVidGetId);
-		res.setVersion(version);
+		res.setVersion(newVersion);
 		res.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 		res.setResponse(filteredList);
 		return res;

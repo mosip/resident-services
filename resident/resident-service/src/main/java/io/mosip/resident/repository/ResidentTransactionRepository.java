@@ -82,6 +82,9 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
 	Long findByIdandcount(@Param("tokenId") String tokenId);
+	
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :lastLoginTime  AND read_status='false'")
+	Long findByIdandlastlogincount(@Param("tokenId") String tokenId,@Param("lastLoginTime") LocalDateTime lastLoginTime);
 
 	@Query(value = "Select new ResidentTransactionEntity(eventId, requestSummary, statusCode,requestDtimes,requestTypeCode) "
 			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
