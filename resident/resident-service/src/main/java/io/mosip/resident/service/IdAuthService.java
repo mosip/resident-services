@@ -9,11 +9,15 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import reactor.util.function.Tuple2;
 
 @Service
 public interface IdAuthService {
 
 	public boolean validateOtp(String transactionID, String individualId, String otp)
+			throws OtpValidationFailedException;
+	
+	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException;
 
 	public boolean authTypeStatusUpdate(String individualId, List<String> authType,
