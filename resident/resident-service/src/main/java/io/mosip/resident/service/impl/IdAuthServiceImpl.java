@@ -147,7 +147,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		}
 		if (residentTransactionEntity != null) {
-			 eventId = residentTransactionEntity.getEventId(); 
+			eventId = residentTransactionEntity.getEventId(); 
 		}
 		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}
