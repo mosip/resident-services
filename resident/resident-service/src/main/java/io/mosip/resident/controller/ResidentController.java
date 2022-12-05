@@ -294,6 +294,7 @@ public class ResidentController {
 			@RequestParam(name = "searchText", required = false) String searchText)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
+		validator.validateToken();
 		validator.validateOnlyLanguageCode(langCode);
 		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, statusFilter);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));

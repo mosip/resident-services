@@ -3,16 +3,19 @@ package io.mosip.resident.validator;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
@@ -35,8 +38,10 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -49,6 +54,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -64,6 +70,8 @@ import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNE
 @Component
 public class RequestValidator {
 
+	private static final String EXP = "exp";
+	private static final String IAT = "iat";
 	@Autowired
 	private UinValidator<String> uinValidator;
 
@@ -179,6 +187,8 @@ public class RequestValidator {
 	
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
+
+	private static final Logger logger = LoggerConfiguration.logConfig(RequestValidator.class);
 
 	@PostConstruct
 	public void setMap() {
@@ -1099,5 +1109,19 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 		return true;
+	}
+
+    public void validateToken() throws ApisResourceAccessException {
+		int expiryTime = Integer.parseInt(identityService.getClaimValue(EXP));
+		int createdTime = Integer.parseInt(identityService.getClaimValue(IAT));
+		logger.info("Expiry Time-"+expiryTime);
+		logger.info("Created Time-"+createdTime);
+		int now = (int) DateUtils.getUTCCurrentDateTime().toEpochSecond(ZoneOffset.UTC) / 1000;
+		logger.info("Current Time-"+now);
+		if(now < expiryTime+createdTime){
+			logger.info("Token is expired");
+			throw new ResidentServiceException(ResidentErrorCode.UNAUTHORIZED, ResidentErrorCode.UNAUTHORIZED.getErrorMessage());
+		}
+		logger.info("Token is valid");
 	}
 }
