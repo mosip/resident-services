@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.resident.controller.DownloadCardController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownloadCardService;
@@ -103,9 +104,25 @@ public class DownloadCardControllerTest {
     }
 
     @Test
-    public void testgGetCardSuccess() throws Exception {
+    public void testGetCardSuccess() throws Exception {
         Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(pdfbytes);
         mockMvc.perform(MockMvcRequestBuilders.post("/download-card").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
+
+    @Test
+    public void testDownloadPersonalizedCard() throws Exception {
+        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any())).thenReturn(pdfbytes);
+        MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
+                new MainRequestDTO<>();
+        DownloadPersonalizedCardDto downloadPersonalizedCardDto =
+                new DownloadPersonalizedCardDto();
+        downloadPersonalizedCardDto.setHtml("PGh0bWw+PGhlYWQ+PC9oZWFkPjxib2R5Pjx0YWJsZT48dHI+PHRkPk5hbWU8L3RkPjx0ZD5GUjwvdGQ+PC90cj48dHI+PHRkPkRPQjwvdGQ+PHRkPjE5OTIvMDQvMTU8L3RkPjwvdHI+PHRyPjx0ZD5QaG9uZSBOdW1iZXI8L3RkPjx0ZD45ODc2NTQzMjEwPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=");
+        downloadPersonalizedCardMainRequestDTO.setRequest(downloadPersonalizedCardDto);
+        reqJson = gson.toJson(downloadPersonalizedCardMainRequestDTO);
+        mockMvc.perform(MockMvcRequestBuilders.post("/download/personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(reqJson.getBytes())).andExpect(status().isOk());
+    }
+
+
 }
