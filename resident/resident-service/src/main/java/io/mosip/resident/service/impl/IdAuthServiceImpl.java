@@ -128,6 +128,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
+		String eventId = null;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
@@ -145,8 +146,10 @@ public class IdAuthServiceImpl implements IdAuthService {
 					response.getErrors().get(0).getErrorMessage());
 
 		}
-
-		return Tuples.of(response.getResponse().isAuthStatus(), residentTransactionEntity.getEventId());
+		if (residentTransactionEntity != null) {
+			eventId = residentTransactionEntity.getEventId(); 
+		}
+		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}
 
 	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException {
