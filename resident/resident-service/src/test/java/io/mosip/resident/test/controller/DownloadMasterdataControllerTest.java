@@ -3,17 +3,16 @@ package io.mosip.resident.test.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.DownloadCardController;
+import io.mosip.resident.controller.DownLoadMasterDataController;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DownloadCardService;
+import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,6 +35,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -43,13 +43,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * @author Kamesh Shekhar Prasad
- * This class is used to test download card api.
+ * This class is used to test download master data controller api.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
-public class DownloadCardControllerTest {
+public class DownloadMasterdataControllerTest {
 	
     @MockBean
     private RequestValidator validator;
@@ -66,10 +66,10 @@ public class DownloadCardControllerTest {
     private RestTemplate residentRestTemplate;
 
     @InjectMocks
-    DownloadCardController downloadCardController;
+    DownLoadMasterDataController downLoadMasterDataController;
 
     @MockBean
-    DownloadCardService downloadCardService;
+    DownLoadMasterDataService downLoadMasterDataService;
 
     @MockBean
     IdentityServiceImpl identityService;
@@ -83,6 +83,15 @@ public class DownloadCardControllerTest {
     @MockBean
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
+    @MockBean
+    private AuditUtil auditUtil;
+
+    @Mock
+    private Utilitiy utilitiy;
+
+    @Mock
+    private Environment environment;
+
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     String reqJson;
@@ -92,7 +101,7 @@ public class DownloadCardControllerTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(downloadCardController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(downLoadMasterDataController).build();
         MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO = new MainRequestDTO<>();
         DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
         downloadCardRequestDTO.setIndividualId("7841261580");
@@ -102,38 +111,33 @@ public class DownloadCardControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
+        Mockito.when(utilitiy.getFileName(Mockito.anyString(), Mockito.anyString())).thenReturn("fileName");
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
     @Test
-    public void testGetCardSuccess() throws Exception {
-        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(pdfbytes);
-        mockMvc.perform(MockMvcRequestBuilders.post("/download-card").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(reqJson.getBytes())).andExpect(status().isOk());
+    public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
+        Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
+                Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/registrationcenters?langcode=eng&hierarchylevel=5&name=14022")).
+               andExpect(status().isOk());
     }
 
     @Test
-    public void testDownloadPersonalizedCard() throws Exception {
-        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any())).thenReturn(pdfbytes);
-        MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
-                new MainRequestDTO<>();
-        DownloadPersonalizedCardDto downloadPersonalizedCardDto =
-                new DownloadPersonalizedCardDto();
-        downloadPersonalizedCardDto.setHtml("PGh0bWw+PGhlYWQ+PC9oZWFkPjxib2R5Pjx0YWJsZT48dHI+PHRkPk5hbWU8L3RkPjx0ZD5GUjwvdGQ+PC90cj48dHI+PHRkPkRPQjwvdGQ+PHRkPjE5OTIvMDQvMTU8L3RkPjwvdHI+PHRyPjx0ZD5QaG9uZSBOdW1iZXI8L3RkPjx0ZD45ODc2NTQzMjEwPC90ZD48L3RyPjwvdGFibGU+PC9ib2R5PjwvaHRtbD4=");
-        downloadPersonalizedCardMainRequestDTO.setRequest(downloadPersonalizedCardDto);
-        reqJson = gson.toJson(downloadPersonalizedCardMainRequestDTO);
-        mockMvc.perform(MockMvcRequestBuilders.post("/download/personalized-card").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(reqJson.getBytes())).andExpect(status().isOk());
+    public void testDownloadNearestRegistrationcenters() throws Exception {
+        Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
+                Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get
+                        ("/download/nearestRegistrationcenters?langcode=eng&longitude=1&latitude=1&proximitydistance=1")).
+                andExpect(status().isOk());
     }
 
     @Test
-    public void testRequestVidCard() throws Exception {
-        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
-        VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        vidDownloadCardResponseDto.setEventId("123");
-        vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any())).thenReturn(vidDownloadCardResponseDtoResponseWrapper);
-        mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
+    public void testDownloadSupportingDocsByLanguage() throws Exception {
+        Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
+                thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get
+                        ("/download/supporting-documents?langcode=eng")).
+                andExpect(status().isOk());
     }
-
 }
