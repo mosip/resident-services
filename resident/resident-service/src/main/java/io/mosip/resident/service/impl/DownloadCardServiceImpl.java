@@ -127,7 +127,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
                     , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
-                String idType = templateUtil.getIndividualIdType(individualId);
+                String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
                 } else {
@@ -194,6 +194,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
         }
         String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
+        if (attributeProperty!=null) {
         List<String> attributeList = List.of(attributeProperty.split("\\|"));
 
         for (String attribute : attributeList) {
@@ -213,6 +214,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             } else {
                 attributeValues.add((String) attributeObject);
             }
+        }
         }
         return attributeValues;
     }
@@ -275,6 +277,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         ResidentCredentialResponseDto.class);
                 eventId =insertDataForVidCard(residentCredentialResponseDto, vid);
                 vidDownloadCardResponseDto.setEventId(eventId);
+                vidDownloadCardResponseDto.setStatus(ResidentConstants.SUCCESS);
             }else{
                 throw new ResidentServiceCheckedException(String.valueOf(ResidentErrorCode.VID_REQUEST_CARD_FAILED),
                         ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage());
@@ -354,7 +357,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private String getUINForIndividualId(String individualId)  {
-        String idType = templateUtil.getIndividualIdType(individualId);
+        String idType = identityService.getIndividualIdType(individualId);
         if(idType.equalsIgnoreCase(IdType.UIN.toString()) || idType.equalsIgnoreCase(IdType.VID.toString())){
             return individualId;
         } else {

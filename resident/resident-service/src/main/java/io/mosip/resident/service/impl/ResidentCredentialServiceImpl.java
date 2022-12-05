@@ -34,6 +34,7 @@ import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
@@ -276,13 +277,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
 			residentCredentialResponseDtoV2.setEventId(residentTransactionEntity.getEventId());
+			residentCredentialResponseDtoV2.setStatus(ResidentConstants.SUCCESS);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-
+				sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
+						residentTransactionEntity.getEventId(), additionalAttributes);
 			}
-			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
-					residentTransactionEntity.getEventId(), additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

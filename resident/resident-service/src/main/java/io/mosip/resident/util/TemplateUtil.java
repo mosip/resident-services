@@ -102,27 +102,17 @@ import java.util.Optional;
 
     public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
-        return getIndividualIdType(individualId);
+        return identityServiceImpl.getIndividualIdType(individualId);
     }
 
-    public String getIndividualIdType(String individualId){
-        if(requestValidator.validateUin(individualId)){
-            return UIN;
-        } else if(requestValidator.validateVid(individualId)){
-            return VID;
-        } else{
-            return AID;
-        }
-    }
-
-    private String getEventStatusForRequestType(String statusCode) {
+    private String getEventStatusForRequestType(String requestType) {
         String eventStatus = "";
-        if(EventStatusSuccess.containsStatus(statusCode)){
-            eventStatus = EventStatus.SUCCESS.name();
-        } else if(EventStatusFailure.containsStatus(statusCode)){
-            eventStatus = EventStatus.FAILED.name();
+        if(EventStatusSuccess.containsStatus(requestType)){
+            eventStatus = EventStatus.SUCCESS.getStatus();
+        } else if(EventStatusFailure.containsStatus(requestType)){
+            eventStatus = EventStatus.FAILED.getStatus();
         } else {
-            eventStatus = EventStatus.IN_PROGRESS.name();
+            eventStatus = EventStatus.IN_PROGRESS.getStatus();
         }
         return eventStatus;
     }

@@ -7,6 +7,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
@@ -351,12 +352,13 @@ public class ResidentController {
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
 		if (request != null) {
 			request.setIndividualId(individualId);
+			request.setIndividualIdType(getIdType(individualId));
 		}
-		request.setIndividualIdType(getIdType(individualId));
 		validator.validateUpdateRequest(requestWrapper, true);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
+		requestDTO.getRequest().getIdentity().put(IdType.UIN.name(), identityServiceImpl.getUinForIndividualId(individualId));
 		response.setResponse(residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
