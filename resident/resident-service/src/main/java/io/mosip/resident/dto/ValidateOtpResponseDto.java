@@ -4,14 +4,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * The Auth Lock Unlock response dto.
+ * The validate otp response dto.
  * 
  * @author Ritik Jain
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AuthLockUnlockResponseDto extends ResponseDTO {
+public class ValidateOtpResponseDto extends IdAuthResponseDto {
 
 	private String eventId;
+	private String status;
 
 }
