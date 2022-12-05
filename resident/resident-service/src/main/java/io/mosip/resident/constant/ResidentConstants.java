@@ -139,6 +139,6 @@ public class ResidentConstants {
     public static final String UIN_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.uin.card.name.convention";
     public static final String VID_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.vid.card.name.convention";
     public static final String RESIDENT_OTP_EXPIRY_TIME = "mosip.resident.otp.expiry.time";
-
+    public static final String SUCCESS = "Success";
 
 }

@@ -34,6 +34,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import reactor.util.function.Tuples;
 
 /**
  * Resident IdAuth controller test class.
@@ -93,9 +94,8 @@ public class IdAuthControllerTest {
 
 	@Test
 	public void testValidateOtp() throws Exception {
-		Boolean authStatus = true;
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(authStatus);
+		Mockito.when(idAuthService.validateOtpV1(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(true, "12345"));
 		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
