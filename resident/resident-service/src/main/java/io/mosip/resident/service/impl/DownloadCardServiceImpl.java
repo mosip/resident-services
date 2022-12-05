@@ -277,6 +277,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         ResidentCredentialResponseDto.class);
                 eventId =insertDataForVidCard(residentCredentialResponseDto, vid);
                 vidDownloadCardResponseDto.setEventId(eventId);
+                vidDownloadCardResponseDto.setStatus(ResidentConstants.SUCCESS);
             }else{
                 throw new ResidentServiceCheckedException(String.valueOf(ResidentErrorCode.VID_REQUEST_CARD_FAILED),
                         ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage());

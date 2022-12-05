@@ -209,6 +209,11 @@ public class Utilitiy {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 				"Utilitiy::getMailingAttributes()::entry");
+		if(id == null || id.isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(),
+					ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage() + ": individual_id is not available." );
+		}
+		
 		Map<String, Object> attributes = new HashMap<>();
 		String mappingJsonString = getMappingJson();
 		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {

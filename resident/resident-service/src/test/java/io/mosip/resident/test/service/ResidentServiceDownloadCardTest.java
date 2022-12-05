@@ -13,6 +13,7 @@ import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -185,7 +186,7 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
-    public void testGetUserInfo(){
+    public void testGetUserInfo() throws ApisResourceAccessException{
         Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
         ResidentUserEntity residentUserEntity = new ResidentUserEntity();
         residentUserEntity.setHost("localhost");
@@ -198,7 +199,7 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testGetUserInfoFailed(){
+    public void testGetUserInfoFailed() throws ApisResourceAccessException {
         Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);

@@ -10,4 +10,5 @@ import lombok.Data;
 public class VidDownloadCardResponseDto
 {
     String eventId;
+    String status;
 }

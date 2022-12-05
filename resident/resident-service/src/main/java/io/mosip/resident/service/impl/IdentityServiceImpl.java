@@ -86,6 +86,7 @@ public class IdentityServiceImpl implements IdentityService {
     private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
     private static final String LANGUAGE = "language";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
+	private static final String PHOTO_ATTRIB_PROP = "mosip.resident.photo.attribute.name";
 
 	private static final String VID = "VID";
 	private static final String AID = "AID";
@@ -191,9 +192,14 @@ public class IdentityServiceImpl implements IdentityService {
 		Map<String, ?> identityAttributes =  getIdentityAttributes(id, false,schemaType);
 		return 	identityAttributes;
 	}
-
+	
 	@Override
 	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
+		return getIdentityAttributes(id, includeUin,schemaType, false);
+	}
+
+	@Override
+	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType, boolean includePhoto) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -220,6 +226,10 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			if(includeUin) {
 				response.put(UIN, identity.get(UIN));
+			}
+			if(includePhoto) {
+				String photo = this.getClaimValue(env.getProperty(IMAGE));
+				response.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
 			}
 			return response;
 		} catch (ApisResourceAccessException | IOException e) {
@@ -319,7 +329,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return null;
 	}
 
-	private Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
+	public Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
 		return getClaims(Set.of(claims));
 	}
 
@@ -396,7 +406,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return  getClaimValue(INDIVIDUAL_ID);
 	}
 
-	private String getClaimValue(String claim) throws ApisResourceAccessException {
+	public String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
 	}
 

@@ -9,9 +9,11 @@ import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IdAuthRequestDto;
 import io.mosip.resident.dto.IdAuthResponseDto;
 import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ValidateOtpResponseDto;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
@@ -22,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
 
 /**
  * Resident IdAuth controller class.
@@ -44,7 +47,7 @@ public class IdAuthController {
 	 * Validate OTP
 	 * 
 	 * @param requestWrapper
-	 * @return ResponseWrapper<IdAuthResponseDto1> object
+	 * @return ResponseWrapper<IdAuthResponseDto> object
 	 * @throws OtpValidationFailedException
 	 */
 	@ResponseFilter
@@ -60,15 +63,17 @@ public class IdAuthController {
 		logger.debug("IdAuthController::validateOtp()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request"));
-		Boolean authStatus = idAuthService.validateOtp(requestWrapper.getRequest().getTransactionId(),
+		Tuple2<Boolean, String> tupleResponse = idAuthService.validateOtpV1(requestWrapper.getRequest().getTransactionId(),
 				requestWrapper.getRequest().getIndividualId(), requestWrapper.getRequest().getOtp());
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request Success"));
 		ResponseWrapper<IdAuthResponseDto> responseWrapper = new ResponseWrapper<IdAuthResponseDto>();
-		IdAuthResponseDto idAuthResponseDto = new IdAuthResponseDto();
-		idAuthResponseDto.setAuthStatus(authStatus);
-		idAuthResponseDto.setTransactionId(requestWrapper.getRequest().getTransactionId());
-		responseWrapper.setResponse(idAuthResponseDto);
+		ValidateOtpResponseDto validateOtpResponseDto = new ValidateOtpResponseDto();
+		validateOtpResponseDto.setAuthStatus(tupleResponse.getT1());
+		validateOtpResponseDto.setTransactionId(requestWrapper.getRequest().getTransactionId());
+		validateOtpResponseDto.setEventId(tupleResponse.getT2());
+		validateOtpResponseDto.setStatus(ResidentConstants.SUCCESS);
+		responseWrapper.setResponse(validateOtpResponseDto);
 		logger.debug("IdAuthController::validateOtp()::exit");
 		return responseWrapper;
 	}
