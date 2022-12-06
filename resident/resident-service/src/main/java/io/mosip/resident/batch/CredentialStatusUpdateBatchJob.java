@@ -251,6 +251,7 @@ public class CredentialStatusUpdateBatchJob {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setRequestType(requestType);
 		notificationRequestDtoV2.setEventId(txn.getEventId());
+		notificationRequestDtoV2.setId(txn.getIndividualId());
 		notificationService.sendNotification(notificationRequestDtoV2);
 	}
 	
@@ -263,6 +264,7 @@ public class CredentialStatusUpdateBatchJob {
 				notificationRequestDtoV2.setTemplateType(templateType);
 				notificationRequestDtoV2.setRequestType(requestType);
 				notificationRequestDtoV2.setEventId(txn.getEventId());
+				notificationRequestDtoV2.setId(txn.getIndividualId());
 				notificationService.sendNotification(notificationRequestDtoV2);
 
 			}
