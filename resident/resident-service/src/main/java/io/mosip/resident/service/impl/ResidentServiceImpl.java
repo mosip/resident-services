@@ -938,8 +938,8 @@ public class ResidentServiceImpl implements ResidentService {
 						NotificationTemplateCode.RS_UIN_UPDATE_SUCCESS, additionalAttributes);
 				if (residentUpdateResponseDTO != null) {
 					residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
+					residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
 				}
-				residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
@@ -1918,10 +1918,12 @@ public class ResidentServiceImpl implements ResidentService {
 			String requestTypeCode;
 			String statusCode;
 			if (residentTransactionEntity.isPresent()) {
+
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
+
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
