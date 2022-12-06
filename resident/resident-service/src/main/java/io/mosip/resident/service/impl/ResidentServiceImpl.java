@@ -1529,7 +1529,6 @@ public class ResidentServiceImpl implements ResidentService {
 				if(requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name()) ){
 					cardType =IdType.UIN.name();
 					String rid = residentTransactionEntity.get().getAid();
-					cardType = identityServiceImpl.getIndividualIdType(rid);
 					if(rid!=null){
 						return getUINCard(rid);
 					}

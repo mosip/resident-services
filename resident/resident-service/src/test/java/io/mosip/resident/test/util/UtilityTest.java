@@ -1,20 +1,21 @@
 package io.mosip.resident.test.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
+import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.IdRepoResponseDto;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -33,17 +34,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.IdRepoResponseDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -59,6 +70,15 @@ public class UtilityTest {
 
 	@Mock
 	private Environment env;
+
+	@Mock
+	private IdentityServiceImpl identityService;
+
+	@Mock
+	private PDFGenerator pdfGenerator;
+
+	@Mock
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
@@ -298,5 +318,123 @@ public class UtilityTest {
 		PowerMockito.when(JsonUtil.readValue(mappingJson, JSONObject.class)).thenThrow(new IOException());
 		utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 
+	}
+
+	@Test
+	public void testGetFileNameAsPerFeatureNameShareCredWithPartner(){
+		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER"));
+		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID"));
+		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID"));
+		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD"));
+		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD"));
+		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN"));
+		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK"));
+		assertEquals("Generic", utility.getFileName("123", "Generic"));
+	}
+
+	@Test
+	public void testGetFileNameAsPerFeatureNameGenerateVid(){
+		Mockito.when(env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY))
+				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
+		Mockito.when(env.getProperty("resident.datetime.pattern"))
+				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf"));
+	}
+
+	@Test
+	public void testGetFileNameNullEventId(){
+		Mockito.when(env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY))
+				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
+		Mockito.when(env.getProperty("resident.datetime.pattern"))
+				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf"));
+	}
+
+	@Test
+	public void testGetIdForResidentTransactionEmail() throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("2186705746");
+		identityDTO.setEmail("kameshprasad1338@gmail.com");
+		identityDTO.setPhone("8809989898");
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"2186705746").getBytes()),
+				utility.getIdForResidentTransaction("2186705746", List.of("EMAIL")));
+	}
+
+	@Test
+	public void testGetIdForResidentTransactionPhone() throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("2186705746");
+		identityDTO.setEmail("kameshprasad1338@gmail.com");
+		identityDTO.setPhone("8809989898");
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		assertEquals(HMACUtils2.digestAsPlainText(("8809989898"+"2186705746").getBytes()),
+				utility.getIdForResidentTransaction("2186705746", List.of("PHONE")));
+	}
+
+	@Test
+	public void testGetIdForResidentTransactionPhoneEmail() throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("2186705746");
+		identityDTO.setEmail("kameshprasad1338@gmail.com");
+		identityDTO.setPhone("8809989898");
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
+				utility.getIdForResidentTransaction("2186705746", List.of("PHONE","EMAIL")));
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetIdForResidentTransactionPhoneEmailFailure() throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("2186705746");
+		identityDTO.setEmail("kameshprasad1338@gmail.com");
+		identityDTO.setPhone("8809989898");
+		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
+				utility.getIdForResidentTransaction("2186705746", List.of("PH")));
+	}
+
+	@Test
+	public void testSignPdf() throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] array = "pdf".getBytes();
+		out.write(array);
+		Mockito.when(pdfGenerator.generate((InputStream) any())).thenReturn(out);
+		utility.signPdf(new ByteArrayInputStream("pdf".getBytes()), null);
+	}
+
+	@Test
+	public void testCreateDownloadLinkFailure(){
+		assertEquals("NA", utility.createDownloadLink("2186705746111111"));
+	}
+
+	@Test
+	public void testCreateDownloadLinkSuccess(){
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setReferenceLink("http://mosip");
+		Optional<ResidentTransactionEntity> residentData = Optional.of(residentTransactionEntity);
+		Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentData);
+		assertEquals("http://mosip", utility.createDownloadLink("2186705746111111"));
+	}
+
+	@Test
+	public void testCreateTrackServiceRequestLink(){
+		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		assertEquals(("http://mosip"+"2186705746111111"), utility.createTrackServiceRequestLink("2186705746111111"));
+	}
+
+	@Test
+	public void testCreateEventId(){
+		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		assertEquals(16,utility.createEventId().length());
+	}
+
+	@Test
+	public void testCreateEntity(){
+		assertEquals("resident-services",utility.createEntity().getCrBy());
 	}
 }
