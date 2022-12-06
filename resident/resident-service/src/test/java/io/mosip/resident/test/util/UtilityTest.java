@@ -1,31 +1,21 @@
 package io.mosip.resident.test.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -44,17 +34,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.IdRepoResponseDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -76,6 +76,9 @@ public class UtilityTest {
 
 	@Mock
 	private PDFGenerator pdfGenerator;
+
+	@Mock
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
@@ -402,5 +405,36 @@ public class UtilityTest {
 		out.write(array);
 		Mockito.when(pdfGenerator.generate((InputStream) any())).thenReturn(out);
 		utility.signPdf(new ByteArrayInputStream("pdf".getBytes()), null);
+	}
+
+	@Test
+	public void testCreateDownloadLinkFailure(){
+		assertEquals("NA", utility.createDownloadLink("2186705746111111"));
+	}
+
+	@Test
+	public void testCreateDownloadLinkSuccess(){
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setReferenceLink("http://mosip");
+		Optional<ResidentTransactionEntity> residentData = Optional.of(residentTransactionEntity);
+		Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentData);
+		assertEquals("http://mosip", utility.createDownloadLink("2186705746111111"));
+	}
+
+	@Test
+	public void testCreateTrackServiceRequestLink(){
+		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		assertEquals(("http://mosip"+"2186705746111111"), utility.createTrackServiceRequestLink("2186705746111111"));
+	}
+
+	@Test
+	public void testCreateEventId(){
+		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		assertEquals(16,utility.createEventId().length());
+	}
+
+	@Test
+	public void testCreateEntity(){
+		assertEquals("resident-services",utility.createEntity().getCrBy());
 	}
 }
