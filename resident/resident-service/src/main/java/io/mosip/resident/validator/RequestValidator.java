@@ -876,6 +876,9 @@ public class RequestValidator {
 		} else if(fromDateTime != null && toDateTime == null) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "toDateTime", request_service_history_api));
 			throw new InvalidInputException("toDateTime");
+		} else if(fromDateTime == null && toDateTime == null) {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "toDateTime", request_service_history_api));
+		throw new InvalidInputException("toDateTime");
 		}
 	}
 
