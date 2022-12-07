@@ -2004,18 +2004,6 @@ public class RequestValidatorTest {
 				(-1, 4, 4, 4, 4, 4)));
 	}
 
-	@Test
-	public void testValidateLocalTimeInvalidMonth(){
-		assertEquals(false,ReflectionTestUtils.invokeMethod(requestValidator, "isValidDate", LocalDateTime.of
-				(2016, -1, 4, 4, 4, 4)));
-	}
-
-	@Test
-	public void testValidateLocalTimeInvalidDay(){
-		assertEquals(false,ReflectionTestUtils.invokeMethod(requestValidator, "isValidDate", LocalDateTime.of
-				(2016, -1, -1, 4, 4, 4)));
-	}
-
 	@Test(expected = InvalidInputException.class)
 	public void testValidateStatusFilter(){
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateStatusFilter", "", "sortType");
