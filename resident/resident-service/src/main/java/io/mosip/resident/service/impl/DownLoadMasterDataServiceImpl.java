@@ -17,7 +17,9 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.Utilitiy;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -289,7 +291,8 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		try {
 			date = sdf1.parse(time);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("ParseException", ExceptionUtils.getStackTrace(e));
+			logger.error("In getTime method of DownLoadMasterDataServiceImpl class", e.getMessage());
 		}
 		return sdf2.format(date);
 	}
