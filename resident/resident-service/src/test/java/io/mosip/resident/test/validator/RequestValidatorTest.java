@@ -83,7 +83,6 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "uinUpdateId", "mosip.resident.updateuin");
 		ReflectionTestUtils.setField(requestValidator, "authTypes", "bio-FIR,bio-IIR");
 		ReflectionTestUtils.setField(requestValidator, "version", "v1");
-		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
 		ReflectionTestUtils.setField(requestValidator, "map", map);
 		ReflectionTestUtils.setField(requestValidator, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
@@ -2027,5 +2026,55 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateFromDateTimeToDateTimeToDateTime(){
 		requestValidator.validateFromDateTimeToDateTime(LocalDateTime.MAX, LocalDateTime.MIN, "fromDate");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestNewApiInvalidDate() throws Exception{
+		RequestWrapper<?> request = new RequestWrapper<>();
+		request.setId("mosip.resident.print");
+		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
+		requestValidator.validateRequestNewApi(request, requestIdType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestNewApiEmptyVersion() throws Exception{
+		RequestWrapper<?> request = new RequestWrapper<>();
+		request.setId("mosip.resident.print");
+		request.setRequesttime(String.valueOf(LocalDateTime.now()));
+		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
+		requestValidator.validateRequestNewApi(request, requestIdType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestNewApiInvalidVersion() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
+		RequestWrapper<?> request = new RequestWrapper<>();
+		request.setId("mosip.resident.print");
+		request.setRequesttime(String.valueOf(LocalDateTime.now()));
+		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
+		requestValidator.validateRequestNewApi(request, requestIdType);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestNewApiInvalidRequest() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
+		RequestWrapper<?> request = new RequestWrapper<>();
+		request.setId("mosip.resident.print");
+		request.setVersion("1.0");
+		request.setRequesttime(String.valueOf(LocalDateTime.now()));
+		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
+		requestValidator.validateRequestNewApi(request, requestIdType);
+	}
+
+	@Test
+	public void testValidateRequestNewApiSuccess() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
+		RequestWrapper<String> request = new RequestWrapper<>();
+		request.setId("mosip.resident.print");
+		request.setVersion("1.0");
+		request.setRequest("d");
+		request.setRequesttime(String.valueOf(LocalDateTime.now()));
+		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
+		assertEquals(true,requestValidator.validateRequestNewApi(request, requestIdType));
 	}
 }
