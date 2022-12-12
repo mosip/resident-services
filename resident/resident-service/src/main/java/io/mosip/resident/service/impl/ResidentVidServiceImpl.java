@@ -701,7 +701,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			map.remove(HASH_ATTRIBUTES);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.error("NoSuchAlgorithmException", ExceptionUtils.getStackTrace(e));
+			logger.error("In getRefIdHash method of ResidentVidServiceImpl class", e.getMessage());
 		}
 		return map;
 	}	

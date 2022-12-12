@@ -148,9 +148,9 @@ public class LoginCheck {
 			if (value == null || value.isEmpty()) {
 				continue;
 			}
-			String[] parts = value.split("\\s*,\\s*");
+			String[] parts = value.split(",");
 			logger.debug("LoginCheck::getClientIp()::exit");
-			return parts[0];
+			return parts[0].trim();
 		}
 		logger.debug("LoginCheck::getClientIp()::exit - excecuted till end");
 		return req.getRemoteAddr();
