@@ -2229,4 +2229,20 @@ public class RequestValidatorTest {
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidCreateV2RequestFailure(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ResidentVidRequestDto requestDto = new ResidentVidRequestDto();
+		requestDto.setId("generate");
+		requestDto.setVersion("newVersion");
+		VidRequestDto vidRequestDtoV2 = new VidRequestDto();
+		vidRequestDtoV2.setVidType("PERPETUAL");
+		vidRequestDtoV2.setTransactionID("1232323232");
+		requestDto.setRequest(vidRequestDtoV2);
+		requestDto.setRequesttime(null);
+		requestValidator.validateVidCreateV2Request(requestDto,
+				false, "123");
+	}
+
 }
