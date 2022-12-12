@@ -437,4 +437,18 @@ public class UtilityTest {
 	public void testCreateEntity(){
 		assertEquals("resident-services",utility.createEntity().getCrBy());
 	}
+
+	@Test
+	public void testGetFileNameAsPerFeatureName(){
+		Mockito.when(env.getProperty(Mockito.anyString()))
+				.thenReturn("AckFileName");
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic"));
+	}
 }

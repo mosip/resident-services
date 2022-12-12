@@ -87,12 +87,12 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "map", map);
 		ReflectionTestUtils.setField(requestValidator, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
-
+		ReflectionTestUtils.setField(requestValidator, "mandatoryLanguages", "eng");
+		ReflectionTestUtils.setField(requestValidator, "optionalLanguages", "ara");
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
-
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -1732,6 +1732,20 @@ public class RequestValidatorTest {
 		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadCardEmptyIndividualId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		DownloadCardRequestDTO downloadCardRequestDTO = new DownloadCardRequestDTO();
+		downloadCardRequestDTO.setTransactionId("1234343434");
+		downloadCardRequestDTO.setOtp("111111");
+		downloadCardRequestDTO.setIndividualId("");
+		downloadCardRequestDTOMainRequestDTO.setId("property");
+		downloadCardRequestDTOMainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
+		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+	}
+
 	@Test
 	public void testValidateDownloadCardSuccess() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
@@ -1918,5 +1932,100 @@ public class RequestValidatorTest {
 		Mockito.when(vidValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_VID.getErrorCode(),
 				ResidentErrorCode.INVALID_VID.getErrorMessage()));
 		assertEquals(false,requestValidator.validateVid("123"));
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testEmptyTransactionId(){
+		requestValidator.validateTransactionId("");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testEmptyUserIdAndTransactionId(){
+		requestValidator.validateUserIdAndTransactionId("", "3232323232");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testNullUserIdAndTransactionId(){
+		requestValidator.validateUserIdAndTransactionId(null, "3232323232");
+	}
+
+	@Test
+	public void testValidateTransliterationIdSuccess() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "transliterateId", "mosip.resident.transliteration.transliterate");
+		MainRequestDTO<TransliterationRequestDTO> requestDTO = new MainRequestDTO<>();
+		TransliterationRequestDTO transliterationRequestDTO = new TransliterationRequestDTO();
+		requestDTO.setId("mosip.resident.transliteration.transliterate");
+		requestValidator.validateId(requestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateOnlyLanguageCode(){
+		requestValidator.validateOnlyLanguageCode(null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateOnlyEmptyLanguageCode(){
+		requestValidator.validateOnlyLanguageCode("");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateOnlyInvalidLanguageCode(){
+		requestValidator.validateOnlyLanguageCode("fra");
+	}
+
+	@Test
+	public void testValidateOnlyValidLanguageCodeSuccess(){
+		requestValidator.validateOnlyLanguageCode("eng");
+	}
+
+	@Test
+	public void testValidateOnlyInvalidLanguageCodeSuccess(){
+		requestValidator.validateOnlyLanguageCode("ara");
+	}
+
+	@Test
+	public void testValidateEventIdLanguageCodeSuccess(){
+		requestValidator.validateEventIdLanguageCode("3434343434","ara");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateEmptyEventIdLanguageCodeSuccess(){
+		requestValidator.validateEventIdLanguageCode("","ara");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateSortType(){
+		ReflectionTestUtils.invokeMethod(requestValidator, "validateSortType", "D", "sortType");
+	}
+
+	@Test
+	public void testValidateLocalTime(){
+		assertEquals(false,ReflectionTestUtils.invokeMethod(requestValidator, "isValidDate", LocalDateTime.of
+				(-1, 4, 4, 4, 4, 4)));
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateStatusFilter(){
+		ReflectionTestUtils.invokeMethod(requestValidator, "validateStatusFilter", "", "sortType");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateFromDateTimeToDateTime(){
+		requestValidator.validateFromDateTimeToDateTime(null, null, "fromDate");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateFromDateTimeToDateTimeFromDateTimeNull(){
+		requestValidator.validateFromDateTimeToDateTime(null, LocalDateTime.MAX, "fromDate");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateFromDateTimeToDateTimeToDateTimeNull(){
+		requestValidator.validateFromDateTimeToDateTime(LocalDateTime.MAX, null, "fromDate");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateFromDateTimeToDateTimeToDateTime(){
+		requestValidator.validateFromDateTimeToDateTime(LocalDateTime.MAX, LocalDateTime.MIN, "fromDate");
 	}
 }

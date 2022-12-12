@@ -138,7 +138,10 @@ public class ResidentConstants {
     public static final String ACK_NAMING_CONVENTION_PROPERTY = "mosip.resident.ack.name.convention";
     public static final String UIN_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.uin.card.name.convention";
     public static final String VID_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.vid.card.name.convention";
-    public static final String RESIDENT_OTP_EXPIRY_TIME = "mosip.resident.otp.expiry.time";
     public static final String SUCCESS = "Success";
+    public static final String REGISTRATION_CENTRE_TEMPLATE_PROPERTY = "resident.template.registration.centers.list";
+    public static final String SUPPORTING_DOCS_TEMPLATE_PROPERTY = "resident.template.support-docs-list";
+    public static final String FROM_DATE_TIME = "fromDateTime";
+    public static final String TO_DATE_TIME = "toDateTime";
 
 }

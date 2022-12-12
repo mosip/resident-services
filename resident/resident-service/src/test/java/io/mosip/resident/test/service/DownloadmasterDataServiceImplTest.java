@@ -6,7 +6,6 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
-import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.dto.WorkingDaysResponseDto;
@@ -115,7 +114,8 @@ public class DownloadmasterDataServiceImplTest {
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
         languageCode = "eng";
 
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(responseWrapper);
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).
+                thenReturn(responseWrapper);
         ReflectionTestUtils.setField(downLoadMasterDataService, "templateManagerBuilder", templateManagerBuilder);
         templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
         InputStream stream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
@@ -127,7 +127,7 @@ public class DownloadmasterDataServiceImplTest {
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
         Mockito.when(utilitiy.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
-
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
         langCode="eng";
         hierarchyLevel=4;
         name = new ArrayList<>();

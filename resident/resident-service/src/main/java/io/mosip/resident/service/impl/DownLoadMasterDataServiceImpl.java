@@ -7,6 +7,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.RegistrationCenterResponseDto;
@@ -56,8 +57,6 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
-	private static final String REGISTRATION_CENTER_TEMPLATE_NAME = "registration-centers-list";
-	private static final String SUPPORTING_DOCS_TEMPLATE_NAME = "supporting-docs-list";
 	public static final String FILE_TEXT = "fileText";
 	
 	@Autowired
@@ -97,10 +96,9 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 			List<String> name) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, REGISTRATION_CENTER_TEMPLATE_NAME);
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY));
 		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
 		Map<String, Object> regCentersMap = new LinkedHashMap<>();
-		List<RegistrationCenterDto> regCentersDtlsList = Collections.emptyList();
 		if (regCentResponseWrapper != null) {
 			RegistrationCenterResponseDto registrationCentersDtls = mapper.readValue(
 					mapper.writeValueAsString(regCentResponseWrapper.getResponse()),
@@ -130,17 +128,16 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	}
 	
 	/**
-	 * download nearest registration centers
+	 * download the nearest registration centers
 	 */
 	public InputStream getNearestRegistrationcenters(String langCode, double longitude, double latitude,
 			int proximityDistance) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, REGISTRATION_CENTER_TEMPLATE_NAME);
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY));
 		ResponseWrapper<?> regCentResponseWrapper =  proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
 				longitude, latitude, proximityDistance);
 		Map<String, Object> regCentersMap = new LinkedHashMap<>();
-		List<RegistrationCenterDto> regCentersDtlsList = Collections.emptyList();
 		if (regCentResponseWrapper != null) {
 			RegistrationCenterResponseDto registrationCentersDtls = mapper.readValue(
 					mapper.writeValueAsString(regCentResponseWrapper.getResponse()),
@@ -184,7 +181,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, SUPPORTING_DOCS_TEMPLATE_NAME);
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.SUPPORTING_DOCS_TEMPLATE_PROPERTY));
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
 		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
 		String fileText = (String) templateResponse.get(FILE_TEXT);		
