@@ -3,6 +3,7 @@ package io.mosip.resident.controller;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -66,7 +67,7 @@ public class DownloadCardController {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
                         downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
-                .header("eventId", tupleResponse.getT2())
+                .header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
                 .body(resource);
     }
     
