@@ -2077,4 +2077,9 @@ public class RequestValidatorTest {
 		RequestIdType requestIdType = RequestIdType.RE_PRINT_ID;
 		assertEquals(true,requestValidator.validateRequestNewApi(request, requestIdType));
 	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateNullIndividualId() throws Exception{
+		requestValidator.validateIndividualId(null);
+	}
 }
