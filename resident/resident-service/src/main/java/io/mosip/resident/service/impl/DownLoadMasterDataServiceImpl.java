@@ -7,6 +7,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.RegistrationCenterResponseDto;
@@ -93,7 +94,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 			List<String> name) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty("resident.template.registration.centers.ist"));
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY));
 		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
 		Map<String, Object> regCentersMap = new LinkedHashMap<>();
 		if (regCentResponseWrapper != null) {
@@ -131,7 +132,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 			int proximityDistance) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty("resident.template.registration.centers.list"));
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY));
 		ResponseWrapper<?> regCentResponseWrapper =  proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
 				longitude, latitude, proximityDistance);
 		Map<String, Object> regCentersMap = new LinkedHashMap<>();
@@ -178,7 +179,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	public InputStream downloadSupportingDocsByLanguage(String langCode) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty("resident.template.support-docs-list"));
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.SUPPORTING_DOCS_TEMPLATE_PROPERTY));
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
 		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
 		String fileText = (String) templateResponse.get(FILE_TEXT);		
