@@ -866,16 +866,23 @@ public class RequestValidator {
 	public void validateFromDateTimeToDateTime(LocalDateTime fromDateTime, LocalDateTime toDateTime, String request_service_history_api) {
 		if(fromDateTime != null && toDateTime != null) {
 			if(fromDateTime.isAfter(toDateTime)) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
-				throw new InvalidInputException("fromDateTime");
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
+						request_service_history_api));
+				throw new InvalidInputException(ResidentConstants.FROM_DATE_TIME);
 			}
 		}
 		if(fromDateTime == null && toDateTime != null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
-			throw new InvalidInputException("fromDateTime");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
+					request_service_history_api));
+			throw new InvalidInputException(ResidentConstants.FROM_DATE_TIME);
 		} else if(fromDateTime != null && toDateTime == null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "toDateTime", request_service_history_api));
-			throw new InvalidInputException("toDateTime");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.TO_DATE_TIME,
+					request_service_history_api));
+			throw new InvalidInputException(ResidentConstants.TO_DATE_TIME);
+		} else if(fromDateTime == null && toDateTime == null) {
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.TO_DATE_TIME,
+				request_service_history_api));
+		throw new InvalidInputException(ResidentConstants.TO_DATE_TIME);
 		}
 	}
 
