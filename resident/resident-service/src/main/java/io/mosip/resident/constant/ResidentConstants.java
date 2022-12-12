@@ -143,5 +143,6 @@ public class ResidentConstants {
     public static final String SUPPORTING_DOCS_TEMPLATE_PROPERTY = "resident.template.support-docs-list";
     public static final String FROM_DATE_TIME = "fromDateTime";
     public static final String TO_DATE_TIME = "toDateTime";
+    public static final String DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.service.history.file.name.convention";
 
 }
