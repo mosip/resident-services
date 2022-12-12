@@ -2245,4 +2245,83 @@ public class RequestValidatorTest {
 				false, "123");
 	}
 
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2InvalidAuthTypeV1() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.authlock");
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(2L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(null);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2EmptyAuthTypeV1() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.authlock");
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
+		authTypeStatusDto.setAuthType("");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(2L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2InvalidUnlockForSeconds() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.authlock");
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(-2L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.authlock");
+		requestWrapper.setVersion("v1");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidRevokeRequest(){
+		ReflectionTestUtils.setField(requestValidator, "generateId", "generate");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "newVersion");
+		ReflectionTestUtils.setField(requestValidator, "revokeVidId", "mosip.resident.vidstatus");
+		RequestWrapper<VidRevokeRequestDTOV2> requestDto = new RequestWrapper<>();
+		requestDto.setId("mosip.resident.vidstatus");
+		requestDto.setVersion("v1");
+		VidRevokeRequestDTOV2 vidRevokeRequestDTO = new VidRevokeRequestDTOV2();
+		vidRevokeRequestDTO.setVidStatus("");
+		vidRevokeRequestDTO.setTransactionID("1212121212");
+		requestDto.setRequest(vidRevokeRequestDTO);
+		requestDto.setRequesttime(LocalDateTime.now().toString());
+		requestValidator.validateVidRevokeRequest(requestDto,
+				false, "123");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateUnlockForSeconds(){
+		ReflectionTestUtils.invokeMethod(requestValidator, "validateUnlockForSeconds", -1L, "validateUnlockForSeconds");
+	}
+
 }
