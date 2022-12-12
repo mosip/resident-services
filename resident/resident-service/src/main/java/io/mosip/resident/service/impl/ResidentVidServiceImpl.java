@@ -38,24 +38,26 @@ import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateEnum;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.GenerateVidResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.RevokeVidResponseDto;
 import io.mosip.resident.dto.VidGeneratorRequestDto;
 import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidResponseDto;
-import io.mosip.resident.dto.VidResponseDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
@@ -218,10 +220,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			// create response dto
 			VidResponseDto vidResponseDto;
 			if(notificationResponseDTO.getMaskedEmail() != null || notificationResponseDTO.getMaskedPhone() != null) {
-				VidResponseDtoV2 vidResponseDtov2 = new VidResponseDtoV2();
-				vidResponseDto = vidResponseDtov2;
-				vidResponseDtov2.setMaskedEmail(notificationResponseDTO.getMaskedEmail());
-				vidResponseDtov2.setMaskedPhone(notificationResponseDTO.getMaskedPhone());
+				GenerateVidResponseDto generateVidResponseDto = new GenerateVidResponseDto();
+				vidResponseDto = generateVidResponseDto;
+				generateVidResponseDto.setMaskedEmail(notificationResponseDTO.getMaskedEmail());
+				generateVidResponseDto.setMaskedPhone(notificationResponseDTO.getMaskedPhone());
+				generateVidResponseDto.setEventId(residentTransactionEntity.getEventId());
+				generateVidResponseDto.setStatus(ResidentConstants.SUCCESS);
 			} else {
 				vidResponseDto = new VidResponseDto();
 			}
@@ -472,7 +476,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					requestDto.getTransactionID(), "Request to revoke VID"));
 			// create response dto
-			VidRevokeResponseDTO vidRevokeResponseDto = new VidRevokeResponseDTO();
+			VidRevokeResponseDTO vidRevokeResponseDto;
+			if(isV2Request) {
+				RevokeVidResponseDto revokeVidResponseDto = new RevokeVidResponseDto();
+				vidRevokeResponseDto = revokeVidResponseDto;
+				revokeVidResponseDto.setEventId(residentTransactionEntity.getEventId());
+				revokeVidResponseDto.setStatus(ResidentConstants.SUCCESS);
+			} else {
+				vidRevokeResponseDto = new VidRevokeResponseDTO();
+			}
 			vidRevokeResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidRevokeResponseDto);
 			if(Utilitiy.isSecureSession()) {

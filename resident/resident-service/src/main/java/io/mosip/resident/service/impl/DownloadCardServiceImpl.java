@@ -38,6 +38,9 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -120,8 +123,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
-    public byte[] getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
+    public Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
         String rid = null;
+        String eventId = "";
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
@@ -133,6 +137,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
                 }
+				ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findByAid(rid);
+				if (residentTransactionEntity != null) {
+					eventId = residentTransactionEntity.getEventId();
+				}
             } else {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(),
@@ -151,7 +159,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
         }
-        return residentService.getUINCard(rid);
+        return Tuples.of(residentService.getUINCard(rid), eventId);
     }
 
     @Override

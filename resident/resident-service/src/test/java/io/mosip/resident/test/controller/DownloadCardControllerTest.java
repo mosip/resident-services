@@ -1,20 +1,12 @@
 package io.mosip.resident.test.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.DownloadCardController;
-import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.DownloadPersonalizedCardDto;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.VidDownloadCardResponseDto;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DownloadCardService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.RequestValidator;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import javax.crypto.SecretKey;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,11 +27,23 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.resident.controller.DownloadCardController;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.VidDownloadCardResponseDto;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DownloadCardService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -106,7 +110,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
-        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(pdfbytes);
+        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.post("/download-card").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
