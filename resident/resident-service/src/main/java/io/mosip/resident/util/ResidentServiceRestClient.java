@@ -241,10 +241,9 @@ public class ResidentServiceRestClient {
 	 * @return boolean
 	 * @throws ApisResourceAccessException 
 	 */
-	public boolean validateURL(String url) throws ApisResourceAccessException {
+	public void validateURL(String url) throws ApisResourceAccessException {
 		try {
 			new URL(url).toURI();
-			return true;
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
