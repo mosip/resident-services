@@ -238,7 +238,6 @@ public class ResidentServiceRestClient {
 	 * Method to validate URL
 	 *
 	 * @param url  
-	 * @return boolean
 	 * @throws ApisResourceAccessException 
 	 */
 	public void validateURL(String url) throws ApisResourceAccessException {
