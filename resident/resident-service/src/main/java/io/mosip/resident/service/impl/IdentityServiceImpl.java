@@ -228,7 +228,7 @@ public class IdentityServiceImpl implements IdentityService {
 				response.put(UIN, identity.get(UIN));
 			}
 			if(includePhoto) {
-				String photo = this.getClaimValue(env.getProperty(IMAGE));
+				String photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
 				response.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
 			}
 			return response;
