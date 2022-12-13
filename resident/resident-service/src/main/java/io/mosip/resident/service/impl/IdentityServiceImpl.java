@@ -332,6 +332,10 @@ public class IdentityServiceImpl implements IdentityService {
 	public Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
 		return getClaims(Set.of(claims));
 	}
+	
+	public Map<String, String> getAvailableclaims(String... claims) throws ApisResourceAccessException {
+		return getAvailablecClaims(Set.of(claims));
+	}
 
 	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
 		AuthUserDetails authUserDetails = getAuthUserDetails();
@@ -341,10 +345,24 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return Map.of();
 	}
+	
+	private Map<String, String> getAvailablecClaims(Set<String> claims) throws ApisResourceAccessException {
+		AuthUserDetails authUserDetails = getAuthUserDetails();
+		if (authUserDetails != null) {
+			String token = authUserDetails.getToken();
+				return getAvailableclaimsFromToken(claims, token);
+		}
+		return Map.of();
+	}
 
 	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
 		Map<String, Object> userInfo = getUserInfo(token);
 		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+	}
+	private Map<String, String> getAvailableclaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
+		Map<String, Object> userInfo = getUserInfo(token);
+		return claims.stream().map(claim -> new SimpleEntry<>(claim, getAvailableclaimFromUserInfo(userInfo, claim)))
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
 
@@ -355,7 +373,15 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return String.valueOf(claimValue);
 	}
-
+	
+	private String getAvailableclaimFromUserInfo(Map<String, Object> userInfo, String claim) {
+		Object claimValue = userInfo.get(claim);
+		if(claimValue == null) {
+			return  String.valueOf(claimValue);
+		}
+			return String.valueOf(claimValue);
+	}
+	
 
 	private Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
@@ -408,6 +434,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	public String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
+	}
+	public String getAvailableclaimValue(String claim) throws ApisResourceAccessException {
+		return getAvailableclaims(claim).get(claim);
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {

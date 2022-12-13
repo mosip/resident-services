@@ -2093,10 +2093,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
-		String name = identityServiceImpl.getClaimValue(env.getProperty(NAME));
-		String photo = identityServiceImpl.getClaimValue(env.getProperty(IMAGE));
-		String email = identityServiceImpl.getClaimValue(env.getProperty(EMAIL));
-		String phone = identityServiceImpl.getClaimValue(env.getProperty(PHONE));
+		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(NAME));
+		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
+		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(EMAIL));
+		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(PHONE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();
