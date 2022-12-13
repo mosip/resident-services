@@ -26,5 +26,9 @@ public class UserInfoDto {
 	private String machineType;
 	
 	private Map<String, Object> photo;
+	
+	private String email;
+	
+	private String  phone; 
 
 }
