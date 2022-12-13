@@ -1,6 +1,7 @@
 package io.mosip.resident.util;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -231,6 +232,24 @@ public class ResidentServiceRestClient {
 			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
 		}
 	}
+	
+	
+	/**
+	 * Method to validate URL
+	 *
+	 * @param url  
+	 * @throws ApisResourceAccessException 
+	 */
+	public void validateURL(String url) throws ApisResourceAccessException {
+		try {
+			new URL(url).toURI();
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
+
+			throw new ApisResourceAccessException("Invalid URL" + url, e);
+		}
+	}
 
 	/**
 	 * Patch api.
@@ -249,6 +268,7 @@ public class ResidentServiceRestClient {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			
+			validateURL(uri.toString());
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
