@@ -413,6 +413,8 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			claimValue = getClaims(claim).get(claim);
 		} catch (ResidentServiceException e) {
+			System.out.println(e.getMessage() +"");
+			logger.error(e.getMessage());
 			claimValue = null;
 		}
 		return claimValue;
