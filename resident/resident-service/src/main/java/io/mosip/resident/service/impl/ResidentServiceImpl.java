@@ -175,6 +175,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UIN = "uin";
 	private static final String NAME = "mosip.resident.name.token.claim-name";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
+	private static final String EMAIL = "mosip.resident.email.token.claim-email";
+	private static final String PHONE = "mosip.resident.phone.token.claim-phone";
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
@@ -2093,6 +2095,8 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
 		String name = identityServiceImpl.getClaimValue(env.getProperty(NAME));
 		String photo = identityServiceImpl.getClaimValue(env.getProperty(IMAGE));
+		String email = identityServiceImpl.getClaimValue(env.getProperty(EMAIL));
+		String phone = identityServiceImpl.getClaimValue(env.getProperty(PHONE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();
@@ -2103,6 +2107,8 @@ public class ResidentServiceImpl implements ResidentService {
 		if(response.isPresent()){
 			data.put("data", photo);
 			user.setFullName(name);
+			user.setPhone(phone);
+			user.setEmail(email);
 			user.setIp(response.get().getIpAddress());
 			user.setMachineType(response.get().getMachineType());
 			user.setHost(response.get().getHost());
