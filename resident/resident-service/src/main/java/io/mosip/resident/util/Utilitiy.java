@@ -456,7 +456,7 @@ public class Utilitiy {
 
 	public String getFileName(String eventId, String propertyName){
 		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
-		if(propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
+		if(eventId!=null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){

@@ -11,6 +11,7 @@ import io.mosip.kernel.dataaccess.hibernate.config.HibernateDaoConfig;
 import io.mosip.preregistration.application.service.TransliterationService;
 import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
 
+
 @SpringBootApplication(scanBasePackages = { 
 		"io.mosip.resident.*", 
 		"io.mosip.kernel.core.*", 
