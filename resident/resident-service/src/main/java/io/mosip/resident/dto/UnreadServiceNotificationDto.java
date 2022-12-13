@@ -16,5 +16,7 @@ public class UnreadServiceNotificationDto {
 	private LocalDateTime timeStamp;
 
 	private String requestType;
+	
+	private String individualId;
 
 }

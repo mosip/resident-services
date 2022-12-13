@@ -21,13 +21,9 @@ import org.springframework.util.MultiValueMap;
 import io.mosip.commons.khazana.config.LoggerConfiguration;
 import io.mosip.idrepository.core.constant.RestServicesConstants;
 import io.mosip.idrepository.core.dto.RestRequestDTO;
-import io.mosip.idrepository.core.exception.IdRepoDataValidationException;
-import io.mosip.idrepository.core.logger.IdRepoLogger;
-import io.mosip.idrepository.core.security.IdRepoSecurityManager;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.interceptor.ResidentEntityInterceptor;
 import lombok.NoArgsConstructor;
 
 /**
@@ -156,9 +152,6 @@ public class RestRequestBuilder {
 			headers.setContentType(MediaType.valueOf(getProperty(serviceName, REST_HEADERS_MEDIA_TYPE)));
 			return headers;
 		} catch (InvalidMediaTypeException e) {
-//			mosipLogger.error(IdRepoSecurityManager.getUser(), METHOD_BUILD_REQUEST, "returnType",
-//					"throwing IDDataValidationException - INVALID_INPUT_PARAMETER"
-//							+ getProperty(serviceName, REST_HEADERS_MEDIA_TYPE));
 			throw new ResidentServiceException(INVALID_INPUT_PARAMETER.getErrorCode(), String.format(
 					INVALID_INPUT_PARAMETER.getErrorMessage(), getProperty(serviceName, REST_HEADERS_MEDIA_TYPE)));
 		}
@@ -175,9 +168,6 @@ public class RestRequestBuilder {
 		if (returnType != null) {
 			request.setResponseType(returnType);
 		} else {
-
-//			mosipLogger.error(IdRepoSecurityManager.getUser(), METHOD_BUILD_REQUEST, "returnType",
-//					"throwing IDDataValidationException - INVALID_RETURN_TYPE");
 			throw new ResidentServiceException(INVALID_INPUT_PARAMETER.getErrorCode(),
 					String.format(INVALID_INPUT_PARAMETER.getErrorMessage(), "returnType"));
 		}
@@ -194,8 +184,6 @@ public class RestRequestBuilder {
 		if (!StringUtils.isEmpty(httpMethod)) {
 			request.setHttpMethod(HttpMethod.valueOf(httpMethod));
 		} else {
-//			mosipLogger.error(IdRepoSecurityManager.getUser(), METHOD_BUILD_REQUEST, "httpMethod",
-//					"throwing IDDataValidationException - INVALID_HTTP_METHOD" + httpMethod);
 			throw new ResidentServiceException(INVALID_INPUT_PARAMETER.getErrorCode(),
 					String.format(INVALID_INPUT_PARAMETER.getErrorMessage(), "httpMethod"));
 		}
@@ -212,10 +200,8 @@ public class RestRequestBuilder {
 		if (!StringUtils.isEmpty(uri)) {
 			request.setUri(uri);
 		} else {
-//			mosipLogger.error(IdRepoSecurityManager.getUser(), METHOD_BUILD_REQUEST, "uri",
-//					"throwing IDDataValidationException - uri is empty or whitespace" + uri);
-//			throw new ResidentServiceException(INVALID_INPUT_PARAMETER.getErrorCode(),
-//					String.format(INVALID_INPUT_PARAMETER.getErrorMessage(), "uri"));
+			throw new ResidentServiceException(INVALID_INPUT_PARAMETER.getErrorCode(),
+					String.format(INVALID_INPUT_PARAMETER.getErrorMessage(), "uri"));
 		}
 	}
 

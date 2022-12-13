@@ -272,8 +272,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				residentTransactionEntity.setRequestSummary(requestSummary);
 			}
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
-			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.REQUEST_RECEIVED,
-					residentTransactionEntity.getEventId(), additionalAttributes);
+//			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.REQUEST_RECEIVED,
+//					residentTransactionEntity.getEventId(), additionalAttributes);
 
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
 			residentCredentialResponseDtoV2.setEventId(residentTransactionEntity.getEventId());
@@ -281,8 +281,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
-						residentTransactionEntity.getEventId(), additionalAttributes);
+//				sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
+//						residentTransactionEntity.getEventId(), additionalAttributes);
 			}
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
@@ -323,6 +323,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setConsent(dto.getConsent());
+		residentTransactionEntity.setIndividualId(individualId);
 		return residentTransactionEntity;
 	}
 

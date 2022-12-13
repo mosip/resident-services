@@ -28,12 +28,6 @@ import io.mosip.resident.interceptor.ResidentEntityInterceptor;
 import io.mosip.resident.repository.OtpTransactionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
-//@EnableAsync
-//@EnableJpaRepositories(basePackageClasses = {entityManagerFactoryRef = "entityManagerFactory",ResidentTransactionRepository.class, ResidentUserRepository.class,
-//		OtpTransactionRepository.class })
-//@EnableCaching
-
-
 @Configuration
 @EnableJpaRepositories(entityManagerFactoryRef = "entityManagerFactory", basePackageClasses = {
 		ResidentTransactionRepository.class,ResidentUserRepository.class,
@@ -62,27 +56,7 @@ public class ResidentDataSourceConfig extends HibernateDaoConfig {
 		jpaProperties.put("hibernate.ejb.interceptor",interceptor);
 		return jpaProperties;
 	}
-	
-//	@Bean
-//	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-//		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-//		em.setDataSource(dataSource());
-//		em.setPackagesToScan("io.mosip.resident.*");
-//
-//		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-//		em.setJpaVendorAdapter(vendorAdapter);
-//		em.setJpaPropertyMap(additionalProperties());
-//		em.setPersistenceUnitPostProcessors(new PersistenceUnitPostProcessor() {
-//
-//			
-//			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
-//				pui.addManagedClassName(ResidentTransactionEntity.class.getName());
-//				
-//			}
-//		});
-//		return em;
-//	}
-	
+
 	@Bean
 	public JpaTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();
@@ -103,22 +77,7 @@ public class ResidentDataSourceConfig extends HibernateDaoConfig {
 		dataSource.setSchema("resident");
 		return dataSource;
 	}
-	
-	/**
-	 * Additional properties.
-	 *
-	 * @return the properties
-	 */
-//	private Map<String, Object> additionalProperties() {
-//		Map<String, Object> jpaProperties = new HashMap<>();
-//		jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
-//		jpaProperties.put("hibernate.temp.use_jdbc_metadata_defaults", Boolean.FALSE);
-//		jpaProperties.put("hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
-//		jpaProperties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
-//		jpaProperties.put("hibernate.ejb.interceptor", interceptor);
-//		return jpaProperties;
-//	}
-	
+
 	@Bean
 	public AfterburnerModule afterburnerModule() {
 		return new AfterburnerModule();
