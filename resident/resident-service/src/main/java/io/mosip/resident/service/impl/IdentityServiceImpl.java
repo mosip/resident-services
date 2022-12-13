@@ -332,7 +332,7 @@ public class IdentityServiceImpl implements IdentityService {
 	public Map<String, String> getClaims(String... claims) throws ApisResourceAccessException {
 		return getClaims(Set.of(claims));
 	}
-
+	
 	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
 		AuthUserDetails authUserDetails = getAuthUserDetails();
 		if (authUserDetails != null) {
@@ -341,7 +341,7 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return Map.of();
 	}
-
+	
 	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
 		Map<String, Object> userInfo = getUserInfo(token);
 		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
@@ -355,7 +355,6 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return String.valueOf(claimValue);
 	}
-
 
 	private Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
@@ -408,6 +407,16 @@ public class IdentityServiceImpl implements IdentityService {
 
 	public String getClaimValue(String claim) throws ApisResourceAccessException {
 		return getClaims(claim).get(claim);
+	}
+	public String getAvailableclaimValue(String claim) throws ApisResourceAccessException {
+		String claimValue;
+		try {
+			claimValue = getClaims(claim).get(claim);
+		} catch (ResidentServiceException e) {
+			logger.error(e.getMessage());
+			claimValue = null;
+		}
+		return claimValue;
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
