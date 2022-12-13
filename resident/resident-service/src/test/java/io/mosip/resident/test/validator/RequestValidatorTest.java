@@ -2009,11 +2009,6 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
-	public void testValidateFromDateTimeToDateTime(){
-		requestValidator.validateFromDateTimeToDateTime(null, null, "fromDate");
-	}
-
-	@Test(expected = InvalidInputException.class)
 	public void testValidateFromDateTimeToDateTimeFromDateTimeNull(){
 		requestValidator.validateFromDateTimeToDateTime(null, LocalDateTime.MAX, "fromDate");
 	}
