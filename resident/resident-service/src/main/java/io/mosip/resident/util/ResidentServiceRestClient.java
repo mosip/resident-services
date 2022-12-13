@@ -241,7 +241,7 @@ public class ResidentServiceRestClient {
 	 * @return boolean
 	 * @throws ApisResourceAccessException 
 	 */
-	public boolean isValidURL(String url) throws ApisResourceAccessException {
+	public boolean validateURL(String url) throws ApisResourceAccessException {
 		try {
 			new URL(url).toURI();
 			return true;
@@ -270,7 +270,7 @@ public class ResidentServiceRestClient {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			
-			isValidURL(uri.toString());
+			validateURL(uri.toString());
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
