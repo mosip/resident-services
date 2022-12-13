@@ -239,13 +239,17 @@ public class ResidentServiceRestClient {
 	 *
 	 * @param url  
 	 * @return boolean
+	 * @throws ApisResourceAccessException 
 	 */
-	public static boolean isValidURL(String url) {
+	public boolean isValidURL(String url) throws ApisResourceAccessException {
 		try {
 			new URL(url).toURI();
 			return true;
 		} catch (Exception e) {
-			return false;
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
+
+			throw new ApisResourceAccessException("Invalid URL" + url, e);
 		}
 	}
 
