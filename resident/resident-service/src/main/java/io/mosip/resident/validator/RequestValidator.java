@@ -879,10 +879,6 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.TO_DATE_TIME,
 					request_service_history_api));
 			throw new InvalidInputException(ResidentConstants.TO_DATE_TIME);
-		} else if(fromDateTime == null && toDateTime == null) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.TO_DATE_TIME,
-				request_service_history_api));
-		throw new InvalidInputException(ResidentConstants.TO_DATE_TIME);
 		}
 	}
 
