@@ -13,13 +13,17 @@ import io.mosip.resident.mock.exception.CantPlaceOrderException;
 import io.mosip.resident.mock.exception.PaymentCanceledException;
 import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
+import io.mosip.resident.util.ObjectWithMetadata;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +44,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 
 @RestControllerAdvice
@@ -102,6 +107,13 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		errorResponse.getErrors().add(error);
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add(ResidentConstants.EVENT_ID,
+					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			return new ResponseEntity<>(errorResponse, headers, httpStatus);
+		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
 	}
 
