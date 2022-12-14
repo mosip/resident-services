@@ -80,6 +80,12 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
 
+	private static final String TRANSACTIONS_LEFT_COUNT = "transactionsLeftCount";
+
+	private static final String TRANSACTION_LIMIT = "transactionLimit";
+
+	private static final String MASKED_VID = "maskedVid";
+
 	private static final String HASH_ATTRIBUTES = "hashAttributes";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentVidServiceImpl.class);
@@ -683,6 +689,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 		List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
 				.map(map -> new LinkedHashMap<String, Object>(map))
+				.map(lhm2 -> getMaskedVid(lhm2))
 				.map(lhm1 -> getRefIdHash(lhm1))
 				.map(lhm -> {
 					return lhm;
@@ -697,19 +704,25 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
+	private Map<String, Object> getMaskedVid(Map<String, Object> map) {
+		String maskedvid = utility.convertToMaskDataFormat(map.get(VID).toString());
+		map.put(MASKED_VID, maskedvid);
+		return map;
+	}
+
 	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
 		try {
-			String hashrefid = HMACUtils2.digestAsPlainText(map.get("vid").toString().getBytes());
+			String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
 			int countdb = residentTransactionRepository.findByrefIdandauthtype(hashrefid);
-			if(map.get("transactionLimit") != null) {
-				int limitCount =  (int) map.get("transactionLimit");
+			if(map.get(TRANSACTION_LIMIT) != null) {
+				int limitCount =  (int) map.get(TRANSACTION_LIMIT);
 				int leftcount = limitCount - countdb;
-			    map.put("transactionsLeftCount", leftcount);
+			    map.put(TRANSACTIONS_LEFT_COUNT, leftcount);
 			    if(leftcount < 0) {
-			    	map.put("transactionsLeftCount", 0);
+			    	map.put(TRANSACTIONS_LEFT_COUNT, 0);
 			    }
 			}else  {
-				map.put("transactionsLeftCount", map.get("transactionLimit"));	
+				map.put(TRANSACTIONS_LEFT_COUNT, map.get(TRANSACTION_LIMIT));	
 			}
 			map.remove(HASH_ATTRIBUTES);
 		} catch (NoSuchAlgorithmException e) {
