@@ -689,6 +689,16 @@ public enum EventEnum {
 			"download registration center success",
 			"download registration center success based on language code,longitude,latitude and distance", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	GRIEVANCE_TICKET_REQUEST("RES-SER-273", RegistrationConstants.SYSTEM,
+			"Grievance ticket request",
+			"Grievance ticket request", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	GRIEVANCE_TICKET_REQUEST_SUCCESS("RES-SER-273", RegistrationConstants.SYSTEM,
+			"Grievance ticket request success",
+			"Grievance ticket request success", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
 			RegistrationConstants.APPLICATION_NAME)
 	;
 

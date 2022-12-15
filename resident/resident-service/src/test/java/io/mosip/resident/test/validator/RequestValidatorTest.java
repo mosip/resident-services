@@ -1504,13 +1504,13 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateIndividualId() throws Exception{
 		String individualId = "";
-		requestValidator.validateIndividualId(individualId);
+		requestValidator.validateEventId(individualId);
 	}
 
 	@Test
 	public void testValidateIndividualIdSuccess() throws Exception {
 		String individualId = "123456789";
-		requestValidator.validateIndividualId(individualId);
+		requestValidator.validateEventId(individualId);
 	}
 
 	@Test
@@ -2075,7 +2075,7 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateNullIndividualId() throws Exception{
-		requestValidator.validateIndividualId(null);
+		requestValidator.validateEventId(null);
 	}
 
 	@Test(expected = InvalidInputException.class)

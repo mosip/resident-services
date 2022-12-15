@@ -145,5 +145,8 @@ public class ResidentConstants {
     public static final String FROM_DATE_TIME = "fromDateTime";
     public static final String TO_DATE_TIME = "toDateTime";
     public static final String DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.service.history.file.name.convention";
+    public static final String GRIEVANCE_REQUEST_ID = "mosip.resident.grievance.ticket.request.id";
+    public static final String GRIEVANCE_REQUEST_VERSION = "mosip.resident.grievance.ticket.request.version";
+    public static final String FULL_NAME_ATTRIBUTE_NAME = "mosip.resident.full.name.attribute.name";
 
 }

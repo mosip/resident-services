@@ -125,7 +125,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     @Override
     public Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
-        String rid = null;
+        String rid = "";
         String eventId = "";
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
