@@ -115,6 +115,8 @@ public class ResidentCredentialControllerTest {
     CredentialRequestStatusResponseDto credentialReqStatusResponse;
 
     PartnerCredentialTypePolicyDto partnerCredentialTypeReqResponse;
+    
+    ResidentCredentialResponseDtoV2 dtoV2;
 
     String reqCredentialEventJson;
 
@@ -126,6 +128,7 @@ public class ResidentCredentialControllerTest {
         credentialCancelReqResponse = new CredentialCancelRequestResponseDto();
         credentialReqResponse = new ResidentCredentialResponseDto();
         partnerCredentialTypeReqResponse = new PartnerCredentialTypePolicyDto();
+        dtoV2 = new ResidentCredentialResponseDtoV2();
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(residentCredentialController).build();
         ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
@@ -194,8 +197,8 @@ public class ResidentCredentialControllerTest {
 
     @Test
     public void testRequestShareCredWithPartner() throws Exception {
-		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString()))
-				.thenReturn(Tuples.of(new ResidentCredentialResponseDtoV2(), "12345"));
+		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(dtoV2, "12345"));
         ShareCredentialRequestDto request = new ShareCredentialRequestDto();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");
