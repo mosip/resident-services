@@ -28,4 +28,7 @@ public interface ResidentVidService {
 
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
+	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
+
 }

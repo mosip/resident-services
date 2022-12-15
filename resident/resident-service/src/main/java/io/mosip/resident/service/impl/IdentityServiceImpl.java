@@ -90,6 +90,7 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private static final String VID = "VID";
 	private static final String AID = "AID";
+	private static final String  PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -217,16 +218,18 @@ public class IdentityServiceImpl implements IdentityService {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());
 			}
-			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
-
+			Map<String, Object> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
+			Map<String,Object> identity = (Map<String, Object>) identityResponse.get(IDENTITY);
+			Optional<String> perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
+			if(perpVid.isPresent()) {
+				String vid = perpVid.get();
+				identity.put(PERPETUAL_VID, vid);
+			}
 			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
-			if(includeUin) {
-				response.put(UIN, identity.get(UIN));
-			}
+
 			if(includePhoto) {
 				String photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
 				response.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
