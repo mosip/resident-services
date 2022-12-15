@@ -51,6 +51,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -228,7 +230,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
+	public ResponseEntity<Object> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(
@@ -237,11 +239,14 @@ public class ResidentController {
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
-		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest()));
+		Tuple2<ResponseDTO, String> tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
+		response.setResponse(tupleResponse.getT1());
 		response.setId(authLockStatusUpdateV2Id);
 		response.setVersion(authLockStatusUpdateV2Version);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS, individualId));
-		return response;
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(response);
 	}
 
 	@ResponseFilter
