@@ -44,8 +44,8 @@ public class ResidentCredentialServiceException extends BaseUncheckedException i
 		this.metadata = metadata;
 	}
 	
-	public ResidentCredentialServiceException(ResidentErrorCode err, Throwable rootCause, Map<String,Object> metadata) {
+	public ResidentCredentialServiceException(ResidentErrorCode err, Throwable rootCause, Map<String, Object> metadata) {
 		this(err.getErrorCode(), err.getErrorMessage(), rootCause);
-		this.metadata=metadata;
+		this.metadata = metadata;
 	}
 }

@@ -210,4 +210,16 @@ public class ResidentCredentialControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
+    
+    @Test
+    public void testRequestShareCredWithPartnerWithoutPurpose() throws Exception {
+		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString()))
+				.thenReturn(Tuples.of(dtoV2, "12345"));
+        ShareCredentialRequestDto request = new ShareCredentialRequestDto();
+        request.setSharableAttributes(null);
+		RequestWrapper<ShareCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
+    }
 }
