@@ -28,6 +28,8 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilitiy;
+import reactor.util.function.Tuple2;
+
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,14 +37,13 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -110,15 +111,17 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		notificationResponseDTO = new NotificationResponseDTO();
-		notificationResponseDTO.setStatus("Notification success");
+		notificationResponseDTO.setStatus("success");
+		notificationResponseDTO.setMessage("Notification success");
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		individualId = identityServiceImpl.getResidentIndvidualId();
 		
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+        residentTransactionEntity.setEventId("12345");
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		residentTransactionEntities.add(residentTransactionEntity);
+		Mockito.when(utility.createEventId()).thenReturn("12345");
 		ArrayList<String> partnerIds = new ArrayList<>();
 		partnerIds.add("m-partner-default-auth");
 		when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
@@ -139,13 +142,10 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 			Mockito.when(idAuthService.authTypeStatusUpdateForRequestId(any(), any(), any())).thenReturn("123");
-			ResponseDTO response = new ResponseDTO();
-			response.setMessage("Notification success");
 			Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
-			ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
-			assertEquals(authLockResponse.getMessage(), authLockResponse.getMessage());
+			Tuple2<ResponseDTO, String> authLockResponse = residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
+			assertEquals(notificationResponseDTO.getMessage(), authLockResponse.getT1().getMessage());
 		}
-
 	}
 
 	@Test(expected = ResidentServiceException.class)

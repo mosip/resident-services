@@ -184,18 +184,23 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
         }
         catch (Exception e) {
-        	residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
             audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
             logger.error("Unable to convert html to pdf RootCause- "+e);
-			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
         } finally {
-        	//if the status code will come as null, it will set it as failed.
-        	if(residentTransactionEntity.getStatusCode()==null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
-			}
-			residentTransactionRepository.save(residentTransactionEntity);
+        	if(residentTransactionEntity != null) {
+        		//if the status code will come as null, it will set it as failed.
+            	if(residentTransactionEntity.getStatusCode()==null) {
+    				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+    				residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+    			}
+    			residentTransactionRepository.save(residentTransactionEntity);
+        	}
 		}
         return Tuples.of(utilitiy.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
     }

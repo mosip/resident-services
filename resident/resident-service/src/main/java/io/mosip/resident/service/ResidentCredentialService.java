@@ -10,6 +10,7 @@ import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import reactor.util.function.Tuple2;
 
 public interface ResidentCredentialService {
 
@@ -17,9 +18,9 @@ public interface ResidentCredentialService {
 	
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request, String id) throws ResidentServiceCheckedException;
 	
-	public ResidentCredentialResponseDtoV2 shareCredential(ResidentCredentialRequestDto request, String requestType) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	public Tuple2<ResidentCredentialResponseDtoV2, String> shareCredential(ResidentCredentialRequestDto request, String requestType) throws ResidentServiceCheckedException, ApisResourceAccessException;
 	
-	public ResidentCredentialResponseDtoV2 shareCredential(ResidentCredentialRequestDto request, String requestType, String purpose) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	public Tuple2<ResidentCredentialResponseDtoV2, String> shareCredential(ResidentCredentialRequestDto request, String requestType, String purpose) throws ResidentServiceCheckedException, ApisResourceAccessException;
 	
 	public CredentialRequestStatusResponseDto getStatus(String requestId) throws ResidentServiceCheckedException;
 
