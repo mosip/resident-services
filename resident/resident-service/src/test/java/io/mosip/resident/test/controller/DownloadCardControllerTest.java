@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -42,6 +43,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -60,6 +62,12 @@ public class DownloadCardControllerTest {
 
     @Mock
     private AuditUtil audit;
+    
+    @Mock
+    private Environment environment;
+    
+    @Mock
+    private Utilitiy utilitiy;
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
@@ -106,6 +114,8 @@ public class DownloadCardControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
+        Mockito.when(utilitiy.getFileName(Mockito.anyString(), Mockito.anyString())).thenReturn("file");
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
     @Test
@@ -117,7 +127,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testDownloadPersonalizedCard() throws Exception {
-        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any())).thenReturn(pdfbytes);
+        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345"));
         MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
                 new MainRequestDTO<>();
         DownloadPersonalizedCardDto downloadPersonalizedCardDto =
