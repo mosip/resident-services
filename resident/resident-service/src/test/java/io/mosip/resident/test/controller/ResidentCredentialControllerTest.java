@@ -53,6 +53,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -193,7 +194,8 @@ public class ResidentCredentialControllerTest {
 
     @Test
     public void testRequestShareCredWithPartner() throws Exception {
-        Mockito.when(residentCredentialService.shareCredential(Mockito.any(),Mockito.anyString())).thenReturn(new ResidentCredentialResponseDtoV2());
+		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString()))
+				.thenReturn(Tuples.of(new ResidentCredentialResponseDtoV2(), "12345"));
         ShareCredentialRequestDto request = new ShareCredentialRequestDto();
         SharableAttributesDTO attr = new SharableAttributesDTO();
         attr.setAttributeName("name");
