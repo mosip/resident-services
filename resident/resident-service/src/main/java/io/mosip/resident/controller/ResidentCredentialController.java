@@ -29,6 +29,7 @@ import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.CredentialTypeResponse;
@@ -52,6 +53,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
 
 @RestController
 @Tag(name = "resident-credential-controller", description = "Resident Credential Controller")
@@ -116,15 +118,19 @@ public class ResidentCredentialController {
 		request.setRequest(credentialRequestDto);
 		buildAdditionalMetadata(requestDTO, request);
 		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
+		Tuple2<ResidentCredentialResponseDtoV2, String> tupleResponse;
 		if(purpose != null) {
-			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name(),purpose));
+			tupleResponse = residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name(),purpose);
 		}else {
-			response.setResponse(residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name()));
+			tupleResponse = residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name());
 		}
 		response.setId(shareCredentialId);
 		response.setVersion(shareCredentialVersion);
+		response.setResponse(tupleResponse.getT1());
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.status(HttpStatus.OK)
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(response);
 	}
 	
 	@GetMapping(value = "req/credential/status/{requestId}")

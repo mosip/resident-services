@@ -78,7 +78,6 @@ import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
 import io.mosip.resident.dto.AuthLockStatusResponseDtoV2;
-import io.mosip.resident.dto.AuthLockUnlockResponseDto;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
@@ -152,6 +151,8 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -173,7 +174,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 	private static final String UIN = "uin";
-	private static final String NAME = "mosip.resident.name.token.claim-name";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
@@ -182,8 +182,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static String cardType = "UIN";
-	private static final String EMAIL = "mosip.resident.email.token.claim-email";
-	private static final String PHONE = "mosip.resident.phone.token.claim-phone";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -1122,14 +1120,15 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseDTO reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2)
+	public Tuple2<ResponseDTO, String> reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
-		AuthLockUnlockResponseDto response = new AuthLockUnlockResponseDto();
+		ResponseDTO response = new ResponseDTO();
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
+		String eventId = null;
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK, "Request for Auth Type Lock"));
@@ -1144,6 +1143,9 @@ public class ResidentServiceImpl implements ResidentService {
 					throw new RuntimeException(e);
 				}
 			}).collect(Collectors.toList());
+			if (!residentTransactionEntities.isEmpty()) {
+    			eventId = residentTransactionEntities.get(0).getEventId();
+    		}
 
 			List<AuthTypeStatusDtoV2> authTypesStatusList = authLockOrUnLockRequestDtoV2.getAuthTypes();
 			String authType = authTypesStatusList.stream().map(ResidentServiceImpl::getAuthTypeBasedOnConfigV2)
@@ -1176,8 +1178,8 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
-				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED.getErrorCode(),
-						ResidentErrorCode.REQUEST_FAILED.getErrorMessage());
+				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED,
+						Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
 
 		} catch (ApisResourceAccessException e) {
@@ -1193,8 +1195,8 @@ public class ResidentServiceImpl implements ResidentService {
 							+ ExceptionUtils.getStackTrace(e));
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
 					"Request for auth" + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
-			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE, e,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
 		} finally {
 			residentTransactionRepository.saveAll(residentTransactionEntities);
 
@@ -1202,7 +1204,7 @@ public class ResidentServiceImpl implements ResidentService {
 			TemplateType templateType = isTransactionSuccessful ? TemplateType.REQUEST_RECEIVED : TemplateType.FAILURE;
 
 			NotificationResponseDTO notificationResponseDTO = sendNotificationV2(individualId, requestType,
-					templateType, residentTransactionEntities.get(0).getEventId(), null);
+					templateType, eventId, null);
 
 			if (isTransactionSuccessful)
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
@@ -1213,12 +1215,11 @@ public class ResidentServiceImpl implements ResidentService {
 			if (notificationResponseDTO != null) {
 				response.setMessage(notificationResponseDTO.getMessage());
 				response.setStatus(ResidentConstants.SUCCESS);
-				response.setEventId(residentTransactionEntities.get(0).getEventId());
 			}
 		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: exit");
-		return response;
+		return Tuples.of(response, eventId);
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
@@ -1950,7 +1951,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 			eventStatusMap.remove(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK);
 
-			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 
 			if (serviceType.isPresent()) {
@@ -2087,10 +2088,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
-		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(NAME));
+		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
-		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(EMAIL));
-		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(PHONE));
+		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
+		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();
