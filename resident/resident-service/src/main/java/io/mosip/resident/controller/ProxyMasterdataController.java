@@ -403,7 +403,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/auth-proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}")
+	@GetMapping("/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}")
 	@Operation(summary = "getDocumentTypesByDocumentCategoryLangCode", description = "getDocumentTypesByDocumentCategoryLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -411,11 +411,11 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryLangCode(@PathVariable("documentcategorycode") String documentcategorycode,@PathVariable("langcode") String langCode)
+	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(@PathVariable("documentcategorycode") String documentcategorycode,@PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getDocumentTypesByDocumentCategoryLangCode::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES);
-		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getDocumentTypesByDocumentCategoryLangCode(documentcategorycode,langCode);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(documentcategorycode,langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_SUCCESS);
 		logger.debug("ProxyMasterdataController::getDocumentTypesByDocumentCategoryLangCode::exit");
 		return responseWrapper;

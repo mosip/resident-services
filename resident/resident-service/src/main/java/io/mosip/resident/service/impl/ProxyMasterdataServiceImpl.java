@@ -415,8 +415,8 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 	
 	@Override
-	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryLangCode()::entry");
+	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("documentcategorycode", documentcategorycode);
@@ -434,7 +434,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryLangCode()::exit");
+		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::exit");
 		return responseWrapper;
 	}
 
