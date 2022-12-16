@@ -126,7 +126,7 @@ public class DownloadCardServiceTest {
 
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");
-        Mockito.when(residentTransactionRepository.findByAid(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        Mockito.when(residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(Mockito.anyString())).thenReturn(residentTransactionEntity);
 
         downloadPersonalizedCardMainRequestDTO=
                 new MainRequestDTO<>();
