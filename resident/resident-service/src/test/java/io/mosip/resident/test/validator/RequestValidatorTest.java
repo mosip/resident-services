@@ -14,6 +14,7 @@ import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.*;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -1501,16 +1502,16 @@ public class RequestValidatorTest {
 	}
 
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateIndividualId() throws Exception{
 		String individualId = "";
-		requestValidator.validateIndividualId(individualId);
+		requestValidator.validateEventId(individualId);
 	}
 
 	@Test
 	public void testValidateIndividualIdSuccess() throws Exception {
-		String individualId = "123456789";
-		requestValidator.validateIndividualId(individualId);
+		String individualId = "1234567897777777";
+		requestValidator.validateEventId(individualId);
 	}
 
 	@Test
@@ -1984,10 +1985,10 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateEventIdLanguageCodeSuccess(){
-		requestValidator.validateEventIdLanguageCode("3434343434","ara");
+		requestValidator.validateEventIdLanguageCode("3434343434777777","ara");
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateEmptyEventIdLanguageCodeSuccess(){
 		requestValidator.validateEventIdLanguageCode("","ara");
 	}
@@ -2073,9 +2074,9 @@ public class RequestValidatorTest {
 		assertEquals(true,requestValidator.validateRequestNewApi(request, requestIdType));
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateNullIndividualId() throws Exception{
-		requestValidator.validateIndividualId(null);
+		requestValidator.validateEventId(null);
 	}
 
 	@Test(expected = InvalidInputException.class)
