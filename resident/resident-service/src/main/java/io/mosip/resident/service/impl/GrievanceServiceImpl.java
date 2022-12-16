@@ -14,41 +14,30 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
 import io.mosip.resident.service.GrievanceService;
-import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
-import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
-import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
 @Service
 public class GrievanceServiceImpl implements GrievanceService {
 
-    private static final String LANGUAGE = "language";
-    private static final String VALUE = "value";
     private static final String TICKET_ID = "ticketId";
     @Autowired
-    private IdentityService identityService;
+    private IdentityServiceImpl identityService;
 
     @Autowired
     private Environment environment;
 
     @Autowired
     private AuditUtil auditUtil;
-
-    @Autowired
-    private Utilities utilities;
 
     @Autowired
     private ResidentGrievanceRepository residentGrievanceRepository;
@@ -70,13 +59,13 @@ public class GrievanceServiceImpl implements GrievanceService {
             responseWrapper.setResponse(response);
         }
         catch (ResidentServiceCheckedException e) {
-            auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
             logger.error("Unable to get attributes- "+e);
-            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
+            throw new ResidentServiceException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED, e);
         } catch (IOException e) {
-            auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
             logger.error("Unable to get attributes- "+e);
-            throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
+            throw new IOException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         } catch (ApisResourceAccessException e) {
             throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
@@ -103,40 +92,19 @@ public class GrievanceServiceImpl implements GrievanceService {
                                                                                     grievanceRequestDTOMainRequestDTO)
             throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         if (grievanceRequestDTOMainRequestDTO.getRequest().getName() == null) {
-            grievanceRequestDTOMainRequestDTO.getRequest().setName(getFullNameFromProfile(
-                    this.environment.getProperty(ResidentConstants.FULL_NAME_ATTRIBUTE_NAME)));
+            grievanceRequestDTOMainRequestDTO.getRequest().setName(identityService.getAvailableclaimValue(
+                    this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE)));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(getFullNameFromProfile(PHONE));
+            grievanceRequestDTOMainRequestDTO.getRequest().setPhoneNo(identityService.getAvailableclaimValue(
+                    this.environment.getProperty(ResidentConstants.PHONE_FROM_PROFILE)
+            ));
         }
         if(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId() == null){
-            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(getFullNameFromProfile(EMAIL));
+            grievanceRequestDTOMainRequestDTO.getRequest().setEmailId(identityService.getAvailableclaimValue(
+                    this.environment.getProperty(ResidentConstants.EMAIL_FROM_PROFILE)));
         }
         return grievanceRequestDTOMainRequestDTO;
     }
 
-    private String getFullNameFromProfile(String attribute) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        Map<String, Object> identityAttributes = null;
-        String name="";
-        identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(
-                    identityService.getResidentIndvidualId(), this.environment.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
-        Object attributeObject = identityAttributes.get(attribute);
-        if (attributeObject instanceof List) {
-            List<Map<String, Object>> attributeMapObject = (List<Map<String, Object>>) attributeObject;
-            for (Map<String, Object> attributeInLanguage : attributeMapObject) {
-                /**
-                 * 1st language code is taken from mandatory/optional languages properties
-                 */
-                String languageCode = utilities.getLanguageCode();
-                if (attributeInLanguage.containsKey(LANGUAGE) &&
-                        attributeInLanguage.get(LANGUAGE).toString().equalsIgnoreCase(languageCode)) {
-                    name = ((String) attributeInLanguage.get(VALUE));
-                    break;
-                }
-            }
-        } else{
-            name = ((String) attributeObject);
-        }
-        return name;
-    }
 }

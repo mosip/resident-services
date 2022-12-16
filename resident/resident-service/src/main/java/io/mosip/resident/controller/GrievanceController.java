@@ -41,7 +41,9 @@ public class GrievanceController {
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceController.class);
 
     @PostMapping("/grievance/ticket")
-    public ResponseWrapper<Object> grievanceTicket(@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+    public ResponseWrapper<Object> grievanceTicket(@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO>
+                                                               grievanceRequestDTOMainRequestDTO) throws ResidentServiceCheckedException,
+            ApisResourceAccessException, IOException {
         logger.debug("DownloadCardController::grievanceTicket()::entry");
         auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
         requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
