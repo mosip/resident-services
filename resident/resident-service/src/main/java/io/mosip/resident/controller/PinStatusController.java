@@ -37,7 +37,7 @@ public class PinStatusController {
     @PostMapping(path = "pinned/{eventId}")
     public ResponseWrapper<ResponseDTO> pinStatus(@PathVariable("eventId") String eventId){
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Pin Status API"));
-        requestValidator.validateIndividualId(eventId);
+        requestValidator.validateEventId(eventId);
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS, eventId));
         return pinUnpinStatusService.pinStatus(eventId, true);
     }
@@ -48,7 +48,7 @@ public class PinStatusController {
     @PostMapping(path = "unpinned/{eventId}")
     public ResponseWrapper<ResponseDTO> unPinStatus(@PathVariable("eventId") String eventId){
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Pin Status API"));
-        requestValidator.validateIndividualId(eventId);
+        requestValidator.validateEventId(eventId);
         audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS, eventId));
         return pinUnpinStatusService.pinStatus(eventId, false);
     }

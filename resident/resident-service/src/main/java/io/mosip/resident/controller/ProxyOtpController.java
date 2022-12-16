@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import static io.mosip.resident.constant.RegistrationConstants.ID;
+
 /**
  * This class provides different api to perform operation for login
  *
@@ -67,7 +69,7 @@ public class ProxyOtpController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
-		requestValidator.validateRequestId(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID));
+		requestValidator.validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		requestValidator.validateDate(userOtpRequest.getRequesttime());
 		return proxyOtpService.sendOtp(userOtpRequest);
 	}

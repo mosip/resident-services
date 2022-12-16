@@ -174,7 +174,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String DOCUMENT = "documents";
 	private static final String SERVER_PROFILE_SIGN_KEY = "PROD";
 	private static final String UIN = "uin";
-	private static final String NAME = "mosip.resident.name.token.claim-name";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
@@ -183,8 +182,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static String cardType = "UIN";
-	private static final String EMAIL = "mosip.resident.email.token.claim-email";
-	private static final String PHONE = "mosip.resident.phone.token.claim-phone";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -1954,7 +1951,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 			eventStatusMap.remove(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK);
 
-			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(NAME));
+			String name = identityServiceImpl.getClaimFromIdToken(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
 
 			if (serviceType.isPresent()) {
@@ -2091,10 +2088,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
-		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(NAME));
+		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
-		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(EMAIL));
-		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(PHONE));
+		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
+		String phone = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.PHONE_FROM_PROFILE));
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();
