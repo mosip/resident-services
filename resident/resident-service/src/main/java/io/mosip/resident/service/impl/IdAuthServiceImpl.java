@@ -129,7 +129,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
-		String eventId = "NA";
+		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);

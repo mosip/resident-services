@@ -193,7 +193,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password=null;
-        String eventId = "NA";
+        String eventId = ResidentConstants.NOT_AVAILABLE;
         ResidentTransactionEntity residentTransactionEntity = null;
         try {
         	residentTransactionEntity = createResidentTransactionEntity();
@@ -289,7 +289,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     public Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid) throws BaseCheckedException {
         ResponseWrapper<VidDownloadCardResponseDto> responseWrapper= new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        String eventId = "NA";
+        String eventId = ResidentConstants.NOT_AVAILABLE;
         ResidentTransactionEntity residentTransactionEntity = null;
         try{
         	residentTransactionEntity = insertDataForVidCard(vid);
