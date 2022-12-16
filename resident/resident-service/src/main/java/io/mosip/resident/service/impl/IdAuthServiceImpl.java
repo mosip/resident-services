@@ -51,6 +51,7 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.AuthRequestDTO;
@@ -128,7 +129,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
-		String eventId = null;
+		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
@@ -137,17 +138,16 @@ public class IdAuthServiceImpl implements IdAuthService {
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
-			throw new OtpValidationFailedException(e.getMessage());
+			throw new OtpValidationFailedException(e.getMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
 		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
 			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
-			throw new OtpValidationFailedException(
-					response.getErrors().get(0).getErrorMessage());
-
+			throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
+					Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
 		if (residentTransactionEntity != null) {
-			eventId = residentTransactionEntity.getEventId(); 
+			eventId = residentTransactionEntity.getEventId();
 		}
 		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}

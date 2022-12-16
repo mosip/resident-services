@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ValidateOtpResponseDto extends IdAuthResponseDto {
 
-	private String eventId;
 	private String status;
 
 }

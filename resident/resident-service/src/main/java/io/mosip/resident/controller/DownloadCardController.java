@@ -102,9 +102,11 @@ public class DownloadCardController {
     }
 
     @GetMapping("/request-card/vid/{VID}")
-    public ResponseWrapper<VidDownloadCardResponseDto> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
+    public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
         requestValidator.validateDownloadCardVid(vid);
-        ResponseWrapper<VidDownloadCardResponseDto> downloadCardResponseDtoResponseWrapper = downloadCardService.getVidCardEventId(vid);
-        return downloadCardResponseDtoResponseWrapper;
+        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid);
+        return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(tupleResponse.getT1());
     }
 }

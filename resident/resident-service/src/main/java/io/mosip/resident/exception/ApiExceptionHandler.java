@@ -122,6 +122,13 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		errorResponse.getErrors().add(error);
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add(ResidentConstants.EVENT_ID,
+					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			return new ResponseEntity<>(errorResponse, headers, httpStatus);
+		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
 	}
 
@@ -256,12 +263,9 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(ResidentServiceCheckedException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> getResidentServiceStackTraceHandler(
 			final HttpServletRequest httpServletRequest, final ResidentServiceCheckedException e) throws IOException {
-		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
-		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
-		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(ApisResourceAccessException.class)
@@ -276,6 +280,13 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add(ResidentConstants.EVENT_ID,
+					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			return new ResponseEntity<>(errorResponse, headers, HttpStatus.OK);
+		}
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}
 

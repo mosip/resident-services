@@ -140,6 +140,7 @@ public class ResidentConstants {
     public static final String VID_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.vid.card.name.convention";
     public static final String SUCCESS = "Success";
     public static final String FAILED = "Failed";
+    public static final String NOT_AVAILABLE = "NA";
     public static final String REGISTRATION_CENTRE_TEMPLATE_PROPERTY = "resident.template.registration.centers.list";
     public static final String SUPPORTING_DOCS_TEMPLATE_PROPERTY = "resident.template.support-docs-list";
     public static final String FROM_DATE_TIME = "fromDateTime";

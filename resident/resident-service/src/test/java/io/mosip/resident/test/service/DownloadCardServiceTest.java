@@ -2,7 +2,6 @@ package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
@@ -10,6 +9,7 @@ import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -25,7 +25,6 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import reactor.util.function.Tuple2;
@@ -83,9 +82,6 @@ public class DownloadCardServiceTest {
     private ResidentServiceImpl residentService;
 
     @Mock
-    private TemplateUtil templateUtil;
-
-    @Mock
     private IdentityServiceImpl identityService;
 
     @Mock
@@ -103,7 +99,6 @@ public class DownloadCardServiceTest {
 
     byte[] pdfbytes;
 
-    private ResponseWrapper<DigitalCardStatusResponseDto> responseDto;
     DigitalCardStatusResponseDto digitalCardStatusResponseDto;
 
     private MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO;
@@ -127,7 +122,7 @@ public class DownloadCardServiceTest {
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenReturn("7841261580");
         Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(utilitiy.createEventId()).thenReturn("123");
+        Mockito.when(utilitiy.createEventId()).thenReturn("12345");
 
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");
@@ -268,33 +263,25 @@ public class DownloadCardServiceTest {
 
     @Test
     public void testGetVidCardEventId() throws BaseCheckedException {
-        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
         ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
         residentCredentialResponseDto.setId("123");
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-        Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(utilitiy.createEventId()).thenReturn("123");
-        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
-                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+		assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testGetVidCardEventIdFailed() throws BaseCheckedException {
-        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        vidDownloadCardResponseDto.setEventId("123");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
         ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
         residentCredentialResponseDto.setId("123");
         residentCredentialResponseDto.setRequestId("123");
@@ -302,55 +289,45 @@ public class DownloadCardServiceTest {
                 ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage())));
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
-                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+		downloadCardService.getVidCardEventId("123");
     }
 
     @Test(expected = ApisResourceAccessException.class)
     public void testGetVidCardEventIdApisResourceAccessException() throws BaseCheckedException {
-        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        vidDownloadCardResponseDto.setEventId("123");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
-        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
-                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+		downloadCardService.getVidCardEventId("123");
     }
 
     @Test(expected = BaseCheckedException.class)
     public void testGetVidCardEventIdResidentServiceCheckedException() throws BaseCheckedException, IOException {
-        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        vidDownloadCardResponseDto.setEventId("123");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
         ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
         residentCredentialResponseDto.setId("123");
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
-        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
-                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+		downloadCardService.getVidCardEventId("123");
     }
 
     @Test
     public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException, IOException {
-        io.mosip.resident.dto.ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        vidDownloadCardResponseDto.setEventId("123");
+        vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        io.mosip.resident.dto.ResponseWrapper<ResidentCredentialResponseDto> responseWrapper =
-                new io.mosip.resident.dto.ResponseWrapper<>();
+		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
         ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
         residentCredentialResponseDto.setId("123");
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-        io.mosip.resident.dto.ResponseWrapper<List<Map<String,?>>> vidResponse = new io.mosip.resident.dto.ResponseWrapper<>();
+        ResponseWrapper<List<Map<String,?>>> vidResponse = new ResponseWrapper<>();
         Map<String, Object> vidDetails = new HashMap<>();
         vidDetails.put("vidType", "perpetual");
         List<Map<String, ?>> vidList = new ArrayList<>();
@@ -365,10 +342,7 @@ public class DownloadCardServiceTest {
         vidResponse.setResponse(vidList);
         Mockito.when(vidService.retrieveVids(Mockito.anyString())).thenReturn(vidResponse);
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
-        Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(utilitiy.createEventId()).thenReturn("123");
-        assertEquals(vidDownloadCardResponseDtoResponseWrapper.getResponse().getEventId(),
-                downloadCardService.getVidCardEventId("123").getResponse().getEventId());
+        assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
     }
 
 }
