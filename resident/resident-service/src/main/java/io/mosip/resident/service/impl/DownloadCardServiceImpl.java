@@ -77,6 +77,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String GENERATED_ON_TIMESTAMP = "genratedOnTimestamp";
     private static final String TRANSACTION_LIMIT = "transactionLimit";
     private static final String TRANSACTION_COUNT = "transactionCount";
+    private static final String CARD_FORMAT = "cardFormat";
+    private static final Object VID_CARD = "vidCard";
     @Autowired
     private ResidentController residentController;
 
@@ -382,6 +384,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         additionalAttributes.put(GENERATED_ON_TIMESTAMP, vidData.get(GENERATED_ON_TIMESTAMP));
                         additionalAttributes.put(TRANSACTION_LIMIT, vidData.get(TRANSACTION_LIMIT));
                         additionalAttributes.put(TRANSACTION_COUNT, vidData.get(TRANSACTION_COUNT));
+                        additionalAttributes.put(CARD_FORMAT, VID_CARD);
                         if(name!=null){
                             additionalAttributes.put(NAME, name);
                         }
