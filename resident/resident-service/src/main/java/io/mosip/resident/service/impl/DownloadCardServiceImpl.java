@@ -1,6 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
@@ -126,7 +125,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Override
     public Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
         String rid = null;
-        String eventId = "";
+        String eventId = "NA";
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
@@ -168,7 +167,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password=null;
-        String eventId = null;
+        String eventId = "NA";
         ResidentTransactionEntity residentTransactionEntity = null;
         try {
         	residentTransactionEntity = createResidentTransactionEntity();
@@ -180,7 +179,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))){
                 password = utilitiy.getPassword(attributeValues);
             }
-            residentTransactionEntity.setRequestSummary(SUCCESS);
+            residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
             residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
         }
         catch (Exception e) {
@@ -261,11 +260,16 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public ResponseWrapper<VidDownloadCardResponseDto> getVidCardEventId(String vid) throws BaseCheckedException {
+    public Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid) throws BaseCheckedException {
         ResponseWrapper<VidDownloadCardResponseDto> responseWrapper= new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        String eventId="";
+        String eventId = "NA";
+        ResidentTransactionEntity residentTransactionEntity = null;
         try{
+        	residentTransactionEntity = insertDataForVidCard(vid);
+        	if (residentTransactionEntity != null) {
+    			eventId = residentTransactionEntity.getEventId(); 
+    		}
             RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
@@ -287,45 +291,67 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 ResidentCredentialResponseDto residentCredentialResponseDto =
                         JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
                         ResidentCredentialResponseDto.class);
-                eventId =insertDataForVidCard(residentCredentialResponseDto, vid);
-                vidDownloadCardResponseDto.setEventId(eventId);
+                residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
                 vidDownloadCardResponseDto.setStatus(ResidentConstants.SUCCESS);
-            }else{
-                throw new ResidentServiceCheckedException(String.valueOf(ResidentErrorCode.VID_REQUEST_CARD_FAILED),
-                        ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage());
+			} else {
+            	if (residentTransactionEntity != null) {
+            		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+                	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+            	}
+				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_REQUEST_CARD_FAILED,
+						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
-        }catch (ApisResourceAccessException e){
-            throw new ApisResourceAccessException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.toString(), e);
-        }catch (ResidentServiceCheckedException exception){
-            throw new ResidentServiceException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorCode(),
-                    ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage(), exception);
-        }catch (IOException exception){
+        } catch (ApisResourceAccessException e) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
+			throw new ApisResourceAccessException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.toString(), e,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } catch (ResidentServiceCheckedException exception) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
+			throw new ResidentServiceException(ResidentErrorCode.VID_REQUEST_CARD_FAILED, exception,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } catch (IOException exception) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
             throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(), exception.getMessage(), exception);
-        }
+        } finally {
+        	if(residentTransactionEntity != null) {
+        		//if the status code will come as null, it will set it as failed.
+            	if(residentTransactionEntity.getStatusCode()==null) {
+    				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+    				residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+    			}
+    			residentTransactionRepository.save(residentTransactionEntity);
+        	}
+		}
         responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
         responseWrapper.setVersion(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
         responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         responseWrapper.setResponse(vidDownloadCardResponseDto);
-        return responseWrapper;
+        return Tuples.of(responseWrapper, eventId);
     }
 
-    private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException {
+    private ResidentTransactionEntity insertDataForVidCard(String vid) throws ApisResourceAccessException, IOException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = utilitiy.createEventId();
         String uin = utilities.getUinByVid(vid);
-        residentTransactionEntity.setEventId(eventId);
+        residentTransactionEntity.setEventId(utilitiy.createEventId());
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(uin));
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
-        residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
         residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
         /**
          * Here we are setting vid in aid column.
          */
         residentTransactionEntity.setAid(vid);
-        residentTransactionRepository.save(residentTransactionEntity);
-        return eventId;
+        return residentTransactionEntity;
     }
 
     private Map<String, Object> getVidDetails(String vid) throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {

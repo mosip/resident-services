@@ -128,7 +128,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
-		String eventId = null;
+		String eventId = "NA";
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
@@ -144,10 +144,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
 			throw new OtpValidationFailedException(
 					response.getErrors().get(0).getErrorMessage());
-
 		}
 		if (residentTransactionEntity != null) {
-			eventId = residentTransactionEntity.getEventId(); 
+			eventId = residentTransactionEntity.getEventId();
 		}
 		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}

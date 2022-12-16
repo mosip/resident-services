@@ -261,6 +261,13 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add(ResidentConstants.EVENT_ID,
+					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			return new ResponseEntity<>(errorResponse, headers, HttpStatus.OK);
+		}
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}
 
@@ -276,6 +283,13 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add(ResidentConstants.EVENT_ID,
+					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			return new ResponseEntity<>(errorResponse, headers, HttpStatus.OK);
+		}
 		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
 	}
 

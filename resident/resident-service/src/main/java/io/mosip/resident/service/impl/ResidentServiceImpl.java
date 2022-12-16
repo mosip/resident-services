@@ -1131,7 +1131,7 @@ public class ResidentServiceImpl implements ResidentService {
 		String individualId = identityServiceImpl.getResidentIndvidualId();
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
-		String eventId = null;
+		String eventId = "NA";
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK, "Request for Auth Type Lock"));
