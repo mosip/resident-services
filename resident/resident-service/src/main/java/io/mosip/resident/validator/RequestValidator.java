@@ -15,6 +15,7 @@ import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -65,7 +66,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static io.mosip.resident.constant.RegistrationConstants.ID;
-import static io.mosip.resident.constant.RegistrationConstants.MESSAGE;
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
 import static io.mosip.resident.constant.RegistrationConstants.VERSION;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
@@ -75,7 +75,7 @@ import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNE
 public class RequestValidator {
 
 	private static final int EVENT_ID_LENGTH = 16;
-	private static final String EID_NOT_BELONG_TO_SESSION_ERROR_MESSAGE = "EID does not belong to the logged in user";
+	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
 	@Autowired
 	private UinValidator<String> uinValidator;
 
@@ -945,11 +945,20 @@ public class RequestValidator {
 	}
 
 	public void validateEventId(String eventId) {
-		if (eventId==null || StringUtils.isEmpty(eventId) || isNumeric(eventId)
-				|| eventId.length()!=EVENT_ID_LENGTH) {
+		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID);
+		if (isNumeric(eventId) || eventId.length()!=EVENT_ID_LENGTH) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"eventId", "Request service history API"));
-			throw new InvalidInputException("eventId");
+					TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID));
+			throw new InvalidInputException(TemplateVariablesConstants.EVENT_ID);
+		}
+	}
+
+	private void validateMissingInputParameter(String variableValue, String variableName) {
+		if (variableValue==null || StringUtils.isEmpty(variableValue)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					variableName, VALIDATE_EVENT_ID));
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER,
+					ResidentErrorCode.MISSING_INPUT_PARAMETER.getErrorMessage()+variableName);
 		}
 	}
 
@@ -1138,7 +1147,8 @@ public class RequestValidator {
     }
 
 	private void validateMessage(String message) {
-		if(message==null || message.length()>1024){
+		validateMissingInputParameter(message, MESSAGE_CODE);
+		if(message.length()>1024){
 			throw new InvalidInputException(MESSAGE_CODE);
 		}
 	}
@@ -1166,7 +1176,7 @@ public class RequestValidator {
 			String sessionToken = identityService.getResidentIdaToken();
 			if(!tokenId.equals(sessionToken)){
 				throw new ResidentServiceException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
-						EID_NOT_BELONG_TO_SESSION_ERROR_MESSAGE);
+						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());
 			}
 		}
 	}

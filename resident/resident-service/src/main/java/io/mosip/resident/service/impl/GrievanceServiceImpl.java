@@ -2,14 +2,17 @@ package io.mosip.resident.service.impl;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.entity.ResidentGrievanceEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentGrievanceRepository;
 import io.mosip.resident.service.GrievanceService;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
@@ -20,19 +23,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
+import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
 @Service
 public class GrievanceServiceImpl implements GrievanceService {
 
     private static final String LANGUAGE = "language";
     private static final String VALUE = "value";
+    private static final String TICKET_ID = "ticketId";
     @Autowired
     private IdentityService identityService;
 
@@ -45,14 +50,24 @@ public class GrievanceServiceImpl implements GrievanceService {
     @Autowired
     private Utilities utilities;
 
+    @Autowired
+    private ResidentGrievanceRepository residentGrievanceRepository;
+
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
 
     @Override
     public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws IOException, ApisResourceAccessException {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setId(grievanceRequestDTOMainRequestDTO.getId());
+        responseWrapper.setVersion(grievanceRequestDTOMainRequestDTO.getVersion());
+        responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
         try {
             grievanceRequestDTOMainRequestDTO = fillDefaultValueFromProfile(grievanceRequestDTOMainRequestDTO);
             String ticketId = UUID.randomUUID().toString();
             insertDataInGrievanceTable(ticketId, grievanceRequestDTOMainRequestDTO);
+            HashMap<String, String> response = new HashMap<>();
+            response.put(TICKET_ID, ticketId);
+            responseWrapper.setResponse(response);
         }
         catch (ResidentServiceCheckedException e) {
             auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
@@ -65,11 +80,23 @@ public class GrievanceServiceImpl implements GrievanceService {
         } catch (ApisResourceAccessException e) {
             throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
-        return null;
+        return responseWrapper;
     }
 
     private void insertDataInGrievanceTable(String ticketId, MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) {
-
+        ResidentGrievanceEntity residentGrievanceEntity = new ResidentGrievanceEntity();
+        residentGrievanceEntity.setId(ticketId);
+        residentGrievanceEntity.setEventId(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
+        residentGrievanceEntity.setName(grievanceRequestDTOMainRequestDTO.getRequest().getName());
+        residentGrievanceEntity.setEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId());
+        residentGrievanceEntity.setAlternateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId());
+        residentGrievanceEntity.setPhoneNo(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo());
+        residentGrievanceEntity.setAlternatePhoneNo(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo());
+        residentGrievanceEntity.setMessage(grievanceRequestDTOMainRequestDTO.getRequest().getMessage());
+        residentGrievanceEntity.setStatus(SUCCESS);
+        residentGrievanceEntity.setCrBy(this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID));
+        residentGrievanceEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+        residentGrievanceRepository.save(residentGrievanceEntity);
     }
 
     private MainRequestDTO<GrievanceRequestDTO> fillDefaultValueFromProfile(MainRequestDTO<GrievanceRequestDTO>
@@ -104,6 +131,7 @@ public class GrievanceServiceImpl implements GrievanceService {
                 if (attributeInLanguage.containsKey(LANGUAGE) &&
                         attributeInLanguage.get(LANGUAGE).toString().equalsIgnoreCase(languageCode)) {
                     name = ((String) attributeInLanguage.get(VALUE));
+                    break;
                 }
             }
         } else{
