@@ -689,7 +689,16 @@ public enum EventEnum {
 			"download registration center success",
 			"download registration center success based on language code,longitude,latitude and distance", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME)
+			RegistrationConstants.APPLICATION_NAME),
+	GET_DOCUMENT_TYPES("RES-SER-274", RegistrationConstants.SYSTEM, "get document types",
+			"get document types by documentCode and langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_TYPES_SUCCESS("RES-SER-275", RegistrationConstants.SYSTEM, "get document types success",
+			"get document types by documentCode and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_TYPES_EXCEPTION("RES-SER-276", RegistrationConstants.SYSTEM, "get document types failure",
+			"get document types by documentCode and langCode is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
 	;
 
 	private final String eventId;
