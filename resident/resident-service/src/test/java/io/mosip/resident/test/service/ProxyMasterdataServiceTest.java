@@ -573,5 +573,42 @@ public class ProxyMasterdataServiceTest {
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getGenderTypesByLangCode("eng");
 	}
+	
+	@Test
+	public void testGetDocumentTypesByDocumentCategoryAndLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
+		assertNotNull(result);
+	}
 
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetDocumentTypesByDocumentCategoryAndLangCodeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		ServiceError error = new ServiceError();
+		error.setErrorCode("101");
+		error.setMessage("errors");
+
+		List<ServiceError> errorList = new ArrayList<ServiceError>();
+		errorList.add(error);
+
+		responseWrapper.setErrors(errorList);
+		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","xyz");
+	}
+
+	@Test
+	public void testGetDocumentTypesByDocumentCategoryAndLangCodeElse() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		ResponseWrapper<?> result = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
+		assertNotNull(result);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetDocumentTypesByDocumentCategoryAndLangCodeWithApisResourceAccessException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any()))
+				.thenThrow(new ApisResourceAccessException());
+		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
+	}
+	
 }
