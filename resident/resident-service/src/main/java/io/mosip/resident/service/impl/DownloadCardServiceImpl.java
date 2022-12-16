@@ -141,7 +141,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     rid = individualId;
                     pdfBytes = residentService.getUINCard(rid);
                 } else if (idType.equalsIgnoreCase(VID)) {
-                    ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findByAid(rid);
+                    ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(individualId);
                     if(residentTransactionEntity !=null ){
                         String credentialRequestId = residentTransactionEntity.getCredentialRequestId();
                         if (credentialRequestId != null) {
