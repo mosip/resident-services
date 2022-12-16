@@ -174,6 +174,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             audit.setAuditRequestDto(EventEnum.REQ_CARD);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
+        } catch (ResidentServiceException e) {
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            logger.error("Unable to get attributes- "+e);
+            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
