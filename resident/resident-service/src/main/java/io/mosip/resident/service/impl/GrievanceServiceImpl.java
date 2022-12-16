@@ -26,6 +26,10 @@ import java.util.UUID;
 
 import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
+/**
+ * @author Kamesh Shekhar Prasad
+ * This class is used to implement service class of grievance api.
+ */
 @Service
 public class GrievanceServiceImpl implements GrievanceService {
 

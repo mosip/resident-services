@@ -153,4 +153,6 @@ public class ResidentConstants {
     public static final String EMAIL_FROM_PROFILE = "mosip.resident.email.token.claim-email";
     public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
 
+    public static final String MESSAGE_CODE_MAXIMUM_LENGTH = "mosip.resident.message.code.maximum.length";
+
 }

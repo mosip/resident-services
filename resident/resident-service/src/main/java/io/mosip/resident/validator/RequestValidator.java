@@ -1148,7 +1148,8 @@ public class RequestValidator {
 
 	private void validateMessage(String message) {
 		validateMissingInputParameter(message, MESSAGE_CODE);
-		if(message.length()>1024){
+		if(message.length()>Integer.parseInt(Objects.requireNonNull(this.environment.getProperty(
+				ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)))){
 			throw new InvalidInputException(MESSAGE_CODE);
 		}
 	}
