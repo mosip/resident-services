@@ -1,9 +1,12 @@
 package io.mosip.resident.test.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,9 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.dto.GenderCodeResponseDTO;
+import io.mosip.resident.dto.GenderTypeDTO;
+import io.mosip.resident.dto.GenderTypeListDTO;
 import io.mosip.resident.dto.TemplateDto;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -611,4 +617,28 @@ public class ProxyMasterdataServiceTest {
 		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
 	}
 	
+	@Test
+	public void testGetGenderCodeByGenderTypeAndLangCode()
+			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+		GenderTypeListDTO response = new GenderTypeListDTO();
+		GenderTypeDTO genderTypeDTO = new GenderTypeDTO("MLE","Male","eng","true");
+		response.setGenderType(List.of(genderTypeDTO));
+		ResponseWrapper res = new ResponseWrapper(); 
+		res.setResponse(response);
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(res);
+		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
+		assertEquals(genderTypeDTO.getCode(),responseWrapper.getResponse().getGenderCode());
+	}
+	
+	@Test
+	public void testGetGenderCodeByGenderTypeAndLangCodeNoValue()
+			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+		GenderTypeListDTO response = new GenderTypeListDTO();
+		response.setGenderType(List.of());
+		ResponseWrapper res = new ResponseWrapper(); 
+		res.setResponse(response);
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(res);
+		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
+	}
+
 }
