@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,8 +79,8 @@ public class ResidentServiceGetServiceHistoryTest {
 
     private int pageStart;
     private int pageSize;
-    private LocalDateTime fromDate;
-    private LocalDateTime toDate;
+    private LocalDate fromDate;
+    private LocalDate toDate;
     private String serviceType;
     private String sortType;
     List<ServiceHistoryResponseDto> serviceHistoryResponseDto;
@@ -138,10 +140,10 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testGetServiceHistorySuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 2;
         pageSize = 3;
-        fromDate = LocalDateTime.now();
-        toDate = LocalDateTime.now();
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
+        fromDate = LocalDate.now();
+        toDate = LocalDate.now();
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
     }
 
     @Test
@@ -199,8 +201,8 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testServiceHistoryWithDifferentParameters() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 1;
         pageSize = 10;
-        fromDate = LocalDateTime.MAX;
-        toDate = LocalDateTime.MIN;
+        fromDate = LocalDate.from(LocalTime.MAX);
+        toDate = LocalDate.MIN;
         serviceType = ServiceType.AUTHENTICATION_REQUEST.toString();
         sortType = "ASC";
         statusFilter = "SUCCESS";
