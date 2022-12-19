@@ -16,7 +16,6 @@ public class GenerateVidResponseDto extends VidResponseDtoV2 {
 	 * 
 	 */
 	private static final long serialVersionUID = 5728940858748492895L;
-	private String eventId;
 	private String status;
 
 }

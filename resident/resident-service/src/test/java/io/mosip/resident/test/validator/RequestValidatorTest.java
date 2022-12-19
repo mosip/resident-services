@@ -12,8 +12,28 @@ import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentVidRequestDto;
+import io.mosip.resident.dto.ResidentVidRequestDtoV2;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidRequestDtoV2;
+import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -28,6 +48,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1413,8 +1434,8 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateServiceHistoryRequest() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "";
 		String serviceType = "";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
@@ -1422,8 +1443,8 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateServiceHistoryRequestBadServiceType() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "";
 		String serviceType = "BadServiceType";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
@@ -1431,8 +1452,8 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateServiceHistoryRequestBadSortType() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "BadSortType";
 		String serviceType = "DATA_SHARE_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
@@ -1440,16 +1461,16 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateServiceHistoryRequestNullSortType() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String serviceType = "DATA_SHARE_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, null, null, serviceType);
 	}
 
 	@Test
 	public void testValidateServiceHistoryRequestDateCheck() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "DATA_SHARE_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
@@ -1457,8 +1478,8 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateServiceHistoryRequestServiceHistoryServiceRequest() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "SERVICE_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
@@ -1466,8 +1487,8 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateServiceHistoryRequestServiceHistoryID_MANAGEMENT_REQUEST() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "ID_MANAGEMENT_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
@@ -1475,8 +1496,8 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateServiceHistoryRequestServiceHistoryDATA_UPDATE_REQUEST() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "DATA_UPDATE_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
@@ -1484,8 +1505,8 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateServiceHistoryRequestServiceHistoryAUTHENTICATION_REQUEST() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "AUTHENTICATION_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
@@ -1493,24 +1514,24 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateServiceHistoryRequestServiceHistorySuccess() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.now();
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.now();
+		LocalDate toDate = LocalDate.now();
 		String sortType = "DESC";
 		String serviceType = "AUTHENTICATION_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
 	}
 
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateIndividualId() throws Exception{
 		String individualId = "";
-		requestValidator.validateIndividualId(individualId);
+		requestValidator.validateEventId(individualId);
 	}
 
 	@Test
 	public void testValidateIndividualIdSuccess() throws Exception {
-		String individualId = "123456789";
-		requestValidator.validateIndividualId(individualId);
+		String individualId = "1234567897777777";
+		requestValidator.validateEventId(individualId);
 	}
 
 	@Test
@@ -1984,10 +2005,10 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateEventIdLanguageCodeSuccess(){
-		requestValidator.validateEventIdLanguageCode("3434343434","ara");
+		requestValidator.validateEventIdLanguageCode("3434343434777777","ara");
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateEmptyEventIdLanguageCodeSuccess(){
 		requestValidator.validateEventIdLanguageCode("","ara");
 	}
@@ -1997,12 +2018,6 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateSortType", "D", "sortType");
 	}
 
-	@Test
-	public void testValidateLocalTime(){
-		assertEquals(false,ReflectionTestUtils.invokeMethod(requestValidator, "isValidDate", LocalDateTime.of
-				(-1, 4, 4, 4, 4, 4)));
-	}
-
 	@Test(expected = InvalidInputException.class)
 	public void testValidateStatusFilter(){
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateStatusFilter", "", "sortType");
@@ -2010,17 +2025,12 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateFromDateTimeToDateTimeFromDateTimeNull(){
-		requestValidator.validateFromDateTimeToDateTime(null, LocalDateTime.MAX, "fromDate");
+		requestValidator.validateFromDateTimeToDateTime(null, LocalDate.now(), "fromDate");
 	}
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateFromDateTimeToDateTimeToDateTimeNull(){
-		requestValidator.validateFromDateTimeToDateTime(LocalDateTime.MAX, null, "fromDate");
-	}
-
-	@Test(expected = InvalidInputException.class)
-	public void testValidateFromDateTimeToDateTimeToDateTime(){
-		requestValidator.validateFromDateTimeToDateTime(LocalDateTime.MAX, LocalDateTime.MIN, "fromDate");
+		requestValidator.validateFromDateTimeToDateTime(LocalDate.MAX, null, "fromDate");
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -2073,9 +2083,9 @@ public class RequestValidatorTest {
 		assertEquals(true,requestValidator.validateRequestNewApi(request, requestIdType));
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateNullIndividualId() throws Exception{
-		requestValidator.validateIndividualId(null);
+		requestValidator.validateEventId(null);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -2206,9 +2216,9 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateServiceHistoryRequestServiceHistoryAUTHENTICATION_REQUESTInvalidDate() throws Exception{
-		LocalDateTime fromDate = LocalDateTime.of
-				(-1, 4, 4, 4, 4, 4);
-		LocalDateTime toDate = LocalDateTime.now();
+		LocalDate fromDate = LocalDate.of
+				(-1, 4, 4);
+		LocalDate toDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "AUTHENTICATION_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
@@ -2216,9 +2226,9 @@ public class RequestValidatorTest {
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateServiceHistoryRequestServiceHistoryAUTHENTICATION_REQUESTInvalidToDate() throws Exception{
-		LocalDateTime toDate = LocalDateTime.of
-				(-1, 4, 4, 4, 4, 4);
-		LocalDateTime fromDate = LocalDateTime.now();
+		LocalDate toDate = LocalDate.of
+				(-1, 4, 4);
+		LocalDate fromDate = LocalDate.now();
 		String sortType = "ASC";
 		String serviceType = "AUTHENTICATION_REQUEST";
 		requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
