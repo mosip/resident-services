@@ -1702,7 +1702,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private String getDateQuery(LocalDate fromDate, LocalDate toDate, PositionalParams parameters ) {
 		LocalDateTime fromDateTime = fromDate.atStartOfDay();
-		LocalDateTime toDateTime = toDate.atTime(23, 59, 59);
+		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay();
 		return " and cr_dtimes between " +  parameters.add(fromDateTime) + " and " +
 				parameters.add(toDateTime);
 	}
