@@ -715,7 +715,9 @@ public enum EventEnum {
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_GENDER_CODE_SUCCESS("RES-SER-278", RegistrationConstants.SYSTEM, "get gender code success",
 			"get gender code by genderName and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
-			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
+	;
+
 
 	private final String eventId;
 

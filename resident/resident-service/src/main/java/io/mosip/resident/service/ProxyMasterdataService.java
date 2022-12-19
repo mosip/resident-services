@@ -158,5 +158,6 @@ public interface ProxyMasterdataService {
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException;
 
 	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String gendertype, String langCode) throws ResidentServiceCheckedException, IOException;
+
 	
 }

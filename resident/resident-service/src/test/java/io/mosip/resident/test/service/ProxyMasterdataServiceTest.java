@@ -640,5 +640,5 @@ public class ProxyMasterdataServiceTest {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(res);
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
 	}
-	
+
 }
