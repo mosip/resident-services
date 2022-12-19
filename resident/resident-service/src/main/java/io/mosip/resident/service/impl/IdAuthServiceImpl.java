@@ -122,7 +122,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
-		return true;
+		return validateOtpV1(transactionId, individualId, otp).getT1();
 	}
 
 	@Override
