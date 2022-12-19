@@ -422,12 +422,11 @@ public class ProxyMasterdataController {
 	}
 	
 	/**
-	 * Get document types by document category code & language code.
+	 * Get gender code by gender type & language code.
 	 * 
 	 * @param langCode
-	 * @param documentcategorycode 
+	 * @param gendertype 
 	 * @return ResponseWrapper object
-	 * @throws ResidentServiceCheckedException
 	 * @throws IOException 
 	 */
 	@ResponseFilter
