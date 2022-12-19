@@ -43,6 +43,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -224,7 +225,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
-                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(),
+                LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
                 String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS");
         assertNotNull(pdfDocument);
     }
