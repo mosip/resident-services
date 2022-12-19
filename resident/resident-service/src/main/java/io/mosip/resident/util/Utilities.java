@@ -225,26 +225,30 @@ public class Utilities {
 		return rid;
 	}
 
-	public String getRidStatus(String rid) throws ApisResourceAccessException {
+	public ArrayList getRidStatus(String rid) throws ApisResourceAccessException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Utilities::getRidStatus():: entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("rid", rid);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
-
-		ResponseWrapper<?> response = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.GET_RID_STATUS,
+		ResponseWrapper<?> response = (ResponseWrapper<?>)residentServiceRestClient.getApi(ApiName.GET_RID_STATUS,
 				pathsegments, ResponseWrapper.class);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
 
 		if (!response.getErrors().isEmpty()) {
-			throw new IndividualIdNotFoundException("Individual ID not found exception");
-
-		} else {
-			rid = (String) response.getResponse();
+			throw new IndividualIdNotFoundException("rid not found exception");
 		}
-		return rid;
+		ArrayList objectArrayList = objMapper.readValue(
+				objMapper.writeValueAsString(response.getResponse()), ArrayList.class);
+		return objectArrayList;
+	}
+
+	public String getPacketStatus(String rid) throws ApisResourceAccessException, IOException {
+		ArrayList regTransactionResponseDTO = getRidStatus(rid);
+
+		return null;
 	}
 
     public String getJson(String configServerFileStorageURL, String uri) {
