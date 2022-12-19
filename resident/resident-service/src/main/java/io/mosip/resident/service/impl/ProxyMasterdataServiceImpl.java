@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.GenderCodeResponseDTO;
+import io.mosip.resident.dto.GenderTypeListDTO;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -353,7 +356,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		logger.debug("ProxyMasterdataServiceImpl::getLatestIdSchema()::exit");
 		return responseWrapper;
 	}
-	
+
 	@Override
 	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
 			throws ResidentServiceCheckedException {
@@ -398,7 +401,8 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("langcode", langCode);
 		try {
-			responseWrapper=residentServiceRestClient.getApi(ApiName.GENDER_TYPE_BY_LANGCODE, pathsegments, ResponseWrapper.class);
+			responseWrapper = residentServiceRestClient.getApi(ApiName.GENDER_TYPE_BY_LANGCODE, pathsegments,
+					ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
@@ -435,6 +439,27 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::exit");
+		return responseWrapper;
+	}
+
+	@Override
+	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String genderName,
+			String langCode) throws ResidentServiceCheckedException, IOException {
+		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
+		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
+		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
+		ResponseWrapper<?> res = getGenderTypesByLangCode(langCode);
+		GenderTypeListDTO response = JsonUtil.readValue(JsonUtil.writeValueAsString(res.getResponse()),
+				GenderTypeListDTO.class);
+		Optional<String> genderCode = response.getGenderType().stream()
+				.filter(map -> map.getGenderName().equalsIgnoreCase(genderName))
+				.map(map -> map.getCode())
+				.findAny();
+		if (genderCode.isPresent()) {
+			genderCodeResponseDTO.setGenderCode(genderCode.get());
+		}
+		responseWrapper.setResponse(genderCodeResponseDTO);
+		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::exit");
 		return responseWrapper;
 	}
 
