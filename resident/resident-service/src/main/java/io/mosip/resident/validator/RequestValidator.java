@@ -55,7 +55,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -867,7 +867,7 @@ public class RequestValidator {
 		}
     }
 
-    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType, String statusFilter) {
+    public void validateServiceHistoryRequest(LocalDate fromDateTime, LocalDate toDateTime, String sortType, String serviceType, String statusFilter) {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
 		validateStatusFilter(statusFilter, "Request service history API");
@@ -878,14 +878,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateFromDateTimeToDateTime(LocalDateTime fromDateTime, LocalDateTime toDateTime, String request_service_history_api) {
-		if(fromDateTime != null && toDateTime != null) {
-			if(fromDateTime.isAfter(toDateTime)) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
-						request_service_history_api));
-				throw new InvalidInputException(ResidentConstants.FROM_DATE_TIME);
-			}
-		}
+	public void validateFromDateTimeToDateTime(LocalDate fromDateTime, LocalDate toDateTime, String request_service_history_api) {
 		if(fromDateTime == null && toDateTime != null) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
 					request_service_history_api));
@@ -910,7 +903,7 @@ public class RequestValidator {
 		}
 	}
 
-	private boolean isValidDate(LocalDateTime localDateTime) {
+	private boolean isValidDate(LocalDate localDateTime) {
 		if(localDateTime!=null) {
 			if (localDateTime.getYear() < 0 || localDateTime.getMonthValue() < 0 || localDateTime.getDayOfMonth() < 0) {
 				return false;
