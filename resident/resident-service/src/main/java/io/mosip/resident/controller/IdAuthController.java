@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,7 +59,7 @@ public class IdAuthController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<IdAuthResponseDto> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
+	public ResponseEntity<Object> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
 			throws OtpValidationFailedException {
 		logger.debug("IdAuthController::validateOtp()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionId(),
@@ -71,11 +72,12 @@ public class IdAuthController {
 		ValidateOtpResponseDto validateOtpResponseDto = new ValidateOtpResponseDto();
 		validateOtpResponseDto.setAuthStatus(tupleResponse.getT1());
 		validateOtpResponseDto.setTransactionId(requestWrapper.getRequest().getTransactionId());
-		validateOtpResponseDto.setEventId(tupleResponse.getT2());
 		validateOtpResponseDto.setStatus(ResidentConstants.SUCCESS);
 		responseWrapper.setResponse(validateOtpResponseDto);
 		logger.debug("IdAuthController::validateOtp()::exit");
-		return responseWrapper;
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(responseWrapper);
 	}
 
 }

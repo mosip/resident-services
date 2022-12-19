@@ -198,5 +198,12 @@ public class ProxyMasterdataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/gendertypes/langcode"))
 				.andExpect(status().isOk());
 	}
+	
+	@Test
+	public void testGetDocumentTypesByDocumentCategoryCodeAndLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/documenttypes/documentcategorycode/langcode"))
+				.andExpect(status().isOk());
+	}
 
 }
