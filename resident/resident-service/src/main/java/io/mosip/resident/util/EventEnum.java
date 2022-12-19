@@ -709,8 +709,15 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	GET_DOCUMENT_TYPES_EXCEPTION("RES-SER-276", RegistrationConstants.SYSTEM, "get document types failure",
 			"get document types by documentCode and langCode is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_CODE("RES-SER-277", RegistrationConstants.SYSTEM, "get gender code",
+			"get gender code by genderName and langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_CODE_SUCCESS("RES-SER-278", RegistrationConstants.SYSTEM, "get gender code success",
+			"get gender code by genderName and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME)
 	;
+
 
 	private final String eventId;
 
