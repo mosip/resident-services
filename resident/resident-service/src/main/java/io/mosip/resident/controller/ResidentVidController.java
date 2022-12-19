@@ -20,6 +20,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
@@ -48,6 +49,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
 
 /**
  * Resident VID controller class.
@@ -159,10 +161,12 @@ public class ResidentVidController {
 		validator.validateVidCreateV2Request(requestDto, isOtpValidationRequired, residentIndividualId);
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, residentIndividualId));
-		ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest(), residentIndividualId);
+		Tuple2<ResponseWrapper<VidResponseDto>, String> tupleResponse = residentVidService.generateVidV2(requestDto.getRequest(), residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
 				residentIndividualId));
-		return ResponseEntity.ok().body(vidResponseDto);
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(tupleResponse.getT1());
 	}
 
 	@PatchMapping(path = "/vid/{vid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -237,13 +241,14 @@ public class ResidentVidController {
 		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
 		auditUtil.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
-		ResponseWrapper<VidRevokeResponseDTO> vidResponseDto = residentVidService.revokeVid(requestDto.getRequest(),
+		Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> tupleResponse = residentVidService.revokeVidV2(requestDto.getRequest(),
 				vid, residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
 				residentIndividualId));
-		return ResponseEntity.ok().body(vidResponseDto);
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(tupleResponse.getT1());
 	}
-	
 	
 	private String getResidentIndividualId() throws ApisResourceAccessException {
 		return identityServiceImpl.getResidentIndvidualId();

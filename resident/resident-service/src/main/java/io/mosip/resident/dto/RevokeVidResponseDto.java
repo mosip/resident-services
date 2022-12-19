@@ -16,7 +16,6 @@ public class RevokeVidResponseDto extends VidRevokeResponseDTO {
 	 * 
 	 */
 	private static final long serialVersionUID = 1973880019812497700L;
-	private String eventId;
 	private String status;
 
 }

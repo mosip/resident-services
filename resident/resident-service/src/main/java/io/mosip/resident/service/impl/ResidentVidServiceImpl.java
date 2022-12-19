@@ -76,6 +76,8 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
@@ -163,6 +165,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	@Override
 	public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto,
 			String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException {
+		return generateVidV2(requestDto, individualId).getT1();
+	}
+	
+	@Override
+	public Tuple2<ResponseWrapper<VidResponseDto>, String> generateVidV2(BaseVidRequestDto requestDto,
+			String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException {
 		boolean isV2Request = requestDto instanceof VidRequestDtoV2;
 		ResponseWrapper<VidResponseDto> responseDto = new ResponseWrapper<>();
 		NotificationRequestDto notificationRequestDto = isV2Request? new NotificationRequestDtoV2() : new NotificationRequestDto();
@@ -192,10 +200,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		String email = identityDTO.getEmail();
 		String phone = identityDTO.getPhone();
+		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
 			if(Utilitiy.isSecureSession()){
 				residentTransactionEntity = createResidentTransactionEntity(requestDto);
+				if (residentTransactionEntity != null) {
+	    			eventId = residentTransactionEntity.getEventId();
+	    		}
 			}
 			String uin = identityDTO.getUIN();
 			// generate vid
@@ -213,7 +225,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.SUCCESS);
 				notificationRequestDtoV2.setRequestType(RequestType.GENERATE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationResponseDTO=notificationService
 						.sendNotification(notificationRequestDto, vidRequestDtoV2.getChannels(), email, phone);
@@ -230,7 +242,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				vidResponseDto = generateVidResponseDto;
 				generateVidResponseDto.setMaskedEmail(notificationResponseDTO.getMaskedEmail());
 				generateVidResponseDto.setMaskedPhone(notificationResponseDTO.getMaskedPhone());
-				generateVidResponseDto.setEventId(residentTransactionEntity.getEventId());
 				generateVidResponseDto.setStatus(ResidentConstants.SUCCESS);
 			} else {
 				vidResponseDto = new VidResponseDto();
@@ -255,7 +266,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.FAILURE);
 				notificationRequestDtoV2.setRequestType(RequestType.GENERATE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationService.sendNotification(notificationRequestDto, vidRequestDtoV2.getChannels(), email, phone);
 			} else {
@@ -276,7 +287,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.FAILURE);
 				notificationRequestDtoV2.setRequestType(RequestType.GENERATE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationService.sendNotification(notificationRequestDto, vidRequestDtoV2.getChannels(), email, phone);
 			} else {
@@ -297,7 +308,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.FAILURE);
 				notificationRequestDtoV2.setRequestType(RequestType.GENERATE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationService.sendNotification(notificationRequestDto, vidRequestDtoV2.getChannels(), email, phone);
 			} else {
@@ -329,7 +340,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
-		return responseDto;
+		return Tuples.of(responseDto, eventId);
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -397,6 +408,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	@Override
 	public ResponseWrapper<VidRevokeResponseDTO> revokeVid(BaseVidRevokeRequestDTO requestDto, String vid, String indivudalId)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		return revokeVidV2(requestDto, vid, indivudalId).getT1();
+	}
+
+	@Override
+	public Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> revokeVidV2(BaseVidRevokeRequestDTO requestDto, String vid, String indivudalId)
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
 		boolean isV2Request = requestDto instanceof VidRevokeRequestDTOV2;
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 		NotificationRequestDto notificationRequestDto = isV2Request? new NotificationRequestDtoV2() : new NotificationRequestDto();
@@ -426,9 +443,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 		}
+		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		if(Utilitiy.isSecureSession()) {
 			residentTransactionEntity = createResidentTransEntity(vid, indivudalId);
+			if (residentTransactionEntity != null) {
+				eventId = residentTransactionEntity.getEventId();
+			}
 		}
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(indivudalId);
 		String uin = identityDTO.getUIN();
@@ -472,7 +493,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.SUCCESS);
 				notificationRequestDtoV2.setRequestType(RequestType.REVOKE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationResponseDTO=notificationService.sendNotification(notificationRequestDto);
 			} else {
@@ -486,7 +507,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(isV2Request) {
 				RevokeVidResponseDto revokeVidResponseDto = new RevokeVidResponseDto();
 				vidRevokeResponseDto = revokeVidResponseDto;
-				revokeVidResponseDto.setEventId(residentTransactionEntity.getEventId());
 				revokeVidResponseDto.setStatus(ResidentConstants.SUCCESS);
 			} else {
 				vidRevokeResponseDto = new VidRevokeResponseDTO();
@@ -506,7 +526,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.FAILURE);
 				notificationRequestDtoV2.setRequestType(RequestType.REVOKE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationService.sendNotification(notificationRequestDto);
 			} else {
@@ -526,7 +546,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.FAILURE);
 				notificationRequestDtoV2.setRequestType(RequestType.REVOKE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationService.sendNotification(notificationRequestDto);
 			} else {
@@ -546,7 +566,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
 				notificationRequestDtoV2.setTemplateType(TemplateType.FAILURE);
 				notificationRequestDtoV2.setRequestType(RequestType.REVOKE_VID);
-				notificationRequestDtoV2.setEventId(residentTransactionEntity.getEventId());
+				notificationRequestDtoV2.setEventId(eventId);
 
 				notificationService.sendNotification(notificationRequestDto);
 			} else {
@@ -578,7 +598,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
-		return responseDto;
+		return Tuples.of(responseDto, eventId);
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(String vid, String indivudalId) throws ApisResourceAccessException, ResidentServiceCheckedException {
