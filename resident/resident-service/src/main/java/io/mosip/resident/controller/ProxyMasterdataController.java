@@ -1,9 +1,9 @@
 package io.mosip.resident.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -418,6 +418,34 @@ public class ProxyMasterdataController {
 		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(documentcategorycode,langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_SUCCESS);
 		logger.debug("ProxyMasterdataController::getDocumentTypesByDocumentCategoryLangCode::exit");
+		return responseWrapper;
+	}
+	
+	/**
+	 * Get document types by document category code & language code.
+	 * 
+	 * @param langCode
+	 * @param documentcategorycode 
+	 * @return ResponseWrapper object
+	 * @throws ResidentServiceCheckedException
+	 * @throws IOException 
+	 */
+	@ResponseFilter
+	@GetMapping("/proxy/masterdata/gendercode/{gendertype}/{langcode}")
+	@Operation(summary = "getGenderCodeByGenderTypeAndLangCode", description = "getGenderCodeByGenderTypeAndLangCode", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getGenderCodeByGenderTypeAndLangCode(@PathVariable("gendertype") String gendertype,@PathVariable("langcode") String langCode)
+			throws ResidentServiceCheckedException, IOException {
+		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(gendertype,langCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_SUCCESS);
+		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::exit");
 		return responseWrapper;
 	}
 }
