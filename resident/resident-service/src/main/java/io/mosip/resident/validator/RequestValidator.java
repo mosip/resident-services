@@ -879,13 +879,6 @@ public class RequestValidator {
 	}
 
 	public void validateFromDateTimeToDateTime(LocalDate fromDateTime, LocalDate toDateTime, String request_service_history_api) {
-//		if(fromDateTime != null && toDateTime != null) {
-//			if(fromDateTime.compareTo(toDateTime)) {
-//				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
-//						request_service_history_api));
-//				throw new InvalidInputException(ResidentConstants.FROM_DATE_TIME);
-//			}
-//		}
 		if(fromDateTime == null && toDateTime != null) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
 					request_service_history_api));

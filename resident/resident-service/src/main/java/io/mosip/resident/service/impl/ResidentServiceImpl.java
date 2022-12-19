@@ -1701,8 +1701,6 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String getDateQuery(LocalDate fromDate, LocalDate toDate, PositionalParams parameters ) {
-		System.out.println(LocalDateTime.now());
-		System.out.println(LocalTime.MIN);
 		LocalDateTime fromDateTime = fromDate.atStartOfDay();
 		LocalDateTime toDateTime = toDate.atTime(23, 59, 59);
 		return " and cr_dtimes between " +  parameters.add(fromDateTime) + " and " +
