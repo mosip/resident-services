@@ -1,48 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -151,8 +110,48 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -1475,8 +1474,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
-			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
-			String statusFilter, String searchText, String langCode)
+																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
+																				 String statusFilter, String searchText, String langCode)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {
@@ -1603,8 +1602,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
-			Integer pageStart, Integer pageFetch, LocalDateTime fromDateTime, LocalDateTime toDateTime,
-			String serviceType, String statusFilter, String searchText, String langCode)
+																						 Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime,
+																						 String serviceType, String statusFilter, String searchText, String langCode)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
@@ -1618,8 +1617,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
-			Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDateTime fromDateTime,
-			LocalDateTime toDateTime, String serviceType, String langCode)
+																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
+																		LocalDate toDateTime, String serviceType, String langCode)
 			throws ResidentServiceCheckedException {
 		PositionalParams positionalParams = new PositionalParams();
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter,
@@ -1640,8 +1639,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	public String getDynamicNativeQueryString(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
-			String statusFilter, String searchText, LocalDateTime fromDateTime, LocalDateTime toDateTime,
-			String serviceType, PositionalParams positionalParams) {
+											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
+											  String serviceType, PositionalParams positionalParams) {
 		
 		String query = "SELECT * FROM resident_transaction  where token_id = "
 				+ positionalParams.add(idaToken);
@@ -1701,8 +1700,11 @@ public class ResidentServiceImpl implements ResidentService {
 		return " and request_type_code in (" +  params.add(serviceTypeListString) + ")";
 	}
 
-	private String getDateQuery(LocalDateTime fromDateTime, LocalDateTime toDateTime, PositionalParams parameters ) {
-		return " and cr_dtimes between " +  parameters.add(fromDateTime) + " and " + parameters.add(toDateTime);
+	private String getDateQuery(LocalDate fromDate, LocalDate toDate, PositionalParams parameters ) {
+		LocalDateTime fromDateTime = fromDate.atStartOfDay();
+		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay();
+		return " and cr_dtimes between " +  parameters.add(fromDateTime) + " and " +
+				parameters.add(toDateTime);
 	}
 
 	private String getSearchQuery(String searchText, PositionalParams params) {
@@ -2053,8 +2055,8 @@ public class ResidentServiceImpl implements ResidentService {
 	 * create the template for service history PDF and converted template into PDF
 	 */
 	public byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
-			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
-			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
+										 String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
+										 String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
 		String requestProperty = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);

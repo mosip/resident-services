@@ -1,6 +1,7 @@
 package io.mosip.resident.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +23,6 @@ import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
@@ -62,8 +62,8 @@ public interface ResidentService {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
-			LocalDateTime fromDateTime, LocalDateTime toDateTime, String serviceType, String sortType,
-			String searchColumn, String searchText, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException;
+																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
+																		  String searchColumn, String searchText, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	byte[] downloadCard(String individualId, String idType)
 			throws ResidentServiceCheckedException;
@@ -85,8 +85,8 @@ public interface ResidentService {
 	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
-			String languageCode, LocalDateTime eventReqDateTime, LocalDateTime fromDateTime, LocalDateTime toDateTime,
-			String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
+								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
+								  String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
 
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException;
 

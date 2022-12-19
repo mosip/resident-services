@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -353,8 +354,8 @@ public class ResidentControllerTest {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
-		residentController.getServiceHistory("eng", 1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
-				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
+		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
+				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
 				ServiceType.AUTHENTICATION_REQUEST.name(), null, null);
 		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());

@@ -1,25 +1,5 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -38,6 +18,25 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * This class is used to test the get service history service
@@ -77,8 +76,8 @@ public class ResidentServiceGetServiceHistoryTest {
 
     private int pageStart;
     private int pageSize;
-    private LocalDateTime fromDate;
-    private LocalDateTime toDate;
+    private LocalDate fromDate;
+    private LocalDate toDate;
     private String serviceType;
     private String sortType;
     List<ServiceHistoryResponseDto> serviceHistoryResponseDto;
@@ -138,10 +137,10 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testGetServiceHistorySuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 2;
         pageSize = 3;
-        fromDate = LocalDateTime.now();
-        toDate = LocalDateTime.now();
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
+        fromDate = LocalDate.now();
+        toDate = LocalDate.now();
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
     }
 
     @Test
@@ -199,8 +198,8 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testServiceHistoryWithDifferentParameters() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 1;
         pageSize = 10;
-        fromDate = LocalDateTime.MAX;
-        toDate = LocalDateTime.MIN;
+        fromDate = LocalDate.MAX;
+        toDate = LocalDate.MIN;
         serviceType = ServiceType.AUTHENTICATION_REQUEST.toString();
         sortType = "ASC";
         statusFilter = "SUCCESS";
