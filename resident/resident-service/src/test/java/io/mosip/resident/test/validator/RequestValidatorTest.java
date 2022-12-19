@@ -12,7 +12,26 @@ import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.DownloadPersonalizedCardDto;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentVidRequestDto;
+import io.mosip.resident.dto.ResidentVidRequestDtoV2;
+import io.mosip.resident.dto.VidRequestDto;
+import io.mosip.resident.dto.VidRequestDtoV2;
+import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
@@ -1999,12 +2018,6 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateSortType", "D", "sortType");
 	}
 
-	@Test
-	public void testValidateLocalTime(){
-		assertEquals(false,ReflectionTestUtils.invokeMethod(requestValidator, "isValidDate", LocalDateTime.of
-				(-1, 4, 4, 4, 4, 4)));
-	}
-
 	@Test(expected = InvalidInputException.class)
 	public void testValidateStatusFilter(){
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateStatusFilter", "", "sortType");
@@ -2018,11 +2031,6 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateFromDateTimeToDateTimeToDateTimeNull(){
 		requestValidator.validateFromDateTimeToDateTime(LocalDate.MAX, null, "fromDate");
-	}
-
-	@Test(expected = InvalidInputException.class)
-	public void testValidateFromDateTimeToDateTimeToDateTime(){
-		requestValidator.validateFromDateTimeToDateTime(LocalDate.MAX, LocalDate.MIN, "fromDate");
 	}
 
 	@Test(expected = InvalidInputException.class)
