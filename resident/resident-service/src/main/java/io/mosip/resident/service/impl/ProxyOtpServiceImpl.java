@@ -221,7 +221,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
-		residentTransactionEntity.setAid(userIdOtpRequest.getRequest().getUserId());
+		residentTransactionEntity.setStatusComment(userIdOtpRequest.getRequest().getUserId());
 		return residentTransactionEntity;
 	}
 
