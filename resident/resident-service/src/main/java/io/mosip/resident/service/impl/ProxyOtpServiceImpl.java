@@ -143,7 +143,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 		ResidentTransactionEntity residentTransactionEntity=null;
 
         try {
-        	residentTransactionEntity = createResidentTransactionEntity(userIdOtpRequest);
+        	residentTransactionEntity = createResidentTransactionEntity(userIdOtpRequest.getRequest().getUserId());
 			if (residentTransactionEntity != null) {
     			eventId = residentTransactionEntity.getEventId();
     		}
@@ -212,8 +212,8 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         return Tuples.of(response, eventId);
     }
 
-	private ResidentTransactionEntity createResidentTransactionEntity(
-			MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
+	private ResidentTransactionEntity createResidentTransactionEntity(String userId)
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
@@ -221,7 +221,11 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary("in-progress");
-		residentTransactionEntity.setStatusComment(userIdOtpRequest.getRequest().getUserId());
+		if (requestValidator.phoneValidator(userId)) {
+			residentTransactionEntity.setStatusComment("Update phone as " + userId);
+		} else if (requestValidator.emailValidator(userId)) {
+			residentTransactionEntity.setStatusComment("Update email as " + userId);
+		}
 		return residentTransactionEntity;
 	}
 
