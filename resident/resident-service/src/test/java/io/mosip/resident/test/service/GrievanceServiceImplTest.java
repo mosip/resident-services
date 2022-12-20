@@ -18,8 +18,6 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -57,7 +55,14 @@ public class GrievanceServiceImplTest {
     }
 
     @Test
-    public void testGetGrievanceTicket() throws IOException, ApisResourceAccessException {
+    public void testGetGrievanceTicket() throws ApisResourceAccessException {
+        ResponseWrapper<Object> actualResult = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
+        assertNotNull(actualResult);
+    }
+
+    @Test(expected = ApisResourceAccessException.class)
+    public void testGetGrievanceTicketFailed() throws ApisResourceAccessException {
+        Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
         ResponseWrapper<Object> actualResult = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
         assertNotNull(actualResult);
     }
