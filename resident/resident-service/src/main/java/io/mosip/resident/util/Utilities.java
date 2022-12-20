@@ -9,10 +9,20 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.CardReadyToDownloadTransactionStage;
+import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.PacketStatusFailure;
+import io.mosip.resident.constant.PacketStatusInProgress;
+import io.mosip.resident.constant.PacketStatusSuccess;
 import io.mosip.resident.constant.RegistrationConstants;
+import io.mosip.resident.constant.RequestReceivedTransactionStage;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TransactionStage;
+import io.mosip.resident.constant.UinGenerationStageTransactionStage;
+import io.mosip.resident.constant.ValidationStageTransactionStage;
+import io.mosip.resident.constant.VerificationStageTransactionStage;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -42,6 +52,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
+import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
+import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+
+
 /**
  * The Class Utilities.
  *
@@ -54,7 +69,6 @@ import java.util.UUID;
  */
 @Data
 public class Utilities {
-
 	private final Logger logger = LoggerConfiguration.logConfig(Utilities.class);
 	/** The reg proc logger. */
 	private static final String sourceStr = "source";
@@ -236,22 +250,82 @@ public class Utilities {
 				pathsegments, ResponseWrapper.class);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
-
-		if (!response.getErrors().isEmpty()) {
-			throw new IndividualIdNotFoundException("rid not found exception");
-		}
 		ArrayList objectArrayList = objMapper.readValue(
 				objMapper.writeValueAsString(response.getResponse()), ArrayList.class);
 		return objectArrayList;
 	}
 
-	public String getPacketStatus(String rid) throws ApisResourceAccessException, IOException {
+	public HashMap<String, String> getPacketStatus(String rid) throws ApisResourceAccessException, IOException {
+		String aidStatus="";
+		String transactionTypeCode="";
+		HashMap<String, String> packetStatusMap = new HashMap<>();
 		ArrayList regTransactionResponseDTO = getRidStatus(rid);
-
-		return null;
+		for(Object object : regTransactionResponseDTO){
+			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
+			String statusCode = (String) packetStatus.get(STATUS_CODE);
+			if(PacketStatusFailure.containsStatus(statusCode)){
+				aidStatus = EventStatus.FAILED.name();
+				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
+				packetStatusMap.put(AID_STATUS, aidStatus);
+				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
+				return packetStatusMap;
+			}
+		}
+		for(Object object : regTransactionResponseDTO){
+			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
+			String statusCode = (String) packetStatus.get(STATUS_CODE);
+			if(PacketStatusInProgress.containsStatus(statusCode)){
+				aidStatus = EventStatus.IN_PROGRESS.name();
+				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
+				packetStatusMap.put(AID_STATUS, aidStatus);
+				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
+				return packetStatusMap;
+			}
+		}
+		for(Object object : regTransactionResponseDTO){
+			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
+			String statusCode = (String) packetStatus.get(STATUS_CODE);
+			if(PacketStatusSuccess.containsStatus(statusCode)){
+				aidStatus = EventStatus.SUCCESS.name();
+				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
+				packetStatusMap.put(AID_STATUS, aidStatus);
+				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
+				return packetStatusMap;
+			}
+		}
+		return packetStatusMap;
 	}
 
-    public String getJson(String configServerFileStorageURL, String uri) {
+	private String getTransactionTypeCode(ArrayList regTransactionResponseDTO) {
+		String typeCode="";
+		for(Object object : regTransactionResponseDTO){
+			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
+			String transactionTypeCode = (String) packetStatus.get(TRANSACTION_TYPE_CODE);
+			if(CardReadyToDownloadTransactionStage.containsStatus(transactionTypeCode)){
+				typeCode = TransactionStage.CARD_READY_TO_DOWNLOAD.name();
+				break;
+			}
+			if(UinGenerationStageTransactionStage.containsStatus(transactionTypeCode)){
+				typeCode = TransactionStage.UIN_GENERATION_STAGE.name();
+				break;
+			}
+			if(VerificationStageTransactionStage.containsStatus(transactionTypeCode)){
+				typeCode = TransactionStage.VERIFICATION_STAGE.name();
+				break;
+			}
+			if(ValidationStageTransactionStage.containsStatus(transactionTypeCode)){
+				typeCode = TransactionStage.VALIDATION_STAGE.name();
+				break;
+			}
+			if(RequestReceivedTransactionStage.containsStatus(transactionTypeCode)){
+				typeCode = TransactionStage.REQUEST_RECEIVED.name();
+				break;
+			}
+		}
+		return typeCode;
+	}
+
+	public String getJson(String configServerFileStorageURL, String uri) {
         if (StringUtils.isBlank(regProcessorIdentityJson)) {
             return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
         }
