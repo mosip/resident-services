@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.mosip.resident.dto.NotificationRequestDtoV2;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -292,6 +293,50 @@ public class NotificationServiceTest {
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
 		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
+	}
+
+	@Test
+	public void emailFailedAndSMSSuccessTestV2() throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("PHONE"),
+				"ka@gm.com", "8897878787");
+		assertEquals(SMS_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void emailFailedAndEmailSuccessTestV2() throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("EMAIL"),
+				"ka@gm.com", "8897878787");
+		assertEquals(EMAIL_SUCCESS, response.getMessage());
 	}
 
 }
