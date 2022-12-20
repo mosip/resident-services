@@ -11,6 +11,7 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
@@ -22,6 +23,7 @@ import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -32,12 +34,16 @@ import io.mosip.resident.dto.ResidentVidRequestDtoV2;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,6 +86,9 @@ public class RequestValidatorTest {
 
 	@Mock
 	private Environment environment;
+
+	@Mock
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -2327,6 +2336,23 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateUnlockForSeconds(){
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateUnlockForSeconds", -1L, "validateUnlockForSeconds");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateGrievanceRequestDtoSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(2));
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
+		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
+		grievanceRequestDTO.setMessage("message");
+		grievanceRequestDTO.setEventId("1212121212121211");
+		grievanceRequestDTOMainRequestDTO.setRequest(grievanceRequestDTO);
+		grievanceRequestDTOMainRequestDTO.setId("id");
+		grievanceRequestDTOMainRequestDTO.setVersion("version");
+		grievanceRequestDTOMainRequestDTO.setRequesttime(DateTime.now().toDate());
+		requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 	}
 
 }
