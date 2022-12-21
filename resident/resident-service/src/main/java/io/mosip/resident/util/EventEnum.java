@@ -689,8 +689,15 @@ public enum EventEnum {
 			"download registration center success",
 			"download registration center success based on language code,longitude,latitude and distance", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME)
-	;
+			RegistrationConstants.APPLICATION_NAME),
+	
+	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page start value %s", "RES-SER", "Residence service", "%s", "pageStart",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page fetch value %s", "RES-SER", "Residence service", "%s", "pageFetch",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
 
 	private final String eventId;
 
