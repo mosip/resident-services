@@ -408,13 +408,6 @@ public class NotificationServiceTest {
 		assertEquals(SMS_SUCCESS, response.getMessage());
 	}
 
-	@Test
-	public void testGetTemplate(){
-		ReflectionTestUtils.invokeMethod(notificationService, "getTemplate",
-				"eng", "ack-download-personalized-card");
-
-	}
-
 	@Test(expected = ResidentServiceException.class)
 	public void testGetTemplateFailed() throws ApisResourceAccessException {
 		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
