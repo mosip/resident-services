@@ -407,4 +407,12 @@ public class NotificationServiceTest {
 		assertEquals(SMS_SUCCESS, response.getMessage());
 	}
 
+	@Test
+	public void testGetTemplate(){
+		assertEquals("Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.",
+				ReflectionTestUtils.invokeMethod(notificationService, "getTemplate",
+				"eng", "ack-download-personalized-card"));
+
+	}
+
 }
