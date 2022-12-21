@@ -434,10 +434,10 @@ public class ResidentControllerTest {
 		requestDTO.setVersion("v1");
 
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
-		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
-		ResponseWrapper<Object> requestWrapper = residentController
+		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
+		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
-		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
+		assertEquals(new ResidentUpdateResponseDTO(), ((ResponseWrapper<Object>)responseEntity.getBody()).getResponse());
 	}
 
 	@Test

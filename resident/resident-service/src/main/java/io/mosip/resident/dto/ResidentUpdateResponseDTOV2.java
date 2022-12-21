@@ -8,6 +8,6 @@ import lombok.Data;
  */
 @Data
 public class ResidentUpdateResponseDTOV2 {
-    private String eventId;
+    private String status;
     private String message;
 }

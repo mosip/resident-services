@@ -77,5 +77,11 @@ public class ResidentServiceException extends BaseUncheckedException implements 
 		this(err);
 		this.metadata = metadata;
 	}
+	
+	public ResidentServiceException(String errorCode, String errorMessage, Throwable rootCause,
+			Map<String, Object> metadata) {
+		this(errorCode, errorMessage, rootCause);
+		this.metadata = metadata;
+	}
 
 }
