@@ -339,4 +339,72 @@ public class NotificationServiceTest {
 		assertEquals(EMAIL_SUCCESS, response.getMessage());
 	}
 
+	@Test
+	public void emailEmailSuccessTestV2() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(notificationService, "notificationType", "EMAIL");
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, null,
+				"ka@gm.com", "8897878787");
+		assertEquals(EMAIL_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void smsSuccessTestV2() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(notificationService, "notificationType", "SMS");
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, null,
+				"ka@gm.com", "8897878787");
+		assertEquals(SMS_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void emailAndSMSSuccessTestV2() throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("PHONE", "EMAIL"),
+				"ka@gm.com", "8897878787");
+		assertEquals(SMS_SUCCESS, response.getMessage());
+	}
+
 }
