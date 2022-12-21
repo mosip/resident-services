@@ -415,4 +415,13 @@ public class NotificationServiceTest {
 
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void testGetTemplateFailed() throws ApisResourceAccessException {
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
+				Mockito.any(Class.class))).thenReturn(null);
+		ReflectionTestUtils.invokeMethod(notificationService, "getTemplate",
+						"eng", "ack-download-personalized-card");
+
+	}
+
 }
