@@ -7,9 +7,9 @@ Enum to store the TransactionStage
 @author Kamesh Shekhar Prasad
  */
 public enum PacketStatus {
-    SUCCESS("Request received", List.of("PACKET_RECEIVER", "UPLOAD_PACKET", "VALIDATE_PACKET", "PACKET_CLASSIFICATION")),
+    SUCCESS("SUCCESS", List.of("PROCESSED", "SUCCESS", "UIN_GENERATED")),
     IN_PROGRESS("IN-PROGRESS", List.of("PROCESSING", "REREGISTER", "RESEND", "RECEIVED", "UPLOAD_PENDING",
-            "AWAITING_INFORMATION", "SUCCESS")),
+            "AWAITING_INFORMATION")),
     FAILURE("FAILURE", List.of("REJECTED", "FAILURE", "REPROCESS_FAILED"));
     private List<String> listOfName;
     private String name;
