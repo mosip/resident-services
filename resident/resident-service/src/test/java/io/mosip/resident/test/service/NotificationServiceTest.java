@@ -410,8 +410,8 @@ public class NotificationServiceTest {
 
 	@Test
 	public void testGetTemplate(){
-		assertNotNull(ReflectionTestUtils.invokeMethod(notificationService, "getTemplate",
-				"eng", "ack-download-personalized-card"));
+		ReflectionTestUtils.invokeMethod(notificationService, "getTemplate",
+				"eng", "ack-download-personalized-card");
 
 	}
 
