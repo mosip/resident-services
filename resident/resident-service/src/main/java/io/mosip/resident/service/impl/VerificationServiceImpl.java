@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -33,6 +34,12 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
+    
+    @Value("${resident.channel.verification.status.id}")
+    private String residentChannelVerificationStatusId;
+    
+    @Value("${resident.channel.verification.status.version}")
+    private String residentChannelVerificationStatusVersion;
 
     private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
@@ -52,8 +59,8 @@ public class VerificationServiceImpl implements VerificationService {
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);
         verificationResponseDTO.setResponse(verificationStatusDTO);
-        verificationResponseDTO.setId("mosip.resident.channel.verification.status");
-        verificationResponseDTO.setVersion("v1");
+        verificationResponseDTO.setId(residentChannelVerificationStatusId);
+        verificationResponseDTO.setVersion(residentChannelVerificationStatusVersion);
         verificationResponseDTO.setResponseTime(DateTime.now().toString());
         return verificationResponseDTO;
     }
