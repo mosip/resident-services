@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.constant.TransactionStage;
+import io.mosip.resident.dto.CheckStatusResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -56,6 +58,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
 /**
@@ -75,6 +78,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String TRANSACTION_COUNT = "transactionCount";
     private static final String CARD_FORMAT = "cardFormat";
     private static final Object VID_CARD = "vidCard";
+    private static final String CARD_READY_TO_DOWNLOAD = "Card ready to download";
+    private static final String IN_PROGRESS = "IN-PROGRESS";
 
     @Autowired
     private Utilities utilities;
@@ -112,10 +117,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
-    public Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
+    public Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
         String rid = "";
         String eventId = utilitiy.createEventId();
         byte[] pdfBytes = new byte[0];
+        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
@@ -124,7 +130,17 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
-                    pdfBytes = residentService.getUINCard(rid);
+                    HashMap<String, String> packetStatusMap = utilities.getPacketStatus(rid);
+                    String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
+                    String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+                    if(aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name()) &&
+                            transactionStage.equalsIgnoreCase(CARD_READY_TO_DOWNLOAD)){
+                        pdfBytes = residentService.getUINCard(rid);
+                    } else{
+                          checkStatusResponseDTOResponseWrapper =
+                                getCheckStatusResponse(packetStatusMap,
+                                downloadCardRequestDTOMainRequestDTO);
+                    }
                 } else if (idType.equalsIgnoreCase(VID)) {
                     ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(individualId);
                     if(residentTransactionEntity !=null ){
@@ -168,7 +184,24 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return Tuples.of(pdfBytes, eventId);
+        return Tuples.of(pdfBytes, eventId, checkStatusResponseDTOResponseWrapper);
+    }
+
+    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap,
+                                                                           MainRequestDTO<DownloadCardRequestDTO>
+                                                                                   downloadCardRequestDTOMainRequestDTO) {
+        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
+        CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
+        String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
+        String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+        checkStatusResponseDTO.setAidStatus(aidStatus);
+        checkStatusResponseDTO.setTransactionID(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
+        checkStatusResponseDTO.setTransactionStage(transactionStage);
+        checkStatusResponseDTO.setIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
+        checkStatusResponseDTOResponseWrapper.setResponse(checkStatusResponseDTO);
+        checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_ID));
+        checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECK_STATUS_VERSION));
+        return checkStatusResponseDTOResponseWrapper;
     }
 
     private void insertDataForDownloadCard(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO,

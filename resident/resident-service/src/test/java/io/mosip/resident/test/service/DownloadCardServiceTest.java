@@ -164,10 +164,14 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testGetDownloadCardPdfAID(){
+    public void testGetDownloadCardPdfAID() throws ApisResourceAccessException, IOException {
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put(ResidentConstants.AID_STATUS, "SUCCESS");
+        hashMap.put(ResidentConstants.TRANSACTION_TYPE_CODE, "SUCCESS");
+        Mockito.when(utilities.getPacketStatus(Mockito.anyString())).thenReturn(hashMap);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
-        assertEquals(pdfbytes, actualResult.getT1());
+        assertNotNull(actualResult.getT1());
     }
 
     @Test(expected = ResidentServiceException.class)

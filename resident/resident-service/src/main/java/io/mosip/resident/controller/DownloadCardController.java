@@ -4,6 +4,7 @@ import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.util.function.Tuple3;
 
 import java.io.ByteArrayInputStream;
 import java.util.Objects;
@@ -66,7 +68,13 @@ public class DownloadCardController {
         logger.debug("DownloadCardController::downloadCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
-        Tuple2<byte[], String> tupleResponse = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+        Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>> tupleResponse =
+                (Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>>)
+                        downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponse = tupleResponse.getT3();
+        if(checkStatusResponse.getResponse() != null){
+            return ResponseEntity.badRequest().body(checkStatusResponse);
+        }
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
             throw new CardNotReadyException();

@@ -49,7 +49,7 @@ public class GrievanceServiceImpl implements GrievanceService {
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
 
     @Override
-    public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws IOException, ApisResourceAccessException {
+    public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(grievanceRequestDTOMainRequestDTO.getId());
         responseWrapper.setVersion(grievanceRequestDTOMainRequestDTO.getVersion());
@@ -61,15 +61,6 @@ public class GrievanceServiceImpl implements GrievanceService {
             HashMap<String, String> response = new HashMap<>();
             response.put(TICKET_ID, ticketId);
             responseWrapper.setResponse(response);
-        }
-        catch (ResidentServiceCheckedException e) {
-            auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
-            logger.error("Unable to get attributes- "+e);
-            throw new ResidentServiceException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED, e);
-        } catch (IOException e) {
-            auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
-            logger.error("Unable to get attributes- "+e);
-            throw new IOException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         } catch (ApisResourceAccessException e) {
             throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
@@ -94,7 +85,7 @@ public class GrievanceServiceImpl implements GrievanceService {
 
     private MainRequestDTO<GrievanceRequestDTO> fillDefaultValueFromProfile(MainRequestDTO<GrievanceRequestDTO>
                                                                                     grievanceRequestDTOMainRequestDTO)
-            throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+            throws ApisResourceAccessException {
         if (grievanceRequestDTOMainRequestDTO.getRequest().getName() == null) {
             grievanceRequestDTOMainRequestDTO.getRequest().setName(identityService.getAvailableclaimValue(
                     this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE)));
