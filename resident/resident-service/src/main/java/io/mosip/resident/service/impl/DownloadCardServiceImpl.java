@@ -133,8 +133,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     HashMap<String, String> packetStatusMap = utilities.getPacketStatus(rid);
                     String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
                     String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-                    if(aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name()) ||
-                            aidStatus.equalsIgnoreCase(IN_PROGRESS) &&
+                    if(aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name()) &&
                             transactionStage.equalsIgnoreCase(CARD_READY_TO_DOWNLOAD)){
                         pdfBytes = residentService.getUINCard(rid);
                     } else{
