@@ -8,6 +8,8 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,7 @@ public class LoginCheck {
 	private static final String HTTP_FORWARDED = "HTTP_FORWARDED";
 	private static final String HTTP_VIA = "HTTP_VIA";
 	private static final String REMOTE_ADDR = "REMOTE_ADDR";
+	private static final CharSequence AUTHORIZATION_TOKEN = "Authorization";
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
@@ -63,15 +66,15 @@ public class LoginCheck {
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..)) && args(redirectURI,state,sessionState,code,stateCookie,req,res)")
 	public void getUserDetails(String redirectURI, String state, String sessionState, String code, String stateCookie,
-			HttpServletRequest req, HttpServletResponse res) {
+			HttpServletRequest req, HttpServletResponse res) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("LoginCheck::getUserDetails()::entry");
 		String idaToken = "";
 		Collection<String> cookies = res.getHeaders(SET_COOKIE);
 		for (String cookie : cookies) {
-			if (cookie.contains(ID_TOKEN)) {
-				Optional<String> cookieIdToken = getCookieValueFromHeader(cookie);
-				if (cookieIdToken.isPresent()) {
-					idaToken = identityServiceImpl.getResidentIdaTokenFromIdTokenJwt(cookieIdToken.get());
+			if (cookie.contains(AUTHORIZATION_TOKEN)) {
+				Optional<String> authorizationCookie = getCookieValueFromHeader(cookie);
+				if (authorizationCookie.isPresent()) {
+					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(authorizationCookie.get());
 				}
 			}
 		}
@@ -145,9 +148,9 @@ public class LoginCheck {
 			if (value == null || value.isEmpty()) {
 				continue;
 			}
-			String[] parts = value.split("\\s*,\\s*");
+			String[] parts = value.split(",");
 			logger.debug("LoginCheck::getClientIp()::exit");
-			return parts[0];
+			return parts[0].trim();
 		}
 		logger.debug("LoginCheck::getClientIp()::exit - excecuted till end");
 		return req.getRemoteAddr();

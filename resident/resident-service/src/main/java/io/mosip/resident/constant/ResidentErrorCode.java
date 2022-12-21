@@ -99,7 +99,7 @@ public enum ResidentErrorCode {
 	VID_VALIDATION("RES-SER-471","This VID cannot be revoked since you have logged in using same VID"),
 	CARD_NOT_FOUND("RES-SER-472", "Card not found." ),
 	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
-			"DOWNLOAD_PERSONALIZED_CARD, UPDATE_MY_UIN"),
+			"UPDATE_MY_UIN"),
 	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
 	PAYMENT_FAILED("RES-SER-475", "Payment has failed"),
 	PAYMENT_CANCELED("RES-SER-476", "Payment has been cancelled"),
@@ -108,7 +108,12 @@ public enum ResidentErrorCode {
 	DOWNLOAD_PERSONALIZED_CARD("RES-SER-479", "Error in downloading personalized card" ),
 	VID_REQUEST_CARD_FAILED("RES-SER-480", "Error in Request card from vid"),
 	PATNER_NOT_FOUND("RES-SER-481","Partner not found."),
-	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found.");
+	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found."),
+	CARD_NOT_READY("RES_SER_509", "The card is not ready for download."),
+	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
+	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
+	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- ");
 
 	private final String errorCode;
 	private final String errorMessage;

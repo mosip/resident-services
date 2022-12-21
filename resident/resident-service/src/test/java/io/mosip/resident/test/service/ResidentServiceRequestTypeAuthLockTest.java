@@ -1,14 +1,23 @@
 package io.mosip.resident.test.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDto;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
@@ -19,22 +28,25 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilitiy;
+import reactor.util.function.Tuple2;
+
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -80,6 +92,12 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	@Mock
 	ResidentTransactionRepository residentTransactionRepository;
 
+	@Mock
+	private ObjectMapper objectMapper;
+
+	@Mock
+	private DocumentService docService;
+
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
 
@@ -93,15 +111,17 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
 
 		notificationResponseDTO = new NotificationResponseDTO();
-		notificationResponseDTO.setStatus("Notification success");
+		notificationResponseDTO.setStatus("success");
+		notificationResponseDTO.setMessage("Notification success");
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		individualId = identityServiceImpl.getResidentIndvidualId();
 		
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+        residentTransactionEntity.setEventId("12345");
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		residentTransactionEntities.add(residentTransactionEntity);
+		Mockito.when(utility.createEventId()).thenReturn("12345");
 		ArrayList<String> partnerIds = new ArrayList<>();
 		partnerIds.add("m-partner-default-auth");
 		when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
@@ -122,13 +142,10 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
 			Mockito.when(idAuthService.authTypeStatusUpdateForRequestId(any(), any(), any())).thenReturn("123");
-			ResponseDTO response = new ResponseDTO();
-			response.setMessage("Notification success");
 			Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
-			ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
-			assertEquals(authLockResponse.getMessage(), authLockResponse.getMessage());
+			Tuple2<ResponseDTO, String> authLockResponse = residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
+			assertEquals(notificationResponseDTO.getMessage(), authLockResponse.getT1().getMessage());
 		}
-
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -193,4 +210,112 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
 
 	}
+
+	@Test
+	public void testGetAuthTypeBasedOnConfigV2(){
+		AuthTypeStatusDtoV2 authTypeStatus = new AuthTypeStatusDtoV2();
+		authTypeStatus.setAuthType("demo");
+		assertEquals("demo",ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
+
+	@Test
+	public void testGetAuthTypeBasedOnConfigV2WithSubType(){
+		AuthTypeStatusDtoV2 authTypeStatus = new AuthTypeStatusDtoV2();
+		authTypeStatus.setAuthType("demo");
+		authTypeStatus.setAuthSubType("demo");
+		assertEquals(null,ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
+
+	@Test
+	public void testGetAuthTypeBasedOnConfigV2WithoutSubType(){
+		AuthTypeStatusDtoV2 authTypeStatus = new AuthTypeStatusDtoV2();
+		authTypeStatus.setAuthType("bio");
+		authTypeStatus.setAuthSubType("FIR");
+		assertEquals("bio-FIR",ResidentServiceImpl.getAuthTypeBasedOnConfigV2(authTypeStatus));
+	}
+
+	@Test
+	public void testTrySendNotificationFailure() throws ResidentServiceCheckedException {
+		Mockito.when(notificationService.sendNotification(any())).thenThrow(new ResidentServiceCheckedException());
+		ReflectionTestUtils.invokeMethod(residentService,
+				"trySendNotification", "123", null, null);
+	}
+
+	@Test
+	public void testCreateResidentTransEntity() {
+		ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", null);
+		jsonObject.put("UIN", null);
+		residentUpdateRequestDto.setIdentity(jsonObject);
+		residentUpdateRequestDto.setIndividualId("123434343");
+		assertNotNull(ReflectionTestUtils.invokeMethod(residentService,
+				"createResidentTransEntity", residentUpdateRequestDto));
+	}
+
+	@Test
+	public void testUpdateResidentTransaction() {
+		PacketGeneratorResDto response = new PacketGeneratorResDto();
+		response.setRegistrationId("123");
+		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		ReflectionTestUtils.invokeMethod(residentService,
+				"updateResidentTransaction", residentTransactionEntity, response);
+	}
+
+	@Test
+	public void testGetResidentDocuments() {
+		ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", null);
+		jsonObject.put("UIN", null);
+		residentUpdateRequestDto.setIdentity(jsonObject);
+		residentUpdateRequestDto.setIndividualId("123434343");
+		JSONObject mappingDocument = new JSONObject();
+		mappingDocument.put("key", "value");
+		ReflectionTestUtils.invokeMethod(residentService,
+				"getResidentDocuments", residentUpdateRequestDto, mappingDocument);
+	}
+
+	@Test
+	public void testGetResidentDocumentsNullDocuments() {
+		ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", null);
+		jsonObject.put("UIN", null);
+		residentUpdateRequestDto.setIdentity(jsonObject);
+		residentUpdateRequestDto.setIndividualId("123434343");
+		ResidentDocuments residentDocuments = new ResidentDocuments("key", "value");
+		residentUpdateRequestDto.setDocuments(List.of(residentDocuments));
+		ReflectionTestUtils.invokeMethod(residentService,
+				"getResidentDocuments", residentUpdateRequestDto, null);
+	}
+
+	@Test
+	public void testGetResidentDocumentValidDocuments() {
+		ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", null);
+		jsonObject.put("UIN", null);
+		residentUpdateRequestDto.setIdentity(jsonObject);
+		residentUpdateRequestDto.setIndividualId("123434343");
+		residentUpdateRequestDto.setTransactionID("123");
+		ReflectionTestUtils.invokeMethod(residentService,
+				"getResidentDocuments", residentUpdateRequestDto, null);
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetResidentDocumentInValidDocuments() throws ResidentServiceCheckedException {
+		ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", null);
+		jsonObject.put("UIN", null);
+		residentUpdateRequestDto.setIdentity(jsonObject);
+		residentUpdateRequestDto.setIndividualId("123434343");
+		residentUpdateRequestDto.setTransactionID("123");
+		Mockito.when(docService.getDocumentsWithMetadata(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		ReflectionTestUtils.invokeMethod(residentService,
+				"getResidentDocuments", residentUpdateRequestDto, null);
+	}
+
+
 }

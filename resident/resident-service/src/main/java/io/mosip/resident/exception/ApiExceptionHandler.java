@@ -13,13 +13,17 @@ import io.mosip.resident.mock.exception.CantPlaceOrderException;
 import io.mosip.resident.mock.exception.PaymentCanceledException;
 import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
+import io.mosip.resident.util.ObjectWithMetadata;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +44,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 
 @RestControllerAdvice
@@ -102,6 +107,18 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		errorResponse.getErrors().add(error);
+		return createResponseEntity(errorResponse, e, httpStatus);
+	}
+
+	private ResponseEntity<ResponseWrapper<ServiceError>> createResponseEntity(
+			ResponseWrapper<ServiceError> errorResponse, Exception e, HttpStatus httpStatus) {
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+			MultiValueMap<String, String> headers = new HttpHeaders();
+			headers.add(ResidentConstants.EVENT_ID,
+					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			return new ResponseEntity<>(errorResponse, headers, httpStatus);
+		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
 	}
 
@@ -110,7 +127,7 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		errorResponse.getErrors().add(error);
-		return new ResponseEntity<>(errorResponse, httpStatus);
+		return createResponseEntity(errorResponse, e, httpStatus);
 	}
 
 	@ExceptionHandler(InvalidInputException.class)
@@ -190,6 +207,14 @@ public class ApiExceptionHandler {
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(CardNotReadyException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final CardNotReadyException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> onHttpMessageNotReadable(
 			final HttpServletRequest httpServletRequest, final HttpMessageNotReadableException e) throws IOException {
@@ -210,7 +235,7 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(exception);
 		logStackTrace(exception);
-		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+		return createResponseEntity(errorResponse, exception, HttpStatus.OK);
 	}
 
 	private ResponseWrapper<ServiceError> getAuthFailedResponse() {
@@ -236,12 +261,9 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(ResidentServiceCheckedException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> getResidentServiceStackTraceHandler(
 			final HttpServletRequest httpServletRequest, final ResidentServiceCheckedException e) throws IOException {
-		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
-		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
-		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(ApisResourceAccessException.class)
@@ -256,7 +278,7 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+		return createResponseEntity(errorResponse, e, HttpStatus.OK);
 	}
 
 	private static void logStackTrace(Exception e) {

@@ -80,6 +80,7 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	}
 	
 	@SuppressWarnings("unchecked")
+	@Override
 	public Map<String, ?> getPartnerDetailFromPartnerId(String partnerId) {
 		ResponseWrapper<?> response = null;
 		try {

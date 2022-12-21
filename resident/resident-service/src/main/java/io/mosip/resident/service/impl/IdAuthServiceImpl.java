@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.constant.EventStatusInProgress;
-import io.mosip.resident.dto.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.util.io.pem.PemObject;
@@ -50,10 +48,22 @@ import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.AuthRequestDTO;
+import io.mosip.resident.dto.AuthResponseDTO;
+import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.dto.AuthTypeDTO;
+import io.mosip.resident.dto.AuthTypeStatusRequestDto;
+import io.mosip.resident.dto.AuthTypeStatusResponseDto;
+import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.AutnTxnResponseDto;
+import io.mosip.resident.dto.OtpAuthRequestDTO;
+import io.mosip.resident.dto.PublicKeyResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
@@ -61,6 +71,8 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 @Component
 public class IdAuthServiceImpl implements IdAuthService {
@@ -110,28 +122,37 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
+		return validateOtpV1(transactionId, individualId, otp).getT1();
+	}
+
+	@Override
+	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
+			throws OtpValidationFailedException {
 		AuthResponseDTO response = null;
+		String eventId = ResidentConstants.NOT_AVAILABLE;
+		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
-			updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId, individualId);
+			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId, individualId);
+			if (residentTransactionEntity != null) {
+				eventId = residentTransactionEntity.getEventId();
+			}
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
-			throw new OtpValidationFailedException(e.getMessage());
+			throw new OtpValidationFailedException(e.getMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
 		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
 			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
-			throw new OtpValidationFailedException(
-					response.getErrors().get(0).getErrorMessage());
-
+			throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
+					Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
-
-		return response.getResponse().isAuthStatus();
+		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}
 
-	private void updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException {
+	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException {
 		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
 				findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId, identityService.getIDAToken(individualId)
 				, EventStatusInProgress.OTP_REQUESTED.toString());
@@ -143,6 +164,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setAuthTypeCode(ServiceType.SERVICE_REQUEST.name());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
+		return residentTransactionEntity;
 	}
 
 	public AuthResponseDTO internelOtpAuth(String transactionId, String individualId,

@@ -35,6 +35,7 @@ import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -52,7 +53,7 @@ public class ProxyConfigControllerTest {
     private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
-	private ResidentConfigService residentConfigService;
+	private ResidentConfigServiceImpl residentConfigService;
 
 	@MockBean
 	private AuditUtil auditUtil;

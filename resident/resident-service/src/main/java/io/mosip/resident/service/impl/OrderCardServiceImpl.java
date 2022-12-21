@@ -6,15 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -26,10 +23,8 @@ import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.PartnerResponseDto;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.UrlRedirectRequestDTO;
@@ -130,9 +125,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto, String individualId)
-			throws ApisResourceAccessException {
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
@@ -303,9 +298,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 		}
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException {
+	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setRequestedEntityId(partnerId);
@@ -324,15 +319,17 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ResidentServiceCheckedException {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
-		ResidentCredentialRequestDto requestDto = null;
-		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
 		String reponse = null;
+		ResidentCredentialRequestDto requestDto = new ResidentCredentialRequestDto();
+		if (residentTransactionEntity.isPresent()) {
+		requestDto.setIssuer(residentTransactionEntity.get().getRequestedEntityId());
 		if (isPaymentEnabled) {
 			reponse = checkOrderStatus(paymentTransactionId, individualId, redirectUrl, residentTransactionEntity.get(),
 					 errorCode, errorMessage, residentFullAddress);
 		}
 		residentCredentialResponseDto = residentCredentialService.reqCredential(requestDto, individualId);
 		updateResidentTransaction(residentTransactionEntity.get(), residentCredentialResponseDto);
+		}
 		return reponse;
 	}
 

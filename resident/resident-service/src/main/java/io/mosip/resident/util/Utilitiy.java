@@ -17,6 +17,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateVariablesConstants;
@@ -60,6 +61,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -72,6 +74,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
@@ -207,6 +210,11 @@ public class Utilitiy {
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
 				"Utilitiy::getMailingAttributes()::entry");
+		if(id == null || id.isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(),
+					ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage() + ": individual_id is not available." );
+		}
+		
 		Map<String, Object> attributes = new HashMap<>();
 		String mappingJsonString = getMappingJson();
 		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
@@ -370,6 +378,16 @@ public class Utilitiy {
 		return residentTransactionEntity;
 	}
 
+	public String createEventId() {
+		/* return a random long of 16 length */
+		long smallest = 1000_0000_0000_0000L;
+		long biggest =  9999_9999_9999_9999L;
+
+		// return a long between smallest and biggest (+1 to include biggest as well with the upper bound)
+		long random = new SecureRandom().longs(smallest, biggest + 1).findFirst().getAsLong();
+		return String.valueOf(random);
+	}
+
 	public static boolean isSecureSession(){
 		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .filter(obj -> !obj.equals(ANONYMOUS_USER)) .isPresent();
 	}
@@ -439,7 +457,7 @@ public class Utilitiy {
 
 	public String getFileName(String eventId, String propertyName){
 		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
-		if(propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
+		if(eventId!=null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
@@ -474,4 +492,29 @@ public class Utilitiy {
 		return HMACUtils2.digestAsPlainText(id.getBytes());
 	}
 
+	public String getFileNameAsPerFeatureName(String eventId, String featureName) {
+		if(featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)));
+		} else if(featureName.equalsIgnoreCase(RequestType.GENERATE_VID.toString())
+		|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.name())){
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)));
+		} else if(featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.toString())){
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)));
+		} else if(featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())){
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)));
+		}else if(featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.toString())){
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)));
+		}
+		else if(featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
+					ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)));
+		}else {
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)));
+		}
+	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
@@ -155,6 +157,44 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			identityMapping=Utilitiy.readResourceContent(identityMappingJsonFile);
 		}
 		return identityMapping;
+	}
+	
+	public List<String> getSharableAttributesList(List<SharableAttributesDTO> sharableAttrList, String schemaType)
+			throws ResidentServiceCheckedException, JsonParseException, JsonMappingException, IOException {
+		
+		// identity mapping json
+		String identityMapping = getIdentityMapping();
+		Map<String, Object> identityMappingMap = objectMapper
+				.readValue(identityMapping.getBytes(StandardCharsets.UTF_8), Map.class);
+		Object identityObj = identityMappingMap.get(IDENTITY);
+		Map<String, Object> identityMap = (Map<String, Object>) identityObj;
+
+		// ui schema share credential json
+		String uiSchema = getUISchema(schemaType);
+		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
+		Object identitySchemaObj = schemaMap.get(IDENTITY);
+		List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
+		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(ID)))
+				.collect(Collectors.toList());
+
+		// attribute list from format present in both identity-mapping & ui-schema json
+		List<String> sharableList1 = sharableAttrList.stream()
+				.filter(map -> identityMap.containsKey(map.getAttributeName()) && map.getFormat()!=null)
+				.flatMap(attr -> Stream.of(attr.getFormat().split(",")))
+				.filter(idsListFromUISchema::contains)
+				.collect(Collectors.toList());
+
+		// attribute list from format not present in identity-mapping & but in ui-schema json
+		List<String> sharableList2 = sharableAttrList.stream()
+				.filter(map -> !identityMap.containsKey(map.getAttributeName()) && map.getFormat()!=null)
+				.map(map -> map.getFormat())
+				.filter(idsListFromUISchema::contains)
+				.collect(Collectors.toList());
+
+		return Stream.of(sharableList1, sharableList2)
+                .flatMap(x -> x.stream())
+                .distinct()
+                .collect(Collectors.toList());
 	}
 
 }

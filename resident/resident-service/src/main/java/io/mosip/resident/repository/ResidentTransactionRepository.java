@@ -3,8 +3,11 @@ package io.mosip.resident.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,7 +28,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	ResidentTransactionEntity findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc
 	(String requestTrnId, String tokenId, String statusCode);
-	ResidentTransactionEntity findByAid(String aid);
+	ResidentTransactionEntity findTopByAidOrderByCrDtimesDesc(String aid);
 
 	ResidentTransactionEntity findTopByRefIdAndStatusCodeOrderByCrDtimesDesc(String refId, String statusCode);
 
@@ -79,6 +82,9 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
 	Long findByIdandcount(@Param("tokenId") String tokenId);
+	
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :lastLoginTime  AND read_status='false'")
+	Long findByIdandlastlogincount(@Param("tokenId") String tokenId,@Param("lastLoginTime") LocalDateTime lastLoginTime);
 
 	@Query(value = "Select new ResidentTransactionEntity(eventId, requestSummary, statusCode,requestDtimes,requestTypeCode) "
 			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
@@ -89,5 +95,10 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	 * AuthTransaction entries only will be expected here. This wouldn't fetch the otp Requested performed in resident service.
 	 */
 	Integer findByrefIdandauthtype(@Param("hashrefid") String hashrefid);
+	
+	@Modifying
+    @Transactional
+	@Query("update ResidentTransactionEntity set read_status='true' where event_id=:eventId")
+	int updateReadStatus(@Param("eventId") String eventId);
 
 }

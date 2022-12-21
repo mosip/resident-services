@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -28,5 +29,7 @@ public interface ProxyPartnerManagementService {
 	
 	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl)
 			throws ResidentServiceCheckedException;
+	
+	public Map<String, ?> getPartnerDetailFromPartnerId(String partnerId);
 
 }

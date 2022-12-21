@@ -2,7 +2,6 @@ package io.mosip.resident.service.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import io.mosip.resident.dto.*;
 import io.mosip.resident.util.Utilitiy;
@@ -92,7 +91,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setEventId(utilitiy.createEventId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());

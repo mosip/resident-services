@@ -4,7 +4,6 @@ import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.mock.dto.PaymentSuccessResponseDto;
 import io.mosip.resident.mock.exception.CantPlaceOrderException;
@@ -22,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +68,7 @@ public class MockApiController {
 		if (lastDigit >= 0 && lastDigit < 6) {
 			PaymentSuccessResponseDto paymentSuccessResponseDto = new PaymentSuccessResponseDto();
 			paymentSuccessResponseDto.setTrackingId(UUID.randomUUID().toString());
-			paymentSuccessResponseDto.setTransactionID(transactionId);
+			paymentSuccessResponseDto.setTransactionId(transactionId);
 			responseWrapper.setResponse(paymentSuccessResponseDto);
 			return ResponseEntity.ok().body(responseWrapper);
 		} else if (lastDigit == 6) {

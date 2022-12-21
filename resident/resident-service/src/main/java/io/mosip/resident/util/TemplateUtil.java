@@ -67,7 +67,7 @@ import java.util.Optional;
      * @return the ack template variables for authentication request
      */
 
-    private Map<String, String> getCommonTemplateVariables(String eventId) {
+    public Map<String, String> getCommonTemplateVariables(String eventId) {
         Map<String, String> templateVariables = new HashMap<>();
         templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
@@ -75,6 +75,7 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
         templateVariables.put(TemplateVariablesConstants.SUMMARY, residentTransactionEntity.getRequestSummary());
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
+        templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(eventId));
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
@@ -101,27 +102,17 @@ import java.util.Optional;
 
     public String getIndividualIdType() throws ApisResourceAccessException {
         String individualId= identityServiceImpl.getResidentIndvidualId();
-        return getIndividualIdType(individualId);
+        return identityServiceImpl.getIndividualIdType(individualId);
     }
 
-    public String getIndividualIdType(String individualId){
-        if(requestValidator.validateUin(individualId)){
-            return UIN;
-        } else if(requestValidator.validateVid(individualId)){
-            return VID;
-        } else{
-            return AID;
-        }
-    }
-
-    private String getEventStatusForRequestType(String statusCode) {
+    private String getEventStatusForRequestType(String requestType) {
         String eventStatus = "";
-        if(EventStatusSuccess.containsStatus(statusCode)){
-            eventStatus = EventStatus.SUCCESS.name();
-        } else if(EventStatusFailure.containsStatus(statusCode)){
-            eventStatus = EventStatus.FAILED.name();
+        if(EventStatusSuccess.containsStatus(requestType)){
+            eventStatus = EventStatus.SUCCESS.getStatus();
+        } else if(EventStatusFailure.containsStatus(requestType)){
+            eventStatus = EventStatus.FAILED.getStatus();
         } else {
-            eventStatus = EventStatus.IN_PROGRESS.name();
+            eventStatus = EventStatus.IN_PROGRESS.getStatus();
         }
         return eventStatus;
     }

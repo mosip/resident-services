@@ -1,6 +1,42 @@
 package io.mosip.resident.test.service;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
+
+import org.assertj.core.util.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
@@ -16,6 +52,7 @@ import io.mosip.resident.dto.AutnTxnResponseDto;
 import io.mosip.resident.dto.ErrorDTO;
 import io.mosip.resident.dto.IdAuthResponseDto;
 import io.mosip.resident.dto.PublicKeyResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -26,39 +63,6 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-
-import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.net.URI;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -169,6 +173,9 @@ public class IdAuthServiceTest {
         String otp = "12345";
 
         String request = "request";
+        
+        ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+        residentTransactionEntity.setEventId("12345");
 
         IdAuthResponseDto authResponse = new IdAuthResponseDto();
         authResponse.setAuthStatus(true);
@@ -215,6 +222,9 @@ public class IdAuthServiceTest {
         when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
+        when(identityService.getIDAToken(anyString())).thenReturn("346697314566835424394775924659202696");
+		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(anyString(),
+				anyString(), anyString())).thenReturn(residentTransactionEntity);
 
         boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 

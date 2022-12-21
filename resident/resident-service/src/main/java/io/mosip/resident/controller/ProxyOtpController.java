@@ -16,17 +16,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import static io.mosip.resident.constant.RegistrationConstants.ID;
 
 /**
  * This class provides different api to perform operation for login
@@ -68,7 +71,7 @@ public class ProxyOtpController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
-		requestValidator.validateRequestId(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID));
+		requestValidator.validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		requestValidator.validateDate(userOtpRequest.getRequesttime());
 		return proxyOtpService.sendOtp(userOtpRequest);
 	}
@@ -94,6 +97,9 @@ public class ProxyOtpController {
 
 		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
 		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
-		return proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+		Tuple2<MainResponseDTO<AuthNResponse>, String> tupleResponse = proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(tupleResponse.getT1());
 	}
 }

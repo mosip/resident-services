@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PaymentSuccessResponseDto {
 
-    private String transactionID;
+    private String transactionId;
 
     private String trackingId;
 }
