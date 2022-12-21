@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,7 @@ import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -235,7 +237,7 @@ public class ResidentControllerTest {
 		ResponseDTO responseDto = new ResponseDTO();
 		responseDto.setStatus("success");
 		doNothing().when(validator).validateAuthLockOrUnlockRequestV2(Mockito.any());
-		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
+		Mockito.doReturn(Tuples.of(responseDto, "12345")).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
 		residentController.reqAauthTypeStatusUpdateV2(authTypeStatusRequest);
 		validator.validateAuthLockOrUnlockRequestV2(authTypeStatusRequest);
 		this.mockMvc.perform(
@@ -248,7 +250,7 @@ public class ResidentControllerTest {
 	public void testReqAuthTypeLockBadRequest() throws Exception {
 		ResponseDTO responseDto = new ResponseDTO();
 		doNothing().when(validator).validateAuthLockOrUnlockRequest(Mockito.any(), Mockito.any());
-		Mockito.doReturn(responseDto).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
+		Mockito.doReturn(Tuples.of(responseDto, "12345")).when(residentService).reqAauthTypeStatusUpdateV2(Mockito.any());
 
 		MvcResult result = this.mockMvc
 				.perform(post("/auth-lock-unlock").contentType(MediaType.APPLICATION_JSON).content(""))
@@ -352,8 +354,8 @@ public class ResidentControllerTest {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
 				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
-		residentController.getServiceHistory("eng", 1, 12, LocalDateTime.parse("2022-06-10T20:04:22.956607"),
-				LocalDateTime.parse("2022-06-10T20:04:22.956607"), SortType.ASC.toString(),
+		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
+				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
 				ServiceType.AUTHENTICATION_REQUEST.name(), null, null);
 		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());

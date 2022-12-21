@@ -8,6 +8,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
@@ -42,6 +43,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -51,6 +53,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -65,12 +68,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.util.function.Tuple2;
 
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -87,6 +93,12 @@ public class ResidentController {
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+	
+	@Autowired
+	private Utilitiy utilitiy;
+
+	@Autowired
+	private Environment environment;
 
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
@@ -218,7 +230,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
+	public ResponseEntity<Object> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(
@@ -227,11 +239,14 @@ public class ResidentController {
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
-		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest()));
+		Tuple2<ResponseDTO, String> tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
+		response.setResponse(tupleResponse.getT1());
 		response.setId(authLockStatusUpdateV2Id);
 		response.setVersion(authLockStatusUpdateV2Version);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS, individualId));
-		return response;
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(response);
 	}
 
 	@ResponseFilter
@@ -286,8 +301,8 @@ public class ResidentController {
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langcode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-			@RequestParam(name = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-			@RequestParam(name = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
 			@RequestParam(name = "sortType", required = false) String sortType,
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
@@ -295,10 +310,10 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		validator.validateOnlyLanguageCode(langCode);
-		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, statusFilter);
+		validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText, langCode);
+				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, langCode);
 		return responseWrapper;
 	}
 
@@ -393,7 +408,7 @@ public class ResidentController {
 			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
-		validator.validateIndividualId(eventId);
+		validator.validateEventId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
@@ -404,6 +419,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId) + ".pdf\"")
+				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
 	}
 
@@ -522,8 +538,8 @@ public class ResidentController {
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
-			@RequestParam(name = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-			@RequestParam(name = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
 			@RequestParam(name = "sortType", required = false) String sortType,
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
@@ -535,18 +551,19 @@ public class ResidentController {
 				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		validator.validateOnlyLanguageCode(languageCode);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText, languageCode);
+				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
-				fromDateTime, toDateTime, serviceType, statusFilter);
+				fromDate, toDate, serviceType, statusFilter);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
+						Objects.requireNonNull(this.environment.getProperty(
+								ResidentConstants.DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY))) + ".pdf\"")
 				.body(resource);
 	}
-	
 	
 	@ResponseFilter
 	@GetMapping("/profile")
