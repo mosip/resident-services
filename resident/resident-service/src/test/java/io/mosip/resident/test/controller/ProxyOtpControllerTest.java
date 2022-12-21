@@ -17,6 +17,8 @@ import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,6 +108,8 @@ public class ProxyOtpControllerTest {
     byte[] pdfbytes;
 
     private ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
+    
+    private MainResponseDTO<AuthNResponse> response;
 
     @Before
     public void setup() throws Exception {
@@ -119,7 +123,7 @@ public class ProxyOtpControllerTest {
         userOtpRequest.setId("mosip.resident.contact.details.send.otp.id");
         reqJson = gson.toJson(userOtpRequest);
         AuthNResponse authNResponse = new AuthNResponse(PreRegLoginConstant.EMAIL_SUCCESS, PreRegLoginConstant.SUCCESS);
-        MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
+        response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
         responseEntity = new ResponseEntity<>(HttpStatus.OK);
     }
@@ -133,7 +137,7 @@ public class ProxyOtpControllerTest {
 
     @Test
     public void testValidateOtp() throws Exception {
-        Mockito.when(proxyOtpService.validateWithUserIdOtp(Mockito.any())).thenReturn(responseEntity);
+        Mockito.when(proxyOtpService.validateWithUserIdOtp(Mockito.any())).thenReturn(Tuples.of(response, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/update-data").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
