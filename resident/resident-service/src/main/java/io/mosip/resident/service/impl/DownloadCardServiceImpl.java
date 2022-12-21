@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.mosip.resident.constant.TransactionStage;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -185,8 +184,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         checkStatusResponseDTO.setAidStatus(aidStatus);
         checkStatusResponseDTO.setTransactionStage(transactionStage);
         checkStatusResponseDTOResponseWrapper.setResponse(checkStatusResponseDTO);
-        checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_ID));
-        checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECK_STATUS_VERSION));
+        checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID));
+        checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECKSTATUS_INDIVIDUALID_VERSION));
         return checkStatusResponseDTOResponseWrapper;
     }
 
