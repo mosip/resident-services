@@ -130,17 +130,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
-                    HashMap<String, String> packetStatusMap = utilities.getPacketStatus(rid);
-                    String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
-                    String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-                    if(aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name()) &&
-                            transactionStage.equalsIgnoreCase(CARD_READY_TO_DOWNLOAD)){
-                        pdfBytes = residentService.getUINCard(rid);
-                    } else{
-                          checkStatusResponseDTOResponseWrapper =
-                                getCheckStatusResponse(packetStatusMap,
-                                downloadCardRequestDTOMainRequestDTO);
-                    }
+                    pdfBytes = residentService.getUINCard(rid);
                 } else if (idType.equalsIgnoreCase(VID)) {
                     ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(individualId);
                     if(residentTransactionEntity !=null ){
@@ -187,17 +177,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return Tuples.of(pdfBytes, eventId, checkStatusResponseDTOResponseWrapper);
     }
 
-    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap,
-                                                                           MainRequestDTO<DownloadCardRequestDTO>
-                                                                                   downloadCardRequestDTOMainRequestDTO) {
+    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap) {
         ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
         CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
         String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
         String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
         checkStatusResponseDTO.setAidStatus(aidStatus);
-        checkStatusResponseDTO.setTransactionID(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
         checkStatusResponseDTO.setTransactionStage(transactionStage);
-        checkStatusResponseDTO.setIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
         checkStatusResponseDTOResponseWrapper.setResponse(checkStatusResponseDTO);
         checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_ID));
         checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECK_STATUS_VERSION));
@@ -395,6 +381,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         responseWrapper.setResponse(vidDownloadCardResponseDto);
         return Tuples.of(responseWrapper, eventId);
+    }
+
+    @Override
+    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException {
+        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
+        return getCheckStatusResponse(packetStatusMap);
     }
 
     private ResidentTransactionEntity insertDataForVidCard(String vid) throws ApisResourceAccessException, IOException {
