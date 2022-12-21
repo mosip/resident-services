@@ -1,20 +1,25 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.TemplateDto;
+import io.mosip.resident.dto.TemplateResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -33,25 +38,18 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.TemplateDto;
-import io.mosip.resident.dto.TemplateResponseDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
-import io.mosip.resident.validator.RequestValidator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -402,10 +400,10 @@ public class NotificationServiceTest {
 		mailingAttributes.put("email", "test@test.com");
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
 		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
-		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
 		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("PHONE", "EMAIL"),
 				"ka@gm.com", "8897878787");
-		assertEquals(SMS_SUCCESS, response.getMessage());
+		assertEquals(SMS_EMAIL_SUCCESS, response.getMessage());
 	}
 
 	@Test(expected = ResidentServiceException.class)
