@@ -47,6 +47,8 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 
+import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
+
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ApiExceptionHandler {
@@ -58,7 +60,6 @@ public class ApiExceptionHandler {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ApiExceptionHandler.class);
 
-	private static final String CHECK_STATUS = "resident.checkstatus.id";
 	private static final String EUIN = "resident.euin.id";
 	private static final String PRINT_UIN = "resident.printuin.id";
 	private static final String UIN = "resident.uin.id";
@@ -107,6 +108,11 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		errorResponse.getErrors().add(error);
+		return createResponseEntity(errorResponse, e, httpStatus);
+	}
+
+	private ResponseEntity<ResponseWrapper<ServiceError>> createResponseEntity(
+			ResponseWrapper<ServiceError> errorResponse, Exception e, HttpStatus httpStatus) {
 		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
 				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
 			MultiValueMap<String, String> headers = new HttpHeaders();
@@ -122,14 +128,7 @@ public class ApiExceptionHandler {
 		ServiceError error = new ServiceError(e.getErrorCode(), e.getErrorText());
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		errorResponse.getErrors().add(error);
-		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
-				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
-			MultiValueMap<String, String> headers = new HttpHeaders();
-			headers.add(ResidentConstants.EVENT_ID,
-					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
-			return new ResponseEntity<>(errorResponse, headers, httpStatus);
-		}
-		return new ResponseEntity<>(errorResponse, httpStatus);
+		return createResponseEntity(errorResponse, e, httpStatus);
 	}
 
 	@ExceptionHandler(InvalidInputException.class)
@@ -237,7 +236,7 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(exception);
 		logStackTrace(exception);
-		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+		return createResponseEntity(errorResponse, exception, HttpStatus.OK);
 	}
 
 	private ResponseWrapper<ServiceError> getAuthFailedResponse() {
@@ -280,14 +279,7 @@ public class ApiExceptionHandler {
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
-				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
-			MultiValueMap<String, String> headers = new HttpHeaders();
-			headers.add(ResidentConstants.EVENT_ID,
-					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
-			return new ResponseEntity<>(errorResponse, headers, HttpStatus.OK);
-		}
-		return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+		return createResponseEntity(errorResponse, e, HttpStatus.OK);
 	}
 
 	private static void logStackTrace(Exception e) {
@@ -312,7 +304,7 @@ public class ApiExceptionHandler {
 
 	private String setId(String requestURI) {
 		Map<String, String> idMap = new HashMap<>();
-		idMap.put("/check-status", env.getProperty(CHECK_STATUS));
+		idMap.put("/check-status", env.getProperty(CHECK_STATUS_ID));
 		idMap.put("/euin", env.getProperty(EUIN));
 		idMap.put("/print-uin", env.getProperty(PRINT_UIN));
 		idMap.put("/uin", env.getProperty(UIN));
