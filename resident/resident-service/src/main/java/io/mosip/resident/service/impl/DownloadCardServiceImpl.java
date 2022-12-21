@@ -79,6 +79,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String CARD_FORMAT = "cardFormat";
     private static final Object VID_CARD = "vidCard";
     private static final String CARD_READY_TO_DOWNLOAD = "Card ready to download";
+    private static final String IN_PROGRESS = "IN-PROGRESS";
 
     @Autowired
     private Utilities utilities;
@@ -132,7 +133,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     HashMap<String, String> packetStatusMap = utilities.getPacketStatus(rid);
                     String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
                     String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-                    if(aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name()) &&
+                    if(aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name()) ||
+                            aidStatus.equalsIgnoreCase(IN_PROGRESS) &&
                             transactionStage.equalsIgnoreCase(CARD_READY_TO_DOWNLOAD)){
                         pdfBytes = residentService.getUINCard(rid);
                     } else{

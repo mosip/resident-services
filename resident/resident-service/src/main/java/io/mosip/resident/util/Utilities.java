@@ -9,12 +9,9 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
-import io.mosip.resident.constant.PacketStatusFailure;
-import io.mosip.resident.constant.PacketStatusInProgress;
-import io.mosip.resident.constant.PacketStatusSuccess;
+import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.RegistrationConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TransactionStage;
@@ -258,30 +255,9 @@ public class Utilities {
 		for(Object object : regTransactionResponseDTO){
 			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
 			String statusCode = (String) packetStatus.get(STATUS_CODE);
-			if(PacketStatusFailure.containsStatus(statusCode)){
-				aidStatus = EventStatus.FAILED.name();
-				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
-				packetStatusMap.put(AID_STATUS, aidStatus);
-				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
-				return packetStatusMap;
-			}
-		}
-		for(Object object : regTransactionResponseDTO){
-			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
-			String statusCode = (String) packetStatus.get(STATUS_CODE);
-			if(PacketStatusInProgress.containsStatus(statusCode)){
-				aidStatus = EventStatus.IN_PROGRESS.name();
-				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
-				packetStatusMap.put(AID_STATUS, aidStatus);
-				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
-				return packetStatusMap;
-			}
-		}
-		for(Object object : regTransactionResponseDTO){
-			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
-			String statusCode = (String) packetStatus.get(STATUS_CODE);
-			if(PacketStatusSuccess.containsStatus(statusCode)){
-				aidStatus = EventStatus.SUCCESS.name();
+			String packetStatusCode = PacketStatus.getStatusCode(statusCode);
+			if(!packetStatusCode.isEmpty()){
+				aidStatus = packetStatusCode;
 				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
 				packetStatusMap.put(AID_STATUS, aidStatus);
 				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
