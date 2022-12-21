@@ -1701,7 +1701,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private String getServiceQuery(String serviceType, PositionalParams params ) {
 		List<String> serviceTypeList = convertServiceTypeToResidentTransactionType(serviceType);
 		String serviceTypeListString = convertServiceTypeListToString(serviceTypeList);
-		return " and request_type_code in (" +  params.add(serviceTypeListString) + ")";
+		return " and request_type_code in (" + serviceTypeListString + ")";
 	}
 
 	private String getDateQuery(LocalDate fromDate, LocalDate toDate, PositionalParams parameters ) {
@@ -1734,7 +1734,7 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 		}
 		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingALlStatus);
-		return " and status_code in (" +  params.add(statusFilterListString) + ")";
+		return " and status_code in (" + statusFilterListString + ")";
 	}
 
 	public String convertStatusFilterListToString(List<String> statusFilterListContainingALlStatus) {
