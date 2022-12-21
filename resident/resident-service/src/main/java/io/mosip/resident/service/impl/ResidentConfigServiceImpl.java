@@ -83,6 +83,12 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 
 	private List<String> uiSchemaFilteredInputAttributes;
 	
+	@Value("${resident.ui.properties.id}")
+	private String residentUiPropertiesId;
+	
+	@Value("${resident.ui.properties.version}")
+	private String residentUiPropertiesVersion;
+	
 	/**
 	 * Gets the properties.
 	 *
@@ -103,6 +109,8 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			.filter(entry -> entry != null && entry.getValue() != null)
 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		responseWrapper.setResponse(properties);
+		responseWrapper.setId(residentUiPropertiesId);
+		responseWrapper.setVersion(residentUiPropertiesVersion);
 		return responseWrapper;
 	}
 
