@@ -275,8 +275,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidCreationException(e.getErrorText(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			} else {
+				throw new VidCreationException(e.getErrorText());
 			}
-			throw new VidCreationException(e.getErrorText());
 		} catch (IOException | ApisResourceAccessException | VidCreationException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_GENERATION_FAILURE, requestDto.getTransactionID()));
@@ -297,8 +298,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidCreationException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			} else {
+				throw new VidCreationException(e.getMessage());
 			}
-			throw new VidCreationException(e.getMessage());
 		} catch (VidAlreadyPresentException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_ALREADY_EXISTS, requestDto.getTransactionID()));
@@ -319,8 +321,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidAlreadyPresentException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			} else {
+				throw e;
 			}
-			throw e;
 		} finally {
 			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
 				//if the status code will come as null, it will set it as failed.
@@ -468,8 +471,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					residentTransactionRepository.save(residentTransactionEntity);
 					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
+				} else {
+					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION);
 				}
-				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION);
 			}
 		} else {
 			String uinForVid = identityServiceImpl.getUinForIndividualId(vid);
@@ -536,8 +540,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidRevocationException(e.getErrorText(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			} else {
+				throw new VidRevocationException(e.getErrorText());
 			}
-			throw new VidRevocationException(e.getErrorText());
 		} catch (IOException | ApisResourceAccessException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_REVOKE_EXCEPTION, requestDto.getTransactionID()));
@@ -557,8 +562,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidRevocationException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			} else {
+				throw new VidRevocationException(e.getMessage());
 			}
-			throw new VidRevocationException(e.getMessage());
 		} catch (VidRevocationException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.VID_REVOKE_EXCEPTION, requestDto.getTransactionID()));
@@ -578,8 +584,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidRevocationException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
+			} else {
+				throw e;
 			}
-			throw e;
 		} finally {
 			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
 				//if the status code will come as null, it will set it as failed.
