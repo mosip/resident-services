@@ -315,6 +315,15 @@ public class UtilitiesTest {
     }
 
     @Test
+    public void testGetTransactionTypeCodeFailed() throws ApisResourceAccessException, IOException {
+        ArrayList transactionTypeCode = new ArrayList<>();
+        HashMap<String ,Object> packetStatus = new HashMap<>();
+        packetStatus.put(TRANSACTION_TYPE_CODE, "test");
+        transactionTypeCode.add(packetStatus);
+        ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", transactionTypeCode);
+    }
+
+    @Test
     public void testGetJson(){
         utilities.getJson("http://localhost", "http://localhost");
     }
