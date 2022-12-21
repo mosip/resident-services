@@ -893,8 +893,13 @@ public class ResidentServiceImpl implements ResidentService {
 					|| mappingJson.trim().isEmpty()) {
 				audit.setAuditRequestDto(
 						EventEnum.getEventEnumWithValue(EventEnum.JSON_PARSING_EXCEPTION, dto.getTransactionID()));
-				throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION,
-						Map.of(ResidentConstants.EVENT_ID, eventId));
+				if (Utilitiy.isSecureSession()) {
+					throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION,
+							Map.of(ResidentConstants.EVENT_ID, eventId));
+				} else {
+					throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+							ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage());
+				}
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
 			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), mappingJsonObject,
