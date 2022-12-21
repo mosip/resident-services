@@ -9,7 +9,6 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.CardReadyToDownloadTransactionStage;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
@@ -17,12 +16,8 @@ import io.mosip.resident.constant.PacketStatusFailure;
 import io.mosip.resident.constant.PacketStatusInProgress;
 import io.mosip.resident.constant.PacketStatusSuccess;
 import io.mosip.resident.constant.RegistrationConstants;
-import io.mosip.resident.constant.RequestReceivedTransactionStage;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TransactionStage;
-import io.mosip.resident.constant.UinGenerationStageTransactionStage;
-import io.mosip.resident.constant.ValidationStageTransactionStage;
-import io.mosip.resident.constant.VerificationStageTransactionStage;
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -301,24 +296,8 @@ public class Utilities {
 		for(Object object : regTransactionResponseDTO){
 			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
 			String transactionTypeCode = (String) packetStatus.get(TRANSACTION_TYPE_CODE);
-			if(CardReadyToDownloadTransactionStage.containsStatus(transactionTypeCode)){
-				typeCode = TransactionStage.CARD_READY_TO_DOWNLOAD.name();
-				break;
-			}
-			if(UinGenerationStageTransactionStage.containsStatus(transactionTypeCode)){
-				typeCode = TransactionStage.UIN_GENERATION_STAGE.name();
-				break;
-			}
-			if(VerificationStageTransactionStage.containsStatus(transactionTypeCode)){
-				typeCode = TransactionStage.VERIFICATION_STAGE.name();
-				break;
-			}
-			if(ValidationStageTransactionStage.containsStatus(transactionTypeCode)){
-				typeCode = TransactionStage.VALIDATION_STAGE.name();
-				break;
-			}
-			if(RequestReceivedTransactionStage.containsStatus(transactionTypeCode)){
-				typeCode = TransactionStage.REQUEST_RECEIVED.name();
+			typeCode = TransactionStage.getTypeCode(transactionTypeCode);
+			if(!typeCode.isEmpty()){
 				break;
 			}
 		}
