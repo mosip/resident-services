@@ -356,7 +356,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<Object> updateUinDemographics(
+	public ResponseEntity<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
@@ -374,10 +374,13 @@ public class ResidentController {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 		requestDTO.getRequest().getIdentity().put(IdType.UIN.name(), identityServiceImpl.getUinForIndividualId(individualId));
-		response.setResponse(residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity()));
+		Tuple2<Object, String> tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity());
+		response.setResponse(tupleResponse.getT1());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
-		return response;
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(response);
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
