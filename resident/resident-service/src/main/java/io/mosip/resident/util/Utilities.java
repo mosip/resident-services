@@ -13,6 +13,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.RegistrationConstants;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TransactionStage;
 import io.mosip.resident.dto.IdResponseDTO1;
@@ -217,7 +218,7 @@ public class Utilities {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
 
-		ResponseWrapper<?> response = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.GET_RID_BY_INDIVIDUAL_ID,
+		ResponseWrapper<?> response = residentServiceRestClient.getApi(ApiName.GET_RID_BY_INDIVIDUAL_ID,
 				pathsegments, ResponseWrapper.class);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
@@ -226,7 +227,7 @@ public class Utilities {
 			throw new IndividualIdNotFoundException("Individual ID not found exception");
 
 		} else {
-			rid = (String) response.getResponse();
+			rid = (String) ((Map<String, ?>)response.getResponse()).get(ResidentConstants.RID);
 		}
 		return rid;
 	}

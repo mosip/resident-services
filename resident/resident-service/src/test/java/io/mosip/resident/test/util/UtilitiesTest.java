@@ -279,19 +279,20 @@ public class UtilitiesTest {
 
     @Test
     public void testGetRidByIndividualId() throws ApisResourceAccessException {
-        ResponseWrapper<String> response = new ResponseWrapper<>();
-        response.setResponse("123");
+        ResponseWrapper response = new ResponseWrapper<>();
+        response.setResponse(Map.of("rid","123"));
         Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
-        assertEquals("123", utilities.getRidByIndividualId("123"));
+        String rid = utilities.getRidByIndividualId("123");
+        assertEquals("123", rid);
     }
 
     @Test(expected = IndividualIdNotFoundException.class)
     public void testGetRidByIndividualIdFailed() throws ApisResourceAccessException {
-        ResponseWrapper<String> response = new ResponseWrapper<>();
+        ResponseWrapper<?> response = new ResponseWrapper<>();
         response.setErrors(List.of(new ServiceError(ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorCode(),
                 ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorMessage())));
         Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
-        assertEquals("123", utilities.getRidByIndividualId("123"));
+        utilities.getRidByIndividualId("123");
     }
 
     @Test
