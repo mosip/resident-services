@@ -48,6 +48,10 @@ public class DocumentServiceImplTest {
 		DocumentRequestDTO request = getDocumentRqtDto();
 		MockMultipartFile file = new MockMultipartFile("test.txt", "test.txt", null, new byte[1100]);
 		file.getOriginalFilename();
+		request.setDocCatCode("POI");
+		request.setLangCode("eng");
+		request.setDocCatCode("poi");
+		request.setReferenceId("abc123");
 		assertNotNull(documentServiceImpl.uploadDocument("transactionId", file, request));
 	}
 

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.List;
 
 import io.mosip.resident.dto.DocumentDTO;
@@ -49,28 +50,21 @@ public class DocumentControllerTest {
 	private AuditUtil audit;
 	
 	@Test
-	public void testUploadDocumentsSuccess() throws ResidentServiceCheckedException {
+	public void testUploadDocumentsSuccess() throws ResidentServiceCheckedException, IOException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
 		when(service.uploadDocument(any(), any(), any())).thenReturn(response );
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), REQUEST_JSON);
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
 		assertEquals(response, uploadDocuments.getResponse());
 	}
 	
 	@Test
-	public void testUploadDocumentsFailed() throws ResidentServiceCheckedException {
+	public void testUploadDocumentsFailed() throws ResidentServiceCheckedException, IOException {
 		when(service.uploadDocument(any(), any(), any())).thenThrow(new ResidentServiceCheckedException("", ""));
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), REQUEST_JSON);
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
 		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), "");
 		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), "");
 	}
-	
-	@Test
-	public void testUploadDocumentsInvalidRequest() throws ResidentServiceCheckedException {
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "");
-		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), ResidentErrorCode.BAD_REQUEST.getErrorCode());
-		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), ResidentErrorCode.BAD_REQUEST.getErrorMessage());
-	}
-	
+		
 	@Test
 	public void testGetDocumentsByTransactionIdSuccess() throws ResidentServiceCheckedException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
