@@ -64,14 +64,7 @@ public class DocumentControllerTest {
 		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), "");
 		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), "");
 	}
-	
-	@Test
-	public void testUploadDocumentsInvalidRequest() throws ResidentServiceCheckedException, IOException {
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "", "proof", "eng", "abc123");
-		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), ResidentErrorCode.BAD_REQUEST.getErrorCode());
-		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), ResidentErrorCode.BAD_REQUEST.getErrorMessage());
-	}
-	
+		
 	@Test
 	public void testGetDocumentsByTransactionIdSuccess() throws ResidentServiceCheckedException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
