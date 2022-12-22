@@ -7,8 +7,11 @@ import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuple3;
+
+import java.io.IOException;
 
 /**
  * This class is used to create service class to download uin card.
@@ -20,4 +23,6 @@ public interface DownloadCardService {
     Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO);
 
     Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid) throws BaseCheckedException;
+
+    ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException;
 }

@@ -11,8 +11,6 @@ import lombok.Data;
 
 @Data
 public class CheckStatusResponseDTO {
-	private String individualId;
-	private String transactionID;
 	private String transactionStage;
 	private String aidStatus;
 }

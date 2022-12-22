@@ -162,4 +162,7 @@ public class ResidentConstants {
     public static final String CHECK_STATUS_ID = "resident.checkstatus.id";
     public static final String CHECK_STATUS_VERSION = "resident.checkstatus.version";
 
+    public static final String CHECK_STATUS_INDIVIDUAL_ID = "mosip.resident.checkstatus.individualid.id";
+    public static final String CHECKSTATUS_INDIVIDUALID_VERSION = "mosip.resident.checkstatus.individualid.version";
+
 }

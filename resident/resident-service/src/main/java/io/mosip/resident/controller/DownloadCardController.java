@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.util.function.Tuple3;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -71,10 +72,6 @@ public class DownloadCardController {
         Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>> tupleResponse =
                 (Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>>)
                         downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
-        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponse = tupleResponse.getT3();
-        if(checkStatusResponse.getResponse() != null){
-            return ResponseEntity.badRequest().body(checkStatusResponse);
-        }
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
             throw new CardNotReadyException();
@@ -116,5 +113,12 @@ public class DownloadCardController {
         return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
+    }
+
+    @GetMapping("/status/individualId/{individualId}")
+    public ResponseEntity<Object> getStatus(@PathVariable("individualId") String individualId) throws BaseCheckedException, IOException {
+        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(individualId);
+        return ResponseEntity.ok()
+                .body(responseWrapper);
     }
 }
