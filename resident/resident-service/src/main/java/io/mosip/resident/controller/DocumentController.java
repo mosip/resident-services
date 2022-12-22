@@ -112,14 +112,7 @@ public class DocumentController {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-		} catch (NullPointerException e) {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
-					ResidentErrorCode.BAD_REQUEST.getErrorMessage())));
-		}
+		} 
 		return responseWrapper;
 	}
 
