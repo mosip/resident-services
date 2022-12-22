@@ -5,7 +5,6 @@ import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -16,6 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
@@ -23,7 +23,8 @@ import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
 
 /**
@@ -54,17 +55,23 @@ public class DocumentValidator implements Validator {
 
 	/**
 	 * This function validates the input parameters of a DocumentRequestDTO object
+	 * @param langCode 
+	 * @param docTypCode 
+	 * @param docCatCode 
 	 * 
 	 * @param docRequest The request object that is passed to the service.
 	 */
-	public void validateRequest(DocumentRequestDTO docRequest) {
-		Objects.requireNonNull(docRequest, String.format(INVALID_INPUT.getErrorMessage() + "request"));
-		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getDocCatCode(), null),
-				String.format(INVALID_INPUT.getErrorMessage() + "request/docCatCode"));
-		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getDocTypCode(), null),
-				String.format(INVALID_INPUT.getErrorMessage() + "request/docTypCode"));
-		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getLangCode(), null),
-				String.format(INVALID_INPUT.getErrorMessage() + "request/langCode"));
+	public void validateRequest(String docCatCode, String docTypCode, String langCode) {
+
+		if (docCatCode == null || StringUtils.isEmpty(docCatCode)) {
+			throw new InvalidInputException("docCatCode");
+		}
+		if (docTypCode == null || StringUtils.isEmpty(docTypCode)) {
+			throw new InvalidInputException("docTypCode");
+		}
+		if (langCode == null || StringUtils.isEmpty(langCode)) {
+			throw new InvalidInputException("langCode");
+		}
 	}
 
 	/**
