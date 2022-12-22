@@ -86,15 +86,20 @@ public class DocumentController {
 	@PostMapping(path = "/documents/{transaction-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentResponseDTO> uploadDocuments(@PathVariable("transaction-id") String transactionId,
 			@RequestPart(value = "file", required = true) MultipartFile file,
-			@RequestPart(value = "request", required = true) String request) {
+			@RequestParam("docCatCode") String docCatCode,
+			@RequestParam("docTypCode") String docTypCode,
+			@RequestParam("langCode") String langCode,
+			@RequestParam("referenceId") String referenceId) throws IOException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			Objects.requireNonNull(StringUtils.defaultIfBlank(request, null),
+			Objects.requireNonNull(StringUtils.defaultIfBlank(docCatCode, null),
 					String.format(INVALID_INPUT.getErrorMessage() + "request"));
-			DocumentRequestDTO docRequest = JsonUtil
-					.readValue(new String(CryptoUtil.decodeURLSafeBase64(request)), new TypeReference<RequestWrapper<DocumentRequestDTO>>() {
-					}).getRequest();
+			DocumentRequestDTO docRequest = new DocumentRequestDTO();
+			docRequest.setDocCatCode(docCatCode);
+			docRequest.setDocTypCode(docTypCode);
+			docRequest.setLangCode(langCode);
+			docRequest.setReferenceId(referenceId);
 			validator.validateRequest(docRequest);
 			validator.scanForViruses(file);
 			audit.setAuditRequestDto(
@@ -109,7 +114,7 @@ public class DocumentController {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-		} catch (IOException | NullPointerException e) {
+		} catch (NullPointerException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
