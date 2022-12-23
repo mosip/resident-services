@@ -4,6 +4,7 @@ import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -31,8 +32,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.util.function.Tuple3;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -66,7 +69,9 @@ public class DownloadCardController {
         logger.debug("DownloadCardController::downloadCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
-        Tuple2<byte[], String> tupleResponse = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+        Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>> tupleResponse =
+                (Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>>)
+                        downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
             throw new CardNotReadyException();
@@ -102,9 +107,18 @@ public class DownloadCardController {
     }
 
     @GetMapping("/request-card/vid/{VID}")
-    public ResponseWrapper<VidDownloadCardResponseDto> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
+    public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
         requestValidator.validateDownloadCardVid(vid);
-        ResponseWrapper<VidDownloadCardResponseDto> downloadCardResponseDtoResponseWrapper = downloadCardService.getVidCardEventId(vid);
-        return downloadCardResponseDtoResponseWrapper;
+        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid);
+        return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(tupleResponse.getT1());
+    }
+
+    @GetMapping("/status/individualId/{individualId}")
+    public ResponseEntity<Object> getStatus(@PathVariable("individualId") String individualId) throws BaseCheckedException, IOException {
+        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(individualId);
+        return ResponseEntity.ok()
+                .body(responseWrapper);
     }
 }

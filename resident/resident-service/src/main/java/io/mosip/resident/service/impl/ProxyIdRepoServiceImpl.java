@@ -2,7 +2,10 @@ package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -39,9 +42,17 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			List<String> attributeList) throws ResidentServiceCheckedException {
 		try {
 			String individualId=identityServiceImpl.getResidentIndvidualId();
-			ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
-					List.of(individualId), "attribute_list", attributeList.stream().collect(Collectors.joining(",")),
-					ResponseWrapper.class);
+			Map<String, Object> pathsegements = new HashMap<String, Object>();
+			pathsegements.put("individualId", individualId);
+			
+			List<String> queryParamName = new ArrayList<String>();
+			queryParamName.add("attribute_list");
+
+			List<Object> queryParamValue = new ArrayList<>();
+			queryParamValue.add(attributeList.stream().collect(Collectors.joining(",")));
+			
+			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
+					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);

@@ -14,6 +14,7 @@ import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import reactor.util.function.Tuple2;
 
 @Service
 public interface ResidentVidService {
@@ -28,6 +29,13 @@ public interface ResidentVidService {
 
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
+	public Tuple2<ResponseWrapper<VidResponseDto>, String> generateVidV2(BaseVidRequestDto requestDto,
+			String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException;
+
+	public Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> revokeVidV2(BaseVidRevokeRequestDTO requestDto,
+			String vid, String indivudalId)
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException;
+	
 	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
