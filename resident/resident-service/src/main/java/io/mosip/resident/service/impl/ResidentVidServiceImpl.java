@@ -701,19 +701,23 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		return vidPolicy;
 	}
-
+	
 	@Override
 	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(residentIndividualId);
 		String uin = identityDTO.getUIN();
+		return retrieveVidsfromUin(uin);
+		}
+
+	@Override
+	public ResponseWrapper<List<Map<String,?>>> retrieveVidsfromUin(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper response;
-		
 		try {
 			response = (ResponseWrapper) residentServiceRestClient.getApi(
 					env.getProperty(ApiName.RETRIEVE_VIDS.name()) + uin, ResponseWrapper.class);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
-					residentIndividualId, ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
+					uin, ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
 							+ e.getMessage() + ExceptionUtils.getStackTrace(e));
 			throw new ApisResourceAccessException("Unable to retrieve VID : " + e.getMessage());
 		}
@@ -764,7 +768,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}	
 	
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVids(uin);
+		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin);
 		List<Map<String, ?>> vids = vidResp.getResponse();
 		if(vids != null && !vids.isEmpty()) {
 			return vids.stream()
