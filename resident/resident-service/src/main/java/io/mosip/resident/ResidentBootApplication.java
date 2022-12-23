@@ -1,13 +1,14 @@
 package io.mosip.resident;
 
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.authcodeflowproxy.api.service.validator.ValidateTokenHelper;
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.preregistration.application.service.TransliterationService;
-import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.preregistration.application.service.TransliterationService;
+import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
 
 @SpringBootApplication(scanBasePackages = { 
 		"io.mosip.resident.*", 
@@ -20,7 +21,7 @@ import org.springframework.context.annotation.Import;
 		"io.mosip.kernel.virusscanner.*", 
 		"io.mosip.commons.khazana.*",
 		"io.mosip.idrepository.core.util.*"})
-@Import({TokenIDGenerator.class, ValidateTokenHelper.class, CbeffImpl.class, TransliterationService.class, TransliterationServiceUtil.class})
+@Import({TokenIDGenerator.class, ValidateTokenUtil.class, CbeffImpl.class, TransliterationService.class, TransliterationServiceUtil.class})
 public class ResidentBootApplication {
 
 	public static void main(String[] args) {

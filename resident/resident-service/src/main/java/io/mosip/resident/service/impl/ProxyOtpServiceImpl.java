@@ -112,7 +112,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
                     userid, "Send OTP"));
             throw new ResidentServiceException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
-                    ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage());
+                    ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage(), ex);
         } finally {
             if (isSuccess) {
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_SUCCESS,
