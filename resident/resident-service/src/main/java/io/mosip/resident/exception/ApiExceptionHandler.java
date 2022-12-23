@@ -9,12 +9,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import io.mosip.resident.mock.exception.CantPlaceOrderException;
-import io.mosip.resident.mock.exception.PaymentCanceledException;
-import io.mosip.resident.mock.exception.PaymentFailedException;
-import io.mosip.resident.mock.exception.TechnicalErrorException;
-import io.mosip.resident.util.ObjectWithMetadata;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -34,7 +28,6 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import io.mosip.kernel.authcodeflowproxy.api.exception.AuthRestException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
@@ -43,9 +36,15 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
+import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.mock.exception.CantPlaceOrderException;
+import io.mosip.resident.mock.exception.PaymentCanceledException;
+import io.mosip.resident.mock.exception.PaymentFailedException;
+import io.mosip.resident.mock.exception.TechnicalErrorException;
+import io.mosip.resident.util.ObjectWithMetadata;
 
 import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
 

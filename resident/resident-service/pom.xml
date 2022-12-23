@@ -14,9 +14,10 @@
 	<version>1.2.1-SNAPSHOT</version>
 	<properties>
 		<commons.packet.manager.version>1.2.1-SNAPSHOT</commons.packet.manager.version>
-		<kernel.core.version>1.2.1-SNAPSHOT</kernel.core.version>
+		<kernel.core.version>1.2.0.1-B1</kernel.core.version>
+		<kernel.virusscanner.clamav.version>1.2.1-SNAPSHOT</kernel.virusscanner.clamav.version>
 		<id-repository-core.version>1.2.0.1-SNAPSHOT</id-repository-core.version>
-		<kernel-keymanager-service.version>1.2.1-SNAPSHOT</kernel-keymanager-service.version>
+		<kernel-keymanager-service.version>1.2.0.1-B1</kernel-keymanager-service.version>
 		<kernel.authcodeflowproxy.api.version>1.2.1-SNAPSHOT</kernel.authcodeflowproxy.api.version>
 		<kernel.parent.version>1.2.0</kernel.parent.version>
 		<kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
@@ -63,6 +64,12 @@
 					<artifactId>commons-lang3</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-openid-bridge-api</artifactId>
+			<version>1.2.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -156,7 +163,7 @@
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-virusscanner-clamav</artifactId>
-			<version>${kernel.core.version}</version>
+			<version>${kernel.virusscanner.clamav.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>io.mosip.kernel</groupId>
@@ -266,7 +273,11 @@
 						<groupId>org.apache.commons</groupId>
 						<artifactId>commons-lang3</artifactId>
 					</exclusion>
-				</exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -303,7 +314,11 @@
 						<groupId>org.apache.commons</groupId>
 						<artifactId>commons-lang3</artifactId>
 					</exclusion>
-				</exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
@@ -337,6 +352,12 @@
 			<artifactId>pre-registration-application-service</artifactId>
 			<version>${pre-registration-application-service.version}</version>
 			<classifier>lib</classifier>
+			<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
