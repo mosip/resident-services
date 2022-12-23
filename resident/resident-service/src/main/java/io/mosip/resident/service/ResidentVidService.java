@@ -35,5 +35,8 @@ public interface ResidentVidService {
 	public Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> revokeVidV2(BaseVidRevokeRequestDTO requestDto,
 			String vid, String indivudalId)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException;
+	
+	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }
