@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
 
 import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.authcodeflowproxy.api.service.validator.ValidateTokenHelper;
+import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 
 @SpringBootApplication(scanBasePackages = {"io.mosip.resident.*"})
-@Import({TokenIDGenerator.class, ValidateTokenHelper.class})
+@Import({TokenIDGenerator.class, ValidateTokenUtil.class})
 public class ResidentTestBootApplication {
 
 	public static void main(String[] args) {

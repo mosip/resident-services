@@ -49,11 +49,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.authmanager.spi.ScopeValidator;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
