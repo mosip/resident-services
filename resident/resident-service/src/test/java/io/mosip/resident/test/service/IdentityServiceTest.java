@@ -20,6 +20,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
@@ -99,6 +100,9 @@ public class IdentityServiceTest {
 
 	@Mock
 	private ObjectStoreHelper objectStoreHelper;
+	
+	@Mock
+	private Utilities utilities;
 
 	private ResponseWrapper responseWrapper;
 
@@ -165,7 +169,7 @@ public class IdentityServiceTest {
 		responseWrapper.setResponse(responseMap);
 		
 		when(env.getProperty(anyString())).thenReturn("property");
-
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJubEpTaUExM2tPUWhZQ0JxMEVKSkRlWnFTOGsybDB3MExUbmQ1WFBCZ20wIn0." +
 				"eyJleHAiOjE2NzIxMjU0NjEsImlhdCI6MTY3MjAzOTA2MSwianRpIjoiODc5YTdmYTItZWZhYy00YTQwLTkxODQtNzZiM2FhMWJiODg0IiwiaXNzIjoiaHR0c" +
 				"HM6Ly9pYW0uZGV2Lm1vc2lwLm5ldC9hdXRoL3JlYWxtcy9tb3NpcCIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiJiNTc3NjkzYi0xOWI1LTRlYTktYWEzNy1kMT" +
@@ -202,8 +206,8 @@ public class IdentityServiceTest {
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("8251649601", result.getUIN());
-		assertEquals("Rahul Singh Kumar", result.getFullName());
+		assertEquals("6", result.getUIN());
+		
 	}
 	
 	@Test
@@ -221,7 +225,7 @@ public class IdentityServiceTest {
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("8251649601", result.getUIN());
+		assertEquals("6", result.getUIN());
 	}
 
 	@Test
@@ -239,7 +243,7 @@ public class IdentityServiceTest {
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		IdentityDTO result = identityService.getIdentity("6");
 		assertNotNull(result);
-		assertEquals("8251649601", result.getUIN());
+		assertEquals("6", result.getUIN());
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -274,18 +278,13 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetUinForIndividualId() throws Exception{
 		String id = "123456789";
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
-				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
-				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String result = identityService.getUinForIndividualId(id);
-		assertEquals("8251649601", result);
+		assertEquals("123456789", result);
 	}
 
 	@Test
@@ -294,16 +293,11 @@ public class IdentityServiceTest {
 		String token = "1234";
 		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
-				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
-				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
 		ClassLoader classLoader = getClass().getClassLoader();
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String result = identityService.getIDATokenForIndividualId(id);
 		assertEquals(token, result);
 	}
@@ -353,12 +347,13 @@ public class IdentityServiceTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
-		assertEquals("8251649601", result);
+		assertEquals("123456789", result);
 	}
 
 	@Test
 	public void testGetIndividualIdForAidUseVidOnlyTrue() throws Exception{
 		String aid = "123456789";
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		Optional<String> perpVid = Optional.of("8251649601");
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
@@ -385,8 +380,7 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdTypeVid(){
-		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
-		assertEquals(IdType.VID.toString(), identityService.getIndividualIdType("2476302389"));
+		assertEquals(IdType.UIN.toString(), identityService.getIndividualIdType("2476302389"));
 	}
 
 	@Test
