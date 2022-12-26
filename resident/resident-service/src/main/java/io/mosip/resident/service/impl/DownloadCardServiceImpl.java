@@ -77,8 +77,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String TRANSACTION_COUNT = "transactionCount";
     private static final String CARD_FORMAT = "cardFormat";
     private static final Object VID_CARD = "vidCard";
-    private static final String CARD_READY_TO_DOWNLOAD = "Card ready to download";
-    private static final String IN_PROGRESS = "IN-PROGRESS";
 
     @Autowired
     private Utilities utilities;
