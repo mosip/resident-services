@@ -2,8 +2,11 @@ package io.mosip.resident.test.service;
 
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TransactionStage;
+import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
@@ -346,6 +349,16 @@ public class DownloadCardServiceTest {
         Mockito.when(vidService.retrieveVids(Mockito.anyString())).thenReturn(vidResponse);
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
         assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
+    }
+
+    @Test
+    public void testGetIndividualIdStatus() throws ApisResourceAccessException, IOException {
+        HashMap<String, String> packetStatusMap = new HashMap<>();
+        packetStatusMap.put(ResidentConstants.AID_STATUS, PacketStatus.SUCCESS.name());
+        packetStatusMap.put(ResidentConstants.TRANSACTION_TYPE_CODE, TransactionStage.CARD_READY_TO_DOWNLOAD.name());
+        Mockito.when(utilities.getPacketStatus(Mockito.anyString())).thenReturn(packetStatusMap);
+        ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus = downloadCardService.getIndividualIdStatus("3425636374");
+        assertEquals(PacketStatus.SUCCESS.name(),getIndividualIdStatus.getResponse().getAidStatus());
     }
 
 }
