@@ -72,4 +72,5 @@ public interface IdentityService {
 	String getIDATokenForIndividualId(String idvid) throws ResidentServiceCheckedException;
 
 
+    String getIndividualIdType(String s);
 }

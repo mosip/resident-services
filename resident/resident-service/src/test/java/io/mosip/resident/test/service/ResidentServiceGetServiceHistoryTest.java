@@ -4,13 +4,16 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AutnTxnDto;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.PartnerServiceImpl;
@@ -72,6 +75,9 @@ public class ResidentServiceGetServiceHistoryTest {
 
     @Mock
     private PartnerServiceImpl partnerServiceImpl;
+
+    @Mock
+    private IdAuthService idAuthServiceImpl;
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -222,4 +228,28 @@ public class ResidentServiceGetServiceHistoryTest {
                 null, "a", "eng").getResponse().getPageSize());
 
     }
+
+    @Test
+    public void testGetAidStatus() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+        aidStatusRequestDTO.setAid("10087100401001420220929210144");
+        aidStatusRequestDTO.setOtp("111111");
+        aidStatusRequestDTO.setTransactionID("1234567890");
+        Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO).getAidStatus());
+    }
+
+    @Test
+    public void testGetAidStatusOtpValidationFalse() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+        aidStatusRequestDTO.setAid("10087100401001420220929210144");
+        aidStatusRequestDTO.setOtp("111111");
+        aidStatusRequestDTO.setTransactionID("1234567890");
+        Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, false).getAidStatus());
+    }
+
+
 }
