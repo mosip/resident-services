@@ -1581,7 +1581,8 @@ public class ResidentServiceImpl implements ResidentService {
 					if (rid != null) {
 						return getUINCard(rid);
 					}
-				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())) {
+				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
+				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
 					cardType = IdType.VID.name();
 					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
 					if (credentialRequestId != null) {

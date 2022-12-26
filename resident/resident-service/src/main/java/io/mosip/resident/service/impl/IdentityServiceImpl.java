@@ -226,7 +226,7 @@ public class IdentityServiceImpl implements IdentityService {
 			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
 					.filter(a -> {
 						if(a.equals(PERPETUAL_VID)) {
-							Optional<String> perpVid=null;
+							Optional<String> perpVid= Optional.empty();
 							try {
 								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
 							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
