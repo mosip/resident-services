@@ -219,7 +219,7 @@ public class IdentityServiceTest {
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 		
 	}
 	
@@ -238,7 +238,7 @@ public class IdentityServiceTest {
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test
@@ -256,7 +256,7 @@ public class IdentityServiceTest {
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		IdentityDTO result = identityService.getIdentity("6");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -360,13 +360,12 @@ public class IdentityServiceTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
-		assertEquals("123456789", result);
+		assertEquals("8251649601", result);
 	}
 
 	@Test
 	public void testGetIndividualIdForAidUseVidOnlyTrue() throws Exception{
 		String aid = "123456789";
-		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		Optional<String> perpVid = Optional.of("8251649601");
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
 		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
@@ -473,7 +472,7 @@ public class IdentityServiceTest {
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test
@@ -492,7 +491,7 @@ public class IdentityServiceTest {
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test(expected = ResidentServiceException.class)
