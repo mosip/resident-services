@@ -169,8 +169,10 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			Map<String, Object> identity =
 					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
-		
-			identityDTO.setUIN(getUinForIndividualId(id));
+			/**
+			 * It is assumed that in the UI schema the UIN is added.
+			 */
+			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
 			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
