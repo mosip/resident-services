@@ -136,9 +136,6 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
-	
-	@Value("${resident.documents.category}")
-	private String individualDocs;
 
 	@Autowired
 	private ResidentVidService residentVidService;
@@ -189,9 +186,6 @@ public class IdentityServiceImpl implements IdentityService {
 
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (VidCreationException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -266,14 +260,7 @@ public class IdentityServiceImpl implements IdentityService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-	
-	private Map<String, String> getIndividualBiometrics(List<Map<String, String>> documents) {
-		return documents.stream()
-				.filter(map -> map.get("category") instanceof String && ((String)map.get("category")).equalsIgnoreCase(individualDocs))
-				.findAny()
-				.orElse(null);
-	}
-	
+
 	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
 		return getMappingValue(identity, NAME, langCode);
 	}
