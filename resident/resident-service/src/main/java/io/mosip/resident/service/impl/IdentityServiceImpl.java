@@ -55,12 +55,14 @@ import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 
@@ -153,6 +155,9 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private ValidateTokenUtil tokenValidationHelper;
 	
+	@Autowired
+    private Utilities  utilities;
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
 	@Override
@@ -167,7 +172,8 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			Map<String, Object> identity =
 					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
-			identityDTO.setUIN(getMappingValue(identity, UIN));
+		
+			identityDTO.setUIN(getUinForIndividualId(id));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
 			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
@@ -183,6 +189,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 		} catch (IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} catch (VidCreationException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -320,11 +329,23 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
-		if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
-			return idvid;
+	
+		try {
+			if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
+				return idvid;
+			}
+			return utilities.getUinByVid(idvid);
+		} catch (VidCreationException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
+		} catch (ApisResourceAccessException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage());
 		}
-		IdentityDTO identityDTO = getIdentity(idvid);
-		return identityDTO.getUIN();
+		
 	}
 	
 	@Override
