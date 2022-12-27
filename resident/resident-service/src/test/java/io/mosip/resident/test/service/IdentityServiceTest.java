@@ -700,4 +700,86 @@ public class IdentityServiceTest {
 		assertEquals("3956038419",identityService.getResidentIndvidualId());
 	}
 
+	@Test
+	public void testGetResidentAuthenticationMode() throws ApisResourceAccessException, JsonProcessingException {
+		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
+		Map<String, Object> userInfo = new HashMap<>();
+		userInfo.put("claim", "value");
+		userInfo.put("individual_id", "3956038419");
+		URI uri = URI.create("http://localhost:8080/userinfo");
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", "Bearer " + token);
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("false");
+		Authentication authentication= Mockito.mock(Authentication.class);
+		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+		SecurityContextHolder.setContext(securityContext);
+		when(securityContext.getAuthentication()).thenReturn(authentication);
+
+		MosipUserDto mosipUserDto = new MosipUserDto();
+		mosipUserDto.setToken(token);
+		// test the case where the principal is an AuthUserDetails object
+		AuthUserDetails authUserDetails = new AuthUserDetails(mosipUserDto, token);
+		when(authentication.getPrincipal()).thenReturn(authUserDetails);
+		assertEquals("",ReflectionTestUtils.invokeMethod(identityService,
+				"getResidentAuthenticationMode"));
+	}
+
+	@Test
+	public void testGetClaimFromAccessToken() throws ApisResourceAccessException, JsonProcessingException {
+		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
+		Map<String, Object> userInfo = new HashMap<>();
+		userInfo.put("claim", "value");
+		userInfo.put("individual_id", "3956038419");
+		URI uri = URI.create("http://localhost:8080/userinfo");
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("Authorization", "Bearer " + token);
+		Authentication authentication= Mockito.mock(Authentication.class);
+		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+		SecurityContextHolder.setContext(securityContext);
+		when(securityContext.getAuthentication()).thenReturn(authentication);
+
+		MosipUserDto mosipUserDto = new MosipUserDto();
+		mosipUserDto.setToken(token);
+		// test the case where the principal is an AuthUserDetails object
+		AuthUserDetails authUserDetails = new AuthUserDetails(mosipUserDto, token);
+		when(authentication.getPrincipal()).thenReturn(authUserDetails);
+		ReflectionTestUtils.invokeMethod(identityService,
+				"getClaimFromAccessToken", "value");
+	}
+
+	@Test
+	public void testGetIndividualIdTypeVidPassed(){
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
+		assertEquals(IdType.VID.toString(), identityService.getIndividualIdType("2476302389"));
+	}
+
+	@Test
+	public void testGetClaimValueFromJwtTokenFailed(){
+		String claim = null;
+		assertEquals("", ReflectionTestUtils.invokeMethod(identityService, "getClaimValueFromJwtToken",
+				token, claim));
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetIndividualIdForAidFailed() throws Exception{
+		String aid = "123456789";
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.empty());
+		ReflectionTestUtils.setField(identityService, "dateFormat", "yyyy/MM/dd");
+		ReflectionTestUtils.setField(identityService, "useVidOnly", true);
+		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+				.thenReturn(responseWrapper);
+		responseWrapper.setErrors(null);
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName"));
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		when(utility.getMappingJson()).thenReturn(mappingJson);
+		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
+		assertEquals("123456789", result);
+	}
+
+
 }
