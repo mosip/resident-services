@@ -33,6 +33,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -74,8 +78,13 @@ public class WebSubUpdateAuthTypeServiceTest {
 
     private NotificationResponseDTO notificationResponseDTO;
 
+    private EventModel eventModel;
+    private Event event;
+
     @Before
     public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
+        eventModel=new EventModel();
+        event=new Event();
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
@@ -86,8 +95,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 
     @Test
     public void testWebSubUpdateAuthTypeService() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        EventModel eventModel=new EventModel();
-        Event event=new Event();
         event.setTransactionId("1234");
         event.setId("1234");
 
@@ -99,5 +106,25 @@ public class WebSubUpdateAuthTypeServiceTest {
         webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
         webSubUpdateAuthTypeService = mock(WebSubUpdateAuthTypeServiceImpl.class);
         Mockito.lenient().doNothing().when(webSubUpdateAuthTypeService).updateAuthTypeStatus(Mockito.any());
+    }
+
+    @Test(expected = Exception.class)
+    public void testWebSubUpdateAuthFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+    }
+
+    @Test
+    public void testWebSubUpdateAuthPassed() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        Map<String, Object> data = new HashMap<>();
+        List<Map<String, Object>> authTypeList = new ArrayList<>();
+        Map<String, Object> authTypeMap = new HashMap<>();
+        authTypeMap.put("bio-FIR", "Locked");
+        authTypeList.add(authTypeMap);
+        data.put("authTypes", authTypeList);
+        data.put("requestId", "0839c2bf-5be5-4359-b860-6f9bda908378");
+        event.setData(data);
+        eventModel.setEvent(event);
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
     }
 }
