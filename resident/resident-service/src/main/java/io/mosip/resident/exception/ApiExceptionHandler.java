@@ -36,6 +36,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
+import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
@@ -236,8 +237,8 @@ public class ApiExceptionHandler {
 		ResponseWrapper<ServiceError> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 		responseWrapper
-				.setErrors(List.of(new ServiceError(ResidentErrorCode.UNAUTHORIZED.getErrorCode(),
-						ResidentErrorCode.UNAUTHORIZED.getErrorMessage())));
+				.setErrors(List.of(new ServiceError(AuthErrorCode.UNAUTHORIZED.getErrorCode(),
+						AuthErrorCode.UNAUTHORIZED.getErrorMessage())));
 		return responseWrapper;
 	}
 	
