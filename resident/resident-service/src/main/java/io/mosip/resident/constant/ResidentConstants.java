@@ -140,6 +140,7 @@ public class ResidentConstants {
     public static final String VID_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.vid.card.name.convention";
     public static final String SUCCESS = "Success";
     public static final String FAILED = "Failed";
+    public static final String NOT_AVAILABLE = "NA";
     public static final String REGISTRATION_CENTRE_TEMPLATE_PROPERTY = "resident.template.registration.centers.list";
     public static final String SUPPORTING_DOCS_TEMPLATE_PROPERTY = "resident.template.support-docs-list";
     public static final String FROM_DATE_TIME = "fromDateTime";
@@ -154,5 +155,16 @@ public class ResidentConstants {
     public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
 
     public static final String MESSAGE_CODE_MAXIMUM_LENGTH = "mosip.resident.message.code.maximum.length";
+
+    public static final String TRANSACTION_TYPE_CODE = "transactionTypeCode";
+    public static final String AID_STATUS = "aidStatus";
+
+    public static final String CHECK_STATUS_ID = "resident.checkstatus.id";
+    public static final String CHECK_STATUS_VERSION = "resident.checkstatus.version";
+
+    public static final String CHECK_STATUS_INDIVIDUAL_ID = "mosip.resident.checkstatus.individualid.id";
+    public static final String CHECKSTATUS_INDIVIDUALID_VERSION = "mosip.resident.checkstatus.individualid.version";
+    
+    public static final String RID = "rid";
 
 }

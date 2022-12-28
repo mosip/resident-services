@@ -241,7 +241,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
 		String individualId = identityServiceImpl.getResidentIndvidualId();
-		String eventId = null;
+		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			

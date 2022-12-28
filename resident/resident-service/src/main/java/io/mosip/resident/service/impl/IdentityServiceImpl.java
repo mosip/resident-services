@@ -55,12 +55,14 @@ import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 
@@ -92,6 +94,7 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private static final String VID = "VID";
 	private static final String AID = "AID";
+	private static final String  PERPETUAL_VID = "perpetualVID";
 
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
@@ -133,9 +136,6 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
-	
-	@Value("${resident.documents.category}")
-	private String individualDocs;
 
 	@Autowired
 	private ResidentVidService residentVidService;
@@ -152,6 +152,9 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private ValidateTokenUtil tokenValidationHelper;
 	
+	@Autowired
+    private Utilities  utilities;
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
 	@Override
@@ -166,6 +169,9 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			Map<String, Object> identity =
 					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+			/**
+			 * It is assumed that in the UI schema the UIN is added.
+			 */
 			identityDTO.setUIN(getMappingValue(identity, UIN));
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
@@ -219,16 +225,32 @@ public class IdentityServiceImpl implements IdentityService {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());
 			}
-			Map<String, ?> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-			Map<String, ?> identity = (Map<String, ?>) identityResponse.get(IDENTITY);
-
+			Map<String, Object> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
+			Map<String,Object> identity = (Map<String, Object>) identityResponse.get(IDENTITY);
+			
 			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
+					.filter(a -> {
+						if(a.equals(PERPETUAL_VID)) {
+							Optional<String> perpVid= Optional.empty();
+							try {
+								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
+							} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+							}
+							if(perpVid.isPresent()) {
+								String vid = perpVid.get();
+								identity.put(PERPETUAL_VID, vid);
+							}
+							return true;
+						} else {
+							return true;
+						}
+					})
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
-			if(includeUin) {
-				response.put(UIN, identity.get(UIN));
-			}
+
 			if(includePhoto) {
 				String photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
 				response.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
@@ -240,14 +262,7 @@ public class IdentityServiceImpl implements IdentityService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-	
-	private Map<String, String> getIndividualBiometrics(List<Map<String, String>> documents) {
-		return documents.stream()
-				.filter(map -> map.get("category") instanceof String && ((String)map.get("category")).equalsIgnoreCase(individualDocs))
-				.findAny()
-				.orElse(null);
-	}
-	
+
 	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
 		return getMappingValue(identity, NAME, langCode);
 	}
@@ -303,11 +318,23 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
-		if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
-			return idvid;
+	
+		try {
+			if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
+				return idvid;
+			}
+			return utilities.getUinByVid(idvid);
+		} catch (VidCreationException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
+		} catch (ApisResourceAccessException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage());
 		}
-		IdentityDTO identityDTO = getIdentity(idvid);
-		return identityDTO.getUIN();
+		
 	}
 	
 	@Override
