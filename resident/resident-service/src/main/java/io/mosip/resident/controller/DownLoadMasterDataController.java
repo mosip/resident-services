@@ -68,7 +68,7 @@ public class DownLoadMasterDataController {
 	 * @return
 	 * @throws ResidentServiceCheckedException
 	 */
-	@GetMapping("/download/registrationcenters")
+	@GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
 			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name)
 			throws ResidentServiceCheckedException, IOException, Exception {

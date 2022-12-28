@@ -75,7 +75,7 @@ public class ApiExceptionHandler {
 			HttpServletRequest httpServletRequest, final ResidentServiceException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ResidentCredentialServiceException.class)
@@ -135,7 +135,7 @@ public class ApiExceptionHandler {
 			final InvalidInputException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(IdRepoAppException.class)
@@ -151,7 +151,7 @@ public class ApiExceptionHandler {
 			final OtpValidationFailedException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
+		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(TokenGenerationFailedException.class)
@@ -263,7 +263,15 @@ public class ApiExceptionHandler {
 			final HttpServletRequest httpServletRequest, final ResidentServiceCheckedException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
+		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(EventIdNotPresentException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EventIdNotPresentException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ApisResourceAccessException.class)
