@@ -144,7 +144,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 			Mockito.when(idAuthService.authTypeStatusUpdateForRequestId(any(), any(), any())).thenReturn("123");
 			Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
 			Tuple2<ResponseDTO, String> authLockResponse = residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
-			assertEquals(notificationResponseDTO.getMessage(), authLockResponse.getT1().getMessage());
+			assertEquals("The chosen authentication types have been successfully locked/unlocked.", authLockResponse.getT1().getMessage());
 		}
 	}
 
