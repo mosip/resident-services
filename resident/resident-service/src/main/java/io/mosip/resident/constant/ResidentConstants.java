@@ -154,4 +154,6 @@ public class ResidentConstants {
     public static final String DOLLAR = "$";
     public static final String AUTH_TYPES = "authTypes";
 
+    public static final String CHANNEL = "channel";
+
 }

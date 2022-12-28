@@ -1877,10 +1877,15 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
 		Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
-		if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name()) &&
-		residentTransactionEntity.isPresent()){
-			fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
-					residentTransactionEntity.get().getPurpose());
+		if(residentTransactionEntity.isPresent()){
+			String purpose = residentTransactionEntity.get().getPurpose();
+			if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name())){
+				fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
+						purpose);
+			} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
+				fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
+						purpose);
+			}
 		}
 		return fileText;
 	}
@@ -1895,7 +1900,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 			Map<String, String> templateResponse = new LinkedHashMap<>(
 					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return templateResponse.get("fileText");
+			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType);
 		} else {
 			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}
