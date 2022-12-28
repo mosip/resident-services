@@ -903,7 +903,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, true);
 	}
