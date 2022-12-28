@@ -38,6 +38,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
 import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
+import io.mosip.kernel.openid.bridge.api.exception.ClientException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -229,6 +230,8 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ResponseWrapper<ServiceError>> defaultErrorHandler(HttpServletRequest httpServletRequest,
 			Exception exception) throws IOException {
 		if(exception instanceof AuthRestException) {
+			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
+		} else if(exception instanceof ClientException) {
 			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
 		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
