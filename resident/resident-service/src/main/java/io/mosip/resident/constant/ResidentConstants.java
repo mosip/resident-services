@@ -148,6 +148,6 @@ public class ResidentConstants {
 
     public static final String ADDITIONAL_ATTRIBUTE_TO_FETCH = "resident.additional.identity.attribute.to.fetch";
     public static final String COMMA = ",";
-
+    public static final String COLON = ":";
 
 }
