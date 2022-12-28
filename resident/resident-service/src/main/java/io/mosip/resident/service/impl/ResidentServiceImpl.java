@@ -1846,7 +1846,8 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					serviceHistoryResponseDto.setServiceType(serviceType.get());
 					serviceHistoryResponseDto
-							.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+							.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType,
+									residentTransactionEntity.getEventId()));
 				}
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
@@ -1857,7 +1858,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return serviceHistoryResponseDtoList;
 	}
 
-	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType)
+	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
@@ -1870,11 +1871,21 @@ public class ResidentServiceImpl implements ResidentService {
 				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 		Map<String, String> templateResponse = new LinkedHashMap<>(
 				(Map<String, String>) proxyResponseWrapper.getResponse());
-		String fileText = templateResponse.get("fileText");
+		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
+		return replacePlaceholderValueInTemplate(fileText, eventId, requestType);
+	}
+
+	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
+		Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
+		if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name()) &&
+		residentTransactionEntity.isPresent()){
+			fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
+					residentTransactionEntity.get().getPurpose());
+		}
 		return fileText;
 	}
 
-	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType)
+	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
@@ -1886,7 +1897,7 @@ public class ResidentServiceImpl implements ResidentService {
 					(Map<String, String>) proxyResponseWrapper.getResponse());
 			return templateResponse.get("fileText");
 		} else {
-			return getDescriptionForLangCode(langCode, statusCode, requestType);
+			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}
 
 	}
@@ -2015,9 +2026,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
-					eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
+					eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType, eventId));
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							getDescriptionForLangCode(languageCode, statusCode, requestType));
+							getDescriptionForLangCode(languageCode, statusCode, requestType, eventId));
 				}
 			} else {
 				eventStatusResponseDTO.setSummary(requestType.name());
