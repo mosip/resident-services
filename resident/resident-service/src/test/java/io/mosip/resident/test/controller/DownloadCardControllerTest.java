@@ -7,7 +7,6 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.dto.CheckStatusResponseDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -122,9 +121,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
-        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
-        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345",
-                checkStatusResponseDTOResponseWrapper));
+        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.post("/download-card").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
