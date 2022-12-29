@@ -1879,12 +1879,14 @@ public class ResidentServiceImpl implements ResidentService {
 		Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
 		if(residentTransactionEntity.isPresent()){
 			String purpose = residentTransactionEntity.get().getPurpose();
-			if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name())){
-				fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
-						purpose);
-			} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
-				fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
-						purpose);
+			if(purpose!=null && !purpose.isEmpty()){
+				if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name())){
+					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
+							purpose);
+				} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
+					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
+							purpose);
+				}
 			}
 		}
 		return fileText;
