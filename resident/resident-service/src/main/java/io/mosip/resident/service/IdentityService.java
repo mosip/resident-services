@@ -1,6 +1,7 @@
 package io.mosip.resident.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -66,6 +67,9 @@ public interface IdentityService {
 			throws ResidentServiceCheckedException;
 			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;
+
+	Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto,
+											  List<String> additionalAttributes) throws ResidentServiceCheckedException;
 
 	String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException;
 

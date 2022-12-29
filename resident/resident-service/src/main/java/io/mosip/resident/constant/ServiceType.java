@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 
 public enum ServiceType {
-    AUTHENTICATION_REQUEST(List.of(RequestType.AUTHENTICATION_REQUEST, RequestType.SEND_OTP, RequestType.VALIDATE_OTP)),
+    AUTHENTICATION_REQUEST(List.of(RequestType.AUTHENTICATION_REQUEST, RequestType.VALIDATE_OTP)),
 	SERVICE_REQUEST(List.of(RequestType.DOWNLOAD_PERSONALIZED_CARD, RequestType.ORDER_PHYSICAL_CARD,
 			RequestType.GET_MY_ID, RequestType.BOOK_AN_APPOINTMENT, RequestType.VID_CARD_DOWNLOAD)),
     DATA_UPDATE_REQUEST(List.of(RequestType.UPDATE_MY_UIN)),

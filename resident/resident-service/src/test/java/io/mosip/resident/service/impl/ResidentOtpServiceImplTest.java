@@ -42,9 +42,6 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 @ContextConfiguration
 public class ResidentOtpServiceImplTest {
 
-	public static final String EMAIL_CHANNEL = "EMAIL";
-	public static final String PHONE_CHANNEL = "PHONE";
-
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
@@ -73,7 +70,6 @@ public class ResidentOtpServiceImplTest {
 	public void setUp() throws Exception {
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
 		OtpResponseDTO responseDto = getOtpResponseDTO();
-		IdentityDTO identityDTO = getIdentityDTO();
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseDto);
 		when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
@@ -99,6 +95,7 @@ public class ResidentOtpServiceImplTest {
 	public void generateOtpForAid() throws Exception {
 		AidOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
+		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
 		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
 		assertNotNull(residentOtpServiceImpl.generateOtpForAid(aidOtpRequestDTO));
 	}

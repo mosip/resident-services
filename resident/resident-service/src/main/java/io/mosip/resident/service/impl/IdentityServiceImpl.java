@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -203,11 +204,18 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
 	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin,schemaType, false);
+		return getIdentityAttributes(id, includeUin,schemaType, false, List.of(
+				Objects.requireNonNull(env.getProperty(ResidentConstants.ADDITIONAL_ATTRIBUTE_TO_FETCH))
+				.split(ResidentConstants.COMMA)));
+	}
+
+	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType, boolean includePhoto) throws ResidentServiceCheckedException {
+		return getIdentityAttributes(id, includeUin, schemaType, includePhoto, List.of());
 	}
 
 	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType, boolean includePhoto) throws ResidentServiceCheckedException {
+	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto,
+													 List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -227,8 +235,13 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, Object> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String,Object> identity = (Map<String, Object>) identityResponse.get(IDENTITY);
-			
-			Map<String, Object> response = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType).stream()
+			List<String> filterBySchema = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType);
+			List<String> finalFilter = new ArrayList<>();
+			finalFilter.addAll(filterBySchema);
+			if(additionalAttributes != null && additionalAttributes.size()>0){
+				finalFilter.addAll(additionalAttributes);
+			}
+			Map<String, Object> response = finalFilter.stream()
 					.filter(a -> {
 						if(a.equals(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();

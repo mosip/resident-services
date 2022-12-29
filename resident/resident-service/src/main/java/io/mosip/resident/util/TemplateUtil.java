@@ -1,7 +1,14 @@
 package io.mosip.resident.util;
 
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.*;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -11,7 +18,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
-import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -31,9 +37,6 @@ import java.util.Optional;
 @Component
  public class TemplateUtil {
 
-    private static final String UIN = "UIN";
-    private static final String VID = "VID";
-    private static final String AID = "AID";
     private static final String LOGO_URL = "logoUrl";
     
     @Autowired
@@ -41,9 +44,6 @@ import java.util.Optional;
 
     @Autowired
     private IdentityServiceImpl identityServiceImpl;
-
-    @Autowired
-    private RequestValidator requestValidator;
     
     @Autowired
     private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
