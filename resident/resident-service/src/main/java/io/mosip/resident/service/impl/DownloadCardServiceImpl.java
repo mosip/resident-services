@@ -57,7 +57,6 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
 import reactor.util.function.Tuple2;
-import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
 /**
@@ -114,11 +113,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
-    public Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
+    public Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
         String rid = "";
         String eventId = utilitiy.createEventId();
         byte[] pdfBytes = new byte[0];
-        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
@@ -171,7 +169,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return Tuples.of(pdfBytes, eventId, checkStatusResponseDTOResponseWrapper);
+        return Tuples.of(pdfBytes, eventId);
     }
 
     private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap) {

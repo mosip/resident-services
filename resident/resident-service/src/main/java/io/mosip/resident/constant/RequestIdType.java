@@ -8,5 +8,6 @@ public enum RequestIdType {
 	RES_UPDATE,
 	CHECK_STATUS,
 	SHARE_CREDENTIAL,
+	AUTH_LOCK_UNLOCK,
 	VERSION;
 }

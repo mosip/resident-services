@@ -1254,16 +1254,16 @@ public class ResidentServiceImpl implements ResidentService {
 			NotificationResponseDTO notificationResponseDTO = sendNotificationV2(individualId, requestType,
 					templateType, eventId, null);
 
-			if (isTransactionSuccessful)
+			if (isTransactionSuccessful) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock success"));
-			else
+				response.setMessage("The chosen authentication types have been successfully locked/unlocked.");
+			} else {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
-			if (notificationResponseDTO != null) {
-				response.setMessage(notificationResponseDTO.getMessage());
-				response.setStatus(ResidentConstants.SUCCESS);
+				response.setMessage("The chosen authentication types haven't been successfully locked/unlocked.");
 			}
+			response.setStatus(ResidentConstants.SUCCESS);
 		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: exit");

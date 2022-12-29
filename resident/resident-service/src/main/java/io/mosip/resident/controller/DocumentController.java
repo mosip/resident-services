@@ -1,40 +1,35 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
-
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
-import io.mosip.resident.dto.DocumentDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-
 import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.DocumentValidator;
 
 /**
@@ -56,6 +51,12 @@ public class DocumentController {
 	
 	@Autowired
 	private AuditUtil audit;
+	
+	@Value("${resident.document.upload.id}")
+	private String residentUploadDocumentId;
+	
+	@Value("${mosip.resident.request.response.version}")
+	private String residentDocumentResponseVersion;
 
 	@Value("${resident.document.get.id}")
 	private String residentGetDocumentId;
@@ -103,6 +104,8 @@ public class DocumentController {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
+			responseWrapper.setId(residentUploadDocumentId);
+			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setResponse(uploadDocumentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_SUCCESS, transactionId));

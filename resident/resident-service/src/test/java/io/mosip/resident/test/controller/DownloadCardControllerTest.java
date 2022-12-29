@@ -7,7 +7,6 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.dto.CheckStatusResponseDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +33,7 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.resident.controller.DownloadCardController;
+import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
@@ -122,9 +122,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
-        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
-        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345",
-                checkStatusResponseDTOResponseWrapper));
+        Mockito.when(downloadCardService.getDownloadCardPDF(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.post("/download-card").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
@@ -152,6 +150,17 @@ public class DownloadCardControllerTest {
 		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any()))
 				.thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
+    }
+    
+    @Test
+    public void testGetStatus() throws Exception {
+    	ResponseWrapper<CheckStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+    	CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
+    	checkStatusResponseDTO.setAidStatus("process");
+    	responseWrapper.setResponse(checkStatusResponseDTO);
+		Mockito.when(downloadCardService.getIndividualIdStatus(Mockito.any()))
+				.thenReturn(responseWrapper);
+        mockMvc.perform(MockMvcRequestBuilders.get("/status/individualId/12345")).andExpect(status().isOk());
     }
 
 }
