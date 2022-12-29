@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.util.function.Tuple3;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -69,9 +68,8 @@ public class DownloadCardController {
         logger.debug("DownloadCardController::downloadCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
-        Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>> tupleResponse =
-                (Tuple3<byte[], String, ResponseWrapper<CheckStatusResponseDTO>>)
-                        downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+		Tuple2<byte[], String> tupleResponse = downloadCardService
+				.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
             throw new CardNotReadyException();
