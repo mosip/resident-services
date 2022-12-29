@@ -149,6 +149,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
@@ -1196,7 +1198,8 @@ public class ResidentServiceImpl implements ResidentService {
     		}
 
 			List<AuthTypeStatusDtoV2> authTypesStatusList = authLockOrUnLockRequestDtoV2.getAuthTypes();
-			String authType = authTypesStatusList.stream().map(ResidentServiceImpl::getAuthTypeBasedOnConfigV2)
+			String authType = authTypesStatusList.stream().map(dto ->ResidentServiceImpl.getAuthTypeBasedOnConfigV2(dto)
+							+ResidentConstants.COLON+ (dto.getLocked()? LOCKED:UNLOCKED))
 					.collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
@@ -1843,7 +1846,8 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					serviceHistoryResponseDto.setServiceType(serviceType.get());
 					serviceHistoryResponseDto
-							.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType));
+							.setDescription(getDescriptionForLangCode(langCode, statusCode, requestType,
+									residentTransactionEntity.getEventId()));
 				}
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
@@ -1854,7 +1858,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return serviceHistoryResponseDtoList;
 	}
 
-	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType)
+	private String getDescriptionForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
@@ -1867,11 +1871,26 @@ public class ResidentServiceImpl implements ResidentService {
 				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 		Map<String, String> templateResponse = new LinkedHashMap<>(
 				(Map<String, String>) proxyResponseWrapper.getResponse());
-		String fileText = templateResponse.get("fileText");
+		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
+		return replacePlaceholderValueInTemplate(fileText, eventId, requestType);
+	}
+
+	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
+		Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
+		if(residentTransactionEntity.isPresent()){
+			String purpose = residentTransactionEntity.get().getPurpose();
+			if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name())){
+				fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
+						purpose);
+			} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
+				fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
+						purpose);
+			}
+		}
 		return fileText;
 	}
 
-	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType)
+	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
@@ -1881,9 +1900,9 @@ public class ResidentServiceImpl implements ResidentService {
 					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 			Map<String, String> templateResponse = new LinkedHashMap<>(
 					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return templateResponse.get("fileText");
+			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType);
 		} else {
-			return getDescriptionForLangCode(langCode, statusCode, requestType);
+			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}
 
 	}
@@ -2012,9 +2031,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
-					eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType));
+					eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType, eventId));
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							getDescriptionForLangCode(languageCode, statusCode, requestType));
+							getDescriptionForLangCode(languageCode, statusCode, requestType, eventId));
 				}
 			} else {
 				eventStatusResponseDTO.setSummary(requestType.name());
