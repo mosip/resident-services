@@ -206,6 +206,7 @@ public class RequestValidator {
 		map.put(RequestIdType.RES_UPDATE, uinUpdateId);
 		map.put(RequestIdType.CHECK_STATUS, checkStatusID);
 		map.put(RequestIdType.SHARE_CREDENTIAL, shareCredentialId);
+		map.put(RequestIdType.AUTH_LOCK_UNLOCK, authLockStatusUpdateV2Id);
 	}
 
 	public void validateVidCreateRequest(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
@@ -319,14 +320,7 @@ public class RequestValidator {
 	}
 
 	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDto) {
-		if (requestDto.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(authLockStatusUpdateV2Id)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "request to auth lock or unlock"));
-			throw new InvalidInputException("id");
-		}
+		validateRequestNewApi(requestDto, RequestIdType.AUTH_LOCK_UNLOCK);
 		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
 
@@ -723,9 +717,8 @@ public class RequestValidator {
 	}
 
 	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
-		validateRequest(requestDTO, RequestIdType.RES_UPDATE);
-
 		if (!isPatch) {
+			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
 			if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 					|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
@@ -734,6 +727,7 @@ public class RequestValidator {
 				throw new InvalidInputException("individualId");
 			}
 		} else {
+			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
