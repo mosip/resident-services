@@ -420,14 +420,22 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
 		String userInfoStr;
-		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))){
+		if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
 			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
-			ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper.verifyJWTSignagure(decodedJWT);
-			if(verifySignagure.left) {
-				userInfoStr = decodeString(getPayload(decodedJWT));
+			if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
+				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
+						.verifyJWTSignagure(decodedJWT);
+				if (verifySignagure.left) {
+					userInfoStr = decodeString(getPayload(decodedJWT));
+				} else {
+					throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE,
+							String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(),
+									String.format("User info signature validation failed. Error: %s: %s",
+											verifySignagure.getRight().getErrorCode(),
+											verifySignagure.getRight().getErrorMessage())));
+				}
 			} else {
-				throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), 
-						String.format("User info signature validation failed. Error: %s: %s", verifySignagure.getRight().getErrorCode(), verifySignagure.getRight().getErrorMessage())));
+				userInfoStr = decodeString(getPayload(decodedJWT));
 			}
 		} else {
 			userInfoStr = userInfoResponseStr;

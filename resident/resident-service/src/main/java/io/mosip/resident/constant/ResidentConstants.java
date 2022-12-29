@@ -59,6 +59,7 @@ public class ResidentConstants {
 
 
     public static final String MOSIP_OIDC_JWT_SIGNED = "mosip.resident.oidc.userinfo.jwt.signed";
+    public static final String MOSIP_OIDC_JWT_VERIFY_ENABLED = "mosip.resident.oidc.userinfo.jwt.verify.enabled";
     public static final String MOSIP_OIDC_ENCRYPTION_ENABLED = "mosip.resident.oidc.userinfo.encryption.enabled";
 
     public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
