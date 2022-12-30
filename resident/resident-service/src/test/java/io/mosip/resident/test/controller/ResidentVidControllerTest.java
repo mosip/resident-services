@@ -257,7 +257,7 @@ public class ResidentVidControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
-		this.mockMvc.perform(builder).andExpect(status().isBadRequest());
+		this.mockMvc.perform(builder).andExpect(status().isOk());
 		// .andExpect(jsonPath("$.response.message", is("Successful")));
 
 	}
@@ -345,7 +345,7 @@ public class ResidentVidControllerTest {
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
-		this.mockMvc.perform(builder).andExpect(status().isBadRequest())
+		this.mockMvc.perform(builder).andExpect(status().isOk())
 				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-471")));
 	}
 
@@ -361,7 +361,7 @@ public class ResidentVidControllerTest {
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
-		this.mockMvc.perform(builder).andExpect(status().isBadRequest());
+		this.mockMvc.perform(builder).andExpect(status().isOk());
 	}
 
 	@Test

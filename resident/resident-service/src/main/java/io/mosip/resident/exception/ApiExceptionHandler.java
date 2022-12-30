@@ -263,7 +263,7 @@ public class ApiExceptionHandler {
 			final HttpServletRequest httpServletRequest, final ResidentServiceCheckedException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 	
 	@ExceptionHandler(EventIdNotPresentException.class)
