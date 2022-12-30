@@ -38,8 +38,8 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Override
-	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(String idType,
-			List<String> attributeList) throws ResidentServiceCheckedException {
+	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
+			throws ResidentServiceCheckedException {
 		try {
 			String individualId=identityServiceImpl.getResidentIndvidualId();
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
