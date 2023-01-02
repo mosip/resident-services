@@ -186,7 +186,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         checkStatusResponseDTOResponseWrapper.setResponse(checkStatusResponseDTO);
         checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID));
         checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECKSTATUS_INDIVIDUALID_VERSION));
-        checkStatusResponseDTOResponseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
+        checkStatusResponseDTOResponseWrapper.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
         return checkStatusResponseDTOResponseWrapper;
     }
 
