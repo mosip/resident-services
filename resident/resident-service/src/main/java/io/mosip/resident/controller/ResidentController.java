@@ -375,6 +375,8 @@ public class ResidentController {
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 		requestDTO.getRequest().getIdentity().put(IdType.UIN.name(), identityServiceImpl.getUinForIndividualId(individualId));
 		Tuple2<Object, String> tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity());
+		response.setId(requestDTO.getId());
+		response.setVersion(requestDTO.getVersion());
 		response.setResponse(tupleResponse.getT1());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));

@@ -216,6 +216,10 @@
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-logger-logback</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -276,6 +280,10 @@
 				<exclusion>
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-logger-logback</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -356,6 +364,10 @@
 				<exclusion>
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-logger-logback</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
