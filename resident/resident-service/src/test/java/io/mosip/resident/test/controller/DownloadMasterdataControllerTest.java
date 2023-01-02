@@ -119,7 +119,7 @@ public class DownloadMasterdataControllerTest {
     public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
         Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
                 Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/registrationcenters?langcode=eng&hierarchylevel=5&name=14022")).
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
                andExpect(status().isOk());
     }
 

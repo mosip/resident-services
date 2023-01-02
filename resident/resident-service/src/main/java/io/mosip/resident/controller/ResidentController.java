@@ -409,6 +409,12 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
 	@GetMapping(path = "/download-card/event/{eventId}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Card successfully downloaded", content = @Content(schema = @Schema(implementation = ResponseWrapper.class))),
+			@ApiResponse(responseCode = "400", description = "Download card failed", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> downloadCard(
 			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(

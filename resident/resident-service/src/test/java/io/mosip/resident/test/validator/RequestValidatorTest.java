@@ -36,6 +36,7 @@ import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -2390,7 +2391,7 @@ public class RequestValidatorTest {
 		requestValidator.validateEventId("3");
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = EidNotBelongToSessionException.class)
 	public void testValidateApiBelongToSameSession() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setTokenId("123");
