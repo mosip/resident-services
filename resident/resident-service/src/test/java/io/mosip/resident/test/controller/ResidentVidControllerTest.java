@@ -239,7 +239,7 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
-	public void vidRevokingSuccessTest() throws Exception {
+	public void vidRevokingFailureTest() throws Exception {
 
 		VidRevokeResponseDTO dto = new VidRevokeResponseDTO();
 		dto.setMessage("Successful");
@@ -264,7 +264,7 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
-	public void vidRevokingFailureTest() throws Exception {
+	public void vidRevokingFailureTest2() throws Exception {
 
 		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new VidRevocationException());
