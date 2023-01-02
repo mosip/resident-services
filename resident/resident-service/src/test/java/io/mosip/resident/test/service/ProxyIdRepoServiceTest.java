@@ -50,7 +50,7 @@ public class ProxyIdRepoServiceTest {
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId("", List.of());
+		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId(List.of());
 		assertNotNull(response);
 	}
 
@@ -61,6 +61,6 @@ public class ProxyIdRepoServiceTest {
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		service.getRemainingUpdateCountByIndividualId("", List.of());
+		service.getRemainingUpdateCountByIndividualId(List.of());
 	}
 }
