@@ -1,7 +1,7 @@
 package io.mosip.resident;
 
 import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.authcodeflowproxy.api.service.validator.ValidateTokenHelper;
+import io.mosip.kernel.auth.defaultadapter.helper.ValidateTokenHelper;
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.preregistration.application.service.TransliterationService;
 import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
