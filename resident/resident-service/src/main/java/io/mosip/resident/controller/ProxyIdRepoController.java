@@ -1,6 +1,5 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.constant.ResidentConstants.ID_TYPE;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
@@ -12,7 +11,6 @@ import javax.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,12 +56,11 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<ResponseWrapper<?>> getRemainingUpdateCountByIndividualId(
-			@RequestParam(name = ID_TYPE, required = false) @Nullable String idType,
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
 		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
 			ResponseWrapper<?> responseWrapper = proxySerivce
-					.getRemainingUpdateCountByIndividualId(idType, filterAttributeList);
+					.getRemainingUpdateCountByIndividualId(filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
