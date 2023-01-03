@@ -40,6 +40,7 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -1163,7 +1164,7 @@ public class RequestValidator {
 			String tokenId = residentTransactionEntity.get().getTokenId();
 			String sessionToken = identityService.getResidentIdaToken();
 			if(!tokenId.equals(sessionToken)){
-				throw new ResidentServiceException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
+				throw new EidNotBelongToSessionException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
 						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());
 			}
 		}

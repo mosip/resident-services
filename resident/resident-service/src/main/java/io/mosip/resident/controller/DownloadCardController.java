@@ -16,6 +16,11 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.util.function.Tuple2;
 
@@ -64,6 +69,12 @@ public class DownloadCardController {
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardController.class);
 
     @PostMapping("/download-card")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Card successfully downloaded", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseWrapper.class)))),
+			@ApiResponse(responseCode = "400", description = "Download card failed", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
     public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO){
         logger.debug("DownloadCardController::downloadCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);

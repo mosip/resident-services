@@ -269,6 +269,30 @@ public class ApiExceptionHandler {
 		logStackTrace(e);
 		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
 	}
+	
+	@ExceptionHandler(EventIdNotPresentException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EventIdNotPresentException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(EidNotBelongToSessionException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EidNotBelongToSessionException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(DigitalCardRidNotFoundException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final DigitalCardRidNotFoundException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
 
 	@ExceptionHandler(ApisResourceAccessException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> getApiResourceStackTraceHandler(
