@@ -243,7 +243,7 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, Object> response = finalFilter.stream()
 					.filter(a -> {
-						if(a.equals(PERPETUAL_VID)) {
+						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
 								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
@@ -254,6 +254,17 @@ public class IdentityServiceImpl implements IdentityService {
 							if(perpVid.isPresent()) {
 								String vid = perpVid.get();
 								identity.put(PERPETUAL_VID, vid);
+							}
+							return true;
+						} else {
+							return true;
+						}
+					})
+					.filter(attr -> {
+						if(attr.contains(ResidentConstants.MASK_PREFIX)) {
+							String attributeName = attr.replace(ResidentConstants.MASK_PREFIX, "");
+							if(identity.containsKey(attributeName)) {
+								identity.put(attr, utility.convertToMaskDataFormat((String) identity.get(attributeName)));
 							}
 							return true;
 						} else {
