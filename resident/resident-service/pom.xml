@@ -28,6 +28,7 @@
 		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
 		<kernel.khazana.version>1.2.1-SNAPSHOT</kernel.khazana.version>
 		<pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
+		<kernel-openid-bridge-api.version>1.2.1-SNAPSHOT</kernel-openid-bridge-api.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -53,6 +54,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<version>${spring.boot.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-openid-bridge-api</artifactId>
+			<version>${kernel-openid-bridge-api.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>

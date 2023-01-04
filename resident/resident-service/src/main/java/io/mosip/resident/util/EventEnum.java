@@ -830,7 +830,8 @@ public enum EventEnum {
 	 */
 	public static EventEnum getEventEnumWithValue(EventEnum e, String edescription, String ename) {
 		e.setDescription(String.format(e.getDescription(), edescription));
-		if (e.getId().equalsIgnoreCase("%s"))
+		String id = e.getId();
+		if (id!=null && id.equalsIgnoreCase("%s"))
 			e.setId(edescription);
 		e.setName(String.format(e.getName(), ename));
 		return e;
