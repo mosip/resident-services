@@ -144,7 +144,8 @@ public class DownloadCardServiceTest {
         Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)).thenReturn("true");
         Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY)).thenReturn("true");
         Mockito.when(identityService.getResidentIndvidualId()).thenReturn("1234567890");
-        Mockito.when(identityService.getResidentIndvidualId()).thenReturn("1234567890");
+        Mockito.when(identityService.getUinForIndividualId(Mockito.anyString())).thenReturn("3425636374");
+        Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
         identityMap = new LinkedHashMap();
         identityMap.put("UIN", "8251649601");
         identityMap.put("email", "manojvsp12@gmail.com");
@@ -281,8 +282,14 @@ public class DownloadCardServiceTest {
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 		assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
     }
+    
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetVidCardEventIdNestedIf() throws BaseCheckedException, IOException {
+		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123456789");
+		downloadCardService.getVidCardEventId("123");
+    }
 
-    @Test(expected = ResidentServiceException.class)
+    @Test(expected = ResidentServiceCheckedException.class)
     public void testGetVidCardEventIdFailed() throws BaseCheckedException {
 		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
@@ -312,17 +319,12 @@ public class DownloadCardServiceTest {
 		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
-        ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
-        residentCredentialResponseDto.setId("123");
-        residentCredentialResponseDto.setRequestId("123");
-        responseWrapper.setResponse(residentCredentialResponseDto);
-        Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
+		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
 		downloadCardService.getVidCardEventId("123");
     }
 
     @Test
-    public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException, IOException {
+    public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException {
 		ResponseWrapper<VidDownloadCardResponseDto> vidDownloadCardResponseDtoResponseWrapper = new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
@@ -347,7 +349,6 @@ public class DownloadCardServiceTest {
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
         Mockito.when(vidService.retrieveVids(Mockito.anyString())).thenReturn(vidResponse);
-        Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
         assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
     }
 
