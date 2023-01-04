@@ -53,18 +53,18 @@ public class ProxyIdRepoControllerTest {
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(service.getRemainingUpdateCountByIndividualId(any(), any())).thenReturn(responseWrapper);
+		when(service.getRemainingUpdateCountByIndividualId(any())).thenReturn(responseWrapper);
 		ResponseEntity<ResponseWrapper<?>> response = controller
-				.getRemainingUpdateCountByIndividualId("", List.of());
+				.getRemainingUpdateCountByIndividualId(List.of());
 		assertNotNull(response);
 	}
 
 	@Test
 	public void testGetRemainingUpdateCountByIndividualIdException() throws ResidentServiceCheckedException {
-		when(service.getRemainingUpdateCountByIndividualId(any(), any()))
+		when(service.getRemainingUpdateCountByIndividualId(any()))
 				.thenThrow(new ResidentServiceCheckedException(API_RESOURCE_ACCESS_EXCEPTION));
 		ResponseEntity<ResponseWrapper<?>> response = controller
-				.getRemainingUpdateCountByIndividualId("", List.of());
+				.getRemainingUpdateCountByIndividualId(List.of());
 		assertEquals(List.of(new ServiceError(API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 				API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage())), response.getBody().getErrors());
 	}

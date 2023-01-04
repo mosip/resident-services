@@ -1,13 +1,18 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
+import java.util.Map;
 
-public class VidAlreadyPresentException extends BaseUncheckedException {
+import io.mosip.kernel.core.exception.BaseUncheckedException;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.util.ObjectWithMetadata;
+
+public class VidAlreadyPresentException extends BaseUncheckedException implements ObjectWithMetadata {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 5320581589143112542L;
+	private Map<String, Object> metadata;
 
 	public VidAlreadyPresentException() {
         super();
@@ -22,4 +27,17 @@ public class VidAlreadyPresentException extends BaseUncheckedException {
     public VidAlreadyPresentException(String errorCode, String errorMessage) {
         super(errorCode, errorMessage);
     }
+    
+	public Map<String, Object> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, Object> metadata) {
+		this.metadata = metadata;
+	}
+
+	public VidAlreadyPresentException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
+		super(ResidentErrorCode.VID_ALREADY_PRESENT.getErrorCode(), errorMessage, rootCause);
+		this.metadata = metadata;
+	}
 }

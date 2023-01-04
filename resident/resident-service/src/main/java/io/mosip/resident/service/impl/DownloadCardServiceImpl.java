@@ -1,18 +1,37 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
+import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
+import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import io.mosip.resident.dto.CheckStatusResponseDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.CredentialReqestDto;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
@@ -26,36 +45,19 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
-import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
-import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
-import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -72,20 +74,14 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String GENERATED_ON_TIMESTAMP = "genratedOnTimestamp";
     private static final String TRANSACTION_LIMIT = "transactionLimit";
     private static final String TRANSACTION_COUNT = "transactionCount";
-    private static final String NEW = "NEW";
-    private static final String FIRST_NAME = "firstName";
-    private static final String DATE_OF_BIRTH = "dateOfBirth";
-    @Autowired
-    private ResidentController residentController;
+    private static final String CARD_FORMAT = "cardFormat";
+    private static final Object VID_CARD = "vidCard";
 
     @Autowired
     private Utilities utilities;
 
     @Autowired
     private AuditUtil audit;
-
-    @Autowired
-    private ObjectStoreHelper objectStoreHelper;
 
     @Autowired
     private ResidentServiceRestClient residentServiceRestClient;
@@ -103,12 +99,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private IdentityServiceImpl identityService;
 
     @Autowired
-    private TemplateUtil templateUtil;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private Environment environment;
 
     @Autowired
@@ -117,11 +107,16 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     @Autowired
     private ResidentVidService vidService;
 
+    @Autowired
+    private ResidentCredentialService residentCredentialService;
+
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
     @Override
-    public byte[] getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
-        String rid = null;
+    public Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
+        String rid = "";
+        String eventId = utilitiy.createEventId();
+        byte[] pdfBytes = new byte[0];
         try {
             if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
@@ -130,9 +125,26 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
+                    pdfBytes = residentService.getUINCard(rid);
+                } else if (idType.equalsIgnoreCase(VID)) {
+                    ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(individualId);
+                    if(residentTransactionEntity !=null ){
+                        String credentialRequestId = residentTransactionEntity.getCredentialRequestId();
+                        if (credentialRequestId != null) {
+                            pdfBytes =residentCredentialService.getCard
+                                    (credentialRequestId, null, null);
+                        }
+                    }
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
+                    pdfBytes = residentService.getUINCard(rid);
                 }
+                if(pdfBytes.length==0){
+                    insertDataForDownloadCard(downloadCardRequestDTOMainRequestDTO, eventId, EventStatus.FAILED.name());
+                } else {
+                    insertDataForDownloadCard(downloadCardRequestDTOMainRequestDTO, eventId, EventStatus.SUCCESS.name());
+                }
+
             } else {
                 logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                         LoggerFileConstant.APPLICATIONID.toString(),
@@ -150,31 +162,100 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             audit.setAuditRequestDto(EventEnum.REQ_CARD);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
+        } catch (ResidentServiceException e) {
+            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
+            logger.error("Unable to get attributes- "+e);
+            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return residentService.getUINCard(rid);
+        return Tuples.of(pdfBytes, eventId);
+    }
+
+    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap) {
+        ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
+        CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
+        String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
+        String transactionStage = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+        checkStatusResponseDTO.setAidStatus(aidStatus);
+        checkStatusResponseDTO.setTransactionStage(transactionStage);
+        checkStatusResponseDTOResponseWrapper.setResponse(checkStatusResponseDTO);
+        checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID));
+        checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECKSTATUS_INDIVIDUALID_VERSION));
+        checkStatusResponseDTOResponseWrapper.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+        return checkStatusResponseDTOResponseWrapper;
+    }
+
+    private void insertDataForDownloadCard(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO,
+                                           String eventId, String status) throws ApisResourceAccessException, ResidentServiceCheckedException {
+        ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
+        residentTransactionEntity.setEventId(eventId);
+        residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
+        residentTransactionEntity.setRequestSummary(RequestType.GET_MY_ID.name());
+        residentTransactionEntity.setStatusCode(status);
+        residentTransactionEntity.setStatusComment(String.valueOf(CARD_DOWNLOADED));
+        residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(
+                downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
+        residentTransactionEntity.setTokenId(identityService.getIDAToken(
+                downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
+        residentTransactionEntity.setRequestTrnId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
+        residentTransactionRepository.save(residentTransactionEntity);
+
     }
 
     @Override
-    public byte[] downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
+    public Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password=null;
+        String eventId = ResidentConstants.NOT_AVAILABLE;
+        ResidentTransactionEntity residentTransactionEntity = null;
         try {
+        	residentTransactionEntity = createResidentTransactionEntity();
+        	if (residentTransactionEntity != null) {
+    			eventId = residentTransactionEntity.getEventId(); 
+    		}
             decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
             List<String> attributeValues = getAttributeList();
             if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))){
                 password = utilitiy.getPassword(attributeValues);
             }
+            residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
+            residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
         }
         catch (Exception e) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
             audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
             logger.error("Unable to convert html to pdf RootCause- "+e);
-            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
-        }
-        return utilitiy.signPdf(new ByteArrayInputStream(decodedData), password);
+			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } finally {
+        	if(residentTransactionEntity != null) {
+        		//if the status code will come as null, it will set it as failed.
+            	if(residentTransactionEntity.getStatusCode()==null) {
+    				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+    				residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+    			}
+    			residentTransactionRepository.save(residentTransactionEntity);
+        	}
+		}
+        return Tuples.of(utilitiy.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
     }
 
-    private List<String> getAttributeList() throws ApisResourceAccessException, IOException {
+    private ResidentTransactionEntity createResidentTransactionEntity() throws ApisResourceAccessException, ResidentServiceCheckedException {
+    	ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
+        String eventId = utilitiy.createEventId();
+        residentTransactionEntity.setEventId(eventId);
+        residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
+        residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(identityService.getResidentIndvidualId()));
+        residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
+        return residentTransactionEntity;
+	}
+
+	private List<String> getAttributeList() throws ApisResourceAccessException, IOException {
        return getAttributeList(identityService.getResidentIndvidualId());
     }
 
@@ -220,40 +301,16 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public String getFileName() {
-        ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = utilitiy.createEventId();
-        residentTransactionEntity.setEventId(eventId);
-        residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
-        try {
-            residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(identityService.getResidentIndvidualId()));
-            residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
-        } catch (ApisResourceAccessException e) {
-            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(),
-                    ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode()
-                            + ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage()
-                            + ExceptionUtils.getStackTrace(e));
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
-                    eventId, "Download personalized card"));
-            throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(),
-                    ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorMessage(), e);
-        } catch (ResidentServiceCheckedException e) {
-            throw new RuntimeException(e);
-        }
-        residentTransactionEntity.setRequestSummary(SUCCESS);
-        residentTransactionEntity.setStatusCode(NEW);
-        residentTransactionRepository.save(residentTransactionEntity);
-        return utilitiy.getFileName(eventId, Objects.requireNonNull(this.environment.getProperty
-                (ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)));
-    }
-
-    @Override
-    public ResponseWrapper<VidDownloadCardResponseDto> getVidCardEventId(String vid) throws BaseCheckedException {
+    public Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid) throws BaseCheckedException {
         ResponseWrapper<VidDownloadCardResponseDto> responseWrapper= new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
-        String eventId="";
+        String eventId = ResidentConstants.NOT_AVAILABLE;
+        ResidentTransactionEntity residentTransactionEntity = null;
         try{
+        	residentTransactionEntity = insertDataForVidCard(vid);
+        	if (residentTransactionEntity != null) {
+    			eventId = residentTransactionEntity.getEventId(); 
+    		}
             RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
             CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
             credentialReqestDto.setId(vid);
@@ -275,45 +332,73 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 ResidentCredentialResponseDto residentCredentialResponseDto =
                         JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
                         ResidentCredentialResponseDto.class);
-                eventId =insertDataForVidCard(residentCredentialResponseDto, vid);
-                vidDownloadCardResponseDto.setEventId(eventId);
+                residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
                 vidDownloadCardResponseDto.setStatus(ResidentConstants.SUCCESS);
-            }else{
-                throw new ResidentServiceCheckedException(String.valueOf(ResidentErrorCode.VID_REQUEST_CARD_FAILED),
-                        ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage());
+			} else {
+            	if (residentTransactionEntity != null) {
+            		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+                	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+            	}
+				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_REQUEST_CARD_FAILED,
+						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
-        }catch (ApisResourceAccessException e){
-            throw new ApisResourceAccessException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.toString(), e);
-        }catch (ResidentServiceCheckedException exception){
-            throw new ResidentServiceException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorCode(),
-                    ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage(), exception);
-        }catch (IOException exception){
+        } catch (ApisResourceAccessException e) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
+			throw new ApisResourceAccessException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.toString(), e,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } catch (ResidentServiceCheckedException exception) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
+			throw new ResidentServiceException(ResidentErrorCode.VID_REQUEST_CARD_FAILED, exception,
+					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } catch (IOException exception) {
+        	if (residentTransactionEntity != null) {
+        		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+        	}
             throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(), exception.getMessage(), exception);
-        }
+        } finally {
+        	if(residentTransactionEntity != null) {
+        		//if the status code will come as null, it will set it as failed.
+            	if(residentTransactionEntity.getStatusCode()==null) {
+    				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+    				residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
+    			}
+    			residentTransactionRepository.save(residentTransactionEntity);
+        	}
+		}
         responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
         responseWrapper.setVersion(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_VERSION));
         responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         responseWrapper.setResponse(vidDownloadCardResponseDto);
-        return responseWrapper;
+        return Tuples.of(responseWrapper, eventId);
     }
 
-    private String insertDataForVidCard(ResidentCredentialResponseDto responseDto, String vid) throws ApisResourceAccessException, IOException {
+    @Override
+    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException {
+        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
+        return getCheckStatusResponse(packetStatusMap);
+    }
+
+    private ResidentTransactionEntity insertDataForVidCard(String vid) throws ApisResourceAccessException, IOException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
-        String eventId = utilitiy.createEventId();
         String uin = utilities.getUinByVid(vid);
-        residentTransactionEntity.setEventId(eventId);
+        residentTransactionEntity.setEventId(utilitiy.createEventId());
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(uin));
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
-        residentTransactionEntity.setCredentialRequestId(responseDto.getRequestId());
-        residentTransactionEntity.setStatusCode(NEW);
+        residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
         /**
          * Here we are setting vid in aid column.
          */
         residentTransactionEntity.setAid(vid);
-        residentTransactionRepository.save(residentTransactionEntity);
-        return eventId;
+        return residentTransactionEntity;
     }
 
     private Map<String, Object> getVidDetails(String vid) throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
@@ -337,6 +422,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         additionalAttributes.put(GENERATED_ON_TIMESTAMP, vidData.get(GENERATED_ON_TIMESTAMP));
                         additionalAttributes.put(TRANSACTION_LIMIT, vidData.get(TRANSACTION_LIMIT));
                         additionalAttributes.put(TRANSACTION_COUNT, vidData.get(TRANSACTION_COUNT));
+                        additionalAttributes.put(CARD_FORMAT, VID_CARD);
                         if(name!=null){
                             additionalAttributes.put(NAME, name);
                         }
@@ -358,7 +444,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     private String getUINForIndividualId(String individualId)  {
         String idType = identityService.getIndividualIdType(individualId);
-        if(idType.equalsIgnoreCase(IdType.UIN.toString()) || idType.equalsIgnoreCase(IdType.VID.toString())){
+        if(idType.equalsIgnoreCase(IdType.UIN.toString())){
             return individualId;
         } else {
             try {

@@ -61,6 +61,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -383,7 +384,7 @@ public class Utilitiy {
 		long biggest =  9999_9999_9999_9999L;
 
 		// return a long between smallest and biggest (+1 to include biggest as well with the upper bound)
-		long random = ThreadLocalRandom.current().nextLong(smallest, biggest+1);
+		long random = new SecureRandom().longs(smallest, biggest + 1).findFirst().getAsLong();
 		return String.valueOf(random);
 	}
 

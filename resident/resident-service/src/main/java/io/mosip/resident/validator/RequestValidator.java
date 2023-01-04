@@ -13,7 +13,9 @@ import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -25,6 +27,7 @@ import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV3;
@@ -35,8 +38,13 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -48,7 +56,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -58,12 +66,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static io.mosip.resident.constant.RegistrationConstants.ID;
+import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
+import static io.mosip.resident.constant.RegistrationConstants.VERSION;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
 @Component
 public class RequestValidator {
 
+	private static final int EVENT_ID_LENGTH = 16;
+	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
 	@Autowired
 	private UinValidator<String> uinValidator;
 
@@ -78,6 +91,9 @@ public class RequestValidator {
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	private String euinId;
 
@@ -191,6 +207,7 @@ public class RequestValidator {
 		map.put(RequestIdType.RES_UPDATE, uinUpdateId);
 		map.put(RequestIdType.CHECK_STATUS, checkStatusID);
 		map.put(RequestIdType.SHARE_CREDENTIAL, shareCredentialId);
+		map.put(RequestIdType.AUTH_LOCK_UNLOCK, authLockStatusUpdateV2Id);
 	}
 
 	public void validateVidCreateRequest(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
@@ -304,14 +321,7 @@ public class RequestValidator {
 	}
 
 	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDto) {
-		if (requestDto.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(authLockStatusUpdateV2Id)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "request to auth lock or unlock"));
-			throw new InvalidInputException("id");
-		}
+		validateRequestNewApi(requestDto, RequestIdType.AUTH_LOCK_UNLOCK);
 		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
 
@@ -708,9 +718,8 @@ public class RequestValidator {
 	}
 
 	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
-		validateRequest(requestDTO, RequestIdType.RES_UPDATE);
-
 		if (!isPatch) {
+			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
 			if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 					|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
@@ -719,6 +728,7 @@ public class RequestValidator {
 				throw new InvalidInputException("individualId");
 			}
 		} else {
+			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
@@ -852,7 +862,7 @@ public class RequestValidator {
 		}
     }
 
-    public void validateServiceHistoryRequest(LocalDateTime fromDateTime, LocalDateTime toDateTime, String sortType, String serviceType, String statusFilter) {
+    public void validateServiceHistoryRequest(LocalDate fromDateTime, LocalDate toDateTime, String sortType, String serviceType, String statusFilter) {
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
 		validateStatusFilter(statusFilter, "Request service history API");
@@ -863,19 +873,15 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateFromDateTimeToDateTime(LocalDateTime fromDateTime, LocalDateTime toDateTime, String request_service_history_api) {
-		if(fromDateTime != null && toDateTime != null) {
-			if(fromDateTime.isAfter(toDateTime)) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
-				throw new InvalidInputException("fromDateTime");
-			}
-		}
+	public void validateFromDateTimeToDateTime(LocalDate fromDateTime, LocalDate toDateTime, String request_service_history_api) {
 		if(fromDateTime == null && toDateTime != null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", request_service_history_api));
-			throw new InvalidInputException("fromDateTime");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
+					request_service_history_api));
+			throw new InvalidInputException(ResidentConstants.FROM_DATE_TIME);
 		} else if(fromDateTime != null && toDateTime == null) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "toDateTime", request_service_history_api));
-			throw new InvalidInputException("toDateTime");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.TO_DATE_TIME,
+					request_service_history_api));
+			throw new InvalidInputException(ResidentConstants.TO_DATE_TIME);
 		}
 	}
 
@@ -892,7 +898,7 @@ public class RequestValidator {
 		}
 	}
 
-	private boolean isValidDate(LocalDateTime localDateTime) {
+	private boolean isValidDate(LocalDate localDateTime) {
 		if(localDateTime!=null) {
 			if (localDateTime.getYear() < 0 || localDateTime.getMonthValue() < 0 || localDateTime.getDayOfMonth() < 0) {
 				return false;
@@ -926,15 +932,26 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateIndividualId(String eventId) {
-		if (eventId==null ||StringUtils.isEmpty(eventId)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "eventId", "Request service history API"));
-			throw new InvalidInputException("eventId");
+	public void validateEventId(String eventId) {
+		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID);
+		if (isNumeric(eventId) || eventId.length()!=EVENT_ID_LENGTH) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID));
+			throw new InvalidInputException(TemplateVariablesConstants.EVENT_ID);
+		}
+	}
+
+	private void validateMissingInputParameter(String variableValue, String variableName) {
+		if (variableValue==null || StringUtils.isEmpty(variableValue)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					variableName, VALIDATE_EVENT_ID));
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER,
+					ResidentErrorCode.MISSING_INPUT_PARAMETER.getErrorMessage()+variableName);
 		}
 	}
 
 	public void validateEventIdLanguageCode(String eventId, String languageCode) {
-		validateIndividualId(eventId);
+		validateEventId(eventId);
 		validateLanguageCode(languageCode);
 	}
 
@@ -999,7 +1016,7 @@ public class RequestValidator {
 	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 		String inputRequestId = userIdOtpRequest.getId();
 		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
-		validateRequestId(inputRequestId, requestIdStoredInProperty);
+		validateRequestType(inputRequestId, requestIdStoredInProperty, ID);
 		validateDate(userIdOtpRequest.getRequesttime());
 		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionID());
 		validateOTP(userIdOtpRequest.getRequest().getOtp());
@@ -1017,15 +1034,15 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateRequestId(String inputRequestId, String requestIdStoredInProperty) {
-		if(inputRequestId==null){
+	public void validateRequestType(String inputRequestType, String requestTypeStoredInProperty, String type) {
+		if(inputRequestType==null){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"request id", "Id must not be null"));
-			throw new InvalidInputException("Id");
-		} else if(!inputRequestId.equalsIgnoreCase(requestIdStoredInProperty)){
+					"request "+type, type+" must not be null"));
+			throw new InvalidInputException(type);
+		} else if(!inputRequestType.equalsIgnoreCase(requestTypeStoredInProperty)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"request id", "Id is invalid"));
-			throw new InvalidInputException("Id");
+					"request "+type, type+" is invalid"));
+			throw new InvalidInputException(type);
 		}
 	}
 
@@ -1038,7 +1055,7 @@ public class RequestValidator {
 	}
 
 	public void validateDownloadCardRequest(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) {
-		validateRequestId(downloadCardRequestDTOMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID));
+		validateRequestType(downloadCardRequestDTOMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID), ID);
 		validateDate(downloadCardRequestDTOMainRequestDTO.getRequesttime());
 		validateTransactionId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
 		validateOTP(downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
@@ -1054,7 +1071,8 @@ public class RequestValidator {
 	}
 
     public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
-		validateRequestId(downloadPersonalizedCardMainRequestDTO.getId(), this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD));
+		validateRequestType(downloadPersonalizedCardMainRequestDTO.getId(),
+				this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD), ID);
 		validateDate(downloadPersonalizedCardMainRequestDTO.getRequesttime());
 		validateString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml(), "html");
 		validateEncodedString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml());
@@ -1099,5 +1117,56 @@ public class RequestValidator {
 			throw new InvalidInputException("request");
 		}
 		return true;
+	}
+
+    public void validateGrievanceRequestDto(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		validateRequestType(grievanceRequestDTOMainRequestDTO.getId(),
+				this.environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID), ID);
+		validateRequestType(grievanceRequestDTOMainRequestDTO.getVersion(),
+				this.environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION), VERSION);
+		validateDate(grievanceRequestDTOMainRequestDTO.getRequesttime());
+		validateEventId(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
+		validateEventIdBelongToSameSession(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
+		validateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId());
+		validateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId());
+		validatePhoneNumber(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo());
+		validatePhoneNumber(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo());
+		validateMessage(grievanceRequestDTOMainRequestDTO.getRequest().getMessage());
+    }
+
+	private void validateMessage(String message) {
+		validateMissingInputParameter(message, MESSAGE_CODE);
+		if(message.length()>Integer.parseInt(Objects.requireNonNull(this.environment.getProperty(
+				ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)))){
+			throw new InvalidInputException(MESSAGE_CODE);
+		}
+	}
+
+	private void validatePhoneNumber(String phoneNo) {
+		if(phoneNo!=null){
+			if(!phoneValidator(phoneNo)){
+				throw new InvalidInputException(PHONE_CHANNEL);
+			}
+		}
+	}
+
+	private void validateEmailId(String emailId) {
+		if(emailId!=null){
+			if(!emailValidator(emailId)){
+				throw new InvalidInputException(EMAIL_CHANNEL);
+			}
+		}
+	}
+
+	private void validateEventIdBelongToSameSession(String eventId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+		if(residentTransactionEntity.isPresent()){
+			String tokenId = residentTransactionEntity.get().getTokenId();
+			String sessionToken = identityService.getResidentIdaToken();
+			if(!tokenId.equals(sessionToken)){
+				throw new EidNotBelongToSessionException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
+						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());
+			}
+		}
 	}
 }

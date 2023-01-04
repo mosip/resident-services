@@ -42,7 +42,7 @@ CREATE TABLE resident.resident_transaction(
     reference_link character varying(1024),
     read_status boolean NOT NULL DEFAULT false,
     pinned_status boolean NOT NULL DEFAULT false,
-    purpose character varying(64),
+    purpose character varying(1024),
     credential_request_id character varying(256),
     attribute_list character varying(255),
     individual_id character varying(500),
