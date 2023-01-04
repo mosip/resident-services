@@ -156,5 +156,8 @@ public class ResidentConstants {
     public static final String AUTH_TYPES = "authTypes";
 
     public static final String CHANNEL = "channel";
+    
+    public static final String MASK_PREFIX = "mask_";
+    public static final String MASK_PERPETUAL_VID = "mask_perpetualVID";
 
 }
