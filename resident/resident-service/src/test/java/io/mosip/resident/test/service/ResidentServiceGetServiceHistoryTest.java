@@ -1,16 +1,26 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.PageDto;
+import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.PartnerServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,24 +30,16 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.EventStatus;
-import io.mosip.resident.constant.EventStatusSuccess;
-import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.dto.AutnTxnDto;
-import io.mosip.resident.dto.PageDto;
-import io.mosip.resident.dto.ServiceHistoryResponseDto;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.PartnerServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.validator.RequestValidator;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * This class is used to test the get service history service
@@ -73,12 +75,15 @@ public class ResidentServiceGetServiceHistoryTest {
 
     @Mock
     private PartnerServiceImpl partnerServiceImpl;
+
+    @Mock
+    private IdAuthService idAuthServiceImpl;
     List<AutnTxnDto> details = null;
 
     private int pageStart;
     private int pageSize;
-    private LocalDateTime fromDate;
-    private LocalDateTime toDate;
+    private LocalDate fromDate;
+    private LocalDate toDate;
     private String serviceType;
     private String sortType;
     List<ServiceHistoryResponseDto> serviceHistoryResponseDto;
@@ -138,10 +143,10 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testGetServiceHistorySuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 2;
         pageSize = 3;
-        fromDate = LocalDateTime.now();
-        toDate = LocalDateTime.now();
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDateTime.now(), LocalDateTime.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
+        fromDate = LocalDate.now();
+        toDate = LocalDate.now();
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
     }
 
     @Test
@@ -199,8 +204,8 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testServiceHistoryWithDifferentParameters() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageStart = 1;
         pageSize = 10;
-        fromDate = LocalDateTime.MAX;
-        toDate = LocalDateTime.MIN;
+        fromDate = LocalDate.MAX;
+        toDate = LocalDate.MIN;
         serviceType = ServiceType.AUTHENTICATION_REQUEST.toString();
         sortType = "ASC";
         statusFilter = "SUCCESS";
@@ -223,4 +228,28 @@ public class ResidentServiceGetServiceHistoryTest {
                 null, "a", "eng").getResponse().getPageSize());
 
     }
+
+    @Test
+    public void testGetAidStatus() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+        aidStatusRequestDTO.setAid("10087100401001420220929210144");
+        aidStatusRequestDTO.setOtp("111111");
+        aidStatusRequestDTO.setTransactionID("1234567890");
+        Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO).getAidStatus());
+    }
+
+    @Test
+    public void testGetAidStatusOtpValidationFalse() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+        aidStatusRequestDTO.setAid("10087100401001420220929210144");
+        aidStatusRequestDTO.setOtp("111111");
+        aidStatusRequestDTO.setTransactionID("1234567890");
+        Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, false).getAidStatus());
+    }
+
+
 }

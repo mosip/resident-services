@@ -689,8 +689,42 @@ public enum EventEnum {
 			"download registration center success",
 			"download registration center success based on language code,longitude,latitude and distance", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME)
-	;
+			RegistrationConstants.APPLICATION_NAME),
+
+	GRIEVANCE_TICKET_REQUEST("RES-SER-273", RegistrationConstants.SYSTEM,
+			"Grievance ticket request",
+			"Grievance ticket request", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	GRIEVANCE_TICKET_REQUEST_SUCCESS("RES-SER-273", RegistrationConstants.SYSTEM,
+			"Grievance ticket request success",
+			"Grievance ticket request success", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	GET_DOCUMENT_TYPES("RES-SER-274", RegistrationConstants.SYSTEM, "get document types",
+			"get document types by documentCode and langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_TYPES_SUCCESS("RES-SER-275", RegistrationConstants.SYSTEM, "get document types success",
+			"get document types by documentCode and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_TYPES_EXCEPTION("RES-SER-276", RegistrationConstants.SYSTEM, "get document types failure",
+			"get document types by documentCode and langCode is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_CODE("RES-SER-277", RegistrationConstants.SYSTEM, "get gender code",
+			"get gender code by genderName and langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_CODE_SUCCESS("RES-SER-278", RegistrationConstants.SYSTEM, "get gender code success",
+			"get gender code by genderName and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page start value %s", "RES-SER", "Residence service", "%s", "pageStart",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page fetch value %s", "RES-SER", "Residence service", "%s", "pageFetch",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+
 
 	private final String eventId;
 

@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class ResidentCredentialResponseDtoV2 {
 	
-	private String eventId;
 	private String status;
 
 }
