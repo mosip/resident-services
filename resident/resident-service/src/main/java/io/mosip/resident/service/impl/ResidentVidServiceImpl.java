@@ -471,8 +471,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					residentTransactionRepository.save(residentTransactionEntity);
 					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
-				} else {
-					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION);
 				}
 			}
 		} else {
