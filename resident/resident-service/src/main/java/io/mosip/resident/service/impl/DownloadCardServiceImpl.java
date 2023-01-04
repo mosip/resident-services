@@ -310,7 +310,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         	String uinForVid = utilities.getUinByVid(vid);
         	residentTransactionEntity = insertDataForVidCard(vid, uinForVid);
         	if (residentTransactionEntity != null) {
-    			eventId = residentTransactionEntity.getEventId(); 
+    			eventId = residentTransactionEntity.getEventId();
     			String uinForIndividualId = identityService.getUinForIndividualId(identityService.getResidentIndvidualId());
     			if(!uinForIndividualId.equals(uinForVid)) {
                 		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
