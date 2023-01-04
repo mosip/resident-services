@@ -1,5 +1,7 @@
 package io.mosip.resident.exception;
 
+import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,23 +11,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.exception.BaseUncheckedException;
-import io.mosip.kernel.core.exception.ExceptionUtils;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.EmptyCheckUtils;
-import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.mock.exception.CantPlaceOrderException;
-import io.mosip.resident.mock.exception.PaymentCanceledException;
-import io.mosip.resident.mock.exception.PaymentFailedException;
-import io.mosip.resident.mock.exception.TechnicalErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -64,15 +49,6 @@ import io.mosip.resident.mock.exception.PaymentCanceledException;
 import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
 import io.mosip.resident.util.ObjectWithMetadata;
-
-import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
