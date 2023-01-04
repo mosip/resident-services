@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public interface OtpTransactionRepository extends JpaRepository<OtpTransactionEntity, String> {
 	Boolean existsByOtpHashAndStatusCode(String otpHash, String statusCode);
 
-	OtpTransactionEntity findByOtpHashAndStatusCode(String otpHash, String statusCode);
+	OtpTransactionEntity findTopByOtpHashAndStatusCode(String otpHash, String statusCode);
 
 	/**
 	 * Obtain the number of count of request_dTtimes for particular userId with
