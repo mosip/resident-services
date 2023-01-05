@@ -136,7 +136,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
         }else if(requestTypeCode.equals(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
             return secureMyId;
         }else {
-            throw new ResidentServiceCheckedException(ResidentErrorCode.ACK_PROPERTY_NOT_FOUND);
+            throw new ResidentServiceCheckedException(ResidentErrorCode.ACK_TEMPLATE_NOT_FOUND);
         }
     }
 
