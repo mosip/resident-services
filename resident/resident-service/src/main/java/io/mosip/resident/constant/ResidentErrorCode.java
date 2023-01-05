@@ -85,7 +85,7 @@ public enum ResidentErrorCode {
 	CONSENT_DENIED("RES-SER-461",
 			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
 
-	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"),
+	ACK_TEMPLATE_NOT_FOUND("RES-SER-460", "Acknowledgment template not found"),
 	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: "),
 	CONFIG_FILE_NOT_FOUND_EXCEPTION("RES-SER-462","Config file not found in the config server"),
 	SEND_OTP_FAILED("RES-SER-463", "Send OTP failed."),
