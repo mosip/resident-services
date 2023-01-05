@@ -76,6 +76,8 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.SUMMARY, residentTransactionEntity.getRequestSummary());
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(eventId));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
@@ -361,8 +363,13 @@ import java.util.Optional;
 	}
 
 	private String getPartnerLogo(String partnerId) {
-		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
-		return (String) partnerDetail.get(LOGO_URL);
+        Map<String, ?> partnerDetail = new HashMap<>();
+        try {
+            partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+        }catch (Exception exception){
+            return "";
+        }
+        return (String) partnerDetail.get(LOGO_URL);
 	}
 
  }
