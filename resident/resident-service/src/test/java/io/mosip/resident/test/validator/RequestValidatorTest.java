@@ -1642,6 +1642,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCard() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("id");
+		mainRequestDTO.setVersion("1.0");
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
@@ -1651,6 +1652,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardNullId() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId(null);
+		mainRequestDTO.setVersion("1.0");
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
@@ -1660,6 +1662,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardNullRequestTime() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
@@ -1669,6 +1672,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardNullString() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
@@ -1679,6 +1683,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardSuccess() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		downloadPersonalizedCardDto.setHtml("html");
@@ -1690,6 +1695,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardBadHtml() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		downloadPersonalizedCardDto.setHtml("`1&`");

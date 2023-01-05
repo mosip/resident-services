@@ -137,6 +137,9 @@ public class ApiExceptionHandler {
 			final InvalidInputException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
+		if(e.getErrorText().contains("html")) {
+			return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+		}
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
