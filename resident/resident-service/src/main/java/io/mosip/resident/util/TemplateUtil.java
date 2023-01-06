@@ -138,8 +138,6 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
-        templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
-        templateVariables.put(TemplateVariablesConstants.ORDER_TRACKING_LINK, residentTransactionEntity.getReferenceLink());
         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());

@@ -607,8 +607,18 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		if(sharableAttributes.size() == 0){
 			sharableAttrData = DATA;
 		}
+		sharableAttrData = removeLastComma(sharableAttrData);
 		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
 		return prepareReqSummaryMsg;
+	}
+
+	public StringBuilder removeLastComma(StringBuilder sb) {
+		// Check if the second last character of the StringBuilder is a comma
+		if (sb.charAt(sb.length() - 2) == ',') {
+			// If it is, remove it using the deleteCharAt method
+			sb = sb.deleteCharAt(sb.length() - 2);
+		}
+		return sb;
 	}
 
 	/*
