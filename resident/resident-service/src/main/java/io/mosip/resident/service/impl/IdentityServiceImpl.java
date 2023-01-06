@@ -183,7 +183,7 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
 			if(fetchFace) {
-				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimFromIdToken(env.getProperty(IMAGE)));
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimValue(env.getProperty(IMAGE)));
 				identity.remove("individualBiometrics");
 			}
 
@@ -191,6 +191,10 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} catch (ApisResourceAccessException e) {
+			logger.error("Error occured in accessing identity data %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug("IdentityServiceImpl::getIdentity()::exit");
 		return identityDTO;
