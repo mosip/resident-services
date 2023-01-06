@@ -1217,11 +1217,11 @@ public class ResidentServiceImpl implements ResidentService {
 
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (requestId != null) {
-					residentTransactionEntity.setRequestSummary("in-progress");
+					residentTransactionEntity.setRequestSummary(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
 					residentTransactionEntity.setPurpose(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setRequestSummary("failed");
+					residentTransactionEntity.setRequestSummary(EventStatusFailure.FAILED.name());
 				}
 				residentTransactionEntity.setRequestTrnId(requestId);
 			});
@@ -1280,7 +1280,8 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.COMPLETED.name());
+		residentTransactionEntity.setStatusComment(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));

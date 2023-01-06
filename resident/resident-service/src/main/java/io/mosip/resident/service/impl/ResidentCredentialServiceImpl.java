@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.constant.EventStatusSuccess;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +79,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
 	private static final String INDIVIDUAL_ID = "individualId";
+	private static final StringBuilder DATA = new StringBuilder("data");
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -320,7 +322,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
 		String attributeList = dto.getSharableAttributes().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
@@ -336,7 +338,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			ResidentTransactionEntity residentTransactionEntity) {
 		// TODO: need to fix transaction ID (need partner's end transactionId)
 		residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
-		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
+		residentTransactionEntity.setStatusComment(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
 		residentTransactionEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
 	}
@@ -600,7 +603,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				sharableAttrData.append(" ");
 				break;
 			}
-
+		}
+		if(sharableAttributes.size() == 0){
+			sharableAttrData = DATA;
 		}
 		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
 		return prepareReqSummaryMsg;
