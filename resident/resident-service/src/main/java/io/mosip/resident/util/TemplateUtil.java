@@ -81,6 +81,7 @@ import java.util.Optional;
                 residentTransactionEntity.getRequestSummary()));
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(eventId));
+        templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_LINK, utilitiy.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, replaceNullWithEmptyString(
                 residentTransactionEntity.getPurpose()));
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, replaceNullWithEmptyString(
