@@ -8,6 +8,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AidStatusRequestDTO;
@@ -38,6 +39,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -51,6 +53,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -105,6 +109,12 @@ public class ResidentController {
 
 	@Value("${resident.authLockStatusUpdateV2.version}")
 	private String authLockStatusUpdateV2Version;
+	
+	@Value("${resident.download.card.eventid.id}")
+	private String downloadCardEventidId;
+	
+	@Value("${resident.download.card.eventid.version}")
+	private String downloadCardEventidVersion;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -419,16 +429,28 @@ public class ResidentController {
 			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
+		InputStreamResource resource = null;
+		try {
 		validator.validateEventId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		if(pdfBytes.length==0){
 			throw new CardNotReadyException();
 		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+		} catch(ResidentServiceException e) {
+			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+			responseWrapper.setId(downloadCardEventidId);
+			responseWrapper.setVersion(downloadCardEventidVersion);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(responseWrapper);
+			}
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
 				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
