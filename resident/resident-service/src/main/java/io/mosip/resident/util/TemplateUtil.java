@@ -1,6 +1,8 @@
 package io.mosip.resident.util;
 
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -60,6 +62,8 @@ import java.util.Optional;
     @Value("${resident.template.time.pattern}")
 	private String templateTimePattern;
 
+    private static final Logger logger = LoggerConfiguration.logConfig(TemplateUtil.class);
+
     /**
      * Gets the ack template variables for authentication request.
      *
@@ -73,19 +77,27 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, residentTransactionEntity.getRequestTypeCode());
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, residentTransactionEntity.getRequestSummary());
+        templateVariables.put(TemplateVariablesConstants.SUMMARY, replaceNullWithEmptyString(
+                residentTransactionEntity.getRequestSummary()));
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP, DateUtils.formatToISOString(residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(eventId));
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
-        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
-        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, replaceNullWithEmptyString(
+                residentTransactionEntity.getPurpose()));
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, replaceNullWithEmptyString(
+                residentTransactionEntity.getAttributeList()));
+        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, replaceNullWithEmptyString(
+                residentTransactionEntity.getAuthTypeCode()));
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
-            throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-                    ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
+            logger.error(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),e);
+            templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, "");
         }
         return templateVariables;
+    }
+
+    public String replaceNullWithEmptyString(String input) {
+        return input == null ? "" : input;
     }
     
 	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
