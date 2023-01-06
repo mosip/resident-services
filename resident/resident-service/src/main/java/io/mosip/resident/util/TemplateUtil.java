@@ -380,6 +380,7 @@ import java.util.Optional;
         try {
             partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
         }catch (Exception exception){
+            logger.error(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorCode(), exception);
             return "";
         }
         return (String) partnerDetail.get(LOGO_URL);
