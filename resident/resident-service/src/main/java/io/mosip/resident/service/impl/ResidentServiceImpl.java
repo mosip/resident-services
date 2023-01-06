@@ -1892,6 +1892,10 @@ public class ResidentServiceImpl implements ResidentService {
 				} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
 					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
 							purpose);
+				} else if (requestType.name().equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.name())) {
+					fileText = fileText.replace(ResidentConstants.DOLLAR+TemplateVariablesConstants.ATTRIBUTES,
+							residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
+									residentTransactionEntity.get().getAttributeList())));
 				}
 			}
 		}

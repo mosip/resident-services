@@ -589,7 +589,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	 * @param sharableAttributes
 	 * @return
 	 */
-	private String prepareReqSummaryMsg(List<String> sharableAttributes) {
+	public String prepareReqSummaryMsg(List<String> sharableAttributes) {
 		String prepareReqSummaryMsg = "";
 		StringBuilder sharableAttrData = new StringBuilder("");
 		for (int i = 0; i < sharableAttributes.size(); i++) {
