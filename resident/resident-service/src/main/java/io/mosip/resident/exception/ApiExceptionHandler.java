@@ -120,6 +120,10 @@ public class ApiExceptionHandler {
 			headers.add(ResidentConstants.EVENT_ID,
 					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
 			return new ResponseEntity<>(errorResponse, headers, httpStatus);
+		} else if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.HTTP_STATUS_CODE)) {
+			httpStatus = (HttpStatus) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.HTTP_STATUS_CODE);
+			return new ResponseEntity<>(errorResponse, httpStatus);
 		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
 	}
@@ -137,9 +141,6 @@ public class ApiExceptionHandler {
 			final InvalidInputException e) throws IOException {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		if(e.getErrorText().contains("html")) {
-			return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
-		}
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
