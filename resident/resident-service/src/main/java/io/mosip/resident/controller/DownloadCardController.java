@@ -106,7 +106,8 @@ public class DownloadCardController {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST));
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD)));
 		}
         Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));

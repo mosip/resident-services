@@ -160,5 +160,7 @@ public class ResidentConstants {
     public static final String MASK_PREFIX = "mask_";
     public static final String MASK_PERPETUAL_VID = "mask_perpetualVID";
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
+    public static final String REQ_RES_ID = "reqResId";
+    public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
 
 }

@@ -121,8 +121,11 @@ public class ApiExceptionHandler {
 					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
 			return new ResponseEntity<>(errorResponse, headers, httpStatus);
 		} else if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
-				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.HTTP_STATUS_CODE)) {
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.HTTP_STATUS_CODE)
+				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.REQ_RES_ID)) {
 			httpStatus = (HttpStatus) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.HTTP_STATUS_CODE);
+			errorResponse.setId((String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.REQ_RES_ID));
+			errorResponse.setVersion(env.getProperty(ResidentConstants.REQ_RES_VERSION));
 			return new ResponseEntity<>(errorResponse, httpStatus);
 		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
