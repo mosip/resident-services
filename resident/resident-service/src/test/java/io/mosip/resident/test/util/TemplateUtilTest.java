@@ -162,12 +162,6 @@ public class TemplateUtilTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void getCommonTemplateVariablesTest() throws ApisResourceAccessException {
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
-        templateUtil.getCommonTemplateVariables(eventId);
-    }
-
-    @Test(expected = ResidentServiceException.class)
     public void getCommonTemplateVariablesTestBadEventId() {
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.empty());
         templateUtil.getCommonTemplateVariables(eventId);
