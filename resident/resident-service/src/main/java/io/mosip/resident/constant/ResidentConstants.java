@@ -170,5 +170,8 @@ public class ResidentConstants {
     public static final String ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY = "resident.template.ack.secure-my-id";
     public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
     public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
+    public static final String ACTION_PERFORMED = "actionPerformed";
+    public static final String VID_TYPE = "vidType";
+    public static final String MASKED_VID = "*masked VID*";
 
 }

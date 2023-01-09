@@ -45,7 +45,9 @@ import java.util.Optional;
  public class TemplateUtil {
 
     private static final String LOGO_URL = "logoUrl";
-    
+    private static final CharSequence GENERATED = "generated";
+    private static final CharSequence REVOKED = "revoked";
+
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
 
@@ -135,6 +137,18 @@ import java.util.Optional;
     }
 
     public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText){
+        Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
+        if(residentTransactionEntity.isPresent()) {
+            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
+                    residentTransactionEntity.get().getRefIdType());
+            fileText = fileText.replace(ResidentConstants.MASKED_VID, residentTransactionEntity.get().getRefId());
+            String requestType = residentTransactionEntity.get().getRequestTypeCode();
+            if(requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())){
+                fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, GENERATED);
+            } else if(requestType.equalsIgnoreCase(RequestType.REVOKE_VID.name())){
+                fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, REVOKED);
+            }
+        }
         return fileText;
     }
 
