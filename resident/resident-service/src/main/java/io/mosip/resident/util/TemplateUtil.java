@@ -288,6 +288,8 @@ import java.util.Optional;
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGenerateVid(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+         templateVariables.remove(TemplateVariablesConstants.PURPOSE);
+         templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
          templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
          templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
