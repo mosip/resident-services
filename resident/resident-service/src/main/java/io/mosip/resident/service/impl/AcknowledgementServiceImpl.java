@@ -74,12 +74,13 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            String requestProperty = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId).getT2();
+            String requestProperty = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode).getT2();
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
                     getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
             Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
             String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
-            Map<String, String> templateVariables = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId).getT1();
+            Map<String, String> templateVariables = RequestType.valueOf(requestTypeCode)
+                    .getAckTemplateVariables(templateUtil, eventId, languageCode).getT1();
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");

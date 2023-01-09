@@ -73,7 +73,7 @@ public enum RequestType {
 	DEFAULT(TemplateUtil::getDefaultTemplateVariables, List.of(), List.of(), List.of(), "",
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
-	private BiFunction<TemplateUtil, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
+	private TriFunction<TemplateUtil, String, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
 	private List<EventStatusFailure> failureStatusList;
 	private List<EventStatusInProgress> inProgressStatusList;
@@ -81,7 +81,7 @@ public enum RequestType {
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
 	private TriFunction<TemplateUtil, String, String, String> getDescriptionTemplateVariables;
 
-	private RequestType(BiFunction<TemplateUtil, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+	private RequestType(TriFunction<TemplateUtil, String, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 						List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
 						List<EventStatusInProgress> inProgressStatusList, String featureName,
 						BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
@@ -144,8 +144,8 @@ public enum RequestType {
 		return "resident.template.summary." + templateType.getType() + "." + getFeatureName();
 	}
 
-	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId) {
-		return ackTemplateVariablesFunction.apply(templateUtil, eventId);
+	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode) {
+		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode);
 	}
 	
 	public Map<String, Object> getNotificationTemplateVariables(TemplateUtil templateUtil, NotificationTemplateVariableDTO dto) {

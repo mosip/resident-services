@@ -1885,7 +1885,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText);
 	}
 
-	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
+	public String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
@@ -2000,7 +2000,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 			Map<String, String> eventStatusMap;
 
-			eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId).getT1();
+			eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId, languageCode).getT1();
 
 			EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
 			eventStatusResponseDTO.setEventId(eventId);

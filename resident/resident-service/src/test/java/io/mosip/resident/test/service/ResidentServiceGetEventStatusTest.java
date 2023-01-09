@@ -102,7 +102,7 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put("authenticationMode", "OTP");
         templateVariables.put("partnerName", "partnerName");
         templateVariables.put("purpose", "authentication");
-        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
+        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
