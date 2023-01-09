@@ -59,6 +59,7 @@ import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.RegProcRePrintRequestDto;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.RegistrationStatusRequestDTO;
 import io.mosip.resident.dto.RegistrationStatusResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
@@ -78,6 +79,7 @@ import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
+import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -149,6 +151,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
@@ -2068,6 +2071,15 @@ public class ResidentServiceImpl implements ResidentService {
 		String fileText = (String) templateResponse.get("fileText");
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
+		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
+			IntStream.range(0, serviceHistoryDtlsList.size()).forEach(i -> {				
+				try {
+					addServiceHistoryDtls(i, serviceHistoryDtlsList.get(i));
+				} catch (Exception e) {
+					throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS, e);
+				}
+			});
+		}
 		for (ServiceHistoryResponseDto dto : serviceHistoryDtlsList) {
 			if (dto.getDescription() == null)
 				dto.setDescription("");
@@ -2118,5 +2130,19 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
 		}
 
+	}
+	
+	/**
+	 * 
+	 * @param index
+	 * @param regCenterDto
+	 * @throws ResidentServiceCheckedException
+	 * @throws Exception
+	 */
+	private void addServiceHistoryDtls(int index, ServiceHistoryResponseDto serviceHistoryDto)
+			throws ResidentServiceCheckedException, Exception {
+		serviceHistoryDto.setSerialNumber(index + 1);
+		if (serviceHistoryDto.getDescription() == null)
+			serviceHistoryDto.setDescription("");
 	}
 }
