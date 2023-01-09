@@ -49,11 +49,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.authmanager.spi.ScopeValidator;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
@@ -434,10 +434,10 @@ public class ResidentControllerTest {
 		requestDTO.setVersion("v1");
 
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
-		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(new ResidentUpdateResponseDTO());
-		ResponseWrapper<Object> requestWrapper = residentController
+		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
+		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
-		assertEquals(new ResidentUpdateResponseDTO(), requestWrapper.getResponse());
+		assertEquals(new ResidentUpdateResponseDTO(), ((ResponseWrapper<Object>)responseEntity.getBody()).getResponse());
 	}
 
 	@Test

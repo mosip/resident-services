@@ -21,6 +21,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -155,7 +156,7 @@ public class ResidentServiceGetEventStatusTest {
         residentService.getEventStatus(eventId, langCode);
     }
     
-    @Test(expected = ResidentServiceCheckedException.class)
+    @Test(expected = EidNotBelongToSessionException.class)
     public void getEventStatusNestedIfTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
     	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("abcd");
         residentService.getEventStatus(eventId, langCode);

@@ -1,5 +1,7 @@
 package io.mosip.resident.exception;
 
+import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -8,12 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
-import io.mosip.resident.mock.exception.CantPlaceOrderException;
-import io.mosip.resident.mock.exception.PaymentCanceledException;
-import io.mosip.resident.mock.exception.PaymentFailedException;
-import io.mosip.resident.mock.exception.TechnicalErrorException;
-import io.mosip.resident.util.ObjectWithMetadata;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
@@ -34,7 +30,6 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
-import io.mosip.kernel.authcodeflowproxy.api.exception.AuthRestException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
@@ -43,9 +38,17 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
+import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
+import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
+import io.mosip.kernel.openid.bridge.api.exception.ClientException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.mock.exception.CantPlaceOrderException;
+import io.mosip.resident.mock.exception.PaymentCanceledException;
+import io.mosip.resident.mock.exception.PaymentFailedException;
+import io.mosip.resident.mock.exception.TechnicalErrorException;
+import io.mosip.resident.util.ObjectWithMetadata;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -58,7 +61,6 @@ public class ApiExceptionHandler {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ApiExceptionHandler.class);
 
-	private static final String CHECK_STATUS = "resident.checkstatus.id";
 	private static final String EUIN = "resident.euin.id";
 	private static final String PRINT_UIN = "resident.printuin.id";
 	private static final String UIN = "resident.uin.id";
@@ -229,6 +231,8 @@ public class ApiExceptionHandler {
 			Exception exception) throws IOException {
 		if(exception instanceof AuthRestException) {
 			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
+		} else if(exception instanceof ClientException) {
+			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
 		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), exception.getMessage());
@@ -242,8 +246,8 @@ public class ApiExceptionHandler {
 		ResponseWrapper<ServiceError> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 		responseWrapper
-				.setErrors(List.of(new ServiceError(ResidentErrorCode.UNAUTHORIZED.getErrorCode(),
-						ResidentErrorCode.UNAUTHORIZED.getErrorMessage())));
+				.setErrors(List.of(new ServiceError(AuthErrorCode.UNAUTHORIZED.getErrorCode(),
+						AuthErrorCode.UNAUTHORIZED.getErrorMessage())));
 		return responseWrapper;
 	}
 	
@@ -264,6 +268,30 @@ public class ApiExceptionHandler {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
 		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+	
+	@ExceptionHandler(EventIdNotPresentException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EventIdNotPresentException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(EidNotBelongToSessionException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EidNotBelongToSessionException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(DigitalCardRidNotFoundException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final DigitalCardRidNotFoundException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ApisResourceAccessException.class)
@@ -303,7 +331,7 @@ public class ApiExceptionHandler {
 
 	private String setId(String requestURI) {
 		Map<String, String> idMap = new HashMap<>();
-		idMap.put("/check-status", env.getProperty(CHECK_STATUS));
+		idMap.put("/check-status", env.getProperty(CHECK_STATUS_ID));
 		idMap.put("/euin", env.getProperty(EUIN));
 		idMap.put("/print-uin", env.getProperty(PRINT_UIN));
 		idMap.put("/uin", env.getProperty(UIN));
