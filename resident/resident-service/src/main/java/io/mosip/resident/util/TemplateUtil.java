@@ -8,6 +8,7 @@ import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
@@ -24,11 +25,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -97,6 +101,10 @@ import java.util.Optional;
         return templateVariables;
     }
 
+    public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId){
+        return Tuples.of(getCommonTemplateVariables(eventId), "");
+    }
+
     public String replaceNullWithEmptyString(String input) {
         return input == null ? "" : input;
     }
@@ -133,7 +141,7 @@ import java.util.Optional;
         return eventStatus;
     }
 
-    public Map<String, String> getAckTemplateVariablesForCredentialShare(String eventId) {
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForCredentialShare(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
@@ -141,28 +149,31 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
-        return templateVariables;
+        return Tuples.of(templateVariables, Objects.requireNonNull(
+                this.env.getProperty(ResidentConstants.ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY)));
     }
 
-    public Map<String, String> getAckTemplateVariablesForAuthenticationRequest(String eventId) {
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForAuthenticationRequest(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
-        return templateVariables;
+        return Tuples.of(templateVariables, Objects.requireNonNull(
+                this.env.getProperty(ResidentConstants.ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY)));
      }
 
-    public Map<String, String> getAckTemplateVariablesForDownloadPersonalizedCard(String eventId) {
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForDownloadPersonalizedCard(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
-        return templateVariables;
+        return Tuples.of(templateVariables, Objects.requireNonNull(
+                this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
 
-     public  Map<String, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId) {
+     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
          templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
@@ -173,65 +184,75 @@ import java.util.Optional;
          templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
          templateVariables.put(TemplateVariablesConstants.PAYMENT_STATUS, getPaymentStatus(residentTransactionEntity.getStatusCode()));
          templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
-         return templateVariables;
+         return Tuples.of(templateVariables, Objects.requireNonNull(
+                 this.env.getProperty(ResidentConstants.ACK_ORDER_PHYSICAL_CARD_TEMPLATE_PROPERTY)));
      }
 
-    public Map<String, String> getAckTemplateVariablesForGetMyId(String eventId) {
-        return getCommonTemplateVariables(eventId);
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGetMyId(String eventId) {
+        return Tuples.of(getCommonTemplateVariables(eventId), Objects.requireNonNull(
+                this.env.getProperty(ResidentConstants.ACK_GET_MY_ID_TEMPLATE_PROPERTY)));
     }
 
-     public  Map<String, String> getAckTemplateVariablesForBookAnAppointment(String eventId) {
-         return Collections.emptyMap();
+     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForBookAnAppointment(String eventId) {
+         return Tuples.of(Collections.emptyMap(), "");
      }
 
-    public Map<String, String> getAckTemplateVariablesForUpdateMyUin(String eventId) {
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
-        return templateVariables;
+        return Tuples.of(templateVariables, Objects.requireNonNull(
+                this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY)));
     }
 
-     public  Map<String, String> getAckTemplateVariablesForGenerateVid(String eventId) {
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGenerateVid(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
          templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
          templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
          templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
-         return templateVariables;
+         return Tuples.of(templateVariables, Objects.requireNonNull(
+                 this.env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_TEMPLATE_PROPERTY)));
      }
 
-    public Map<String, String> getAckTemplateVariablesForRevokeVid(String eventId) {
+    public Tuple2<Map<String, String>, String> getAckTemplateVariablesForRevokeVid(String eventId) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
         templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
-        return templateVariables;
+        return Tuples.of(templateVariables, Objects.requireNonNull(
+                this.env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_TEMPLATE_PROPERTY)));
     }
 
     public Map<String, String> getAckTemplateVariablesForVerifyPhoneEmail(String eventId) {
         return getCommonTemplateVariables(eventId);
     }
 
-     public  Map<String, String> getAckTemplateVariablesForAuthTypeLockUnlock(String eventId) {
+     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForAuthTypeLockUnlock(String eventId) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
          templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
-         return templateVariables;
+         return Tuples.of(templateVariables, Objects.requireNonNull(
+                 this.env.getProperty(ResidentConstants.ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY)));
      }
 
-     public  Map<String, String> getAckTemplateVariablesForVidCardDownload(String eventId) {
-         return Collections.emptyMap();
+     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForVidCardDownload(String eventId) {
+         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+         return Tuples.of(templateVariables, Objects.requireNonNull(
+                 this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));
      }
      
-     public Map<String, String> getAckTemplateVariablesForSendOtp(String eventId) {
-         return getCommonTemplateVariables(eventId);
+     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForSendOtp(String eventId) {
+         return Tuples.of(getCommonTemplateVariables(eventId), "");
      }
      
-     public Map<String, String> getAckTemplateVariablesForValidateOtp(String eventId) {
-         return getCommonTemplateVariables(eventId);
+     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForValidateOtp(String eventId) {
+         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+         return Tuples.of(templateVariables, Objects.requireNonNull(
+                 this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
      }
      
      public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {

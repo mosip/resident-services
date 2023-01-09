@@ -2,6 +2,7 @@ package io.mosip.resident.constant;
 
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.util.TemplateUtil;
+import reactor.util.function.Tuple2;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,20 +66,20 @@ public enum RequestType {
 	VALIDATE_OTP(TemplateUtil::getAckTemplateVariablesForValidateOtp, List.of(EventStatusSuccess.OTP_VERIFIED),
 			List.of(EventStatusFailure.OTP_VERIFICATION_FAILED), List.of(EventStatusInProgress.OTP_REQUESTED),
 			"verify-my-phone-email", TemplateUtil::getNotificationCommonTemplateVariables),
-	DEFAULT(TemplateUtil::getCommonTemplateVariables, List.of(), List.of(), List.of(), "",
+	DEFAULT(TemplateUtil::getDefaultTemplateVariables, List.of(), List.of(), List.of(), "",
 			TemplateUtil::getNotificationCommonTemplateVariables);
 
-	private BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction;
+	private BiFunction<TemplateUtil, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
 	private List<EventStatusFailure> failureStatusList;
 	private List<EventStatusInProgress> inProgressStatusList;
 	private String featureName;
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
 
-	private RequestType(BiFunction<TemplateUtil, String, Map<String, String>> ackTemplateVariablesFunction,
-			List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
-			List<EventStatusInProgress> inProgressStatusList, String featureName,
-			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction) {
+	private RequestType(BiFunction<TemplateUtil, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+						List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
+						List<EventStatusInProgress> inProgressStatusList, String featureName,
+						BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction) {
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
 		this.successStatusList = Collections.unmodifiableList(successStatusList);
 		this.failureStatusList = Collections.unmodifiableList(failureStatusList);
@@ -136,7 +137,7 @@ public enum RequestType {
 		return "resident.template.summary." + templateType.getType() + "." + getFeatureName();
 	}
 
-	public Map<String, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId) {
+	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId) {
 		return ackTemplateVariablesFunction.apply(templateUtil, eventId);
 	}
 	

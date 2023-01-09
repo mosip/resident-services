@@ -6,9 +6,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
-import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -29,14 +27,18 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import reactor.util.function.Tuples;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -111,7 +113,8 @@ public class AcknowledgmentServiceTest {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         Mockito.when(proxyMasterdataServiceImpl.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(responseWrapper);
-        Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, eventId)).thenReturn(templateVariables);
+        Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, eventId)).
+                thenReturn(Tuples.of(templateVariables, ""));
         ReflectionTestUtils.setField(acknowledgementService, "templateManagerBuilder", templateManagerBuilder);
         templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
         InputStream stream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
