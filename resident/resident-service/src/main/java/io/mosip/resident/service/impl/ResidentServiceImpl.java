@@ -1882,23 +1882,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
-		Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
-		if(residentTransactionEntity.isPresent()){
-			String purpose = residentTransactionEntity.get().getPurpose();
-			if(purpose!=null && !purpose.isEmpty()){
-				if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name())){
-					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
-							purpose);
-				} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
-					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
-							purpose);
-				} else if (requestType.name().equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.name())) {
-					fileText = residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
-									residentTransactionEntity.get().getAttributeList()));
-				}
-			}
-		}
-		return fileText;
+		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText);
 	}
 
 	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)

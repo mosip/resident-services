@@ -20,6 +20,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
+import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,6 +60,9 @@ import java.util.Optional;
 
     @Autowired
 	private Environment env;
+
+    @Autowired
+    private ResidentCredentialServiceImpl residentCredentialServiceImpl;
     
     @Value("${resident.template.date.pattern}")
 	private String templateDatePattern;
@@ -99,6 +103,66 @@ import java.util.Optional;
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, "");
         }
         return templateVariables;
+    }
+
+    public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText) {
+        Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
+        if (residentTransactionEntity.isPresent()) {
+            return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
+                    residentTransactionEntity.get().getAttributeList()));
+        }
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForGetMyId(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForVidCardDownload(String eventId, String fileText){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText){
+        Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
+        if(residentTransactionEntity.isPresent()) {
+            String purpose = residentTransactionEntity.get().getPurpose();
+            if (purpose != null && !purpose.isEmpty()) {
+                fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
+                        purpose);
+            }
+        }
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForSecureMyId(String eventId, String fileText){
+        Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
+        if(residentTransactionEntity.isPresent()) {
+            String purpose = residentTransactionEntity.get().getPurpose();
+            if (purpose != null && !purpose.isEmpty())
+                return fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPES,
+                        purpose);
+        }
+            return fileText;
     }
 
     public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId){
