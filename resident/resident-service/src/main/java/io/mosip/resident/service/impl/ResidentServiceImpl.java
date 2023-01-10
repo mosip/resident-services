@@ -186,6 +186,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
+	private static final String UPDATED = " updated";
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -1143,6 +1144,8 @@ public class ResidentServiceImpl implements ResidentService {
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
+		residentTransactionEntity.setStatusComment(attributeList+UPDATED);
 		return residentTransactionEntity;
 	}
 

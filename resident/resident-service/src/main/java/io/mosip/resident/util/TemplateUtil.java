@@ -155,13 +155,16 @@ import java.util.Optional;
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText){
+    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText) {
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-            String purpose = residentTransactionEntity.getPurpose();
-            if (purpose != null && !purpose.isEmpty()) {
-                fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
-                        purpose);
-            }
+        String purpose = residentTransactionEntity.getPurpose();
+        if (purpose != null && !purpose.isEmpty()) {
+            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
+                    purpose);
+        }
+        if (fileText.contains("\n")) {
+            fileText = fileText.replace("\n", " ");
+        }
         return fileText;
     }
 
@@ -243,7 +246,8 @@ import java.util.Optional;
                 residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, replaceNullWithEmptyString(
                 residentTransactionEntity.getAuthTypeCode()));
-        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, replaceNullWithEmptyString(
+                residentTransactionEntity.getAttributeList()));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -277,9 +281,10 @@ import java.util.Optional;
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(String eventId, String languageCode) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity,
+                languageCode));
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
-        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK, residentTransactionEntity.getReferenceLink());
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY)));
     }
@@ -345,6 +350,8 @@ import java.util.Optional;
      
      public Tuple2<Map<String, String>, String> getAckTemplateVariablesForValidateOtp(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+         templateVariables.put(ResidentConstants.CHANNEL, replaceNullWithEmptyString(
+                 getEntityFromEventId(eventId).getAttributeList()));
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
      }
