@@ -154,11 +154,12 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
 						.filter(map -> Boolean.valueOf(String.valueOf(map.get(INPUT_REQUIRED))))
 						.filter(map -> !FILEUPLOAD.equals(map.get(CONTROL_TYPE)))
-						.map(map -> {
+						.flatMap(map -> {
+							String attribName = (String)map.get(ID);
 							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
-								return ResidentConstants.MASK_PREFIX + (String) map.get(ID);
+								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
 							} else {
-								return (String)map.get(ID);
+								return Stream.of(attribName);
 							}
 						})
 						.collect(Collectors.toList());
