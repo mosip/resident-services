@@ -1,3 +1,4 @@
+
 package io.mosip.resident.constant;
 
 /**
@@ -157,8 +158,8 @@ public class ResidentConstants {
 
     public static final String CHANNEL = "channel";
     
-    public static final String MASK_PREFIX = "mask_";
-    public static final String MASK_PERPETUAL_VID = "mask_perpetualVID";
+    public static final String MASK_PREFIX = "masked_";
+    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
 
     public static final String ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY = "resident.template.ack.share-cred-with-partner";
     public static final String ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY = "resident.template.ack.authentication.request";
