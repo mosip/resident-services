@@ -157,6 +157,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 						.flatMap(map -> {
 							String attribName = (String)map.get(ID);
 							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
+								//Include the attribute and its masked attribute
 								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
 							} else {
 								return Stream.of(attribName);
