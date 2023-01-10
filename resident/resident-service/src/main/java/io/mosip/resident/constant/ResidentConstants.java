@@ -1,3 +1,4 @@
+
 package io.mosip.resident.constant;
 
 /**
