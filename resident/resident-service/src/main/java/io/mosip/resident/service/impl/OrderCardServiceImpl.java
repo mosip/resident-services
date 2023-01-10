@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -136,7 +138,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.CARD_DELIVERED.name());
 		residentTransactionEntity.setConsent(requestDto.getConsent());
 		// TODO: need to fix transaction ID (need partner's end transactionId)
 		residentTransactionEntity.setRequestTrnId(requestDto.getTransactionID());
@@ -145,7 +147,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	private void updateResidentTransaction(ResidentTransactionEntity residentTransEntity,
 			ResidentCredentialResponseDto residentCredentialResponseDto) {
-		residentTransEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransEntity.setStatusCode(EventStatusSuccess.CARD_DELIVERED.name());
+		residentTransEntity.setStatusComment(EventStatusSuccess.CARD_DELIVERED.name());
 		residentTransEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionRepository.save(residentTransEntity);
 	}
@@ -281,12 +284,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorCode(),
 						ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorMessage());
 			}
-			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			residentTransactionEntity.setStatusCode(EventStatusSuccess.PHYSICAL_CARD_ORDERED.name());
+			residentTransactionEntity.setStatusComment(EventStatusSuccess.PHYSICAL_CARD_ORDERED.name());
 			residentTransactionRepository.save(residentTransactionEntity);
 			String newUrl = redirectUrl.contains("?") ? redirectUrl + "&" : redirectUrl + "?";
 			StringBuilder builder = new StringBuilder();
 			Map<String, String> queryParams = new HashMap<>();
-			queryParams.put("eventId", residentTransactionEntity.getEventId());
+			queryParams.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
 			for (Map.Entry<String, String> entry : queryParams.entrySet()) {
 				String keyValueParam = entry.getKey() + "=" + entry.getValue();
 				if (!builder.toString().isEmpty()) {
@@ -309,7 +313,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.PHYSICAL_CARD_ORDERED.name());
 		return residentTransactionEntity;
 	}
 

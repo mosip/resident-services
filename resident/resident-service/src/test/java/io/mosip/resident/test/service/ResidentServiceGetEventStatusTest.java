@@ -171,6 +171,8 @@ public class ResidentServiceGetEventStatusTest {
     
     @Test
     public void getEventStatusServiceTypeNotMappedTest() throws ResidentServiceCheckedException {
+        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, eventId, "eng")).
+                thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
     	residentTransactionEntity.get().setRequestTypeCode(RequestType.SEND_OTP.name());
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);

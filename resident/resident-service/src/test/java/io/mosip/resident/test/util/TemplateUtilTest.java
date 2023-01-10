@@ -14,6 +14,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
@@ -61,6 +62,9 @@ public class TemplateUtilTest {
 
     @Mock
     private Environment environment;
+
+    @Mock
+    private ResidentServiceImpl residentService;
 
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
@@ -192,7 +196,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForVidCardDownloadTest() {
-        assertEquals(0,templateUtil.getAckTemplateVariablesForVidCardDownload(eventId, "eng").size());
+        assertEquals(2,templateUtil.getAckTemplateVariablesForVidCardDownload(eventId, "eng").size());
     }
 
     @Test

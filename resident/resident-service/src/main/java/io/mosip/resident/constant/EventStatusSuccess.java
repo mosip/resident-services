@@ -23,7 +23,8 @@ public enum EventStatusSuccess {
     PHONE_VERIFIED,
     OTP_VERIFIED,
     COMPLETED,
-    AUTHENTICATION_TYPE_UPDATED;
+    AUTHENTICATION_TYPE_UPDATED,
+    PHYSICAL_CARD_ORDERED;
 
     public static boolean containsStatus(String status) {
         for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {
