@@ -249,6 +249,8 @@ import java.util.Optional;
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+         templateVariables.put(TemplateVariablesConstants.PURPOSE,
+                 getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
          templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, residentTransactionEntity.getAuthTypeCode());
          templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, residentTransactionEntity.getAttributeList());
          templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
