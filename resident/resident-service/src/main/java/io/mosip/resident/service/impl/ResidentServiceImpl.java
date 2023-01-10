@@ -2126,7 +2126,7 @@ public class ResidentServiceImpl implements ResidentService {
 	 * create the template for service history PDF and converted template into PDF
 	 */
 	public byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
-										 String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
+										 String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDate, LocalDate toDate,
 										 String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
@@ -2154,8 +2154,8 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		Map<String, Object> servHistoryMap = new HashMap<>();
 		servHistoryMap.put("eventReqTimeStamp", eventReqDateTime);
-		servHistoryMap.put("fromDateTime", fromDateTime);
-		servHistoryMap.put("toDateTime", toDateTime);
+		servHistoryMap.put("fromDate", fromDate);
+		servHistoryMap.put("toDate", toDate);
 		servHistoryMap.put("statusFilter", statusFilter);
 		servHistoryMap.put("serviceType", serviceType);
 		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
