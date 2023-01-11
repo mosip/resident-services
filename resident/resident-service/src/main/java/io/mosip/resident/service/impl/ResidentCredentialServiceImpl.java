@@ -1,27 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -30,7 +9,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
@@ -69,8 +48,27 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
@@ -78,6 +76,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
 	private static final String INDIVIDUAL_ID = "individualId";
+	private static final String DATA = "data";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -320,7 +319,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
 		String attributeList = dto.getSharableAttributes().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
@@ -336,7 +335,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			ResidentTransactionEntity residentTransactionEntity) {
 		// TODO: need to fix transaction ID (need partner's end transactionId)
 		residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
-		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
+		residentTransactionEntity.setStatusComment(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
 		residentTransactionEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
 	}
@@ -586,7 +586,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	 * @param sharableAttributes
 	 * @return
 	 */
-	private String prepareReqSummaryMsg(List<String> sharableAttributes) {
+	public String prepareReqSummaryMsg(List<String> sharableAttributes) {
 		String prepareReqSummaryMsg = "";
 		StringBuilder sharableAttrData = new StringBuilder("");
 		for (int i = 0; i < sharableAttributes.size(); i++) {
@@ -600,10 +600,22 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				sharableAttrData.append(" ");
 				break;
 			}
-
 		}
+		if(sharableAttributes.size() == 0){
+			sharableAttrData.append(DATA);
+		}
+		sharableAttrData = removeLastComma(sharableAttrData);
 		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
 		return prepareReqSummaryMsg;
+	}
+
+	public StringBuilder removeLastComma(StringBuilder sb) {
+		// Check if the second last character of the StringBuilder is a comma
+		if (sb.charAt(sb.length() - 2) == ',') {
+			// If it is, remove it using the deleteCharAt method
+			sb = sb.deleteCharAt(sb.length() - 2);
+		}
+		return sb;
 	}
 
 	/*

@@ -21,7 +21,10 @@ public enum EventStatusSuccess {
     VID_REVOKED,
     EMAIL_VERIFIED,
     PHONE_VERIFIED,
-    OTP_VERIFIED;
+    OTP_VERIFIED,
+    COMPLETED,
+    AUTHENTICATION_TYPE_UPDATED,
+    PHYSICAL_CARD_ORDERED;
 
     public static boolean containsStatus(String status) {
         for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {

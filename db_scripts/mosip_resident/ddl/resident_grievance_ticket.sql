@@ -33,7 +33,7 @@ CREATE TABLE resident.resident_grievance_ticket(
 
 COMMENT ON TABLE resident.resident_grievance_ticket IS 'This Table is used to save the  resident_grievance_ticket table values.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.id IS 'Unique Id.';
-COMMENT ON COLUMN resident.resident_grievance_ticket.event_id IS 'Unique event id.';
+COMMENT ON COLUMN resident.resident_grievance_ticket.eventId IS 'Unique event id.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.emailId IS 'Unique email id.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.alternateEmailId IS 'Alternate email id.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.phoneNo IS 'Phone number.';

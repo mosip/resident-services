@@ -140,6 +140,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -186,6 +187,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
+	private static final String UPDATED = " updated";
+	private static final String ALL = "ALL";
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -1143,6 +1146,8 @@ public class ResidentServiceImpl implements ResidentService {
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
+		residentTransactionEntity.setStatusComment(attributeList+UPDATED);
 		return residentTransactionEntity;
 	}
 
@@ -1220,11 +1225,11 @@ public class ResidentServiceImpl implements ResidentService {
 
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (requestId != null) {
-					residentTransactionEntity.setRequestSummary("in-progress");
+					residentTransactionEntity.setRequestSummary(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
 					residentTransactionEntity.setPurpose(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setRequestSummary("failed");
+					residentTransactionEntity.setRequestSummary(EventStatusFailure.FAILED.name());
 				}
 				residentTransactionEntity.setRequestTrnId(requestId);
 			});
@@ -1283,7 +1288,8 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.COMPLETED.name());
+		residentTransactionEntity.setStatusComment(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
@@ -1884,23 +1890,10 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
-		Optional<ResidentTransactionEntity> residentTransactionEntity= residentTransactionRepository.findById(eventId);
-		if(residentTransactionEntity.isPresent()){
-			String purpose = residentTransactionEntity.get().getPurpose();
-			if(purpose!=null && !purpose.isEmpty()){
-				if(requestType.name().equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.name())){
-					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.AUTH_TYPES,
-							purpose);
-				} else if (requestType.name().equalsIgnoreCase(RequestType.VALIDATE_OTP.name())) {
-					fileText = fileText.replace(ResidentConstants.DOLLAR+ResidentConstants.CHANNEL,
-							purpose);
-				}
-			}
-		}
-		return fileText;
+		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText);
 	}
 
-	private String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
+	public String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
@@ -2003,7 +1996,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (residentTransactionEntity.isPresent()) {
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
-					throw new EidNotBelongToSessionException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
+					throw new EidNotBelongToSessionException();
 				}
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
@@ -2015,7 +2008,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 			Map<String, String> eventStatusMap;
 
-			eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId);
+			eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId, languageCode).getT1();
 
 			EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
 			eventStatusResponseDTO.setEventId(eventId);
@@ -2138,7 +2131,7 @@ public class ResidentServiceImpl implements ResidentService {
 	 * create the template for service history PDF and converted template into PDF
 	 */
 	public byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
-										 String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
+										 String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDate, LocalDate toDate,
 										 String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
@@ -2165,9 +2158,25 @@ public class ResidentServiceImpl implements ResidentService {
 				dto.setDescription("");
 		}
 		Map<String, Object> servHistoryMap = new HashMap<>();
+		if(eventReqDateTime == null){
+			eventReqDateTime = DateUtils.getUTCCurrentDateTime();
+		}
+		if(fromDate == null){
+			fromDate = LocalDate.of(LocalDate.now().getYear(), Month.JANUARY, 1);
+		}
+		if(toDate == null){
+			toDate = LocalDate.now();
+		}
+		if(statusFilter == null){
+			statusFilter = ALL;
+		}
+
+		if(serviceType == null){
+			serviceType = ALL;
+		}
 		servHistoryMap.put("eventReqTimeStamp", eventReqDateTime);
-		servHistoryMap.put("fromDateTime", fromDateTime);
-		servHistoryMap.put("toDateTime", toDateTime);
+		servHistoryMap.put("fromDate", fromDate);
+		servHistoryMap.put("toDate", toDate);
 		servHistoryMap.put("statusFilter", statusFilter);
 		servHistoryMap.put("serviceType", serviceType);
 		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
@@ -2215,7 +2224,6 @@ public class ResidentServiceImpl implements ResidentService {
 	/**
 	 * 
 	 * @param index
-	 * @param regCenterDto
 	 * @throws ResidentServiceCheckedException
 	 * @throws Exception
 	 */
