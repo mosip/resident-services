@@ -114,11 +114,17 @@ public class ApiExceptionHandler {
 
 	private ResponseEntity<ResponseWrapper<ServiceError>> createResponseEntity(
 			ResponseWrapper<ServiceError> errorResponse, Exception e, HttpStatus httpStatus) {
-		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
-				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null) {
 			MultiValueMap<String, String> headers = new HttpHeaders();
-			headers.add(ResidentConstants.EVENT_ID,
-					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			if (((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+				headers.add(ResidentConstants.EVENT_ID,
+						(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			} else if (((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.HTTP_STATUS_CODE)) {
+				httpStatus = (HttpStatus) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.HTTP_STATUS_CODE);
+			} else if (((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.REQ_RES_ID)) {
+				errorResponse.setId((String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.REQ_RES_ID));
+			}
+			errorResponse.setVersion(env.getProperty(ResidentConstants.REQ_RES_VERSION));
 			return new ResponseEntity<>(errorResponse, headers, httpStatus);
 		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
