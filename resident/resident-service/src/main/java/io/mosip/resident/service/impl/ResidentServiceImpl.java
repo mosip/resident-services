@@ -59,7 +59,6 @@ import io.mosip.resident.dto.PacketSignPublicKeyResponseDTO;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.RegProcRePrintRequestDto;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.RegistrationStatusRequestDTO;
 import io.mosip.resident.dto.RegistrationStatusResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusSubRequestDto;
@@ -79,7 +78,6 @@ import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
-import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -1757,12 +1755,21 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if (searchText != null) {
 			dynamicQuery = getSearchQuery(searchText, positionalParams);
 		}
+		if(serviceType == null){
+			dynamicQuery = getServiceQueryForNullServiceType();
+		}
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
+
 		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageFetch
 				+ " offset " + (pageStart) * pageFetch;
 		return query + dynamicQuery + orderByQuery;
+	}
+
+	private String getServiceQueryForNullServiceType() {
+		return " and request_type_code in (" + convertServiceTypeListToString(
+				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestType())) +")";
 	}
 
 	private String getServiceQuery(String serviceType, PositionalParams params ) {
