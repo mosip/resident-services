@@ -1073,10 +1073,16 @@ public class RequestValidator {
     public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
 		validateRequestType(downloadPersonalizedCardMainRequestDTO.getId(),
 				this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD), ID);
+		validateVersion(downloadPersonalizedCardMainRequestDTO.getVersion());
 		validateDate(downloadPersonalizedCardMainRequestDTO.getRequesttime());
 		validateString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml(), "html");
 		validateEncodedString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml());
     }
+
+	private void validateVersion(String requestVersion) {
+		if (StringUtils.isEmpty(requestVersion) || !requestVersion.equals(reqResVersion))
+			throw new InvalidInputException("version");
+	}
 
 	private void validateEncodedString(String html) {
 		try{
