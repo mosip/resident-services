@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.util.TemplateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,6 +91,9 @@ public class ResidentCredentialControllerTest {
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private TemplateUtil templateUtil;
 
     @MockBean
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;

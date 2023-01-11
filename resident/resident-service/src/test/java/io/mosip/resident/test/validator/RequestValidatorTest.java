@@ -1843,6 +1843,7 @@ public class RequestValidatorTest {
 		otpRequestDTOV3.setOtp("111111");
 		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("8878787878");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1859,6 +1860,7 @@ public class RequestValidatorTest {
 		otpRequestDTOV3.setOtp("111111");
 		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("test@g.com");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);

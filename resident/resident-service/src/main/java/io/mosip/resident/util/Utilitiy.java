@@ -112,6 +112,9 @@ public class Utilitiy {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private Utilities utilities;
+
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static String regProcessorIdentityJson = "";
@@ -410,14 +413,12 @@ public class Utilitiy {
 		byte[] pdfSignatured=null;
 		try {
 			ByteArrayOutputStream pdfValue= (ByteArrayOutputStream)pdfGenerator.generate(in);
-			PdfReader pdfReader = new PdfReader(pdfValue.toByteArray());
-			int pageNumber = pdfReader.getNumberOfPages();
 			PDFSignatureRequestDto request = new PDFSignatureRequestDto(
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_X))),
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.LOWER_LEFT_Y))),
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_X))),
 					Integer.parseInt(Objects.requireNonNull(env.getProperty(ResidentConstants.UPPER_RIGHT_Y))),
-					env.getProperty(ResidentConstants.REASON), pageNumber, password);
+					env.getProperty(ResidentConstants.REASON), utilities.getTotalNumberOfPageInPdf(pdfValue), password);
 			request.setApplicationId(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID));
 			request.setReferenceId(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID));
 			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));

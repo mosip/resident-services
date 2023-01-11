@@ -1,6 +1,7 @@
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfReader;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -405,5 +407,10 @@ public class Utilities {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
+		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
+		return pdfReader.getNumberOfPages();
 	}
 }
