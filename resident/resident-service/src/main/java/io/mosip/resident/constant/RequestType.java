@@ -61,7 +61,7 @@ public enum RequestType {
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock, TemplateUtil::getDescriptionTemplateVariablesForSecureMyId),
 	VID_CARD_DOWNLOAD(TemplateUtil::getAckTemplateVariablesForVidCardDownload,
 			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"",
+			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"vid-card-download",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload, TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload),
 
 	SEND_OTP(TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(), "send-otp",

@@ -270,7 +270,11 @@ import java.util.Optional;
      }
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGetMyId(String eventId, String languageCode) {
-        return Tuples.of(getCommonTemplateVariables(eventId), Objects.requireNonNull(
+        Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(getEntityFromEventId(eventId),
+                languageCode));
+        templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
+        return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_GET_MY_ID_TEMPLATE_PROPERTY)));
     }
 
@@ -342,6 +346,9 @@ import java.util.Optional;
 
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForVidCardDownload(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId);
+         templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
+         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(getEntityFromEventId(
+                 eventId), languageCode));
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));
      }
