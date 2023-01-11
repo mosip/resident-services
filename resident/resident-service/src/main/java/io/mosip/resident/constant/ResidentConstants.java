@@ -81,7 +81,7 @@ public class ResidentConstants {
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
 
-    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD = "mosip.resident.download.personalized.card";
+    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
     public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
 
@@ -157,9 +157,13 @@ public class ResidentConstants {
     public static final String AUTH_TYPES = "authTypes";
 
     public static final String CHANNEL = "channel";
-    
+
     public static final String MASK_PREFIX = "masked_";
     public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
+
+    public static final String HTTP_STATUS_CODE = "httpStatusCode";
+    public static final String REQ_RES_ID = "reqResId";
+    public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
 
     public static final String ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY = "resident.template.ack.share-cred-with-partner";
     public static final String ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY = "resident.template.ack.authentication.request";
