@@ -140,6 +140,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -187,6 +188,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
+	private static final String ALL = "ALL";
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -2156,6 +2158,22 @@ public class ResidentServiceImpl implements ResidentService {
 				dto.setDescription("");
 		}
 		Map<String, Object> servHistoryMap = new HashMap<>();
+		if(eventReqDateTime == null){
+			eventReqDateTime = DateUtils.getUTCCurrentDateTime();
+		}
+		if(fromDate == null){
+			fromDate = LocalDate.of(LocalDate.now().getYear(), Month.JANUARY, 1);
+		}
+		if(toDate == null){
+			toDate = LocalDate.now();
+		}
+		if(statusFilter == null){
+			statusFilter = ALL;
+		}
+
+		if(serviceType == null){
+			serviceType = ALL;
+		}
 		servHistoryMap.put("eventReqTimeStamp", eventReqDateTime);
 		servHistoryMap.put("fromDate", fromDate);
 		servHistoryMap.put("toDate", toDate);
@@ -2206,7 +2224,6 @@ public class ResidentServiceImpl implements ResidentService {
 	/**
 	 * 
 	 * @param index
-	 * @param regCenterDto
 	 * @throws ResidentServiceCheckedException
 	 * @throws Exception
 	 */
