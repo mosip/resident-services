@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
@@ -98,7 +99,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
-		residentTransactionEntity.setAuthTypeCode(ServiceType.AUTHENTICATION_REQUEST.name());
+		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(", "));
+		residentTransactionEntity.setAttributeList(attributeList);
+		residentTransactionEntity.setAuthTypeCode(attributeList);
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode("OTP_REQUESTED");
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");

@@ -161,7 +161,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
-			residentTransactionEntity.setAuthTypeCode(ServiceType.SERVICE_REQUEST.name());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 		return residentTransactionEntity;

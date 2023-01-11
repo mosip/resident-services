@@ -29,10 +29,10 @@ public class TemplateVariablesConstants {
     public static final String NAME = "name";
     public static final String STATUS = "status";
     public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
+    public static final String TRACK_SERVICE_LINK = "trackServiceLink";
     public static final String DOWNLOAD_LINK = "downloadLink";
-    public static final String TRACKING_LINK = "trackingLink";
     public static final String TRANSACTION_ID = "transactionId";
-    public static final String PARTNER_ID = "partner";
     public static final String OTP = "otp";
     public static final String PHONE = "phone";
+    public static final String ATTRIBUTES = "attributes";
 }

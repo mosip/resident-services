@@ -1,23 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
-import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
-import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import io.mosip.resident.dto.CheckStatusResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -26,12 +8,12 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.CredentialReqestDto;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
@@ -56,8 +38,25 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utilitiy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
+import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
+import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
+import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -193,6 +192,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setRequestSummary(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setStatusCode(status);
+        residentTransactionEntity.setAuthTypeCode(OTP);
         residentTransactionEntity.setStatusComment(String.valueOf(CARD_DOWNLOADED));
         residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(
                 downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
@@ -221,7 +221,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 password = utilitiy.getPassword(attributeValues);
             }
             residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
-            residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+            residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
+            residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
         }
         catch (Exception e) {
         	if (residentTransactionEntity != null) {
@@ -249,6 +250,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     	ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
         String eventId = utilitiy.createEventId();
         residentTransactionEntity.setEventId(eventId);
+        residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
         residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(identityService.getResidentIndvidualId()));
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
@@ -388,10 +390,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException {
         ResidentTransactionEntity residentTransactionEntity = utilitiy.createEntity();
         residentTransactionEntity.setEventId(utilitiy.createEventId());
+        residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setRefId(utilitiy.convertToMaskDataFormat(uin));
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
-        residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
+        residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
         residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
         /**
          * Here we are setting vid in aid column.

@@ -7,11 +7,15 @@ import io.mosip.preregistration.application.constant.PreRegLoginConstant;
 import io.mosip.preregistration.core.util.GenericUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.ExceptionJSONInfoDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.MainResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -23,9 +27,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,10 +220,12 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
+        residentTransactionEntity.setAttributeList(userId);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
 		if (requestValidator.phoneValidator(userId)) {
 			residentTransactionEntity.setStatusComment("Update phone as " + userId);
 		} else if (requestValidator.emailValidator(userId)) {
