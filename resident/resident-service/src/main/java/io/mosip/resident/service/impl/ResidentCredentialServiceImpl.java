@@ -1,28 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import io.mosip.resident.constant.EventStatusSuccess;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -31,7 +9,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
@@ -70,8 +48,27 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
@@ -79,7 +76,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
 	private static final String INDIVIDUAL_ID = "individualId";
-	private static final StringBuilder DATA = new StringBuilder("data");
+	private static final String DATA = "data";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -605,7 +602,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			}
 		}
 		if(sharableAttributes.size() == 0){
-			sharableAttrData = DATA;
+			sharableAttrData.append(DATA);
 		}
 		sharableAttrData = removeLastComma(sharableAttrData);
 		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
