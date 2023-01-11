@@ -32,6 +32,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to test the get Status service
@@ -101,7 +102,7 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put("authenticationMode", "OTP");
         templateVariables.put("partnerName", "partnerName");
         templateVariables.put("purpose", "authentication");
-        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString())).thenReturn(templateVariables);
+        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
@@ -170,6 +171,8 @@ public class ResidentServiceGetEventStatusTest {
     
     @Test
     public void getEventStatusServiceTypeNotMappedTest() throws ResidentServiceCheckedException {
+        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, eventId, "eng")).
+                thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
     	residentTransactionEntity.get().setRequestTypeCode(RequestType.SEND_OTP.name());
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
