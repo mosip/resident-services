@@ -1018,7 +1018,7 @@ public class RequestValidator {
 		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
 		validateRequestType(inputRequestId, requestIdStoredInProperty, ID);
 		validateDate(userIdOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionID());
+		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionId());
 		validateOTP(userIdOtpRequest.getRequest().getOtp());
 	}
 

@@ -84,7 +84,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             log.info("Response after loginCommonUtil {}", response);
 
             userid = userOtpRequest.getRequest().getUserId();
-            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionID());
+            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionId());
             boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language);
             AuthNResponse authNResponse = null;
             if (otpSent) {
@@ -149,7 +149,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionID());
+            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);

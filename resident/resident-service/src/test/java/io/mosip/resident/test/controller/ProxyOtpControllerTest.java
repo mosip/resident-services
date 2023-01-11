@@ -118,7 +118,7 @@ public class ProxyOtpControllerTest {
         userOtpRequest = new MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
         otpRequestDTOV2.setUserId("8809909090");
-        otpRequestDTOV2.setTransactionID("1234343434");
+        otpRequestDTOV2.setTransactionId("1234343434");
         userOtpRequest.setRequest(otpRequestDTOV2);
         userOtpRequest.setId("mosip.resident.contact.details.send.otp.id");
         reqJson = gson.toJson(userOtpRequest);
