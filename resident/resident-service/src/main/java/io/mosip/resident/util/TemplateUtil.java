@@ -32,6 +32,7 @@ import reactor.util.function.Tuples;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -116,7 +117,8 @@ import java.util.Optional;
 
     private String truncateMilliSecondInTimeStampString(LocalDateTime localDateTime) {
         return LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth(),
-                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond()).toString();
+                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond()).
+                format(DateTimeFormatter.ofPattern(Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_DATE_TIME_PATTERN))));
     }
 
     public String replaceSpecialChars(String input) {
