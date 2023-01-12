@@ -115,12 +115,6 @@ public class ResidentController {
 	
 	@Value("${resident.download.card.eventid.version}")
 	private String downloadCardEventidVersion;
-	
-	@Value("${resident.vid.version.new}")
-	private String newVersion;
-	
-	@Value("${resident.checkstatus.id}")
-	private String checkStatusId;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -477,7 +471,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PostMapping("/aid/status")
+	@PostMapping("/aid/get-individual-id")
 	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -494,8 +488,6 @@ public class ResidentController {
 		logger.debug("ResidentController::getAidStatus()::exit");
 		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(resp);
-		responseWrapper.setId(checkStatusId);
-		responseWrapper.setVersion(newVersion);
 		return responseWrapper;
 	}
 

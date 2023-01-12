@@ -160,7 +160,7 @@ public class DownloadCardControllerTest {
     	responseWrapper.setResponse(checkStatusResponseDTO);
 		Mockito.when(downloadCardService.getIndividualIdStatus(Mockito.any()))
 				.thenReturn(responseWrapper);
-        mockMvc.perform(MockMvcRequestBuilders.get("/aid-stage/12345")).andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.get("/status/individualId/12345")).andExpect(status().isOk());
     }
 
 }

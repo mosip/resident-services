@@ -504,16 +504,16 @@ public class ResidentControllerTest {
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
 		aidStatusRequestDTO.setAid("8251649601");
 		aidStatusRequestDTO.setOtp("111111");
-		aidStatusRequestDTO.setTransactionId("1234567890");
+		aidStatusRequestDTO.setTransactionID("1234567890");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestWrapper.setId("mosip.resident.uin");
-		requestWrapper.setVersion("1.0");
+		requestWrapper.setVersion("v1");
 		Mockito.when(residentService.getAidStatus(Mockito.any())).thenReturn(new AidStatusResponseDTO());
 		String requestAsString = gson.toJson(requestWrapper);
 		this.mockMvc
 				.perform(
-						post("/aid/status").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
+						post("/aid/get-individual-id").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 	}
 

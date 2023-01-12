@@ -20,9 +20,9 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
+import io.mosip.resident.dto.AidOtpRequestDTO;
 import io.mosip.resident.dto.AuthError;
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.MaskedResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
@@ -92,18 +92,18 @@ public class ResidentOtpServiceImplTest {
 	}
 
 	@Test
-	public void generateOtpForIndividualId() throws Exception {
-		IndividualIdOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
+	public void generateOtpForAid() throws Exception {
+		AidOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
 		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
 		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
-		assertNotNull(residentOtpServiceImpl.generateOtpForIndividualId(aidOtpRequestDTO));
+		assertNotNull(residentOtpServiceImpl.generateOtpForAid(aidOtpRequestDTO));
 	}
 
 	@Ignore
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void generateOtpFailureTest() throws Exception {
-		IndividualIdOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
+		AidOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
 		IdentityDTO identityDTO = getIdentityDTO();
 		identityDTO.setEmail(null);
@@ -115,11 +115,12 @@ public class ResidentOtpServiceImplTest {
 		when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
 		Mockito.when(residentOtpServiceImpl.generateOtp(any())).thenThrow(new ResidentServiceCheckedException());
 		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(otpResponseDTO);
-		assertNotNull(residentOtpServiceImpl.generateOtpForIndividualId(aidOtpRequestDTO));
+		assertNotNull(residentOtpServiceImpl.generateOtpForAid(aidOtpRequestDTO));
 	}
 
-	private IndividualIdOtpRequestDTO getAidOtpRequestDTO() {
-		IndividualIdOtpRequestDTO aidOtpRequestDTO = new IndividualIdOtpRequestDTO();
+	private AidOtpRequestDTO getAidOtpRequestDTO() {
+		AidOtpRequestDTO aidOtpRequestDTO = new AidOtpRequestDTO();
+		aidOtpRequestDTO.setAid("aid");
 		aidOtpRequestDTO.setIndividualId("individualId");
 		return aidOtpRequestDTO;
 	}
@@ -146,7 +147,7 @@ public class ResidentOtpServiceImplTest {
 	private OtpRequestDTO getOtpRequestDTO() {
 		OtpRequestDTO otpRequestDTO = new OtpRequestDTO();
 		otpRequestDTO.setIndividualId("individualId");
-		otpRequestDTO.setTransactionId("transactionId");
+		otpRequestDTO.setTransactionID("transactionID");
 		return otpRequestDTO;
 	}
 

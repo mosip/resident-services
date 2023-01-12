@@ -22,7 +22,7 @@ public class OtpResponseDTO {
 	private String version;
 
 	/** Variable to hold id */
-	private String transactionId;
+	private String transactionID;
 
 	/** Variable to hold id */
 	private String responseTime;

@@ -6,7 +6,8 @@ import lombok.Data;
 public class AidStatusResponseDTO {
 
 	private String individualId;
-	private String transactionId;
+	private String individualIdType;
+	private String transactionID;
 	private String aidStatus;
 	
 }

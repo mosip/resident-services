@@ -13,7 +13,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TransactionStage;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.CredentialReqestDto;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
@@ -125,15 +124,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
-                    HashMap<String, String> ridStatus = utilities.getPacketStatus(rid);
-                    String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-                    String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-                    if (transactionTypeCode==TransactionStage.CARD_READY_TO_DOWNLOAD.getName() && aidStatus==EventStatus.SUCCESS.name()) {
-                    	pdfBytes = residentService.getUINCard(rid);
-                    } else {
-                         throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-                                ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
-                    }
+                    pdfBytes = residentService.getUINCard(rid);
                 } else if (idType.equalsIgnoreCase(VID)) {
                     ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(individualId);
                     if(residentTransactionEntity !=null ){
@@ -391,8 +382,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String aid) throws ApisResourceAccessException, IOException {
-        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(aid);
+    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException {
+        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
         return getCheckStatusResponse(packetStatusMap);
     }
 
