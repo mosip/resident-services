@@ -2041,10 +2041,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
-					eventStatusResponseDTO.setSummary(templateUtil.toReadableString(
-							getSummaryForLangCode(languageCode, statusCode, requestType, eventId)));
+					eventStatusResponseDTO.setSummary(getSummaryForLangCode(languageCode, statusCode, requestType, eventId));
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							templateUtil.toReadableString(getDescriptionForLangCode(languageCode, statusCode, requestType, eventId)));
+							getDescriptionForLangCode(languageCode, statusCode, requestType, eventId));
 				}
 			} else {
 				eventStatusResponseDTO.setSummary(requestType.name());

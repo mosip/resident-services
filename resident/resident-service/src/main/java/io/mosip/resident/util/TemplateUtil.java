@@ -100,12 +100,7 @@ import java.util.Optional;
                 truncateMilliSecondInTimeStampString(residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_LINK, utilitiy.createTrackServiceRequestLink(eventId));
-        String purpose = replaceNullWithEmptyString(residentTransactionEntity.getPurpose());
-        if(purpose.equalsIgnoreCase("")){
-            purpose = toReadableString(replaceNullWithEmptyString(getPurposeFromResidentTransactionEntityLangCode(
-                    residentTransactionEntity, languageCode)));
-        }
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, purpose);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()));
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
@@ -120,11 +115,14 @@ import java.util.Optional;
     }
 
     private String truncateMilliSecondInTimeStampString(LocalDateTime localDateTime) {
-        return DateUtils.formatToISOString(LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth(),
-                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond()));
+        return LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth(),
+                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond()).toString();
     }
 
     public String replaceSpecialChars(String input) {
+        if(input == null || input.equalsIgnoreCase("")){
+            return "";
+        }
         return input.replaceAll("[^a-zA-Z0-9 ]", " ");
     }
     public String toReadableString(String input) {
@@ -268,6 +266,8 @@ import java.util.Optional;
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForDownloadPersonalizedCard(String eventId, String languageCode) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                getEntityFromEventId(eventId), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -275,6 +275,8 @@ import java.util.Optional;
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
          ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                 residentTransactionEntity, languageCode));
          templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
          templateVariables.put(TemplateVariablesConstants.ORDER_TRACKING_LINK, residentTransactionEntity.getReferenceLink());
          templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
@@ -287,6 +289,8 @@ import java.util.Optional;
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGetMyId(String eventId, String languageCode) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                getEntityFromEventId(eventId), languageCode));
         templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_GET_MY_ID_TEMPLATE_PROPERTY)));
@@ -298,6 +302,8 @@ import java.util.Optional;
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(String eventId, String languageCode) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                getEntityFromEventId(eventId), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY)));
     }
@@ -305,6 +311,8 @@ import java.util.Optional;
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGenerateVid(String eventId, String languageCode) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                residentTransactionEntity, languageCode));
         templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
         templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
         templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
@@ -319,7 +327,7 @@ import java.util.Optional;
                             residentTransactionEntity.getStatusCode()),
                     RequestType.valueOf(residentTransactionEntity.getRequestTypeCode().trim()), residentTransactionEntity.getEventId());
         } catch (ResidentServiceCheckedException e) {
-            throw new RuntimeException(e);
+            return "";
         }
         return purpose;
     }
@@ -327,6 +335,8 @@ import java.util.Optional;
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForRevokeVid(String eventId, String languageCode) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
         templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
         return Tuples.of(templateVariables, Objects.requireNonNull(
@@ -339,6 +349,8 @@ import java.util.Optional;
 
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForAuthTypeLockUnlock(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
+         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                 getEntityFromEventId(eventId), languageCode));
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          templateVariables.put(ResidentConstants.AUTH_TYPES, templateVariables.get(TemplateVariablesConstants.PURPOSE));
          return Tuples.of(templateVariables, Objects.requireNonNull(
@@ -347,6 +359,8 @@ import java.util.Optional;
 
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForVidCardDownload(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
+         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+                 getEntityFromEventId(eventId), languageCode));
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));
