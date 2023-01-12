@@ -161,7 +161,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             } else {
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
             	residentTransactionEntity.setRequestSummary("failed");
-				throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS,
+				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
             response.setResponse(authresponse);
@@ -170,18 +170,18 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, ex,
+			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (RuntimeException ex) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-            throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, ex,
+            throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ResidentServiceCheckedException e) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
-        	throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, e,
+        	throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ApisResourceAccessException e) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());

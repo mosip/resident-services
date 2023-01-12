@@ -226,8 +226,8 @@ public class ProxyOtpServiceImpllTest {
         otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
-                thenThrow(new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorCode(),
-                        ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorMessage()));
+                thenThrow(new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage()));
         assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
