@@ -6,15 +6,15 @@ import lombok.EqualsAndHashCode;
 /**
  * This class is used to provide request for OTP generation.
  * 
- * @author Dinesh Karuppiah
+ * @author Aiham Hasan
  *
  */
 
 @Data
 @EqualsAndHashCode(callSuper=true)
-public class AidOtpRequestDTO extends OtpRequestDTO{
+public class IndividualIdOtpRequestDTO extends OtpRequestDTO{
 
 	/** Variable to hold individualID */
-	private String aid;
+	private String individualId;
 
 }

@@ -8,7 +8,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.dto.AidOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -96,7 +96,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setEventId(utilitiy.createEventId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
+		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
 		residentTransactionEntity.setAuthTypeCode(ServiceType.AUTHENTICATION_REQUEST.name());
 		residentTransactionEntity.setRequestSummary("OTP Generated");
@@ -121,15 +121,15 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	}
 
 	@Override
-	public OtpResponseDTO generateOtpForAid(AidOtpRequestDTO otpRequestDto)
+	public OtpResponseDTO generateOtpForIndividualId(IndividualIdOtpRequestDTO otpRequestDto)
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
 		String individualId;
 		try {
-			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getAid());
+			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getIndividualId());
 			otpRequestDto.setIndividualId(individualId);
 			return generateOtp(otpRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUALID_STATUS_IS_NOT_READY);
 		}
 	}
 
