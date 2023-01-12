@@ -73,7 +73,7 @@ public class TemplateUtilTest {
 
     private static final String OTP = "otp";
 
-    private static final String PROPERTY = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final String PROPERTY = "YYYY-MM-DD HH:MM:SS";
 
     @Before
     public void setUp() throws ApisResourceAccessException {
