@@ -62,7 +62,6 @@ public enum ResidentErrorCode {
 	INVALID_PAGE_FETCH_VALUE("RES-SER-447", "Invalid page fetch value"),
 	PERPETUAL_VID_NOT_AVALIABLE("RES-SER-448", "Perpatual VID not available"),
 	AID_STATUS_IS_NOT_READY("RES-SER-449", "AID is not ready"),
-	INDIVIDUALID_STATUS_IS_NOT_READY("RES-SER-483", "AID is not ready"),
 
 	BIOMETRIC_MISSING("RES-SER-450", "Biometric data is not available in database"),
 	EMPTY_COLLECTION_FOUND("RES-SER-451", "Collection is empty"),
@@ -72,7 +71,6 @@ public enum ResidentErrorCode {
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
 	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
 	RID_NOT_FOUND("RES-SER-456", "RID not found"), AID_NOT_FOUND("RES-SER-457", "AID not found"),
-	INDIVIDUALID_NOT_FOUND("RES-SER-484", "AID not found"),
 	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-458", "Credential request id not found"),
 	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
 

@@ -132,7 +132,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			otpRequestDto.setIndividualId(individualId);
 			return generateOtp(otpRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INDIVIDUALID_STATUS_IS_NOT_READY);
+			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
 		}
 	}
 

@@ -463,8 +463,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             } catch (ResidentServiceCheckedException e) {
                 audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
                 throw new ResidentServiceException(
-                        ResidentErrorCode.INDIVIDUALID_NOT_FOUND.getErrorCode(),
-                        ResidentErrorCode.INDIVIDUALID_NOT_FOUND.getErrorMessage(), e);
+                        ResidentErrorCode.AID_NOT_FOUND.getErrorCode(),
+                        ResidentErrorCode.AID_NOT_FOUND.getErrorMessage(), e);
             } catch (ApisResourceAccessException e) {
                 audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
                 throw new ResidentServiceException(
