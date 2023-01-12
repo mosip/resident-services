@@ -328,7 +328,7 @@ public class ResidentController {
 			@RequestParam(name = "searchText", required = false) String searchText,
 			TimeZone timezone)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		logger.info("TimeZone: " + timezone.getDisplayName() + timezone.getID());
+		logger.info("TimeZone: " + timezone.getDisplayName() + " : " + timezone.getID());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		validator.validateOnlyLanguageCode(langCode);
 		validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
