@@ -128,7 +128,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     HashMap<String, String> ridStatus = utilities.getPacketStatus(rid);
                     String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
                     String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-                    if (transactionTypeCode==TransactionStage.CARD_READY_TO_DOWNLOAD.getName() && aidStatus==EventStatus.SUCCESS.name()) {
+                    if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.getName()) && aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
                     	pdfBytes = residentService.getUINCard(rid);
                     } else {
                          throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
