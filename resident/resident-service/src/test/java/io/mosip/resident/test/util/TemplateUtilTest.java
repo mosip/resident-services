@@ -71,7 +71,7 @@ public class TemplateUtilTest {
 
     private NotificationTemplateVariableDTO dto;
 
-    private static final String OTP = "Otp";
+    private static final String OTP = "otp";
 
     private static final String PROPERTY = "yyyy-MM-dd'T'HH:mm:ss";
 

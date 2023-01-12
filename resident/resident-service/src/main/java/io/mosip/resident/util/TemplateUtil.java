@@ -94,9 +94,9 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.EVENT_TYPE,
                 RequestType.valueOf(residentTransactionEntity.getRequestTypeCode()).getName());
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS,
-                toReadableString(getEventStatusForRequestType(residentTransactionEntity.getStatusCode())));
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, toReadableString(replaceNullWithEmptyString(
-                residentTransactionEntity.getRequestSummary())));
+                getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
+        templateVariables.put(TemplateVariablesConstants.SUMMARY, replaceNullWithEmptyString(
+                residentTransactionEntity.getRequestSummary()));
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
                 truncateMilliSecondInTimeStampString(residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utilitiy.createTrackServiceRequestLink(eventId));
@@ -105,7 +105,7 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()));
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-                toReadableString(replaceNullWithEmptyString(toReadableString(residentTransactionEntity.getAuthTypeCode()))));
+                replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()));
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
@@ -116,31 +116,8 @@ import java.util.Optional;
     }
 
     private String truncateMilliSecondInTimeStampString(LocalDateTime localDateTime) {
-        return LocalDateTime.of(localDateTime.getYear(), localDateTime.getMonth(), localDateTime.getDayOfMonth(),
-                localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond()).
-                format(DateTimeFormatter.ofPattern(Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_DATE_TIME_PATTERN))));
-    }
-
-    public String replaceSpecialChars(String input) {
-        if(input == null || input.equalsIgnoreCase("")){
-            return "";
-        }
-        return input.replaceAll("[^a-zA-Z0-9 ]", " ");
-    }
-    public String toReadableString(String input) {
-        input = replaceSpecialChars(input);
-        StringBuilder output = new StringBuilder();
-        String[] parts = input.split(" ");
-        for (int i = 0; i < parts.length; i++) {
-            if(parts[i].length()==0){
-                continue;
-            }
-            output.append(parts[i].trim().substring(0, 1).toUpperCase());
-            output.append(parts[i].trim().substring(1).toLowerCase());
-            output.append(" ");
-
-        }
-        return output.toString().trim();
+        return localDateTime.format(
+                DateTimeFormatter.ofPattern(Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_DATE_TIME_PATTERN))));
     }
     public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText){
         return fileText;
@@ -374,8 +351,8 @@ import java.util.Optional;
      
      public Tuple2<Map<String, String>, String> getAckTemplateVariablesForValidateOtp(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
-         templateVariables.put(ResidentConstants.CHANNEL, toReadableString(replaceNullWithEmptyString(
-                 getEntityFromEventId(eventId).getAttributeList())));
+         templateVariables.put(ResidentConstants.CHANNEL, replaceNullWithEmptyString(
+                 getEntityFromEventId(eventId).getAttributeList()));
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
      }
