@@ -1115,6 +1115,8 @@ public class ResidentServiceImpl implements ResidentService {
 				// if the status code will come as null, it will set it as failed.
 				if (residentTransactionEntity.getStatusCode() == null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				}
+				if (residentTransactionEntity.getRequestSummary() == null) {
 					residentTransactionEntity.setRequestSummary("failed");
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
