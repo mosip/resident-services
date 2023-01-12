@@ -191,6 +191,8 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         } finally {
         	if(residentTransactionEntity.getStatusCode()==null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
+        	if (residentTransactionEntity.getRequestSummary() == null) {
 				residentTransactionEntity.setRequestSummary("failed");
 			}
 			residentTransactionRepository.save(residentTransactionEntity);
