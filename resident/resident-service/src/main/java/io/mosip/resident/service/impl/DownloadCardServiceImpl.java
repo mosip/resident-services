@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
@@ -219,6 +220,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             List<String> attributeValues = getAttributeList();
             if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))){
                 password = utilitiy.getPassword(attributeValues);
+            }
+            List<String> attributes = downloadPersonalizedCardMainRequestDTO.getRequest().getAttributes();
+            if(attributes != null){
+                String attributeList = attributes.
+                stream().collect(Collectors.joining(", "));
+                residentTransactionEntity.setAttributeList(attributeList);
             }
             residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
             residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());

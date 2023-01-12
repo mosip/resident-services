@@ -178,5 +178,6 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
+    public static final String ACK_DATE_TIME_PATTERN = "resident.ack.datetime.pattern";
 
 }

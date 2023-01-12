@@ -71,6 +71,10 @@ public class TemplateUtilTest {
 
     private NotificationTemplateVariableDTO dto;
 
+    private static final String OTP = "otp";
+
+    private static final String PROPERTY = "YYYY-MM-DD HH:MM:SS";
+
     @Before
     public void setUp() throws ApisResourceAccessException {
         eventId = "12345";
@@ -87,7 +91,7 @@ public class TemplateUtilTest {
         Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(PROPERTY);
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS, "eng", "111111");
     }
 
@@ -100,19 +104,19 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForCredentialShare() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForCredentialShare( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForDownloadPersonalizedCard() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForDownloadPersonalizedCard( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForOrderPhysicalCard() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -120,7 +124,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -138,19 +142,19 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForUpdateMyUin() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForUpdateMyUin( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForGenerateVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGenerateVid( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForRevokeVid() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForRevokeVid( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
@@ -162,25 +166,25 @@ public class TemplateUtilTest {
     @Test
     public void getAckTemplateVariablesForAuthLock() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock( eventId, "eng").getT1();
-        assertEquals("otp",ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
+        assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test(expected = ResidentServiceException.class)
     public void getCommonTemplateVariablesTestBadEventId() {
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.empty());
-        templateUtil.getCommonTemplateVariables(eventId);
+        templateUtil.getCommonTemplateVariables(eventId, "");
     }
 
     @Test
     public void getFeatureNameTest() {
-        assertEquals(RequestType.AUTHENTICATION_REQUEST.name(),templateUtil.getFeatureName(eventId));
+        assertEquals(RequestType.AUTHENTICATION_REQUEST.getName(),templateUtil.getFeatureName(eventId));
     }
 
     @Test
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId).get(
+        assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng").get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -189,7 +193,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId).get(
+        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng").get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -279,37 +283,37 @@ public class TemplateUtilTest {
 
     @Test
     public void getEmailSubjectTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getEmailSubjectTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getEmailContentTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getEmailContentTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSmsTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getBellIconTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getBellIconTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getPurposeTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSummaryTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 }
