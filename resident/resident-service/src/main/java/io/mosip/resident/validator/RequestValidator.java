@@ -679,25 +679,6 @@ public class RequestValidator {
 		return true;
 
 	}
-	
-	public boolean validateAidStatusRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
-		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
-		} catch (Exception e) {
-			throw new InvalidInputException("requesttime");
-		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(newVersion))
-			throw new InvalidInputException("version");
-		
-		if (request.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-		return true;
-
-	}
 
 	public static boolean isNumeric(String strNum) {
 		return !strNum.matches(("[0-9]+"));
@@ -859,10 +840,10 @@ public class RequestValidator {
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
-		validateAidStatusRequest(reqDto, RequestIdType.CHECK_STATUS);
+		validateRequest(reqDto, RequestIdType.CHECK_STATUS);
 
 		if(reqDto.getRequest().getAid() == null) {
-			throw new InvalidInputException("individualId");
+			throw new InvalidInputException("aid");
 		}
 		
 	}
