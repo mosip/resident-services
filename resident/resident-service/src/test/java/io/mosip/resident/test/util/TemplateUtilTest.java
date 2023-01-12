@@ -73,6 +73,8 @@ public class TemplateUtilTest {
 
     private static final String OTP = "Otp";
 
+    private static final String PROPERTY = "yyyy-MM-dd'T'HH:mm:ss";
+
     @Before
     public void setUp() throws ApisResourceAccessException {
         eventId = "12345";
@@ -89,7 +91,7 @@ public class TemplateUtilTest {
         Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(PROPERTY);
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS, "eng", "111111");
     }
 
@@ -281,37 +283,37 @@ public class TemplateUtilTest {
 
     @Test
     public void getEmailSubjectTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getEmailSubjectTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getEmailContentTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getEmailContentTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSmsTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getSmsTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getBellIconTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getBellIconTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getPurposeTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 
     @Test
     public void getSummaryTemplateTypeCodeTest() {
-        assertEquals("property",
+        assertEquals(PROPERTY,
                 templateUtil.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
     }
 }
