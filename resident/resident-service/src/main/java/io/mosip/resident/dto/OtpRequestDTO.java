@@ -22,7 +22,7 @@ public class OtpRequestDTO {
 	private String version;
 
 	/** Variable to hold Transaction ID */
-	private String transactionId;
+	private String transactionID;
 
 	/** Variable to hold Request time */
 	private String requestTime;
