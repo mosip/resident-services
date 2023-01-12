@@ -81,7 +81,7 @@ public class ResidentConstants {
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
 
-    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD = "mosip.resident.download.personalized.card";
+    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
     public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
 
@@ -157,8 +157,26 @@ public class ResidentConstants {
     public static final String AUTH_TYPES = "authTypes";
 
     public static final String CHANNEL = "channel";
-    
+
     public static final String MASK_PREFIX = "masked_";
     public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
+
+    public static final String HTTP_STATUS_CODE = "httpStatusCode";
+    public static final String REQ_RES_ID = "reqResId";
+    public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
+
+    public static final String ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY = "resident.template.ack.share-cred-with-partner";
+    public static final String ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY = "resident.template.ack.authentication.request";
+    public static final String ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY = "resident.template.ack.download-a-personalized-card";
+    public static final String ACK_ORDER_PHYSICAL_CARD_TEMPLATE_PROPERTY = "resident.template.ack.order-a-physical-card";
+    public static final String ACK_GET_MY_ID_TEMPLATE_PROPERTY = "resident.template.ack.get.my.id";
+    public static final String ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY = "resident.template.ack.update-demographic-data";
+    public static final String ACK_MANAGE_MY_VID_TEMPLATE_PROPERTY = "resident.template.ack.manage-my-vid";
+    public static final String ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY = "resident.template.ack.secure-my-id";
+    public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
+    public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
+    public static final String ACTION_PERFORMED = "actionPerformed";
+    public static final String VID_TYPE = "vidType";
+    public static final String MASKED_VID = "*masked VID*";
 
 }
