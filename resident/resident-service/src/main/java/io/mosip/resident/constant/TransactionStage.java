@@ -20,6 +20,10 @@ public enum TransactionStage {
         this.name = name;
         this.listOfName = listOfName;
     }
+    
+    public String getName() {
+    	return name;
+    }
 
     public static String getTypeCode(String transactionTypeCode){
         for (TransactionStage transactionStage : values()) {
