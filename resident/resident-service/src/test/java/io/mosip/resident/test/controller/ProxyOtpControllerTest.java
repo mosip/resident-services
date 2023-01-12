@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.controller.ProxyOtpController;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
@@ -50,11 +48,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.crypto.SecretKey;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
