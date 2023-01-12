@@ -1,6 +1,6 @@
 package io.mosip.resident.service;
 
-import io.mosip.resident.dto.AidOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -23,6 +23,6 @@ public interface ResidentOtpService {
 
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException;
 
-	public OtpResponseDTO generateOtpForAid(AidOtpRequestDTO otpRequestDto) throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException;
+	public OtpResponseDTO generateOtpForIndividualId(IndividualIdOtpRequestDTO otpRequestDto) throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

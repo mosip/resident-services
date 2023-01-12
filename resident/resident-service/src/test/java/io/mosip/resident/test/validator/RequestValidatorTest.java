@@ -127,6 +127,7 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "mandatoryLanguages", "eng");
 		ReflectionTestUtils.setField(requestValidator, "optionalLanguages", "ara");
 		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "1.0");
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
@@ -1419,7 +1420,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestValidator.validateAidStatusRequestDto(requestWrapper);
 	}
