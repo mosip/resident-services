@@ -1940,13 +1940,13 @@ public class ResidentServiceImpl implements ResidentService {
 			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getAid());
 			boolean validStatus = individualId != null;
 			if (performOtpValidation) {
-				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualId, reqDto.getOtp());
+				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionID(), individualId, reqDto.getOtp());
 			}
 			if (validStatus) {
 				AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
 				aidStatusResponseDTO.setIndividualId(individualId);
 				aidStatusResponseDTO.setAidStatus(PROCESSED);
-				aidStatusResponseDTO.setTransactionId(reqDto.getTransactionId());
+				aidStatusResponseDTO.setTransactionID(reqDto.getTransactionID());
 				return aidStatusResponseDTO;
 			}
 			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);

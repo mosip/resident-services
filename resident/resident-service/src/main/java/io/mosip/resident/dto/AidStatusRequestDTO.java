@@ -7,6 +7,6 @@ public class AidStatusRequestDTO {
 
 	private String aid;
 	private String otp;
-	private String transactionId;
+	private String transactionID;
 	
 }

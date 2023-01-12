@@ -133,9 +133,9 @@ public class DownloadCardController {
 				.body(tupleResponse.getT1());
     }
 
-    @GetMapping("/aid-stage/{aid}")
-    public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
-        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(aid);
+    @GetMapping("/status/individualId/{individualId}")
+    public ResponseEntity<Object> getStatus(@PathVariable("individualId") String individualId) throws BaseCheckedException, IOException {
+        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(individualId);
         return ResponseEntity.ok()
                 .body(responseWrapper);
     }
