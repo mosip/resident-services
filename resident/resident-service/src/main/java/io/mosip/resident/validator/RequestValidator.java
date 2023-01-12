@@ -30,6 +30,7 @@ import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -1012,13 +1013,21 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionID");
 		}
 	}
+	
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
+		validateVersion(userOtpRequest.getVersion());
+		validateDate(userOtpRequest.getRequesttime());
+		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+	}
 
 	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 		String inputRequestId = userIdOtpRequest.getId();
 		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
 		validateRequestType(inputRequestId, requestIdStoredInProperty, ID);
+		validateVersion(userIdOtpRequest.getVersion());
 		validateDate(userIdOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionID());
+		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionId());
 		validateOTP(userIdOtpRequest.getRequest().getOtp());
 	}
 
@@ -1079,7 +1088,7 @@ public class RequestValidator {
 		validateEncodedString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml());
     }
 
-	private void validateVersion(String requestVersion) {
+	public void validateVersion(String requestVersion) {
 		if (StringUtils.isEmpty(requestVersion) || !requestVersion.equals(reqResVersion))
 			throw new InvalidInputException("version");
 	}

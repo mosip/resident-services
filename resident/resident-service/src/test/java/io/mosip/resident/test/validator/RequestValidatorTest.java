@@ -24,6 +24,7 @@ import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -104,7 +105,6 @@ public class RequestValidatorTest {
 
 	@Before
 	public void setup() {
-		Mockito.when(uinValidator.validateId(Mockito.any())).thenReturn(true);
 		Map<RequestIdType, String> map = new HashMap<RequestIdType, String>();
 		map.put(RequestIdType.RE_PRINT_ID, "mosip.resident.print");
 		map.put(RequestIdType.AUTH_LOCK_ID, "mosip.resident.authlock");
@@ -1803,6 +1803,34 @@ public class RequestValidatorTest {
 		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
 		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
 	}
+	
+	@Test(expected = InvalidInputException.class)
+	public void testValidateProxySendOtpRequestInvalidUserId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+	
+	@Test
+	public void testValidateProxySendOtpRequestCorrectPhoneUserId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("8878787878");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateUpdateDataRequestInvalidUserId() throws Exception{
@@ -1810,7 +1838,7 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1825,7 +1853,7 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
 		otpRequestDTOV3.setUserId("k");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
@@ -1841,8 +1869,9 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("8878787878");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1857,8 +1886,9 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("test@g.com");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1970,6 +2000,13 @@ public class RequestValidatorTest {
 		requestDTO.setRequest(authHistoryRequestDTO);
 		requestValidator.validatePageFetchAndPageStartFormat(requestDTO, "request");
 	}
+	
+	@Test
+	public void testValidateUin(){
+		Mockito.when(uinValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_UIN.getErrorCode(),
+				ResidentErrorCode.INVALID_UIN.getErrorMessage()));
+		assertEquals(false,requestValidator.validateUin("123"));
+	}
 
 	@Test
 	public void testValidateVid(){
@@ -1986,6 +2023,13 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testEmptyUserIdAndTransactionId(){
 		requestValidator.validateUserIdAndTransactionId("", "3232323232");
+	}
+	
+	@Test(expected = InvalidInputException.class)
+	public void testInvalidUserId(){
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		requestValidator.validateUserIdAndTransactionId("shgasbieh", "3232323232");
 	}
 
 	@Test(expected = InvalidInputException.class)

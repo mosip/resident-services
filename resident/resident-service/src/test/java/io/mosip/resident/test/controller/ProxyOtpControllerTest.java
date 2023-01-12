@@ -9,6 +9,9 @@ import io.mosip.resident.controller.ProxyOtpController;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyOtpService;
 import io.mosip.resident.service.ResidentVidService;
@@ -46,6 +49,7 @@ import javax.crypto.SecretKey;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -102,6 +106,8 @@ public class ProxyOtpControllerTest {
     Gson gson = new GsonBuilder().serializeNulls().create();
 
     private MainRequestDTO<OtpRequestDTOV2> userOtpRequest;
+    
+    private MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest;
 
     String reqJson;
 
@@ -116,16 +122,24 @@ public class ProxyOtpControllerTest {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(proxyOtpController).build();
         userOtpRequest = new MainRequestDTO<>();
+        userIdOtpRequest = new MainRequestDTO<>();
         OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
         otpRequestDTOV2.setUserId("8809909090");
-        otpRequestDTOV2.setTransactionID("1234343434");
+        otpRequestDTOV2.setTransactionId("1234343434");
         userOtpRequest.setRequest(otpRequestDTOV2);
         userOtpRequest.setId("mosip.resident.contact.details.send.otp.id");
+        OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
+        otpRequestDTOV3.setOtp("111");
+        otpRequestDTOV3.setUserId("8809909090");
+        otpRequestDTOV3.setTransactionId("1234343434");
+        userIdOtpRequest.setRequest(otpRequestDTOV3);
+        userIdOtpRequest.setId("mosip.resident.contact.details.update.id");
         reqJson = gson.toJson(userOtpRequest);
         AuthNResponse authNResponse = new AuthNResponse(PreRegLoginConstant.EMAIL_SUCCESS, PreRegLoginConstant.SUCCESS);
         response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
         responseEntity = new ResponseEntity<>(HttpStatus.OK);
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
     @Test
@@ -134,12 +148,24 @@ public class ProxyOtpControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/send-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
+    
+    @Test(expected = ResidentServiceException.class)
+    public void testSendOtpException() throws Exception {
+    	doThrow(new InvalidInputException("error message")).when(validator).validateProxySendOtpRequest(Mockito.any());
+        proxyOtpController.sendOTP(userOtpRequest);
+    }
 
     @Test
     public void testValidateOtp() throws Exception {
         Mockito.when(proxyOtpService.validateWithUserIdOtp(Mockito.any())).thenReturn(Tuples.of(response, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/update-data").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
+    }
+    
+    @Test(expected = ResidentServiceException.class)
+    public void testValidateOtpException() throws Exception {
+    	doThrow(new InvalidInputException("error message")).when(validator).validateUpdateDataRequest(Mockito.any());
+        proxyOtpController.validateWithUserIdOtp(userIdOtpRequest);
     }
 
 }

@@ -92,7 +92,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
         notificationRequestDto.setId(identityService.getResidentIndvidualId());
-        String refId = this.hash(userId+requestDTO.getRequest().getTransactionID());
+        String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
         this.environment.getProperty("otp.request.flooding.max-count", Integer.class)) {
@@ -102,11 +102,11 @@ public class OtpManagerServiceImpl implements OtpManager {
             String otp = this.generateOTP(requestDTO);
             this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
             String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+
-                    requestDTO.getRequest().getTransactionID()).getBytes());
+                    requestDTO.getRequest().getTransactionId()).getBytes());
             OtpTransactionEntity otpTxn;
             otpTxn = new OtpTransactionEntity();
             otpTxn.setId(UUID.randomUUID().toString());
-            otpTxn.setRefId(this.hash(userId + requestDTO.getRequest().getTransactionID()));
+            otpTxn.setRefId(this.hash(userId + requestDTO.getRequest().getTransactionId()));
             otpTxn.setOtpHash(otpHash);
             otpTxn.setCrBy(this.environment.getProperty("resident.clientId"));
             otpTxn.setCrDtimes(DateUtils.getUTCCurrentDateTime());

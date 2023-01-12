@@ -87,7 +87,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             log.info("Response after loginCommonUtil {}", response);
 
             userid = userOtpRequest.getRequest().getUserId();
-            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionID());
+            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionId());
             boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language);
             AuthNResponse authNResponse = null;
             if (otpSent) {
@@ -152,7 +152,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionID());
+            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
@@ -161,7 +161,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             } else {
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
             	residentTransactionEntity.setRequestSummary("failed");
-				throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS,
+				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
             response.setResponse(authresponse);
@@ -170,18 +170,18 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, ex,
+			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (RuntimeException ex) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-            throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, ex,
+            throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ResidentServiceCheckedException e) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
-        	throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, e,
+        	throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ApisResourceAccessException e) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -191,6 +191,8 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         } finally {
         	if(residentTransactionEntity.getStatusCode()==null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
+        	if (residentTransactionEntity.getRequestSummary() == null) {
 				residentTransactionEntity.setRequestSummary("failed");
 			}
 			residentTransactionRepository.save(residentTransactionEntity);
