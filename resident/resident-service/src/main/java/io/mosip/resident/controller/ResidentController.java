@@ -84,6 +84,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.util.function.Tuple2;
+import java.util.Map;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -492,9 +493,15 @@ public class ResidentController {
 	public ResponseWrapper<AidStatusResponseDTO> checkAidStatus(@RequestBody RequestWrapper<AidStatusRequestDTO> reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		logger.debug("ResidentController::getAidStatus()::entry");
+		AidStatusResponseDTO resp = new AidStatusResponseDTO();
+		try {
 		validator.validateAidStatusRequestDto(reqDto);
 		audit.setAuditRequestDto(EventEnum.AID_STATUS);
-		AidStatusResponseDTO resp = residentService.getAidStatus(reqDto.getRequest());
+		resp = residentService.getAidStatus(reqDto.getRequest());
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e ) {
+			throw new ResidentServiceException( e.getErrorCode(),  e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
+		}
 		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
 		logger.debug("ResidentController::getAidStatus()::exit");
 		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();

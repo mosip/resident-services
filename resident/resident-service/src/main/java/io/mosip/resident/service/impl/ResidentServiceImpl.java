@@ -1939,7 +1939,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		try {
-			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getAid());
+			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getIndividualId());
 			boolean validStatus = individualId != null;
 			if (performOtpValidation) {
 				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualId, reqDto.getOtp());
@@ -1958,7 +1958,7 @@ public class ResidentServiceImpl implements ResidentService {
 					"ResidentServiceImpl::getAidStatus()::" + e.getClass().getSimpleName() + " :" + e.getMessage());
 			RegStatusCheckResponseDTO ridStatus = null;
 			try {
-				ridStatus = getRidStatus(reqDto.getAid());
+				ridStatus = getRidStatus(reqDto.getIndividualId());
 			} catch (RIDInvalidException ex) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
 			}
@@ -1979,7 +1979,7 @@ public class ResidentServiceImpl implements ResidentService {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
 			}
 			AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-			aidStatusRequestDTO.setAid(aid);
+			aidStatusRequestDTO.setIndividualId(aid);
 			AidStatusResponseDTO aidStatusResponseDTO = getAidStatus(aidStatusRequestDTO, false);
 			return aidStatusResponseDTO.getAidStatus();
 		} catch (ApisResourceAccessException | OtpValidationFailedException e) {
