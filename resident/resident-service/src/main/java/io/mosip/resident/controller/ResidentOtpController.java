@@ -13,6 +13,7 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -66,14 +67,14 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public OtpResponseDTO reqOtpForIndividualId(@RequestBody IndividualIdOtpRequestDTO otpRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
+	public IndividualIdResponseDto reqOtpForIndividualId(@RequestBody IndividualIdOtpRequestDTO individualIdRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN);
-		OtpResponseDTO otpResponseDTO = new OtpResponseDTO();
+		IndividualIdResponseDto individualIdResponseDto;
 		try {
-		if(otpRequestDto.getIndividualId()  == null) {
+		if(individualIdRequestDto.getIndividualId()  == null) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "individualId");
 		}
-		otpResponseDTO = residentOtpService.generateOtpForIndividualId(otpRequestDto);
+		individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e ) {
 			throw new ResidentServiceException( e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID,otpRequestId));
@@ -83,9 +84,9 @@ public class ResidentOtpController {
 			throw e ;
 		}
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN_SUCCESS);
-		otpResponseDTO.setId(otpRequestId);
-		otpResponseDTO.setVersion(otpRequestVersion);
-		return otpResponseDTO;
+		individualIdResponseDto.setId(otpRequestId);
+		individualIdResponseDto.setVersion(otpRequestVersion);
+		return individualIdResponseDto;
 	}
 
 }
