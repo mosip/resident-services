@@ -6,7 +6,6 @@ import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -81,8 +80,8 @@ import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.DigitalCardRidNotFoundException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -106,7 +105,6 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.PositionalParams;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
@@ -243,9 +241,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.update-uin.machine-zone-code}")
 	private String zoneCode;
 
-	@Value("${mosip.vid.only:false}")
-	private boolean vidOnly;
-
 	@Value("${resident.service.history.id}")
 	private String serviceHistoryId;
 
@@ -303,9 +298,6 @@ public class ResidentServiceImpl implements ResidentService {
 		templateManager = templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH)
 				.build();
 	}
-
-	@Autowired
-	private PDFGenerator pdfGenerator;
 
 	@Value("${auth.types.allowed}")
 	public void setAuthTypes(String authType) {
@@ -1691,18 +1683,15 @@ public class ResidentServiceImpl implements ResidentService {
 																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
 																		LocalDate toDateTime, String serviceType, String langCode)
 			throws ResidentServiceCheckedException {
-		PositionalParams positionalParams = new PositionalParams();
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, positionalParams);
+				searchText, fromDateTime, toDateTime, serviceType);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
-		positionalParams.applyParams(nativeQuery);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
 				.getResultList();
 		String[] split = nativeQueryString.split("order by");
 		String nativeQueryStringWithoutOrderBy = split[0];
 		nativeQueryStringWithoutOrderBy = nativeQueryStringWithoutOrderBy.replace("*", "count(*)");
 		Query nativeQuery2 = entityManager.createNativeQuery(nativeQueryStringWithoutOrderBy);
-		positionalParams.applyParams(nativeQuery2);		
 		BigInteger count = (BigInteger) nativeQuery2.getSingleResult();
 		int size = count.intValue();
 		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1,
@@ -1711,54 +1700,53 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public String getDynamicNativeQueryString(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
 											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-											  String serviceType, PositionalParams positionalParams) {
-		
-		String query = "SELECT * FROM resident_transaction  where token_id = "
-				+ positionalParams.add(idaToken);
+											  String serviceType) {
+		String query = "SELECT * FROM resident_transaction  where token_id = '"
+				+ idaToken+"'";
 		String dynamicQuery = "";
 		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase("ALL")
 				&& statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getServiceQuery(serviceType, positionalParams)
-					+ getStatusFilterQuery(statusFilter, positionalParams) + getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime) + getServiceQuery(serviceType)
+					+ getStatusFilterQuery(statusFilter) + getSearchQuery(searchText);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getServiceQuery(serviceType, positionalParams)
-					+ getStatusFilterQuery(statusFilter, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime) + getServiceQuery(serviceType )
+					+ getStatusFilterQuery(statusFilter );
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getServiceQuery(serviceType, positionalParams)
-					+ getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getServiceQuery(serviceType )
+					+ getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getStatusFilterQuery(statusFilter, positionalParams)
-					+ getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getStatusFilterQuery(statusFilter )
+					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null
 				&& searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType, positionalParams) + getStatusFilterQuery(statusFilter, positionalParams)
-					+ getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter )
+					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getServiceQuery(serviceType, positionalParams) + getStatusFilterQuery(statusFilter, positionalParams);
+			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType, positionalParams) + getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getServiceQuery(serviceType ) + getSearchQuery(searchText );
 		} else if (statusFilter != null && searchText != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter, positionalParams) + getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getStatusFilterQuery(statusFilter ) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getStatusFilterQuery(statusFilter, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getStatusFilterQuery(statusFilter );
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams) + getServiceQuery(serviceType, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getServiceQuery(serviceType );
 		} else if (fromDateTime != null && toDateTime != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, positionalParams);
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getServiceQuery(serviceType, positionalParams);
+			dynamicQuery = getServiceQuery(serviceType );
 		} else if (statusFilter != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter, positionalParams);
+			dynamicQuery = getStatusFilterQuery(statusFilter );
 		} else if (searchText != null) {
-			dynamicQuery = getSearchQuery(searchText, positionalParams);
+			dynamicQuery = getSearchQuery(searchText );
 		}
 		if(serviceType == null){
-			dynamicQuery = getServiceQueryForNullServiceType();
+			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
 		}
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
@@ -1774,25 +1762,25 @@ public class ResidentServiceImpl implements ResidentService {
 				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestType())) +")";
 	}
 
-	private String getServiceQuery(String serviceType, PositionalParams params ) {
+	private String getServiceQuery(String serviceType) {
 		List<String> serviceTypeList = convertServiceTypeToResidentTransactionType(serviceType);
 		String serviceTypeListString = convertServiceTypeListToString(serviceTypeList);
 		return " and request_type_code in (" + serviceTypeListString + ")";
 	}
 
-	private String getDateQuery(LocalDate fromDate, LocalDate toDate, PositionalParams parameters ) {
+	private String getDateQuery(LocalDate fromDate, LocalDate toDate) {
 		LocalDateTime fromDateTime = fromDate.atStartOfDay();
 		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay();
-		return " and cr_dtimes between " +  parameters.add(fromDateTime) + " and " +
-				parameters.add(toDateTime);
+		return " and cr_dtimes between '" +  fromDateTime + "' and '" +
+				toDateTime+ "'";
 	}
 
-	private String getSearchQuery(String searchText, PositionalParams params) {
+	private String getSearchQuery(String searchText) {
 		String text= "%" + searchText.replace(AUTH_TYPE_SEPERATOR, "") + "%";
-		return " and Replace(event_id,'-','') like "+params.add(text);
+		return " and Replace(event_id,'-','') like '"+text+ "'";
 	}
 
-	public String getStatusFilterQuery(String statusFilter, PositionalParams params) {
+	public String getStatusFilterQuery(String statusFilter) {
 		List<String> statusFilterList = List.of(statusFilter.split(",")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
