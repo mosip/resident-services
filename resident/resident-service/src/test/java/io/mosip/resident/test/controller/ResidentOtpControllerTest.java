@@ -118,7 +118,7 @@ public class ResidentOtpControllerTest {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(residentOtpController).build();
 		otpRequestDTO = new OtpRequestDTO();
 		otpRequestDTO.setIndividualId("123456");
-		otpRequestDTO.setTransactionId("1234327890");
+		otpRequestDTO.setTransactionID("1234327890");
 		reqJson = gson.toJson(otpRequestDTO);
 	}
 

@@ -146,7 +146,7 @@ public class ResidentOtpServiceImplTest {
 	private OtpRequestDTO getOtpRequestDTO() {
 		OtpRequestDTO otpRequestDTO = new OtpRequestDTO();
 		otpRequestDTO.setIndividualId("individualId");
-		otpRequestDTO.setTransactionId("transactionId");
+		otpRequestDTO.setTransactionID("transactionID");
 		return otpRequestDTO;
 	}
 

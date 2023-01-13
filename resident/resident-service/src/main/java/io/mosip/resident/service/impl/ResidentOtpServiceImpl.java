@@ -97,7 +97,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setEventId(utilitiy.createEventId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
-		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionId());
+		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
 		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
