@@ -232,7 +232,7 @@ public class ResidentServiceGetServiceHistoryTest {
     @Test
     public void testGetAidStatus() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
         AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-        aidStatusRequestDTO.setAid("10087100401001420220929210144");
+        aidStatusRequestDTO.setIndividualId("10087100401001420220929210144");
         aidStatusRequestDTO.setOtp("111111");
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
@@ -243,7 +243,7 @@ public class ResidentServiceGetServiceHistoryTest {
     @Test
     public void testGetAidStatusOtpValidationFalse() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
         AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-        aidStatusRequestDTO.setAid("10087100401001420220929210144");
+        aidStatusRequestDTO.setIndividualId("10087100401001420220929210144");
         aidStatusRequestDTO.setOtp("111111");
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
