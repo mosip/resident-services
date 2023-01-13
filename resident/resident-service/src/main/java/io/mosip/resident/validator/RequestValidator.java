@@ -862,7 +862,7 @@ public class RequestValidator {
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		validateAidStatusRequest(reqDto, RequestIdType.CHECK_STATUS);
 
-		if(reqDto.getRequest().getAid() == null) {
+		if(reqDto.getRequest().getIndividualId() == null) {
 			throw new InvalidInputException("individualId");
 		}
 		

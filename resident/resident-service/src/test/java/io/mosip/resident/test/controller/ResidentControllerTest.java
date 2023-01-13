@@ -503,7 +503,7 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testCheckAidStatus() throws Exception {
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid("8251649601");
+		aidStatusRequestDTO.setIndividualId("8251649601");
 		aidStatusRequestDTO.setOtp("111111");
 		aidStatusRequestDTO.setTransactionId("1234567890");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
