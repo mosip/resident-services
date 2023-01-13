@@ -170,9 +170,6 @@ import java.util.Optional;
             fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
                     purpose);
         }
-        if (fileText.contains("\n")) {
-            fileText = fileText.replace("\n", " ");
-        }
         return fileText;
     }
 
@@ -328,8 +325,6 @@ import java.util.Optional;
 
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForAuthTypeLockUnlock(String eventId, String languageCode) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode);
-         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
-                 getEntityFromEventId(eventId), languageCode));
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          templateVariables.put(ResidentConstants.AUTH_TYPES, templateVariables.get(TemplateVariablesConstants.PURPOSE));
          return Tuples.of(templateVariables, Objects.requireNonNull(
