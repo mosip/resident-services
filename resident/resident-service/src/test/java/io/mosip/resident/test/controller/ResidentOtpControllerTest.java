@@ -151,7 +151,7 @@ public class ResidentOtpControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(individualIdOtpRequestDTO);
 		this.mockMvc.perform(
-				MockMvcRequestBuilders.post("/req/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
+				MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
 				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
 	}
 	
