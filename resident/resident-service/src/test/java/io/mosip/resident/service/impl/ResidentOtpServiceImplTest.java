@@ -78,7 +78,6 @@ public class ResidentOtpServiceImplTest {
 		OtpResponseDTO responseDto = getOtpResponseDTO();
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseDto);
-		when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
 	}
 
 	@Test
