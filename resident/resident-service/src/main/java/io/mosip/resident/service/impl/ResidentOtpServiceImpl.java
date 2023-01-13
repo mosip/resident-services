@@ -8,7 +8,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.dto.AidOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -124,11 +124,11 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	}
 
 	@Override
-	public OtpResponseDTO generateOtpForAid(AidOtpRequestDTO otpRequestDto)
+	public OtpResponseDTO generateOtpForIndividualId(IndividualIdOtpRequestDTO otpRequestDto)
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
 		String individualId;
 		try {
-			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getAid());
+			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getIndividualId());
 			otpRequestDto.setIndividualId(individualId);
 			return generateOtp(otpRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {

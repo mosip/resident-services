@@ -13,6 +13,6 @@ import lombok.ToString;
 @ToString
 public class OtpRequestDTOV2 {
     private  String userId;
-    private String transactionID;
+    private String transactionId;
 }
 

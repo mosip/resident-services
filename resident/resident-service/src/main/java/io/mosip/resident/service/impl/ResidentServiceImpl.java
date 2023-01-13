@@ -1115,6 +1115,8 @@ public class ResidentServiceImpl implements ResidentService {
 				// if the status code will come as null, it will set it as failed.
 				if (residentTransactionEntity.getStatusCode() == null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+				}
+				if (residentTransactionEntity.getRequestSummary() == null) {
 					residentTransactionEntity.setRequestSummary("failed");
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
@@ -1940,13 +1942,13 @@ public class ResidentServiceImpl implements ResidentService {
 			String individualId = identityServiceImpl.getIndividualIdForAid(reqDto.getAid());
 			boolean validStatus = individualId != null;
 			if (performOtpValidation) {
-				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionID(), individualId, reqDto.getOtp());
+				validStatus = idAuthServiceImpl.validateOtp(reqDto.getTransactionId(), individualId, reqDto.getOtp());
 			}
 			if (validStatus) {
 				AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
 				aidStatusResponseDTO.setIndividualId(individualId);
 				aidStatusResponseDTO.setAidStatus(PROCESSED);
-				aidStatusResponseDTO.setTransactionID(reqDto.getTransactionID());
+				aidStatusResponseDTO.setTransactionId(reqDto.getTransactionId());
 				return aidStatusResponseDTO;
 			}
 			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
