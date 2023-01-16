@@ -310,11 +310,11 @@ public class ApiExceptionHandler {
 			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
 		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
-		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), e.getMessage());
+		ServiceError error = new ServiceError(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(), e.getMessage());
 		errorResponse.getErrors().add(error);
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return createResponseEntity(errorResponse, e, HttpStatus.OK);
+		return createResponseEntity(errorResponse, e, HttpStatus.BAD_REQUEST);
 	}
 
 	private static void logStackTrace(Exception e) {
