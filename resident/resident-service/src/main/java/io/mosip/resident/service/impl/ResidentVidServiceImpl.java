@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,6 +79,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
+
+	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
 
 	private static final String TRANSACTIONS_LEFT_COUNT = "transactionsLeftCount";
 
@@ -720,10 +723,11 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		
 		List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
-				.map(map -> new LinkedHashMap<String, Object>(map))
-				.map(lhm2 -> getMaskedVid(lhm2))
-				.map(lhm1 -> getRefIdHash(lhm1))
-				.map(lhm -> {
+				.map(map -> {
+					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
+					getMaskedVid(lhm);
+					getRefIdHash(lhm);
+					normalizeExpiryTime(lhm);
 					return lhm;
 				})
 				.collect(Collectors.toList());
@@ -736,6 +740,18 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
+	private void normalizeExpiryTime(LinkedHashMap<String, Object> lhm) {
+		Object expiryTimeObj = lhm.get(EXPIRY_TIMESTAMP);
+		if(expiryTimeObj instanceof String) {
+			String expiryTime = String.valueOf(expiryTimeObj);
+			LocalDateTime expiryLocalDateTime = mapper.convertValue(expiryTime, LocalDateTime.class);
+			//For the big expiry time, assume no expiry time, so set to null
+			if(expiryLocalDateTime.getYear() >= 9999) {
+				lhm.put(EXPIRY_TIMESTAMP, null);
+			}
+		}
+	}
+
 	private Map<String, Object> getMaskedVid(Map<String, Object> map) {
 		String maskedvid = utility.convertToMaskDataFormat(map.get(VID).toString());
 		map.put(MASKED_VID, maskedvid);
