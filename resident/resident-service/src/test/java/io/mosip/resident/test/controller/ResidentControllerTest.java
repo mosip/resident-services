@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.crypto.SecretKey;
 
@@ -356,7 +357,7 @@ public class ResidentControllerTest {
 				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
 		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
 				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
-				ServiceType.AUTHENTICATION_REQUEST.name(), null, null);
+				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, TimeZone.getDefault());
 		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
@@ -502,18 +503,18 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testCheckAidStatus() throws Exception {
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid("8251649601");
+		aidStatusRequestDTO.setIndividualId("8251649601");
 		aidStatusRequestDTO.setOtp("111111");
-		aidStatusRequestDTO.setTransactionID("1234567890");
+		aidStatusRequestDTO.setTransactionId("1234567890");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestWrapper.setId("mosip.resident.uin");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		Mockito.when(residentService.getAidStatus(Mockito.any())).thenReturn(new AidStatusResponseDTO());
 		String requestAsString = gson.toJson(requestWrapper);
 		this.mockMvc
 				.perform(
-						post("/aid/get-individual-id").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
+						post("/aid/status").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
 	}
 
