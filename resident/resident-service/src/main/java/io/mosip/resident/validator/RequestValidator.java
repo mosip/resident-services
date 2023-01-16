@@ -862,7 +862,7 @@ public class RequestValidator {
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		validateAidStatusRequest(reqDto, RequestIdType.CHECK_STATUS);
 
-		if(reqDto.getRequest().getAid() == null) {
+		if(reqDto.getRequest().getIndividualId() == null) {
 			throw new InvalidInputException("individualId");
 		}
 		
@@ -965,8 +965,7 @@ public class RequestValidator {
 		if (variableValue==null || StringUtils.isEmpty(variableValue)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					variableName, VALIDATE_EVENT_ID));
-			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER,
-					ResidentErrorCode.MISSING_INPUT_PARAMETER.getErrorMessage()+variableName);
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, variableName);
 		}
 	}
 
