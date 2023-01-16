@@ -518,4 +518,8 @@ public class Utilitiy {
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)));
 		}
 	}
+	
+	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
+		return HMACUtils2.digestAsPlainText(individualId.getBytes());
+	}
 }

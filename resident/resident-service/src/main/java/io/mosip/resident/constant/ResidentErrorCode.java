@@ -113,7 +113,7 @@ public enum ResidentErrorCode {
 	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
 	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
 	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
-	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- ");
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s");
 
 	private final String errorCode;
 	private final String errorMessage;

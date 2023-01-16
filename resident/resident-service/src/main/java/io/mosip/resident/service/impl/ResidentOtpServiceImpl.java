@@ -116,17 +116,13 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
 			residentTransactionEntity.setRefId(utilitiy.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
 		} else{
-			residentTransactionEntity.setRefId(getRefIdHash(otpRequestDTO.getIndividualId()));
+			residentTransactionEntity.setRefId(utilitiy.getRefIdHash(otpRequestDTO.getIndividualId()));
 		}
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setCrBy("mosip");
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
 		residentTransactionEntity.setPurpose(String.join(ResidentConstants.COMMA, otpRequestDTO.getOtpChannel()));
 		residentTransactionRepository.save(residentTransactionEntity);
-	}
-
-	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
-		return HMACUtils2.digestAsPlainText(individualId.getBytes());
 	}
 
 	@Override
