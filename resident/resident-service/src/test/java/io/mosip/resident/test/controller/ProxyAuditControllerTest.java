@@ -33,13 +33,15 @@ import io.mosip.resident.controller.AuthTransactionCallbackController;
 import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.controller.ProxyAuditController;
-import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.dto.AuditRequestDtoV2;
+import io.mosip.resident.dto.AuditRequestDtoV3;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilitiy;
 
 /**
  * Resident proxy audit controller test class.
@@ -59,6 +61,12 @@ public class ProxyAuditControllerTest {
 
 	@Mock
 	private AuditUtil auditUtil;
+	
+	@Mock
+	private IdentityService identityService;
+	
+	@Mock
+	private Utilitiy utility;
 
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
@@ -83,7 +91,9 @@ public class ProxyAuditControllerTest {
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	private AuditRequestDtoV2 auditRequestDtoV2;
-
+	
+	private AuditRequestDtoV3 auditRequestDtoV3;
+	
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -99,12 +109,31 @@ public class ProxyAuditControllerTest {
 		auditRequestDtoV2.setAuditEventId("RES-SER-1111");
 		auditRequestDtoV2.setModuleId("RES-SER");
 		auditRequestDtoV2.setModuleName("Residence service");
-		reqJson = gson.toJson(auditRequestDtoV2);
+		auditRequestDtoV3 = new AuditRequestDtoV3();
+		auditRequestDtoV3.setAuditEventId("RES-SER-1111");
+		auditRequestDtoV3.setModuleId("RES-SER");
+		auditRequestDtoV3.setModuleName("Residence service");
 	}
 
 	@Test
-	public void testAuditLog() throws Exception {
+	public void testAuthAuditLog() throws Exception {
+		reqJson = gson.toJson(auditRequestDtoV2);
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(reqJson.getBytes())).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testAuditLogWithId() throws Exception {
+		auditRequestDtoV3.setId("23456");
+		reqJson = gson.toJson(auditRequestDtoV3);
+		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(reqJson.getBytes())).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testAuditLogWithNullId() throws Exception {
+		reqJson = gson.toJson(auditRequestDtoV3);
+		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 
