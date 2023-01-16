@@ -1,6 +1,36 @@
 package io.mosip.resident.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.TimeZone;
+
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -8,6 +38,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AidStatusRequestDTO;
@@ -38,6 +69,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -51,32 +83,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import reactor.util.function.Tuple2;
-
-import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -105,6 +113,18 @@ public class ResidentController {
 
 	@Value("${resident.authLockStatusUpdateV2.version}")
 	private String authLockStatusUpdateV2Version;
+	
+	@Value("${resident.download.card.eventid.id}")
+	private String downloadCardEventidId;
+	
+	@Value("${resident.download.card.eventid.version}")
+	private String downloadCardEventidVersion;
+	
+	@Value("${resident.vid.version.new}")
+	private String newVersion;
+	
+	@Value("${resident.checkstatus.id}")
+	private String checkStatusId;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -306,8 +326,10 @@ public class ResidentController {
 			@RequestParam(name = "sortType", required = false) String sortType,
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
-			@RequestParam(name = "searchText", required = false) String searchText)
+			@RequestParam(name = "searchText", required = false) String searchText,
+			TimeZone timezone)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.info("TimeZone: " + timezone.getDisplayName() + " : " + timezone.getID());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		validator.validateOnlyLanguageCode(langCode);
 		validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
@@ -419,16 +441,28 @@ public class ResidentController {
 			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
+		InputStreamResource resource = null;
+		try {
 		validator.validateEventId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		if(pdfBytes.length==0){
 			throw new CardNotReadyException();
 		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+		} catch(ResidentServiceException e) {
+			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+			responseWrapper.setId(downloadCardEventidId);
+			responseWrapper.setVersion(downloadCardEventidVersion);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(responseWrapper);
+			}
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
 				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
@@ -449,7 +483,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PostMapping("/aid/get-individual-id")
+	@PostMapping("/aid/status")
 	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -459,13 +493,21 @@ public class ResidentController {
 	public ResponseWrapper<AidStatusResponseDTO> checkAidStatus(@RequestBody RequestWrapper<AidStatusRequestDTO> reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		logger.debug("ResidentController::getAidStatus()::entry");
+		AidStatusResponseDTO resp = new AidStatusResponseDTO();
+		try {
 		validator.validateAidStatusRequestDto(reqDto);
 		audit.setAuditRequestDto(EventEnum.AID_STATUS);
-		AidStatusResponseDTO resp = residentService.getAidStatus(reqDto.getRequest());
+		resp = residentService.getAidStatus(reqDto.getRequest());
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e ) {
+			throw new ResidentServiceException( e.getErrorCode(),  e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
+		}
 		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
 		logger.debug("ResidentController::getAidStatus()::exit");
 		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(resp);
+		responseWrapper.setId(checkStatusId);
+		responseWrapper.setVersion(newVersion);
 		return responseWrapper;
 	}
 

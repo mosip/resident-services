@@ -123,7 +123,7 @@ public class OTPManagerServiceImplTest {
         response.setResponse(responseMap);
         otpRequestDTOV2 = new OtpRequestDTOV2();
         requestDTO = new MainRequestDTO<>();
-        otpRequestDTOV2.setTransactionID("1234567891");
+        otpRequestDTOV2.setTransactionId("1234567891");
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("2123456");

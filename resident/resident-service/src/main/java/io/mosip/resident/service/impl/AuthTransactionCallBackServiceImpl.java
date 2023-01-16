@@ -68,7 +68,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
         
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
 		residentTransactionEntity.setStatusCode(status);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat((String) eventModel.getEvent().getData().get(INDIVIDUAL_ID)));

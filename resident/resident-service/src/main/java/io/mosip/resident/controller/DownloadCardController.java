@@ -11,6 +11,8 @@ import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.exception.CardNotReadyException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -99,7 +102,13 @@ public class DownloadCardController {
     public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO){
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
-        requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+		try {
+			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
+		} catch (InvalidInputException e) {
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
+		}
         Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
@@ -124,9 +133,9 @@ public class DownloadCardController {
 				.body(tupleResponse.getT1());
     }
 
-    @GetMapping("/status/individualId/{individualId}")
-    public ResponseEntity<Object> getStatus(@PathVariable("individualId") String individualId) throws BaseCheckedException, IOException {
-        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(individualId);
+    @GetMapping("/aid-stage/{aid}")
+    public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
+        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(aid);
         return ResponseEntity.ok()
                 .body(responseWrapper);
     }

@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class AidStatusRequestDTO {
 
-	private String aid;
+	private String individualId;
 	private String otp;
-	private String transactionID;
+	private String transactionId;
 	
 }
