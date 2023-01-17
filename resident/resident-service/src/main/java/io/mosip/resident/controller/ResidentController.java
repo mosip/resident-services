@@ -67,6 +67,9 @@ import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
+import io.mosip.resident.exception.EventIdNotPresentException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -449,18 +452,16 @@ public class ResidentController {
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
 		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		if(pdfBytes.length==0){
-			throw new CardNotReadyException();
+			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
 		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
-		} catch(ResidentServiceException e) {
-			ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
-			responseWrapper.setId(downloadCardEventidId);
-			responseWrapper.setVersion(downloadCardEventidVersion);
+		} catch(ResidentServiceException | EventIdNotPresentException | InvalidRequestTypeCodeException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-			return ResponseEntity.badRequest().contentType(MediaType.APPLICATION_JSON).body(responseWrapper);
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
+							downloadCardEventidId));
 			}
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
 				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId) + ".pdf\"")

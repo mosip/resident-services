@@ -2,20 +2,17 @@ package io.mosip.resident.exception;
 
 import java.util.Map;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.util.ObjectWithMetadata;
+
 /**
  * 
  * @author Girish Yarru
  *
  */
-public class ResidentServiceCheckedException extends BaseCheckedException implements ObjectWithMetadata {
+public class ResidentServiceCheckedException extends BaseResidentCheckedExceptionWithMetadata {
 	
 	private static final long serialVersionUID = -1561461793874550645L;
 	
-	private Map<String, Object> metadata;
-
 	public ResidentServiceCheckedException() {
 		super();
 	}
@@ -36,17 +33,13 @@ public class ResidentServiceCheckedException extends BaseCheckedException implem
 		this(error.getErrorCode(), error.getErrorMessage(), e);
 	}
 	
-	public Map<String, Object> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(Map<String, Object> metadata) {
-		this.metadata = metadata;
+	public ResidentServiceCheckedException(ResidentErrorCode err, Map<String, Object> metadata) {
+		super(err, metadata);
 	}
 	
-	public ResidentServiceCheckedException(ResidentErrorCode err, Map<String, Object> metadata) {
-		this(err.getErrorCode(), err.getErrorMessage());
-		this.metadata = metadata;
+	public ResidentServiceCheckedException(String errorCode, String errorMessage, Throwable rootCause,
+			Map<String, Object> metadata) {
+		super(errorCode, errorMessage, rootCause, metadata);
 	}
 
 }
