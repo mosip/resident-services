@@ -123,7 +123,7 @@ public class OTPManagerServiceImplTest {
         response.setResponse(responseMap);
         otpRequestDTOV2 = new OtpRequestDTOV2();
         requestDTO = new MainRequestDTO<>();
-        otpRequestDTOV2.setTransactionID("1234567891");
+        otpRequestDTOV2.setTransactionId("1234567891");
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("2123456");
@@ -171,7 +171,7 @@ public class OTPManagerServiceImplTest {
         when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
         otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds(120));
-        when(otpTransactionRepository.findByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
+        when(otpTransactionRepository.findTopByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
         assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }
 
@@ -180,7 +180,7 @@ public class OTPManagerServiceImplTest {
         when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
         otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime());
-        when(otpTransactionRepository.findByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
+        when(otpTransactionRepository.findTopByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
         assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }
 

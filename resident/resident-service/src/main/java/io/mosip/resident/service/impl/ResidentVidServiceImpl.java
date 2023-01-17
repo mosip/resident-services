@@ -1,29 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -33,7 +11,7 @@ import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
@@ -76,11 +54,33 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilitiy;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
+
+	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
 
 	private static final String TRANSACTIONS_LEFT_COUNT = "transactionsLeftCount";
 
@@ -252,7 +252,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 			if(Utilitiy.isSecureSession()) {
 				residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
-				residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_GENERATED.name());
+				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_GENERATED.name());
 			}
 			
 		} catch (JsonProcessingException e) {
@@ -355,7 +356,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_GENERATED.name());
 		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
 		return residentTransactionEntity;
 	}
@@ -471,8 +472,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					residentTransactionRepository.save(residentTransactionEntity);
 					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
-				} else {
-					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION);
 				}
 			}
 		} else {
@@ -519,7 +518,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			vidRevokeResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidRevokeResponseDto);
 			if(Utilitiy.isSecureSession()) {
-				residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_REVOKED.name());
+				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_REVOKED.name());
 			}
 		} catch (JsonProcessingException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_JSON_PARSING_EXCEPTION,
@@ -620,7 +620,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_REVOKED.name());
 		return residentTransactionEntity;
 	}
 
@@ -723,10 +723,11 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		
 		List<Map<String, ?>> filteredList = ((List<Map<String, ?>>) response.getResponse()).stream()
-				.map(map -> new LinkedHashMap<String, Object>(map))
-				.map(lhm2 -> getMaskedVid(lhm2))
-				.map(lhm1 -> getRefIdHash(lhm1))
-				.map(lhm -> {
+				.map(map -> {
+					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
+					getMaskedVid(lhm);
+					getRefIdHash(lhm);
+					normalizeExpiryTime(lhm);
 					return lhm;
 				})
 				.collect(Collectors.toList());
@@ -739,6 +740,18 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
+	private void normalizeExpiryTime(LinkedHashMap<String, Object> lhm) {
+		Object expiryTimeObj = lhm.get(EXPIRY_TIMESTAMP);
+		if(expiryTimeObj instanceof String) {
+			String expiryTime = String.valueOf(expiryTimeObj);
+			LocalDateTime expiryLocalDateTime = mapper.convertValue(expiryTime, LocalDateTime.class);
+			//For the big expiry time, assume no expiry time, so set to null
+			if(expiryLocalDateTime.getYear() >= 9999) {
+				lhm.put(EXPIRY_TIMESTAMP, null);
+			}
+		}
+	}
+
 	private Map<String, Object> getMaskedVid(Map<String, Object> map) {
 		String maskedvid = utility.convertToMaskDataFormat(map.get(VID).toString());
 		map.put(MASKED_VID, maskedvid);

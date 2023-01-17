@@ -25,6 +25,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -47,6 +48,8 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	private static final String FILEUPLOAD = "fileupload";
 
 	private static final String INPUT_REQUIRED = "inputRequired";
+	
+	private static final String MASK_REQUIRED = "maskRequired";
 
 	private static final String IDENTITY = "identity";
 
@@ -151,7 +154,15 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
 						.filter(map -> Boolean.valueOf(String.valueOf(map.get(INPUT_REQUIRED))))
 						.filter(map -> !FILEUPLOAD.equals(map.get(CONTROL_TYPE)))
-						.map(map -> (String)map.get(ID))
+						.flatMap(map -> {
+							String attribName = (String)map.get(ID);
+							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
+								//Include the attribute and its masked attribute
+								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
+							} else {
+								return Stream.of(attribName);
+							}
+						})
 						.collect(Collectors.toList());
 			return uiSchemaFilteredInputAttributesList;
 		}

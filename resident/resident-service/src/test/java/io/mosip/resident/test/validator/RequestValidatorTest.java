@@ -24,6 +24,7 @@ import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -36,6 +37,7 @@ import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -103,7 +105,6 @@ public class RequestValidatorTest {
 
 	@Before
 	public void setup() {
-		Mockito.when(uinValidator.validateId(Mockito.any())).thenReturn(true);
 		Map<RequestIdType, String> map = new HashMap<RequestIdType, String>();
 		map.put(RequestIdType.RE_PRINT_ID, "mosip.resident.print");
 		map.put(RequestIdType.AUTH_LOCK_ID, "mosip.resident.authlock");
@@ -112,6 +113,7 @@ public class RequestValidatorTest {
 		map.put(RequestIdType.AUTH_HISTORY_ID, "mosip.resident.authhistory");
 		map.put(RequestIdType.RES_UPDATE, "mosip.resident.updateuin");
 		map.put(RequestIdType.CHECK_STATUS, "mosip.resident.checkstatus");
+		map.put(RequestIdType.AUTH_LOCK_UNLOCK, "mosip.resident.auth.lock.unlock");
 		ReflectionTestUtils.setField(requestValidator, "checkStatusID", "mosip.resident.checkstatus");
 		ReflectionTestUtils.setField(requestValidator, "authLockId", "mosip.resident.authlock");
 		ReflectionTestUtils.setField(requestValidator, "euinId", "mosip.resident.euin");
@@ -124,6 +126,8 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 		ReflectionTestUtils.setField(requestValidator, "mandatoryLanguages", "eng");
 		ReflectionTestUtils.setField(requestValidator, "optionalLanguages", "ara");
+		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "newVersion", "1.0");
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
@@ -901,7 +905,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, true);
 	}
@@ -1216,7 +1220,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(null);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1227,7 +1231,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1239,7 +1243,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1257,7 +1261,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1276,7 +1280,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.auth.lock.unlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1289,7 +1293,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1307,7 +1311,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1326,7 +1330,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.auth.lock.unlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 		//Should not throw exception
@@ -1346,7 +1350,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.auth.lock.unlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 		//Should not throw exception
@@ -1362,7 +1366,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1380,7 +1384,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -1400,7 +1404,7 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testValidateAidStatusRequestDtoAidNull() throws Exception{
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid(null);
+		aidStatusRequestDTO.setIndividualId(null);
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
@@ -1412,11 +1416,11 @@ public class RequestValidatorTest {
 	@Test
 	public void testValidateAidStatusRequestDtoSuccess() throws Exception{
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-		aidStatusRequestDTO.setAid("17");
+		aidStatusRequestDTO.setIndividualId("17");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestValidator.validateAidStatusRequestDto(requestWrapper);
 	}
@@ -1639,6 +1643,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCard() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("id");
+		mainRequestDTO.setVersion("1.0");
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
@@ -1648,6 +1653,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardNullId() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId(null);
+		mainRequestDTO.setVersion("1.0");
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
@@ -1657,6 +1663,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardNullRequestTime() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
@@ -1666,6 +1673,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardNullString() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
@@ -1676,6 +1684,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardSuccess() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		downloadPersonalizedCardDto.setHtml("html");
@@ -1687,6 +1696,7 @@ public class RequestValidatorTest {
 	public void testValidateDownloadPersonalizedCardBadHtml() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
 		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		downloadPersonalizedCardDto.setHtml("`1&`");
@@ -1794,6 +1804,34 @@ public class RequestValidatorTest {
 		downloadCardRequestDTOMainRequestDTO.setRequest(downloadCardRequestDTO);
 		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
 	}
+	
+	@Test(expected = InvalidInputException.class)
+	public void testValidateProxySendOtpRequestInvalidUserId() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+	
+	@Test
+	public void testValidateProxySendOtpRequestCorrectPhoneUserId() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("8878787878");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
 
 	@Test(expected = InvalidInputException.class)
 	public void testValidateUpdateDataRequestInvalidUserId() throws Exception{
@@ -1801,7 +1839,7 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1816,7 +1854,7 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
 		otpRequestDTOV3.setUserId("k");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
@@ -1832,8 +1870,9 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("8878787878");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1848,8 +1887,9 @@ public class RequestValidatorTest {
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
-		otpRequestDTOV3.setTransactionID("1232323232");
+		otpRequestDTOV3.setTransactionId("1232323232");
 		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("test@g.com");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
@@ -1961,6 +2001,13 @@ public class RequestValidatorTest {
 		requestDTO.setRequest(authHistoryRequestDTO);
 		requestValidator.validatePageFetchAndPageStartFormat(requestDTO, "request");
 	}
+	
+	@Test
+	public void testValidateUin(){
+		Mockito.when(uinValidator.validateId(Mockito.any())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_UIN.getErrorCode(),
+				ResidentErrorCode.INVALID_UIN.getErrorMessage()));
+		assertEquals(false,requestValidator.validateUin("123"));
+	}
 
 	@Test
 	public void testValidateVid(){
@@ -1977,6 +2024,13 @@ public class RequestValidatorTest {
 	@Test(expected = InvalidInputException.class)
 	public void testEmptyUserIdAndTransactionId(){
 		requestValidator.validateUserIdAndTransactionId("", "3232323232");
+	}
+	
+	@Test(expected = InvalidInputException.class)
+	public void testInvalidUserId(){
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		requestValidator.validateUserIdAndTransactionId("shgasbieh", "3232323232");
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -2279,7 +2333,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -2298,7 +2352,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -2317,7 +2371,7 @@ public class RequestValidatorTest {
 		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.authlock");
-		requestWrapper.setVersion("v1");
+		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
 		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
 	}
@@ -2388,7 +2442,7 @@ public class RequestValidatorTest {
 		requestValidator.validateEventId("3");
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = EidNotBelongToSessionException.class)
 	public void testValidateApiBelongToSameSession() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setTokenId("123");

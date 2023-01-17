@@ -28,6 +28,7 @@
 		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
 		<kernel.khazana.version>1.2.1-SNAPSHOT</kernel.khazana.version>
 		<pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
+		<kernel-openid-bridge-api.version>1.2.1-SNAPSHOT</kernel-openid-bridge-api.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -56,6 +57,17 @@
 		</dependency>
 		<dependency>
 			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-openid-bridge-api</artifactId>
+			<version>${kernel-openid-bridge-api.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
 			<artifactId>kernel-core</artifactId>
 			<version>${kernel.core.version}</version>
 			<exclusions>
@@ -64,12 +76,6 @@
 					<artifactId>commons-lang3</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>io.mosip.kernel</groupId>
-			<artifactId>kernel-openid-bridge-api</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -216,6 +222,10 @@
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-logger-logback</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -276,6 +286,10 @@
 				<exclusion>
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-logger-logback</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -356,6 +370,10 @@
 				<exclusion>
 					<groupId>io.mosip.kernel</groupId>
 					<artifactId>kernel-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.mosip.kernel</groupId>
+					<artifactId>kernel-logger-logback</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

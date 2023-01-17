@@ -1,5 +1,7 @@
 package io.mosip.resident.exception;
 
+import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,7 +38,9 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.EmptyCheckUtils;
+import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.openid.bridge.api.exception.AuthRestException;
+import io.mosip.kernel.openid.bridge.api.exception.ClientException;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -45,8 +49,6 @@ import io.mosip.resident.mock.exception.PaymentCanceledException;
 import io.mosip.resident.mock.exception.PaymentFailedException;
 import io.mosip.resident.mock.exception.TechnicalErrorException;
 import io.mosip.resident.util.ObjectWithMetadata;
-
-import static io.mosip.resident.constant.ResidentConstants.CHECK_STATUS_ID;
 
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -112,11 +114,19 @@ public class ApiExceptionHandler {
 
 	private ResponseEntity<ResponseWrapper<ServiceError>> createResponseEntity(
 			ResponseWrapper<ServiceError> errorResponse, Exception e, HttpStatus httpStatus) {
-		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null
-				&& ((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+		if (e instanceof ObjectWithMetadata && ((ObjectWithMetadata) e).getMetadata() != null) {
 			MultiValueMap<String, String> headers = new HttpHeaders();
-			headers.add(ResidentConstants.EVENT_ID,
-					(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			if (((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.EVENT_ID)) {
+				headers.add(ResidentConstants.EVENT_ID,
+						(String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.EVENT_ID));
+			}  
+			if (((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.HTTP_STATUS_CODE)) {
+				httpStatus = (HttpStatus) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.HTTP_STATUS_CODE);
+			}  
+			if (((ObjectWithMetadata) e).getMetadata().containsKey(ResidentConstants.REQ_RES_ID)) {
+				errorResponse.setId((String) ((ObjectWithMetadata) e).getMetadata().get(ResidentConstants.REQ_RES_ID));
+			}
+			errorResponse.setVersion(env.getProperty(ResidentConstants.REQ_RES_VERSION));
 			return new ResponseEntity<>(errorResponse, headers, httpStatus);
 		}
 		return new ResponseEntity<>(errorResponse, httpStatus);
@@ -229,6 +239,8 @@ public class ApiExceptionHandler {
 			Exception exception) throws IOException {
 		if(exception instanceof AuthRestException) {
 			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
+		} else if(exception instanceof ClientException) {
+			return  new ResponseEntity<ResponseWrapper<ServiceError>>(getAuthFailedResponse(), HttpStatus.UNAUTHORIZED);
 		}
 		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
 		ServiceError error = new ServiceError(ResidentErrorCode.BAD_REQUEST.getErrorCode(), exception.getMessage());
@@ -242,8 +254,8 @@ public class ApiExceptionHandler {
 		ResponseWrapper<ServiceError> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 		responseWrapper
-				.setErrors(List.of(new ServiceError(ResidentErrorCode.UNAUTHORIZED.getErrorCode(),
-						ResidentErrorCode.UNAUTHORIZED.getErrorMessage())));
+				.setErrors(List.of(new ServiceError(AuthErrorCode.UNAUTHORIZED.getErrorCode(),
+						AuthErrorCode.UNAUTHORIZED.getErrorMessage())));
 		return responseWrapper;
 	}
 	
@@ -264,6 +276,30 @@ public class ApiExceptionHandler {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
 		return getCheckedErrorEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+	
+	@ExceptionHandler(EventIdNotPresentException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EventIdNotPresentException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(EidNotBelongToSessionException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final EidNotBelongToSessionException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(DigitalCardRidNotFoundException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final DigitalCardRidNotFoundException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(ApisResourceAccessException.class)

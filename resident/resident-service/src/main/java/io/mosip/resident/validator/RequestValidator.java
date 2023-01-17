@@ -30,6 +30,7 @@ import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
 import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
@@ -40,6 +41,7 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -206,6 +208,7 @@ public class RequestValidator {
 		map.put(RequestIdType.RES_UPDATE, uinUpdateId);
 		map.put(RequestIdType.CHECK_STATUS, checkStatusID);
 		map.put(RequestIdType.SHARE_CREDENTIAL, shareCredentialId);
+		map.put(RequestIdType.AUTH_LOCK_UNLOCK, authLockStatusUpdateV2Id);
 	}
 
 	public void validateVidCreateRequest(IVidRequestDto<? extends BaseVidRequestDto> requestDto, boolean otpValidationRequired, String individualId) {
@@ -319,14 +322,7 @@ public class RequestValidator {
 	}
 
 	public void validateAuthLockOrUnlockRequestV2(RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDto) {
-		if (requestDto.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(authLockStatusUpdateV2Id)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "request to auth lock or unlock"));
-			throw new InvalidInputException("id");
-		}
+		validateRequestNewApi(requestDto, RequestIdType.AUTH_LOCK_UNLOCK);
 		validateAuthTypeV2(requestDto.getRequest().getAuthTypes());
 	}
 
@@ -684,6 +680,25 @@ public class RequestValidator {
 		return true;
 
 	}
+	
+	public boolean validateAidStatusRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
+		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+			throw new InvalidInputException("id");
+		try {
+			DateUtils.parseToLocalDateTime(request.getRequesttime());
+		} catch (Exception e) {
+			throw new InvalidInputException("requesttime");
+		}
+		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(newVersion))
+			throw new InvalidInputException("version");
+		
+		if (request.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException("request");
+		}
+		return true;
+
+	}
 
 	public static boolean isNumeric(String strNum) {
 		return !strNum.matches(("[0-9]+"));
@@ -723,9 +738,8 @@ public class RequestValidator {
 	}
 
 	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
-		validateRequest(requestDTO, RequestIdType.RES_UPDATE);
-
 		if (!isPatch) {
+			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
 			if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
 					|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
@@ -734,6 +748,7 @@ public class RequestValidator {
 				throw new InvalidInputException("individualId");
 			}
 		} else {
+			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
@@ -845,10 +860,10 @@ public class RequestValidator {
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
-		validateRequest(reqDto, RequestIdType.CHECK_STATUS);
+		validateAidStatusRequest(reqDto, RequestIdType.CHECK_STATUS);
 
-		if(reqDto.getRequest().getAid() == null) {
-			throw new InvalidInputException("aid");
+		if(reqDto.getRequest().getIndividualId() == null) {
+			throw new InvalidInputException("individualId");
 		}
 		
 	}
@@ -950,8 +965,7 @@ public class RequestValidator {
 		if (variableValue==null || StringUtils.isEmpty(variableValue)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					variableName, VALIDATE_EVENT_ID));
-			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER,
-					ResidentErrorCode.MISSING_INPUT_PARAMETER.getErrorMessage()+variableName);
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, variableName);
 		}
 	}
 
@@ -1017,13 +1031,21 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionID");
 		}
 	}
+	
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
+		validateVersion(userOtpRequest.getVersion());
+		validateDate(userOtpRequest.getRequesttime());
+		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+	}
 
 	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 		String inputRequestId = userIdOtpRequest.getId();
 		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
 		validateRequestType(inputRequestId, requestIdStoredInProperty, ID);
+		validateVersion(userIdOtpRequest.getVersion());
 		validateDate(userIdOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionID());
+		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionId());
 		validateOTP(userIdOtpRequest.getRequest().getOtp());
 	}
 
@@ -1077,11 +1099,17 @@ public class RequestValidator {
 
     public void validateDownloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
 		validateRequestType(downloadPersonalizedCardMainRequestDTO.getId(),
-				this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD), ID);
+				this.environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID), ID);
+		validateVersion(downloadPersonalizedCardMainRequestDTO.getVersion());
 		validateDate(downloadPersonalizedCardMainRequestDTO.getRequesttime());
 		validateString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml(), "html");
 		validateEncodedString(downloadPersonalizedCardMainRequestDTO.getRequest().getHtml());
     }
+
+	public void validateVersion(String requestVersion) {
+		if (StringUtils.isEmpty(requestVersion) || !requestVersion.equals(reqResVersion))
+			throw new InvalidInputException("version");
+	}
 
 	private void validateEncodedString(String html) {
 		try{
@@ -1169,7 +1197,7 @@ public class RequestValidator {
 			String tokenId = residentTransactionEntity.get().getTokenId();
 			String sessionToken = identityService.getResidentIdaToken();
 			if(!tokenId.equals(sessionToken)){
-				throw new ResidentServiceException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
+				throw new EidNotBelongToSessionException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION,
 						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());
 			}
 		}

@@ -7,11 +7,15 @@ import io.mosip.preregistration.application.constant.PreRegLoginConstant;
 import io.mosip.preregistration.core.util.GenericUtil;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.ExceptionJSONInfoDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.MainResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -23,9 +27,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +87,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             log.info("Response after loginCommonUtil {}", response);
 
             userid = userOtpRequest.getRequest().getUserId();
-            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionID());
+            otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionId());
             boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language);
             AuthNResponse authNResponse = null;
             if (otpSent) {
@@ -149,7 +152,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionID());
+            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
@@ -158,7 +161,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             } else {
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
             	residentTransactionEntity.setRequestSummary("failed");
-				throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS,
+				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
             response.setResponse(authresponse);
@@ -167,18 +170,18 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, ex,
+			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (RuntimeException ex) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-            throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, ex,
+            throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ResidentServiceCheckedException e) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
-        	throw new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS, e,
+        	throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ApisResourceAccessException e) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -188,6 +191,8 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         } finally {
         	if(residentTransactionEntity.getStatusCode()==null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
+        	if (residentTransactionEntity.getRequestSummary() == null) {
 				residentTransactionEntity.setRequestSummary("failed");
 			}
 			residentTransactionRepository.save(residentTransactionEntity);
@@ -217,10 +222,12 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
+		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
+        residentTransactionEntity.setAttributeList(userId);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
 		if (requestValidator.phoneValidator(userId)) {
 			residentTransactionEntity.setStatusComment("Update phone as " + userId);
 		} else if (requestValidator.emailValidator(userId)) {

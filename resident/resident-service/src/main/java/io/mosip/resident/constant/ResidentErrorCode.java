@@ -85,7 +85,7 @@ public enum ResidentErrorCode {
 	CONSENT_DENIED("RES-SER-461",
 			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
 
-	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"),
+	ACK_TEMPLATE_NOT_FOUND("RES-SER-460", "Acknowledgment template not found"),
 	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: "),
 	CONFIG_FILE_NOT_FOUND_EXCEPTION("RES-SER-462","Config file not found in the config server"),
 	SEND_OTP_FAILED("RES-SER-463", "Send OTP failed."),
@@ -113,7 +113,7 @@ public enum ResidentErrorCode {
 	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
 	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
 	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
-	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- ");
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s");
 
 	private final String errorCode;
 	private final String errorMessage;

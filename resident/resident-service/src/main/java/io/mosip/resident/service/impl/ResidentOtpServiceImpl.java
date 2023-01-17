@@ -1,22 +1,17 @@
 package io.mosip.resident.service.impl;
 
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-
-import io.mosip.resident.dto.*;
-import io.mosip.resident.util.Utilitiy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
+import io.mosip.resident.dto.OtpRequestDTO;
+import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -26,6 +21,17 @@ import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilitiy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
@@ -55,6 +61,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 	@Autowired
 	private Utilitiy utilitiy;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 	
 	@Override
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
@@ -96,7 +105,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
-		residentTransactionEntity.setAuthTypeCode(ServiceType.AUTHENTICATION_REQUEST.name());
+		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(", "));
+		residentTransactionEntity.setAttributeList(attributeList);
+		residentTransactionEntity.setAuthTypeCode(attributeList);
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode("OTP_REQUESTED");
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
@@ -105,26 +116,28 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
 			residentTransactionEntity.setRefId(utilitiy.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
 		} else{
-			residentTransactionEntity.setRefId(getRefIdHash(otpRequestDTO.getIndividualId()));
+			residentTransactionEntity.setRefId(utilitiy.getRefIdHash(otpRequestDTO.getIndividualId()));
 		}
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setCrBy("mosip");
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+		residentTransactionEntity.setPurpose(String.join(ResidentConstants.COMMA, otpRequestDTO.getOtpChannel()));
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 
-	private String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
-		return HMACUtils2.digestAsPlainText(individualId.getBytes());
-	}
-
 	@Override
-	public OtpResponseDTO generateOtpForAid(AidOtpRequestDTO otpRequestDto)
+	public IndividualIdResponseDto generateOtpForIndividualId(IndividualIdOtpRequestDTO individualIdRequestDto)
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
 		String individualId;
 		try {
-			individualId = identityServiceImpl.getIndividualIdForAid(otpRequestDto.getAid());
-			otpRequestDto.setIndividualId(individualId);
-			return generateOtp(otpRequestDto);
+			individualId = identityServiceImpl.getIndividualIdForAid(individualIdRequestDto.getIndividualId());
+			individualIdRequestDto.setIndividualId(individualId);
+			OtpRequestDTO otpRequestDTO = objectMapper.convertValue(individualIdRequestDto, OtpRequestDTO.class);
+			otpRequestDTO.setTransactionID(individualIdRequestDto.getTransactionId());
+			OtpResponseDTO otpResponseDTO = generateOtp(otpRequestDTO);
+			IndividualIdResponseDto individualIdResponseDto = objectMapper.convertValue(otpResponseDTO, IndividualIdResponseDto.class);
+			individualIdResponseDto.setTransactionId(otpResponseDTO.getTransactionID());
+			return individualIdResponseDto;
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
 		}

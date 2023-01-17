@@ -1,3 +1,4 @@
+
 package io.mosip.resident.constant;
 
 /**
@@ -47,27 +48,10 @@ public class ResidentConstants {
     public static final String NOTIFICATION_TIME_PATTERN = "mosip.notification.time.pattern";
     
     public static final String EVENT_ID = "eventId";
-    
-    public static final String EVENT_DETAILS = "eventDetails";
-    
-    public static final String NAME = "name";
-    
-    public static final String DATE = "date";
-    
-    public static final String TIME = "time";
 
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
-
-    public static final String URL = "url";
-    
-    public static final String DOWNLOAD_LINK = "downloadLink";
-    
-    public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
-
-    public static final String TXN_ID = "txnId";
-    
     public static final String RESIDENT = "RESIDENT";
 
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
@@ -75,14 +59,13 @@ public class ResidentConstants {
     public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
 
 
-    public static final String IDA_TOKEN_CLAIM_NAME = "mosip.resident.oidc.id_token.ida_token.claim-name";
     public static final String MOSIP_OIDC_JWT_SIGNED = "mosip.resident.oidc.userinfo.jwt.signed";
+    public static final String MOSIP_OIDC_JWT_VERIFY_ENABLED = "mosip.resident.oidc.userinfo.jwt.verify.enabled";
     public static final String MOSIP_OIDC_ENCRYPTION_ENABLED = "mosip.resident.oidc.userinfo.encryption.enabled";
 
     public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
     public static final String RESIDENT_APP_ID = "resident.appid";
 
-    public static final String DATA_SHARE_URL = "mosip.datashare.url";
     public static final String DATA_SHARE_APPLICATION_ID = "mosip.datashare.application.id";
     public static final String DATA_SHARE_REFERENCE_ID = "mosip.datashare.reference.id";
 
@@ -98,7 +81,7 @@ public class ResidentConstants {
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
 
-    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD = "mosip.resident.download.personalized.card";
+    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
     public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
 
@@ -110,7 +93,6 @@ public class ResidentConstants {
 
     public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
 
-    public static final String CREDENTIAL_TYPE_PROPERTY = "mosip.resident.request.credential.credentialType";
     public static final String CREDENTIAL_ISSUER = "mosip.credential.issuer";
     public static final String CREDENTIAL_ENCRYPTION_FLAG = "mosip.resident.request.credential.isEncrypt";
     public static final String CREDENTIAL_ENCRYPTION_KEY = "mosip.resident.request.credential.encryption.key";
@@ -160,11 +142,45 @@ public class ResidentConstants {
     public static final String AID_STATUS = "aidStatus";
 
     public static final String CHECK_STATUS_ID = "resident.checkstatus.id";
-    public static final String CHECK_STATUS_VERSION = "resident.checkstatus.version";
 
     public static final String CHECK_STATUS_INDIVIDUAL_ID = "mosip.resident.checkstatus.individualid.id";
     public static final String CHECKSTATUS_INDIVIDUALID_VERSION = "mosip.resident.checkstatus.individualid.version";
     
     public static final String RID = "rid";
+
+    public static final String ADDITIONAL_ATTRIBUTE_TO_FETCH = "resident.additional.identity.attribute.to.fetch";
+    public static final String COMMA = ",";
+    public static final String COLON = ":";
+
+    public static final String FILE_TEXT = "fileText";
+    public static final String DOLLAR = "$";
+    public static final String AUTH_TYPES = "authTypes";
+
+    public static final String CHANNEL = "channel";
+
+    public static final String MASK_PREFIX = "masked_";
+    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
+
+    public static final String HTTP_STATUS_CODE = "httpStatusCode";
+    public static final String REQ_RES_ID = "reqResId";
+    public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
+
+    public static final String ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY = "resident.template.ack.share-cred-with-partner";
+    public static final String ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY = "resident.template.ack.authentication.request";
+    public static final String ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY = "resident.template.ack.download-a-personalized-card";
+    public static final String ACK_ORDER_PHYSICAL_CARD_TEMPLATE_PROPERTY = "resident.template.ack.order-a-physical-card";
+    public static final String ACK_GET_MY_ID_TEMPLATE_PROPERTY = "resident.template.ack.get.my.id";
+    public static final String ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY = "resident.template.ack.update-demographic-data";
+    public static final String ACK_MANAGE_MY_VID_TEMPLATE_PROPERTY = "resident.template.ack.manage-my-vid";
+    public static final String ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY = "resident.template.ack.secure-my-id";
+    public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
+    public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
+    public static final String ACTION_PERFORMED = "actionPerformed";
+    public static final String VID_TYPE = "vidType";
+    public static final String MASKED_VID = "*masked VID*";
+    public static final String ACK_DATE_TIME_PATTERN = "resident.ack.datetime.pattern";
+    
+    public static final String NO_ID = "NO_ID";
+    public static final String NO_ID_TYPE = "NO_ID_TYPE";
 
 }
