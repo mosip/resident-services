@@ -39,7 +39,12 @@ public class BaseResidentCheckedExceptionWithMetadata extends BaseCheckedExcepti
 		this(err.getErrorCode(), err.getErrorMessage());
 		this.metadata = metadata;
 	}
-	
+
+	public BaseResidentCheckedExceptionWithMetadata(String errorCode, String errorMessage, Map<String, Object> metadata) {
+		this(errorCode, errorMessage);
+		this.metadata = metadata;
+	}
+
 	public BaseResidentCheckedExceptionWithMetadata(String errorCode, String errorMessage, Throwable rootCause,
 			Map<String, Object> metadata) {
 		this(errorCode, errorMessage, rootCause);

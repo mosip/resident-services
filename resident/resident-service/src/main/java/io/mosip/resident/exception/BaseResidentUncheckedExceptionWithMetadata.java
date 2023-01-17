@@ -24,6 +24,10 @@ public class BaseResidentUncheckedExceptionWithMetadata extends BaseUncheckedExc
 		this.metadata = metadata;
 	}
 
+	public BaseResidentUncheckedExceptionWithMetadata() {
+        super();
+    }
+
 	/**
 	 * Constructor the initialize Handler exception.
 	 *
@@ -44,17 +48,17 @@ public class BaseResidentUncheckedExceptionWithMetadata extends BaseUncheckedExc
 	public BaseResidentUncheckedExceptionWithMetadata(String errorCode, String errorMessage, Throwable rootCause) {
 		super(errorCode, errorMessage, rootCause);
 	}
-	
-	public BaseResidentUncheckedExceptionWithMetadata(ResidentErrorCode err, Throwable rootCause, Map<String, Object> metadata) {
-		this(err.getErrorCode(), err.getErrorMessage(), rootCause);
-		this.metadata = metadata;
-	}
-	
+
 	public BaseResidentUncheckedExceptionWithMetadata(ResidentErrorCode err, Map<String, Object> metadata) {
 		this(err.getErrorCode(), err.getErrorMessage());
 		this.metadata = metadata;
 	}
-	
+
+	public BaseResidentUncheckedExceptionWithMetadata(ResidentErrorCode err, Throwable rootCause, Map<String, Object> metadata) {
+		this(err.getErrorCode(), err.getErrorMessage(), rootCause);
+		this.metadata = metadata;
+	}
+
 	public BaseResidentUncheckedExceptionWithMetadata(String errorCode, String errorMessage, Throwable rootCause,
 			Map<String, Object> metadata) {
 		this(errorCode, errorMessage, rootCause);
