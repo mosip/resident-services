@@ -42,7 +42,11 @@ public class ApisResourceAccessException extends BaseCheckedException implements
 	public ApisResourceAccessException(String message, Throwable cause) {
 		super(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), message, cause);
 	}
-	
+
+	public ApisResourceAccessException(String errorCode, String errorMessage, Exception exception) {
+		super(errorCode, errorMessage, exception);
+	}
+
 	public Map<String, Object> getMetadata() {
 		return metadata;
 	}

@@ -477,7 +477,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				uinForVid = identityServiceImpl.getUinForIndividualId(vid);
 			}catch (Exception exception){
 				logger.error(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode()+exception);
-				throw new ApisResourceAccessException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode());
+				throw new ApisResourceAccessException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), exception);
 			}
 			if(uinForVid == null || !uinForVid.equalsIgnoreCase(uin)) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_INDIVITUAL);

@@ -29,6 +29,7 @@ import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
@@ -1090,7 +1091,7 @@ public class RequestValidator {
 	}
 
 	private void validateIndividualIdV2(String individualId) {
-		if (individualId == null || StringUtils.isEmpty(individualId)) {
+		if (individualId == null || StringUtils.isEmpty(individualId) || isNumeric(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request service history API"));
 			throw new InvalidInputException("individualId");
@@ -1201,5 +1202,9 @@ public class RequestValidator {
 						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());
 			}
 		}
+	}
+
+	public void validateRequestForIndividualIdOtp(IndividualIdOtpRequestDTO individualIdRequestDto) {
+		validateIndividualIdV2(individualIdRequestDto.getIndividualId());
 	}
 }
