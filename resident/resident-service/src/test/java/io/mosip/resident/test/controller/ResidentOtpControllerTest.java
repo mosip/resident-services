@@ -122,6 +122,7 @@ public class ResidentOtpControllerTest {
 		otpRequestDTO.setTransactionID("1234327890");
 		reqJson = gson.toJson(otpRequestDTO);
 		ReflectionTestUtils.setField(residentOtpController, "otpRequestId", "mosip.identity.otp.internal");
+		ReflectionTestUtils.setField(residentOtpController, "otpRequestVersion", "1.0");
 	}
 
 	@Test
@@ -158,6 +159,7 @@ public class ResidentOtpControllerTest {
 	@Test(expected = ResidentServiceException.class)
 	@WithUserDetails("resident")
 	public void reqOtpForAidNullTest() throws Exception {
+		ReflectionTestUtils.setField(residentOtpController, "otpRequestId", "id");
 		IndividualIdOtpRequestDTO aidOtpRequestDTO = new IndividualIdOtpRequestDTO();
 		aidOtpRequestDTO.setIndividualId(null);
 		assertNotNull(residentOtpController.reqOtpForIndividualId(aidOtpRequestDTO));

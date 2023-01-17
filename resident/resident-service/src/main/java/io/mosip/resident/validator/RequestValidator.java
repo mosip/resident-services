@@ -1204,7 +1204,4 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateRequestForIndividualIdOtp(IndividualIdOtpRequestDTO individualIdRequestDto) {
-		validateIndividualIdV2(individualIdRequestDto.getIndividualId());
-	}
 }
