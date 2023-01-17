@@ -48,5 +48,11 @@ public class ResidentServiceCheckedException extends BaseCheckedException implem
 		this(err.getErrorCode(), err.getErrorMessage());
 		this.metadata = metadata;
 	}
+	
+	public ResidentServiceCheckedException(String errorCode, String errorMessage, Throwable rootCause,
+			Map<String, Object> metadata) {
+		this(errorCode, errorMessage, rootCause);
+		this.metadata = metadata;
+	}
 
 }
