@@ -7,7 +7,7 @@ import io.mosip.resident.constant.ResidentErrorCode;
 /**
  * The Class ResidentServiceException.
  */
-public class ResidentServiceException extends ResidentUncheckedExceptionWithMetadata {
+public class ResidentServiceException extends BaseResidentUncheckedExceptionWithMetadata {
 
 	/** Generated serial version id. */
 	private static final long serialVersionUID = 8621530697947108810L;

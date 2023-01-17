@@ -9,7 +9,7 @@ import io.mosip.resident.constant.ResidentErrorCode;
  * @author Girish Yarru
  *
  */
-public class ResidentServiceCheckedException extends ResidentCheckedExceptionWithMetadata {
+public class ResidentServiceCheckedException extends BaseResidentCheckedExceptionWithMetadata {
 	
 	private static final long serialVersionUID = -1561461793874550645L;
 	

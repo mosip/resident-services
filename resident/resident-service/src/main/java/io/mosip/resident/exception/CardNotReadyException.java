@@ -8,7 +8,7 @@ import io.mosip.resident.constant.ResidentErrorCode;
  * @author Kamesh Shekhar Prasad
  * This class is used to throw exception for card not available use case.
  */
-public class CardNotReadyException extends ResidentUncheckedExceptionWithMetadata {
+public class CardNotReadyException extends BaseResidentUncheckedExceptionWithMetadata {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
