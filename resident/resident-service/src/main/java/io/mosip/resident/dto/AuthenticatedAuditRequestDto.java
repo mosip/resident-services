@@ -9,13 +9,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The audit request dto v2.
+ * The authenticated audit request dto.
  * 
  * @author Ritik Jain
  */
 @Data
 @NoArgsConstructor
-public class AuditRequestDtoV2 {
+public class AuthenticatedAuditRequestDto {
+
 	/** The event id. */
 	@NotNull
 	@Size(min = 1, max = 64)
