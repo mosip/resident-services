@@ -55,6 +55,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -93,6 +94,8 @@ public class UtilityTest {
 		identity = JsonUtil.readValue(idJsonString, JSONObject.class);
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
+        when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
+        when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd");
 	}
 
 	@Test
