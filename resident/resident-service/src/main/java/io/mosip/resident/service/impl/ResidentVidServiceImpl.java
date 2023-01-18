@@ -475,7 +475,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 		} else {
-			String uinForVid ="";
+			String uinForVid;
 			try {
 				uinForVid = identityServiceImpl.getUinForIndividualId(vid);
 			}catch (Exception exception){
