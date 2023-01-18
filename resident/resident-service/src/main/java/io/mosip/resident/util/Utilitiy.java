@@ -457,11 +457,11 @@ public class Utilitiy {
 	}
 
 	public String getFileName(String eventId, String propertyName){
-		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
 		if(eventId!=null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			String dateTimePattern = this.env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN);
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", DateUtils
 					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
 		}
@@ -521,5 +521,14 @@ public class Utilitiy {
 	
 	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
 		return HMACUtils2.digestAsPlainText(individualId.getBytes());
+	}
+
+	public String formatDateTimeForUI(LocalDateTime localDateTime) {
+	    return localDateTime.format(
+	            DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN))));
+	}
+
+	public String formatWithOffsetForUI(int timeZoneOffset, LocalDateTime localDateTime) {
+		return formatDateTimeForUI(localDateTime.minusMinutes(timeZoneOffset));
 	}
 }

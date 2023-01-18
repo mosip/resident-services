@@ -147,7 +147,7 @@ public class DownloadCardControllerTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any()))
+		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt()))
 				.thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
     }
