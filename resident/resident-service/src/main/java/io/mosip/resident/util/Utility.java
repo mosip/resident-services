@@ -86,9 +86,9 @@ import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
  */
 
 @Component
-public class Utilitiy {
+public class Utility {
 
-	private static final Logger logger = LoggerConfiguration.logConfig(Utilitiy.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -153,7 +153,7 @@ public class Utilitiy {
 	@SuppressWarnings("unchecked")
 	public JSONObject retrieveIdrepoJson(String id) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utilitiy::retrieveIdrepoJson()::entry");
+				"Utility::retrieveIdrepoJson()::entry");
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(id);
 		ResponseWrapper<IdRepoResponseDto> response = null;
@@ -200,7 +200,7 @@ public class Utilitiy {
 			String jsonResponse = JsonUtil.writeValueAsString(response.getResponse());
 			JSONObject json = JsonUtil.readValue(jsonResponse, JSONObject.class);
 			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-					"Utilitiy::retrieveIdrepoJson()::exit");
+					"Utility::retrieveIdrepoJson()::exit");
 			return JsonUtil.getJSONObject(json, "identity");
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
@@ -212,7 +212,7 @@ public class Utilitiy {
 	public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utilitiy::getMailingAttributes()::entry");
+				"Utility::getMailingAttributes()::entry");
 		if(id == null || id.isEmpty()) {
 			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(),
 					ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage() + ": individual_id is not available." );
@@ -269,7 +269,7 @@ public class Utilitiy {
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utilitiy::getMailingAttributes()::exit");
+				"Utility::getMailingAttributes()::exit");
 		return attributes;
 	}
 

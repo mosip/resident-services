@@ -16,7 +16,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class TemplateUtilTest {
     private RequestValidator validator;
     
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
     
     @Mock
     private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;

@@ -9,7 +9,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +72,7 @@ public class AcknowledgmentControllerTest {
     private IdAuthService idAuthService;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     private ResponseEntity<Object> responseEntity;
 

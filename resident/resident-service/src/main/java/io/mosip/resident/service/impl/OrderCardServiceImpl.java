@@ -28,7 +28,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -68,7 +68,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 	private AuditUtil auditUtil;
 
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 
 	@Autowired
 	NotificationService notificationService;
