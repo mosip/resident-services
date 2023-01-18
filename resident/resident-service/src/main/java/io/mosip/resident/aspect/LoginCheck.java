@@ -22,6 +22,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.Utilitiy;
 
 /**
  * Aspect class for login redirect API
@@ -33,7 +34,6 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 @EnableAspectJAutoProxy
 public class LoginCheck {
 
-	private static final String ID_TOKEN = "id_token";
 	private static final String SET_COOKIE = "Set-Cookie";
 	private static final String USER_AGENT = "User-Agent";
 	private static final String WINDOWS = "Windows";
@@ -42,18 +42,6 @@ public class LoginCheck {
 	private static final String X11 = "x11";
 	private static final String ANDROID = "Android";
 	private static final String IPHONE = "IPhone";
-	private static final String X_FORWARDED_FOR = "X-Forwarded-For";
-	private static final String X_REAL_IP = "x-real-ip";
-	private static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
-	private static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
-	private static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
-	private static final String HTTP_X_FORWARDED = "HTTP_X_FORWARDED";
-	private static final String HTTP_X_CLUSTER_CLIENT_IP = "HTTP_X_CLUSTER_CLIENT_IP";
-	private static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
-	private static final String HTTP_FORWARDED_FOR = "HTTP_FORWARDED_FOR";
-	private static final String HTTP_FORWARDED = "HTTP_FORWARDED";
-	private static final String HTTP_VIA = "HTTP_VIA";
-	private static final String REMOTE_ADDR = "REMOTE_ADDR";
 	private static final CharSequence AUTHORIZATION_TOKEN = "Authorization";
 
 	@Autowired
@@ -61,6 +49,9 @@ public class LoginCheck {
 	
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+	
+	@Autowired
+	private Utilitiy utility;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(LoginCheck.class);
 
@@ -82,11 +73,11 @@ public class LoginCheck {
 		if(idaToken!=null && !idaToken.isEmpty()) {
 			Optional<ResidentUserEntity> userData = residentUserRepository.findById(idaToken);
 			if (userData.isPresent()) {
-				residentUserRepository.updateUserData(idaToken, DateUtils.getUTCCurrentDateTime(), getClientIp(req),
+				residentUserRepository.updateUserData(idaToken, DateUtils.getUTCCurrentDateTime(), utility.getClientIp(req),
 						req.getRemoteHost(), getMachineType(req));
 			} else {
 				residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
-						getClientIp(req), req.getRemoteHost(), getMachineType(req)));
+						utility.getClientIp(req), req.getRemoteHost(), getMachineType(req)));
 			}
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
@@ -126,34 +117,4 @@ public class LoginCheck {
 		logger.debug("LoginCheck::getMachineType()::exit");
 		return os;
 	}
-
-	private String getClientIp(HttpServletRequest req) {
-		logger.debug("LoginCheck::getClientIp()::entry");
-		String[] IP_HEADERS = {
-				X_FORWARDED_FOR,
-				X_REAL_IP,
-				PROXY_CLIENT_IP,
-				WL_PROXY_CLIENT_IP,
-				HTTP_X_FORWARDED_FOR,
-				HTTP_X_FORWARDED,
-				HTTP_X_CLUSTER_CLIENT_IP,
-				HTTP_CLIENT_IP,
-				HTTP_FORWARDED_FOR,
-				HTTP_FORWARDED,
-				HTTP_VIA,
-				REMOTE_ADDR
-		};
-		for (String header : IP_HEADERS) {
-			String value = req.getHeader(header);
-			if (value == null || value.isEmpty()) {
-				continue;
-			}
-			String[] parts = value.split(",");
-			logger.debug("LoginCheck::getClientIp()::exit");
-			return parts[0].trim();
-		}
-		logger.debug("LoginCheck::getClientIp()::exit - excecuted till end");
-		return req.getRemoteAddr();
-	}
-
 }

@@ -33,8 +33,8 @@ import io.mosip.resident.controller.AuthTransactionCallbackController;
 import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.controller.ProxyAuditController;
-import io.mosip.resident.dto.AuditRequestDtoV2;
-import io.mosip.resident.dto.AuditRequestDtoV3;
+import io.mosip.resident.dto.AuthenticatedAuditRequestDto;
+import io.mosip.resident.dto.UnauthenticatedAuditRequestDto;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -90,9 +90,9 @@ public class ProxyAuditControllerTest {
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
-	private AuditRequestDtoV2 auditRequestDtoV2;
+	private AuthenticatedAuditRequestDto authenticatedAuditRequestDto;
 	
-	private AuditRequestDtoV3 auditRequestDtoV3;
+	private UnauthenticatedAuditRequestDto unauthenticatedAuditRequestDto;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -105,34 +105,34 @@ public class ProxyAuditControllerTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(proxyAuditController).build();
-		auditRequestDtoV2 = new AuditRequestDtoV2();
-		auditRequestDtoV2.setAuditEventId("RES-SER-1111");
-		auditRequestDtoV2.setModuleId("RES-SER");
-		auditRequestDtoV2.setModuleName("Residence service");
-		auditRequestDtoV3 = new AuditRequestDtoV3();
-		auditRequestDtoV3.setAuditEventId("RES-SER-1111");
-		auditRequestDtoV3.setModuleId("RES-SER");
-		auditRequestDtoV3.setModuleName("Residence service");
+		authenticatedAuditRequestDto = new AuthenticatedAuditRequestDto();
+		authenticatedAuditRequestDto.setAuditEventId("RES-SER-1111");
+		authenticatedAuditRequestDto.setModuleId("RES-SER");
+		authenticatedAuditRequestDto.setModuleName("Residence service");
+		unauthenticatedAuditRequestDto = new UnauthenticatedAuditRequestDto();
+		unauthenticatedAuditRequestDto.setAuditEventId("RES-SER-1111");
+		unauthenticatedAuditRequestDto.setModuleId("RES-SER");
+		unauthenticatedAuditRequestDto.setModuleName("Residence service");
 	}
 
 	@Test
 	public void testAuthAuditLog() throws Exception {
-		reqJson = gson.toJson(auditRequestDtoV2);
+		reqJson = gson.toJson(authenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testAuditLogWithId() throws Exception {
-		auditRequestDtoV3.setId("23456");
-		reqJson = gson.toJson(auditRequestDtoV3);
+		unauthenticatedAuditRequestDto.setId("23456");
+		reqJson = gson.toJson(unauthenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
-	
+
 	@Test
 	public void testAuditLogWithNullId() throws Exception {
-		reqJson = gson.toJson(auditRequestDtoV3);
+		reqJson = gson.toJson(unauthenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
