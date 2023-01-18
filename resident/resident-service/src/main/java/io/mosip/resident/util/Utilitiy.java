@@ -461,7 +461,7 @@ public class Utilitiy {
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
-			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForUI(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}
