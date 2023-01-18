@@ -32,7 +32,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 /**
  * The Class ResidentConfigServiceImpl.
@@ -129,7 +129,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		Resource residentUiSchemaJsonFileRes = resourceLoader
 				.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
 		if (residentUiSchemaJsonFileRes.exists()) {
-			uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFileRes);
+			uiSchema = Utility.readResourceContent(residentUiSchemaJsonFileRes);
 		} else {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
 		}
@@ -173,7 +173,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Override
 	public String getIdentityMapping() throws ResidentServiceCheckedException {
 		if(identityMapping==null) {
-			identityMapping=Utilitiy.readResourceContent(identityMappingJsonFile);
+			identityMapping=Utility.readResourceContent(identityMappingJsonFile);
 		}
 		return identityMapping;
 	}
