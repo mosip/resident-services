@@ -42,14 +42,6 @@ public class ApisResourceAccessException extends BaseResidentCheckedExceptionWit
 	public ApisResourceAccessException(String errorCode, String errorMessage, Exception exception) {
 		super(errorCode, errorMessage, exception);
 	}
-
-	public Map<String, Object> getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(Map<String, Object> metadata) {
-		this.metadata = metadata;
-	}
 	
 	public ApisResourceAccessException(String err, Throwable rootCause, Map<String, Object> metadata) {
 		super(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), err, rootCause, metadata);
