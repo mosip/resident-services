@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.text.pdf.PdfReader;
 import com.nimbusds.jose.util.IOUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
@@ -55,6 +54,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +75,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
@@ -521,5 +521,34 @@ public class Utilitiy {
 	
 	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
 		return HMACUtils2.digestAsPlainText(individualId.getBytes());
+	}
+	
+	public String getClientIp(HttpServletRequest req) {
+		logger.debug("Utilitiy::getClientIp()::entry");
+		String[] IP_HEADERS = {
+				ResidentConstants.X_FORWARDED_FOR,
+				ResidentConstants.X_REAL_IP,
+				ResidentConstants.PROXY_CLIENT_IP,
+				ResidentConstants.WL_PROXY_CLIENT_IP,
+				ResidentConstants.HTTP_X_FORWARDED_FOR,
+				ResidentConstants.HTTP_X_FORWARDED,
+				ResidentConstants.HTTP_X_CLUSTER_CLIENT_IP,
+				ResidentConstants.HTTP_CLIENT_IP,
+				ResidentConstants.HTTP_FORWARDED_FOR,
+				ResidentConstants.HTTP_FORWARDED,
+				ResidentConstants.HTTP_VIA,
+				ResidentConstants.REMOTE_ADDR
+		};
+		for (String header : IP_HEADERS) {
+			String value = req.getHeader(header);
+			if (value == null || value.isEmpty()) {
+				continue;
+			}
+			String[] parts = value.split(",");
+			logger.debug("Utilitiy::getClientIp()::exit");
+			return parts[0].trim();
+		}
+		logger.debug("Utilitiy::getClientIp()::exit - excecuted till end");
+		return req.getRemoteAddr();
 	}
 }

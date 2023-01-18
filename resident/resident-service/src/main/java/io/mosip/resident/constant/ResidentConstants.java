@@ -182,5 +182,20 @@ public class ResidentConstants {
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
+    
+    // IP headers constants start---
+    public static final String X_FORWARDED_FOR = "X-Forwarded-For";
+    public static final String X_REAL_IP = "x-real-ip";
+    public static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
+    public static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
+    public static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
+    public static final String HTTP_X_FORWARDED = "HTTP_X_FORWARDED";
+    public static final String HTTP_X_CLUSTER_CLIENT_IP = "HTTP_X_CLUSTER_CLIENT_IP";
+    public static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
+    public static final String HTTP_FORWARDED_FOR = "HTTP_FORWARDED_FOR";
+    public static final String HTTP_FORWARDED = "HTTP_FORWARDED";
+    public static final String HTTP_VIA = "HTTP_VIA";
+    public static final String REMOTE_ADDR = "REMOTE_ADDR";
+    // IP headers constants end---
 
 }
