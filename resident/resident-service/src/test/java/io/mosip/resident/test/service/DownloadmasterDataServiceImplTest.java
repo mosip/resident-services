@@ -80,7 +80,7 @@ public class DownloadmasterDataServiceImplTest {
     private ResidentServiceRestClient residentServiceRestClient;
 
     @Mock
-    private Utility utilitiy;
+    private Utility utility;
 
     private byte[] result;
     private String eventId;
@@ -126,7 +126,7 @@ public class DownloadmasterDataServiceImplTest {
         signatureResponseDto.setData("data");
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
-        Mockito.when(utilitiy.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
+        Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
         langCode="eng";
         hierarchyLevel=4;

@@ -51,7 +51,7 @@ public class ResidentVerificationServiceTest {
     private IdentityServiceImpl identityServiceImpl;
     
     @Mock
-	private Utility utilitiy;
+	private Utility utility;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;

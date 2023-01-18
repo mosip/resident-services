@@ -108,7 +108,7 @@ public class ResidentController {
 	private IdentityServiceImpl identityServiceImpl;
 	
 	@Autowired
-	private Utility utilitiy;
+	private Utility utility;
 
 	@Autowired
 	private Environment environment;
@@ -618,7 +618,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
+				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
 								ResidentConstants.DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);

@@ -80,7 +80,7 @@ public class ProxyOtpServiceImpllTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
-    private Utility utilitiy;
+    private Utility utility;
 
     @Mock
     @Qualifier("selfTokenRestTemplate")
@@ -150,8 +150,8 @@ public class ProxyOtpServiceImpllTest {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
         responseEntity = new ResponseEntity<>(HttpStatus.OK);
-        Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(utilitiy.createEventId()).thenReturn("12345");
+        Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEventId()).thenReturn("12345");
     }
 
     @Test

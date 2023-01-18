@@ -87,7 +87,7 @@ public class ResidentOtpControllerTest {
 	private UinCardRePrintService rePrintService;
 
 	@MockBean
-	private Utility utilitiy;
+	private Utility utility;
 
 	@MockBean
 	private Utilities utilities;

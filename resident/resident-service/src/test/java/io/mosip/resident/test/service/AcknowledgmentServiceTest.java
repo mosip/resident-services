@@ -79,7 +79,7 @@ public class AcknowledgmentServiceTest {
     private ResidentServiceRestClient residentServiceRestClient;
 
     @Mock
-    private Utility utilitiy;
+    private Utility utility;
 
     private byte[] result;
     private String eventId;
@@ -125,7 +125,7 @@ public class AcknowledgmentServiceTest {
         signatureResponseDto.setData("data");
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
-        Mockito.when(utilitiy.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
+        Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
     }
 
     @Test

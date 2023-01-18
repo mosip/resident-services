@@ -65,7 +65,7 @@ public class DownloadCardController {
     DownloadCardService downloadCardService;
     
     @Autowired
-    private Utility utilitiy;
+    private Utility utility;
     
     @Autowired
     private Environment environment;
@@ -118,7 +118,7 @@ public class DownloadCardController {
         }
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\""
-						+ utilitiy.getFileName(tupleResponse.getT2(),
+						+ utility.getFileName(tupleResponse.getT2(),
 								Objects.requireNonNull(this.environment.getProperty(
 										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset)
 						+ ".pdf\"")

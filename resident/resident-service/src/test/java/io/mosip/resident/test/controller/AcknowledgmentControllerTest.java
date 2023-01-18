@@ -72,7 +72,7 @@ public class AcknowledgmentControllerTest {
     private IdAuthService idAuthService;
 
     @Mock
-    private Utility utilitiy;
+    private Utility utility;
 
     private ResponseEntity<Object> responseEntity;
 

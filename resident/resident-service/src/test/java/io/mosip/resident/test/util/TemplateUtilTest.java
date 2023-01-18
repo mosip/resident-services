@@ -55,7 +55,7 @@ public class TemplateUtilTest {
     private RequestValidator validator;
     
     @Mock
-    private Utility utilitiy;
+    private Utility utility;
     
     @Mock
     private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;

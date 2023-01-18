@@ -87,7 +87,7 @@ public class ResidentVidServiceTest {
     private ObjectMapper mapper;
     
     @Mock
-	private Utility utilitiy;
+	private Utility utility;
     
 	@Mock
 	private AuditUtil audit;
@@ -145,7 +145,7 @@ public class ResidentVidServiceTest {
 		
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		Mockito.lenient().when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
+		Mockito.lenient().when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		Mockito.lenient().when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
     }
 

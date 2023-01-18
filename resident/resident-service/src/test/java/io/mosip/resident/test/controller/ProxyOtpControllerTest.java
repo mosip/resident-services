@@ -98,7 +98,7 @@ public class ProxyOtpControllerTest {
     private AuditUtil auditUtil;
 
     @Mock
-    private Utility utilitiy;
+    private Utility utility;
 
     @Mock
     private Environment environment;

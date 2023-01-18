@@ -60,7 +60,7 @@ public class AcknowledgementController {
     private TemplateUtil templateUtil;
 
     @Autowired
-    private Utility utilitiy;
+    private Utility utility;
 
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
@@ -93,7 +93,7 @@ public class AcknowledgementController {
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        utilitiy.getFileNameAsPerFeatureName(eventId, featureName, timeZoneOffset) + ".pdf\"")
+                        utility.getFileNameAsPerFeatureName(eventId, featureName, timeZoneOffset) + ".pdf\"")
                 .body(resource);
     }
 }
