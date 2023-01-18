@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.json.simple.JSONObject;
@@ -570,8 +571,10 @@ public class IdentityServiceImpl implements IdentityService {
 			return UIN;
 		} else if(requestValidator.validateVid(individualId)){
 			return VID;
-		} else{
+		} else if(requestValidator.validateRid(individualId)){
 			return AID;
+		} else {
+			throw new InvalidIDException(ResidentErrorCode.INVALID_ID.getErrorCode(), ResidentErrorCode.INVALID_ID.getErrorMessage());
 		}
 	}
 }

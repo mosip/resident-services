@@ -182,5 +182,9 @@ public class ResidentConstants {
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
+    public static final String PERPETUAL = "Perpetual";
+
+    public static final String DATA = "Data";
+    public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
 
 }

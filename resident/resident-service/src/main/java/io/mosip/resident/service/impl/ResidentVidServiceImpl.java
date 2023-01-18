@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -96,6 +97,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	
 	private static final String VID = "vid";
 	private static final String VID_TYPE = "vidType";
+	private static final Object VID_POLICIES = "vidPolicies";
+	private static final String VID_POLICY = "vidPolicy";
 
 	@Value("${resident.vid.id}")
 	private String id;
@@ -204,6 +207,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
 			if(Utilitiy.isSecureSession()){
+				validateVidFromSession(individualId);
 				residentTransactionEntity = createResidentTransactionEntity(requestDto);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
@@ -348,6 +352,67 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		return Tuples.of(responseDto, eventId);
+	}
+
+	private void validateVidFromSession(String individualId) {
+		try {
+			String idType = identityServiceImpl.getIndividualIdType(individualId);
+			String uin = identityServiceImpl.getUinForIndividualId(individualId);
+			if (idType.equalsIgnoreCase(IdType.VID.name())) {
+				String vidType =
+						getVidTypeFromVid(individualId, uin);
+				if(vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+					int numberOfPerpetualVid = getNumberOfPerpetualVidFromUin(uin).getT1();
+					VidPolicy vidPolicy = getVidPolicyAsVidPolicyDto();
+					if(vidPolicy.getAllowedInstances() >= numberOfPerpetualVid
+					&& vidPolicy.getAutoRestoreAllowed() && vidPolicy.getRestoreOnAction().
+							equalsIgnoreCase(env.getProperty(ResidentConstants.VID_ACTIVE_STATUS)
+
+							)){
+						if(getNumberOfPerpetualVidFromUin(uin).getT2().equals(individualId)){
+							//fail
+						}
+					}
+//					1. if "instancesAllowed": is greated than or equal to number of perpetural vid
+//					2. if "autoRestoreAllowed": true,
+//							3. if restoreOnAction is not "ACTIVE" mosip.idrepo.vid.reactive-status=ACTIVE
+//					3. in list of vids if first vid is equal to the logged in vid
+
+				}
+			}
+		}catch (ApisResourceAccessException e) {
+				throw new RuntimeException(e);
+			}  catch (ResidentServiceCheckedException | com.fasterxml.jackson.core.JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+	}
+
+	private VidPolicy getVidPolicyAsVidPolicyDto() throws ResidentServiceCheckedException, com.fasterxml.jackson.core.JsonProcessingException {
+		String vidPolicy = getVidPolicy();
+		VidPolicy vidPolicyDto = new VidPolicy();
+		Map<Object, Object> vidPolicyMap = mapper.readValue(vidPolicy, Map.class);
+		Object vidPolicyMapValue = vidPolicyMap.get(VID_POLICIES);
+		List<Map<String, String>> vidList = (List<Map<String, String>>)vidPolicyMapValue;
+		if(vidList!=null){
+			 vidPolicyDto = mapper.convertValue(vidList.get(0).get(VID_POLICY), VidPolicy.class);
+		}
+		return vidPolicyDto;
+	}
+
+	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		String firstVid = "";
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId);
+		int count =0;
+		for(Map<String, ?> vidList : vids.getResponse()){
+			if(count==0){
+				firstVid = (String) vidList.get(TemplateVariablesConstants.VID);
+			}
+			if(vidList.get(TemplateVariablesConstants.VID_TYPE).toString().
+					equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+				count ++;
+			}
+		}
+		return Tuples.of(count, firstVid);
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
