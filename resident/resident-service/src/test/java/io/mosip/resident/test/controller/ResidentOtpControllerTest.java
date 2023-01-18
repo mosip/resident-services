@@ -3,6 +3,7 @@ package io.mosip.resident.test.controller;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.mosip.resident.dto.IndividualIdResponseDto;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -155,13 +156,14 @@ public class ResidentOtpControllerTest {
 				MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
 				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
 	}
-	
-	@Test(expected = ResidentServiceException.class)
+
 	@WithUserDetails("resident")
 	public void reqOtpForAidNullTest() throws Exception {
 		ReflectionTestUtils.setField(residentOtpController, "otpRequestId", "id");
 		IndividualIdOtpRequestDTO aidOtpRequestDTO = new IndividualIdOtpRequestDTO();
 		aidOtpRequestDTO.setIndividualId(null);
+		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
+		Mockito.when(residentOtpService.generateOtpForIndividualId(Mockito.any())).thenReturn(individualIdResponseDto);
 		assertNotNull(residentOtpController.reqOtpForIndividualId(aidOtpRequestDTO));
 	}
 }

@@ -37,6 +37,9 @@ public class ResidentOtpController {
 
 	@Autowired
 	private AuditUtil audit;
+
+	@Autowired
+	private RequestValidator requestValidator;
 	
 	@Value("${mosip.resident.api.id.otp.request}")
 	private String otpRequestId;
@@ -71,11 +74,7 @@ public class ResidentOtpController {
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN);
 		IndividualIdResponseDto individualIdResponseDto;
 		try {
-			if(individualIdRequestDto.getIndividualId()  == null || individualIdRequestDto.getIndividualId().equalsIgnoreCase("")
-			|| RequestValidator.isNumeric(individualIdRequestDto.getIndividualId())) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "individualId");
-			}
+			requestValidator.validateIndividualIdOtpRequest(individualIdRequestDto);
 		individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e ) {
 			throw new ResidentServiceException( e.getErrorCode(), e.getErrorText(), e,
