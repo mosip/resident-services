@@ -319,7 +319,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid) throws BaseCheckedException {
+    public Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset) throws BaseCheckedException {
         ResponseWrapper<VidDownloadCardResponseDto> responseWrapper= new ResponseWrapper<>();
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         String eventId = ResidentConstants.NOT_AVAILABLE;
@@ -344,7 +344,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             credentialReqestDto.setIssuer(environment.getProperty(ResidentConstants.CREDENTIAL_ISSUER));
             credentialReqestDto.setEncrypt(Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
             credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
-            Map<String, Object> additionalAttributes = getVidDetails(vid, uinForVid);
+            Map<String, Object> additionalAttributes = getVidDetails(vid, uinForVid, timeZoneOffset);
             credentialReqestDto.setAdditionalData(additionalAttributes);
             requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
             requestDto.setRequest(credentialReqestDto);
@@ -420,12 +420,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return residentTransactionEntity;
     }
 
-    private Map<String, Object> getVidDetails(String vid, String uin) throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+    private Map<String, Object> getVidDetails(String vid, String uin, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         Map<String, Object> additionalAttributes = new HashMap<>();
         String name=null;
         ResponseWrapper<List<Map<String,?>>> vidResponse = null;
         if(uin!=null){
-            vidResponse =vidService.retrieveVids(uin);
+            vidResponse =vidService.retrieveVids(uin, timeZoneOffset);
             name = getFullName(uin);
         }
         if (vidResponse!=null){

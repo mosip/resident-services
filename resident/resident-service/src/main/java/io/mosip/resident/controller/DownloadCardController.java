@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
@@ -99,7 +100,8 @@ public class DownloadCardController {
     
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
-    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO){
+    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
+    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset){
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 		try {
@@ -118,16 +120,17 @@ public class DownloadCardController {
 				.header("Content-Disposition", "attachment; filename=\""
 						+ utilitiy.getFileName(tupleResponse.getT2(),
 								Objects.requireNonNull(this.environment.getProperty(
-										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)))
+										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset)
 						+ ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
                 .body(resource);
     }
 
     @GetMapping("/request-card/vid/{VID}")
-    public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
+    public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
+    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws BaseCheckedException {
         requestValidator.validateDownloadCardVid(vid);
-        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid);
+        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
         return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());

@@ -1,14 +1,16 @@
 package io.mosip.resident.constant;
 
-import io.mosip.resident.dto.NotificationTemplateVariableDTO;
-import io.mosip.resident.util.TemplateUtil;
-import org.apache.commons.lang3.function.TriFunction;
-import reactor.util.function.Tuple2;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+
+import org.apache.commons.lang3.function.TriFunction;
+
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
+import io.mosip.resident.function.QuadFunction;
+import io.mosip.resident.util.TemplateUtil;
+import reactor.util.function.Tuple2;
 
 /**
  * The Enum RequestType.
@@ -73,7 +75,7 @@ public enum RequestType {
 	DEFAULT("Default", TemplateUtil::getDefaultTemplateVariables, List.of(), List.of(), List.of(), "",
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
-	private TriFunction<TemplateUtil, String, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
+	private QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private List<EventStatusSuccess> successStatusList;
 	private List<EventStatusFailure> failureStatusList;
 	private List<EventStatusInProgress> inProgressStatusList;
@@ -83,7 +85,7 @@ public enum RequestType {
 
 	private String name;
 
-	private RequestType(String name, TriFunction<TemplateUtil, String, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+	private RequestType(String name, QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 						List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
 						List<EventStatusInProgress> inProgressStatusList, String featureName,
 						BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
@@ -149,8 +151,8 @@ public enum RequestType {
 		return "resident.template.summary." + templateType.getType() + "." + getFeatureName();
 	}
 
-	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode) {
-		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode);
+	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode, Integer timeZoneOffset) {
+		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode, timeZoneOffset);
 	}
 	
 	public Map<String, Object> getNotificationTemplateVariables(TemplateUtil templateUtil, NotificationTemplateVariableDTO dto) {

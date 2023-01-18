@@ -282,13 +282,13 @@ public class DownloadCardServiceTest {
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-		assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
+		assertEquals("12345", downloadCardService.getVidCardEventId("123", 0).getT2());
     }
     
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetVidCardEventIdNestedIf() throws BaseCheckedException, IOException {
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123456789");
-		downloadCardService.getVidCardEventId("123");
+		downloadCardService.getVidCardEventId("123", 0);
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
@@ -304,7 +304,7 @@ public class DownloadCardServiceTest {
                 ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage())));
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-		downloadCardService.getVidCardEventId("123");
+		downloadCardService.getVidCardEventId("123", 0);
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -313,7 +313,7 @@ public class DownloadCardServiceTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
-		downloadCardService.getVidCardEventId("123");
+		downloadCardService.getVidCardEventId("123", 0);
     }
 
     @Test(expected = BaseCheckedException.class)
@@ -322,7 +322,7 @@ public class DownloadCardServiceTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
-		downloadCardService.getVidCardEventId("123");
+		downloadCardService.getVidCardEventId("123", 0);
     }
 
     @Test
@@ -350,8 +350,8 @@ public class DownloadCardServiceTest {
         vidDetails.put("transactionCount", "1234343434");
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        Mockito.when(vidService.retrieveVids(Mockito.anyString())).thenReturn(vidResponse);
-        assertEquals("12345", downloadCardService.getVidCardEventId("123").getT2());
+        Mockito.when(vidService.retrieveVids(Mockito.anyString(), Mockito.anyInt())).thenReturn(vidResponse);
+        assertEquals("12345", downloadCardService.getVidCardEventId("123", 0).getT2());
     }
 
     @Test
