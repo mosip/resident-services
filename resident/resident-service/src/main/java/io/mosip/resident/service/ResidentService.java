@@ -90,5 +90,5 @@ public interface ResidentService {
 
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException;
 
-	public String getFileName(String eventId);
+	public String getFileName(String eventId, int timeZoneOffset);
 }

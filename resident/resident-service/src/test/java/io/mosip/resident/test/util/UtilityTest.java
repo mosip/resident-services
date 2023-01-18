@@ -322,14 +322,14 @@ public class UtilityTest {
 
 	@Test
 	public void testGetFileNameAsPerFeatureNameShareCredWithPartner(){
-		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER"));
-		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID"));
-		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID"));
-		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD"));
-		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD"));
-		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN"));
-		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK"));
-		assertEquals("Generic", utility.getFileName("123", "Generic"));
+		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER", 0));
+		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID", 0));
+		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID", 0));
+		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD", 0));
+		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD", 0));
+		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN", 0));
+		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
+		assertEquals("Generic", utility.getFileName("123", "Generic", 0));
 	}
 
 	@Test
@@ -338,7 +338,7 @@ public class UtilityTest {
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf"));
+		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0));
 	}
 
 	@Test
@@ -347,7 +347,7 @@ public class UtilityTest {
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf"));
+		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0));
 	}
 
 	@Test
@@ -442,13 +442,13 @@ public class UtilityTest {
 	public void testGetFileNameAsPerFeatureName(){
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0));
 	}
 }

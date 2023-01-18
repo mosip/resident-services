@@ -1563,13 +1563,13 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public String getFileName(String eventId) {
+	public String getFileName(String eventId, int timeZoneOffset) {
 		if (cardType.equalsIgnoreCase(IdType.UIN.toString())) {
 			return utility.getFileName(eventId, Objects
-					.requireNonNull(this.env.getProperty(ResidentConstants.UIN_CARD_NAMING_CONVENTION_PROPERTY)));
+					.requireNonNull(this.env.getProperty(ResidentConstants.UIN_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		} else {
 			return utility.getFileName(eventId, Objects
-					.requireNonNull(this.env.getProperty(ResidentConstants.VID_CARD_NAMING_CONVENTION_PROPERTY)));
+					.requireNonNull(this.env.getProperty(ResidentConstants.VID_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		}
 	}
 
