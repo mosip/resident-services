@@ -532,6 +532,7 @@ public class Utilitiy {
 	
 	public String formatWithOffsetForFileName(int timeZoneOffset, LocalDateTime localDateTime) {
 		return formatDateTimeForPattern(localDateTime.minusMinutes(timeZoneOffset), Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)));
+	}
 	
 	public String getClientIp(HttpServletRequest req) {
 		logger.debug("Utilitiy::getClientIp()::entry");
