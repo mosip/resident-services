@@ -1,7 +1,6 @@
 package io.mosip.resident.controller;
 
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
@@ -37,6 +36,9 @@ public class ResidentOtpController {
 
 	@Autowired
 	private AuditUtil audit;
+
+	@Autowired
+	private RequestValidator requestValidator;
 	
 	@Value("${mosip.resident.api.id.otp.request}")
 	private String otpRequestId;
@@ -71,17 +73,14 @@ public class ResidentOtpController {
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN);
 		IndividualIdResponseDto individualIdResponseDto;
 		try {
-			if(individualIdRequestDto.getIndividualId()  == null || individualIdRequestDto.getIndividualId().equals("")) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "individualId");
-			}
-		individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e ) {
-			throw new ResidentServiceException( e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.REQ_RES_ID,otpRequestId));
-		}
-		catch(ResidentServiceException e) {
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,otpRequestId));
-			throw e ;
+			requestValidator.validateReqOtp(individualIdRequestDto);
+			individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
+		} catch (ResidentServiceException e) {
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
+			throw e;
 		}
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN_SUCCESS);
 		individualIdResponseDto.setId(otpRequestId);

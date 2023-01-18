@@ -1,6 +1,7 @@
 package io.mosip.resident.validator;
 
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
+import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -85,6 +86,10 @@ public class RequestValidator {
 	@Autowired
 	private VidValidator<String> vidValidator;
 
+	@Autowired
+	private RidValidator<String> ridValidator;
+
+	@Autowired
 	private AuditUtil audit;
 
 	@Autowired
@@ -556,6 +561,14 @@ public class RequestValidator {
 		}
 	}
 
+	public boolean validateRid(String individualId) {
+		try {
+			return ridValidator.validateId(individualId);
+		} catch (InvalidIDException e) {
+			return false;
+		}
+	}
+
 	public void validateVidRevokeRequest(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, boolean isOtpValidationRequired, String individualId) {
 
 		validateRevokeVidRequestWrapper(requestDto,"Request to revoke VID");
@@ -853,7 +866,7 @@ public class RequestValidator {
 
 	private boolean validateIndividualIdvIdWithoutIdType(String individualId) {
 		try {
-			return this.validateUin(individualId) || this.validateVid(individualId);
+			return this.validateUin(individualId) || this.validateVid(individualId) || this.validateRid(individualId);
 		} catch (InvalidIDException e) {
 			return false;
 		}
@@ -1090,7 +1103,7 @@ public class RequestValidator {
 	}
 
 	private void validateIndividualIdV2(String individualId) {
-		if (individualId == null || StringUtils.isEmpty(individualId)) {
+		if (individualId == null || StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request service history API"));
 			throw new InvalidInputException("individualId");
@@ -1203,7 +1216,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateIndividualIdOtpRequest(IndividualIdOtpRequestDTO individualIdRequestDto) {
+	public void validateReqOtp(IndividualIdOtpRequestDTO individualIdRequestDto) {
 		validateIndividualIdV2(individualIdRequestDto.getIndividualId());
 		validateTransactionId(individualIdRequestDto.getTransactionId());
 	}
