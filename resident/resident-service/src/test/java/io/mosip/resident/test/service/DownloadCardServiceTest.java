@@ -29,7 +29,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 import org.junit.Before;
@@ -88,7 +88,7 @@ public class DownloadCardServiceTest {
     private IdentityServiceImpl identityService;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;

@@ -11,7 +11,7 @@ import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -60,7 +60,7 @@ public class AcknowledgementController {
     private TemplateUtil templateUtil;
 
     @Autowired
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
 
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,

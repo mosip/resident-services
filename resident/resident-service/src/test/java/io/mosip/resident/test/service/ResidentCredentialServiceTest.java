@@ -62,7 +62,7 @@ import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,7 +88,7 @@ public class ResidentCredentialServiceTest {
     private ObjectMapper mapper;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
 
     @Mock
     private AuditUtil audit;

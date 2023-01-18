@@ -7,7 +7,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class DownLoadMasterDataController {
 	private AuditUtil audit;
 
 	@Autowired
-	private Utilitiy utilitiy;
+	private Utility utilitiy;
 
 	@Autowired
 	private Environment environment;

@@ -86,9 +86,9 @@ import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
  */
 
 @Component
-public class Utilitiy {
+public class Utility {
 
-	private static final Logger logger = LoggerConfiguration.logConfig(Utilitiy.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;

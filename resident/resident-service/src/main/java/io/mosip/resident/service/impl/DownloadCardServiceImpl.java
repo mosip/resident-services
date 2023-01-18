@@ -38,7 +38,7 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -94,7 +94,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private ResidentServiceImpl residentService;
 
     @Autowired
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
 
     @Autowired
     private IdentityServiceImpl identityService;

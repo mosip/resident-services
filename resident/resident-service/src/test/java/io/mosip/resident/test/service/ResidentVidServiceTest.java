@@ -62,7 +62,7 @@ import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -87,7 +87,7 @@ public class ResidentVidServiceTest {
     private ObjectMapper mapper;
     
     @Mock
-	private Utilitiy utilitiy;
+	private Utility utilitiy;
     
 	@Mock
 	private AuditUtil audit;

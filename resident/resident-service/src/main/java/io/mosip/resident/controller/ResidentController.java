@@ -81,7 +81,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -108,7 +108,7 @@ public class ResidentController {
 	private IdentityServiceImpl identityServiceImpl;
 	
 	@Autowired
-	private Utilitiy utilitiy;
+	private Utility utilitiy;
 
 	@Autowired
 	private Environment environment;

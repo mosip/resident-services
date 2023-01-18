@@ -59,7 +59,7 @@ import java.util.Optional;
     private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
     
     @Autowired
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
 
     @Autowired
     private ResidentServiceImpl residentService;

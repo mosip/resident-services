@@ -16,7 +16,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -65,7 +65,7 @@ public class DownloadCardController {
     DownloadCardService downloadCardService;
     
     @Autowired
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
     
     @Autowired
     private Environment environment;

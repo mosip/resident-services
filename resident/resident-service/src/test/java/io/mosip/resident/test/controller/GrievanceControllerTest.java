@@ -14,7 +14,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,7 +62,7 @@ public class GrievanceControllerTest {
     private Environment environment;
     
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utilitiy;
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;

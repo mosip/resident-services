@@ -21,7 +21,7 @@ import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -60,7 +60,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	private ResidentServiceImpl residentServiceImpl;
 
 	@Autowired
-	private Utilitiy utilitiy;
+	private Utility utilitiy;
 	
 	@Autowired
 	private ObjectMapper objectMapper;
