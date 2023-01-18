@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,6 +76,9 @@ public class UtilityTest {
 
 	@Mock
 	private IdentityServiceImpl identityService;
+	
+	@Mock
+	private HttpServletRequest request;
 
 	@Mock
 	private PDFGenerator pdfGenerator;
@@ -96,6 +101,7 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
         when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
         when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd");
+		request = Mockito.mock(HttpServletRequest.class);
 	}
 
 	@Test
@@ -453,5 +459,28 @@ public class UtilityTest {
 		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0));
 		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
 		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0));
+	}
+
+	@Test
+	public void testGetClientIp() {
+		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("1.2.3,1.3");
+		String ipAddress = utility.getClientIp(request);
+		assertEquals("1.2.3", ipAddress);
+	}
+
+	@Test
+	public void testGetClientIpEmpty() {
+		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("");
+		Mockito.when(request.getRemoteAddr()).thenReturn("1.1.5");
+		String ipAddress = utility.getClientIp(request);
+		assertEquals("1.1.5", ipAddress);
+	}
+
+	@Test
+	public void testGetClientIpNull() {
+		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn(null);
+		Mockito.when(request.getRemoteAddr()).thenReturn("1.5.5");
+		String ipAddress = utility.getClientIp(request);
+		assertEquals("1.5.5", ipAddress);
 	}
 }

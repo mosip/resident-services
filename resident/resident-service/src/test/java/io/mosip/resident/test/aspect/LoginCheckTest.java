@@ -24,6 +24,7 @@ import io.mosip.resident.aspect.LoginCheck;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.Utilitiy;
 
 /**
  * Aspect test class for login redirect API
@@ -43,6 +44,9 @@ public class LoginCheckTest {
 	
 	@Mock
 	private IdentityServiceImpl identityServiceImpl;
+	
+	@Mock
+	private Utilitiy utility;
 
 	@Mock
 	private HttpServletRequest request;
