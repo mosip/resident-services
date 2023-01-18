@@ -148,8 +148,9 @@ import java.util.Optional;
     public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText) {
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
-                residentTransactionEntity.getRefIdType());
-        fileText = fileText.replace(ResidentConstants.MASKED_VID, residentTransactionEntity.getRefId());
+                replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
+        fileText = fileText.replace(ResidentConstants.MASKED_VID, replaceNullWithEmptyString(
+                residentTransactionEntity.getRefId()));
         String requestType = residentTransactionEntity.getRequestTypeCode();
         if (requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())) {
             fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, GENERATED);

@@ -1,31 +1,30 @@
 package io.mosip.resident.controller;
 
-import java.security.NoSuchAlgorithmException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
-import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @RestController
@@ -37,6 +36,9 @@ public class ResidentOtpController {
 
 	@Autowired
 	private AuditUtil audit;
+
+	@Autowired
+	private RequestValidator requestValidator;
 	
 	@Value("${mosip.resident.api.id.otp.request}")
 	private String otpRequestId;
@@ -71,17 +73,14 @@ public class ResidentOtpController {
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN);
 		IndividualIdResponseDto individualIdResponseDto;
 		try {
-		if(individualIdRequestDto.getIndividualId()  == null) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + "individualId");
-		}
-		individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e ) {
-			throw new ResidentServiceException( e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.REQ_RES_ID,otpRequestId));
-		}
-		catch(ResidentServiceException e) {
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,otpRequestId));
-			throw e ;
+			requestValidator.validateReqOtp(individualIdRequestDto);
+			individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
+		} catch (ResidentServiceException e) {
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
+			throw e;
 		}
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN_SUCCESS);
 		individualIdResponseDto.setId(otpRequestId);

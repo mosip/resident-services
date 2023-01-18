@@ -38,6 +38,10 @@ public class ApisResourceAccessException extends BaseResidentCheckedExceptionWit
 	public ApisResourceAccessException(String message, Throwable cause) {
 		super(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), message, cause);
 	}
+
+	public ApisResourceAccessException(String errorCode, String errorMessage, Exception exception) {
+		super(errorCode, errorMessage, exception);
+	}
 	
 	public ApisResourceAccessException(String err, Throwable rootCause, Map<String, Object> metadata) {
 		super(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), err, rootCause, metadata);
