@@ -16,6 +16,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -70,7 +71,8 @@ public class DownLoadMasterDataController {
 	 */
 	@GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
-			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name)
+			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
@@ -85,14 +87,15 @@ public class DownLoadMasterDataController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
-								ResidentConstants.DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY))) + ".pdf\"")
+								ResidentConstants.DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);
 	}
 	
 	@GetMapping("/download/nearestRegistrationcenters")
 	public ResponseEntity<Object> downloadNearestRegistrationcenters(@RequestParam(name="langcode") String langCode,
 			@RequestParam(name="longitude") double longitude, @RequestParam(name="latitude") double latitude,
-			@RequestParam(name="proximitydistance") int proximityDistance)
+			@RequestParam(name="proximitydistance") int proximityDistance,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
@@ -107,12 +110,13 @@ public class DownLoadMasterDataController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
-								ResidentConstants.DOWNLOAD_NEAREST_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY))) + ".pdf\"")
+								ResidentConstants.DOWNLOAD_NEAREST_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);
 	}
 	
 	@GetMapping(path = "/download/supporting-documents", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@RequestParam(name = "langcode") String langCode)
+	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@RequestParam(name = "langcode") String langCode,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getSupportingDocsByLanguageCode()::entry");
 		DOWNLOADABLE_SUPPORTING_FILENAME = "supportingDocs-";
@@ -127,7 +131,7 @@ public class DownLoadMasterDataController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
-								ResidentConstants.DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY))) + ".pdf\"")
+								ResidentConstants.DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);
 	}
 	/**

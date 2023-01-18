@@ -9,5 +9,5 @@ import java.io.IOException;
  * @Author Kamesh Shekhar Prasad
  */
 public interface AcknowledgementService {
-    byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException, IOException;
+    byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, IOException;
 }

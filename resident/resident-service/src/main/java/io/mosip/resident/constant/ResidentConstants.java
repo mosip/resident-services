@@ -8,7 +8,8 @@ package io.mosip.resident.constant;
  */
 public class ResidentConstants {
 
-    private ResidentConstants() {
+    public static final int UTC_TIMEZONE_OFFSET = 0;
+	private ResidentConstants() {
 	}
 
     public static final String OBJECT_STORE_ACCOUNT_NAME = "mosip.resident.object.store.account-name";
@@ -178,7 +179,8 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
-    public static final String ACK_DATE_TIME_PATTERN = "resident.ack.datetime.pattern";
+    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
+    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";

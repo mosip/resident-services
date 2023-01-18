@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
@@ -63,7 +64,8 @@ public class AcknowledgementController {
 
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
-                                                  @PathVariable("languageCode") String languageCode) throws ResidentServiceCheckedException, IOException {
+                                                  @PathVariable("languageCode") String languageCode,
+                                                  @RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementController::acknowledgement()::entry");
         InputStreamResource resource = null;
         String featureName = null;
@@ -76,7 +78,7 @@ public class AcknowledgementController {
 		}
         try {
             auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
-	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode);
+	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset);
 	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
 	        logger.debug("AcknowledgementController::acknowledgement()::exit");
@@ -91,7 +93,7 @@ public class AcknowledgementController {
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        utilitiy.getFileNameAsPerFeatureName(eventId, featureName) + ".pdf\"")
+                        utilitiy.getFileNameAsPerFeatureName(eventId, featureName, timeZoneOffset) + ".pdf\"")
                 .body(resource);
     }
 }
