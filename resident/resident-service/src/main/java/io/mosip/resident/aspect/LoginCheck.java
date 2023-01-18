@@ -22,7 +22,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 /**
  * Aspect class for login redirect API
@@ -51,7 +51,7 @@ public class LoginCheck {
 	private IdentityServiceImpl identityServiceImpl;
 	
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(LoginCheck.class);
 

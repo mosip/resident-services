@@ -47,7 +47,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,7 +111,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	Environment env;
 
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -197,20 +197,20 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				residentCredentialResponseDto = JsonUtil.readValue(
 						JsonUtil.writeValueAsString(responseDto.getResponse()), ResidentCredentialResponseDto.class);
 				additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
-				if(!Utilitiy.isSecureSession()){
+				if(!Utility.isSecureSession()){
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_SUCCESS,
 							additionalAttributes);
 				}
 				
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			if(!Utilitiy.isSecureSession()){
+			if(!Utility.isSecureSession()){
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			}
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (IOException e) {
-			if(!Utilitiy.isSecureSession()){
+			if(!Utility.isSecureSession()){
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_CRE_REQ_FAILURE, additionalAttributes);
 			}
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
@@ -299,7 +299,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
 		} finally {
-			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+			if (Utility.isSecureSession() && residentTransactionEntity != null) {
 				//if the status code will come as null, it will set it as failed.
 				if(residentTransactionEntity.getStatusCode()==null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -435,7 +435,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	public CredentialReqestDto prepareCredentialRequest(ResidentCredentialRequestDto residentCreDto, String individualId) {
 		CredentialReqestDto crDto = new CredentialReqestDto();
-		if(Utilitiy.isSecureSession()){
+		if(Utility.isSecureSession()){
 			crDto.setId(individualId);
 			crDto.setCredentialType(credentialType);
 			crDto.setEncrypt(isEncrypt);

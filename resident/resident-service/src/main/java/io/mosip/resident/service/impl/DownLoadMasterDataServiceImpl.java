@@ -16,7 +16,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	private ObjectMapper mapper;
 	
 	@Autowired
-	private Utilitiy utilitiy;
+	private Utility utility;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
@@ -119,7 +119,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
-		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
+		return new ByteArrayInputStream(utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
 	
 	/**
@@ -152,7 +152,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
     
 		StringWriter writer = new StringWriter();
 		IOUtils.copy(supportingDocsTemplateData, writer, "UTF-8");
-		return new ByteArrayInputStream(utilitiy.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
+		return new ByteArrayInputStream(utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
   
 	/**

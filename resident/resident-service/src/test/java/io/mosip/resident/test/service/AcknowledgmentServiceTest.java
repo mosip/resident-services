@@ -15,7 +15,7 @@ import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
 import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +79,7 @@ public class AcknowledgmentServiceTest {
     private ResidentServiceRestClient residentServiceRestClient;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     private byte[] result;
     private String eventId;
@@ -125,7 +125,7 @@ public class AcknowledgmentServiceTest {
         signatureResponseDto.setData("data");
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
-        Mockito.when(utilitiy.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
+        Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
     }
 
     @Test

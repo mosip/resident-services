@@ -21,7 +21,7 @@ import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -60,7 +60,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	private ResidentServiceImpl residentServiceImpl;
 
 	@Autowired
-	private Utilitiy utilitiy;
+	private Utility utility;
 	
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -100,7 +100,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
-		residentTransactionEntity.setEventId(utilitiy.createEventId());
+		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
 		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
@@ -114,9 +114,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setLangCode("eng");
 		residentTransactionEntity.setRefIdType("UIN");
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
-			residentTransactionEntity.setRefId(utilitiy.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
+			residentTransactionEntity.setRefId(utility.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
 		} else{
-			residentTransactionEntity.setRefId(utilitiy.getRefIdHash(otpRequestDTO.getIndividualId()));
+			residentTransactionEntity.setRefId(utility.getRefIdHash(otpRequestDTO.getIndividualId()));
 		}
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setCrBy("mosip");

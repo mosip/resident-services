@@ -13,7 +13,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +60,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     }
 
     @Autowired
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     @Override
     public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
@@ -84,7 +84,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return utilitiy.signPdf(templateValue, null);
+            return utility.signPdf(templateValue, null);
 
     }
 

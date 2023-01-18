@@ -25,7 +25,7 @@ import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ProxyOtpService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,7 +65,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 	private IdentityServiceImpl identityServiceImpl;
     
     @Autowired
-	private Utilitiy utility;
+	private Utility utility;
     
     @Autowired
 	private ResidentTransactionRepository residentTransactionRepository;

@@ -20,7 +20,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,7 +45,7 @@ public class ProxyAuditController {
 	private IdentityService identityService;
 	
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 
 	/**
 	 * Auth audit log.

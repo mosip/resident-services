@@ -30,7 +30,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 
 @Configuration
@@ -52,7 +52,7 @@ public class Config {
 
 	@Bean("varres")
 	public VariableResolverFactory getVariableResolverFactory() {
-		String mvelExpression = Utilitiy.readResourceContent(mvelFile);
+		String mvelExpression = Utility.readResourceContent(mvelFile);
 		VariableResolverFactory functionFactory = new MapVariableResolverFactory();
 		MVEL.eval(mvelExpression, functionFactory);
 		return functionFactory;

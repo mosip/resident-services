@@ -23,7 +23,7 @@ import io.mosip.resident.service.impl.ProxyOtpServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public class ProxyOtpServiceImpllTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     @Mock
     @Qualifier("selfTokenRestTemplate")
@@ -150,8 +150,8 @@ public class ProxyOtpServiceImpllTest {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
         responseEntity = new ResponseEntity<>(HttpStatus.OK);
-        Mockito.when(utilitiy.createEntity()).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(utilitiy.createEventId()).thenReturn("12345");
+        Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEventId()).thenReturn("12345");
     }
 
     @Test

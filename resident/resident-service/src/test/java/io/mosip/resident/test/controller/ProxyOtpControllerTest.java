@@ -18,7 +18,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -98,7 +98,7 @@ public class ProxyOtpControllerTest {
     private AuditUtil auditUtil;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     @Mock
     private Environment environment;

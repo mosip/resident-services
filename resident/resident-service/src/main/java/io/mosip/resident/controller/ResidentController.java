@@ -81,7 +81,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -108,7 +108,7 @@ public class ResidentController {
 	private IdentityServiceImpl identityServiceImpl;
 	
 	@Autowired
-	private Utilitiy utilitiy;
+	private Utility utility;
 
 	@Autowired
 	private Environment environment;
@@ -618,7 +618,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + utilitiy.getFileName(null,
+				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
 								ResidentConstants.DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);

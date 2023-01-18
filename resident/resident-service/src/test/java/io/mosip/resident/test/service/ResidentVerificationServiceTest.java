@@ -11,7 +11,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class ResidentVerificationServiceTest {
     private IdentityServiceImpl identityServiceImpl;
     
     @Mock
-	private Utilitiy utilitiy;
+	private Utility utility;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;

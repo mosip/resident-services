@@ -15,7 +15,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -67,7 +67,7 @@ public class UtilityTest {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@InjectMocks
-	private Utilitiy utility;
+	private Utility utility;
 
 	private JSONObject identity;
 
@@ -191,7 +191,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -215,7 +215,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -237,7 +237,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -259,7 +259,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -302,7 +302,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = "";
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("user@mail.com", attributes.get("email"));
@@ -319,7 +319,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Mockito.doReturn(JsonUtil.getJSONObject(identity, "identity")).when(utilitySpy)
 				.retrieveIdrepoJson(Mockito.anyString());

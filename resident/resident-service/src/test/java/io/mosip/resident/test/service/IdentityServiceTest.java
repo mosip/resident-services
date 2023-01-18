@@ -26,7 +26,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -80,7 +80,7 @@ public class IdentityServiceTest {
 	private AuditUtil auditUtil;
 
 	@Mock
-	private Utilitiy utility;
+	private Utility utility;
 
 	@Mock
 	private CbeffUtil cbeffUtil;

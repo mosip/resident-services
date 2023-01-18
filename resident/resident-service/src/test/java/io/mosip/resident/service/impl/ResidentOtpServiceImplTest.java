@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -64,7 +64,7 @@ public class ResidentOtpServiceImplTest {
 	private ResidentServiceImpl residentServiceImpl;
 
 	@Mock
-	private Utilitiy utility;
+	private Utility utility;
 
 	@InjectMocks
 	private ResidentOtpServiceImpl residentOtpServiceImpl;
