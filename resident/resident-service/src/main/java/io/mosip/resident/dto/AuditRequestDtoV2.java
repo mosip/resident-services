@@ -35,16 +35,6 @@ public class AuditRequestDtoV2 {
 	@NotNull
 	private LocalDateTime actionTimeStamp;
 
-	/** The host name. */
-	@NotNull
-	@Size(min = 1, max = 32)
-	private String hostName;
-
-	/** The host ip. */
-	@NotNull
-	@Size(min = 1, max = 16)
-	private String hostIp;
-
 	/** The application id. */
 	@NotNull
 	@Size(min = 1, max = 64)

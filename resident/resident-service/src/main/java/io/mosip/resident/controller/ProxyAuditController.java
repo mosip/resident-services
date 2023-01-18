@@ -2,6 +2,8 @@ package io.mosip.resident.controller;
 
 import java.security.NoSuchAlgorithmException;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +48,7 @@ public class ProxyAuditController {
 	private Utilitiy utility;
 
 	/**
-	 * Audit log.
+	 * Auth audit log.
 	 *
 	 * @param auditRequestDtoV2 the audit request dto
 	 * @return the response entity
@@ -62,15 +64,15 @@ public class ProxyAuditController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> authAuditLog(@RequestBody AuditRequestDtoV2 auditRequestDtoV2)
+	public ResponseEntity<?> authAuditLog(@RequestBody AuditRequestDtoV2 auditRequestDtoV2, HttpServletRequest req)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
 		AuditRequestDTO auditRequestDto=new AuditRequestDTO();
 		auditRequestDto.setEventId(auditRequestDtoV2.getAuditEventId());
 		auditRequestDto.setEventName(auditRequestDtoV2.getAuditEventName());
 		auditRequestDto.setEventType(auditRequestDtoV2.getAuditEventType());
 		auditRequestDto.setActionTimeStamp(auditRequestDtoV2.getActionTimeStamp());
-		auditRequestDto.setHostName(auditRequestDtoV2.getHostName());
-		auditRequestDto.setHostIp(auditRequestDtoV2.getHostIp());
+		auditRequestDto.setHostName(req.getRemoteHost());
+		auditRequestDto.setHostIp(utility.getClientIp(req));
 		auditRequestDto.setApplicationId(auditRequestDtoV2.getApplicationId());
 		auditRequestDto.setApplicationName(auditRequestDtoV2.getApplicationName());
 		auditRequestDto.setSessionUserId(auditRequestDtoV2.getSessionUserId());
@@ -85,7 +87,16 @@ public class ProxyAuditController {
 		auditUtil.callAuditManager(auditRequestDto);
 		return ResponseEntity.ok().build();
 	}
-	
+
+	/**
+	 * Audit log.
+	 * 
+	 * @param auditRequestDtoV3
+	 * @return the response entity
+	 * @throws ResidentServiceCheckedException
+	 * @throws ApisResourceAccessException
+	 * @throws NoSuchAlgorithmException
+	 */
 	@ResponseFilter
 	@PostMapping("/proxy/audit/log")
 	@Operation(summary = "auditLog", description = "audit log", tags = { "proxy-audit-controller" })
@@ -94,15 +105,15 @@ public class ProxyAuditController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<?> auditLog(@RequestBody AuditRequestDtoV3 auditRequestDtoV3)
+	public ResponseEntity<?> auditLog(@RequestBody AuditRequestDtoV3 auditRequestDtoV3, HttpServletRequest req)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
 		AuditRequestDTO auditRequestDto=new AuditRequestDTO();
 		auditRequestDto.setEventId(auditRequestDtoV3.getAuditEventId());
 		auditRequestDto.setEventName(auditRequestDtoV3.getAuditEventName());
 		auditRequestDto.setEventType(auditRequestDtoV3.getAuditEventType());
 		auditRequestDto.setActionTimeStamp(auditRequestDtoV3.getActionTimeStamp());
-		auditRequestDto.setHostName(auditRequestDtoV3.getHostName());
-		auditRequestDto.setHostIp(auditRequestDtoV3.getHostIp());
+		auditRequestDto.setHostName(req.getRemoteHost());
+		auditRequestDto.setHostIp(utility.getClientIp(req));
 		auditRequestDto.setApplicationId(auditRequestDtoV3.getApplicationId());
 		auditRequestDto.setApplicationName(auditRequestDtoV3.getApplicationName());
 		auditRequestDto.setSessionUserId(auditRequestDtoV3.getSessionUserId());
