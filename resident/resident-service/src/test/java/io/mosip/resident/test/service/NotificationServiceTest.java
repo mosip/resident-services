@@ -18,7 +18,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -63,7 +63,7 @@ public class NotificationServiceTest {
 	private NotificationService notificationService;
 
 	@Mock
-	private Utilitiy utility;
+	private Utility utility;
 	
 	@Mock
 	private Utilities utilities;

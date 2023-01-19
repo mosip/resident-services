@@ -2,11 +2,10 @@ package io.mosip.resident.exception;
 
 import java.util.Map;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.util.ObjectWithMetadata;
 
-public class VidRevocationException extends BaseUncheckedException implements ObjectWithMetadata {
+public class VidRevocationException extends BaseResidentUncheckedExceptionWithMetadata {
 
 	/**
 	 * 

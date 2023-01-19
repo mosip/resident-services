@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.exception.ServiceError;
@@ -264,11 +265,11 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public ResponseWrapper<?> retrieveVids() throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
+	public ResponseWrapper<?> retrieveVids(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
 		logger.debug("ResidentVidController::retrieveVids()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS);
 		String residentIndividualId = getResidentIndividualId();
-		ResponseWrapper<List<Map<String, ?>>> retrieveVids = residentVidService.retrieveVids(residentIndividualId);
+		ResponseWrapper<List<Map<String, ?>>> retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset);
 		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS_SUCCESS);
 		logger.debug("ResidentVidController::retrieveVids()::exit");
 		return retrieveVids;
