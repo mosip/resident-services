@@ -63,7 +63,7 @@ public interface ResidentService {
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
-																		  String searchColumn, String searchText, String langCode) throws ResidentServiceCheckedException, ApisResourceAccessException;
+																		  String searchColumn, String searchText, String langCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	byte[] downloadCard(String individualId, String idType)
 			throws ResidentServiceCheckedException;
@@ -73,7 +73,7 @@ public interface ResidentService {
 
 	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
 
-	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId)
+	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId, int timeZoneOffset)
 			throws ResidentServiceCheckedException;
 
 	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id);
@@ -86,9 +86,9 @@ public interface ResidentService {
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
-								  String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
+								  String serviceType, String statusFilter, int timeZoneOffset) throws ResidentServiceCheckedException, IOException;
 
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException;
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException;
 
-	public String getFileName(String eventId);
+	public String getFileName(String eventId, int timeZoneOffset);
 }

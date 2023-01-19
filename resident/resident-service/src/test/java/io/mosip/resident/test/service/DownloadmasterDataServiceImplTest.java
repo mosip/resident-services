@@ -15,7 +15,7 @@ import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.DownLoadMasterDataServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -80,7 +80,7 @@ public class DownloadmasterDataServiceImplTest {
     private ResidentServiceRestClient residentServiceRestClient;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     private byte[] result;
     private String eventId;
@@ -126,7 +126,7 @@ public class DownloadmasterDataServiceImplTest {
         signatureResponseDto.setData("data");
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
-        Mockito.when(utilitiy.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
+        Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
         langCode="eng";
         hierarchyLevel=4;

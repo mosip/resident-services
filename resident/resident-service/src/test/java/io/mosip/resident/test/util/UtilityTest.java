@@ -15,7 +15,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -49,12 +49,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -64,7 +67,7 @@ public class UtilityTest {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@InjectMocks
-	private Utilitiy utility;
+	private Utility utility;
 
 	private JSONObject identity;
 
@@ -73,6 +76,9 @@ public class UtilityTest {
 
 	@Mock
 	private IdentityServiceImpl identityService;
+	
+	@Mock
+	private HttpServletRequest request;
 
 	@Mock
 	private PDFGenerator pdfGenerator;
@@ -93,6 +99,9 @@ public class UtilityTest {
 		identity = JsonUtil.readValue(idJsonString, JSONObject.class);
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
+        when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
+        when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd");
+		request = Mockito.mock(HttpServletRequest.class);
 	}
 
 	@Test
@@ -182,7 +191,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -206,7 +215,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -228,7 +237,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -250,7 +259,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
@@ -293,7 +302,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = "";
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("user@mail.com", attributes.get("email"));
@@ -310,7 +319,7 @@ public class UtilityTest {
 		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utilitiy utilitySpy = Mockito.spy(utility);
+		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
 		Mockito.doReturn(JsonUtil.getJSONObject(identity, "identity")).when(utilitySpy)
 				.retrieveIdrepoJson(Mockito.anyString());
@@ -322,14 +331,14 @@ public class UtilityTest {
 
 	@Test
 	public void testGetFileNameAsPerFeatureNameShareCredWithPartner(){
-		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER"));
-		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID"));
-		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID"));
-		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD"));
-		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD"));
-		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN"));
-		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK"));
-		assertEquals("Generic", utility.getFileName("123", "Generic"));
+		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER", 0));
+		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID", 0));
+		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID", 0));
+		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD", 0));
+		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD", 0));
+		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN", 0));
+		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
+		assertEquals("Generic", utility.getFileName("123", "Generic", 0));
 	}
 
 	@Test
@@ -338,7 +347,7 @@ public class UtilityTest {
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf"));
+		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0));
 	}
 
 	@Test
@@ -347,7 +356,7 @@ public class UtilityTest {
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf"));
+		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0));
 	}
 
 	@Test
@@ -442,13 +451,36 @@ public class UtilityTest {
 	public void testGetFileNameAsPerFeatureName(){
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK"));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic"));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0));
+	}
+
+	@Test
+	public void testGetClientIp() {
+		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("1.2.3,1.3");
+		String ipAddress = utility.getClientIp(request);
+		assertEquals("1.2.3", ipAddress);
+	}
+
+	@Test
+	public void testGetClientIpEmpty() {
+		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("");
+		Mockito.when(request.getRemoteAddr()).thenReturn("1.1.5");
+		String ipAddress = utility.getClientIp(request);
+		assertEquals("1.1.5", ipAddress);
+	}
+
+	@Test
+	public void testGetClientIpNull() {
+		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn(null);
+		Mockito.when(request.getRemoteAddr()).thenReturn("1.5.5");
+		String ipAddress = utility.getClientIp(request);
+		assertEquals("1.5.5", ipAddress);
 	}
 }
