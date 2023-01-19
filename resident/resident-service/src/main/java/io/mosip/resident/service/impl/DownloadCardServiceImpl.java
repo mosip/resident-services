@@ -214,7 +214,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO) {
+    public Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset) {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
         byte[] decodedData;
         String password=null;
