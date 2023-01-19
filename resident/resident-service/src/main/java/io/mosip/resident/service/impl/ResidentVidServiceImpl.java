@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -43,6 +44,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.VidAlreadyPresentException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
@@ -75,8 +77,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICIES;
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
@@ -206,6 +210,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 			if(Utility.isSecureSession()){
 				residentTransactionEntity = createResidentTransactionEntity(requestDto);
+				validateVidFromSession(individualId);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
 	    		}
@@ -347,8 +352,69 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setVersion(version);
 		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-
 		return Tuples.of(responseDto, eventId);
+	}
+
+	private void validateVidFromSession(String individualId) {
+		try {
+			String idType = identityServiceImpl.getIndividualIdType(individualId);
+			String uin = identityServiceImpl.getUinForIndividualId(individualId);
+			if (idType.equalsIgnoreCase(IdType.VID.name())) {
+				String vidType =
+						getVidTypeFromVid(individualId, uin);
+				if(vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+					int numberOfPerpetualVid = getNumberOfPerpetualVidFromUin(uin).getT1();
+					VidPolicy vidPolicy = getVidPolicyAsVidPolicyDto();
+					if(vidPolicy.getAllowedInstances() >= numberOfPerpetualVid
+							&& vidPolicy.getAutoRestoreAllowed() &&
+							!vidPolicy.getRestoreOnAction().
+									equalsIgnoreCase(env.getProperty(ResidentConstants.VID_ACTIVE_STATUS))){
+						if(getNumberOfPerpetualVidFromUin(uin).getT2().equals(individualId)){
+							throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED,
+									ResidentErrorCode.VID_CREATION_FAILED.getErrorMessage());
+						}
+					}
+				}
+			}
+		}catch (ApisResourceAccessException | ResidentServiceCheckedException |
+				com.fasterxml.jackson.core.JsonProcessingException | ResidentServiceException e) {
+			audit.setAuditRequestDto(EventEnum.VID_GENERATION_FAILURE);
+			logger.error(EventEnum.VID_GENERATION_FAILURE.getDescription() + e);
+			throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED.getErrorCode(),
+					ResidentErrorCode.VID_CREATION_FAILED.getErrorMessage(), e);
+		}
+	}
+
+	private VidPolicy getVidPolicyAsVidPolicyDto() throws ResidentServiceCheckedException, com.fasterxml.jackson.core.JsonProcessingException {
+		String vidPolicy = getVidPolicy();
+		VidPolicy vidPolicyDto = new VidPolicy();
+		Map<Object, Object> vidPolicyMap = mapper.readValue(vidPolicy, Map.class);
+		Object vidPolicyMapValue = vidPolicyMap.get(VID_POLICIES);
+		List<Map<String, String>> vidList = (List<Map<String, String>>)vidPolicyMapValue;
+		if(vidList!=null){
+			for(Map<String, String> vid:vidList){
+				if(vid.get(TemplateVariablesConstants.VID_TYPE).equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+					vidPolicyDto = mapper.convertValue(vid.get(VID_POLICY), VidPolicy.class);
+				}
+			}
+		}
+		return vidPolicyDto;
+	}
+
+	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		String firstVid = "";
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , 0);
+		int count =0;
+		for(Map<String, ?> vidList : vids.getResponse()){
+			if(count==0){
+				firstVid = (String) vidList.get(TemplateVariablesConstants.VID);
+			}
+			if(vidList.get(TemplateVariablesConstants.VID_TYPE).toString().
+					equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+				count ++;
+			}
+		}
+		return Tuples.of(count, firstVid);
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {

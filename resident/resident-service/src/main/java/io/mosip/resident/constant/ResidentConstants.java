@@ -200,4 +200,11 @@ public class ResidentConstants {
     public static final String REMOTE_ADDR = "REMOTE_ADDR";
     // IP headers constants end---
 
+    public static final String VID_POLICIES = "vidPolicies";
+    public static final String VID_POLICY = "vidPolicy";
+    public static final String PERPETUAL = "Perpetual";
+
+    public static final String DATA = "Data";
+    public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
+
 }
