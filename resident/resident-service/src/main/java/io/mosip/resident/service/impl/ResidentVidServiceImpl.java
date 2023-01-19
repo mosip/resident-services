@@ -81,6 +81,8 @@ import java.util.stream.Collectors;
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
 
+	private static final String GENRATED_ON_TIMESTAMP = "genratedOnTimestamp";
+	
 	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
 
 	private static final String TRANSACTIONS_LEFT_COUNT = "transactionsLeftCount";
@@ -735,7 +737,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
 					getMaskedVid(lhm);
 					getRefIdHash(lhm);
-					normalizeExpiryTime(lhm, timeZoneOffset);
+					normalizeTime(EXPIRY_TIMESTAMP, lhm, timeZoneOffset);
+					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset);
 					return lhm;
 				})
 				.collect(Collectors.toList());
@@ -748,16 +751,16 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
-	private void normalizeExpiryTime(LinkedHashMap<String, Object> lhm, int timeZoneOffset) {
-		Object expiryTimeObj = lhm.get(EXPIRY_TIMESTAMP);
-		if(expiryTimeObj instanceof String) {
-			String expiryTime = String.valueOf(expiryTimeObj);
-			LocalDateTime expiryLocalDateTime = mapper.convertValue(expiryTime, LocalDateTime.class);
+	private void normalizeTime(String attributeName, LinkedHashMap<String, Object> lhm, int timeZoneOffset) {
+		Object timeObject = lhm.get(attributeName);
+		if(timeObject instanceof String) {
+			String timeStr = String.valueOf(timeObject);
+			LocalDateTime localDateTime = mapper.convertValue(timeStr, LocalDateTime.class);
 			//For the big expiry time, assume no expiry time, so set to null
-			if(expiryLocalDateTime.getYear() >= 9999) {
-				lhm.put(EXPIRY_TIMESTAMP, null);
+			if(localDateTime.getYear() >= 9999) {
+				lhm.put(attributeName, null);
 			} else {
-				lhm.put(EXPIRY_TIMESTAMP, utility.formatWithOffsetForUI(timeZoneOffset, expiryLocalDateTime)) ;
+				lhm.put(attributeName, utility.formatWithOffsetForUI(timeZoneOffset, localDateTime)) ;
 			}
 		}
 	}

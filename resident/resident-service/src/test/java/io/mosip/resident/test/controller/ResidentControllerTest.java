@@ -534,8 +534,8 @@ public class ResidentControllerTest {
 		user.setFullName("name");
 		ResponseWrapper<UserInfoDto> response = new ResponseWrapper<>();
 		response.setResponse(user);
-		residentController.userinfo();
-		Mockito.when(residentService.getUserinfo(Mockito.any())).thenReturn(response);
+		residentController.userinfo(0);
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt())).thenReturn(response);
 		this.mockMvc.perform(get("/profile"))
 				.andExpect(status().isOk());
 	}
