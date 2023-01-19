@@ -354,10 +354,10 @@ public class ResidentControllerTest {
 	public void testGetServiceHistorySuccess() throws Exception {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt())).thenReturn(response);
 		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
 				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
-				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, TimeZone.getDefault());
+				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, 0);
 		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
@@ -495,7 +495,7 @@ public class ResidentControllerTest {
 		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
 		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210");
+				.downloadCard("9876543210", 0);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -521,7 +521,7 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
-		residentController.checkAidStatus("17", "eng");
+		residentController.checkAidStatus("17", "eng", 0);
 		when(residentService.checkAidStatus("17")).thenReturn("PROCESSED");
 		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng"))
 				.andExpect(status().isOk());
