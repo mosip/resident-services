@@ -28,7 +28,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,7 +99,7 @@ public class ResidentServiceDownloadCardTest {
     private TemplateManager templateManager;
 
     @Mock
-    private Utilitiy utility;
+    private Utility utility;
 
     private byte[] result;
     private String eventId;

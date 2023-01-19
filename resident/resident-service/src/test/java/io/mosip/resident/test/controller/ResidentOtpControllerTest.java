@@ -47,7 +47,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 
 @RunWith(SpringRunner.class)
@@ -87,7 +87,7 @@ public class ResidentOtpControllerTest {
 	private UinCardRePrintService rePrintService;
 
 	@MockBean
-	private Utilitiy utilitiy;
+	private Utility utility;
 
 	@MockBean
 	private Utilities utilities;

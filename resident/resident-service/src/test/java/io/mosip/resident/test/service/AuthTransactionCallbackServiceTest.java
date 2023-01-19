@@ -14,7 +14,7 @@ import io.mosip.resident.service.impl.AuthTransactionCallBackServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class AuthTransactionCallbackServiceTest {
     private IdentityServiceImpl identityServiceImpl;
     
     @Mock
-    private Utilitiy utility;
+    private Utility utility;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
