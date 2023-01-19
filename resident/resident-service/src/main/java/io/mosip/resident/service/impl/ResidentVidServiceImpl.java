@@ -403,7 +403,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		String firstVid = "";
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , 0);
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , ResidentConstants.UTC_TIMEZONE_OFFSET);
 		int count =0;
 		for(Map<String, ?> vidList : vids.getResponse()){
 			if(count==0){
