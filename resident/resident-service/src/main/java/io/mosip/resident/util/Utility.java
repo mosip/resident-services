@@ -1,7 +1,58 @@
 package io.mosip.resident.util;
 
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.mvel2.MVEL;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -30,55 +81,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.mvel2.MVEL;
-import org.mvel2.integration.VariableResolverFactory;
-import org.mvel2.integration.impl.MapVariableResolverFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
-import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 
 /**
  * @author Girish Yarru
@@ -522,16 +524,19 @@ public class Utility {
 	}
 
 	private String formatDateTimeForPattern(LocalDateTime localDateTime, String dateTimePattern) {
-	    return localDateTime.format(
-	            DateTimeFormatter.ofPattern(dateTimePattern));
+		return localDateTime == null ? null : localDateTime.format(DateTimeFormatter.ofPattern(dateTimePattern));
 	}
 
 	public String formatWithOffsetForUI(int timeZoneOffset, LocalDateTime localDateTime) {
-		return formatDateTimeForPattern(localDateTime.minusMinutes(timeZoneOffset), Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN)));
+		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN)));
+	}
+
+	public LocalDateTime applyTimeZoneOffsetOnDateTime(int timeZoneOffset, LocalDateTime localDateTime) {
+		return localDateTime == null ? null : localDateTime.minusMinutes(timeZoneOffset); //Converting UTC to local time zone
 	}
 	
 	public String formatWithOffsetForFileName(int timeZoneOffset, LocalDateTime localDateTime) {
-		return formatDateTimeForPattern(localDateTime.minusMinutes(timeZoneOffset), Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)));
+		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)));
 	}
 	
 	public String getClientIp(HttpServletRequest req) {

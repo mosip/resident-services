@@ -1684,7 +1684,7 @@ public class ResidentServiceImpl implements ResidentService {
 																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException {
 		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType);
+				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
 				.getResultList();
@@ -1700,24 +1700,24 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public String getDynamicNativeQueryString(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
 											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-											  String serviceType) {
+											  String serviceType, int timeZoneOffset) {
 		String query = "SELECT * FROM resident_transaction  where token_id = '"
 				+ idaToken+"'";
 		String dynamicQuery = "";
 		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase("ALL")
 				&& statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime) + getServiceQuery(serviceType)
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType)
 					+ getStatusFilterQuery(statusFilter) + getSearchQuery(searchText);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime) + getServiceQuery(serviceType )
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
 					+ getStatusFilterQuery(statusFilter );
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getServiceQuery(serviceType )
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
 					+ getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getStatusFilterQuery(statusFilter )
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter )
 					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null
 				&& searchText != null) {
@@ -1730,14 +1730,14 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if (statusFilter != null && searchText != null) {
 			dynamicQuery = getStatusFilterQuery(statusFilter ) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getSearchQuery(searchText );
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getStatusFilterQuery(statusFilter );
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter );
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime ) + getServiceQuery(serviceType );
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType );
 		} else if (fromDateTime != null && toDateTime != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime );
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL")) {
 			dynamicQuery = getServiceQuery(serviceType );
 		} else if (statusFilter != null) {
@@ -1768,9 +1768,10 @@ public class ResidentServiceImpl implements ResidentService {
 		return " and request_type_code in (" + serviceTypeListString + ")";
 	}
 
-	private String getDateQuery(LocalDate fromDate, LocalDate toDate) {
-		LocalDateTime fromDateTime = fromDate.atStartOfDay();
-		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay();
+	private String getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
+		//Converting local time to UTC before using in db query
+		LocalDateTime fromDateTime = fromDate.atStartOfDay().plusMinutes(timeZoneOffset);
+		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay().plusMinutes(timeZoneOffset);
 		return " and cr_dtimes between '" +  fromDateTime + "' and '" +
 				toDateTime+ "'";
 	}
@@ -2171,7 +2172,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(serviceType == null){
 			serviceType = ALL;
 		}
-		servHistoryMap.put("eventReqTimeStamp", eventReqDateTime);
+		servHistoryMap.put("eventReqTimeStamp", utility.formatWithOffsetForUI(0, eventReqDateTime));//No change to the offset - keep the incoming timestamp with same offset
 		servHistoryMap.put("fromDate", fromDate);
 		servHistoryMap.put("toDate", toDate);
 		servHistoryMap.put("statusFilter", statusFilter);
@@ -2187,7 +2188,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException {
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException {
 		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
 		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
@@ -2207,7 +2208,7 @@ public class ResidentServiceImpl implements ResidentService {
 			user.setIp(response.get().getIpAddress());
 			user.setMachineType(response.get().getMachineType());
 			user.setHost(response.get().getHost());
-			user.setLastLogin(response.get().getLastloginDtime());
+			user.setLastLogin(utility.applyTimeZoneOffsetOnDateTime(timeZoneOffset, response.get().getLastloginDtime()));
 			user.setPhoto(data);
 			responseWrapper.setResponse(user);
 			return responseWrapper;

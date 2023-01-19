@@ -633,11 +633,11 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<UserInfoDto> userinfo()
+	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
 		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id);
+		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id, timeZoneOffset);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
 	}

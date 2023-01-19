@@ -88,7 +88,7 @@ public interface ResidentService {
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
 								  String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
 
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException;
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException;
 
 	public String getFileName(String eventId, int timeZoneOffset);
 }
