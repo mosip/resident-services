@@ -2,6 +2,7 @@ package io.mosip.resident.exception;
 	
 import java.util.Map;
 
+import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.util.ObjectWithMetadata;
 
@@ -9,7 +10,7 @@ import io.mosip.resident.util.ObjectWithMetadata;
  * The Class ApisResourceAccessException.
  * 
  */
-public class ApisResourceAccessException extends BaseResidentCheckedExceptionWithMetadata {
+public class ApisResourceAccessException extends BaseCheckedException implements ObjectWithMetadata {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
@@ -41,12 +42,17 @@ public class ApisResourceAccessException extends BaseResidentCheckedExceptionWit
 	public ApisResourceAccessException(String message, Throwable cause) {
 		super(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), message, cause);
 	}
+	
+	public Map<String, Object> getMetadata() {
+		return metadata;
+	}
 
-	public ApisResourceAccessException(String errorCode, String errorMessage, Exception exception) {
-		super(errorCode, errorMessage, exception);
+	public void setMetadata(Map<String, Object> metadata) {
+		this.metadata = metadata;
 	}
 	
 	public ApisResourceAccessException(String err, Throwable rootCause, Map<String, Object> metadata) {
-		super(ResidentErrorCode.API_RESOURCE_UNAVAILABLE.getErrorCode(), err, rootCause, metadata);
+		this(err, rootCause);
+		this.metadata = metadata;
 	}
 }

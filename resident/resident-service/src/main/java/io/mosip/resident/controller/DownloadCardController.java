@@ -16,7 +16,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
@@ -65,7 +64,7 @@ public class DownloadCardController {
     DownloadCardService downloadCardService;
     
     @Autowired
-    private Utility utility;
+    private Utilitiy utilitiy;
     
     @Autowired
     private Environment environment;
@@ -100,8 +99,7 @@ public class DownloadCardController {
     
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
-    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
-    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset){
+    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO){
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 		try {
@@ -111,26 +109,25 @@ public class DownloadCardController {
 					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
 		}
-        Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, timeZoneOffset);
+        Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\""
-						+ utility.getFileName(tupleResponse.getT2(),
+						+ utilitiy.getFileName(tupleResponse.getT2(),
 								Objects.requireNonNull(this.environment.getProperty(
-										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset)
+										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)))
 						+ ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
                 .body(resource);
     }
 
     @GetMapping("/request-card/vid/{VID}")
-    public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
-    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws BaseCheckedException {
+    public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid) throws BaseCheckedException {
         requestValidator.validateDownloadCardVid(vid);
-        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
+        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid);
         return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());

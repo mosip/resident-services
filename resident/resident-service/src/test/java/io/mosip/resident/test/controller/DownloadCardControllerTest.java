@@ -45,7 +45,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -69,7 +69,7 @@ public class DownloadCardControllerTest {
     private Environment environment;
     
     @Mock
-    private Utility utility;
+    private Utilitiy utilitiy;
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
@@ -116,7 +116,7 @@ public class DownloadCardControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("file");
+        Mockito.when(utilitiy.getFileName(Mockito.anyString(), Mockito.anyString())).thenReturn("file");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -129,7 +129,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testDownloadPersonalizedCard() throws Exception {
-    	Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt())).thenReturn(Tuples.of(pdfbytes, "12345"));
+        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345"));
         MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
                 new MainRequestDTO<>();
         DownloadPersonalizedCardDto downloadPersonalizedCardDto =
@@ -147,7 +147,7 @@ public class DownloadCardControllerTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt()))
+		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any()))
 				.thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
     }

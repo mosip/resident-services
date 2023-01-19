@@ -18,7 +18,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 
 @Component
 public class VerificationServiceImpl implements VerificationService {
@@ -30,7 +30,7 @@ public class VerificationServiceImpl implements VerificationService {
     private IdentityServiceImpl identityServiceImpl;
     
     @Autowired
-	private Utility utility;
+	private Utilitiy utility;
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;

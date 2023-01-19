@@ -13,7 +13,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,10 +60,10 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     }
 
     @Autowired
-    private Utility utility;
+    private Utilitiy utilitiy;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
+    public byte[] getAcknowledgementPDF(String eventId, String languageCode) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
 
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
@@ -74,17 +74,17 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            String requestProperty = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset).getT2();
+            String requestProperty = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode).getT2();
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
                     getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
             Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
             String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
             Map<String, String> templateVariables = RequestType.valueOf(requestTypeCode)
-                    .getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset).getT1();
+                    .getAckTemplateVariables(templateUtil, eventId, languageCode).getT1();
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return utility.signPdf(templateValue, null);
+            return utilitiy.signPdf(templateValue, null);
 
     }
 
