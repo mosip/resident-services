@@ -9,14 +9,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * The authenticated audit request dto.
+ * The audit request dto v2.
  * 
  * @author Ritik Jain
  */
 @Data
 @NoArgsConstructor
-public class AuthenticatedAuditRequestDto {
-
+public class AuditRequestDtoV2 {
 	/** The event id. */
 	@NotNull
 	@Size(min = 1, max = 64)
@@ -35,6 +34,16 @@ public class AuthenticatedAuditRequestDto {
 	/** The action time stamp. */
 	@NotNull
 	private LocalDateTime actionTimeStamp;
+
+	/** The host name. */
+	@NotNull
+	@Size(min = 1, max = 32)
+	private String hostName;
+
+	/** The host ip. */
+	@NotNull
+	@Size(min = 1, max = 16)
+	private String hostIp;
 
 	/** The application id. */
 	@NotNull

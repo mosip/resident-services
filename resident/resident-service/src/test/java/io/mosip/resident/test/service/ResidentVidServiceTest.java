@@ -62,7 +62,7 @@ import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -87,7 +87,7 @@ public class ResidentVidServiceTest {
     private ObjectMapper mapper;
     
     @Mock
-	private Utility utility;
+	private Utilitiy utilitiy;
     
 	@Mock
 	private AuditUtil audit;
@@ -145,7 +145,7 @@ public class ResidentVidServiceTest {
 		
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		Mockito.lenient().when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		Mockito.lenient().when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
 		Mockito.lenient().when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
     }
 

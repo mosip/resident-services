@@ -62,7 +62,7 @@ import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 import reactor.util.function.Tuple2;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,7 +88,7 @@ public class ResidentCredentialServiceTest {
     private ObjectMapper mapper;
 
     @Mock
-    private Utility utility;
+    private Utilitiy utilitiy;
 
     @Mock
     private AuditUtil audit;
@@ -129,9 +129,9 @@ public class ResidentCredentialServiceTest {
         residentCredentialRequestDto.setConsent("Accepted");
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId("e65c86f5-8929-4547-a156-9b349c29ab8b");
-		when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234567890");
-        when(utility.createEventId()).thenReturn("1111111111111111");
+        when(utilitiy.createEventId()).thenReturn("1111111111111111");
     }
 
     @Test

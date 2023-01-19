@@ -1,14 +1,13 @@
 package io.mosip.resident.exception;
 
-import java.util.Map;
-
+import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
 
 /**
  * @author Kamesh Shekhar Prasad
  * This class is used to throw exception for card not available use case.
  */
-public class CardNotReadyException extends BaseResidentUncheckedExceptionWithMetadata {
+public class CardNotReadyException extends BaseUncheckedException {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
@@ -49,8 +48,4 @@ public class CardNotReadyException extends BaseResidentUncheckedExceptionWithMet
     public CardNotReadyException(String message, Throwable cause) {
         super(ResidentErrorCode.CARD_NOT_READY.getErrorCode(), message, cause);
     }
-	
-	public CardNotReadyException(Map<String, Object> metadata) {
-		super(ResidentErrorCode.CARD_NOT_READY, metadata);
-	}
 }

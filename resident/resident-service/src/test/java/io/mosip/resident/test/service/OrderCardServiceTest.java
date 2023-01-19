@@ -18,7 +18,7 @@ import io.mosip.resident.service.impl.OrderCardServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +57,7 @@ public class OrderCardServiceTest {
 	private AuditUtil auditUtil;
 
 	@Mock
-	private Utility utility;
+	private Utilitiy utility;
 
 	@Mock
 	private IdentityServiceImpl identityServiceImpl;

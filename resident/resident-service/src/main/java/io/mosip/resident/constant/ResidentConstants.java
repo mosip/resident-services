@@ -8,8 +8,7 @@ package io.mosip.resident.constant;
  */
 public class ResidentConstants {
 
-    public static final int UTC_TIMEZONE_OFFSET = 0;
-	private ResidentConstants() {
+    private ResidentConstants() {
 	}
 
     public static final String OBJECT_STORE_ACCOUNT_NAME = "mosip.resident.object.store.account-name";
@@ -179,25 +178,9 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
-    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
-    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
+    public static final String ACK_DATE_TIME_PATTERN = "resident.ack.datetime.pattern";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
-    
-    // IP headers constants start---
-    public static final String X_FORWARDED_FOR = "X-Forwarded-For";
-    public static final String X_REAL_IP = "x-real-ip";
-    public static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
-    public static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
-    public static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
-    public static final String HTTP_X_FORWARDED = "HTTP_X_FORWARDED";
-    public static final String HTTP_X_CLUSTER_CLIENT_IP = "HTTP_X_CLUSTER_CLIENT_IP";
-    public static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
-    public static final String HTTP_FORWARDED_FOR = "HTTP_FORWARDED_FOR";
-    public static final String HTTP_FORWARDED = "HTTP_FORWARDED";
-    public static final String HTTP_VIA = "HTTP_VIA";
-    public static final String REMOTE_ADDR = "REMOTE_ADDR";
-    // IP headers constants end---
 
 }

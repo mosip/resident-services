@@ -1,6 +1,7 @@
 package io.mosip.resident.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import lombok.Data;

@@ -2,9 +2,11 @@ package io.mosip.resident.exception;
 
 import java.util.Map;
 
+import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.util.ObjectWithMetadata;
 
-public class VidAlreadyPresentException extends BaseResidentUncheckedExceptionWithMetadata {
+public class VidAlreadyPresentException extends BaseUncheckedException implements ObjectWithMetadata {
 
     /**
 	 * 
@@ -25,8 +27,17 @@ public class VidAlreadyPresentException extends BaseResidentUncheckedExceptionWi
     public VidAlreadyPresentException(String errorCode, String errorMessage) {
         super(errorCode, errorMessage);
     }
+    
+	public Map<String, Object> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, Object> metadata) {
+		this.metadata = metadata;
+	}
 
 	public VidAlreadyPresentException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
-		super(ResidentErrorCode.VID_ALREADY_PRESENT.getErrorCode(), errorMessage, rootCause, metadata);
+		super(ResidentErrorCode.VID_ALREADY_PRESENT.getErrorCode(), errorMessage, rootCause);
+		this.metadata = metadata;
 	}
 }

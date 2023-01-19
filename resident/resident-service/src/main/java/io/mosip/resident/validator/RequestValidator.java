@@ -1,7 +1,6 @@
 package io.mosip.resident.validator;
 
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
-import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -30,7 +29,6 @@ import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
-import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
@@ -85,9 +83,6 @@ public class RequestValidator {
 
 	@Autowired
 	private VidValidator<String> vidValidator;
-
-	@Autowired
-	private RidValidator<String> ridValidator;
 
 	@Autowired
 	private AuditUtil audit;
@@ -561,14 +556,6 @@ public class RequestValidator {
 		}
 	}
 
-	public boolean validateRid(String individualId) {
-		try {
-			return ridValidator.validateId(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
-	}
-
 	public void validateVidRevokeRequest(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, boolean isOtpValidationRequired, String individualId) {
 
 		validateRevokeVidRequestWrapper(requestDto,"Request to revoke VID");
@@ -866,7 +853,7 @@ public class RequestValidator {
 
 	private boolean validateIndividualIdvIdWithoutIdType(String individualId) {
 		try {
-			return this.validateUin(individualId) || this.validateVid(individualId) || this.validateRid(individualId);
+			return this.validateUin(individualId) || this.validateVid(individualId);
 		} catch (InvalidIDException e) {
 			return false;
 		}
@@ -1103,7 +1090,7 @@ public class RequestValidator {
 	}
 
 	private void validateIndividualIdV2(String individualId) {
-		if (individualId == null || StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
+		if (individualId == null || StringUtils.isEmpty(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request service history API"));
 			throw new InvalidInputException("individualId");
@@ -1214,10 +1201,5 @@ public class RequestValidator {
 						ResidentErrorCode.EID_NOT_BELONG_TO_SESSION.getErrorMessage());
 			}
 		}
-	}
-
-	public void validateReqOtp(IndividualIdOtpRequestDTO individualIdRequestDto) {
-		validateIndividualIdV2(individualIdRequestDto.getIndividualId());
-		validateTransactionId(individualIdRequestDto.getTransactionId());
 	}
 }

@@ -72,7 +72,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
+import io.mosip.resident.util.Utilitiy;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
@@ -109,7 +109,7 @@ public class ResidentServiceResUpdateTest {
 	@Mock
 	NotificationService notificationService;
 	@Mock
-	private Utility utility;
+	private Utilitiy utility;
 
 	@Mock
 	private Utilities utilities;
