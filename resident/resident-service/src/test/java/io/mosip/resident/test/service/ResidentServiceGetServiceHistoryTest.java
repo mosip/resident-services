@@ -145,8 +145,8 @@ public class ResidentServiceGetServiceHistoryTest {
         pageSize = 3;
         fromDate = LocalDate.now();
         toDate = LocalDate.now();
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), serviceType, "DESC", statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
     @Test
@@ -154,42 +154,42 @@ public class ResidentServiceGetServiceHistoryTest {
         pageStart = 2;
         pageSize = 3;
 
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+        assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null, serviceType, "DESC", statusFilter, searchText, "eng", 0).getResponse().getPageSize());
 
     }
 
     @Test
     public void testGetServiceHistoryNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetServiceHistoryCheckedException() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Integer pageStart = 1;
         Integer pageSize = 1;
-        Mockito.when(residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng")).thenThrow(ResidentServiceCheckedException.class);
-        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng")).thenThrow(ResidentServiceCheckedException.class);
-        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, 1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng")).thenThrow(ResidentServiceCheckedException.class);
-        assertEquals(0, residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        Mockito.when(residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0)).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0)).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, 1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0)).thenThrow(ResidentServiceCheckedException.class);
+        assertEquals(0, residentServiceImpl.getServiceHistory( -1, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetServiceHistoryNegativeResidentServiceCheckedException() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Integer pageStart = 1;
-        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng")).thenThrow(ResidentServiceCheckedException.class);
-        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        Mockito.when(residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0)).thenThrow(ResidentServiceCheckedException.class);
+        assertEquals(0, residentServiceImpl.getServiceHistory( pageStart, -1, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
     @Test
     public void testPageSizeCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
         pageSize = 10;
         pageStart = 1;
-        assertEquals(10, residentServiceImpl.getServiceHistory(null, null, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(10, residentServiceImpl.getServiceHistory(null, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
-        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, null, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng").getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(null, null, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(null, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, null, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
     @Test
@@ -197,7 +197,7 @@ public class ResidentServiceGetServiceHistoryTest {
         pageStart = 1;
         pageSize = 10;
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType,
-                null, statusFilter, searchText, "eng").getResponse().getPageSize());
+                null, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
     @Test
@@ -211,21 +211,21 @@ public class ResidentServiceGetServiceHistoryTest {
         statusFilter = "SUCCESS";
         searchText = "a";
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType,
-                statusFilter, searchText, "eng").getResponse().getPageSize());
+                statusFilter, searchText, "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
-                statusFilter, searchText, "eng").getResponse().getPageSize());
+                statusFilter, searchText, "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType,
-                statusFilter, null, "eng").getResponse().getPageSize());
+                statusFilter, null, "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
-                statusFilter, null, "eng").getResponse().getPageSize());
+                statusFilter, null, "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType,
-                null, "a", "eng").getResponse().getPageSize());
+                null, "a", "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
-                null, "a", "eng").getResponse().getPageSize());
+                null, "a", "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, null, sortType,
-                statusFilter, "a", "eng").getResponse().getPageSize());
+                statusFilter, "a", "eng", 0).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
-                null, "a", "eng").getResponse().getPageSize());
+                null, "a", "eng", 0).getResponse().getPageSize());
 
     }
 

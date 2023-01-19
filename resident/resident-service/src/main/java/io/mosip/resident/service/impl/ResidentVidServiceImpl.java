@@ -53,7 +53,7 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Component
@@ -152,7 +153,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private IdentityServiceImpl identityServiceImpl;
 	
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 	
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -203,7 +204,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
-			if(Utilitiy.isSecureSession()){
+			if(Utility.isSecureSession()){
 				residentTransactionEntity = createResidentTransactionEntity(requestDto);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
@@ -250,7 +251,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			vidResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidResponseDto);
 
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_GENERATED.name());
@@ -273,7 +274,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					requestDto.getTransactionID(), "Request to generate VID"));
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidCreationException(e.getErrorText(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
 			} else {
@@ -296,7 +297,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					requestDto.getTransactionID(), "Request to generate VID"));
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidCreationException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
 			} else {
@@ -319,14 +320,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					requestDto.getTransactionID(), "Request to generate VID"));
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidAlreadyPresentException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
 			} else {
 				throw e;
 			}
 		} finally {
-			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+			if (Utility.isSecureSession() && residentTransactionEntity != null) {
 				//if the status code will come as null, it will set it as failed.
 				if(residentTransactionEntity.getStatusCode()==null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -452,7 +453,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
-		if(Utilitiy.isSecureSession()) {
+		if(Utility.isSecureSession()) {
 			residentTransactionEntity = createResidentTransEntity(vid, indivudalId);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
@@ -467,7 +468,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			String idaTokenForIndividualId = identityServiceImpl.getResidentIdaToken();
 			String idaTokenForVid = identityServiceImpl.getIDATokenForIndividualId(vid);
 			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
-				if(Utilitiy.isSecureSession()) {
+				if(Utility.isSecureSession()) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionRepository.save(residentTransactionEntity);
 					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
@@ -524,7 +525,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			vidRevokeResponseDto.setMessage(notificationResponseDTO.getMessage());
 			responseDto.setResponse(vidRevokeResponseDto);
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_REVOKED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_REVOKED.name());
 			}
@@ -544,7 +545,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					requestDto.getTransactionID(), "Request to revoke VID"));
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidRevocationException(e.getErrorText(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
 			} else {
@@ -566,7 +567,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					requestDto.getTransactionID(), "Request to revoke VID"));
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidRevocationException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
 			} else {
@@ -588,14 +589,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					requestDto.getTransactionID(), "Request to revoke VID"));
-			if(Utilitiy.isSecureSession()) {
+			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new VidRevocationException(e.getMessage(), e, Map.of(ResidentConstants.EVENT_ID, eventId));
 			} else {
 				throw e;
 			}
 		} finally {
-			if (Utilitiy.isSecureSession() && residentTransactionEntity != null) {
+			if (Utility.isSecureSession() && residentTransactionEntity != null) {
 				//if the status code will come as null, it will set it as failed.
 				if(residentTransactionEntity.getStatusCode()==null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -632,7 +633,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private String getVidTypeFromVid(String vid, String indivudalId) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId);
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId, ResidentConstants.UTC_TIMEZONE_OFFSET);
 		return vids.getResponse().stream()
 				.filter(map -> ((String)map.get(TemplateVariablesConstants.VID)).equals(vid))
 				.map(map -> (String)map.get(TemplateVariablesConstants.VID_TYPE))
@@ -710,14 +711,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 	
 	@Override
-	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(residentIndividualId);
 		String uin = identityDTO.getUIN();
-		return retrieveVidsfromUin(uin);
+		return retrieveVidsfromUin(uin, timeZoneOffset);
 		}
 
 	@Override
-	public ResponseWrapper<List<Map<String,?>>> retrieveVidsfromUin(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public ResponseWrapper<List<Map<String,?>>> retrieveVidsfromUin(String uin, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper response;
 		try {
 			response = (ResponseWrapper) residentServiceRestClient.getApi(
@@ -734,7 +735,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
 					getMaskedVid(lhm);
 					getRefIdHash(lhm);
-					normalizeExpiryTime(lhm);
+					normalizeExpiryTime(lhm, timeZoneOffset);
 					return lhm;
 				})
 				.collect(Collectors.toList());
@@ -747,7 +748,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
-	private void normalizeExpiryTime(LinkedHashMap<String, Object> lhm) {
+	private void normalizeExpiryTime(LinkedHashMap<String, Object> lhm, int timeZoneOffset) {
 		Object expiryTimeObj = lhm.get(EXPIRY_TIMESTAMP);
 		if(expiryTimeObj instanceof String) {
 			String expiryTime = String.valueOf(expiryTimeObj);
@@ -755,6 +756,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			//For the big expiry time, assume no expiry time, so set to null
 			if(expiryLocalDateTime.getYear() >= 9999) {
 				lhm.put(EXPIRY_TIMESTAMP, null);
+			} else {
+				lhm.put(EXPIRY_TIMESTAMP, utility.formatWithOffsetForUI(timeZoneOffset, expiryLocalDateTime)) ;
 			}
 		}
 	}
@@ -788,7 +791,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}	
 	
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin);
+		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin, ResidentConstants.UTC_TIMEZONE_OFFSET);
 		List<Map<String, ?>> vids = vidResp.getResponse();
 		if(vids != null && !vids.isEmpty()) {
 			return vids.stream()
