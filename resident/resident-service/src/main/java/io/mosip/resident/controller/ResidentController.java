@@ -613,7 +613,7 @@ public class ResidentController {
 				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
-				fromDate, toDate, serviceType, statusFilter);
+				fromDate, toDate, serviceType, statusFilter, timeZoneOffset);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");

@@ -226,7 +226,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",	
                 LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
-                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS");
+                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0);
         assertNotNull(pdfDocument);
     }
 

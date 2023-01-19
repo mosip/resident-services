@@ -129,7 +129,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testDownloadPersonalizedCard() throws Exception {
-        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any())).thenReturn(Tuples.of(pdfbytes, "12345"));
+    	Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt())).thenReturn(Tuples.of(pdfbytes, "12345"));
         MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
                 new MainRequestDTO<>();
         DownloadPersonalizedCardDto downloadPersonalizedCardDto =
