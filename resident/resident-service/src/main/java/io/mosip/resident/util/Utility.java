@@ -1,8 +1,58 @@
 package io.mosip.resident.util;
 
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.mvel2.MVEL;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itextpdf.text.pdf.PdfReader;
 import com.nimbusds.jose.util.IOUtils;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -31,54 +81,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.mvel2.MVEL;
-import org.mvel2.integration.VariableResolverFactory;
-import org.mvel2.integration.impl.MapVariableResolverFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-
-import javax.annotation.PostConstruct;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
-import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 
 /**
  * @author Girish Yarru
@@ -86,9 +88,9 @@ import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
  */
 
 @Component
-public class Utilitiy {
+public class Utility {
 
-	private static final Logger logger = LoggerConfiguration.logConfig(Utilitiy.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -153,7 +155,7 @@ public class Utilitiy {
 	@SuppressWarnings("unchecked")
 	public JSONObject retrieveIdrepoJson(String id) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utilitiy::retrieveIdrepoJson()::entry");
+				"Utility::retrieveIdrepoJson()::entry");
 		List<String> pathsegments = new ArrayList<>();
 		pathsegments.add(id);
 		ResponseWrapper<IdRepoResponseDto> response = null;
@@ -200,7 +202,7 @@ public class Utilitiy {
 			String jsonResponse = JsonUtil.writeValueAsString(response.getResponse());
 			JSONObject json = JsonUtil.readValue(jsonResponse, JSONObject.class);
 			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-					"Utilitiy::retrieveIdrepoJson()::exit");
+					"Utility::retrieveIdrepoJson()::exit");
 			return JsonUtil.getJSONObject(json, "identity");
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
@@ -212,7 +214,7 @@ public class Utilitiy {
 	public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utilitiy::getMailingAttributes()::entry");
+				"Utility::getMailingAttributes()::entry");
 		if(id == null || id.isEmpty()) {
 			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(),
 					ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage() + ": individual_id is not available." );
@@ -269,7 +271,7 @@ public class Utilitiy {
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utilitiy::getMailingAttributes()::exit");
+				"Utility::getMailingAttributes()::exit");
 		return attributes;
 	}
 
@@ -456,14 +458,12 @@ public class Utilitiy {
 		return pdfSignatured;
 	}
 
-	public String getFileName(String eventId, String propertyName){
-		String dateTimePattern = this.env.getProperty(DATETIME_PATTERN);
+	public String getFileName(String eventId, String propertyName, int timeZoneOffset){
 		if(eventId!=null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
-			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", DateUtils
-					.getUTCCurrentDateTimeString(Objects.requireNonNull(dateTimePattern)));
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}
@@ -493,30 +493,79 @@ public class Utilitiy {
 		return HMACUtils2.digestAsPlainText(id.getBytes());
 	}
 
-	public String getFileNameAsPerFeatureName(String eventId, String featureName) {
+	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
 		if(featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)));
+					ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		} else if(featureName.equalsIgnoreCase(RequestType.GENERATE_VID.toString())
 		|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.name())){
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)));
+					ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		} else if(featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.toString())){
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)));
+					ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		} else if(featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())){
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)));
+					ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		}else if(featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.toString())){
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)));
+					ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		}
 		else if(featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)));
+					ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		}else {
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)));
+			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		}
+	}
+	
+	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
+		return HMACUtils2.digestAsPlainText(individualId.getBytes());
+	}
+
+	private String formatDateTimeForPattern(LocalDateTime localDateTime, String dateTimePattern) {
+		return localDateTime == null ? null : localDateTime.format(DateTimeFormatter.ofPattern(dateTimePattern));
+	}
+
+	public String formatWithOffsetForUI(int timeZoneOffset, LocalDateTime localDateTime) {
+		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN)));
+	}
+
+	public LocalDateTime applyTimeZoneOffsetOnDateTime(int timeZoneOffset, LocalDateTime localDateTime) {
+		return localDateTime == null ? null : localDateTime.minusMinutes(timeZoneOffset); //Converting UTC to local time zone
+	}
+	
+	public String formatWithOffsetForFileName(int timeZoneOffset, LocalDateTime localDateTime) {
+		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)));
+	}
+	
+	public String getClientIp(HttpServletRequest req) {
+		logger.debug("Utilitiy::getClientIp()::entry");
+		String[] IP_HEADERS = {
+				ResidentConstants.X_FORWARDED_FOR,
+				ResidentConstants.X_REAL_IP,
+				ResidentConstants.PROXY_CLIENT_IP,
+				ResidentConstants.WL_PROXY_CLIENT_IP,
+				ResidentConstants.HTTP_X_FORWARDED_FOR,
+				ResidentConstants.HTTP_X_FORWARDED,
+				ResidentConstants.HTTP_X_CLUSTER_CLIENT_IP,
+				ResidentConstants.HTTP_CLIENT_IP,
+				ResidentConstants.HTTP_FORWARDED_FOR,
+				ResidentConstants.HTTP_FORWARDED,
+				ResidentConstants.HTTP_VIA,
+				ResidentConstants.REMOTE_ADDR
+		};
+		for (String header : IP_HEADERS) {
+			String value = req.getHeader(header);
+			if (value == null || value.isEmpty()) {
+				continue;
+			}
+			String[] parts = value.split(",");
+			logger.debug("Utilitiy::getClientIp()::exit");
+			return parts[0].trim();
+		}
+		logger.debug("Utilitiy::getClientIp()::exit - excecuted till end");
+		return req.getRemoteAddr();
 	}
 	
 	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {

@@ -28,7 +28,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,7 +99,7 @@ public class ResidentServiceDownloadCardTest {
     private TemplateManager templateManager;
 
     @Mock
-    private Utilitiy utility;
+    private Utility utility;
 
     private byte[] result;
     private String eventId;
@@ -195,7 +195,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setIpAddress("http");
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123");
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 
@@ -204,7 +204,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123");
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 
@@ -224,9 +224,9 @@ public class ResidentServiceDownloadCardTest {
                 .thenReturn(responseWrapper1);
         Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
-        byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
+        byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",	
                 LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
-                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS");
+                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0);
         assertNotNull(pdfDocument);
     }
 
