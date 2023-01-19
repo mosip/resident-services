@@ -113,7 +113,13 @@ public enum ResidentErrorCode {
 	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
 	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
 	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
-	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s");
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s"),
+	OTP_EXPIRED("RES-OTP-006","OTP has expired"),
+	OTP_INVALID("RES-OTP-007","OTP is invalid"),
+	INVALID_TRANSACTION_ID("RES-OTP-008","Input transactionId does not match transactionId of OTP Request"),
+	SMS_AUTH_LOCKED("RES-OTP-010","Your SMS OTP authentication is locked"),
+	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked");
+	
 
 	private final String errorCode;
 	private final String errorMessage;
