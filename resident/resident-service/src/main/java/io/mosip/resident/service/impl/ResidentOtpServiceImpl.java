@@ -65,9 +65,6 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
-	@Autowired
-	private ObjectMapper objectMapper;
-	
 	@Override
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
 		OtpResponseDTO responseDto = null;

@@ -124,21 +124,6 @@ public class ProxyAuditControllerTest {
 	
 	@Test
 	public void testAuditLogWithId() throws Exception {
-		auditRequestDtoV3.setId("23456");
-		reqJson = gson.toJson(auditRequestDtoV3);
-		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(reqJson.getBytes())).andExpect(status().isOk());
-	}
-	
-	@Test
-	public void testAuditLogWithNullId() throws Exception {
-		reqJson = gson.toJson(auditRequestDtoV3);
-		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
-				.content(reqJson.getBytes())).andExpect(status().isOk());
-	}
-
-	@Test
-	public void testAuditLogWithId() throws Exception {
 		unauthenticatedAuditRequestDto.setId("23456");
 		reqJson = gson.toJson(unauthenticatedAuditRequestDto);
 		mockMvc.perform(MockMvcRequestBuilders.post("/proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)

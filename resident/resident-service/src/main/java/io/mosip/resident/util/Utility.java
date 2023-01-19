@@ -568,7 +568,4 @@ public class Utility {
 		return req.getRemoteAddr();
 	}
 	
-	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
-		return HMACUtils2.digestAsPlainText(individualId.getBytes());
-	}
 }

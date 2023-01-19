@@ -38,12 +38,6 @@ public class ResidentOtpController {
 	@Autowired
 	private AuditUtil audit;
 	
-	@Value("${mosip.resident.api.id.otp.request}")
-	private String otpRequestId;
-	
-	@Value("${resident.version.new}")
-	private String otpRequestVersion;
-
 	@Autowired
 	private RequestValidator requestValidator;
 	
