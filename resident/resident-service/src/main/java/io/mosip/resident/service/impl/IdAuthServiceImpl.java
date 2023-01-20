@@ -125,6 +125,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return validateOtpV1(transactionId, individualId, otp).getT1();
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
@@ -173,7 +174,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 				throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
-			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.equals(ResidentConstants.PHONE_AND_EMAIL)) {
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.contains(ResidentConstants.PHONE_AND_EMAIL)) {
 				throw new OtpValidationFailedException(ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			}

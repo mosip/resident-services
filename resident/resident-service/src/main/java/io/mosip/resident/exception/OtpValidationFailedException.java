@@ -53,4 +53,9 @@ public class OtpValidationFailedException extends BaseResidentCheckedExceptionWi
 	public OtpValidationFailedException(String errorCode, String errorMessage, Map<String, Object> metadata) {
 		super(errorCode, errorMessage,metadata);
 	}
+
+	public OtpValidationFailedException(String errorCode, String errorText, OtpValidationFailedException e,
+			Map<String, Object> metadata) {
+		super(errorCode, errorText, e, metadata);
+	}
 }
