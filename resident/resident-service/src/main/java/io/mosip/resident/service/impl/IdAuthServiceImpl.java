@@ -166,23 +166,22 @@ public class IdAuthServiceImpl implements IdAuthService {
 				throw new OtpValidationFailedException(ResidentErrorCode.INVALID_TRANSACTION_ID.getErrorCode(), response.getErrors().get(0).getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			} 
-			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.equals(ResidentConstants.PHONE)) {
-				throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
-						Map.of(ResidentConstants.EVENT_ID, eventId));
-			}
-			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.equals(ResidentConstants.EMAIL)) {
-				throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
-						Map.of(ResidentConstants.EVENT_ID, eventId));
-			}
-			if (authType != null) {
-			boolean containsPhone = authType.contains(ResidentConstants.PHONE);
-			boolean containsEmail = authType.contains(ResidentConstants.EMAIL);
-				if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && containsPhone && containsEmail) {
-				throw new OtpValidationFailedException(ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorMessage(),
-						Map.of(ResidentConstants.EVENT_ID, eventId));
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE)) {
+				if (authType.equals(ResidentConstants.PHONE)) {
+					throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
+							Map.of(ResidentConstants.EVENT_ID, eventId));
+				} if (authType.equals(ResidentConstants.EMAIL)) {
+					throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
+							Map.of(ResidentConstants.EVENT_ID, eventId));
+				} if (authType != null) {
+					boolean containsPhone = authType.contains(ResidentConstants.PHONE);
+					boolean containsEmail = authType.contains(ResidentConstants.EMAIL);
+					if (containsPhone && containsEmail) {
+						throw new OtpValidationFailedException(ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorMessage(),
+								Map.of(ResidentConstants.EVENT_ID, eventId));
+					}
 				}
-			}
-			else throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
+			} else throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
 					Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
 		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
