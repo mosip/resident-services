@@ -7,9 +7,7 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
-    public static final int UTC_TIMEZONE_OFFSET = 0;
-	private ResidentConstants() {
+    private ResidentConstants() {
 	}
 
     public static final String OBJECT_STORE_ACCOUNT_NAME = "mosip.resident.object.store.account-name";
@@ -199,5 +197,33 @@ public class ResidentConstants {
     public static final String HTTP_VIA = "HTTP_VIA";
     public static final String REMOTE_ADDR = "REMOTE_ADDR";
     // IP headers constants end---
+
+    public static final String VID_POLICIES = "vidPolicies";
+    public static final String VID_POLICY = "vidPolicy";
+    public static final String PERPETUAL = "Perpetual";
+
+    public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
+    public static final int UTC_TIMEZONE_OFFSET = 0;
+    public static final String INDIVIDUAL_ID = "individualId";
+    public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
+    public static final String REQUEST = "request";
+    public static final String VERSION = "version";
+    public static final String REQUEST_TIME = "requestTime";
+    public static final String ID = "id";
+    public static final String REQUEST_GENERATE_VID = "Request to generate VID";
+    public static final String GENERATE_ID = "generateId";
+    public static final String UNLOCK_FOR_SECONDS = "unlockForSeconds";
+    public static final String REQUEST_FOR_EUIN = "Request for EUIN";
+    public static final String CARD_TYPE = "cardType";
+    public static final String PAGE_NUMBER_ERROR = "please provide Page size and Page number to be Fetched";
+    public static final String PAGE_FETCH_PAGE_START_GREATER_THAN_ZERO = "Page Fetch or Page Start must be greater than 0";
+    public static final String PAGE_START_PAGE_FETCH = "Page Start Page Fetch";
+    public static final String PAGE_START = "Page Start";
+    public static final String PAGE_FETCH = "Page Fetch";
+    public static final String VID_STATUS = "vidStatus";
+    public static final String REQUEST_REVOKE_VID = "Request to revoke VID";
+    public static final String REVOKE_VID = "revokeVidId";
+    public static final String REQUEST_PRINT_UIN = "Request for print UIN API";
+    public static final String IDENTITY_JSON = "identityJson";
 
 }

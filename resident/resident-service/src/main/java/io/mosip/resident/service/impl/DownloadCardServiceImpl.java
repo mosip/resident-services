@@ -398,9 +398,23 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String aid) throws ApisResourceAccessException, IOException {
-        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(aid);
+    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException {
+        individualId = getRidForIndividualId(individualId);
+        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
         return getCheckStatusResponse(packetStatusMap);
+    }
+
+    private String getRidForIndividualId(String individualId) {
+        String idType = identityService.getIndividualIdType(individualId);
+        if(idType.equalsIgnoreCase(AID)){
+            return individualId;
+        } else{
+            try {
+                return utilities.getRidByIndividualId(individualId);
+            } catch (ApisResourceAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException {
