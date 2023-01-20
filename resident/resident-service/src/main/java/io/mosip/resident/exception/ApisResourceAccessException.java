@@ -3,6 +3,7 @@ package io.mosip.resident.exception;
 import java.util.Map;
 
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.util.ObjectWithMetadata;
 
 /**
  * The Class ApisResourceAccessException.
@@ -12,6 +13,8 @@ public class ApisResourceAccessException extends BaseResidentCheckedExceptionWit
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+	
+	private Map<String, Object> metadata;
 
 	/**
 	 * Instantiates a new apis resource access exception.

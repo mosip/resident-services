@@ -5,6 +5,7 @@ import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -36,6 +37,15 @@ public class ResidentOtpController {
 
 	@Autowired
 	private AuditUtil audit;
+	
+	@Autowired
+	private RequestValidator requestValidator;
+	
+	@Value("${mosip.resident.api.id.otp.request}")
+	private String otpRequestId;
+	
+	@Value("${resident.version.new}")
+	private String otpRequestVersion;
 
 	@Autowired
 	private RequestValidator requestValidator;
