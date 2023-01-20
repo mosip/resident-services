@@ -11,8 +11,6 @@ public class ResidentCredentialServiceException extends BaseResidentUncheckedExc
 	 */
 	private static final long serialVersionUID = 8621530697947108810L;
 	
-	private Map<String,Object> metadata;
-
 	/**
 	 * Constructor the initialize Handler exception
 	 * 

@@ -10,7 +10,6 @@ public class VidCreationException extends BaseResidentUncheckedExceptionWithMeta
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Map<String, Object> metadata;
 	
 	public VidCreationException() {
 		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());

@@ -10,7 +10,6 @@ public class VidAlreadyPresentException extends BaseResidentUncheckedExceptionWi
 	 * 
 	 */
 	private static final long serialVersionUID = 5320581589143112542L;
-	private Map<String, Object> metadata;
 
 	public VidAlreadyPresentException() {
         super();

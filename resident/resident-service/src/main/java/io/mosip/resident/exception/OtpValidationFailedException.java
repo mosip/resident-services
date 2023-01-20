@@ -9,8 +9,6 @@ public class OtpValidationFailedException extends BaseResidentCheckedExceptionWi
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
     
-    private Map<String,Object> metadata;
-
     /**
      * Instantiates a new otp validation failed exception.
      */
