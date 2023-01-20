@@ -3,7 +3,6 @@ package io.mosip.resident.exception;
 import java.util.Map;
 
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.util.ObjectWithMetadata;
 
 /**
  * The Class ResidentServiceException.
