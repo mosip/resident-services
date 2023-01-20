@@ -189,7 +189,6 @@ public class ResidentConstants {
     public static final String OTP_AUTH_LOCKED_ERR_CODE = "IDA-MLC-019";
     public static final String PHONE = "PHONE";
     public static final String EMAIL = "EMAIL";
-    public static final String PHONE_AND_EMAIL = "PHONE, EMAIL";
     
     // IP headers constants start---
     public static final String X_FORWARDED_FOR = "X-Forwarded-For";

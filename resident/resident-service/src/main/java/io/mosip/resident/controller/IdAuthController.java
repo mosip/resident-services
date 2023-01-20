@@ -45,7 +45,7 @@ public class IdAuthController {
 	@Autowired
 	private AuditUtil auditUtil;
     
-    @Value("${mosip.resident.identity.auth.internals}")
+    @Value("${mosip.resident.identity.auth.internal.id}")
     private String validateOtpId;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(IdAuthController.class);
