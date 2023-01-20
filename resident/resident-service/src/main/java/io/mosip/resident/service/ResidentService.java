@@ -86,9 +86,9 @@ public interface ResidentService {
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
-								  String serviceType, String statusFilter) throws ResidentServiceCheckedException, IOException;
+								  String serviceType, String statusFilter, int timeZoneOffset) throws ResidentServiceCheckedException, IOException;
 
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id) throws ApisResourceAccessException;
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException;
 
 	public String getFileName(String eventId, int timeZoneOffset);
 }

@@ -121,7 +121,7 @@ public class ProxyAuditControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.post("/auth-proxy/audit/log").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
-
+	
 	@Test
 	public void testAuditLogWithId() throws Exception {
 		unauthenticatedAuditRequestDto.setId("23456");

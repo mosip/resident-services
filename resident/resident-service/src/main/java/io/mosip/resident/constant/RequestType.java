@@ -1,5 +1,10 @@
 package io.mosip.resident.constant;
 
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
+import io.mosip.resident.util.TemplateUtil;
+import org.apache.commons.lang3.function.TriFunction;
+import reactor.util.function.Tuple2;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
