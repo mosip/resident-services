@@ -47,15 +47,6 @@ public class ResidentOtpController {
 	@Value("${resident.version.new}")
 	private String otpRequestVersion;
 
-	@Autowired
-	private RequestValidator requestValidator;
-	
-	@Value("${mosip.resident.api.id.otp.request}")
-	private String otpRequestId;
-	
-	@Value("${resident.version.new}")
-	private String otpRequestVersion;
-
 	@PostMapping(value = "/req/otp")
 	@Operation(summary = "reqOtp", description = "reqOtp", tags = { "resident-otp-controller" })
 	@ApiResponses(value = {
