@@ -4,7 +4,12 @@ import io.mosip.kernel.core.exception.BaseCheckedException;
 
 public class PacketManagerException extends BaseCheckedException {
 
-    public PacketManagerException(String errorCode, String message) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4181242224801724711L;
+
+	public PacketManagerException(String errorCode, String message) {
         super(errorCode, message);
     }
 

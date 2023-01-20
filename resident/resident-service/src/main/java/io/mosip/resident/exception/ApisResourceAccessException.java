@@ -12,7 +12,7 @@ public class ApisResourceAccessException extends BaseResidentCheckedExceptionWit
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
-
+	
 	/**
 	 * Instantiates a new apis resource access exception.
 	 */
