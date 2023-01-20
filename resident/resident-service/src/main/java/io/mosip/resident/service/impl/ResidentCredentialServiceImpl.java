@@ -320,8 +320,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
-		String attributeList = dto.getSharableAttributes().stream().collect(Collectors.joining(", "));
-		residentTransactionEntity.setAttributeList(attributeList);
+		List<String> sharableAttributes = dto.getSharableAttributes();
+		if(sharableAttributes != null){
+			residentTransactionEntity.setAttributeList(String.join(", ", sharableAttributes));
+		}
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(dto.getIssuer());
 		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
