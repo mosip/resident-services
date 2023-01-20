@@ -832,7 +832,7 @@ public class ResidentServiceImpl implements ResidentService {
 		Object responseDto = null;
 		ResidentUpdateResponseDTO residentUpdateResponseDTO = null;
 		ResidentUpdateResponseDTOV2 residentUpdateResponseDTOV2 = null;
-		String eventId = ResidentConstants.NOT_AVAILABLE;
+		String eventId = null;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utility.isSecureSession()) {
@@ -1113,6 +1113,9 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
+		}
+		if(eventId == null) {
+			eventId = ResidentConstants.NOT_AVAILABLE;
 		}
 		return Tuples.of(responseDto, eventId);
 	}

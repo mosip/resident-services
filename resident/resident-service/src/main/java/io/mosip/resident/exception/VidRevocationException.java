@@ -23,7 +23,7 @@ public class VidRevocationException extends BaseResidentUncheckedExceptionWithMe
 	public VidRevocationException(String errorMessage) {
 		super(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorCode(), errorMessage);
 	}
-
+	
 	public VidRevocationException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
 		super(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorCode(), errorMessage, rootCause, metadata);
 	}

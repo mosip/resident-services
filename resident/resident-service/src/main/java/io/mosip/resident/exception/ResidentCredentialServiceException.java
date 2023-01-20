@@ -10,7 +10,7 @@ public class ResidentCredentialServiceException extends BaseResidentUncheckedExc
 	 * Generated serial version id
 	 */
 	private static final long serialVersionUID = 8621530697947108810L;
-
+	
 	/**
 	 * Constructor the initialize Handler exception
 	 * 
