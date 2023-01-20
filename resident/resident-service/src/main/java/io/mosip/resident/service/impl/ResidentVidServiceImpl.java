@@ -359,20 +359,38 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 			String idType = identityServiceImpl.getIndividualIdType(individualId);
 			String uin = identityServiceImpl.getUinForIndividualId(individualId);
+			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(uin);
+			/**
+			 * Check If id type is VID.
+			 */
 			if (idType.equalsIgnoreCase(IdType.VID.name())) {
 				String vidType =
 						getVidTypeFromVid(individualId, uin);
+				/**
+				 * Checks if VID type is Perpetual VID.
+				 */
 				if(vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
-					int numberOfPerpetualVid = getNumberOfPerpetualVidFromUin(uin).getT1();
+					int numberOfPerpetualVid = numberOfPerpetualVidTuple.getT1();
 					VidPolicy vidPolicy = getVidPolicyAsVidPolicyDto();
+					/**
+					 * Checks if VID Policy allowed instance is greater than number of existing Perpetual VID.
+					 */
 					if(vidPolicy.getAllowedInstances() >= numberOfPerpetualVid
-							&& vidPolicy.getAutoRestoreAllowed() &&
-							!vidPolicy.getRestoreOnAction().
-									equalsIgnoreCase(env.getProperty(ResidentConstants.VID_ACTIVE_STATUS))){
-						if(getNumberOfPerpetualVidFromUin(uin).getT2().equals(individualId)){
-							throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED,
-									ResidentErrorCode.VID_CREATION_FAILED.getErrorMessage());
-						}
+							/**
+							 * Checks if VID Policy auto restore allowed is true.
+							 */
+							&& vidPolicy.getAutoRestoreAllowed()
+							/**
+							 * Checks if VID Policy restore on action is not ACTIVE.
+							 */
+							&& !vidPolicy.getRestoreOnAction().
+									equalsIgnoreCase(env.getProperty(ResidentConstants.VID_ACTIVE_STATUS))
+							/**
+							 * Checks if first Perpetual Vid is equal to logged in vid.
+							 */
+					&& numberOfPerpetualVidTuple.getT2().equals(individualId)){
+						throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION,
+									ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION.getErrorMessage());
 					}
 				}
 			}
@@ -380,8 +398,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				com.fasterxml.jackson.core.JsonProcessingException | ResidentServiceException e) {
 			audit.setAuditRequestDto(EventEnum.VID_GENERATION_FAILURE);
 			logger.error(EventEnum.VID_GENERATION_FAILURE.getDescription() + e);
-			throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED.getErrorCode(),
-					ResidentErrorCode.VID_CREATION_FAILED.getErrorMessage(), e);
+			throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION.getErrorCode(),
+					ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION.getErrorMessage(), e);
 		}
 	}
 
@@ -402,19 +420,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		String firstVid = "";
 		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , ResidentConstants.UTC_TIMEZONE_OFFSET);
-		int count =0;
-		for(Map<String, ?> vidList : vids.getResponse()){
-			if(count==0){
-				firstVid = (String) vidList.get(TemplateVariablesConstants.VID);
-			}
-			if(vidList.get(TemplateVariablesConstants.VID_TYPE).toString().
-					equalsIgnoreCase(ResidentConstants.PERPETUAL)){
-				count ++;
-			}
+		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
+		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
+				.collect(Collectors.toList());
+		if(vidList.isEmpty()){
+			return Tuples.of(0, "");
 		}
-		return Tuples.of(count, firstVid);
+		return Tuples.of(vidList.size(), vidList.get(0).get(TemplateVariablesConstants.VID).toString());
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {

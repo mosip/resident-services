@@ -1,42 +1,12 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.UUID;
-
-import org.apache.commons.io.IOUtils;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationResponseDTO;
@@ -63,6 +33,39 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -106,6 +109,14 @@ public class ResidentVidServiceTest {
 	private ResidentTransactionRepository residentTransactionRepository;
     
     private JSONObject identity;
+
+    private ResponseWrapper<List<Map<String,?>>> vidResponse;
+
+    private String vid;
+
+    private List<Map<String, ?>> vidList;
+
+    private Map<String, Object> vidDetails;
     
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
@@ -147,6 +158,22 @@ public class ResidentVidServiceTest {
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
 		Mockito.lenient().when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		Mockito.lenient().when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
+
+        vidResponse = new ResponseWrapper<>();
+        vidDetails = new HashMap<>();
+        vidDetails.put("vidType", "perpetual");
+        vidList = new ArrayList<>();
+        vidDetails.put("vid", "123");
+        vidDetails.put("maskedVid", "1******4");
+        vidDetails.put("expiryTimeStamp", "1234343434");
+        vidDetails.put("expiryTimestamp", "1516239022");
+        vidDetails.put("genratedOnTimestamp", "1234343434");
+        vidDetails.put("transactionLimit", 2);
+        vidDetails.put("transactionCount", 2);
+        vidList.add(vidDetails);
+        vidResponse.setResponse(vidList);
+        vid = "2038096257310540";
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(LocalDateTime.now());
     }
 
     @Test
@@ -328,4 +355,61 @@ public class ResidentVidServiceTest {
     	when(mapper.readValue(Mockito.any(URL.class), Mockito.any(Class.class))).thenThrow(new IOException());
     	residentVidService.getVidPolicy();
     }
+
+    @Test
+    public void testRetrieveVids() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        assertEquals(vidResponse.getResponse().size(),
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+    }
+
+    @Test(expected = ApisResourceAccessException.class)
+    public void testRetrieveVidsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(new ApisResourceAccessException());
+        residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET);
+    }
+
+    @Test
+    public void testRetrieveVidsInvalidYear() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
+                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        assertEquals(vidResponse.getResponse().size(),
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+    }
+
+    @Test
+    public void testRetrieveVidsInvalidExpiryTimeStamp() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        vidDetails.remove("expiryTimestamp");
+        vidList.add(vidDetails);
+        vidResponse.setResponse(vidList);
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        assertEquals(vidResponse.getResponse().size(),
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+    }
+
+    @Test
+    public void testRetrieveVidsNegativeTransactionLimit() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        vidDetails.put("transactionLimit", -1);
+        vidList.add(vidDetails);
+        vidResponse.setResponse(vidList);
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
+                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        assertEquals(vidResponse.getResponse().size(),
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+    }
+
+    @Test
+    public void testRetrieveVidsNullTransactionLimit() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        vidDetails.put("transactionLimit", null);
+        vidList.add(vidDetails);
+        vidResponse.setResponse(vidList);
+        when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(
+                LocalDateTime.of(10000, 12, 1, 12, 12, 12));
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        assertEquals(vidResponse.getResponse().size(),
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+    }
+
 }
