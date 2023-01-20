@@ -131,7 +131,14 @@ public class IdAuthServiceImpl implements IdAuthService {
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
+		String authType = null;
 		try {
+			residentTransactionEntity = residentTransactionRepository.
+					findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId, identityService.getIDAToken(individualId)
+					, EventStatusInProgress.OTP_REQUESTED.toString());
+			if (residentTransactionEntity != null) {
+				authType = residentTransactionEntity.getAuthTypeCode();
+			}
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId, individualId);
 			if (residentTransactionEntity != null) {
@@ -158,8 +165,16 @@ public class IdAuthServiceImpl implements IdAuthService {
 				throw new OtpValidationFailedException(ResidentErrorCode.INVALID_TRANSACTION_ID.getErrorCode(), response.getErrors().get(0).getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			} 
-			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.UIN_LOCKED_ERR_CODE)) {
-				throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(), response.getErrors().get(0).getErrorMessage(),
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.equals(ResidentConstants.PHONE)) {
+				throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
+						Map.of(ResidentConstants.EVENT_ID, eventId));
+			}
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.equals(ResidentConstants.EMAIL)) {
+				throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
+						Map.of(ResidentConstants.EVENT_ID, eventId));
+			}
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE) && authType.equals(ResidentConstants.PHONE_AND_EMAIL)) {
+				throw new OtpValidationFailedException(ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorCode(), ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
 			else throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),

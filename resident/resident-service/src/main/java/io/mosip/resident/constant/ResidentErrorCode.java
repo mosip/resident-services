@@ -118,7 +118,8 @@ public enum ResidentErrorCode {
 	OTP_INVALID("RES-OTP-007","OTP is invalid"),
 	INVALID_TRANSACTION_ID("RES-OTP-008","Input transactionId does not match transactionId of OTP Request"),
 	SMS_AUTH_LOCKED("RES-OTP-010","Your SMS OTP authentication is locked"),
-	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked");
+	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked"),
+	SMS_AND_EMAIL_AUTH_LOCKED("RES-OTP-012","Your SMS and email OTP authentication is locked");
 	
 
 	private final String errorCode;
