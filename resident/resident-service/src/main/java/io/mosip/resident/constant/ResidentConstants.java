@@ -231,5 +231,7 @@ public class ResidentConstants {
     public static final String REQUEST_PRINT_UIN = "Request for print UIN API";
     public static final String IDENTITY_JSON = "identityJson";
     public static final String SCHEMA_TYPE = "schemaType";
+    public static final String FILE_NAME = "fileName";
+    public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
 
 }
