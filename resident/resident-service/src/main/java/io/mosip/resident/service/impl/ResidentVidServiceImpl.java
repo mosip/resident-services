@@ -570,15 +570,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				throw new ApisResourceAccessException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), exception);
 			}
+			identityDTO = identityServiceImpl.getIdentity(indivudalId);
+			uin = identityDTO.getUIN();
+			notificationRequestDto.setId(uin);
 			if(uinForVid == null || !uinForVid.equalsIgnoreCase(uin)) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_INDIVITUAL);
 			}
 		}
 		
 		try {
-			identityDTO = identityServiceImpl.getIdentity(indivudalId);
-			uin = identityDTO.getUIN();
-			notificationRequestDto.setId(uin);
 			// revoke vid
 			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin, vid);
 			audit.setAuditRequestDto(
