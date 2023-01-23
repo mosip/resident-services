@@ -1022,9 +1022,15 @@ public class RequestValidator {
 		validateEventId(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
 		validateEventIdBelongToSameSession(grievanceRequestDTOMainRequestDTO.getRequest().getEventId());
 		validateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getEmailId());
-		validateEmailId(grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId());
+		String alternateEmail = grievanceRequestDTOMainRequestDTO.getRequest().getAlternateEmailId();
+		if(alternateEmail!=null){
+			validateEmailId(alternateEmail);
+		}
+		String alternatePhone = grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo();
+		if(alternatePhone!=null){
+			validatePhoneNumber(alternatePhone);
+		}
 		validatePhoneNumber(grievanceRequestDTOMainRequestDTO.getRequest().getPhoneNo());
-		validatePhoneNumber(grievanceRequestDTOMainRequestDTO.getRequest().getAlternatePhoneNo());
 		validateMessage(grievanceRequestDTOMainRequestDTO.getRequest().getMessage());
     }
 
@@ -1091,12 +1097,12 @@ public class RequestValidator {
 	}
 
 	public void validatePurpose(String purpose) {
-		if(purpose.isEmpty() || validateStringWithAlphaNumericCharacter(purpose)){
+		if(purpose.isEmpty() || validateStringWithAlphaNumericCharacter(purpose) || purpose.startsWith(" ")){
 			validateString(purpose, TemplateVariablesConstants.PURPOSE);
 		}
 	}
 
 	private boolean validateStringWithAlphaNumericCharacter(String purpose) {
-		return !purpose.matches("[A-Za-z0-9 ]+");
+		return !purpose.matches("[A-Za-z0-9]+");
 	}
 }

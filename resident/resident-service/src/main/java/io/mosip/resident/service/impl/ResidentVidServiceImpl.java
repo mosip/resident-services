@@ -371,7 +371,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				/**
 				 * Checks if VID type is Perpetual VID.
 				 */
-				if(vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+				if(vidType!=null && vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
 					int numberOfPerpetualVid = numberOfPerpetualVidTuple.getT1();
 					VidPolicy vidPolicy = getVidPolicyAsVidPolicyDto();
 					/**
