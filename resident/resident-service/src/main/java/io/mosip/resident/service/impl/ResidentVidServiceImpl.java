@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -43,6 +44,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.VidAlreadyPresentException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
@@ -75,12 +77,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICIES;
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
 
+	private static final String GENRATED_ON_TIMESTAMP = "genratedOnTimestamp";
+	
 	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
 
 	private static final String TRANSACTIONS_LEFT_COUNT = "transactionsLeftCount";
@@ -206,6 +212,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 			if(Utility.isSecureSession()){
 				residentTransactionEntity = createResidentTransactionEntity(requestDto);
+				validateVidFromSession(individualId);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
 	    		}
@@ -347,8 +354,82 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setVersion(version);
 		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-
 		return Tuples.of(responseDto, eventId);
+	}
+
+	private void validateVidFromSession(String individualId) {
+		try {
+			String idType = identityServiceImpl.getIndividualIdType(individualId);
+			String uin = identityServiceImpl.getUinForIndividualId(individualId);
+			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(uin);
+			/**
+			 * Check If id type is VID.
+			 */
+			if (idType.equalsIgnoreCase(IdType.VID.name())) {
+				String vidType =
+						getVidTypeFromVid(individualId, uin);
+				/**
+				 * Checks if VID type is Perpetual VID.
+				 */
+				if(vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+					int numberOfPerpetualVid = numberOfPerpetualVidTuple.getT1();
+					VidPolicy vidPolicy = getVidPolicyAsVidPolicyDto();
+					/**
+					 * Checks if VID Policy allowed instance is greater than number of existing Perpetual VID.
+					 */
+					if(vidPolicy.getAllowedInstances() >= numberOfPerpetualVid
+							/**
+							 * Checks if VID Policy auto restore allowed is true.
+							 */
+							&& vidPolicy.getAutoRestoreAllowed()
+							/**
+							 * Checks if VID Policy restore on action is not ACTIVE.
+							 */
+							&& !vidPolicy.getRestoreOnAction().
+									equalsIgnoreCase(env.getProperty(ResidentConstants.VID_ACTIVE_STATUS))
+							/**
+							 * Checks if first Perpetual Vid is equal to logged in vid.
+							 */
+					&& numberOfPerpetualVidTuple.getT2().equals(individualId)){
+						throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION,
+									ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION.getErrorMessage());
+					}
+				}
+			}
+		}catch (ApisResourceAccessException | ResidentServiceCheckedException |
+				com.fasterxml.jackson.core.JsonProcessingException | ResidentServiceException e) {
+			audit.setAuditRequestDto(EventEnum.VID_GENERATION_FAILURE);
+			logger.error(EventEnum.VID_GENERATION_FAILURE.getDescription() + e);
+			throw new ResidentServiceException(ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION.getErrorCode(),
+					ResidentErrorCode.VID_CREATION_FAILED_WITH_REVOCATION.getErrorMessage(), e);
+		}
+	}
+
+	private VidPolicy getVidPolicyAsVidPolicyDto() throws ResidentServiceCheckedException, com.fasterxml.jackson.core.JsonProcessingException {
+		String vidPolicy = getVidPolicy();
+		VidPolicy vidPolicyDto = new VidPolicy();
+		Map<Object, Object> vidPolicyMap = mapper.readValue(vidPolicy, Map.class);
+		Object vidPolicyMapValue = vidPolicyMap.get(VID_POLICIES);
+		List<Map<String, String>> vidList = (List<Map<String, String>>)vidPolicyMapValue;
+		if(vidList!=null){
+			for(Map<String, String> vid:vidList){
+				if(vid.get(TemplateVariablesConstants.VID_TYPE).equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+					vidPolicyDto = mapper.convertValue(vid.get(VID_POLICY), VidPolicy.class);
+				}
+			}
+		}
+		return vidPolicyDto;
+	}
+
+	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , ResidentConstants.UTC_TIMEZONE_OFFSET);
+		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
+		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
+				.collect(Collectors.toList());
+		if(vidList.isEmpty()){
+			return Tuples.of(0, "");
+		}
+		return Tuples.of(vidList.size(), vidList.get(0).get(TemplateVariablesConstants.VID).toString());
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -735,7 +816,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
 					getMaskedVid(lhm);
 					getRefIdHash(lhm);
-					normalizeExpiryTime(lhm, timeZoneOffset);
+					normalizeTime(EXPIRY_TIMESTAMP, lhm, timeZoneOffset);
+					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset);
 					return lhm;
 				})
 				.collect(Collectors.toList());
@@ -748,16 +830,16 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
-	private void normalizeExpiryTime(LinkedHashMap<String, Object> lhm, int timeZoneOffset) {
-		Object expiryTimeObj = lhm.get(EXPIRY_TIMESTAMP);
-		if(expiryTimeObj instanceof String) {
-			String expiryTime = String.valueOf(expiryTimeObj);
-			LocalDateTime expiryLocalDateTime = mapper.convertValue(expiryTime, LocalDateTime.class);
+	private void normalizeTime(String attributeName, LinkedHashMap<String, Object> lhm, int timeZoneOffset) {
+		Object timeObject = lhm.get(attributeName);
+		if(timeObject instanceof String) {
+			String timeStr = String.valueOf(timeObject);
+			LocalDateTime localDateTime = mapper.convertValue(timeStr, LocalDateTime.class);
 			//For the big expiry time, assume no expiry time, so set to null
-			if(expiryLocalDateTime.getYear() >= 9999) {
-				lhm.put(EXPIRY_TIMESTAMP, null);
+			if(localDateTime.getYear() >= 9999) {
+				lhm.put(attributeName, null);
 			} else {
-				lhm.put(EXPIRY_TIMESTAMP, utility.formatWithOffsetForUI(timeZoneOffset, expiryLocalDateTime)) ;
+				lhm.put(attributeName, utility.formatWithOffsetForUI(timeZoneOffset, localDateTime)) ;
 			}
 		}
 	}

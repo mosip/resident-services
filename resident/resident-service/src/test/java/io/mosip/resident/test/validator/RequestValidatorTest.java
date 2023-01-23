@@ -13,6 +13,7 @@ import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
@@ -1688,6 +1689,7 @@ public class RequestValidatorTest {
 		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
 		downloadPersonalizedCardDto.setHtml("html");
+		downloadPersonalizedCardDto.setAttributes(List.of(TemplateVariablesConstants.NAME));
 		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
 		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
 	}
