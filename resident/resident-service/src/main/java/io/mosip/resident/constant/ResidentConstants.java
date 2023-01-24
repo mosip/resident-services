@@ -233,5 +233,6 @@ public class ResidentConstants {
     public static final String SCHEMA_TYPE = "schemaType";
     public static final String FILE_NAME = "fileName";
     public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
+    public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
 
 }
