@@ -255,6 +255,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
+	
+	@Value("#{'${resident.async.request.types}'.split(',')}") 
+	private List<String> asyncRequestTypes;
 
 	@Autowired
 	private AuditUtil audit;
@@ -2061,16 +2064,18 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) {
+	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String id) {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
 		Long residentTransactionEntity;
-		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(Id);
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(id);
 		if (residentUserEntity.isPresent()) {
-			time = residentUserEntity.get().getLastloginDtime();
-			residentTransactionEntity = residentTransactionRepository.findByIdandlastlogincount(Id, time);
+			time = residentUserEntity.get().getLastbellnotifDtimes();
+			residentTransactionEntity = residentTransactionRepository
+					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(id, time, asyncRequestTypes);
 		} else {
-			residentTransactionEntity = residentTransactionRepository.findByIdandcount(Id);
+			residentTransactionEntity = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(id,
+					asyncRequestTypes);
 		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
 		notification.setUnreadCount(residentTransactionEntity);
@@ -2108,8 +2113,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id) {
-		List<ResidentTransactionEntity> result = residentTransactionRepository.findByIdandStatus(Id);
+	public ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String id) {
+		List<ResidentTransactionEntity> result = residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(id, asyncRequestTypes);
 
 		List<UnreadServiceNotificationDto> unreadServiceNotificationDto = new ArrayList<>();
 

@@ -80,15 +80,15 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	Long countByTokenId(String tokenId);
 
-	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
-	Long findByIdandcount(@Param("tokenId") String tokenId);
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false' and requestTypeCode in (:requestTypes)")
+	Long countByIdAndUnreadStatusForRequestTypes(@Param("tokenId") String tokenId, @Param("requestTypes") List<String> requestTypes);
 	
-	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :lastLoginTime  AND read_status='false'")
-	Long findByIdandlastlogincount(@Param("tokenId") String tokenId,@Param("lastLoginTime") LocalDateTime lastLoginTime);
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where tokenId=:tokenId AND crDtimes>= :lastLoginTime  AND read_status='false' AND requestTypeCode in (:requestTypes)")
+	Long countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(@Param("tokenId") String tokenId,@Param("lastLoginTime") LocalDateTime lastLoginTime, @Param("requestTypes") List<String> requestTypes);
 
 	@Query(value = "Select new ResidentTransactionEntity(eventId, requestSummary, statusCode,requestDtimes,requestTypeCode) "
-			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false'")
-	List<ResidentTransactionEntity> findByIdandStatus(@Param("tokenId") String tokenId);
+			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false' and requestTypeCode in (:requestTypes)")
+	List<ResidentTransactionEntity> findByIdAndUnreadStatusForRequestTypes(@Param("tokenId") String tokenId, @Param("requestTypes") List<String> requestTypes);
 
 	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashrefid AND auth_type_code !='OTP_REQUESTED'")
 	/**
