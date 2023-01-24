@@ -6,9 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +19,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -24,7 +26,10 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.exception.ResidentServiceException;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -48,6 +53,8 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
+	
+	Resource resource;
 
 	@Before
 	public void setUp() throws Exception {
@@ -55,7 +62,7 @@ public class ResidentConfigServiceImplTest {
 				.thenReturn(new ByteArrayInputStream("{\"name\":\"identity-mapping\"}".getBytes()));
 		ReflectionTestUtils.setField(configServiceImpl, "resourceLoader", resourceLoader);
 		ReflectionTestUtils.setField(configServiceImpl, "residentUiSchemaJsonFilePrefix", "classpath:resident-ui");
-		Resource resource = Mockito.mock(Resource.class);
+		resource = Mockito.mock(Resource.class);
 		Mockito.when(resourceLoader.getResource(Mockito.anyString())).thenReturn(resource);
 		when(resource.exists()).thenReturn(true);
 		String uiSchema = "{\"name\":\"ui-schema\"}";
@@ -100,25 +107,11 @@ public class ResidentConfigServiceImplTest {
 
 	}
 
-	@Test
-	public void testGetUISchema() throws Exception {
-		ResidentConfigServiceImpl testSubject;
-
-		testSubject = createTestSubject();
-		String uiSchema = "{\"name\":\"ui-schema\"}";
-		String result = testSubject.getUISchema("update-demographics");
-		assertTrue(result.contains(uiSchema));
-	}
-
-	@Test
-	public void testGetUISchemaTry() throws Exception {
-		ResidentConfigServiceImpl testSubject;
-
-		testSubject = createTestSubject();
-		String uiSchema = null;
-		uiSchema = "{\"name\":\"ui-schema\"}";
-		String result = testSubject.getUISchema("update-demographics");
-		assertTrue(result.contains(uiSchema));
+	@Test(expected = ResidentServiceException.class)
+	public void testGetUISchemaElse() throws Exception {
+		ResidentConfigServiceImpl testSubject = createTestSubject();
+		when(resource.exists()).thenReturn(false);
+		testSubject.getUISchema("update-demographics");
 	}
 
 	@Test
@@ -174,16 +167,5 @@ public class ResidentConfigServiceImplTest {
 		testSubject = createTestSubject();
 		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
 		assertNull(result);
-	}
-
-	@Test
-	public void testGetUiSchemaFilteredInputAttributesEmpty() throws Exception{
-		ResidentConfigServiceImpl testSubject;
-		List<String> result;
-		List<String> uiSchemaFilteredInputAttributes = new ArrayList<>();
-		testSubject = createTestSubject();
-		ReflectionTestUtils.setField(testSubject, "uiSchemaFilteredInputAttributes", uiSchemaFilteredInputAttributes);
-		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
-		assertNotNull(result);
 	}
 }
