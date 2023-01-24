@@ -1,11 +1,14 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
-import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-
-import java.io.IOException;
-import java.io.InputStream;
-
+import io.mosip.kernel.core.http.RequestWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
+import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +18,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 
-import io.mosip.kernel.core.http.RequestWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
-import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceException;
+import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
+import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 
 /**
  * It validates the request and scans the file for viruses
@@ -43,6 +40,9 @@ public class DocumentValidator implements Validator {
 	@Autowired
 	private Environment env;
 
+	@Autowired
+	private RequestValidator requestValidator;
+
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return clazz.isAssignableFrom(RequestWrapper.class);
@@ -58,8 +58,7 @@ public class DocumentValidator implements Validator {
 	 * @param langCode 
 	 * @param docTypCode 
 	 * @param docCatCode 
-	 * 
-	 * @param docRequest The request object that is passed to the service.
+	 *
 	 */
 	public void validateRequest(String docCatCode, String docTypCode, String langCode) {
 
@@ -69,9 +68,7 @@ public class DocumentValidator implements Validator {
 		if (docTypCode == null || StringUtils.isEmpty(docTypCode)) {
 			throw new InvalidInputException("docTypCode");
 		}
-		if (langCode == null || StringUtils.isEmpty(langCode)) {
-			throw new InvalidInputException("langCode");
-		}
+		requestValidator.validateOnlyLanguageCode(langCode);
 	}
 
 	/**
