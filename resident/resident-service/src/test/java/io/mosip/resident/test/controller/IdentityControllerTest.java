@@ -36,6 +36,7 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -82,6 +83,9 @@ public class IdentityControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	private ResponseWrapper responseWrapper;
 
