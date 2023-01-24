@@ -109,6 +109,8 @@ public class ResidentCredentialController {
 			@RequestBody RequestWrapper<ShareCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
 		validator.validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
+		validator.validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
+		validator.validatePurpose(requestDTO.getRequest().getPurpose());
 		String purpose = requestDTO.getRequest().getPurpose();
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();

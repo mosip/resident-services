@@ -1,15 +1,12 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.io.InputStream;
-import java.util.UUID;
-
+import io.mosip.kernel.core.http.RequestWrapper;
+import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
+import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,13 +18,15 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import io.mosip.kernel.core.http.RequestWrapper;
-import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
-import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.dto.DocumentRequestDTO;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceException;
+import java.io.InputStream;
+import java.util.UUID;
+
+import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Manoj SP
@@ -39,6 +38,9 @@ public class DocumentValidatorTest {
 	
 	@InjectMocks
 	private DocumentValidator validator;
+
+	@Mock
+	private RequestValidator requestValidator;
 
 	@Mock
 	private VirusScanner<Boolean, InputStream> virusScanner;
