@@ -38,6 +38,7 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -133,6 +134,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
+        ReflectionTestUtils.setField(residentServiceImpl, "asyncRequestTypes", List.of("TEST"));
     }
     @Test(expected = ResidentServiceException.class)
     public void testUpdateMyUinException() throws ResidentServiceCheckedException{

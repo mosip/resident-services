@@ -9,6 +9,8 @@ import javax.crypto.SecretKey;
 
 import io.mosip.resident.controller.AcknowledgementController;
 import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +83,9 @@ public class ProxyMasterdataControllerTest {
 
 	@MockBean
 	private ObjectStoreHelper objectStore;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@Autowired
 	private MockMvc mockMvc;

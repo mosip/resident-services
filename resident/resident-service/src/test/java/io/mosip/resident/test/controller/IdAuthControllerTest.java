@@ -32,6 +32,7 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import reactor.util.function.Tuples;
@@ -73,6 +74,9 @@ public class IdAuthControllerTest {
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	Gson gson = new GsonBuilder().serializeNulls().create();
 

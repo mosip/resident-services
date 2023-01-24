@@ -39,6 +39,7 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
@@ -67,6 +68,9 @@ public class ProxyAuditControllerTest {
 	
 	@Mock
 	private Utility utility;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
