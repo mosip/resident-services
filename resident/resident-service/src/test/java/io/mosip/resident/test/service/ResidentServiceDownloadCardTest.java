@@ -244,7 +244,7 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity1.setStatusCode("200");
         residentTransactionEntity1.setRequestDtimes(LocalDateTime.now());
         residentTransactionEntity1.setRequestTypeCode("SERVICE_HISTORY");
-        Mockito.when(residentTransactionRepository.findByIdandStatus(Mockito.anyString())).thenReturn(List.of(residentTransactionEntity1));
+        Mockito.when(residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.any())).thenReturn(List.of(residentTransactionEntity1));
         assertEquals("123", residentServiceImpl.getUnreadnotifylist("123").getResponse().get(0).getEventId());
     }
 
@@ -298,7 +298,7 @@ public class ResidentServiceDownloadCardTest {
         UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
         unreadServiceNotificationDto.setUnreadCount(4L);
         responseWrapper.setResponse(unreadServiceNotificationDto);
-        Mockito.when(residentTransactionRepository.findByIdandcount(Mockito.anyString())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
         assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
@@ -316,7 +316,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setLastbellnotifDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentTransactionRepository.findByIdandcount(Mockito.anyString())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
         assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
