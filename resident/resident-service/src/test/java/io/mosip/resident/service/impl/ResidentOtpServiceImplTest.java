@@ -1,12 +1,18 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.resident.dto.AuthError;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
+import io.mosip.resident.dto.MaskedResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTO;
+import io.mosip.resident.dto.OtpResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -16,23 +22,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.mosip.resident.dto.AuthError;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
-import io.mosip.resident.dto.MaskedResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTO;
-import io.mosip.resident.dto.OtpResponseDTO;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * 
@@ -76,8 +75,14 @@ public class ResidentOtpServiceImplTest {
 	public void setUp() throws Exception {
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
 		OtpResponseDTO responseDto = getOtpResponseDTO();
+		responseDto.setTransactionID("1232323232");
 
 		when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseDto);
+		IndividualIdOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
+		aidOtpRequestDTO.setIndividualId("9054257143");
+		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
+		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn("9054257143");
+		Mockito.when(objectMapper.convertValue(aidOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
 	}
 
 	@Test
@@ -96,14 +101,24 @@ public class ResidentOtpServiceImplTest {
 		assertNotNull(residentOtpServiceImpl.generateOtp(otpRequestDTO));
 	}
 
-	@Ignore
+
 	@Test
 	public void generateOtpForIndividualId() throws Exception {
 		IndividualIdOtpRequestDTO aidOtpRequestDTO = getAidOtpRequestDTO();
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
+		otpRequestDTO.setIndividualId("9054257143");
+		otpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
+		aidOtpRequestDTO.setIndividualId("9054257143");
 		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
-		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn(otpRequestDTO.getIndividualId());
-		assertNotNull(residentOtpServiceImpl.generateOtpForIndividualId(aidOtpRequestDTO));
+		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn("9054257143");
+		Mockito.when(objectMapper.convertValue(aidOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
+		OtpResponseDTO otpResponseDTO = new OtpResponseDTO();
+		otpResponseDTO.setResponse(new MaskedResponseDTO());
+		otpResponseDTO.setTransactionID("1234567789");
+		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
+		individualIdResponseDto.setResponse(new MaskedResponseDTO());
+		individualIdResponseDto.setTransactionId("1234567789");
+		residentOtpServiceImpl.generateOtpForIndividualId(aidOtpRequestDTO);
 	}
 
 	@Ignore
