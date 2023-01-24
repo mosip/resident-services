@@ -6,18 +6,22 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.UUIDUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.velocity.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +29,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 
 /**
  * It's a service class that uploads a document to the object store and returns
@@ -45,6 +52,9 @@ public class DocumentServiceImpl implements DocumentService {
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
+
+	@Autowired
+	private Environment environment;
 
 	/**
 	 * It uploads a file to the object store
@@ -67,12 +77,18 @@ public class DocumentServiceImpl implements DocumentService {
 			DocumentResponseDTO response = new DocumentResponseDTO();
 			response.setTransactionId(transactionId);
 			response.setDocId(docId);
+			String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+			String extensionProperty = Objects.requireNonNull(environment.getProperty(ALLOWED_FILE_TYPE));
+			if(!extensionProperty.contains(extension)){
+				throw new InvalidInputException(ResidentConstants.FILE_NAME);
+			}
 			response.setDocName(file.getOriginalFilename());
 			response.setDocCatCode(request.getDocCatCode());
 			response.setDocTypCode(request.getDocTypCode());
 			response.setDocFileFormat(StringUtils.split(file.getOriginalFilename(), "\\.")[1]);
 			return response;
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceCheckedException(ResidentErrorCode.FAILED_TO_UPLOAD_DOC.getErrorCode(),

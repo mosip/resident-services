@@ -1,23 +1,12 @@
 package io.mosip.resident.controller;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.websocket.server.PathParam;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
@@ -28,6 +17,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/identity")
@@ -66,14 +65,19 @@ public class IdentityController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("IdentityController::getInputAttributeValues()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES);
+		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		try{
 		String id = getIdFromUser();
 		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id,true, schemaType, true);
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(propertiesResponse);
+		}catch (Exception exception){
+			throw new InvalidInputException(ResidentConstants.SCHEMA_TYPE);
+		}
 		responseWrapper.setId(residentIdentityInfoId);
 		responseWrapper.setVersion(residentIdentityInfoVersion);
-		responseWrapper.setResponse(propertiesResponse);
+
 		return responseWrapper;
 	}
 

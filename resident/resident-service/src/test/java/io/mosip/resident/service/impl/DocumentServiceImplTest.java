@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -38,15 +39,18 @@ public class DocumentServiceImplTest {
 	@Mock
 	private ObjectStoreHelper objectStoreHelper;
 
+	@Mock
+	private Environment environment;
+
 	@Before
 	public void setUp() throws Exception {
-
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("pdf");
 	}
 
 	@Test
 	public void uploadDocumentTest() throws Exception {
 		DocumentRequestDTO request = getDocumentRqtDto();
-		MockMultipartFile file = new MockMultipartFile("test.txt", "test.txt", null, new byte[1100]);
+		MockMultipartFile file = new MockMultipartFile("test.pdf", "test.pdf", null, new byte[1100]);
 		file.getOriginalFilename();
 		request.setDocCatCode("POI");
 		request.setLangCode("eng");
