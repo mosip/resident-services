@@ -371,7 +371,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				/**
 				 * Checks if VID type is Perpetual VID.
 				 */
-				if(vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
+				if(vidType!=null && vidType.equalsIgnoreCase(ResidentConstants.PERPETUAL)){
 					int numberOfPerpetualVid = numberOfPerpetualVidTuple.getT1();
 					VidPolicy vidPolicy = getVidPolicyAsVidPolicyDto();
 					/**
@@ -540,12 +540,17 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				eventId = residentTransactionEntity.getEventId();
 			}
 		}
-		IdentityDTO identityDTO = identityServiceImpl.getIdentity(indivudalId);
-		String uin = identityDTO.getUIN();
-
-		notificationRequestDto.setId(uin);
-		
+		IdentityDTO identityDTO = new IdentityDTO();
+		String uin="";
 		if(isV2Request) {
+			try {
+				identityDTO = identityServiceImpl.getIdentity(indivudalId);
+			}catch (Exception e){
+				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
+						Map.of(ResidentConstants.EVENT_ID, eventId));
+			}
+			uin = identityDTO.getUIN();
+			notificationRequestDto.setId(uin);
 			String idaTokenForIndividualId = identityServiceImpl.getResidentIdaToken();
 			String idaTokenForVid = identityServiceImpl.getIDATokenForIndividualId(vid);
 			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
@@ -565,13 +570,15 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				throw new ApisResourceAccessException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), exception);
 			}
+			identityDTO = identityServiceImpl.getIdentity(indivudalId);
+			uin = identityDTO.getUIN();
+			notificationRequestDto.setId(uin);
 			if(uinForVid == null || !uinForVid.equalsIgnoreCase(uin)) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_INDIVITUAL);
 			}
 		}
 		
 		try {
-
 			// revoke vid
 			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin, vid);
 			audit.setAuditRequestDto(
@@ -706,7 +713,11 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
-		residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
+		try {
+			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
+		} catch (Exception exception){
+			residentTransactionEntity.setRefIdType("");
+		}
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_REVOKED.name());

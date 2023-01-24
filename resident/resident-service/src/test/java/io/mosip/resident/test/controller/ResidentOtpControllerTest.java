@@ -44,6 +44,7 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentOtpService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
@@ -95,6 +96,9 @@ public class ResidentOtpControllerTest {
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@Mock
 	private AuditUtil audit;
