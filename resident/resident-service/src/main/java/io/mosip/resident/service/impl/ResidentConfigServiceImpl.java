@@ -84,8 +84,6 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private List<String> uiSchemaFilteredInputAttributes;
-	
 	@Value("${resident.ui.properties.id}")
 	private String residentUiPropertiesId;
 	
@@ -123,7 +121,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 * @return the UI schema
 	 */
 	@Override
-	@Cacheable("ui-schema")
+	@Cacheable(value="ui-schema", key="#schemaType")
 	public String getUISchema(String schemaType) {
 		String uiSchema;
 		Resource residentUiSchemaJsonFileRes = resourceLoader
@@ -137,12 +135,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 
 	@Override
+	@Cacheable(value="ui-schema-filtered-attributes", key="#schemaType")
 	public List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
-		if(uiSchemaFilteredInputAttributes == null) {
-			uiSchemaFilteredInputAttributes = doGetUiSchemaFilteredInputAttributes(schemaType);
-		}
-		return uiSchemaFilteredInputAttributes;
-		
+		return doGetUiSchemaFilteredInputAttributes(schemaType);
 	}
 	
 	private List<String> doGetUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
