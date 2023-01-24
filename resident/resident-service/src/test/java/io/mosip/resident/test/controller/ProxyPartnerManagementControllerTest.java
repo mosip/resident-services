@@ -33,6 +33,7 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -73,6 +74,9 @@ public class ProxyPartnerManagementControllerTest {
 
 	@MockBean
 	private ResidentVidService vidService;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@Autowired
 	private MockMvc mockMvc;
