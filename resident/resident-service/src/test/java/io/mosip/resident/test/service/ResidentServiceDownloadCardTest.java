@@ -38,6 +38,7 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -133,6 +134,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
+        ReflectionTestUtils.setField(residentServiceImpl, "asyncRequestTypes", List.of("TEST"));
     }
     @Test(expected = ResidentServiceException.class)
     public void testUpdateMyUinException() throws ResidentServiceCheckedException{
@@ -244,7 +246,7 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity1.setStatusCode("200");
         residentTransactionEntity1.setRequestDtimes(LocalDateTime.now());
         residentTransactionEntity1.setRequestTypeCode("SERVICE_HISTORY");
-        Mockito.when(residentTransactionRepository.findByIdandStatus(Mockito.anyString())).thenReturn(List.of(residentTransactionEntity1));
+        Mockito.when(residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.any())).thenReturn(List.of(residentTransactionEntity1));
         assertEquals("123", residentServiceImpl.getUnreadnotifylist("123").getResponse().get(0).getEventId());
     }
 
@@ -298,7 +300,7 @@ public class ResidentServiceDownloadCardTest {
         UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
         unreadServiceNotificationDto.setUnreadCount(4L);
         responseWrapper.setResponse(unreadServiceNotificationDto);
-        Mockito.when(residentTransactionRepository.findByIdandcount(Mockito.anyString())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
         assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
@@ -316,7 +318,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setLastbellnotifDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentTransactionRepository.findByIdandcount(Mockito.anyString())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
         assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }

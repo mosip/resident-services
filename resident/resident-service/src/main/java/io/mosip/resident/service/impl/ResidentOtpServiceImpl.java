@@ -1,13 +1,12 @@
 package io.mosip.resident.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
@@ -26,8 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -81,13 +78,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-		} catch (ResidentServiceCheckedException e) {
-			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-		} catch (NoSuchAlgorithmException e) {
+		} catch (ResidentServiceCheckedException | NoSuchAlgorithmException e) {
 			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
@@ -136,7 +127,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			otpRequestDTO.setTransactionID(individualIdRequestDto.getTransactionId());
 			OtpResponseDTO otpResponseDTO = generateOtp(otpRequestDTO);
 			IndividualIdResponseDto individualIdResponseDto = objectMapper.convertValue(otpResponseDTO, IndividualIdResponseDto.class);
-			individualIdResponseDto.setTransactionId(otpResponseDTO.getTransactionID());
+			if(individualIdResponseDto!=null){
+				individualIdResponseDto.setTransactionId(otpResponseDTO.getTransactionID());
+			}
 			return individualIdResponseDto;
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);
