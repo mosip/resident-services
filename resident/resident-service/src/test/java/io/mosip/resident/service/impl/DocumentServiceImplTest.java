@@ -44,7 +44,6 @@ public class DocumentServiceImplTest {
 
 	@Before
 	public void setUp() throws Exception {
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("pdf");
 	}
 
 	@Test
