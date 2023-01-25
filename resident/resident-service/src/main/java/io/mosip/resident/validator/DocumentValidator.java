@@ -9,6 +9,7 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
+import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 
@@ -114,6 +117,14 @@ public class DocumentValidator implements Validator {
 		if(documentId == null || documentId.length() < 20){
 			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
 					INVALID_INPUT.getErrorMessage() + "documentId");
+		}
+	}
+
+	public void validateFileName(MultipartFile file) {
+		String extension = Objects.requireNonNull(FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase();
+		String extensionProperty = Objects.requireNonNull(env.getProperty(ALLOWED_FILE_TYPE)).toLowerCase();
+		if(!extensionProperty.contains(Objects.requireNonNull(extension))){
+			throw new InvalidInputException(ResidentConstants.FILE_NAME);
 		}
 	}
 }

@@ -77,11 +77,6 @@ public class DocumentServiceImpl implements DocumentService {
 			DocumentResponseDTO response = new DocumentResponseDTO();
 			response.setTransactionId(transactionId);
 			response.setDocId(docId);
-			String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-			String extensionProperty = Objects.requireNonNull(environment.getProperty(ALLOWED_FILE_TYPE));
-			if(!extensionProperty.contains(extension)){
-				throw new InvalidInputException(ResidentConstants.FILE_NAME);
-			}
 			response.setDocName(file.getOriginalFilename());
 			response.setDocCatCode(request.getDocCatCode());
 			response.setDocTypCode(request.getDocTypCode());
