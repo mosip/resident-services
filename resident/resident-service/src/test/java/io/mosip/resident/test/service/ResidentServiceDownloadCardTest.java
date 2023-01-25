@@ -247,7 +247,7 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity1.setRequestDtimes(LocalDateTime.now());
         residentTransactionEntity1.setRequestTypeCode("SERVICE_HISTORY");
         Mockito.when(residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.any())).thenReturn(List.of(residentTransactionEntity1));
-        assertEquals("123", residentServiceImpl.getUnreadnotifylist("123").getResponse().get(0).getEventId());
+        assertEquals("123", residentServiceImpl.getNotificationList("123").getResponse().get(0).getEventId());
     }
 
     @Test
@@ -258,7 +258,6 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setIpAddress("http");
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentUserRepository.updateByIdandTime(any(), any())).thenReturn(2);
         assertEquals(2, residentServiceImpl.updatebellClickdttimes("123"));
     }
 
@@ -266,7 +265,6 @@ public class ResidentServiceDownloadCardTest {
     public void testUpdatebellClickdttimesNewRecord() throws ApisResourceAccessException, ResidentServiceCheckedException{
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentUserRepository.insertRecordByIdAndNotificationClickTime(any(), any(), any())).thenReturn(1);
         assertEquals(1, residentServiceImpl.updatebellClickdttimes("123"));
     }
 
@@ -279,7 +277,6 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setLastbellnotifDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentUserRepository.insertRecordByIdAndNotificationClickTime(any(), any(), any())).thenReturn(1);
         ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
         BellNotificationDto bellNotificationDto = new BellNotificationDto();
         bellNotificationDto.setLastbellnotifclicktime(LocalDateTime.now());
@@ -289,12 +286,12 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
-    public void testGetnotificationCount(){
+    public void testGetnotificationCount() throws ApisResourceAccessException, ResidentServiceCheckedException{
         ResidentUserEntity residentUserEntity = new ResidentUserEntity();
         residentUserEntity.setHost("localhost");
         residentUserEntity.setIdaToken("123");
         residentUserEntity.setIpAddress("http");
-        residentUserEntity.setLastloginDtime(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
+        residentUserEntity.setLoginDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
         UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
@@ -306,7 +303,7 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
-    public void testGetnotificationCountLastLoginTime(){
+    public void testGetnotificationCountLastLoginTime() throws ApisResourceAccessException, ResidentServiceCheckedException{
         ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
         UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
         unreadServiceNotificationDto.setUnreadCount(4L);

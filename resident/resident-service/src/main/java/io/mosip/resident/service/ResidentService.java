@@ -76,13 +76,13 @@ public interface ResidentService {
 	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId, int timeZoneOffset)
 			throws ResidentServiceCheckedException;
 
-	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id);
+	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
 	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id);
 
 	int updatebellClickdttimes(String sessionId) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
+	ResponseWrapper<List<UnreadServiceNotificationDto>> getNotificationList(String Id);
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,

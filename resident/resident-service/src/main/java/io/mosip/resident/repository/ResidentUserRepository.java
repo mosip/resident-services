@@ -1,6 +1,7 @@
 package io.mosip.resident.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,18 +22,13 @@ import io.mosip.resident.entity.ResidentUserEntity;
 @Transactional
 @Repository
 public interface ResidentUserRepository extends JpaRepository<ResidentUserEntity, String> {
-	Optional<ResidentUserEntity> findById(String Id);
+	Optional<ResidentUserEntity> findById(String id);
+	
+	List<ResidentUserEntity> findFirst2ByIdaTokenOrderByLoginDtimesDesc(String idaToken);
 
 	@Modifying
 	@Query("update ResidentUserEntity res set res.lastbellnotifDtimes =:datetime where res.sessionId =:sessionId")
-	int updateByIdandTime(@Param("sessionId") String sessionId, @Param("datetime") LocalDateTime datetime);
+	int updateByIdLastbellnotifDtimes(@Param("sessionId") String sessionId, @Param("datetime") LocalDateTime datetime);
 	
-	@Modifying
-    @Transactional
-	@Query(value = "INSERT INTO resident.resident_user_actions(\r\n"
-			+ "	session_id, ida_token, last_bell_notif_click_dtimes)\r\n"
-			+ "	VALUES (:sessionId, :tokenId, :datetime);" , nativeQuery=true)
-	int insertRecordByIdAndNotificationClickTime(@Param("sessionId") String sessionId, @Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
-
-	Optional<ResidentUserEntity> findByIdaTokenOrderByLastloginDtimeDesc(String idaToken);
+	Optional<ResidentUserEntity> findFirstByIdaTokenOrderByLoginDtimesDesc(String idaToken);
 }

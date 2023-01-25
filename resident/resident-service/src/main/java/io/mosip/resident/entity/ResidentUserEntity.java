@@ -34,8 +34,8 @@ public class ResidentUserEntity {
 	@Column(name = "last_bell_notif_click_dtimes")
 	private LocalDateTime lastbellnotifDtimes;
 
-	@Column(name = "last_login_dtimes")
-	private LocalDateTime lastloginDtime;
+	@Column(name = "login_dtimes")
+	private LocalDateTime loginDtimes;
 	
 	@Column(name = "ip_address")
 	private String ipAddress;
@@ -46,12 +46,11 @@ public class ResidentUserEntity {
 	@Column(name = "machine_type")
 	private String machineType;
 
-	public ResidentUserEntity(String sessionId, String idaToken, LocalDateTime lastbellnotifDtimes, LocalDateTime lastloginDtime,
+	public ResidentUserEntity(String sessionId, String idaToken, LocalDateTime loginDtimes,
 			String ipAddress, String host, String machineType) {
 		this.sessionId = sessionId;
 		this.idaToken = idaToken;
-		this.lastbellnotifDtimes = lastbellnotifDtimes;
-		this.lastloginDtime = lastloginDtime;
+		this.loginDtimes = loginDtimes;
 		this.ipAddress = ipAddress;
 		this.host = host;
 		this.machineType = machineType;

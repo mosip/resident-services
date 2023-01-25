@@ -573,7 +573,7 @@ public class ResidentController {
 
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
-	@GetMapping("/unread/service-list")
+	@GetMapping("/notification/list")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -586,7 +586,7 @@ public class ResidentController {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
 		String Id = identityServiceImpl.getResidentIdaToken();
 		ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotificationDtoList = residentService
-				.getUnreadnotifylist(Id);
+				.getNotificationList(Id);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
 		return unreadServiceNotificationDtoList;
 	}
@@ -636,8 +636,8 @@ public class ResidentController {
 	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
-		String sessionId = identityServiceImpl.getSessionId();
-		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(sessionId, timeZoneOffset);
+		String Id = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id, timeZoneOffset);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
 	}

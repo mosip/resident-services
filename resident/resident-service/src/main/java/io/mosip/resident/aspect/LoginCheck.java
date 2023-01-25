@@ -68,17 +68,18 @@ public class LoginCheck {
 				Optional<String> authorizationCookie = getCookieValueFromHeader(cookie);
 				if (authorizationCookie.isPresent()) {
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(authorizationCookie.get());
-					sessionId = identityServiceImpl.getSessionIdFromToken(authorizationCookie.get());
+					sessionId = identityServiceImpl.createSessionId();
 				}
+				break;
 			}
 		}
 
 		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
-			Optional<ResidentUserEntity> userData = residentUserRepository.findByIdaTokenOrderByLastloginDtimeDesc(idaToken);
-			ResidentUserEntity newUserData = new ResidentUserEntity(sessionId, idaToken, null, DateUtils.getUTCCurrentDateTime(),
+			Optional<ResidentUserEntity> lastLoggedInUserData = residentUserRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
+			ResidentUserEntity newUserData = new ResidentUserEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
 					utility.getClientIp(req), req.getRemoteHost(), getMachineType(req));
-			if (userData.isPresent()) {
-				newUserData.setLastbellnotifDtimes(userData.get().getLastbellnotifDtimes());
+			if (lastLoggedInUserData.isPresent()) {
+				newUserData.setLastbellnotifDtimes(lastLoggedInUserData.get().getLastbellnotifDtimes());
 			} 
 
 			residentUserRepository.save(newUserData);
