@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,11 +21,13 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "resident_user_actions", schema = "resident")
 @Entity
-@Builder
 @NoArgsConstructor
 
 public class ResidentUserEntity {
 	@Id
+	@Column(name = "session_id")
+	private String sessionId;
+	
 	@Column(name = "ida_token")
 	private String idaToken;
 
@@ -45,31 +46,9 @@ public class ResidentUserEntity {
 	@Column(name = "machine_type")
 	private String machineType;
 
-	/**
-	 * The constructor used in retrieval of the specific fields.
-	 * 
-	 * @param idaToken
-	 * @param lastbellnotifDtimes
-	 * @param lastloginDtime
-	 * 
-	 */
-	public ResidentUserEntity(String idaToken, LocalDateTime lastbellnotifDtimes, LocalDateTime lastloginDtime) {
-		this.idaToken = idaToken;
-		this.lastbellnotifDtimes = lastbellnotifDtimes;
-		this.lastloginDtime = lastloginDtime;
-
-	}
-
-	public ResidentUserEntity(String idaToken, LocalDateTime lastloginDtime, String ipAddress, String host, String machineType) {
-		this.idaToken = idaToken;
-		this.lastloginDtime = lastloginDtime;
-		this.ipAddress = ipAddress;
-		this.host = host;
-		this.machineType = machineType;
-	}
-
-	public ResidentUserEntity(String idaToken, LocalDateTime lastbellnotifDtimes, LocalDateTime lastloginDtime,
+	public ResidentUserEntity(String sessionId, String idaToken, LocalDateTime lastbellnotifDtimes, LocalDateTime lastloginDtime,
 			String ipAddress, String host, String machineType) {
+		this.sessionId = sessionId;
 		this.idaToken = idaToken;
 		this.lastbellnotifDtimes = lastbellnotifDtimes;
 		this.lastloginDtime = lastloginDtime;

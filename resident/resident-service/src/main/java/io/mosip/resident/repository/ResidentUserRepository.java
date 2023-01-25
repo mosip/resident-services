@@ -24,18 +24,15 @@ public interface ResidentUserRepository extends JpaRepository<ResidentUserEntity
 	Optional<ResidentUserEntity> findById(String Id);
 
 	@Modifying
-	@Query("update ResidentUserEntity res set res.lastbellnotifDtimes =:datetime where res.idaToken =:tokenId")
-	int updateByIdandTime(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
+	@Query("update ResidentUserEntity res set res.lastbellnotifDtimes =:datetime where res.sessionId =:sessionId")
+	int updateByIdandTime(@Param("sessionId") String sessionId, @Param("datetime") LocalDateTime datetime);
 	
-	@Modifying
-	@Query("update ResidentUserEntity res set res.lastloginDtime =:datetime, res.ipAddress =:ipAddress, res.host =:host, res.machineType =:machineType where res.idaToken =:tokenId")
-	void updateUserData(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime,
-			@Param("ipAddress") String ipAddress, @Param("host") String host, @Param("machineType") String machineType);
-
 	@Modifying
     @Transactional
 	@Query(value = "INSERT INTO resident.resident_user_actions(\r\n"
-			+ "	ida_token, last_bell_notif_click_dtimes)\r\n"
-			+ "	VALUES (:tokenId, :datetime);" , nativeQuery=true)
-	int insertRecordByIdAndNotificationClickTime(@Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
+			+ "	session_id, ida_token, last_bell_notif_click_dtimes)\r\n"
+			+ "	VALUES (:sessionId, :tokenId, :datetime);" , nativeQuery=true)
+	int insertRecordByIdAndNotificationClickTime(@Param("sessionId") String sessionId, @Param("tokenId") String tokenId, @Param("datetime") LocalDateTime datetime);
+
+	Optional<ResidentUserEntity> findByIdaTokenOrderByLastloginDtimeDesc(String idaToken);
 }

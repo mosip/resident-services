@@ -2089,7 +2089,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id) {
 		ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
 		BellNotificationDto bellnotifdttimes = new BellNotificationDto();
-		Optional<ResidentUserEntity> timstamp = residentUserRepository.findById(Id);
+		Optional<ResidentUserEntity> timstamp = residentUserRepository.findByIdaTokenOrderByLastloginDtimeDesc(Id);
 		if (timstamp.isPresent()) {
 			LocalDateTime time = timstamp.get().getLastbellnotifDtimes();
 			bellnotifdttimes.setLastbellnotifclicktime(time);
@@ -2101,13 +2101,13 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public int updatebellClickdttimes(String Id) {
+	public int updatebellClickdttimes(String sessionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
-		Optional<ResidentUserEntity> idtoken = residentUserRepository.findById(Id);
-		if (idtoken.isPresent()) {
-			return residentUserRepository.updateByIdandTime(Id, dt);
+		Optional<ResidentUserEntity> entity = residentUserRepository.findById(sessionId);
+		if (entity.isPresent()) {
+			return residentUserRepository.updateByIdandTime(sessionId, dt);
 		} else {
-			return residentUserRepository.insertRecordByIdAndNotificationClickTime(Id, dt);
+			return residentUserRepository.insertRecordByIdAndNotificationClickTime(sessionId, identityServiceImpl.getResidentIdaToken(), dt);
 		}
 
 	}

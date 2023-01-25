@@ -80,7 +80,7 @@ public interface ResidentService {
 
 	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id);
 
-	 public int updatebellClickdttimes(String individualId);
+	int updatebellClickdttimes(String sessionId) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
 	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
 	
@@ -92,3 +92,4 @@ public interface ResidentService {
 
 	public String getFileName(String eventId, int timeZoneOffset);
 }
+

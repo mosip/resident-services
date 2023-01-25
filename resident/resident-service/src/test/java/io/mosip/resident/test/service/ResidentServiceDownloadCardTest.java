@@ -251,7 +251,7 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
-    public void testUpdatebellClickdttimes(){
+    public void testUpdatebellClickdttimes() throws ApisResourceAccessException, ResidentServiceCheckedException{
         ResidentUserEntity residentUserEntity = new ResidentUserEntity();
         residentUserEntity.setHost("localhost");
         residentUserEntity.setIdaToken("123");
@@ -263,10 +263,10 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
-    public void testUpdatebellClickdttimesNewRecord(){
+    public void testUpdatebellClickdttimesNewRecord() throws ApisResourceAccessException, ResidentServiceCheckedException{
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentUserRepository.insertRecordByIdAndNotificationClickTime(any(), any())).thenReturn(1);
+        Mockito.when(residentUserRepository.insertRecordByIdAndNotificationClickTime(any(), any(), any())).thenReturn(1);
         assertEquals(1, residentServiceImpl.updatebellClickdttimes("123"));
     }
 
@@ -279,7 +279,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setLastbellnotifDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentUserRepository.insertRecordByIdAndNotificationClickTime(any(), any())).thenReturn(1);
+        Mockito.when(residentUserRepository.insertRecordByIdAndNotificationClickTime(any(), any(), any())).thenReturn(1);
         ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
         BellNotificationDto bellNotificationDto = new BellNotificationDto();
         bellNotificationDto.setLastbellnotifclicktime(LocalDateTime.now());

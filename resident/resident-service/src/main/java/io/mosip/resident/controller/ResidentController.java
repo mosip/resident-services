@@ -565,8 +565,8 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))), })
 	public int bellupdateClickdttimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::updatedttime()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		int response = residentService.updatebellClickdttimes(individualId);
+		String sessionId = identityServiceImpl.getSessionId();
+		int response = residentService.updatebellClickdttimes(sessionId);
 		logger.debug("ResidentController::updatedttime()::exit");
 		return response;
 	}
@@ -636,8 +636,8 @@ public class ResidentController {
 	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
-		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id, timeZoneOffset);
+		String sessionId = identityServiceImpl.getSessionId();
+		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(sessionId, timeZoneOffset);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
 	}

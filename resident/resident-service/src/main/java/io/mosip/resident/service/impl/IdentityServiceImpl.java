@@ -496,6 +496,15 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return getIDATokenForIndividualId(individualId);
 	}
+	public String getSessionIdFromToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		return getClaimValueFromJwtToken(accessToken, ResidentConstants.SUBJECT_CLAIM_NAME);
+	}
+	
+	public String getSessionId() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		AuthUserDetails authUserDetails = getAuthUserDetails();
+		String accessToken = authUserDetails.getToken();
+		return getClaimValueFromJwtToken(accessToken, ResidentConstants.SUBJECT_CLAIM_NAME);
+	}
 
 	public String getIndividualIdForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -531,7 +540,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaimValueFromJwtToken(idToken, claim);
 	}
 
-	private String getClaimValueFromJwtToken(String jwtToken, String claim) {
+	public String getClaimValueFromJwtToken(String jwtToken, String claim) {
 		String claimValue = "";
 		String payLoad = "";
 		if(jwtToken!=null){
