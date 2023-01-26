@@ -27,7 +27,6 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -82,7 +81,7 @@ public interface ResidentService {
 
 	int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<PageDto<List<ServiceHistoryResponseDto>>> getNotificationList(Integer pageStart, Integer pageFetch, String Id, String languageCode, int timeZoneOffset);
+	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart, Integer pageFetch, String Id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
@@ -92,9 +91,5 @@ public interface ResidentService {
 
 	public String getFileName(String eventId, int timeZoneOffset);
 
-	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
-			LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType, String statusFilter,
-			String searchText, String langCode, int timeZoneOffset, boolean asyncRequestTypesOnly)
-			throws ResidentServiceCheckedException, ApisResourceAccessException;
 }
 

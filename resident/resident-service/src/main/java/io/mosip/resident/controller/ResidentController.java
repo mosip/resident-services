@@ -7,13 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
@@ -66,7 +64,6 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
@@ -581,14 +578,15 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<PageDto<List<ServiceHistoryResponseDto>>> notificationServiceNotification(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+	public ResponseWrapper<?> notificationServiceNotification(@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "languageCode", required = false) String languageCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
+		validator.validateOnlyLanguageCode(languageCode);
 		String id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<PageDto<List<ServiceHistoryResponseDto>>> notificationDtoList = residentService
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = residentService
 				.getNotificationList(pageStart, pageFetch, id, languageCode, timeZoneOffset);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
 		return notificationDtoList;
