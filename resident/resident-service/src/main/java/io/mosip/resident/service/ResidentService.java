@@ -82,7 +82,7 @@ public interface ResidentService {
 
 	int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<PageDto<List<UnreadServiceNotificationDto>>> getNotificationList(String Id);
+	ResponseWrapper<List<UnreadServiceNotificationDto>> getNotificationList(String Id);
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,

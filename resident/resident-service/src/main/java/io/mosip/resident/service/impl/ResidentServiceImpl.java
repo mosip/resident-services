@@ -2125,7 +2125,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<PageDto<List<UnreadServiceNotificationDto>>> getNotificationList(String id) {
+	public ResponseWrapper<List<UnreadServiceNotificationDto>> getNotificationList(String id) {
 		List<ResidentTransactionEntity> result = residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(id, asyncRequestTypes);
 
 		List<UnreadServiceNotificationDto> unreadServiceNotificationDto = new ArrayList<>();
