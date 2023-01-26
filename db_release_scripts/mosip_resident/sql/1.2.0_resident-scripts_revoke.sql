@@ -14,4 +14,7 @@
 
 DROP TABLE IF EXISTS resident.otp_transaction;
 DROP TABLE IF EXISTS resident.resident_transaction;
+DROP TABLE IF EXISTS resident.resident_session;
+DROP TABLE IF EXISTS resident.resident_user_actions;
+
 -----------------------------------------------------------------------------------------------------

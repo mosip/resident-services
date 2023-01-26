@@ -550,8 +550,8 @@ public class ResidentController {
 	public ResponseWrapper<BellNotificationDto> bellClickdttimes()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getnotificationclickdttimes()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(individualId);
+		String idaToken = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(idaToken);
 		logger.debug("ResidentController::getnotificationclickdttimes::exit");
 		return response;
 	}
@@ -565,15 +565,15 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))), })
 	public int bellupdateClickdttimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::updatedttime()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		int response = residentService.updatebellClickdttimes(individualId);
+		String idaToken = identityServiceImpl.getResidentIdaToken();
+		int response = residentService.updatebellClickdttimes(idaToken);
 		logger.debug("ResidentController::updatedttime()::exit");
 		return response;
 	}
 
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
-	@GetMapping("/unread/service-list")
+	@GetMapping("/notification/service-list")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -581,14 +581,14 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotification()
+	public ResponseWrapper<List<UnreadServiceNotificationDto>> notificationServiceNotification()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
 		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotificationDtoList = residentService
-				.getUnreadnotifylist(Id);
+		ResponseWrapper<List<UnreadServiceNotificationDto>> notificationDtoList = residentService
+				.getNotificationList(Id);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
-		return unreadServiceNotificationDtoList;
+		return notificationDtoList;
 	}
 
 	@GetMapping(path = "/download/service-history")
