@@ -78,11 +78,11 @@ public interface ResidentService {
 
 	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id);
+	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String idaToken);
 
-	int updatebellClickdttimes(String sessionId) throws ApisResourceAccessException, ResidentServiceCheckedException;
+	int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<List<UnreadServiceNotificationDto>> getNotificationList(String Id);
+	ResponseWrapper<PageDto<List<UnreadServiceNotificationDto>>> getNotificationList(String Id);
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,

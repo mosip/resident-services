@@ -17,11 +17,10 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.entity.ResidentUserEntity;
+import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentUserRepository;
+import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.Utility;
 
@@ -46,7 +45,7 @@ public class LoginCheck {
 	private static final CharSequence AUTHORIZATION_TOKEN = "Authorization";
 
 	@Autowired
-	private ResidentUserRepository residentUserRepository;
+	private ResidentSessionRepository residentSessionRepository;
 	
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -75,14 +74,9 @@ public class LoginCheck {
 		}
 
 		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
-			Optional<ResidentUserEntity> lastLoggedInUserData = residentUserRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
-			ResidentUserEntity newUserData = new ResidentUserEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
+			ResidentSessionEntity newSessionData = new ResidentSessionEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
 					utility.getClientIp(req), req.getRemoteHost(), getMachineType(req));
-			if (lastLoggedInUserData.isPresent()) {
-				newUserData.setLastbellnotifDtimes(lastLoggedInUserData.get().getLastbellnotifDtimes());
-			} 
-
-			residentUserRepository.save(newUserData);
+			residentSessionRepository.save(newSessionData);
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}

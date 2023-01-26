@@ -25,34 +25,14 @@ import lombok.NoArgsConstructor;
 
 public class ResidentUserEntity {
 	@Id
-	@Column(name = "session_id")
-	private String sessionId;
-	
 	@Column(name = "ida_token")
 	private String idaToken;
 
 	@Column(name = "last_bell_notif_click_dtimes")
 	private LocalDateTime lastbellnotifDtimes;
 
-	@Column(name = "login_dtimes")
-	private LocalDateTime loginDtimes;
-	
-	@Column(name = "ip_address")
-	private String ipAddress;
-	
-	@Column(name = "host")
-	private String host;
-	
-	@Column(name = "machine_type")
-	private String machineType;
-
-	public ResidentUserEntity(String sessionId, String idaToken, LocalDateTime loginDtimes,
-			String ipAddress, String host, String machineType) {
-		this.sessionId = sessionId;
+	public ResidentUserEntity(String idaToken, LocalDateTime lastbellnotifDtimes) {
+		this.lastbellnotifDtimes = lastbellnotifDtimes;
 		this.idaToken = idaToken;
-		this.loginDtimes = loginDtimes;
-		this.ipAddress = ipAddress;
-		this.host = host;
-		this.machineType = machineType;
 	}
 }

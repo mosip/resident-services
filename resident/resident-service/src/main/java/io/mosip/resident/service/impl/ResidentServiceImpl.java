@@ -123,6 +123,7 @@ import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
+import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -140,6 +141,7 @@ import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.DocumentService;
@@ -162,6 +164,7 @@ import reactor.util.function.Tuples;
 @Service
 public class ResidentServiceImpl implements ResidentService {
 
+	private static final int UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY = 1;
 	private static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 	private static final String AUTH_TYPE_SEPERATOR = "-";
 	private static final String PROCESSED = "PROCESSED";
@@ -282,6 +285,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
+	
+	@Autowired
+	private ResidentSessionRepository residentSessionRepository;
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
@@ -2071,8 +2077,9 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
 		Long residentTransactionEntity;
-		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
-		if (residentUserEntity.isPresent()) {
+		Optional<ResidentSessionEntity> residentSessionEntity = residentSessionRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
+		if (residentSessionEntity.isPresent()) {
 			time = residentUserEntity.get().getLastbellnotifDtimes();
 			residentTransactionEntity = residentTransactionRepository
 					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
@@ -2089,12 +2096,12 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id) {
+	public ResponseWrapper<BellNotificationDto> getbellClickdttimes(String idaToken) {
 		ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
 		BellNotificationDto bellnotifdttimes = new BellNotificationDto();
-		Optional<ResidentUserEntity> timstamp = residentUserRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(Id);
-		if (timstamp.isPresent()) {
-			LocalDateTime time = timstamp.get().getLastbellnotifDtimes();
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
+		if (residentUserEntity.isPresent()) {
+			LocalDateTime time = residentUserEntity.get().getLastbellnotifDtimes();
 			bellnotifdttimes.setLastbellnotifclicktime(time);
 		}
 		responseWrapper.setId(serviceEventId);
@@ -2104,20 +2111,21 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public int updatebellClickdttimes(String sessionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
-		Optional<ResidentUserEntity> entity = residentUserRepository.findById(sessionId);
+		Optional<ResidentUserEntity> entity = residentUserRepository.findById(idaToken);
 		if (entity.isPresent()) {
-			return residentUserRepository.updateByIdLastbellnotifDtimes(sessionId, dt);
+			return residentUserRepository.updateByIdLastbellnotifDtimes(idaToken, dt);
 		} else {
-			throw new ResidentServiceException(ResidentErrorCode.NO_RECORDS_FOUND.getErrorCode(),
-					ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
+			ResidentUserEntity newUserData = new ResidentUserEntity(idaToken, dt);
+			residentUserRepository.save(newUserData);
+			return UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY;
 		}
 
 	}
 
 	@Override
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> getNotificationList(String id) {
+	public ResponseWrapper<PageDto<List<UnreadServiceNotificationDto>>> getNotificationList(String id) {
 		List<ResidentTransactionEntity> result = residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(id, asyncRequestTypes);
 
 		List<UnreadServiceNotificationDto> unreadServiceNotificationDto = new ArrayList<>();
@@ -2214,7 +2222,7 @@ public class ResidentServiceImpl implements ResidentService {
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 		//Return the second element
-		List<ResidentUserEntity> lastTwoLoginEntities = residentUserRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(idaToken);
+		List<ResidentSessionEntity> lastTwoLoginEntities = residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(idaToken);
 		if (!lastTwoLoginEntities.isEmpty()) {
 			data.put("data", photo);
 			user.setFullName(name);

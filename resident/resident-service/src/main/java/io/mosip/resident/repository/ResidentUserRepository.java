@@ -22,13 +22,9 @@ import io.mosip.resident.entity.ResidentUserEntity;
 @Transactional
 @Repository
 public interface ResidentUserRepository extends JpaRepository<ResidentUserEntity, String> {
-	Optional<ResidentUserEntity> findById(String id);
 	
-	List<ResidentUserEntity> findFirst2ByIdaTokenOrderByLoginDtimesDesc(String idaToken);
-
 	@Modifying
-	@Query("update ResidentUserEntity res set res.lastbellnotifDtimes =:datetime where res.sessionId =:sessionId")
-	int updateByIdLastbellnotifDtimes(@Param("sessionId") String sessionId, @Param("datetime") LocalDateTime datetime);
+	@Query("update ResidentUserEntity res set res.lastbellnotifDtimes =:datetime where res.idaToken =:idaToken")
+	int updateByIdLastbellnotifDtimes(@Param("idaToken") String sessionId, @Param("datetime") LocalDateTime datetime);
 	
-	Optional<ResidentUserEntity> findFirstByIdaTokenOrderByLoginDtimesDesc(String idaToken);
 }
