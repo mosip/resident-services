@@ -82,7 +82,7 @@ public interface ResidentService {
 
 	int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<PageDto<List<UnreadServiceNotificationDto>>> getNotificationList(String Id);
+	ResponseWrapper<PageDto<List<ServiceHistoryResponseDto>>> getNotificationList(Integer pageStart, Integer pageFetch, String Id, String languageCode, int timeZoneOffset);
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
@@ -91,5 +91,10 @@ public interface ResidentService {
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException;
 
 	public String getFileName(String eventId, int timeZoneOffset);
+
+	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+			LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType, String statusFilter,
+			String searchText, String langCode, int timeZoneOffset, boolean asyncRequestTypesOnly)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
 }
 

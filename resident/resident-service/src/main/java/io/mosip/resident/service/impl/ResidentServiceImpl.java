@@ -1543,11 +1543,21 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-
+	
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																				 String statusFilter, String searchText, String langCode, int timeZoneOffset)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		return getServiceHistory(pageStart, pageFetch,
+				 fromDateTime, toDateTime, serviceType, sortType,
+				 statusFilter, searchText, langCode, timeZoneOffset, false);
+	}
+
+	@Override
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
+																				 String statusFilter, String searchText, String langCode, int timeZoneOffset, boolean asyncRequestTypesOnly)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {

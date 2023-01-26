@@ -581,12 +581,15 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> notificationServiceNotification()
+	public ResponseWrapper<PageDto<List<ServiceHistoryResponseDto>>> notificationServiceNotification(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestParam(name = "languageCode", required = false) String languageCode,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
-		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<List<UnreadServiceNotificationDto>> notificationDtoList = residentService
-				.getNotificationList(Id);
+		String id = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<PageDto<List<ServiceHistoryResponseDto>>> notificationDtoList = residentService
+				.getNotificationList(pageStart, pageFetch, id, languageCode, timeZoneOffset);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
 		return notificationDtoList;
 	}
