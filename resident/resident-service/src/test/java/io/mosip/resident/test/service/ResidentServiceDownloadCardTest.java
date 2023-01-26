@@ -195,8 +195,9 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setHost("localhost");
         residentUserEntity.setIdaToken("123");
         residentUserEntity.setIpAddress("http");
+        residentUserEntity.setSessionId("123");
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
-        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
+        Mockito.when(residentUserRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(Mockito.anyString())).thenReturn(List.of(residentUserEntity));
         ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
@@ -258,14 +259,14 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setIpAddress("http");
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        assertEquals(2, residentServiceImpl.updatebellClickdttimes("123"));
+        assertEquals(0, residentServiceImpl.updatebellClickdttimes("123"));
     }
 
-    @Test
-    public void testUpdatebellClickdttimesNewRecord() throws ApisResourceAccessException, ResidentServiceCheckedException{
+    @Test(expected = ResidentServiceException.class)
+    public void testUpdatebellClickdttimesNoRecord() throws ApisResourceAccessException, ResidentServiceCheckedException{
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        assertEquals(1, residentServiceImpl.updatebellClickdttimes("123"));
+        residentServiceImpl.updatebellClickdttimes("123");
     }
 
     @Test
@@ -273,10 +274,11 @@ public class ResidentServiceDownloadCardTest {
         ResidentUserEntity residentUserEntity = new ResidentUserEntity();
         residentUserEntity.setHost("localhost");
         residentUserEntity.setIdaToken("123");
+        residentUserEntity.setSessionId("123");
         residentUserEntity.setIpAddress("http");
         residentUserEntity.setLastbellnotifDtimes(LocalDateTime.of(2015, 12, 3, 4, 4, 4));
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
-        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
+        Mockito.when(residentUserRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(Mockito.anyString())).thenReturn(response);
         ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
         BellNotificationDto bellNotificationDto = new BellNotificationDto();
         bellNotificationDto.setLastbellnotifclicktime(LocalDateTime.now());
@@ -316,7 +318,7 @@ public class ResidentServiceDownloadCardTest {
         Optional<ResidentUserEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
         Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
-        assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
+        assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
 
