@@ -18,12 +18,6 @@ public class UserInfoDto {
 	
 	private LocalDateTime lastLogin;
 	
-	private String ip;
-	
-	private String host;
-	
-	private String machineType;
-	
 	private Map<String, Object> photo;
 	
 	private String email;

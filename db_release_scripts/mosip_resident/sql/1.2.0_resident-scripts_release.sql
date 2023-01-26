@@ -17,4 +17,5 @@
 \ir ddl/resident_transaction.sql
 \ir ddl/resident_grievance_ticket.sql
 \ir ddl/resident_user_actions.sql
+\ir ddl/resident_sessions.sql
 -----------------------------------------------------------------------------------------------------

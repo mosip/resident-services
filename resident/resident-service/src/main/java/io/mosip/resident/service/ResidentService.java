@@ -76,13 +76,13 @@ public interface ResidentService {
 	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId, int timeZoneOffset)
 			throws ResidentServiceCheckedException;
 
-	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id);
+	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id);
+	ResponseWrapper<BellNotificationDto> getbellClickdttimes(String idaToken);
 
-	 public int updatebellClickdttimes(String individualId);
+	int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id);
+	ResponseWrapper<PageDto<List<UnreadServiceNotificationDto>>> getNotificationList(String Id);
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
@@ -92,3 +92,4 @@ public interface ResidentService {
 
 	public String getFileName(String eventId, int timeZoneOffset);
 }
+
