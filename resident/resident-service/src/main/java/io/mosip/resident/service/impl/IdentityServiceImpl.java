@@ -215,18 +215,14 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
 	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin,schemaType, false, List.of(
+		return getIdentityAttributes(id, includeUin, schemaType, List.of(
 				Objects.requireNonNull(env.getProperty(ResidentConstants.ADDITIONAL_ATTRIBUTE_TO_FETCH))
 				.split(ResidentConstants.COMMA)));
 	}
 
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType, boolean includePhoto) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin, schemaType, includePhoto, List.of());
-	}
-
 	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto,
-													 List<String> additionalAttributes) throws ResidentServiceCheckedException {
+	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType,
+			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);

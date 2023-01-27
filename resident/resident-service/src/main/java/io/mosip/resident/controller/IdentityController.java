@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -68,7 +69,7 @@ public class IdentityController {
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
 		try{
 		String id = getIdFromUser();
-		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id,true, schemaType, true);
+		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id, true, schemaType, List.of());
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
 		responseWrapper.setResponse(propertiesResponse);

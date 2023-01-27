@@ -62,14 +62,11 @@ public interface IdentityService {
 	 */
 	Map<String, ?> getIdentityAttributes(String id, boolean includeUin,String schemaType)
 			throws ResidentServiceCheckedException;
-	
-	Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto)
-			throws ResidentServiceCheckedException;
 			
 	public String getResidentIndvidualId() throws ApisResourceAccessException;
 
-	Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto,
-											  List<String> additionalAttributes) throws ResidentServiceCheckedException;
+	Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType,
+			List<String> additionalAttributes) throws ResidentServiceCheckedException;
 
 	String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException;
 
