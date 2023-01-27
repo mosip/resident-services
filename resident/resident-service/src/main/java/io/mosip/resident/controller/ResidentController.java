@@ -314,14 +314,14 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetServiceAuthHistoryRoles()" + ")")
-	@GetMapping(path = "/service-history/{langcode}")
+	@GetMapping(path = "/service-history/{langCode}")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langcode") String langCode,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langCode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -570,7 +570,7 @@ public class ResidentController {
 
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
-	@GetMapping("/notification/service-list")
+	@GetMapping("/notifications/{langCode}")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -578,16 +578,16 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<?> notificationServiceNotification(@RequestParam(name = "pageStart", required = false) Integer pageStart,
+	public ResponseWrapper<?> notificationServiceNotification(@PathVariable("langCode") String langCode,
+			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-			@RequestParam(name = "languageCode", required = false) String languageCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
-		validator.validateOnlyLanguageCode(languageCode);
+		validator.validateOnlyLanguageCode(langCode);
 		String id = identityServiceImpl.getResidentIdaToken();
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = residentService
-				.getNotificationList(pageStart, pageFetch, id, languageCode, timeZoneOffset);
+				.getNotificationList(pageStart, pageFetch, id, langCode, timeZoneOffset);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
 		return notificationDtoList;
 	}

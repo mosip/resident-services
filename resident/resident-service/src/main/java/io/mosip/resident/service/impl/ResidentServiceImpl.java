@@ -1776,9 +1776,9 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String getServiceQuery(String serviceType) {
-		List<String> serviceTypeList = convertServiceTypeToResidentTransactionType(serviceType);
-		String serviceTypeListString = convertServiceTypeListToString(serviceTypeList);
-		return " and request_type_code in (" + serviceTypeListString + ")";
+		List<String> requestTypeList = convertServiceTypeToResidentTransactionType(serviceType);
+		String requestTypeListString = convertServiceTypeListToString(requestTypeList);
+		return " and request_type_code in (" + requestTypeListString + ")";
 	}
 
 	private String getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {

@@ -139,7 +139,6 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
-        ReflectionTestUtils.setField(residentServiceImpl, "asyncRequestTypes", List.of("TEST"));
     }
     @Test(expected = ResidentServiceException.class)
     public void testUpdateMyUinException() throws ResidentServiceCheckedException{
