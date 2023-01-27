@@ -12,9 +12,10 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.GrievanceService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,7 +63,7 @@ public class GrievanceControllerTest {
     private Environment environment;
     
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
@@ -86,6 +87,9 @@ public class GrievanceControllerTest {
 
     @MockBean
     private ResidentVidService vidService;
+    
+    @MockBean
+    private ResidentServiceImpl residentService;
 
     @MockBean
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -109,7 +113,7 @@ public class GrievanceControllerTest {
         grievanceRequestDTOMainRequestDTO.setId("mosip.resident.grievance.ticket.request");
         reqJson = gson.toJson(grievanceRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utilitiy.getFileName(Mockito.anyString(), Mockito.anyString())).thenReturn("file");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("file");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 

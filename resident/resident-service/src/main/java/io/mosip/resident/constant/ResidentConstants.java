@@ -7,7 +7,6 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
     private ResidentConstants() {
 	}
 
@@ -39,8 +38,6 @@ public class ResidentConstants {
     
     public static final String IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED = "mosip.resident.update.service.status.job.enabled";
 
-    public static final String ID_TYPE = "idType";
-    
     public static final String PUBLIC_URL = "mosipbox.public.url";
     
     public static final String NOTIFICATION_ZONE = "mosip.notification.timezone";
@@ -80,6 +77,7 @@ public class ResidentConstants {
     public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
+    public static final String SUBJECT_CLAIM_NAME = "mosip.resident.access_token.subject.claim-name";
 
     public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
@@ -178,9 +176,64 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
-    public static final String ACK_DATE_TIME_PATTERN = "resident.ack.datetime.pattern";
+    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
+    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
+
+    public static final String OTP_EXPIRED_ERR_CODE = "IDA-OTA-003"; 
+    public static final String OTP_INVALID_ERR_CODE = "IDA-OTA-004";
+    public static final String INVALID_ID_ERR_CODE = "IDA-MLC-009";
+    public static final String OTP_AUTH_LOCKED_ERR_CODE = "IDA-MLC-019";
+    public static final String PHONE = "PHONE";
+    public static final String EMAIL = "EMAIL";
+    
+    // IP headers constants start---
+    public static final String X_FORWARDED_FOR = "X-Forwarded-For";
+    public static final String X_REAL_IP = "x-real-ip";
+    public static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
+    public static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
+    public static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
+    public static final String HTTP_X_FORWARDED = "HTTP_X_FORWARDED";
+    public static final String HTTP_X_CLUSTER_CLIENT_IP = "HTTP_X_CLUSTER_CLIENT_IP";
+    public static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
+    public static final String HTTP_FORWARDED_FOR = "HTTP_FORWARDED_FOR";
+    public static final String HTTP_FORWARDED = "HTTP_FORWARDED";
+    public static final String HTTP_VIA = "HTTP_VIA";
+    public static final String REMOTE_ADDR = "REMOTE_ADDR";
+    // IP headers constants end---
+
+    public static final String VID_POLICIES = "vidPolicies";
+    public static final String VID_POLICY = "vidPolicy";
+    public static final String PERPETUAL = "Perpetual";
+
+    public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
+    public static final int UTC_TIMEZONE_OFFSET = 0;
+    public static final String INDIVIDUAL_ID = "individualId";
+    public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
+    public static final String REQUEST = "request";
+    public static final String VERSION = "version";
+    public static final String REQUEST_TIME = "requestTime";
+    public static final String ID = "id";
+    public static final String REQUEST_GENERATE_VID = "Request to generate VID";
+    public static final String GENERATE_ID = "generateId";
+    public static final String UNLOCK_FOR_SECONDS = "unlockForSeconds";
+    public static final String REQUEST_FOR_EUIN = "Request for EUIN";
+    public static final String CARD_TYPE = "cardType";
+    public static final String PAGE_NUMBER_ERROR = "please provide Page size and Page number to be Fetched";
+    public static final String PAGE_FETCH_PAGE_START_GREATER_THAN_ZERO = "Page Fetch or Page Start must be greater than 0";
+    public static final String PAGE_START_PAGE_FETCH = "Page Start Page Fetch";
+    public static final String PAGE_START = "Page Start";
+    public static final String PAGE_FETCH = "Page Fetch";
+    public static final String VID_STATUS = "vidStatus";
+    public static final String REQUEST_REVOKE_VID = "Request to revoke VID";
+    public static final String REVOKE_VID = "revokeVidId";
+    public static final String REQUEST_PRINT_UIN = "Request for print UIN API";
+    public static final String IDENTITY_JSON = "identityJson";
+    public static final String SCHEMA_TYPE = "schemaType";
+    public static final String FILE_NAME = "fileName";
+    public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
+    public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
 
 }

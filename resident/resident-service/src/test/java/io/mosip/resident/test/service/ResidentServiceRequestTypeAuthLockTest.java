@@ -27,7 +27,8 @@ import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
+import org.springframework.core.env.Environment;
 import reactor.util.function.Tuple2;
 
 import org.json.simple.JSONObject;
@@ -87,7 +88,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	IdentityServiceImpl identityServiceImpl;
 	
 	@Mock
-	private Utilitiy utility;
+	private Utility utility;
 
 	@Mock
 	ResidentTransactionRepository residentTransactionRepository;
@@ -97,6 +98,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 
 	@Mock
 	private DocumentService docService;
+
+	@Mock
+	private Environment environment;
 
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();

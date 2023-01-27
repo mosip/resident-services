@@ -53,18 +53,22 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.repository.ResidentSessionRepository;
+import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -106,7 +110,7 @@ public class IdentityServiceImpl implements IdentityService {
 	private ResidentServiceRestClient restClientWithPlainRestTemplate;
 	
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 	
 	@Autowired
 	private TokenIDGenerator tokenIDGenerator;
@@ -141,9 +145,6 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private ResidentVidService residentVidService;
 
-	@Autowired
-	private Environment environment;
-	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
 	
@@ -155,6 +156,12 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
     private Utilities  utilities;
+	
+	@Autowired
+	private ResidentUserRepository  residentUserRepo;
+	
+	@Autowired
+	private ResidentSessionRepository  residentSessionRepo;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -435,9 +442,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
 		String userInfoStr;
-		if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
+		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
 			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
-			if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
+			if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
 				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
 						.verifyJWTSignagure(decodedJWT);
 				if (verifySignagure.left) {
@@ -455,7 +462,7 @@ public class IdentityServiceImpl implements IdentityService {
 		} else {
 			userInfoStr = userInfoResponseStr;
 		}
-		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+		if(Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
 			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
 		}
 		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
@@ -497,6 +504,17 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return getIDATokenForIndividualId(individualId);
 	}
+	
+	public String createSessionId(){
+		return utility.createEventId();
+	}
+	
+	public String getSessionId() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String residentIdaToken = getResidentIdaToken();
+		return residentSessionRepo.findFirstByIdaTokenOrderByLoginDtimesDesc(residentIdaToken)
+				.map(ResidentSessionEntity::getSessionId)
+				.orElseGet(this::createSessionId);
+	}
 
 	public String getIndividualIdForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -517,7 +535,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+		return getClaimFromIdToken(this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 	}
 	
 	public String getClaimFromAccessToken(String claim) {
@@ -532,7 +550,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaimValueFromJwtToken(idToken, claim);
 	}
 
-	private String getClaimValueFromJwtToken(String jwtToken, String claim) {
+	public String getClaimValueFromJwtToken(String jwtToken, String claim) {
 		String claimValue = "";
 		String payLoad = "";
 		if(jwtToken!=null){
@@ -562,7 +580,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String decryptPayload(String payload) {
-		return objectStoreHelper.decryptData(payload, this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID), this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID), this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
 	}
 
 	public String getIndividualIdType(String individualId){
@@ -570,8 +588,10 @@ public class IdentityServiceImpl implements IdentityService {
 			return UIN;
 		} else if(requestValidator.validateVid(individualId)){
 			return VID;
-		} else{
+		} else if(requestValidator.validateRid(individualId)){
 			return AID;
+		} else {
+			throw new InvalidInputException(ResidentConstants.INDIVIDUAL_ID);
 		}
 	}
 }

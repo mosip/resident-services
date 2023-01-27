@@ -26,7 +26,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -80,7 +80,7 @@ public class IdentityServiceTest {
 	private AuditUtil auditUtil;
 
 	@Mock
-	private Utilitiy utility;
+	private Utility utility;
 
 	@Mock
 	private CbeffUtil cbeffUtil;
@@ -203,6 +203,7 @@ public class IdentityServiceTest {
 				"CjfN3mlwxDxHm2DzMHnwbKR5orEm1NRyCnUfGGm5IMVTdDnXz1iUAsU7zeKA2XOdH3zQgMUu-vqJpgRWRG-XJHakSyblfAFIVAILRi7rwJQjL7X1lhm1ZAqUX" +
 				"Soh6kZBoOeYd_29RQQzFQNzpn_Ahk4GxQu_TLyvoWeNXpfx94om7TqrZYghtTg5_svku2P0NuFxzbWysPMjaHrEff0idKY94sKJ6eNpLXRXbJCPkAHtfVY0U3" +
 				"YDQqWUpYjE3hQCZz0u_L8sieJIN3mYtjd12rfOrjEKu2fFGu5UbJRVqkmOw0egVGHw";
+		Mockito.when(requestValidator.validateRid(Mockito.anyString())).thenReturn(true);
 	}
 
 	@Test
@@ -397,7 +398,7 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testDecryptPayload(){
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
+		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
 		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("payload");
 		assertEquals("payload", ReflectionTestUtils.invokeMethod(identityService, "decryptPayload", "payload"));
 	}
@@ -605,7 +606,7 @@ public class IdentityServiceTest {
 
 		when(restClientWithPlainRestTemplate.getApi(uri, String.class, headers))
 				.thenReturn(objectMapper.writeValueAsString(userInfo));
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
+		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
 		Authentication authentication= Mockito.mock(Authentication.class);
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		SecurityContextHolder.setContext(securityContext);
@@ -622,18 +623,18 @@ public class IdentityServiceTest {
 	@Test(expected = Exception.class)
 	public void testGetResidentIndividualIdValidToken() throws ApisResourceAccessException, JsonProcessingException {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignagure = new ImmutablePair<>(true, AuthErrorCode.UNAUTHORIZED);
-		Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
+		//Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
 		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
-		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("Value");
+		//Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("Value");
 		URI uri = URI.create("http://localhost:8080/userinfo");
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", "Bearer " + token);
 
 		when(restClientWithPlainRestTemplate.getApi(uri, String.class, headers))
 				.thenReturn(token);
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
+		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
 		Authentication authentication= Mockito.mock(Authentication.class);
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		SecurityContextHolder.setContext(securityContext);
@@ -650,7 +651,7 @@ public class IdentityServiceTest {
 	@Test(expected = Exception.class)
 	public void testGetResidentIndividualIdValidTokenVerifySignatureFalse() throws ApisResourceAccessException, JsonProcessingException {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignagure = new ImmutablePair<>(false, AuthErrorCode.UNAUTHORIZED);
-		Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
+		//Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
 		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
@@ -660,7 +661,7 @@ public class IdentityServiceTest {
 
 		when(restClientWithPlainRestTemplate.getApi(uri, String.class, headers))
 				.thenReturn(token);
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
+		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("true");
 		Authentication authentication= Mockito.mock(Authentication.class);
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		SecurityContextHolder.setContext(securityContext);
@@ -685,7 +686,7 @@ public class IdentityServiceTest {
 		headers.add("Authorization", "Bearer " + token);
 		when(restClientWithPlainRestTemplate.getApi(uri, String.class, headers))
 				.thenReturn(objectMapper.writeValueAsString(userInfo));
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("false");
+		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("false");
 		Authentication authentication= Mockito.mock(Authentication.class);
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		SecurityContextHolder.setContext(securityContext);
@@ -708,7 +709,7 @@ public class IdentityServiceTest {
 		URI uri = URI.create("http://localhost:8080/userinfo");
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", "Bearer " + token);
-		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("false");
+		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("false");
 		Authentication authentication= Mockito.mock(Authentication.class);
 		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
 		SecurityContextHolder.setContext(securityContext);

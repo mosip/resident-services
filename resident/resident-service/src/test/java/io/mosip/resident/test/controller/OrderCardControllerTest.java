@@ -44,6 +44,7 @@ import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -93,6 +94,9 @@ public class OrderCardControllerTest {
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@Autowired
 	private MockMvc mockMvc;

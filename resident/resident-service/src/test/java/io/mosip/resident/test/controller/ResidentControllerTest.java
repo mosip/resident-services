@@ -1,54 +1,7 @@
 package io.mosip.resident.test.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-
-import javax.crypto.SecretKey;
-
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.exception.ServiceError;
@@ -95,7 +48,50 @@ import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.validator.RequestValidator;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
 import reactor.util.function.Tuples;
+
+import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -354,10 +350,10 @@ public class ResidentControllerTest {
 	public void testGetServiceHistorySuccess() throws Exception {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(response);
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt())).thenReturn(response);
 		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
 				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
-				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, TimeZone.getDefault());
+				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, 0);
 		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
@@ -495,7 +491,7 @@ public class ResidentControllerTest {
 		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
 		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210");
+				.downloadCard("9876543210", 0);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -521,7 +517,7 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
-		residentController.checkAidStatus("17", "eng");
+		residentController.checkAidStatus("17", "eng", 0);
 		when(residentService.checkAidStatus("17")).thenReturn("PROCESSED");
 		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng"))
 				.andExpect(status().isOk());
@@ -534,8 +530,8 @@ public class ResidentControllerTest {
 		user.setFullName("name");
 		ResponseWrapper<UserInfoDto> response = new ResponseWrapper<>();
 		response.setResponse(user);
-		residentController.userinfo();
-		Mockito.when(residentService.getUserinfo(Mockito.any())).thenReturn(response);
+		residentController.userinfo(0);
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt())).thenReturn(response);
 		this.mockMvc.perform(get("/profile"))
 				.andExpect(status().isOk());
 	}

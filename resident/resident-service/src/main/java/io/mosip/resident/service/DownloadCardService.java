@@ -20,9 +20,9 @@ import java.io.IOException;
 public interface DownloadCardService {
     Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO);
 
-    Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO);
+    Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset);
 
-    Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid) throws BaseCheckedException;
+    Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset) throws BaseCheckedException;
 
     ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException;
 }

@@ -36,6 +36,7 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -75,6 +76,9 @@ public class ProxyConfigControllerTest {
 
 	@MockBean
 	private ResidentVidService vidService;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;

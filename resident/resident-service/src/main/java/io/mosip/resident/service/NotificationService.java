@@ -52,7 +52,7 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -82,7 +82,7 @@ public class NotificationService {
 	private ResidentServiceRestClient restClient;
 
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 	
 	@Autowired
 	private Utilities utilities;

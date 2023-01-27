@@ -32,7 +32,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 /**
  * The Class ResidentConfigServiceImpl.
@@ -84,8 +84,6 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private List<String> uiSchemaFilteredInputAttributes;
-	
 	@Value("${resident.ui.properties.id}")
 	private String residentUiPropertiesId;
 	
@@ -123,13 +121,13 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 * @return the UI schema
 	 */
 	@Override
-	@Cacheable("ui-schema")
+	@Cacheable(value="ui-schema", key="#schemaType")
 	public String getUISchema(String schemaType) {
 		String uiSchema;
 		Resource residentUiSchemaJsonFileRes = resourceLoader
 				.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
 		if (residentUiSchemaJsonFileRes.exists()) {
-			uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFileRes);
+			uiSchema = Utility.readResourceContent(residentUiSchemaJsonFileRes);
 		} else {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
 		}
@@ -137,12 +135,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 
 	@Override
+	@Cacheable(value="ui-schema-filtered-attributes", key="#schemaType")
 	public List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
-		if(uiSchemaFilteredInputAttributes == null) {
-			uiSchemaFilteredInputAttributes = doGetUiSchemaFilteredInputAttributes(schemaType);
-		}
-		return uiSchemaFilteredInputAttributes;
-		
+		return doGetUiSchemaFilteredInputAttributes(schemaType);
 	}
 	
 	private List<String> doGetUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
@@ -152,7 +147,6 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		if(identityObj instanceof List) {
 			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
-						.filter(map -> Boolean.valueOf(String.valueOf(map.get(INPUT_REQUIRED))))
 						.filter(map -> !FILEUPLOAD.equals(map.get(CONTROL_TYPE)))
 						.flatMap(map -> {
 							String attribName = (String)map.get(ID);
@@ -173,7 +167,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Override
 	public String getIdentityMapping() throws ResidentServiceCheckedException {
 		if(identityMapping==null) {
-			identityMapping=Utilitiy.readResourceContent(identityMappingJsonFile);
+			identityMapping=Utility.readResourceContent(identityMappingJsonFile);
 		}
 		return identityMapping;
 	}
