@@ -8,8 +8,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +17,10 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.entity.ResidentUserEntity;
-import io.mosip.resident.repository.ResidentUserRepository;
+import io.mosip.resident.entity.ResidentSessionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.Utility;
 
@@ -45,7 +45,7 @@ public class LoginCheck {
 	private static final CharSequence AUTHORIZATION_TOKEN = "Authorization";
 
 	@Autowired
-	private ResidentUserRepository residentUserRepository;
+	private ResidentSessionRepository residentSessionRepository;
 	
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -60,25 +60,23 @@ public class LoginCheck {
 			HttpServletRequest req, HttpServletResponse res) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("LoginCheck::getUserDetails()::entry");
 		String idaToken = "";
+		String sessionId = "";
 		Collection<String> cookies = res.getHeaders(SET_COOKIE);
 		for (String cookie : cookies) {
 			if (cookie.contains(AUTHORIZATION_TOKEN)) {
 				Optional<String> authorizationCookie = getCookieValueFromHeader(cookie);
 				if (authorizationCookie.isPresent()) {
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(authorizationCookie.get());
+					sessionId = identityServiceImpl.createSessionId();
 				}
+				break;
 			}
 		}
 
-		if(idaToken!=null && !idaToken.isEmpty()) {
-			Optional<ResidentUserEntity> userData = residentUserRepository.findById(idaToken);
-			if (userData.isPresent()) {
-				residentUserRepository.updateUserData(idaToken, DateUtils.getUTCCurrentDateTime(), utility.getClientIp(req),
-						req.getRemoteHost(), getMachineType(req));
-			} else {
-				residentUserRepository.save(new ResidentUserEntity(idaToken, DateUtils.getUTCCurrentDateTime(),
-						utility.getClientIp(req), req.getRemoteHost(), getMachineType(req)));
-			}
+		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
+			ResidentSessionEntity newSessionData = new ResidentSessionEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
+					utility.getClientIp(req), req.getRemoteHost(), getMachineType(req));
+			residentSessionRepository.save(newSessionData);
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
