@@ -2076,7 +2076,10 @@ public class ResidentServiceImpl implements ResidentService {
 		Long residentTransactionEntity;
 		Optional<ResidentSessionEntity> residentSessionEntity = residentSessionRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
 		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
+<<<<<<< HEAD
 		List<String> asyncRequestTypes = getAsyncRequestTypes();
+=======
+>>>>>>> upstream/develop
 		if (residentSessionEntity.isPresent()) {
 			time = residentUserEntity.get().getLastbellnotifDtimes();
 			residentTransactionEntity = residentTransactionRepository
