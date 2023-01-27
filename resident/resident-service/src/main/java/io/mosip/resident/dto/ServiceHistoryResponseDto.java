@@ -19,7 +19,6 @@ public class ServiceHistoryResponseDto {
     private String eventStatus;
     private String timeStamp;
     private String serviceType;
-    private boolean pinnedStatus;
-    private boolean readStatus;
+    private String pinnedStatus;
     private int serialNumber; 
 }
