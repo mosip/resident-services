@@ -577,8 +577,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-
-	public ResponseWrapper<?> notificationServiceNotification(@PathVariable("langCode") String langCode,
+	public ResponseWrapper<?> getNotificationsList(@PathVariable("langCode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
