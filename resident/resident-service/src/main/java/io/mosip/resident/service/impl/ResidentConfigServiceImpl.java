@@ -147,7 +147,6 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		if(identityObj instanceof List) {
 			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
-						.filter(map -> !FILEUPLOAD.equals(map.get(CONTROL_TYPE)))
 						.flatMap(map -> {
 							String attribName = (String)map.get(ID);
 							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
