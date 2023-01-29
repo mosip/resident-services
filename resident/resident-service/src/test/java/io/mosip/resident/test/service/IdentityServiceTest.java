@@ -219,6 +219,12 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIdentityLangCodeNull() throws Exception {
+		getAuthUserDetailsFromAuthentication();
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		fileLoadMethod();
 		IdentityDTO result = identityService.getIdentity("6");
 		assertNotNull(result);
@@ -247,6 +253,11 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetMappingValueIf() throws Exception {
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		identityService.getIdentity("6");
 	}
 
@@ -283,7 +294,7 @@ public class IdentityServiceTest {
 		assertEquals("value", result);
 	}
 	
-	private Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> LoadUserInfoMethod() throws Exception {
+	private Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> loadUserInfoMethod() throws Exception {
 		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
@@ -295,7 +306,7 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetUserInfoSuccess() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Map<String, Object> result = ReflectionTestUtils.invokeMethod(identityService, "getUserInfo", token);
@@ -304,6 +315,11 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdForAid() throws Exception{
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		String aid = "123456789";
 		fileLoadMethod();
 		String result = ReflectionTestUtils.invokeMethod(identityService, "getIndividualIdForAid", aid);
@@ -312,6 +328,11 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdForAidUseVidOnlyTrue() throws Exception{
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		String aid = "123456789";
 		Optional<String> perpVid = Optional.of("8251649601");
 		when(residentVidService.getPerpatualVid(anyString())).thenReturn(perpVid);
@@ -381,6 +402,11 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetMappingValueNullIoException() throws Exception {
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		String mappingJson = "mappingJson";
 		when(utility.getMappingJson()).thenReturn(mappingJson);
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
@@ -390,6 +416,11 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetMappingValueInvalidPerpetualVid() throws Exception {
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		fileLoadMethod();
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
@@ -398,6 +429,11 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetMappingValueValidPerpetualVid() throws Exception {
+		when(env.getProperty(anyString())).thenReturn("photo");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
@@ -493,7 +529,7 @@ public class IdentityServiceTest {
 
 	@Test(expected = Exception.class)
 	public void testGetResidentIndividualIdInvalidToken() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
@@ -506,7 +542,7 @@ public class IdentityServiceTest {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignagure = new ImmutablePair<>(true, AuthErrorCode.UNAUTHORIZED);
 		//Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
 		//Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("Value");
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
@@ -518,7 +554,7 @@ public class IdentityServiceTest {
 	public void testGetResidentIndividualIdValidTokenVerifySignatureFalse() throws Exception {
 		ImmutablePair<Boolean, AuthErrorCode> verifySignagure = new ImmutablePair<>(false, AuthErrorCode.UNAUTHORIZED);
 		//Mockito.when(tokenValidationHelper.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignagure);
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
@@ -528,9 +564,8 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetResidentIndividualIdValidTokenSucess() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "3956038419");
-		
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		getAuthUserDetailsFromAuthentication();
@@ -539,7 +574,7 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetResidentAuthenticationMode() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "3956038419");
 		getAuthUserDetailsFromAuthentication();
 		assertEquals("",ReflectionTestUtils.invokeMethod(identityService,
@@ -548,7 +583,7 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetClaimFromAccessToken() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = LoadUserInfoMethod();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "3956038419");
 		getAuthUserDetailsFromAuthentication();
 		ReflectionTestUtils.invokeMethod(identityService,
