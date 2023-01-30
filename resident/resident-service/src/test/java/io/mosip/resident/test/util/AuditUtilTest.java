@@ -6,18 +6,23 @@ import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditResponseDto;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.TokenGenerator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -52,6 +57,12 @@ public class AuditUtilTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private Environment environment;
+
+    @Mock
+    private IdentityServiceImpl identityService;
+
     @Captor
     ArgumentCaptor<HttpEntity> httpEntityCaptor;
 
@@ -80,7 +91,8 @@ public class AuditUtilTest {
 
         localDateTime = DateUtils.getUTCCurrentDateTime();
         when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
-
+        when(identityService.getAvailableclaimValue(Mockito.anyString())).thenReturn("user1");
+        when(environment.getProperty(Mockito.anyString())).thenReturn("user1");
     }
 
     @Test
@@ -122,7 +134,7 @@ public class AuditUtilTest {
 
         assertEquals("user1", httpEntity.getBody().getRequest().getSessionUserId());
         assertEquals("user1", httpEntity.getBody().getRequest().getSessionUserName());
-        assertEquals("user1", httpEntity.getBody().getRequest().getCreatedBy());
+        assertEquals("RESIDENT", httpEntity.getBody().getRequest().getCreatedBy());
 
         assertEquals(localDateTime, httpEntity.getBody().getRequest().getActionTimeStamp());
 
