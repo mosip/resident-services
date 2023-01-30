@@ -187,7 +187,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			VidRequestDto vidRequestDto = (VidRequestDto) requestDto;
 			if (Objects.nonNull(vidRequestDto.getOtp())) {
 				try {
-					boolean isAuthenticated = idAuthService.validateOtp(vidRequestDto.getTransactionID(),
+					boolean isAuthenticated = idAuthService.validateOtpv2(vidRequestDto.getTransactionID(),
 							individualId, vidRequestDto.getOtp());
 					if (!isAuthenticated)
 						throw new OtpValidationFailedException();
@@ -513,7 +513,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				try {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,
 							requestDto.getTransactionID(), "Request to revoke VID"));
-					boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(),
+					boolean isAuthenticated = idAuthService.validateOtpv2(requestDto.getTransactionID(),
 							vidRevokeRequestDTO.getIndividualId(), vidRevokeRequestDTO.getOtp());
 	
 					if (!isAuthenticated)
