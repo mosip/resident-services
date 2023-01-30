@@ -81,7 +81,6 @@ public class DocumentController {
 	 * 
 	 * @param transactionId String
 	 * @param file          The file to be uploaded
-	 * @param request       DocumentRequestDTO
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
 	@PostMapping(path = "/documents/{transaction-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -95,6 +94,7 @@ public class DocumentController {
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			validator.validateRequest(docCatCode,docTypCode,langCode);
+			validator.validateFileName(file);
 			DocumentRequestDTO docRequest = new DocumentRequestDTO();
 			docRequest.setDocCatCode(docCatCode);
 			docRequest.setDocTypCode(docTypCode);
