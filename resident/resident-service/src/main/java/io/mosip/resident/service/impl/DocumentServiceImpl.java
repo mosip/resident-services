@@ -72,7 +72,7 @@ public class DocumentServiceImpl implements DocumentService {
 			String objectNameWithPath = transactionId + "/" + docId;
 			Map<String, Object> metadata = Map.of("doccatcode", request.getDocCatCode(), "doctypcode",
 					request.getDocTypCode(), "langcode", request.getLangCode(), "docname", file.getOriginalFilename(),
-					"docid", docId,"referenceid",request.getReferenceId());
+					"docid", docId,"referenceid",request.getReferenceId(), "content-length", file.getSize());
 			objectStoreHelper.putObject(objectNameWithPath, file.getInputStream(), metadata);
 			DocumentResponseDTO response = new DocumentResponseDTO();
 			response.setTransactionId(transactionId);
