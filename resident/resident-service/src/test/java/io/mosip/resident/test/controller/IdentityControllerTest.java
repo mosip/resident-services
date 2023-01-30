@@ -2,6 +2,7 @@ package io.mosip.resident.test.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.LinkedHashMap;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +34,10 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.controller.IdentityController;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
@@ -39,6 +45,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * Resident identity controller test class.
@@ -64,6 +71,9 @@ public class IdentityControllerTest {
 
 	@Mock
 	private AuditUtil auditUtil;
+
+	@Mock
+	private RequestValidator validator;
 
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
@@ -107,6 +117,7 @@ public class IdentityControllerTest {
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
 		responseWrapper.setResponse(identityMap);
+		ReflectionTestUtils.setField(identityController, "residentIdentityInfoId", "identity.id");
 	}
 
 	@Test
@@ -115,4 +126,10 @@ public class IdentityControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/identity/info/type/schemaType")).andExpect(status().isOk());
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void testGetInputAttributeValuesWithInvalidInputException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+		Mockito.doThrow(new InvalidInputException()).when(validator).validateSchemaType(Mockito.anyString());
+		identityController.getInputAttributeValues("schema-type");
+	}
 }
