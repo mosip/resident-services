@@ -7,9 +7,13 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +50,12 @@ public class AuditUtil {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private Environment environment;
 	
   
 	/** The Constant UNKNOWN_HOST. */
@@ -90,7 +100,13 @@ public class AuditUtil {
 		auditRequestDto.setApplicationName(eventEnum.getApplicationName());
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(authentication != null) {
-			String name = authentication.getName();
+			String name = null;
+			try {
+				name = identityService.getAvailableclaimValue(
+						this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			} catch (ApisResourceAccessException e) {
+				throw new RuntimeException(e);
+			}
 			auditRequestDto.setSessionUserId(name);
 			auditRequestDto.setSessionUserName(name);
 			auditRequestDto.setCreatedBy(name);
@@ -104,6 +120,7 @@ public class AuditUtil {
 		auditRequestDto.setEventId(eventEnum.getEventId());
 		auditRequestDto.setId(eventEnum.getId());
 		auditRequestDto.setIdType(eventEnum.getIdType());
+		auditRequestDto.setCreatedBy(ResidentConstants.RESIDENT);
 		callAuditManager(auditRequestDto);
 	}
 	
