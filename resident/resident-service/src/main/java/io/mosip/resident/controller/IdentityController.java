@@ -8,9 +8,11 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -44,6 +46,9 @@ public class IdentityController {
 	@Autowired
 	private IdentityService idServiceImpl;
 	
+	@Autowired
+	private RequestValidator validator;
+	
 	@Value("${resident.identity.info.id}")
 	private String residentIdentityInfoId;
 
@@ -66,16 +71,18 @@ public class IdentityController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("IdentityController::getInputAttributeValues()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES);
+		try {
+			validator.validateSchemaType(schemaType);
+		} catch (InvalidInputException e) {
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID, residentIdentityInfoId));
+		}
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		try{
 		String id = getIdFromUser();
 		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id, true, schemaType, List.of());
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
 		responseWrapper.setResponse(propertiesResponse);
-		}catch (Exception exception){
-			throw new InvalidInputException(ResidentConstants.SCHEMA_TYPE);
-		}
 		responseWrapper.setId(residentIdentityInfoId);
 		responseWrapper.setVersion(residentIdentityInfoVersion);
 
