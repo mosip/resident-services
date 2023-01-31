@@ -162,6 +162,7 @@ public class ResidentConstants {
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
     public static final String REQ_RES_ID = "reqResId";
     public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
+    public static final String RESIDENT_USER_PROFILE_ID = "mosip.resident.user.profile.id";
 
     public static final String ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY = "resident.template.ack.share-cred-with-partner";
     public static final String ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY = "resident.template.ack.authentication.request";
