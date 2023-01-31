@@ -19,6 +19,12 @@ public interface IdAuthService {
 	
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException;
+	
+	public boolean validateOtpv2(String transactionId, String individualId, String otp) 
+			throws OtpValidationFailedException;
+	
+	public Tuple2<Boolean, String> validateOtpV2(String transactionId, String individualId, String otp)
+			throws OtpValidationFailedException;
 
 	public boolean authTypeStatusUpdate(String individualId, List<String> authType,
 			AuthTypeStatus authTypeStatus, Long unlockForSeconds) throws ApisResourceAccessException;
