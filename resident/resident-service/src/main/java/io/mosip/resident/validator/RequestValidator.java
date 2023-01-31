@@ -51,6 +51,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -963,6 +964,15 @@ public class RequestValidator {
 					throw new InvalidInputException("serviceType");
 				}
 			}
+		}
+	}
+
+	public void validateSchemaType(String schemaType) {
+		Optional<UISchemaTypes> uiSchemaTypeOptional = UISchemaTypes.getUISchemaTypeFromString(schemaType);
+		if (uiSchemaTypeOptional.isEmpty()) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+					ResidentConstants.SCHEMA_TYPE, "Validating schema type"));
+			throw new InvalidInputException(ResidentConstants.SCHEMA_TYPE);
 		}
 	}
 
