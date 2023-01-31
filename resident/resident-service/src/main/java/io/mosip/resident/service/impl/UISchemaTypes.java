@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public enum UISchemaTypes {
@@ -26,4 +28,12 @@ public enum UISchemaTypes {
         }
         return Optional.empty();
     }
+
+	public static List<String> getUISchemaTypesList() {
+		List<String> uiSchemaValues = new ArrayList<>();
+		for (UISchemaTypes uiSchemaType : values()) {
+			uiSchemaValues.add(uiSchemaType.getFileIdentifier());
+		}
+		return uiSchemaValues;
+	}
 }
