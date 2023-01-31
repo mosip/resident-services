@@ -70,7 +70,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.RegistrationConstants.ID;
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
@@ -973,8 +972,7 @@ public class RequestValidator {
 		if (uiSchemaTypeOptional.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					ResidentConstants.SCHEMA_TYPE, "Validating schema type"));
-			throw new InvalidInputException(ResidentConstants.SCHEMA_TYPE + ". Valid values are "
-					+ UISchemaTypes.getUISchemaTypesList().stream().collect(Collectors.joining(", ")));
+			throw new InvalidInputException(ResidentConstants.SCHEMA_TYPE);
 		}
 	}
 
