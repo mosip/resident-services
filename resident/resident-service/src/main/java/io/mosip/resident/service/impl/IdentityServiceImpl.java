@@ -176,7 +176,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			Map<String, Object> identity =
-					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+					getIdentityAttributes(id, env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
@@ -208,20 +208,14 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
-		Map<String, ?> identityAttributes =  getIdentityAttributes(id, false,schemaType);
-		return 	identityAttributes;
-	}
-	
-	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin, schemaType, List.of(
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
+		return getIdentityAttributes(id, schemaType, List.of(
 				Objects.requireNonNull(env.getProperty(ResidentConstants.ADDITIONAL_ATTRIBUTE_TO_FETCH))
 				.split(ResidentConstants.COMMA)));
 	}
 
 	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType,
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType,
 			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();

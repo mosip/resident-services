@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import java.util.Optional;
+
 public enum UISchemaTypes {
 	UPDATE_DEMOGRAPHICS("update-demographics"),
 	PERSONALIZED_CARD("personalized-card"),
@@ -16,4 +18,12 @@ public enum UISchemaTypes {
 		return fileIdentifier;
 	}
 
+	public static Optional<UISchemaTypes> getUISchemaTypeFromString(String schemaTypeString) {
+        for (UISchemaTypes uiSchemaType : values()) {
+            if (uiSchemaType.getFileIdentifier().equals(schemaTypeString)) {
+                return Optional.of(uiSchemaType);
+            }
+        }
+        return Optional.empty();
+    }
 }
