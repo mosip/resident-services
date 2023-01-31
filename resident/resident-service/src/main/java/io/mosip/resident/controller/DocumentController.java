@@ -96,7 +96,7 @@ public class DocumentController {
 			validator.validateRequest(docCatCode,docTypCode,langCode);
 			validator.validateFileName(file);
 			DocumentRequestDTO docRequest = new DocumentRequestDTO();
-			docRequest.setDocCatCode(docCatCode);
+			docRequest.setDocCatCode(docCatCode.toLowerCase());
 			docRequest.setDocTypCode(docTypCode);
 			docRequest.setLangCode(langCode);
 			docRequest.setReferenceId(referenceId);
