@@ -176,7 +176,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			Map<String, Object> identity =
-					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+					getIdentityAttributes(id, env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
@@ -208,25 +208,15 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
-		Map<String, ?> identityAttributes =  getIdentityAttributes(id, false,schemaType);
-		return 	identityAttributes;
-	}
-	
-	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin,schemaType, false, List.of(
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
+		return getIdentityAttributes(id, schemaType, List.of(
 				Objects.requireNonNull(env.getProperty(ResidentConstants.ADDITIONAL_ATTRIBUTE_TO_FETCH))
 				.split(ResidentConstants.COMMA)));
 	}
 
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType, boolean includePhoto) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin, schemaType, includePhoto, List.of());
-	}
-
 	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto,
-													 List<String> additionalAttributes) throws ResidentServiceCheckedException {
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType,
+			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -271,6 +261,21 @@ public class IdentityServiceImpl implements IdentityService {
 							return true;
 						}
 					})
+					.filter(a -> {
+						if(a.equals(env.getProperty(PHOTO_ATTRIB_PROP))) {
+							String photo;
+							try {
+								photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
+							} catch (ApisResourceAccessException e) {
+								logger.error("Error occured in accessing picture from claims %s", e.getMessage());
+								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+							}
+							identity.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
+							return true;
+						}
+						return true;
+					})
 					.filter(attr -> {
 						if(attr.contains(ResidentConstants.MASK_PREFIX)) {
 							String attributeName = attr.replace(ResidentConstants.MASK_PREFIX, "");
@@ -286,10 +291,6 @@ public class IdentityServiceImpl implements IdentityService {
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 
-			if(includePhoto) {
-				String photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
-				response.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
-			}
 			return response;
 		} catch (ApisResourceAccessException | IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());

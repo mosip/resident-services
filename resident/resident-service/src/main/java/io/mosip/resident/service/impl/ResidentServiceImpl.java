@@ -121,7 +121,6 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -262,9 +261,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
 	
-	@Value("#{'${resident.async.request.types}'.split(',')}") 
-	private List<String> asyncRequestTypes;
-
 	@Autowired
 	private AuditUtil audit;
 
@@ -1543,7 +1539,7 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-
+	
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
@@ -1700,7 +1696,7 @@ public class ResidentServiceImpl implements ResidentService {
 																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
 																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException {
-		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter,
+		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageStart, pageFetch, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
@@ -1715,7 +1711,7 @@ public class ResidentServiceImpl implements ResidentService {
 				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList, langCode, timeZoneOffset));
 	}
 
-	public String getDynamicNativeQueryString(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
+	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
 											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
 											  String serviceType, int timeZoneOffset) {
 		String query = "SELECT * FROM resident_transaction  where token_id = '"
@@ -1780,9 +1776,9 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String getServiceQuery(String serviceType) {
-		List<String> serviceTypeList = convertServiceTypeToResidentTransactionType(serviceType);
-		String serviceTypeListString = convertServiceTypeListToString(serviceTypeList);
-		return " and request_type_code in (" + serviceTypeListString + ")";
+		List<String> requestTypeList = convertServiceTypeToResidentTransactionType(serviceType);
+		String requestTypeListString = convertServiceTypeListToString(requestTypeList);
+		return " and request_type_code in (" + requestTypeListString + ")";
 	}
 
 	private String getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
@@ -1881,7 +1877,8 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
 			}
-			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
+			serviceHistoryResponseDto.setPinnedStatus(residentTransactionEntity.getPinnedStatus());
+			serviceHistoryResponseDto.setReadStatus(residentTransactionEntity.isReadStatus());
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
@@ -2079,6 +2076,7 @@ public class ResidentServiceImpl implements ResidentService {
 		Long residentTransactionEntity;
 		Optional<ResidentSessionEntity> residentSessionEntity = residentSessionRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
 		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
+		List<String> asyncRequestTypes = getAsyncRequestTypes();
 		if (residentSessionEntity.isPresent()) {
 			time = residentUserEntity.get().getLastbellnotifDtimes();
 			residentTransactionEntity = residentTransactionRepository
@@ -2093,6 +2091,13 @@ public class ResidentServiceImpl implements ResidentService {
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponse(notification);
 		return responseWrapper;
+	}
+
+	private List<String> getAsyncRequestTypes() {
+		return ServiceType.ASYNC.getRequestType()
+				.stream()
+				.map(RequestType::name)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -2124,25 +2129,13 @@ public class ResidentServiceImpl implements ResidentService {
 
 	}
 
-	@Override
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> getNotificationList(String id) {
-		List<ResidentTransactionEntity> result = residentTransactionRepository.findByIdAndUnreadStatusForRequestTypes(id, asyncRequestTypes);
-
-		List<UnreadServiceNotificationDto> unreadServiceNotificationDto = new ArrayList<>();
-
-		for (ResidentTransactionEntity residentTransactionEntity : result) {
-			UnreadServiceNotificationDto unreadServiceNotificationres = new UnreadServiceNotificationDto();
-			unreadServiceNotificationres.setEventId(residentTransactionEntity.getEventId());
-			unreadServiceNotificationres.setSummary(residentTransactionEntity.getRequestSummary());
-			unreadServiceNotificationres.setEventStatus(residentTransactionEntity.getStatusCode());
-			unreadServiceNotificationres.setTimeStamp(residentTransactionEntity.getRequestDtimes());
-			unreadServiceNotificationres.setRequestType(residentTransactionEntity.getRequestTypeCode());
-			unreadServiceNotificationDto.add(unreadServiceNotificationres);
-		}
-		ResponseWrapper<List<UnreadServiceNotificationDto>> responseWrapper = new ResponseWrapper<>();
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
+			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
+																				 null, null, ServiceType.ASYNC.name(), null,
+																				 null, null, languageCode, timeZoneOffset);
 		responseWrapper.setId(unreadnotificationlist);
 		responseWrapper.setVersion(serviceEventVersion);
-		responseWrapper.setResponse(unreadServiceNotificationDto);
 		return responseWrapper;
 	}
 
