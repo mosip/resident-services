@@ -1,5 +1,6 @@
 package io.mosip.resident.test.util;
 
+import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.HMACUtils2;
@@ -136,6 +137,16 @@ public class UtilityTest {
 		assertEquals(jsonUsingVID.get("UIN"), JsonUtil.getJSONObject(identity, "identity").get("UIN"));
 	}
 
+	@Test(expected = IdRepoAppException.class)
+	public void testRetrieveIdrepoJsonError() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
+		response.setErrors(List.of(new ServiceError("error code", "error msg")));
+
+		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+				any(), any(Class.class))).thenReturn(response);
+		utility.retrieveIdrepoJson("5628965106742572");
+	}
+
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void retrieveIdrepoJsonClientError() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
@@ -207,6 +218,22 @@ public class UtilityTest {
 		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
 		assertEquals("user@mail.com", attributes1.get("email"));
 
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testGetMailingAttributesIdNull() throws Exception {
+		utility.getMailingAttributes(null, new HashSet<String>());
+	}
+	
+	@Test(expected = ResidentServiceException.class)
+	public void testGetMailingAttributesIdEmpty() throws Exception {
+		utility.getMailingAttributes("", new HashSet<String>());
+	}
+
+	@Test
+	public void testGetMappingJsonEmpty() throws Exception {
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", "");
+		utility.getMappingJson();
 	}
 
 	@Test

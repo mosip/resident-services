@@ -38,8 +38,6 @@ public class ResidentConstants {
     
     public static final String IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED = "mosip.resident.update.service.status.job.enabled";
 
-    public static final String ID_TYPE = "idType";
-    
     public static final String PUBLIC_URL = "mosipbox.public.url";
     
     public static final String NOTIFICATION_ZONE = "mosip.notification.timezone";
@@ -79,6 +77,7 @@ public class ResidentConstants {
     public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
+    public static final String SUBJECT_CLAIM_NAME = "mosip.resident.access_token.subject.claim-name";
 
     public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
@@ -232,5 +231,9 @@ public class ResidentConstants {
     public static final String REVOKE_VID = "revokeVidId";
     public static final String REQUEST_PRINT_UIN = "Request for print UIN API";
     public static final String IDENTITY_JSON = "identityJson";
+    public static final String SCHEMA_TYPE = "schemaType";
+    public static final String FILE_NAME = "fileName";
+    public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
+    public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
 
 }

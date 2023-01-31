@@ -117,6 +117,8 @@ public class ResidentVidServiceTest {
     private List<Map<String, ?>> vidList;
 
     private Map<String, Object> vidDetails;
+
+    private IdentityDTO identityValue;
     
     @Before
     public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
@@ -131,7 +133,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMessage("Vid successfully generated");
 
         when(notificationService.sendNotification(any(NotificationRequestDto.class))).thenReturn(notificationResponseDTO);
-        IdentityDTO identityValue = new IdentityDTO();
+        identityValue = new IdentityDTO();
         identityValue.setEmail("aaa@bbb.com");
         identityValue.setPhone("987654321");
         identityValue.setUIN("1234567890");
@@ -174,6 +176,7 @@ public class ResidentVidServiceTest {
         vidResponse.setResponse(vidList);
         vid = "2038096257310540";
         when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(LocalDateTime.now());
+        when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
     }
 
     @Test
@@ -268,7 +271,7 @@ public class ResidentVidServiceTest {
 	public void revokeVidSuccessTest() throws OtpValidationFailedException, IOException, ApisResourceAccessException,
 			ResidentServiceCheckedException {
 
-		String vid = "2038096257310540";
+		String vid = "1234567890";
 	
 		VidGeneratorResponseDto dto = new VidGeneratorResponseDto();
 		dto.setVidStatus("Deactive");
@@ -283,7 +286,7 @@ public class ResidentVidServiceTest {
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
         when(identityServiceImpl.getUinForIndividualId(vid)).thenReturn("1234567890");
 
-		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
+		ResponseWrapper<VidRevokeResponseDTO> result2 = residentVidService.revokeVid(vidRevokeRequest,vid, "1234567890");
 
 		assertEquals("Vid successfully generated", result2.getResponse().getMessage().toString());
 	}

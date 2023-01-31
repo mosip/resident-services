@@ -1,7 +1,53 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -75,8 +121,8 @@ import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
+import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -94,6 +140,7 @@ import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.DocumentService;
@@ -110,55 +157,13 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
 
+	private static final int UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY = 1;
 	private static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 	private static final String AUTH_TYPE_SEPERATOR = "-";
 	private static final String PROCESSED = "PROCESSED";
@@ -255,7 +260,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
-
+	
 	@Autowired
 	private AuditUtil audit;
 
@@ -276,6 +281,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
+	
+	@Autowired
+	private ResidentSessionRepository residentSessionRepository;
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
@@ -1292,6 +1300,8 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
+		residentTransactionEntity.setLangCode(this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE));
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
 		return residentTransactionEntity;
 	}
 
@@ -1529,7 +1539,7 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
-
+	
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
@@ -1686,7 +1696,7 @@ public class ResidentServiceImpl implements ResidentService {
 																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
 																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException {
-		String nativeQueryString = getDynamicNativeQueryString(sortType, idaToken, pageStart, pageFetch, statusFilter,
+		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageStart, pageFetch, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
@@ -1701,7 +1711,7 @@ public class ResidentServiceImpl implements ResidentService {
 				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList, langCode, timeZoneOffset));
 	}
 
-	public String getDynamicNativeQueryString(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
+	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
 											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
 											  String serviceType, int timeZoneOffset) {
 		String query = "SELECT * FROM resident_transaction  where token_id = '"
@@ -1766,9 +1776,9 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private String getServiceQuery(String serviceType) {
-		List<String> serviceTypeList = convertServiceTypeToResidentTransactionType(serviceType);
-		String serviceTypeListString = convertServiceTypeListToString(serviceTypeList);
-		return " and request_type_code in (" + serviceTypeListString + ")";
+		List<String> requestTypeList = convertServiceTypeToResidentTransactionType(serviceType);
+		String requestTypeListString = convertServiceTypeListToString(requestTypeList);
+		return " and request_type_code in (" + requestTypeListString + ")";
 	}
 
 	private String getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
@@ -1867,7 +1877,8 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
 			}
-			serviceHistoryResponseDto.setPinnedStatus(String.valueOf(residentTransactionEntity.getPinnedStatus()));
+			serviceHistoryResponseDto.setPinnedStatus(residentTransactionEntity.getPinnedStatus());
+			serviceHistoryResponseDto.setReadStatus(residentTransactionEntity.isReadStatus());
 			serviceHistoryResponseDtoList.add(serviceHistoryResponseDto);
 		}
 		return serviceHistoryResponseDtoList;
@@ -2059,16 +2070,20 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) {
+	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
 		Long residentTransactionEntity;
-		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(Id);
-		if (residentUserEntity.isPresent()) {
-			time = residentUserEntity.get().getLastloginDtime();
-			residentTransactionEntity = residentTransactionRepository.findByIdandlastlogincount(Id, time);
+		Optional<ResidentSessionEntity> residentSessionEntity = residentSessionRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
+		List<String> asyncRequestTypes = getAsyncRequestTypes();
+		if (residentSessionEntity.isPresent()) {
+			time = residentUserEntity.get().getLastbellnotifDtimes();
+			residentTransactionEntity = residentTransactionRepository
+					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
 		} else {
-			residentTransactionEntity = residentTransactionRepository.findByIdandcount(Id);
+			residentTransactionEntity = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(idaToken,
+					asyncRequestTypes);
 		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
 		notification.setUnreadCount(residentTransactionEntity);
@@ -2078,13 +2093,20 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseWrapper;
 	}
 
+	private List<String> getAsyncRequestTypes() {
+		return ServiceType.ASYNC.getRequestType()
+				.stream()
+				.map(RequestType::name)
+				.collect(Collectors.toList());
+	}
+
 	@Override
-	public ResponseWrapper<BellNotificationDto> getbellClickdttimes(String Id) {
+	public ResponseWrapper<BellNotificationDto> getbellClickdttimes(String idaToken) {
 		ResponseWrapper<BellNotificationDto> responseWrapper = new ResponseWrapper<>();
 		BellNotificationDto bellnotifdttimes = new BellNotificationDto();
-		Optional<ResidentUserEntity> timstamp = residentUserRepository.findById(Id);
-		if (timstamp.isPresent()) {
-			LocalDateTime time = timstamp.get().getLastbellnotifDtimes();
+		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
+		if (residentUserEntity.isPresent()) {
+			LocalDateTime time = residentUserEntity.get().getLastbellnotifDtimes();
 			bellnotifdttimes.setLastbellnotifclicktime(time);
 		}
 		responseWrapper.setId(serviceEventId);
@@ -2094,36 +2116,26 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public int updatebellClickdttimes(String Id) {
+	public int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		LocalDateTime dt = DateUtils.getUTCCurrentDateTime();
-		Optional<ResidentUserEntity> idtoken = residentUserRepository.findById(Id);
-		if (idtoken.isPresent()) {
-			return residentUserRepository.updateByIdandTime(Id, dt);
+		Optional<ResidentUserEntity> entity = residentUserRepository.findById(idaToken);
+		if (entity.isPresent()) {
+			return residentUserRepository.updateByIdLastbellnotifDtimes(idaToken, dt);
 		} else {
-			return residentUserRepository.insertRecordByIdAndNotificationClickTime(Id, dt);
+			ResidentUserEntity newUserData = new ResidentUserEntity(idaToken, dt);
+			residentUserRepository.save(newUserData);
+			return UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY;
 		}
 
 	}
 
-	@Override
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> getUnreadnotifylist(String Id) {
-		List<ResidentTransactionEntity> result = residentTransactionRepository.findByIdandStatus(Id);
-
-		List<UnreadServiceNotificationDto> unreadServiceNotificationDto = new ArrayList<>();
-
-		for (ResidentTransactionEntity residentTransactionEntity : result) {
-			UnreadServiceNotificationDto unreadServiceNotificationres = new UnreadServiceNotificationDto();
-			unreadServiceNotificationres.setEventId(residentTransactionEntity.getEventId());
-			unreadServiceNotificationres.setSummary(residentTransactionEntity.getRequestSummary());
-			unreadServiceNotificationres.setEventStatus(residentTransactionEntity.getStatusCode());
-			unreadServiceNotificationres.setTimeStamp(residentTransactionEntity.getRequestDtimes());
-			unreadServiceNotificationres.setRequestType(residentTransactionEntity.getRequestTypeCode());
-			unreadServiceNotificationDto.add(unreadServiceNotificationres);
-		}
-		ResponseWrapper<List<UnreadServiceNotificationDto>> responseWrapper = new ResponseWrapper<>();
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
+			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
+																				 null, null, ServiceType.ASYNC.name(), null,
+																				 null, null, languageCode, timeZoneOffset);
 		responseWrapper.setId(unreadnotificationlist);
 		responseWrapper.setVersion(serviceEventVersion);
-		responseWrapper.setResponse(unreadServiceNotificationDto);
 		return responseWrapper;
 	}
 
@@ -2191,7 +2203,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException {
+	public ResponseWrapper<UserInfoDto> getUserinfo(String idaToken, int timeZoneOffset) throws ApisResourceAccessException {
 		String name = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 		String photo = identityServiceImpl.getAvailableclaimValue(env.getProperty(IMAGE));
 		String email = identityServiceImpl.getAvailableclaimValue(env.getProperty(ResidentConstants.EMAIL_FROM_PROFILE));
@@ -2202,16 +2214,22 @@ public class ResidentServiceImpl implements ResidentService {
 		responseWrapper.setId(serviceEventId);
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
-		Optional<ResidentUserEntity> response = residentUserRepository.findById(Id);
-		if (response.isPresent()) {
+		//Return the second element
+		List<ResidentSessionEntity> lastTwoLoginEntities = residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(idaToken);
+		if (!lastTwoLoginEntities.isEmpty()) {
 			data.put("data", photo);
 			user.setFullName(name);
 			user.setPhone(phone);
 			user.setEmail(email);
-			user.setIp(response.get().getIpAddress());
-			user.setMachineType(response.get().getMachineType());
-			user.setHost(response.get().getHost());
-			user.setLastLogin(utility.applyTimeZoneOffsetOnDateTime(timeZoneOffset, response.get().getLastloginDtime()));
+			
+			LocalDateTime lastLoginDateTime;
+			if (lastTwoLoginEntities.size() > 1) {
+				lastLoginDateTime = lastTwoLoginEntities.get(1).getLoginDtimes();
+			} else {
+				lastLoginDateTime = lastTwoLoginEntities.get(0).getLoginDtimes();
+			}
+			
+			user.setLastLogin(utility.applyTimeZoneOffsetOnDateTime(timeZoneOffset, lastLoginDateTime));
 			user.setPhoto(data);
 			responseWrapper.setResponse(user);
 			return responseWrapper;
