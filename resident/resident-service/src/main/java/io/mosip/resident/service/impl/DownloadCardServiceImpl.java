@@ -119,7 +119,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String eventId = utility.createEventId();
         byte[] pdfBytes = new byte[0];
         try {
-            if (idAuthService.validateOtp(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
+            if (idAuthService.validateOtpv2(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
                     getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
                     , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
