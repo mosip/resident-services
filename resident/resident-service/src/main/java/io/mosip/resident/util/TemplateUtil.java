@@ -173,8 +173,7 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
             String purpose = residentTransactionEntity.getPurpose();
             if (purpose != null && !purpose.isEmpty())
-                return fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPES,
-                        purpose);
+                return purpose;
             return fileText;
     }
 
