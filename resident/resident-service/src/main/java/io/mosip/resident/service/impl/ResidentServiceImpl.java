@@ -2211,8 +2211,8 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();
-		responseWrapper.setId(serviceEventId);
-		responseWrapper.setVersion(serviceEventVersion);
+		responseWrapper.setId(env.getProperty(ResidentConstants.RESIDENT_USER_PROFILE_ID));
+		responseWrapper.setVersion(env.getProperty(ResidentConstants.REQ_RES_VERSION));
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 		//Return the second element
 		List<ResidentSessionEntity> lastTwoLoginEntities = residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(idaToken);
