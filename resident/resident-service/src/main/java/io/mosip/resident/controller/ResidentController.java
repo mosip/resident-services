@@ -602,7 +602,7 @@ public class ResidentController {
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
 			@RequestParam(name = "searchText", required = false) String searchText,
-			@RequestParam(name = "languageCode", required = false) String languageCode,
+			@RequestParam(name = "languageCode", required = true) String languageCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::serviceHistory::pdf");
