@@ -401,13 +401,12 @@ public class Utility {
 		return trackServiceUrl + eventId;
 	}
 	
-	public String createDownloadLink(String eventId) {
-		Optional<ResidentTransactionEntity> residentData=	residentTransactionRepository.findById(eventId);
-		if(residentData.isPresent()) {
-			return residentData.get().getReferenceLink();
+	public String getDownloadLinkFromEntity(ResidentTransactionEntity residentTransactionEntity) {
+		if (residentTransactionEntity.getReferenceLink() != null
+				&& !residentTransactionEntity.getReferenceLink().isEmpty()) {
+			return residentTransactionEntity.getReferenceLink();
 		}
-		return "NA";
-		
+		return ResidentConstants.NOT_AVAILABLE;
 	}
 
 	public byte[] signPdf(InputStream in, String password) {
