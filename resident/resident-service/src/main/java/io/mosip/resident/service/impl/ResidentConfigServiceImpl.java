@@ -41,7 +41,7 @@ import io.mosip.resident.util.Utility;
 @Component
 public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
-	private static final String ID = "id";
+	private static final String UI_SCHEMA_ATTRIBUTE_NAME = "mosip.resident.schema.attribute-name";
 
 	private static final String CONTROL_TYPE = "controlType";
 
@@ -148,7 +148,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
 						.flatMap(map -> {
-							String attribName = (String)map.get(ID);
+							String attribName = (String)map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME));
 							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
 								//Include the attribute and its masked attribute
 								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
@@ -186,7 +186,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
 		Object identitySchemaObj = schemaMap.get(IDENTITY);
 		List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
-		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(ID)))
+		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME))))
 				.collect(Collectors.toList());
 
 		// attribute list from format present in both identity-mapping & ui-schema json
