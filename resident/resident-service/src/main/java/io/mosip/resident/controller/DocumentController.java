@@ -114,6 +114,8 @@ public class DocumentController {
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setId(residentUploadDocumentId);
+			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 		} 
 		return responseWrapper;
@@ -212,6 +214,8 @@ public class DocumentController {
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setId(residentDeleteId);
+			responseWrapper.setVersion(residentDeleteVersion);
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 		}
 		return responseWrapper;
