@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -46,7 +47,8 @@ public class DocumentValidator implements Validator {
 	@Autowired
 	private RequestValidator requestValidator;
 	
-	private static final String FILE_SIZE = "mosip.allowed.file.size";
+	@Value("${mosip.allowed.file.size.in.bytes}")
+	private String fileSize;
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -128,7 +130,7 @@ public class DocumentValidator implements Validator {
 		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
 			throw new InvalidInputException(ResidentConstants.FILE_NAME);
 		}
-		if (file.getSize() > Integer.parseInt(env.getProperty(FILE_SIZE))) {
+		if (file.getSize() > Integer.parseInt(fileSize)) {
 			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
 		}
 	}
