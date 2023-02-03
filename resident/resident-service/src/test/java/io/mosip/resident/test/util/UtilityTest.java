@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -445,16 +444,14 @@ public class UtilityTest {
 
 	@Test
 	public void testCreateDownloadLinkFailure(){
-		assertEquals("NA", utility.createDownloadLink("2186705746111111"));
+		assertEquals("NA", utility.getDownloadLinkFromEntity(new ResidentTransactionEntity()));
 	}
 
 	@Test
 	public void testCreateDownloadLinkSuccess(){
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setReferenceLink("http://mosip");
-		Optional<ResidentTransactionEntity> residentData = Optional.of(residentTransactionEntity);
-		Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentData);
-		assertEquals("http://mosip", utility.createDownloadLink("2186705746111111"));
+		assertEquals("http://mosip", utility.getDownloadLinkFromEntity(residentTransactionEntity));
 	}
 
 	@Test
