@@ -53,12 +53,16 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.repository.ResidentSessionRepository;
+import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.JsonUtil;
@@ -141,9 +145,6 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private ResidentVidService residentVidService;
 
-	@Autowired
-	private Environment environment;
-	
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
 	
@@ -155,6 +156,12 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
     private Utilities  utilities;
+	
+	@Autowired
+	private ResidentUserRepository  residentUserRepo;
+	
+	@Autowired
+	private ResidentSessionRepository  residentSessionRepo;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
@@ -169,7 +176,7 @@ public class IdentityServiceImpl implements IdentityService {
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
 			Map<String, Object> identity =
-					getIdentityAttributes(id, true,env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+					getIdentityAttributes(id, env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
@@ -201,25 +208,15 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	@Override
-	public Map<String, ?> getIdentityAttributes(String id,String schemaType) throws ResidentServiceCheckedException, IOException {
-		Map<String, ?> identityAttributes =  getIdentityAttributes(id, false,schemaType);
-		return 	identityAttributes;
-	}
-	
-	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin,schemaType, false, List.of(
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
+		return getIdentityAttributes(id, schemaType, List.of(
 				Objects.requireNonNull(env.getProperty(ResidentConstants.ADDITIONAL_ATTRIBUTE_TO_FETCH))
 				.split(ResidentConstants.COMMA)));
 	}
 
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin,String schemaType, boolean includePhoto) throws ResidentServiceCheckedException {
-		return getIdentityAttributes(id, includeUin, schemaType, includePhoto, List.of());
-	}
-
 	@Override
-	public Map<String, Object> getIdentityAttributes(String id, boolean includeUin, String schemaType, boolean includePhoto,
-													 List<String> additionalAttributes) throws ResidentServiceCheckedException {
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType,
+			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
@@ -264,6 +261,21 @@ public class IdentityServiceImpl implements IdentityService {
 							return true;
 						}
 					})
+					.filter(a -> {
+						if(a.equals(env.getProperty(PHOTO_ATTRIB_PROP))) {
+							String photo;
+							try {
+								photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
+							} catch (ApisResourceAccessException e) {
+								logger.error("Error occured in accessing picture from claims %s", e.getMessage());
+								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+							}
+							identity.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
+							return true;
+						}
+						return true;
+					})
 					.filter(attr -> {
 						if(attr.contains(ResidentConstants.MASK_PREFIX)) {
 							String attributeName = attr.replace(ResidentConstants.MASK_PREFIX, "");
@@ -279,10 +291,6 @@ public class IdentityServiceImpl implements IdentityService {
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 
-			if(includePhoto) {
-				String photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
-				response.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
-			}
 			return response;
 		} catch (ApisResourceAccessException | IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
@@ -435,9 +443,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
 		String userInfoStr;
-		if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
+		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
 			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
-			if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
+			if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
 				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
 						.verifyJWTSignagure(decodedJWT);
 				if (verifySignagure.left) {
@@ -455,7 +463,7 @@ public class IdentityServiceImpl implements IdentityService {
 		} else {
 			userInfoStr = userInfoResponseStr;
 		}
-		if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+		if(Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
 			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
 		}
 		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
@@ -497,6 +505,17 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 		return getIDATokenForIndividualId(individualId);
 	}
+	
+	public String createSessionId(){
+		return utility.createEventId();
+	}
+	
+	public String getSessionId() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String residentIdaToken = getResidentIdaToken();
+		return residentSessionRepo.findFirstByIdaTokenOrderByLoginDtimesDesc(residentIdaToken)
+				.map(ResidentSessionEntity::getSessionId)
+				.orElseGet(this::createSessionId);
+	}
 
 	public String getIndividualIdForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -517,7 +536,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.environment.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+		return getClaimFromIdToken(this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 	}
 	
 	public String getClaimFromAccessToken(String claim) {
@@ -532,7 +551,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaimValueFromJwtToken(idToken, claim);
 	}
 
-	private String getClaimValueFromJwtToken(String jwtToken, String claim) {
+	public String getClaimValueFromJwtToken(String jwtToken, String claim) {
 		String claimValue = "";
 		String payLoad = "";
 		if(jwtToken!=null){
@@ -562,7 +581,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String decryptPayload(String payload) {
-		return objectStoreHelper.decryptData(payload, this.environment.getProperty(ResidentConstants.RESIDENT_APP_ID), this.environment.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID), this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
 	}
 
 	public String getIndividualIdType(String individualId){
@@ -570,8 +589,10 @@ public class IdentityServiceImpl implements IdentityService {
 			return UIN;
 		} else if(requestValidator.validateVid(individualId)){
 			return VID;
-		} else{
+		} else if(requestValidator.validateRid(individualId)){
 			return AID;
+		} else {
+			throw new InvalidInputException(ResidentConstants.INDIVIDUAL_ID);
 		}
 	}
 }

@@ -81,7 +81,6 @@ public class DocumentController {
 	 * 
 	 * @param transactionId String
 	 * @param file          The file to be uploaded
-	 * @param request       DocumentRequestDTO
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
 	@PostMapping(path = "/documents/{transaction-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -95,8 +94,9 @@ public class DocumentController {
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			validator.validateRequest(docCatCode,docTypCode,langCode);
+			validator.validateFileName(file);
 			DocumentRequestDTO docRequest = new DocumentRequestDTO();
-			docRequest.setDocCatCode(docCatCode);
+			docRequest.setDocCatCode(docCatCode.toLowerCase());
 			docRequest.setDocTypCode(docTypCode);
 			docRequest.setLangCode(langCode);
 			docRequest.setReferenceId(referenceId);
@@ -114,6 +114,8 @@ public class DocumentController {
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setId(residentUploadDocumentId);
+			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 		} 
 		return responseWrapper;
@@ -212,6 +214,8 @@ public class DocumentController {
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setId(residentDeleteId);
+			responseWrapper.setVersion(residentDeleteVersion);
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 		}
 		return responseWrapper;

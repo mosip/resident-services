@@ -9,8 +9,6 @@ public class OtpValidationFailedException extends BaseResidentCheckedExceptionWi
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
     
-    private Map<String,Object> metadata;
-
     /**
      * Instantiates a new otp validation failed exception.
      */
@@ -50,5 +48,14 @@ public class OtpValidationFailedException extends BaseResidentCheckedExceptionWi
 
 	public OtpValidationFailedException(String errorMessage, Map<String, Object> metadata) {
 		super(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), errorMessage, metadata);
+	}
+
+	public OtpValidationFailedException(String errorCode, String errorMessage, Map<String, Object> metadata) {
+		super(errorCode, errorMessage,metadata);
+	}
+
+	public OtpValidationFailedException(String errorCode, String errorText, OtpValidationFailedException e,
+			Map<String, Object> metadata) {
+		super(errorCode, errorText, e, metadata);
 	}
 }
