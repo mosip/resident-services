@@ -113,7 +113,18 @@ public enum ResidentErrorCode {
 	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
 	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
 	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
-	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s");
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s"),
+	OTP_EXPIRED("RES-OTP-006","OTP has expired"),
+	OTP_INVALID("RES-OTP-007","OTP is invalid"),
+	INVALID_TRANSACTION_ID("RES-OTP-008","Input transactionId does not match transactionId of OTP Request"),
+	SMS_AUTH_LOCKED("RES-OTP-010","Your SMS OTP authentication is locked"),
+	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked"),
+	SMS_AND_EMAIL_AUTH_LOCKED("RES-OTP-012","Your SMS and email OTP authentication is locked"),
+	VID_CREATION_FAILED_WITH_REVOCATION("RES-SER-513",
+			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session."),
+	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB.");
+	
+
 
 	private final String errorCode;
 	private final String errorMessage;

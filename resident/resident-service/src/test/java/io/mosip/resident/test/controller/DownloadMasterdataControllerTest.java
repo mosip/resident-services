@@ -10,6 +10,7 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
@@ -85,6 +86,9 @@ public class DownloadMasterdataControllerTest {
 
     @MockBean
     private AuditUtil auditUtil;
+    
+    @MockBean
+    private ResidentServiceImpl residentService;
 
     @Mock
     private Utility utility;

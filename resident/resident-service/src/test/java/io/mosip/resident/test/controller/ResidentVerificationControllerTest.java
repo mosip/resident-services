@@ -8,6 +8,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -72,6 +73,9 @@ public class ResidentVerificationControllerTest {
     @MockBean
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
+    
+    @MockBean
+    private ResidentServiceImpl residentService;
 
     @Mock
     private AuditUtil audit;

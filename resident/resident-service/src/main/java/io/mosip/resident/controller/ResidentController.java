@@ -7,13 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
@@ -66,7 +64,6 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
@@ -317,14 +314,14 @@ public class ResidentController {
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetServiceAuthHistoryRoles()" + ")")
-	@GetMapping(path = "/service-history/{langcode}")
+	@GetMapping(path = "/service-history/{langCode}")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langcode") String langCode,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langCode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -550,8 +547,8 @@ public class ResidentController {
 	public ResponseWrapper<BellNotificationDto> bellClickdttimes()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getnotificationclickdttimes()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(individualId);
+		String idaToken = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(idaToken);
 		logger.debug("ResidentController::getnotificationclickdttimes::exit");
 		return response;
 	}
@@ -565,30 +562,33 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))), })
 	public int bellupdateClickdttimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::updatedttime()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		int response = residentService.updatebellClickdttimes(individualId);
+		String idaToken = identityServiceImpl.getResidentIdaToken();
+		int response = residentService.updatebellClickdttimes(idaToken);
 		logger.debug("ResidentController::updatedttime()::exit");
 		return response;
 	}
 
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
-	@GetMapping("/unread/service-list")
+	@GetMapping("/notifications/{langCode}")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotification()
+	public ResponseWrapper<?> getNotificationsList(@PathVariable("langCode") String langCode,
+			@RequestParam(name = "pageStart", required = false) Integer pageStart,
+			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
-		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotificationDtoList = residentService
-				.getUnreadnotifylist(Id);
+		validator.validateOnlyLanguageCode(langCode);
+		String id = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = residentService
+				.getNotificationList(pageStart, pageFetch, id, langCode, timeZoneOffset);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
-		return unreadServiceNotificationDtoList;
+		return notificationDtoList;
 	}
 
 	@GetMapping(path = "/download/service-history")
@@ -602,7 +602,7 @@ public class ResidentController {
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
 			@RequestParam(name = "searchText", required = false) String searchText,
-			@RequestParam(name = "languageCode", required = false) String languageCode,
+			@RequestParam(name = "languageCode", required = true) String languageCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::serviceHistory::pdf");

@@ -6,6 +6,7 @@ import io.mosip.resident.controller.AuthTransactionCallbackController;
 import io.mosip.resident.controller.VerificationController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.*;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
@@ -73,6 +74,9 @@ public class AuthTransactionCallbackControllerTest {
 
     @MockBean
     private ObjectStoreHelper objectStore;
+    
+    @MockBean
+    private ResidentServiceImpl residentService;
 
     @MockBean
     private VerificationServiceImpl verificationServiceImpl;
