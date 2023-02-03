@@ -48,7 +48,7 @@ public class DocumentValidator implements Validator {
 	private RequestValidator requestValidator;
 	
 	@Value("${mosip.allowed.file.size.in.bytes}")
-	private String fileSize;
+	private int fileSize;
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -130,7 +130,7 @@ public class DocumentValidator implements Validator {
 		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
 			throw new InvalidInputException(ResidentConstants.FILE_NAME);
 		}
-		if (file.getSize() > Integer.parseInt(fileSize)) {
+		if (file.getSize() > fileSize) {
 			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
 		}
 	}
