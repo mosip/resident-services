@@ -121,7 +121,8 @@ public enum ResidentErrorCode {
 	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked"),
 	SMS_AND_EMAIL_AUTH_LOCKED("RES-OTP-012","Your SMS and email OTP authentication is locked"),
 	VID_CREATION_FAILED_WITH_REVOCATION("RES-SER-513",
-			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session.");
+			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session."),
+	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB.");
 	
 
 
