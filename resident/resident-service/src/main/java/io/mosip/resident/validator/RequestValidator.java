@@ -715,25 +715,6 @@ public class RequestValidator {
 		return true;
 
 	}
-	
-	public boolean validateAidStatusRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
-		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
-		} catch (Exception e) {
-			throw new InvalidInputException("requesttime");
-		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(newVersion))
-			throw new InvalidInputException("version");
-		
-		if (request.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
-		return true;
-
-	}
 
 	public static boolean isNumeric(String strNum) {
 		return !strNum.matches(("[0-9]+"));
@@ -1077,13 +1058,6 @@ public class RequestValidator {
 		}
 	}
 	
-	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
-		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
-		validateVersion(userOtpRequest.getVersion());
-		validateDate(userOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
-	}
-
 	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
