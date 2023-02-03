@@ -274,8 +274,10 @@ import java.util.Optional;
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(String eventId, String languageCode, Integer timeZoneOffset) {
         Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
-                getEntityFromEventId(eventId), languageCode));
+        		residentTransactionEntity, languageCode));
+        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.getDownloadLinkFromEntity(residentTransactionEntity));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY)));
     }
@@ -329,8 +331,10 @@ import java.util.Optional;
 
      public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForVidCardDownload(String eventId, String languageCode, Integer timeZoneOffset) {
          Map<String, String> templateVariables = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
+         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
          templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
-                 getEntityFromEventId(eventId), languageCode));
+                 residentTransactionEntity, languageCode));
+         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.getDownloadLinkFromEntity(residentTransactionEntity));
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));
@@ -402,7 +406,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
  		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createDownloadLink(dto.getEventId()));
+    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
     		}
  		return templateVariables;
  	}
@@ -420,7 +424,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
  		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-   			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createDownloadLink(dto.getEventId()));
+   			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
    		}
  		return templateVariables;
  	}
@@ -428,7 +432,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
  		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
- 			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createDownloadLink(dto.getEventId()));
+ 			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
  		}
  		return templateVariables;
  	}
@@ -441,7 +445,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto) {
     	 Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
     	 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createDownloadLink(dto.getEventId()));
+    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
     		}
     	 return templateVariables;
   	}
