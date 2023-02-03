@@ -26,7 +26,7 @@ import java.util.Objects;
 import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-
+import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
 /**
  * It validates the request and scans the file for viruses
  * 
@@ -45,6 +45,8 @@ public class DocumentValidator implements Validator {
 
 	@Autowired
 	private RequestValidator requestValidator;
+	
+	private static final String FILE_SIZE = "mosip.allowed.file.size";
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -123,8 +125,11 @@ public class DocumentValidator implements Validator {
 	public void validateFileName(MultipartFile file) {
 		String extension = Objects.requireNonNull(FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase();
 		String extensionProperty = Objects.requireNonNull(env.getProperty(ALLOWED_FILE_TYPE)).toLowerCase();
-		if(!extensionProperty.contains(Objects.requireNonNull(extension))){
+		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
 			throw new InvalidInputException(ResidentConstants.FILE_NAME);
+		}
+		if (file.getSize() > Integer.parseInt(env.getProperty(FILE_SIZE))) {
+			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
 		}
 	}
 }
