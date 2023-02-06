@@ -58,8 +58,8 @@ public enum ResidentErrorCode {
 	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type for resident websub"),
 
 	RESIDENT_AUTH_TXN_DETAILS_FAILURE("RES-SER-445", "Failed to retrieve auth transaction details"),
-	INVALID_PAGE_START_VALUE("RES-SER-446", "Invalid page start value"),
-	INVALID_PAGE_FETCH_VALUE("RES-SER-447", "Invalid page fetch value"),
+	INVALID_PAGE_INDEX_VALUE("RES-SER-446", "Invalid page index value"),
+	INVALID_PAGE_SIZE_VALUE("RES-SER-447", "Invalid page size value"),
 	PERPETUAL_VID_NOT_AVALIABLE("RES-SER-448", "Perpatual VID not available"),
 	AID_STATUS_IS_NOT_READY("RES-SER-449", "AID is not ready"),
 
