@@ -2075,10 +2075,9 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
 		Long residentTransactionEntity;
-		Optional<ResidentSessionEntity> residentSessionEntity = residentSessionRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
 		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
 		List<String> asyncRequestTypes = getAsyncRequestTypes();
-		if (residentSessionEntity.isPresent()) {
+		if (residentUserEntity.isPresent()) {
 			time = residentUserEntity.get().getLastbellnotifDtimes();
 			residentTransactionEntity = residentTransactionRepository
 					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
