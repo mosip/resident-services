@@ -729,12 +729,12 @@ public enum EventEnum {
 			"get gender code by genderName and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
-			"Invalid page start value %s", "RES-SER", "Residence service", "%s", "pageStart",
+	INVALID_PAGE_INDEX_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page index value %s", "RES-SER", "Residence service", "%s", "pageIndex",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
-			"Invalid page fetch value %s", "RES-SER", "Residence service", "%s", "pageFetch",
+	INVALID_PAGE_SIZE_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page size value %s", "RES-SER", "Residence service", "%s", "pageSize",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
 
 

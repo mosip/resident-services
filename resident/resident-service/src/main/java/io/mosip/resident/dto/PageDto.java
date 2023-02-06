@@ -11,14 +11,14 @@ import java.util.List;
  */
 
 public class PageDto<T> {
-    private int pageNo;
+    private int pageIndex;
     private int pageSize;
     private long totalItems;
     private int totalPages;
     private List<T> data;
 
-    public int getPageNo() {
-        return this.pageNo;
+    public int getPageIndex() {
+        return this.pageIndex;
     }
 
     public int getPageSize() {
@@ -37,8 +37,8 @@ public class PageDto<T> {
         return this.data;
     }
 
-    public void setPageNo(int pageNo) {
-        this.pageNo = pageNo;
+    public void setPageIndex(int pageIndex) {
+        this.pageIndex = pageIndex;
     }
 
     public void setPageSize(int pageSize) {
@@ -64,12 +64,12 @@ public class PageDto<T> {
     }
 
     public String toString() {
-        int var10000 = this.getPageNo();
-        return "PageDto(pageNo=" + var10000 + ", pageSize=" + this.getPageSize() + ", " + ", totalItems=" + this.getTotalItems() + ", totalPages=" + this.getTotalPages() + ", data=" + this.getData() + ")";
+        int var10000 = this.getPageIndex();
+        return "PageDto(pageIndex=" + var10000 + ", pageSize=" + this.getPageSize() + ", " + ", totalItems=" + this.getTotalItems() + ", totalPages=" + this.getTotalPages() + ", data=" + this.getData() + ")";
     }
 
-    public PageDto(int pageNo, int pageSize, long totalItems, int totalPages, List<T> data) {
-        this.pageNo = pageNo;
+    public PageDto(int pageIndex, int pageSize, long totalItems, int totalPages, List<T> data) {
+        this.pageIndex = pageIndex;
         this.pageSize = pageSize;
         this.totalItems = totalItems;
         this.totalPages = totalPages;

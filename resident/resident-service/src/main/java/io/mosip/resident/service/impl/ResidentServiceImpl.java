@@ -183,8 +183,8 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UIN = "uin";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
-	private static final Integer DEFAULT_PAGE_START = 0;
-	private static final Integer DEFAULT_PAGE_COUNT = 10;
+	private static final Integer DEFAULT_PAGE_INDEX = 0;
+	private static final Integer DEFAULT_PAGE_SIZE = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
@@ -1541,36 +1541,36 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 	
 	@Override
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageIndex, Integer pageSize,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																				 String statusFilter, String searchText, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
-		if (pageStart == null) {
-			if (pageFetch == null) {
-				// If both Page start and page fetch values are null return all records
-				pageStart = DEFAULT_PAGE_START;
-				pageFetch = DEFAULT_PAGE_COUNT;
+		if (pageIndex == null) {
+			if (pageSize == null) {
+				// If both Page index and page size values are null return all records
+				pageIndex = DEFAULT_PAGE_INDEX;
+				pageSize = DEFAULT_PAGE_SIZE;
 			} else {
-				pageStart = DEFAULT_PAGE_START;
+				pageIndex = DEFAULT_PAGE_INDEX;
 			}
 		} else {
-			if (pageFetch == null) {
-				pageFetch = DEFAULT_PAGE_COUNT;
+			if (pageSize == null) {
+				pageSize = DEFAULT_PAGE_SIZE;
 			}
 		}
-		if (pageStart < 0) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_START_VALUE,
-					pageStart.toString(), "Invalid page start value"));
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
-		} else if (pageFetch < 0) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_FETCH_VALUE,
-					pageFetch.toString(), "Invalid page fetch value"));
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
+		if (pageIndex < 0) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_INDEX_VALUE,
+					pageIndex.toString(), "Invalid page index value"));
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_INDEX_VALUE);
+		} else if (pageSize < 0) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_SIZE_VALUE,
+					pageSize.toString(), "Invalid page size value"));
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_SIZE_VALUE);
 		}
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
-				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
+				sortType, pageIndex, pageSize, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
 				langCode, timeZoneOffset);
 		return serviceHistoryResponseDtoList;
 	}
@@ -1678,12 +1678,12 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
-																						 Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime,
+																						 Integer pageIndex, Integer pageSize, LocalDate fromDateTime, LocalDate toDateTime,
 																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
-		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
+		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageIndex, pageSize, idaToken, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
@@ -1692,11 +1692,11 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseWrapper;
 	}
 
-	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
-																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
+	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageIndex,
+																		Integer pageSize, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
 																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException {
-		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageStart, pageFetch, statusFilter,
+		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageIndex, pageSize, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
@@ -1707,11 +1707,11 @@ public class ResidentServiceImpl implements ResidentService {
 		Query nativeQuery2 = entityManager.createNativeQuery(nativeQueryStringWithoutOrderBy);
 		BigInteger count = (BigInteger) nativeQuery2.getSingleResult();
 		int size = count.intValue();
-		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1,
+		return new PageDto<>(pageIndex, pageSize, size, (size / pageSize) + 1,
 				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList, langCode, timeZoneOffset));
 	}
 
-	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
+	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageIndex, Integer pageSize,
 											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
 											  String serviceType, int timeZoneOffset) {
 		String query = "SELECT * FROM resident_transaction  where token_id = '"
@@ -1765,8 +1765,8 @@ public class ResidentServiceImpl implements ResidentService {
 			sortType = SortType.DESC.toString();
 		}
 
-		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageFetch
-				+ " offset " + (pageStart) * pageFetch;
+		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageSize
+				+ " offset " + (pageIndex) * pageSize;
 		return query + dynamicQuery + orderByQuery;
 	}
 
