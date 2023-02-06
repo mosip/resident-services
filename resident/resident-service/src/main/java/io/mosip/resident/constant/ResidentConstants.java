@@ -87,8 +87,6 @@ public class ResidentConstants {
 
     public static final String DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.personalized.card.naming.convention";
 
-    public static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
-
     public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
 
     public static final String CREDENTIAL_ISSUER = "mosip.credential.issuer";

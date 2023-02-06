@@ -175,8 +175,7 @@ public class IdentityServiceImpl implements IdentityService {
 		logger.debug("IdentityServiceImpl::getIdentity()::entry");
 		IdentityDTO identityDTO = new IdentityDTO();
 		try {
-			Map<String, Object> identity =
-					getIdentityAttributes(id, env.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+			Map<String, Object> identity =	getIdentityAttributes(id, null);
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
@@ -184,9 +183,11 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setEmail(getMappingValue(identity, EMAIL));
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
 			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
-			DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
-			LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
-			identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
+			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
+				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
+				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
+				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
+			}
 			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
 
 			if(fetchFace) {
@@ -236,14 +237,16 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, Object> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 			Map<String,Object> identity = (Map<String, Object>) identityResponse.get(IDENTITY);
-			List<String> filterBySchema = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType);
 			List<String> finalFilter = new ArrayList<>();
-			finalFilter.addAll(filterBySchema);
+			if(schemaType != null) {
+				List<String> filterBySchema = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType);
+				finalFilter.addAll(filterBySchema);
+			}
 			if(additionalAttributes != null && additionalAttributes.size()>0){
 				finalFilter.addAll(additionalAttributes);
 			}
 			Map<String, Object> response = finalFilter.stream()
-					.filter(a -> {
+					.peek(a -> {
 						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
@@ -256,12 +259,9 @@ public class IdentityServiceImpl implements IdentityService {
 								String vid = perpVid.get();
 								identity.put(PERPETUAL_VID, vid);
 							}
-							return true;
-						} else {
-							return true;
 						}
 					})
-					.filter(a -> {
+					.peek(a -> {
 						if(a.equals(env.getProperty(PHOTO_ATTRIB_PROP))) {
 							String photo;
 							try {
@@ -271,20 +271,17 @@ public class IdentityServiceImpl implements IdentityService {
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 										ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 							}
-							identity.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
-							return true;
+							if(photo != null) {
+								identity.put(env.getProperty(PHOTO_ATTRIB_PROP), photo);
+							}
 						}
-						return true;
 					})
-					.filter(attr -> {
+					.peek(attr -> {
 						if(attr.contains(ResidentConstants.MASK_PREFIX)) {
 							String attributeName = attr.replace(ResidentConstants.MASK_PREFIX, "");
 							if(identity.containsKey(attributeName)) {
 								identity.put(attr, utility.convertToMaskDataFormat((String) identity.get(attributeName)));
 							}
-							return true;
-						} else {
-							return true;
 						}
 					})
 					.filter(attrib -> identity.containsKey(attrib))
@@ -333,7 +330,9 @@ public class IdentityServiceImpl implements IdentityService {
                     	return ((String)((Map) attributeValue).get(VALUE));
                     }
                     return null;
-                }).collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));
 	}
 	
 	private String getValueForLang(List<Map<String, Object>> attributeValue, String langCode) {
