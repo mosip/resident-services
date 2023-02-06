@@ -281,8 +281,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         Map<String, Object> identityAttributes = null;
         List<String> attributeValues = new ArrayList<>();
         try {
-            identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(
-                    individualId, this.environment.getProperty(ResidentConstants.RESIDENT_IDENTITY_SCHEMATYPE));
+			identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(individualId, null);
         } catch (ResidentServiceCheckedException e) {
             audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
             logger.error("Unable to get attributes- "+e);

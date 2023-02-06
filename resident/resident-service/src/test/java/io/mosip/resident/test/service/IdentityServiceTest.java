@@ -1,6 +1,51 @@
 package io.mosip.resident.test.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.biometrics.spi.CbeffUtil;
@@ -30,51 +75,11 @@ import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 @RefreshScope
 @ContextConfiguration
 public class IdentityServiceTest {
-
+	
 	@InjectMocks
 	private IdentityService identityService = new IdentityServiceImpl();
 
@@ -184,7 +189,6 @@ public class IdentityServiceTest {
 		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
 		.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName", "perpetualVID"));
 		
-		when(env.getProperty(anyString())).thenReturn("property");
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.validateRid(Mockito.anyString())).thenReturn(true);
 		token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJubEpTaUExM2tPUWhZQ0JxMEVKSkRlWnFTOGsybDB3MExUbmQ1WFBCZ20wIn0." +
@@ -207,6 +211,9 @@ public class IdentityServiceTest {
 				"CjfN3mlwxDxHm2DzMHnwbKR5orEm1NRyCnUfGGm5IMVTdDnXz1iUAsU7zeKA2XOdH3zQgMUu-vqJpgRWRG-XJHakSyblfAFIVAILRi7rwJQjL7X1lhm1ZAqUX" +
 				"Soh6kZBoOeYd_29RQQzFQNzpn_Ahk4GxQu_TLyvoWeNXpfx94om7TqrZYghtTg5_svku2P0NuFxzbWysPMjaHrEff0idKY94sKJ6eNpLXRXbJCPkAHtfVY0U3" +
 				"YDQqWUpYjE3hQCZz0u_L8sieJIN3mYtjd12rfOrjEKu2fFGu5UbJRVqkmOw0egVGHw";
+		when(env.getProperty("mosip.resident.photo.attribute.name")).thenReturn("photo");
+		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName");
+		when(env.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -220,7 +227,6 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetIdentityLangCodeNull() throws Exception {
 		getAuthUserDetailsFromAuthentication();
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -253,7 +259,6 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetMappingValueIf() throws Exception {
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -315,7 +320,6 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdForAid() throws Exception{
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -328,7 +332,6 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetIndividualIdForAidUseVidOnlyTrue() throws Exception{
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -354,7 +357,7 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testDecryptPayload(){
-		//Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
+		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
 		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("payload");
 		assertEquals("payload", ReflectionTestUtils.invokeMethod(identityService, "decryptPayload", "payload"));
 	}
@@ -402,7 +405,6 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetMappingValueNullIoException() throws Exception {
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -416,7 +418,6 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetMappingValueInvalidPerpetualVid() throws Exception {
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -429,7 +430,6 @@ public class IdentityServiceTest {
 
 	@Test
 	public void testGetMappingValueValidPerpetualVid() throws Exception {
-		when(env.getProperty(anyString())).thenReturn("photo");
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
@@ -444,6 +444,8 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMappingValueValidPerpetualVidResidentServiceCheckedException() throws Exception {
+		fileLoadMethod();
+		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
@@ -453,6 +455,8 @@ public class IdentityServiceTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMappingValueValidPerpetualVidApisResourceAccessException() throws Exception {
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
+		fileLoadMethod();
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("6", result.getUIN());
