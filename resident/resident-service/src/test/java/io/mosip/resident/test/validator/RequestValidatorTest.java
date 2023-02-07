@@ -1418,6 +1418,7 @@ public class RequestValidatorTest {
 	public void testValidateAidStatusRequestDtoSuccess() throws Exception{
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
 		aidStatusRequestDTO.setIndividualId("17");
+		aidStatusRequestDTO.setTransactionId("1234567890");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
