@@ -570,26 +570,18 @@ public class RequestValidator {
 		return email.matches(emailRegex);
 	}
 	
-	public boolean emailCharsValidator(String email) {
-		boolean charLengthCheck = false;
-		if (email.length() <= emailCharsLimit) {
-			charLengthCheck = true;
-		} else {
+	public void emailCharsValidator(String email) {
+		if (email.length() > emailCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
-					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),emailCharsLimit,email));
-			}
-		return charLengthCheck;
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(), emailCharsLimit, email));
+		}
 	}
 	
-	public boolean phoneCharsValidator(String phoneNo) {
-		boolean charLengthCheck = false;
-		if (phoneNo.length() <= phoneCharsLimit) {
-			charLengthCheck = true;
-		} else {
+	public void phoneCharsValidator(String phoneNo) {
+		if (phoneNo.length() > phoneCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
-					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),phoneCharsLimit,phoneNo));
-			}
-		return charLengthCheck;
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(), phoneCharsLimit, phoneNo));
+		}
 	}
 
 	public boolean validateVid(String individualId) {
@@ -1288,20 +1280,18 @@ public class RequestValidator {
 
 	private void validatePhoneNumber(String phoneNo) {
 		if (phoneNo != null) {
-			if (phoneCharsValidator(phoneNo)) {
-				if (!phoneValidator(phoneNo)) {
-					throw new InvalidInputException(PHONE_CHANNEL);
-				}
+			phoneCharsValidator(phoneNo);
+			if (!phoneValidator(phoneNo)) {
+				throw new InvalidInputException(PHONE_CHANNEL);
 			}
 		}
 	}
 
 	private void validateEmailId(String emailId) {
-		if(emailId!=null){
-			if (emailCharsValidator(emailId)) {
-				if(!emailValidator(emailId)){
-					throw new InvalidInputException(EMAIL_CHANNEL, EMAIL_CHANNEL+ResidentConstants.MUST_NOT_BE_EMPTY);
-				}
+		if (emailId != null) {
+			emailCharsValidator(emailId);
+			if (!emailValidator(emailId)) {
+				throw new InvalidInputException(EMAIL_CHANNEL, EMAIL_CHANNEL + ResidentConstants.MUST_NOT_BE_EMPTY);
 			}
 		}
 	}
