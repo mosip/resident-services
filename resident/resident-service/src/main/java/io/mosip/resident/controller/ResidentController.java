@@ -339,6 +339,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		validator.validateOnlyLanguageCode(langCode);
 		validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
+		validator.validateSearchText(searchText);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
 				pageIndex, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, langCode, timeZoneOffset);
