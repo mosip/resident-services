@@ -1214,7 +1214,7 @@ public class RequestValidator {
 	}
 
 	private void validateString(String string, String variableName) {
-		if(string == null){
+		if(string == null || string.trim().isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
 			throw new InvalidInputException(variableName);
 		}
@@ -1272,7 +1272,7 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),messageCharsLimit,message));
 		}
-		if (!message.matches("[A-Za-z0-9 .,-]+")) {
+		if (!message.matches(ResidentConstants.ALLOWED_SPECIAL_CHAR_REGEX)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),message));
 		}
@@ -1315,14 +1315,12 @@ public class RequestValidator {
 	
 
 	public void validatePurpose(String purpose) {
-		if (purpose.isEmpty() || purpose.startsWith(" ")) {
-			validateString(purpose, TemplateVariablesConstants.PURPOSE);
-		}
+		validateString(purpose, TemplateVariablesConstants.PURPOSE);
 		if (purpose.length() > purposeCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
 		}
-		if (!purpose.matches("[A-Za-z0-9 .,-]+")) {
+		if (!purpose.matches(ResidentConstants.ALLOWED_SPECIAL_CHAR_REGEX)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),purpose));
 		}
