@@ -227,8 +227,10 @@ public class RequestValidator {
 	private int otpLength;
 	
 	@Value("${resident.allowed.special.char.regex}") 
-	private String allowedSpecialCharRegex;	
+	private String allowedSpecialCharRegex;	  
 	
+	@Value("${resident.eid.allowed.special.char.regex}") 
+	private String eidAllowedSpecialCharRegex;
 
 	@PostConstruct
 	public void setMap() {
@@ -935,7 +937,7 @@ public class RequestValidator {
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
 			throw new InvalidInputException("individualId");
 		}
-		if (!individualId.matches("[A-Za-z0-9 -]+")) {
+		if (!individualId.matches(eidAllowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),individualId));
 		}
