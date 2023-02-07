@@ -226,6 +226,9 @@ public class RequestValidator {
 	@Value("${mosip.kernel.otp.default-length}")  
 	private int otpLength;
 	
+	@Value("${resident.allowed.special.char.regex}") 
+	private String allowedSpecialCharRegex;	
+	
 
 	@PostConstruct
 	public void setMap() {
@@ -1272,7 +1275,7 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),messageCharsLimit,message));
 		}
-		if (!message.matches(ResidentConstants.ALLOWED_SPECIAL_CHAR_REGEX)) {
+		if (!message.matches(allowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),message));
 		}
@@ -1320,7 +1323,7 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
 		}
-		if (!purpose.matches(ResidentConstants.ALLOWED_SPECIAL_CHAR_REGEX)) {
+		if (!purpose.matches(allowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),purpose));
 		}

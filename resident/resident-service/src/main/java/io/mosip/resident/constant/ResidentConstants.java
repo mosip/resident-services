@@ -234,6 +234,5 @@ public class ResidentConstants {
     public static final String FILE_NAME = "fileName";
     public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
-    public static final String ALLOWED_SPECIAL_CHAR_REGEX="[A-Za-z0-9 .,-]+";
 
 }
