@@ -204,6 +204,36 @@ public class RequestValidator {
 
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
+	
+	@Value("${resident.grievance-redressal.alt-email.chars.limit}")
+	private int emailCharsLimit;
+	
+	@Value("${resident.grievance-redressal.alt-phone.chars.limit}")
+	private int phoneCharsLimit;
+	
+	@Value("${resident.grievance-redressal.comments.chars.limit}")
+	private int messageCharsLimit;   
+	
+	@Value("${resident.share-credential.purpose.chars.limit}")
+	private int purposeCharsLimit;
+	
+	@Value("${mosip.resident.eventid.searchtext.length}")
+	private int searchTextLength;
+	
+	@Value("${mosip.kernel.vid.length}")
+	private int vidLength;
+	
+	@Value("${mosip.kernel.otp.default-length}")  
+	private int otpLength;
+	
+	@Value("${resident.message.allowed.special.char.regex}") 
+	private String messageAllowedSpecialCharRegex;
+	
+	@Value("${resident.purpose.allowed.special.char.regex}") 
+	private String purposeAllowedSpecialCharRegex;
+	
+	@Value("${resident.id.allowed.special.char.regex}") 
+	private String idAllowedSpecialCharRegex;
 
 	@PostConstruct
 	public void setMap() {
@@ -546,6 +576,20 @@ public class RequestValidator {
 
 	public boolean emailValidator(String email) {
 		return email.matches(emailRegex);
+	}
+	
+	public void emailCharsValidator(String email) {
+		if (email.length() > emailCharsLimit) {
+			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(), emailCharsLimit, email));
+		}
+	}
+	
+	public void phoneCharsValidator(String phoneNo) {
+		if (phoneNo.length() > phoneCharsLimit) {
+			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(), phoneCharsLimit, phoneNo));
+		}
 	}
 
 	public boolean validateVid(String individualId) {
@@ -896,6 +940,14 @@ public class RequestValidator {
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
 			throw new InvalidInputException("individualId");
 		}
+		if (!individualId.matches(idAllowedSpecialCharRegex)) {
+			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
+					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),individualId));
+		}
+		if (individualId.length() > vidLength) {
+			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),vidLength,individualId));
+		}
 	}
 
 	public void validateServiceHistoryRequest(LocalDate fromDateTime, LocalDate toDateTime, String sortType, String serviceType, String statusFilter) {
@@ -906,6 +958,15 @@ public class RequestValidator {
 		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
 			throw new InvalidInputException("DateTime");
+		}
+	}
+	
+	public void validateSearchText(String searchText) {
+		if (searchText != null) {
+			if (searchText.length() > searchTextLength) {
+				throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(), String
+						.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),searchTextLength,searchText));
+			}
 		}
 	}
 
@@ -992,6 +1053,13 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					variableName, VALIDATE_EVENT_ID));
 			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, variableName);
+		}
+	}
+	
+	public void validateOtpCharLimit(String otp) {
+		if (otp.length() > otpLength) {
+			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),otpLength,otp));
 		}
 	}
 
@@ -1154,7 +1222,7 @@ public class RequestValidator {
 	}
 
 	private void validateString(String string, String variableName) {
-		if(string == null){
+		if(string == null || string.trim().isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.INPUT_INVALID);
 			throw new InvalidInputException(variableName);
 		}
@@ -1208,24 +1276,30 @@ public class RequestValidator {
 
 	private void validateMessage(String message) {
 		validateMissingInputParameter(message, MESSAGE_CODE);
-		if(message.length()>Integer.parseInt(Objects.requireNonNull(this.environment.getProperty(
-				ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)))){
-			throw new InvalidInputException(MESSAGE_CODE);
+		if (message.length() > messageCharsLimit) {
+			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
+					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),messageCharsLimit,message));
+		}
+		if (!message.matches(messageAllowedSpecialCharRegex)) {
+			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
+					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),message));
 		}
 	}
 
 	private void validatePhoneNumber(String phoneNo) {
-		if(phoneNo!=null){
-			if(!phoneValidator(phoneNo)){
+		if (phoneNo != null) {
+			phoneCharsValidator(phoneNo);
+			if (!phoneValidator(phoneNo)) {
 				throw new InvalidInputException(PHONE_CHANNEL);
 			}
 		}
 	}
 
 	private void validateEmailId(String emailId) {
-		if(emailId!=null){
-			if(!emailValidator(emailId)){
-				throw new InvalidInputException(EMAIL_CHANNEL);
+		if (emailId != null) {
+			emailCharsValidator(emailId);
+			if (!emailValidator(emailId)) {
+				throw new InvalidInputException(EMAIL_CHANNEL, EMAIL_CHANNEL + ResidentConstants.MUST_NOT_BE_EMPTY);
 			}
 		}
 	}
@@ -1249,13 +1323,15 @@ public class RequestValidator {
 	
 
 	public void validatePurpose(String purpose) {
-		if(purpose.isEmpty() || validateStringWithAlphaNumericCharacter(purpose) || purpose.startsWith(" ")){
-			validateString(purpose, TemplateVariablesConstants.PURPOSE);
+		validateString(purpose, TemplateVariablesConstants.PURPOSE);
+		if (purpose.length() > purposeCharsLimit) {
+			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
+					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
 		}
-	}
-
-	private boolean validateStringWithAlphaNumericCharacter(String purpose) {
-		return !purpose.matches("[A-Za-z0-9]+");
+		if (!purpose.matches(purposeAllowedSpecialCharRegex)) {
+			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
+					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),purpose));
+		}
 	}
 
 	public void validateSharableAttributes(List<SharableAttributesDTO> sharableAttributes) {

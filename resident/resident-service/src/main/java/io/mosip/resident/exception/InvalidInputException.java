@@ -21,4 +21,8 @@ public class InvalidInputException extends BaseUncheckedException {
     public InvalidInputException(String message, Throwable cause) {
         super(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + message, cause);
     }
+    
+    public InvalidInputException(String message, String  message2) {
+        super(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + message);
+    }
 }

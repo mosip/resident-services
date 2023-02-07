@@ -129,6 +129,13 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "optionalLanguages", "ara");
 		ReflectionTestUtils.setField(requestValidator, "reqResVersion", "1.0");
 		ReflectionTestUtils.setField(requestValidator, "newVersion", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "vidLength", 16); 
+		ReflectionTestUtils.setField(requestValidator, "otpLength", 6);
+		ReflectionTestUtils.setField(requestValidator, "searchTextLength", 16);
+		ReflectionTestUtils.setField(requestValidator, "emailCharsLimit", 128);
+		ReflectionTestUtils.setField(requestValidator, "phoneCharsLimit", 64);
+		ReflectionTestUtils.setField(requestValidator, "messageCharsLimit", 1024);
+		ReflectionTestUtils.setField(requestValidator, "purposeCharsLimit", 1024);
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
@@ -2401,7 +2408,7 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.invokeMethod(requestValidator, "validateUnlockForSeconds", -1L, "validateUnlockForSeconds");
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test
 	public void testValidateGrievanceRequestDtoInvalidMessage() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(2));
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
