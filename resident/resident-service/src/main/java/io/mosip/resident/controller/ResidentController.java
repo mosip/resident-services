@@ -127,6 +127,9 @@ public class ResidentController {
 	
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusId;
+	
+	@Value("${resident.service-history.events.max.page-size}")
+	private Integer maxEventsServiceHistoryPageSize;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -578,23 +581,21 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getNotificationsList(@PathVariable("langCode") String langCode,
-			@RequestParam(name = "pageStart", required = false) Integer pageStart,
-			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestParam(name = "pageIndex", required = false) Integer pageIndex,
+			@RequestParam(name = "pageSize", required = false) Integer pageSize,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
 		validator.validateOnlyLanguageCode(langCode);
 		String id = identityServiceImpl.getResidentIdaToken();
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = residentService
-				.getNotificationList(pageStart, pageFetch, id, langCode, timeZoneOffset);
+				.getNotificationList(pageIndex, pageSize, id, langCode, timeZoneOffset);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
 		return notificationDtoList;
 	}
 
 	@GetMapping(path = "/download/service-history")
 	public ResponseEntity<Object> downLoadServiceHistory(
-			@RequestParam(name = "pageStart", required = false) Integer pageStart,
-			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
 			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -610,7 +611,7 @@ public class ResidentController {
 				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		validator.validateOnlyLanguageCode(languageCode);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
+				null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
 				fromDate, toDate, serviceType, statusFilter, timeZoneOffset);
