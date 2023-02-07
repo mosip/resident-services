@@ -71,6 +71,7 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -114,6 +115,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+	
+    @Autowired
+    RequestValidator requestValidator;
 	
 	private String thumbprint=null;
 
@@ -163,6 +167,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Override
 	public Tuple2<Boolean, String> validateOtpV2(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
+		requestValidator.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
