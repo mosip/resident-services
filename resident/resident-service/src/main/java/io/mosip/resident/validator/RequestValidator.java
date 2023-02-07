@@ -226,11 +226,14 @@ public class RequestValidator {
 	@Value("${mosip.kernel.otp.default-length}")  
 	private int otpLength;
 	
-	@Value("${resident.allowed.special.char.regex}") 
-	private String allowedSpecialCharRegex;	  
+	@Value("${resident.message.allowed.special.char.regex}") 
+	private String messageAllowedSpecialCharRegex;
 	
-	@Value("${resident.eid.allowed.special.char.regex}") 
-	private String eidAllowedSpecialCharRegex;
+	@Value("${resident.purpose.allowed.special.char.regex}") 
+	private String purposeAllowedSpecialCharRegex;
+	
+	@Value("${resident.id.allowed.special.char.regex}") 
+	private String idAllowedSpecialCharRegex;
 
 	@PostConstruct
 	public void setMap() {
@@ -937,7 +940,7 @@ public class RequestValidator {
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
 			throw new InvalidInputException("individualId");
 		}
-		if (!individualId.matches(eidAllowedSpecialCharRegex)) {
+		if (!individualId.matches(idAllowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),individualId));
 		}
@@ -1277,7 +1280,7 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),messageCharsLimit,message));
 		}
-		if (!message.matches(allowedSpecialCharRegex)) {
+		if (!message.matches(messageAllowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),message));
 		}
@@ -1325,7 +1328,7 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
 		}
-		if (!purpose.matches(allowedSpecialCharRegex)) {
+		if (!purpose.matches(purposeAllowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),purpose));
 		}
