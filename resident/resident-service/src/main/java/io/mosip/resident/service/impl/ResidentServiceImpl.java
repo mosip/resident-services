@@ -2129,9 +2129,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	}
 
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
-			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageIndex,
+			Integer pageSize, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageIndex, pageSize,
 																				 null, null, ServiceType.ASYNC.name(), null,
 																				 null, null, languageCode, timeZoneOffset);
 		responseWrapper.setId(unreadnotificationlist);
