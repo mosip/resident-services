@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -26,7 +27,7 @@ import java.util.Objects;
 import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-
+import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
 /**
  * It validates the request and scans the file for viruses
  * 
@@ -45,6 +46,9 @@ public class DocumentValidator implements Validator {
 
 	@Autowired
 	private RequestValidator requestValidator;
+	
+	@Value("${mosip.max.file.upload.size.in.bytes}")
+	private int maxFileUploadSize;
 
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -123,8 +127,11 @@ public class DocumentValidator implements Validator {
 	public void validateFileName(MultipartFile file) {
 		String extension = Objects.requireNonNull(FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase();
 		String extensionProperty = Objects.requireNonNull(env.getProperty(ALLOWED_FILE_TYPE)).toLowerCase();
-		if(!extensionProperty.contains(Objects.requireNonNull(extension))){
+		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
 			throw new InvalidInputException(ResidentConstants.FILE_NAME);
+		}
+		if (file.getSize() > maxFileUploadSize) {
+			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
 		}
 	}
 }
