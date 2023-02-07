@@ -136,6 +136,9 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "phoneCharsLimit", 64);
 		ReflectionTestUtils.setField(requestValidator, "messageCharsLimit", 1024);
 		ReflectionTestUtils.setField(requestValidator, "purposeCharsLimit", 1024);
+		ReflectionTestUtils.setField(requestValidator, "messageAllowedSpecialCharRegex", "[A-Za-z0-9 .,-]+");
+		ReflectionTestUtils.setField(requestValidator, "purposeAllowedSpecialCharRegex", "[A-Za-z0-9 .,-]+");
+		ReflectionTestUtils.setField(requestValidator, "idAllowedSpecialCharRegex", "[A-Za-z0-9 -]+");
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
