@@ -23,7 +23,7 @@ public enum EventStatus {
 	public static Optional<EventStatus> getEventStatusForText(String status) {
 		return Stream.of(values())
 			.filter(event -> event.getStatus()
-				.equalsIgnoreCase(status))
+				.equalsIgnoreCase(status.trim()))
 			.findAny();
 	}
 }
