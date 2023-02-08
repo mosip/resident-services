@@ -127,6 +127,9 @@ public class ResidentController {
 	
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusId;
+	
+	@Value("${resident.service-history.download.max.count}")
+	private Integer maxEventsServiceHistoryPageSize;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -594,8 +597,6 @@ public class ResidentController {
 
 	@GetMapping(path = "/download/service-history")
 	public ResponseEntity<Object> downLoadServiceHistory(
-			@RequestParam(name = "pageStart", required = false) Integer pageStart,
-			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
 			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
@@ -611,7 +612,7 @@ public class ResidentController {
 				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		validator.validateOnlyLanguageCode(languageCode);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
+				null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
 				fromDate, toDate, serviceType, statusFilter, timeZoneOffset);
