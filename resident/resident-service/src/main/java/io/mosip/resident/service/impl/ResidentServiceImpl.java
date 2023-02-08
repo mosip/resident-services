@@ -2040,6 +2040,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventStatusMap.remove(TemplateVariablesConstants.SUMMARY);
 			eventStatusMap.remove(TemplateVariablesConstants.TIMESTAMP);
 			eventStatusMap.remove(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK);
+			eventStatusMap.remove(TemplateVariablesConstants.TRACK_SERVICE_LINK);
 
 			String name = identityServiceImpl.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
@@ -2074,10 +2075,9 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
 		Long residentTransactionEntity;
-		Optional<ResidentSessionEntity> residentSessionEntity = residentSessionRepository.findFirstByIdaTokenOrderByLoginDtimesDesc(idaToken);
 		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
 		List<String> asyncRequestTypes = getAsyncRequestTypes();
-		if (residentSessionEntity.isPresent()) {
+		if (residentUserEntity.isPresent()) {
 			time = residentUserEntity.get().getLastbellnotifDtimes();
 			residentTransactionEntity = residentTransactionRepository
 					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
@@ -2211,8 +2211,8 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseWrapper<UserInfoDto> responseWrapper = new ResponseWrapper<UserInfoDto>();
 		UserInfoDto user = new UserInfoDto();
 		Map<String, Object> data = new HashMap<>();
-		responseWrapper.setId(serviceEventId);
-		responseWrapper.setVersion(serviceEventVersion);
+		responseWrapper.setId(env.getProperty(ResidentConstants.RESIDENT_USER_PROFILE_ID));
+		responseWrapper.setVersion(env.getProperty(ResidentConstants.REQ_RES_VERSION));
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 		//Return the second element
 		List<ResidentSessionEntity> lastTwoLoginEntities = residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(idaToken);
