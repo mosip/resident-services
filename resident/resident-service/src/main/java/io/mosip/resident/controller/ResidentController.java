@@ -128,7 +128,7 @@ public class ResidentController {
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusId;
 	
-	@Value("${resident.service-history.events.max.page-size}")
+	@Value("${resident.service-history.download.max.count}")
 	private Integer maxEventsServiceHistoryPageSize;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
