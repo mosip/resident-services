@@ -171,8 +171,7 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
             String purpose = residentTransactionEntity.getPurpose();
             if (purpose != null && !purpose.isEmpty())
-                return fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPES,
-                        purpose);
+                return purpose;
             return fileText;
     }
 
@@ -334,7 +333,7 @@ import java.util.Optional;
     	 Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	 Map<String, String> templateVariables = tupleResponse.getT1();
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
-         templateVariables.put(ResidentConstants.AUTH_TYPES, templateVariables.get(TemplateVariablesConstants.PURPOSE));
+         templateVariables.put(ResidentConstants.AUTH_TYPE, templateVariables.get(TemplateVariablesConstants.PURPOSE));
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY)));
      }
