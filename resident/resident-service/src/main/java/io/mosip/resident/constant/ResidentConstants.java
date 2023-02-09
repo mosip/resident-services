@@ -150,7 +150,7 @@ public class ResidentConstants {
 
     public static final String FILE_TEXT = "fileText";
     public static final String DOLLAR = "$";
-    public static final String AUTH_TYPES = "authTypes";
+    public static final String AUTH_TYPE = "authType";
 
     public static final String CHANNEL = "channel";
 
