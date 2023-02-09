@@ -1764,9 +1764,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(serviceType == null){
 			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
 		}
-		if(onlineVerificationPartnerId != null) {
-			dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
-		}
+		dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
