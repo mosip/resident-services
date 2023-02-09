@@ -15,7 +15,7 @@
 	<properties>
 		<commons.packet.manager.version>1.1.5.3</commons.packet.manager.version>
 		<kernel.core.version>1.1.5.3</kernel.core.version>
-		<kernel.core.version.latest>1.1.5.5-SNAPSHOT</kernel.core.version.latest>
+		<kernel.core.version.latest>1.1.5.5</kernel.core.version.latest>
 		<kernel.idvalidator.uin.version>1.1.5.4</kernel.idvalidator.uin.version>
 		<kernel-keymanager-service.version>1.1.5.3</kernel-keymanager-service.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
