@@ -260,7 +260,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
-	
+
+	@Value("${ida.online-verification-partner-id}")
+	private String onlineVerificationPartnerId;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -1761,6 +1764,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(serviceType == null){
 			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
 		}
+		dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
@@ -1768,6 +1772,10 @@ public class ResidentServiceImpl implements ResidentService {
 		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageSize
 				+ " offset " + (pageIndex) * pageSize;
 		return query + dynamicQuery + orderByQuery;
+	}
+
+	private String getOlvPartnerIdQuery() {
+		return " AND (olv_partner_id is null OR olv_partner_id='" + onlineVerificationPartnerId + "')";
 	}
 
 	private String getServiceQueryForNullServiceType() {
