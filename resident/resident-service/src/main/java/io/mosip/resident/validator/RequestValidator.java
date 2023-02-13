@@ -1323,14 +1323,16 @@ public class RequestValidator {
 	
 
 	public void validatePurpose(String purpose) {
-		validateString(purpose, TemplateVariablesConstants.PURPOSE);
+		if (purpose == null || purpose.trim().isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, purpose);
+		}
 		if (purpose.length() > purposeCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
 		}
 		if (!purpose.matches(purposeAllowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
-					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(),purpose));
+					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(), purpose));
 		}
 	}
 
