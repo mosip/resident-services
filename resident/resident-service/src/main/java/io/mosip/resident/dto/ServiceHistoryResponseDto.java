@@ -1,5 +1,6 @@
 package io.mosip.resident.dto;
 
+import io.mosip.resident.constant.RequestType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class ServiceHistoryResponseDto {
     private String eventStatus;
     private String timeStamp;
     private String serviceType;
+    private String requestType;
     private boolean pinnedStatus;
     private boolean readStatus;
     private int serialNumber; 

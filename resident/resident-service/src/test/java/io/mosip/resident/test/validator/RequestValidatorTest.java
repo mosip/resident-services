@@ -136,6 +136,9 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "phoneCharsLimit", 64);
 		ReflectionTestUtils.setField(requestValidator, "messageCharsLimit", 1024);
 		ReflectionTestUtils.setField(requestValidator, "purposeCharsLimit", 1024);
+		ReflectionTestUtils.setField(requestValidator, "messageAllowedSpecialCharRegex", "[A-Za-z0-9 .,-]+");
+		ReflectionTestUtils.setField(requestValidator, "purposeAllowedSpecialCharRegex", "[A-Za-z0-9 .,-]+");
+		ReflectionTestUtils.setField(requestValidator, "idAllowedSpecialCharRegex", "[A-Za-z0-9 -]+");
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
@@ -1425,6 +1428,7 @@ public class RequestValidatorTest {
 	public void testValidateAidStatusRequestDtoSuccess() throws Exception{
 		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
 		aidStatusRequestDTO.setIndividualId("17");
+		aidStatusRequestDTO.setTransactionId("1234567890");
 		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.checkstatus");
