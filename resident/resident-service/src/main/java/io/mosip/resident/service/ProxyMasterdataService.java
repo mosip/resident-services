@@ -9,6 +9,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.dto.GenderCodeResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import reactor.util.function.Tuple2;
 
 /**
  * Resident proxy masterdata service class.
@@ -26,6 +27,9 @@ public interface ProxyMasterdataService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
+
+	public Tuple2<List<String>, List<String>> getValidDocCatAndTypeList(String langCode)
+			throws ResidentServiceCheckedException;
 
 	/**
 	 * Get location hierarchy levels by language code.

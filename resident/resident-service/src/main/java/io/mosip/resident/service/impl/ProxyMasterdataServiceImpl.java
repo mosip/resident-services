@@ -3,12 +3,15 @@ package io.mosip.resident.service.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +31,8 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * Resident proxy masterdata service implementation class.
@@ -36,6 +41,12 @@ import io.mosip.resident.util.ResidentServiceRestClient;
  */
 @Component
 public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
+
+	private static final String CODE = "code";
+
+	private static final String DOCUMENTTYPES = "documenttypes";
+
+	private static final String DOCUMENTCATEGORIES = "documentcategories";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -71,6 +82,28 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode()::exit");
 		return responseWrapper;
+	}
+
+	@Override
+	@Cacheable(value = "valid-doc-cat-and-type-list", key = "#langCode")
+	public Tuple2<List<String>, List<String>> getValidDocCatAndTypeList(String langCode)
+			throws ResidentServiceCheckedException {
+		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCode(langCode);
+		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
+		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
+
+		List<String> docCatCodes = validDoc.stream()
+				.map(map -> ((String) map.get(CODE)).toLowerCase())
+				.collect(Collectors.toList());
+
+		List<String> docTypeCodes = validDoc.stream()
+				.map(map -> (List<Map<String, Object>>) map.get(DOCUMENTTYPES))
+				.flatMap(map -> map.stream()
+						.flatMap(abc -> {
+							return Stream.of(((String) abc.get(CODE)).toLowerCase());
+							}))
+				.collect(Collectors.toList());
+		return Tuples.of(docCatCodes, docTypeCodes);
 	}
 
 	@Override
