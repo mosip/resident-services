@@ -2023,6 +2023,7 @@ public class ResidentServiceImpl implements ResidentService {
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
 			} else {
+				audit.setAuditRequestDto(EventEnum.CHECK_AID_STATUS_REQUEST_FAILED);
 				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 			}
 			RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);

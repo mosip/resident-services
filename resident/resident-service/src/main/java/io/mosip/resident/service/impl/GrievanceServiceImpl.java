@@ -62,6 +62,7 @@ public class GrievanceServiceImpl implements GrievanceService {
             response.put(TICKET_ID, ticketId);
             responseWrapper.setResponse(response);
         } catch (ApisResourceAccessException e) {
+        	auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
             throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
         return responseWrapper;
