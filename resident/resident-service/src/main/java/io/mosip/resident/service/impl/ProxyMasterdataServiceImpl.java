@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -86,7 +87,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 	@Override
 	@Cacheable(value = "valid-doc-cat-and-type-list", key = "#langCode")
-	public Tuple2<List<String>, List<String>> getValidDocCatAndTypeList(String langCode)
+	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
 		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
@@ -96,14 +97,22 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 				.map(map -> ((String) map.get(CODE)).toLowerCase())
 				.collect(Collectors.toList());
 
-		List<String> docTypeCodes = validDoc.stream()
-				.map(map -> (List<Map<String, Object>>) map.get(DOCUMENTTYPES))
-				.flatMap(map -> map.stream()
-						.flatMap(abc -> {
-							return Stream.of(((String) abc.get(CODE)).toLowerCase());
-							}))
-				.collect(Collectors.toList());
+		Map<String, List<String>> docTypeCodes = validDoc.stream()
+				.map(map -> {
+					return Map.entry(((String) map.get(CODE)).toLowerCase(),
+							getDocTypCodeList((List<Map<String, Object>>) map.get(DOCUMENTTYPES)));
+				})
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
 		return Tuples.of(docCatCodes, docTypeCodes);
+	}
+
+	private List<String> getDocTypCodeList(List<Map<String, Object>> docTypMap){
+		return docTypMap.stream()
+				.flatMap(map -> {
+					return Stream.of(((String) map.get(CODE)).toLowerCase());
+					})
+				.collect(Collectors.toList());
 	}
 
 	@Override

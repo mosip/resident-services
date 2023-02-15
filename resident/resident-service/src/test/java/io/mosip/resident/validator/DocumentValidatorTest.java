@@ -24,6 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
@@ -58,7 +59,8 @@ public class DocumentValidatorTest {
 	@Before
 	public void init() throws Exception {
 		ReflectionTestUtils.setField(validator, "env", env);
-		when(proxyMasterdataService.getValidDocCatAndTypeList(any())).thenReturn(Tuples.of(List.of("poi","poa"), List.of("cob","coa")));
+		when(proxyMasterdataService.getValidDocCatAndTypeList(any()))
+				.thenReturn(Tuples.of(List.of("poi", "poa"), Map.of("poi", List.of("cob"), "poa", List.of("coa"))));
 	}
 	
 	@Test

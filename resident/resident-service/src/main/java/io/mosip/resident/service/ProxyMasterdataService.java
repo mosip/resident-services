@@ -2,6 +2,7 @@ package io.mosip.resident.service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public interface ProxyMasterdataService {
 	 */
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
 
-	public Tuple2<List<String>, List<String>> getValidDocCatAndTypeList(String langCode)
+	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException;
 
 	/**

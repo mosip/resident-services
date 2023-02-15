@@ -89,7 +89,7 @@ public class DocumentValidator implements Validator {
 		}
 		requestValidator.validateOnlyLanguageCode(langCode);
 		validateDocCatCode(docCatCode, langCode);
-		validateDocTypeCode(docTypCode, langCode);
+		validateDocTypeCode(docCatCode, docTypCode, langCode);
 	}
 
 	public void validateDocCatCode(String docCatCode, String langCode) throws ResidentServiceCheckedException {
@@ -99,8 +99,10 @@ public class DocumentValidator implements Validator {
 		}
 	}
 
-	public void validateDocTypeCode(String docTypeCode, String langCode) throws ResidentServiceCheckedException {
-		List<String> docTypeCodeList = proxyMasterdataService.getValidDocCatAndTypeList(langCode).getT2();
+	public void validateDocTypeCode(String docCatCode, String docTypeCode, String langCode)
+			throws ResidentServiceCheckedException {
+		List<String> docTypeCodeList = proxyMasterdataService.getValidDocCatAndTypeList(langCode).getT2()
+				.get(docCatCode);
 		if (!docTypeCodeList.contains(docTypeCode.toLowerCase())) {
 			throw new InvalidInputException(DOC_TYP_CODE);
 		}
