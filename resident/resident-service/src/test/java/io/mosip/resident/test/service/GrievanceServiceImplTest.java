@@ -7,6 +7,8 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
 import io.mosip.resident.service.impl.GrievanceServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +42,9 @@ public class GrievanceServiceImplTest {
 
     @Mock
     private ResidentGrievanceRepository residentGrievanceRepository;
+    
+    @Mock
+    private AuditUtil auditUtil;
 
     private MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO;
 
