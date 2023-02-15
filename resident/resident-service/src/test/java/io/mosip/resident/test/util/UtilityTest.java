@@ -51,8 +51,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;

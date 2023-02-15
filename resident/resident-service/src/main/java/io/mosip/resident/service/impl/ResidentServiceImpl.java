@@ -259,7 +259,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
-	
+
+	@Value("${ida.online-verification-partner-id}")
+	private String onlineVerificationPartnerId;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -1760,6 +1763,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(serviceType == null){
 			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
 		}
+		dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
@@ -1767,6 +1771,10 @@ public class ResidentServiceImpl implements ResidentService {
 		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageFetch
 				+ " offset " + (pageStart) * pageFetch;
 		return query + dynamicQuery + orderByQuery;
+	}
+
+	private String getOlvPartnerIdQuery() {
+		return " AND (olv_partner_id is null OR olv_partner_id='" + onlineVerificationPartnerId + "')";
 	}
 
 	private String getServiceQueryForNullServiceType() {
@@ -1858,6 +1866,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+			serviceHistoryResponseDto.setRequestType(requestType.name());
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
 			serviceHistoryResponseDto.setEventStatus(statusCode);
 			if (residentTransactionEntity.getUpdDtimes() != null
