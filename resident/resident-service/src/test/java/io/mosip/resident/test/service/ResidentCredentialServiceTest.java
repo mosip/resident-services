@@ -1,6 +1,31 @@
 package io.mosip.resident.test.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.URI;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
@@ -37,31 +62,8 @@ import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilitiy;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.io.IOException;
-import java.net.URI;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuple2;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -86,7 +88,7 @@ public class ResidentCredentialServiceTest {
     private ObjectMapper mapper;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     @Mock
     private AuditUtil audit;
@@ -127,9 +129,9 @@ public class ResidentCredentialServiceTest {
         residentCredentialRequestDto.setConsent("Accepted");
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId("e65c86f5-8929-4547-a156-9b349c29ab8b");
-		when(utilitiy.createEntity()).thenReturn(residentTransactionEntity);
+		when(utility.createEntity()).thenReturn(residentTransactionEntity);
 		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234567890");
-        when(utilitiy.createEventId()).thenReturn("1111111111111111");
+        when(utility.createEventId()).thenReturn("1111111111111111");
     }
 
     @Test
@@ -260,8 +262,8 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResidentCredentialResponseDtoV2 credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
-        assertNotNull(credentialResponseDto.getEventId());
+        Tuple2<ResidentCredentialResponseDtoV2, String> credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
+        assertNotNull(credentialResponseDto.getT1().getStatus());
     }
 
     @Test
@@ -289,8 +291,8 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResidentCredentialResponseDtoV2 credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER","Banking");
-        assertNotNull(credentialResponseDto.getEventId());
+        Tuple2<ResidentCredentialResponseDtoV2, String> credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER","Banking");
+        assertNotNull(credentialResponseDto.getT1().getStatus());
     }
 
     @Test
@@ -319,8 +321,8 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        ResidentCredentialResponseDtoV2 credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
-        assertNotNull(credentialResponseDto.getEventId());
+        Tuple2<ResidentCredentialResponseDtoV2, String> credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto,"SHARE_CRED_WITH_PARTNER");
+        assertNotNull(credentialResponseDto.getT1().getStatus());
     }
 
     @Test(expected = ResidentCredentialServiceException.class)

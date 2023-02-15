@@ -455,10 +455,10 @@ public enum EventEnum {
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	
-	OTP_AID_GEN("RES-SER-194", RegistrationConstants.SYSTEM, "generating otp for aid", "Request for generating otp for aid", "RES-SER",
+	OTP_INDIVIDUALID_GEN("RES-SER-194", RegistrationConstants.SYSTEM, "generating otp for Individual ID", "Request for generating otp for Individual ID", "RES-SER",
 			"Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
-	OTP_AID_GEN_SUCCESS("RES-SER-195", RegistrationConstants.SYSTEM, "generating otp for aid success", "otp generation for aid is success",
+	OTP_INDIVIDUALID_GEN_SUCCESS("RES-SER-195", RegistrationConstants.SYSTEM, "generating otp for Individual ID success", "otp generation for Individual ID is success",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	OTP_AID_GEN_EXCEPTION("RES-SER-196", RegistrationConstants.SYSTEM, "generating otp for aid failure", "otp generation for aid is failed",
@@ -480,11 +480,17 @@ public enum EventEnum {
 	AID_STATUS("RES-SER-210", RegistrationConstants.SYSTEM, "Checking AID status", "Request for checking AID status",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
+	INDIVIDUALID_STATUS("RES-SER-210", RegistrationConstants.SYSTEM, "Checking Individual ID status", "Request for checking Individual ID status",
+			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	AID_STATUS_RESPONSE("RES-SER-211", RegistrationConstants.SYSTEM, "Checking AID status Response", "AID status is %s",
 			"RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
 			RegistrationConstants.APPLICATIONNAME),
 	AID_STATUS_SUCCESS("RES-SER-212", RegistrationConstants.SYSTEM, "Checking AID status Success",
 			"Request for checking AID status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	INDIVIDUALID_STATUS_SUCCESS("RES-SER-212", RegistrationConstants.SYSTEM, "Checking Individual ID status Success",
+			"Request for checking Individual ID status is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	REQ_AUTH_TYPE_LOCK("RES-SER-213", RegistrationConstants.SYSTEM, "Request auth type lock",
 			"Requesting auth type lock is success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
@@ -549,6 +555,9 @@ public enum EventEnum {
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "RID digital card request",
 			"Downloading digital card based on RID success", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	RID_DIGITAL_CARD_REQ_FAILURE("RES-SER-231", RegistrationConstants.SYSTEM, "RID digital card request",
+			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-232", RegistrationConstants.SYSTEM, "RID digital card request",
 			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
@@ -634,6 +643,9 @@ public enum EventEnum {
 	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url success",
 			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url failed",
+			"get acknowledgement download url failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 
 	SEND_OTP_FAILURE("RES-SER-259", RegistrationConstants.SYSTEM, "send otp failure",
 			"send otp is failed", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
@@ -689,8 +701,42 @@ public enum EventEnum {
 			"download registration center success",
 			"download registration center success based on language code,longitude,latitude and distance", "RES-SER",
 			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME)
-	;
+			RegistrationConstants.APPLICATION_NAME),
+
+	GRIEVANCE_TICKET_REQUEST("RES-SER-273", RegistrationConstants.SYSTEM,
+			"Grievance ticket request",
+			"Grievance ticket request", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	GRIEVANCE_TICKET_REQUEST_SUCCESS("RES-SER-273", RegistrationConstants.SYSTEM,
+			"Grievance ticket request success",
+			"Grievance ticket request success", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	GET_DOCUMENT_TYPES("RES-SER-274", RegistrationConstants.SYSTEM, "get document types",
+			"get document types by documentCode and langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_TYPES_SUCCESS("RES-SER-275", RegistrationConstants.SYSTEM, "get document types success",
+			"get document types by documentCode and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_DOCUMENT_TYPES_EXCEPTION("RES-SER-276", RegistrationConstants.SYSTEM, "get document types failure",
+			"get document types by documentCode and langCode is failed", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_CODE("RES-SER-277", RegistrationConstants.SYSTEM, "get gender code",
+			"get gender code by genderName and langCode", "RES-SER", "Residence service", "NO_ID", "NO_ID_TYPE",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	GET_GENDER_CODE_SUCCESS("RES-SER-278", RegistrationConstants.SYSTEM, "get gender code success",
+			"get gender code by genderName and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
+			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page start value %s", "RES-SER", "Residence service", "%s", "pageStart",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page fetch value %s", "RES-SER", "Residence service", "%s", "pageFetch",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+
 
 	private final String eventId;
 
@@ -785,8 +831,10 @@ public enum EventEnum {
 
 	public static EventEnum getEventEnumWithValue(EventEnum e, String s) {
 		e.setDescription(String.format(e.getDescription(), s));
-		if (e.getId().equalsIgnoreCase("%s"))
+		String id = e.getId();
+		if (id!=null && id.equalsIgnoreCase("%s")){
 			e.setId(s);
+		}
 		return e;
 	}
 
@@ -796,7 +844,8 @@ public enum EventEnum {
 	 */
 	public static EventEnum getEventEnumWithValue(EventEnum e, String edescription, String ename) {
 		e.setDescription(String.format(e.getDescription(), edescription));
-		if (e.getId().equalsIgnoreCase("%s"))
+		String id = e.getId();
+		if (id!=null && id.equalsIgnoreCase("%s"))
 			e.setId(edescription);
 		e.setName(String.format(e.getName(), ename));
 		return e;

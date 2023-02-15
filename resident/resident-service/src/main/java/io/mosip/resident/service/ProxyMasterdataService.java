@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.dto.GenderCodeResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -153,5 +154,10 @@ public interface ProxyMasterdataService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException;
+
+	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException;
+
+	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String gendertype, String langCode) throws ResidentServiceCheckedException, IOException;
+
 	
 }

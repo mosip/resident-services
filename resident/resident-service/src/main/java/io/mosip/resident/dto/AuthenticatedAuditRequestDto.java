@@ -8,9 +8,15 @@ import javax.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * The authenticated audit request dto.
+ * 
+ * @author Ritik Jain
+ */
 @Data
 @NoArgsConstructor
-public class AuditRequestDtoV2 {
+public class AuthenticatedAuditRequestDto {
+
 	/** The event id. */
 	@NotNull
 	@Size(min = 1, max = 64)
@@ -30,16 +36,6 @@ public class AuditRequestDtoV2 {
 	@NotNull
 	private LocalDateTime actionTimeStamp;
 
-	/** The host name. */
-	@NotNull
-	@Size(min = 1, max = 32)
-	private String hostName;
-
-	/** The host ip. */
-	@NotNull
-	@Size(min = 1, max = 16)
-	private String hostIp;
-
 	/** The application id. */
 	@NotNull
 	@Size(min = 1, max = 64)
@@ -58,17 +54,6 @@ public class AuditRequestDtoV2 {
 	/** The session user name. */
 	@Size(min = 1, max = 128)
 	private String sessionUserName;
-
-	/** The id. */
-	@NotNull
-	@Size(min = 1, max = 64)
-
-	private String id;
-
-	/** The id type. */
-	@NotNull
-	@Size(min = 1, max = 64)
-	private String idType;
 
 	/** The created by. */
 	@NotNull

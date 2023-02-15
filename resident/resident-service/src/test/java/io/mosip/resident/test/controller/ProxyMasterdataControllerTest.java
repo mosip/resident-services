@@ -9,6 +9,8 @@ import javax.crypto.SecretKey;
 
 import io.mosip.resident.controller.AcknowledgementController;
 import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +83,9 @@ public class ProxyMasterdataControllerTest {
 
 	@MockBean
 	private ObjectStoreHelper objectStore;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -196,6 +201,20 @@ public class ProxyMasterdataControllerTest {
 	public void testGetGenderTypesByLangCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getGenderTypesByLangCode(Mockito.anyString())).thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/gendertypes/langcode"))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testGetDocumentTypesByDocumentCategoryCodeAndLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/documenttypes/documentcategorycode/langcode"))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testGetGenderCodeByGenderTypeAndLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/gendercode/gendertype/langcode"))
 				.andExpect(status().isOk());
 	}
 

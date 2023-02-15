@@ -25,13 +25,14 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 
 /**
  * The Class ResidentConfigServiceImpl.
@@ -40,13 +41,15 @@ import io.mosip.resident.util.Utilitiy;
 @Component
 public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
-	private static final String ID = "id";
+	private static final String UI_SCHEMA_ATTRIBUTE_NAME = "mosip.resident.schema.attribute-name";
 
 	private static final String CONTROL_TYPE = "controlType";
 
 	private static final String FILEUPLOAD = "fileupload";
 
 	private static final String INPUT_REQUIRED = "inputRequired";
+	
+	private static final String MASK_REQUIRED = "maskRequired";
 
 	private static final String IDENTITY = "identity";
 
@@ -81,7 +84,11 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private List<String> uiSchemaFilteredInputAttributes;
+	@Value("${resident.ui.properties.id}")
+	private String residentUiPropertiesId;
+	
+	@Value("${resident.ui.properties.version}")
+	private String residentUiPropertiesVersion;
 	
 	/**
 	 * Gets the properties.
@@ -103,6 +110,8 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			.filter(entry -> entry != null && entry.getValue() != null)
 			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 		responseWrapper.setResponse(properties);
+		responseWrapper.setId(residentUiPropertiesId);
+		responseWrapper.setVersion(residentUiPropertiesVersion);
 		return responseWrapper;
 	}
 
@@ -112,13 +121,13 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 * @return the UI schema
 	 */
 	@Override
-	@Cacheable("ui-schema")
+	@Cacheable(value="ui-schema", key="#schemaType")
 	public String getUISchema(String schemaType) {
 		String uiSchema;
 		Resource residentUiSchemaJsonFileRes = resourceLoader
 				.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
 		if (residentUiSchemaJsonFileRes.exists()) {
-			uiSchema = Utilitiy.readResourceContent(residentUiSchemaJsonFileRes);
+			uiSchema = Utility.readResourceContent(residentUiSchemaJsonFileRes);
 		} else {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
 		}
@@ -126,12 +135,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 
 	@Override
+	@Cacheable(value="ui-schema-filtered-attributes", key="#schemaType")
 	public List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
-		if(uiSchemaFilteredInputAttributes == null) {
-			uiSchemaFilteredInputAttributes = doGetUiSchemaFilteredInputAttributes(schemaType);
-		}
-		return uiSchemaFilteredInputAttributes;
-		
+		return doGetUiSchemaFilteredInputAttributes(schemaType);
 	}
 	
 	private List<String> doGetUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
@@ -141,9 +147,15 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		if(identityObj instanceof List) {
 			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
-						.filter(map -> Boolean.valueOf(String.valueOf(map.get(INPUT_REQUIRED))))
-						.filter(map -> !FILEUPLOAD.equals(map.get(CONTROL_TYPE)))
-						.map(map -> (String)map.get(ID))
+						.flatMap(map -> {
+							String attribName = (String)map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME));
+							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
+								//Include the attribute and its masked attribute
+								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
+							} else {
+								return Stream.of(attribName);
+							}
+						})
 						.collect(Collectors.toList());
 			return uiSchemaFilteredInputAttributesList;
 		}
@@ -154,7 +166,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Override
 	public String getIdentityMapping() throws ResidentServiceCheckedException {
 		if(identityMapping==null) {
-			identityMapping=Utilitiy.readResourceContent(identityMappingJsonFile);
+			identityMapping=Utility.readResourceContent(identityMappingJsonFile);
 		}
 		return identityMapping;
 	}
@@ -174,7 +186,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
 		Object identitySchemaObj = schemaMap.get(IDENTITY);
 		List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
-		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(ID)))
+		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME))))
 				.collect(Collectors.toList());
 
 		// attribute list from format present in both identity-mapping & ui-schema json

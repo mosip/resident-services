@@ -1,6 +1,37 @@
 package io.mosip.resident.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.validation.Valid;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -8,6 +39,8 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
@@ -31,17 +64,21 @@ import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UnreadServiceNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
+import io.mosip.resident.exception.EventIdNotPresentException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,28 +86,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
+import reactor.util.function.Tuple2;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -87,12 +103,33 @@ public class ResidentController {
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+	
+	@Autowired
+	private Utility utility;
+
+	@Autowired
+	private Environment environment;
 
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
 
 	@Value("${resident.authLockStatusUpdateV2.version}")
 	private String authLockStatusUpdateV2Version;
+	
+	@Value("${resident.download.card.eventid.id}")
+	private String downloadCardEventidId;
+	
+	@Value("${resident.download.card.eventid.version}")
+	private String downloadCardEventidVersion;
+	
+	@Value("${resident.vid.version.new}")
+	private String newVersion;
+	
+	@Value("${resident.checkstatus.id}")
+	private String checkStatusId;
+	
+	@Value("${resident.service-history.download.max.count}")
+	private Integer maxEventsServiceHistoryPageSize;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
@@ -218,7 +255,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<ResponseDTO> reqAauthTypeStatusUpdateV2(
+	public ResponseEntity<Object> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(
@@ -227,11 +264,14 @@ public class ResidentController {
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
-		response.setResponse(residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest()));
+		Tuple2<ResponseDTO, String> tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
+		response.setResponse(tupleResponse.getT1());
 		response.setId(authLockStatusUpdateV2Id);
 		response.setVersion(authLockStatusUpdateV2Version);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS, individualId));
-		return response;
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(response);
 	}
 
 	@ResponseFilter
@@ -265,42 +305,46 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<EventStatusResponseDTO> checkAidStatus(@PathVariable(name = "event-id") String eventId,
-			@RequestParam(name = "langCode") String languageCode) throws ResidentServiceCheckedException {
+			@RequestParam(name = "langCode") String languageCode,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
 		logger.debug("checkAidStatus controller entry");
 		validator.validateEventIdLanguageCode(eventId, languageCode);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST, eventId));
-		ResponseWrapper<EventStatusResponseDTO> responseWrapper = residentService.getEventStatus(eventId, languageCode);
+		ResponseWrapper<EventStatusResponseDTO> responseWrapper = residentService.getEventStatus(eventId, languageCode, timeZoneOffset);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS, eventId));
 		return responseWrapper;
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetServiceAuthHistoryRoles()" + ")")
-	@GetMapping(path = "/service-history/{langcode}")
+	@GetMapping(path = "/service-history/{langCode}")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langcode") String langCode,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(@PathVariable("langCode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-			@RequestParam(name = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-			@RequestParam(name = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
 			@RequestParam(name = "sortType", required = false) String sortType,
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
-			@RequestParam(name = "searchText", required = false) String searchText)
+			@RequestParam(name = "searchText", required = false) String searchText,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.info("TimeZone-offset: " + timeZoneOffset);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		validator.validateOnlyLanguageCode(langCode);
-		validator.validateServiceHistoryRequest(fromDateTime, toDateTime, sortType, serviceType, statusFilter);
+		validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
+		validator.validateSearchText(searchText);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText, langCode);
+				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, langCode, timeZoneOffset);
 		return responseWrapper;
-	}
+	}	
 
 	@Deprecated
 	@ResponseFilter
@@ -341,7 +385,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<Object> updateUinDemographics(
+	public ResponseEntity<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
@@ -359,10 +403,15 @@ public class ResidentController {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 		requestDTO.getRequest().getIdentity().put(IdType.UIN.name(), identityServiceImpl.getUinForIndividualId(individualId));
-		response.setResponse(residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity()));
+		Tuple2<Object, String> tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity());
+		response.setId(requestDTO.getId());
+		response.setVersion(requestDTO.getVersion());
+		response.setResponse(tupleResponse.getT1());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
-		return response;
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(response);
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
@@ -389,21 +438,39 @@ public class ResidentController {
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
 	@GetMapping(path = "/download-card/event/{eventId}")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Card successfully downloaded", content = @Content(schema = @Schema(implementation = ResponseWrapper.class))),
+			@ApiResponse(responseCode = "400", description = "Download card failed", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> downloadCard(
-			@PathVariable("eventId") String eventId) throws ResidentServiceCheckedException {
+			@PathVariable("eventId") String eventId,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
-		validator.validateIndividualId(eventId);
+		InputStreamResource resource = null;
+		try {
+		validator.validateEventId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId, getIdType(eventId));
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		if(pdfBytes.length==0){
-			throw new CardNotReadyException();
+			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
 		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId) + ".pdf\"")
+		} catch(ResidentServiceException | EventIdNotPresentException | InvalidRequestTypeCodeException | InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
+							downloadCardEventidId));
+			}
+		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
+				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, timeZoneOffset) + ".pdf\"")
+				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
 	}
 
@@ -422,7 +489,7 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PostMapping("/aid/get-individual-id")
+	@PostMapping("/aid/status")
 	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -432,13 +499,21 @@ public class ResidentController {
 	public ResponseWrapper<AidStatusResponseDTO> checkAidStatus(@RequestBody RequestWrapper<AidStatusRequestDTO> reqDto)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		logger.debug("ResidentController::getAidStatus()::entry");
+		AidStatusResponseDTO resp = new AidStatusResponseDTO();
+		try {
 		validator.validateAidStatusRequestDto(reqDto);
 		audit.setAuditRequestDto(EventEnum.AID_STATUS);
-		AidStatusResponseDTO resp = residentService.getAidStatus(reqDto.getRequest());
+		resp = residentService.getAidStatus(reqDto.getRequest());
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e ) {
+			throw new ResidentServiceException( e.getErrorCode(),  e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
+		}
 		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
 		logger.debug("ResidentController::getAidStatus()::exit");
 		ResponseWrapper<AidStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(resp);
+		responseWrapper.setId(checkStatusId);
+		responseWrapper.setVersion(newVersion);
 		return responseWrapper;
 	}
 
@@ -476,8 +551,8 @@ public class ResidentController {
 	public ResponseWrapper<BellNotificationDto> bellClickdttimes()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getnotificationclickdttimes()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(individualId);
+		String idaToken = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(idaToken);
 		logger.debug("ResidentController::getnotificationclickdttimes::exit");
 		return response;
 	}
@@ -491,62 +566,65 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))), })
 	public int bellupdateClickdttimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::updatedttime()::entry");
-		String individualId = identityServiceImpl.getResidentIdaToken();
-		int response = residentService.updatebellClickdttimes(individualId);
+		String idaToken = identityServiceImpl.getResidentIdaToken();
+		int response = residentService.updatebellClickdttimes(idaToken);
 		logger.debug("ResidentController::updatedttime()::exit");
 		return response;
 	}
 
 	@ResponseFilter
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
-	@GetMapping("/unread/service-list")
+	@GetMapping("/notifications/{langCode}")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-
-	public ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotification()
+	public ResponseWrapper<?> getNotificationsList(@PathVariable("langCode") String langCode,
+			@RequestParam(name = "pageStart", required = false) Integer pageStart,
+			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
-		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<List<UnreadServiceNotificationDto>> unreadServiceNotificationDtoList = residentService
-				.getUnreadnotifylist(Id);
+		validator.validateOnlyLanguageCode(langCode);
+		String id = identityServiceImpl.getResidentIdaToken();
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = residentService
+				.getNotificationList(pageStart, pageFetch, id, langCode, timeZoneOffset);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
-		return unreadServiceNotificationDtoList;
+		return notificationDtoList;
 	}
 
 	@GetMapping(path = "/download/service-history")
 	public ResponseEntity<Object> downLoadServiceHistory(
-			@RequestParam(name = "pageStart", required = false) Integer pageStart,
-			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
-			@RequestParam(name = "fromDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDateTime,
-			@RequestParam(name = "toDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDateTime,
+			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
 			@RequestParam(name = "sortType", required = false) String sortType,
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
 			@RequestParam(name = "searchText", required = false) String searchText,
-			@RequestParam(name = "languageCode", required = false) String languageCode)
+			@RequestParam(name = "languageCode", required = true) String languageCode,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::serviceHistory::pdf");
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		validator.validateOnlyLanguageCode(languageCode);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter, searchText, languageCode);
+				null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
 		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
 		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
-				fromDateTime, toDateTime, serviceType, statusFilter);
+				fromDate, toDate, serviceType, statusFilter, timeZoneOffset);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + "viewServiceHistory" + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
+						Objects.requireNonNull(this.environment.getProperty(
+								ResidentConstants.DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);
 	}
-	
 	
 	@ResponseFilter
 	@GetMapping("/profile")
@@ -557,11 +635,11 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<UserInfoDto> userinfo()
+	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
 		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id);
+		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id, timeZoneOffset);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
 	}

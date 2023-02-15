@@ -21,6 +21,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -31,6 +32,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to test the get Status service
@@ -100,7 +102,7 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put("authenticationMode", "OTP");
         templateVariables.put("partnerName", "partnerName");
         templateVariables.put("purpose", "authentication");
-        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString())).thenReturn(templateVariables);
+        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
@@ -115,21 +117,21 @@ public class ResidentServiceGetEventStatusTest {
 
     @Test
     public void getEventStatusTest() throws ResidentServiceCheckedException {
-        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test
     public void getEventStatusTestVid() throws ResidentServiceCheckedException {
         Mockito.when(validator.validateVid(Mockito.anyString())).thenReturn(true);
-        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test
     public void getEventStatusTestUIN() throws ResidentServiceCheckedException {
         Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
-        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
@@ -137,7 +139,7 @@ public class ResidentServiceGetEventStatusTest {
     public void getEventStatusTestEventStatusFailure() throws ResidentServiceCheckedException {
         residentTransactionEntity.get().setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
@@ -145,32 +147,34 @@ public class ResidentServiceGetEventStatusTest {
     public void getEventStatusTestEventStatusPending() throws ResidentServiceCheckedException{
         residentTransactionEntity.get().setStatusCode("in-progress");
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void getEventStatusTestException() throws ResidentServiceCheckedException {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        residentService.getEventStatus(eventId, langCode);
+        residentService.getEventStatus(eventId, langCode, 0);
     }
     
-    @Test(expected = ResidentServiceCheckedException.class)
+    @Test(expected = EidNotBelongToSessionException.class)
     public void getEventStatusNestedIfTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
     	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("abcd");
-        residentService.getEventStatus(eventId, langCode);
+        residentService.getEventStatus(eventId, langCode, 0);
     }
     
     @Test(expected = ResidentServiceCheckedException.class)
     public void getEventStatusThrowsExceptionTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
     	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
-        residentService.getEventStatus(eventId, langCode);
+        residentService.getEventStatus(eventId, langCode, 0);
     }
     
     @Test
     public void getEventStatusServiceTypeNotMappedTest() throws ResidentServiceCheckedException {
+        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, eventId, "eng", 0)).
+                thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
     	residentTransactionEntity.get().setRequestTypeCode(RequestType.SEND_OTP.name());
-        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode);
+        ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0);
         assert resultResponseWrapper.getResponse().getEventId().equals(eventId);
     }
 }

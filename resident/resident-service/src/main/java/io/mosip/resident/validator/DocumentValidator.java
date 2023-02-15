@@ -1,21 +1,5 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
-import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
-import org.springframework.web.multipart.MultipartFile;
-
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
@@ -23,9 +7,27 @@ import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
+
+import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
+import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
+import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
+import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
 /**
  * It validates the request and scans the file for viruses
  * 
@@ -42,6 +44,12 @@ public class DocumentValidator implements Validator {
 	@Autowired
 	private Environment env;
 
+	@Autowired
+	private RequestValidator requestValidator;
+	
+	@Value("${mosip.max.file.upload.size.in.bytes}")
+	private int maxFileUploadSize;
+
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return clazz.isAssignableFrom(RequestWrapper.class);
@@ -54,17 +62,20 @@ public class DocumentValidator implements Validator {
 
 	/**
 	 * This function validates the input parameters of a DocumentRequestDTO object
-	 * 
-	 * @param docRequest The request object that is passed to the service.
+	 * @param langCode 
+	 * @param docTypCode 
+	 * @param docCatCode 
+	 *
 	 */
-	public void validateRequest(DocumentRequestDTO docRequest) {
-		Objects.requireNonNull(docRequest, String.format(INVALID_INPUT.getErrorMessage() + "request"));
-		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getDocCatCode(), null),
-				String.format(INVALID_INPUT.getErrorMessage() + "request/docCatCode"));
-		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getDocTypCode(), null),
-				String.format(INVALID_INPUT.getErrorMessage() + "request/docTypCode"));
-		Objects.requireNonNull(StringUtils.defaultIfBlank(docRequest.getLangCode(), null),
-				String.format(INVALID_INPUT.getErrorMessage() + "request/langCode"));
+	public void validateRequest(String docCatCode, String docTypCode, String langCode) {
+
+		if (docCatCode == null || StringUtils.isEmpty(docCatCode)) {
+			throw new InvalidInputException("docCatCode");
+		}
+		if (docTypCode == null || StringUtils.isEmpty(docTypCode)) {
+			throw new InvalidInputException("docTypCode");
+		}
+		requestValidator.validateOnlyLanguageCode(langCode);
 	}
 
 	/**
@@ -110,6 +121,17 @@ public class DocumentValidator implements Validator {
 		if(documentId == null || documentId.length() < 20){
 			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
 					INVALID_INPUT.getErrorMessage() + "documentId");
+		}
+	}
+
+	public void validateFileName(MultipartFile file) {
+		String extension = Objects.requireNonNull(FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase();
+		String extensionProperty = Objects.requireNonNull(env.getProperty(ALLOWED_FILE_TYPE)).toLowerCase();
+		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
+			throw new InvalidInputException(ResidentConstants.FILE_NAME);
+		}
+		if (file.getSize() > maxFileUploadSize) {
+			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
 		}
 	}
 }

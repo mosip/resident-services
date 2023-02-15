@@ -85,7 +85,7 @@ public enum ResidentErrorCode {
 	CONSENT_DENIED("RES-SER-461",
 			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
 
-	ACK_PROPERTY_NOT_FOUND("RES-SER-460", "Ack Property not found"),
+	ACK_TEMPLATE_NOT_FOUND("RES-SER-460", "Acknowledgment template not found"),
 	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: "),
 	CONFIG_FILE_NOT_FOUND_EXCEPTION("RES-SER-462","Config file not found in the config server"),
 	SEND_OTP_FAILED("RES-SER-463", "Send OTP failed."),
@@ -111,7 +111,22 @@ public enum ResidentErrorCode {
 	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found."),
 	CARD_NOT_READY("RES_SER_509", "The card is not ready for download."),
 	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
-	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in.");
+	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
+	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s"),
+	OTP_EXPIRED("RES-OTP-006","OTP has expired"),
+	OTP_INVALID("RES-OTP-007","OTP is invalid"),
+	INVALID_TRANSACTION_ID("RES-OTP-008","Input transactionId does not match transactionId of OTP Request"),
+	SMS_AUTH_LOCKED("RES-OTP-010","Your SMS OTP authentication is locked"),
+	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked"),
+	SMS_AND_EMAIL_AUTH_LOCKED("RES-OTP-012","Your SMS and email OTP authentication is locked"),
+	VID_CREATION_FAILED_WITH_REVOCATION("RES-SER-513",
+			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session."),
+	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB."),
+	CHAR_LIMIT_EXCEEDS("RES-SER-514","Input text size exceeds the limit; Character limit=%d; inputType=%s"),
+	CONTAINS_SPECIAL_CHAR("RES-SER-515","Input text contains special characters;inputType=%s");
+	
+
 
 	private final String errorCode;
 	private final String errorMessage;

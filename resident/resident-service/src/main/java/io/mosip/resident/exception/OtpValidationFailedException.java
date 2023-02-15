@@ -1,15 +1,14 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseCheckedException;
+import java.util.Map;
+
 import io.mosip.resident.constant.ResidentErrorCode;
 
-import static io.mosip.kernel.core.exception.BaseUncheckedException.EMPTY_SPACE;
-
-public class OtpValidationFailedException extends BaseCheckedException {
+public class OtpValidationFailedException extends BaseResidentCheckedExceptionWithMetadata {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
-
+    
     /**
      * Instantiates a new otp validation failed exception.
      */
@@ -46,4 +45,17 @@ public class OtpValidationFailedException extends BaseCheckedException {
     public OtpValidationFailedException(String message, Throwable cause) {
         super(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), message, cause);
     }
+
+	public OtpValidationFailedException(String errorMessage, Map<String, Object> metadata) {
+		super(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), errorMessage, metadata);
+	}
+
+	public OtpValidationFailedException(String errorCode, String errorMessage, Map<String, Object> metadata) {
+		super(errorCode, errorMessage,metadata);
+	}
+
+	public OtpValidationFailedException(String errorCode, String errorText, OtpValidationFailedException e,
+			Map<String, Object> metadata) {
+		super(errorCode, errorText, e, metadata);
+	}
 }

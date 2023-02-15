@@ -1,16 +1,17 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
+import java.util.Map;
+
 import io.mosip.resident.constant.ResidentErrorCode;
 
 /**
  * The Class ResidentServiceException.
  */
-public class ResidentServiceException extends BaseUncheckedException {
+public class ResidentServiceException extends BaseResidentUncheckedExceptionWithMetadata {
 
 	/** Generated serial version id. */
 	private static final long serialVersionUID = 8621530697947108810L;
-
+	
 	/**
 	 * Constructor the initialize Handler exception.
 	 *
@@ -53,6 +54,19 @@ public class ResidentServiceException extends BaseUncheckedException {
 	 */
 	public ResidentServiceException(ResidentErrorCode err, Throwable rootCause) {
 		this(err.getErrorCode(), err.getErrorMessage(), rootCause);
+	}
+	
+	public ResidentServiceException(ResidentErrorCode err, Throwable rootCause, Map<String, Object> metadata) {
+		super(err, rootCause, metadata);
+	}
+	
+	public ResidentServiceException(ResidentErrorCode err, Map<String, Object> metadata) {
+		super(err, metadata);
+	}
+	
+	public ResidentServiceException(String errorCode, String errorMessage, Throwable rootCause,
+			Map<String, Object> metadata) {
+		super(errorCode, errorMessage, rootCause, metadata);
 	}
 
 }

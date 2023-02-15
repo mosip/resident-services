@@ -8,6 +8,8 @@ import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyOtpService;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +18,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * This class provides different api to perform operation for login
@@ -67,8 +73,13 @@ public class ProxyOtpController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
-		requestValidator.validateRequestId(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID));
-		requestValidator.validateDate(userOtpRequest.getRequesttime());
+		try {
+			requestValidator.validateProxySendOtpRequest(userOtpRequest);
+		} catch (InvalidInputException e) {
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID)));
+		}
 		return proxyOtpService.sendOtp(userOtpRequest);
 	}
 
@@ -92,7 +103,16 @@ public class ProxyOtpController {
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 
 		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
-		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
-		return proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+		try {
+			requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+		} catch (InvalidInputException e) {
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID)));
+		}
+		Tuple2<MainResponseDTO<AuthNResponse>, String> tupleResponse = proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+		return ResponseEntity.ok()
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+				.body(tupleResponse.getT1());
 	}
 }

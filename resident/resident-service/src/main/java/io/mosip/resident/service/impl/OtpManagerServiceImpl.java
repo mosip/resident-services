@@ -11,10 +11,13 @@ import io.mosip.preregistration.application.dto.OTPGenerateRequestDTO;
 import io.mosip.preregistration.application.dto.RequestDTO;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.dto.*;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.entity.OtpTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -38,7 +41,11 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -85,7 +92,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
         notificationRequestDto.setId(identityService.getResidentIndvidualId());
-        String refId = this.hash(userId+requestDTO.getRequest().getTransactionID());
+        String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
         this.environment.getProperty("otp.request.flooding.max-count", Integer.class)) {
@@ -95,11 +102,11 @@ public class OtpManagerServiceImpl implements OtpManager {
             String otp = this.generateOTP(requestDTO);
             this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
             String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+
-                    requestDTO.getRequest().getTransactionID()).getBytes());
+                    requestDTO.getRequest().getTransactionId()).getBytes());
             OtpTransactionEntity otpTxn;
             otpTxn = new OtpTransactionEntity();
             otpTxn.setId(UUID.randomUUID().toString());
-            otpTxn.setRefId(this.hash(userId + requestDTO.getRequest().getTransactionID()));
+            otpTxn.setRefId(this.hash(userId + requestDTO.getRequest().getTransactionId()));
             otpTxn.setOtpHash(otpHash);
             otpTxn.setCrBy(this.environment.getProperty("resident.clientId"));
             otpTxn.setCrDtimes(DateUtils.getUTCCurrentDateTime());
@@ -181,7 +188,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
         if (!otpRepo.existsByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS))
             return false;
-        OtpTransactionEntity otpTxn = otpRepo.findByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS);
+        OtpTransactionEntity otpTxn = otpRepo.findTopByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS);
         otpTxn.setStatusCode(PreRegLoginConstant.USED_STATUS);
         otpRepo.save(otpTxn);
         if (!(otpTxn.getExpiryDtimes().isAfter(DateUtils.getUTCCurrentDateTime()))) {

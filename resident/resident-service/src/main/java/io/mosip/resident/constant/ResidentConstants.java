@@ -1,3 +1,4 @@
+
 package io.mosip.resident.constant;
 
 /**
@@ -6,7 +7,6 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
     private ResidentConstants() {
 	}
 
@@ -38,8 +38,6 @@ public class ResidentConstants {
     
     public static final String IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED = "mosip.resident.update.service.status.job.enabled";
 
-    public static final String ID_TYPE = "idType";
-    
     public static final String PUBLIC_URL = "mosipbox.public.url";
     
     public static final String NOTIFICATION_ZONE = "mosip.notification.timezone";
@@ -47,27 +45,10 @@ public class ResidentConstants {
     public static final String NOTIFICATION_TIME_PATTERN = "mosip.notification.time.pattern";
     
     public static final String EVENT_ID = "eventId";
-    
-    public static final String EVENT_DETAILS = "eventDetails";
-    
-    public static final String NAME = "name";
-    
-    public static final String DATE = "date";
-    
-    public static final String TIME = "time";
 
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
-
-    public static final String URL = "url";
-    
-    public static final String DOWNLOAD_LINK = "downloadLink";
-    
-    public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
-
-    public static final String TXN_ID = "txnId";
-    
     public static final String RESIDENT = "RESIDENT";
 
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
@@ -75,14 +56,13 @@ public class ResidentConstants {
     public static final String RESIDENT_CONTACT_DETAILS_SEND_OTP_ID="resident.contact.details.send.otp.id";
 
 
-    public static final String IDA_TOKEN_CLAIM_NAME = "mosip.resident.oidc.id_token.ida_token.claim-name";
     public static final String MOSIP_OIDC_JWT_SIGNED = "mosip.resident.oidc.userinfo.jwt.signed";
+    public static final String MOSIP_OIDC_JWT_VERIFY_ENABLED = "mosip.resident.oidc.userinfo.jwt.verify.enabled";
     public static final String MOSIP_OIDC_ENCRYPTION_ENABLED = "mosip.resident.oidc.userinfo.encryption.enabled";
 
     public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
     public static final String RESIDENT_APP_ID = "resident.appid";
 
-    public static final String DATA_SHARE_URL = "mosip.datashare.url";
     public static final String DATA_SHARE_APPLICATION_ID = "mosip.datashare.application.id";
     public static final String DATA_SHARE_REFERENCE_ID = "mosip.datashare.reference.id";
 
@@ -97,8 +77,9 @@ public class ResidentConstants {
     public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
+    public static final String SUBJECT_CLAIM_NAME = "mosip.resident.access_token.subject.claim-name";
 
-    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD = "mosip.resident.download.personalized.card";
+    public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
     public static final String PASSWORD_ATTRIBUTE = "mosip.digitalcard.uincard.password";
 
@@ -106,11 +87,8 @@ public class ResidentConstants {
 
     public static final String DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.personalized.card.naming.convention";
 
-    public static final String RESIDENT_IDENTITY_SCHEMATYPE = "resident.identity.schematype.with.photo";
-
     public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
 
-    public static final String CREDENTIAL_TYPE_PROPERTY = "mosip.resident.request.credential.credentialType";
     public static final String CREDENTIAL_ISSUER = "mosip.credential.issuer";
     public static final String CREDENTIAL_ENCRYPTION_FLAG = "mosip.resident.request.credential.isEncrypt";
     public static final String CREDENTIAL_ENCRYPTION_KEY = "mosip.resident.request.credential.encryption.key";
@@ -138,7 +116,123 @@ public class ResidentConstants {
     public static final String ACK_NAMING_CONVENTION_PROPERTY = "mosip.resident.ack.name.convention";
     public static final String UIN_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.uin.card.name.convention";
     public static final String VID_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.vid.card.name.convention";
-    public static final String RESIDENT_OTP_EXPIRY_TIME = "mosip.resident.otp.expiry.time";
     public static final String SUCCESS = "Success";
+    public static final String FAILED = "Failed";
+    public static final String NOT_AVAILABLE = "NA";
+    public static final String REGISTRATION_CENTRE_TEMPLATE_PROPERTY = "resident.template.registration.centers.list";
+    public static final String SUPPORTING_DOCS_TEMPLATE_PROPERTY = "resident.template.support-docs-list";
+    public static final String FROM_DATE_TIME = "fromDateTime";
+    public static final String TO_DATE_TIME = "toDateTime";
+    public static final String DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.service.history.file.name.convention";
+    public static final String GRIEVANCE_REQUEST_ID = "mosip.resident.grievance.ticket.request.id";
+    public static final String GRIEVANCE_REQUEST_VERSION = "mosip.resident.grievance.ticket.request.version";
+
+    public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
+
+    public static final String EMAIL_FROM_PROFILE = "mosip.resident.email.token.claim-email";
+    public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
+
+    public static final String MESSAGE_CODE_MAXIMUM_LENGTH = "mosip.resident.message.code.maximum.length";
+
+    public static final String TRANSACTION_TYPE_CODE = "transactionTypeCode";
+    public static final String AID_STATUS = "aidStatus";
+
+    public static final String CHECK_STATUS_ID = "resident.checkstatus.id";
+
+    public static final String CHECK_STATUS_INDIVIDUAL_ID = "mosip.resident.checkstatus.individualid.id";
+    public static final String CHECKSTATUS_INDIVIDUALID_VERSION = "mosip.resident.checkstatus.individualid.version";
+    
+    public static final String RID = "rid";
+
+    public static final String ADDITIONAL_ATTRIBUTE_TO_FETCH = "resident.additional.identity.attribute.to.fetch";
+    public static final String COMMA = ",";
+    public static final String COLON = ":";
+
+    public static final String FILE_TEXT = "fileText";
+    public static final String DOLLAR = "$";
+    public static final String AUTH_TYPE = "authType";
+
+    public static final String CHANNEL = "channel";
+
+    public static final String MASK_PREFIX = "masked_";
+    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
+
+    public static final String HTTP_STATUS_CODE = "httpStatusCode";
+    public static final String REQ_RES_ID = "reqResId";
+    public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
+    public static final String RESIDENT_USER_PROFILE_ID = "mosip.resident.user.profile.id";
+
+    public static final String ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY = "resident.template.ack.share-cred-with-partner";
+    public static final String ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY = "resident.template.ack.authentication.request";
+    public static final String ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY = "resident.template.ack.download-a-personalized-card";
+    public static final String ACK_ORDER_PHYSICAL_CARD_TEMPLATE_PROPERTY = "resident.template.ack.order-a-physical-card";
+    public static final String ACK_GET_MY_ID_TEMPLATE_PROPERTY = "resident.template.ack.get.my.id";
+    public static final String ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY = "resident.template.ack.update-demographic-data";
+    public static final String ACK_MANAGE_MY_VID_TEMPLATE_PROPERTY = "resident.template.ack.manage-my-vid";
+    public static final String ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY = "resident.template.ack.secure-my-id";
+    public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
+    public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
+    public static final String ACTION_PERFORMED = "actionPerformed";
+    public static final String VID_TYPE = "vidType";
+    public static final String MASKED_VID = "*masked VID*";
+    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
+    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
+    
+    public static final String NO_ID = "NO_ID";
+    public static final String NO_ID_TYPE = "NO_ID_TYPE";
+
+    public static final String OTP_EXPIRED_ERR_CODE = "IDA-OTA-003"; 
+    public static final String OTP_INVALID_ERR_CODE = "IDA-OTA-004";
+    public static final String INVALID_ID_ERR_CODE = "IDA-MLC-009";
+    public static final String OTP_AUTH_LOCKED_ERR_CODE = "IDA-MLC-019";
+    public static final String PHONE = "PHONE";
+    public static final String EMAIL = "EMAIL";
+    
+    // IP headers constants start---
+    public static final String X_FORWARDED_FOR = "X-Forwarded-For";
+    public static final String X_REAL_IP = "x-real-ip";
+    public static final String PROXY_CLIENT_IP = "Proxy-Client-IP";
+    public static final String WL_PROXY_CLIENT_IP = "WL-Proxy-Client-IP";
+    public static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
+    public static final String HTTP_X_FORWARDED = "HTTP_X_FORWARDED";
+    public static final String HTTP_X_CLUSTER_CLIENT_IP = "HTTP_X_CLUSTER_CLIENT_IP";
+    public static final String HTTP_CLIENT_IP = "HTTP_CLIENT_IP";
+    public static final String HTTP_FORWARDED_FOR = "HTTP_FORWARDED_FOR";
+    public static final String HTTP_FORWARDED = "HTTP_FORWARDED";
+    public static final String HTTP_VIA = "HTTP_VIA";
+    public static final String REMOTE_ADDR = "REMOTE_ADDR";
+    // IP headers constants end---
+
+    public static final String VID_POLICIES = "vidPolicies";
+    public static final String VID_POLICY = "vidPolicy";
+    public static final String PERPETUAL = "Perpetual";
+
+    public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
+    public static final int UTC_TIMEZONE_OFFSET = 0;
+    public static final String INDIVIDUAL_ID = "individualId";
+    public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
+    public static final String REQUEST = "request";
+    public static final String VERSION = "version";
+    public static final String REQUEST_TIME = "requestTime";
+    public static final String ID = "id";
+    public static final String REQUEST_GENERATE_VID = "Request to generate VID";
+    public static final String GENERATE_ID = "generateId";
+    public static final String UNLOCK_FOR_SECONDS = "unlockForSeconds";
+    public static final String REQUEST_FOR_EUIN = "Request for EUIN";
+    public static final String CARD_TYPE = "cardType";
+    public static final String PAGE_NUMBER_ERROR = "please provide Page size and Page number to be Fetched";
+    public static final String PAGE_FETCH_PAGE_START_GREATER_THAN_ZERO = "Page Fetch or Page Start must be greater than 0";
+    public static final String PAGE_START_PAGE_FETCH = "Page Start Page Fetch";
+    public static final String PAGE_START = "Page Start";
+    public static final String PAGE_FETCH = "Page Fetch";
+    public static final String VID_STATUS = "vidStatus";
+    public static final String REQUEST_REVOKE_VID = "Request to revoke VID";
+    public static final String REVOKE_VID = "revokeVidId";
+    public static final String REQUEST_PRINT_UIN = "Request for print UIN API";
+    public static final String IDENTITY_JSON = "identityJson";
+    public static final String SCHEMA_TYPE = "schemaType";
+    public static final String FILE_NAME = "fileName";
+    public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
+    public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
 
 }

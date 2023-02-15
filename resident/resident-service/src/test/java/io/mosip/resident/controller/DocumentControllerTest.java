@@ -1,13 +1,13 @@
 package io.mosip.resident.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.DocumentDTO;
+import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.DocumentValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,15 +16,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
-
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.DocumentValidator;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Manoj SP
@@ -49,28 +48,21 @@ public class DocumentControllerTest {
 	private AuditUtil audit;
 	
 	@Test
-	public void testUploadDocumentsSuccess() throws ResidentServiceCheckedException {
+	public void testUploadDocumentsSuccess() throws ResidentServiceCheckedException, IOException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
 		when(service.uploadDocument(any(), any(), any())).thenReturn(response );
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), REQUEST_JSON);
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
 		assertEquals(response, uploadDocuments.getResponse());
 	}
 	
 	@Test
-	public void testUploadDocumentsFailed() throws ResidentServiceCheckedException {
+	public void testUploadDocumentsFailed() throws ResidentServiceCheckedException, IOException {
 		when(service.uploadDocument(any(), any(), any())).thenThrow(new ResidentServiceCheckedException("", ""));
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), REQUEST_JSON);
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
 		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), "");
 		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), "");
 	}
-	
-	@Test
-	public void testUploadDocumentsInvalidRequest() throws ResidentServiceCheckedException {
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "");
-		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), ResidentErrorCode.BAD_REQUEST.getErrorCode());
-		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), ResidentErrorCode.BAD_REQUEST.getErrorMessage());
-	}
-	
+		
 	@Test
 	public void testGetDocumentsByTransactionIdSuccess() throws ResidentServiceCheckedException {
 		DocumentResponseDTO response = new DocumentResponseDTO();

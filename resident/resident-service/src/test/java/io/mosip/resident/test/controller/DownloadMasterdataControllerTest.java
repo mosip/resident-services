@@ -10,9 +10,10 @@ import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,9 +86,12 @@ public class DownloadMasterdataControllerTest {
 
     @MockBean
     private AuditUtil auditUtil;
+    
+    @MockBean
+    private ResidentServiceImpl residentService;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     @Mock
     private Environment environment;
@@ -111,7 +115,7 @@ public class DownloadMasterdataControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utilitiy.getFileName(Mockito.anyString(), Mockito.anyString())).thenReturn("fileName");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("fileName");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -119,7 +123,7 @@ public class DownloadMasterdataControllerTest {
     public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
         Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
                 Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
-        mockMvc.perform(MockMvcRequestBuilders.get("/download/registrationcenters?langcode=eng&hierarchylevel=5&name=14022")).
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
                andExpect(status().isOk());
     }
 

@@ -9,6 +9,7 @@ import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -22,6 +23,7 @@ import io.mosip.resident.service.impl.ProxyOtpServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,6 +80,9 @@ public class ProxyOtpServiceImpllTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @Mock
+    private Utility utility;
+
+    @Mock
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate restTemplate;
 
@@ -132,7 +137,7 @@ public class ProxyOtpServiceImpllTest {
         response.setResponse(responseMap);
         otpRequestDTOV2 = new OtpRequestDTOV2();
         requestDTO = new MainRequestDTO<>();
-        otpRequestDTOV2.setTransactionID("1234567891");
+        otpRequestDTOV2.setTransactionId("1234567891");
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
         ResponseWrapper<Map<String, String>> responseMap1 = new ResponseWrapper<>();
@@ -145,7 +150,8 @@ public class ProxyOtpServiceImpllTest {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
         responseEntity = new ResponseEntity<>(HttpStatus.OK);
-
+        Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEventId()).thenReturn("12345");
     }
 
     @Test
@@ -194,9 +200,9 @@ public class ProxyOtpServiceImpllTest {
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
         otpRequestDTOV3.setUserId("ka@gm.com");
-        otpRequestDTOV3.setTransactionID("122222222");
+        otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+        assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
     @Test
@@ -205,10 +211,10 @@ public class ProxyOtpServiceImpllTest {
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
         otpRequestDTOV3.setUserId("ka@gm.com");
-        otpRequestDTOV3.setTransactionID("122222222");
+        otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+        assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -217,12 +223,12 @@ public class ProxyOtpServiceImpllTest {
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
         otpRequestDTOV3.setUserId("ka@gm.com");
-        otpRequestDTOV3.setTransactionID("122222222");
+        otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
-                thenThrow(new ResidentServiceException(ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorCode(),
-                        ResidentErrorCode.VALIDATION_UNSUCCESS.getErrorMessage()));
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+                thenThrow(new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+                        ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage()));
+        assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -231,11 +237,11 @@ public class ProxyOtpServiceImpllTest {
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
         otpRequestDTOV3.setUserId("ka@gm.com");
-        otpRequestDTOV3.setTransactionID("122222222");
+        otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
                 thenThrow(new RuntimeException());
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+        assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -244,11 +250,11 @@ public class ProxyOtpServiceImpllTest {
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
         otpRequestDTOV3.setUserId("ka@gm.com");
-        otpRequestDTOV3.setTransactionID("122222222");
+        otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
                 thenThrow(new ResidentServiceCheckedException());
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+        assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -257,11 +263,11 @@ public class ProxyOtpServiceImpllTest {
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
         otpRequestDTOV3.setUserId("ka@gm.com");
-        otpRequestDTOV3.setTransactionID("122222222");
+        otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).
                 thenThrow(new ApisResourceAccessException());
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.validateWithUserIdOtp(requestDTO1).getStatusCode());
+        assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 
 }
