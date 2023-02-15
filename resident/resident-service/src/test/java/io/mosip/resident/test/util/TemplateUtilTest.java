@@ -1,5 +1,6 @@
 package io.mosip.resident.test.util;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -10,8 +11,10 @@ import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
@@ -30,6 +33,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static junit.framework.TestCase.assertEquals;
@@ -66,6 +70,9 @@ public class TemplateUtilTest {
     @Mock
     private ResidentServiceImpl residentService;
 
+    @Mock
+    private ProxyMasterdataService proxyMasterdataService;
+
     private String eventId;
     private ResidentTransactionEntity residentTransactionEntity;
 
@@ -75,8 +82,13 @@ public class TemplateUtilTest {
 
     private static final String PROPERTY = "YYYY-MM-DD HH:MM:SS";
 
+    private Map<String, Object> templateResponse;
+    private ResponseWrapper responseWrapper;
+    private Map<String, String> templateVariables;
+    private Map<String, Object> values;
+
     @Before
-    public void setUp() throws ApisResourceAccessException {
+    public void setUp() throws ApisResourceAccessException, ResidentServiceCheckedException {
         eventId = "12345";
         residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId(eventId);
@@ -93,6 +105,16 @@ public class TemplateUtilTest {
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(PROPERTY);
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS, "eng", "111111");
+        templateResponse = new LinkedHashMap<>();
+        templateVariables = new LinkedHashMap<>();
+        values = new LinkedHashMap<>();
+        values.put("test", String.class);
+        templateVariables.put("eventId", eventId);
+        responseWrapper = new ResponseWrapper<>();
+        templateResponse.put("fileText", "otp");
+        responseWrapper.setResponse(templateResponse);
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
+                responseWrapper);
     }
 
     @Test
@@ -173,11 +195,6 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestBadEventId() {
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.empty());
         templateUtil.getCommonTemplateVariables(eventId, "", 0);
-    }
-
-    @Test
-    public void getFeatureNameTest() {
-        assertEquals(RequestType.AUTHENTICATION_REQUEST.getName(),templateUtil.getFeatureName(eventId));
     }
 
     @Test
