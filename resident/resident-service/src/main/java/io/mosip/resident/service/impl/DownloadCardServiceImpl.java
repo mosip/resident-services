@@ -332,6 +332,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     			if(!uinForIndividualId.equals(uinForVid)) {
                 		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
                     	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+                    	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
                     	throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
     							Map.of(ResidentConstants.EVENT_ID, eventId));
     			}
@@ -367,6 +368,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
         } catch (ApisResourceAccessException e) {
+        	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
         	if (residentTransactionEntity != null) {
         		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());

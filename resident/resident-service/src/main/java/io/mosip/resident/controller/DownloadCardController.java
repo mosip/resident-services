@@ -129,8 +129,10 @@ public class DownloadCardController {
     @GetMapping("/request-card/vid/{VID}")
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
     		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws BaseCheckedException {
+    	auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
         requestValidator.validateDownloadCardVid(vid);
         Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
+        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
         return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
