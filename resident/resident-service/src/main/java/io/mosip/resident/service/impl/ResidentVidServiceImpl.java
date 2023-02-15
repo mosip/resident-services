@@ -212,7 +212,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 			if(Utility.isSecureSession()){
 				residentTransactionEntity = createResidentTransactionEntity(requestDto);
-				validateVidFromSession(individualId);
+				validateVidFromSession(individualId, requestDto.getVidType());
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
 	    		}
@@ -357,7 +357,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return Tuples.of(responseDto, eventId);
 	}
 
-	private void validateVidFromSession(String individualId) {
+	private void validateVidFromSession(String individualId, String vidType) {
 		try {
 			String idType = identityServiceImpl.getIndividualIdType(individualId);
 			String uin = identityServiceImpl.getUinForIndividualId(individualId);
@@ -366,8 +366,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			 * Check If id type is VID.
 			 */
 			if (idType.equalsIgnoreCase(IdType.VID.name())) {
-				String vidType =
-						getVidTypeFromVid(individualId, uin);
 				/**
 				 * Checks if VID type is Perpetual VID.
 				 */
