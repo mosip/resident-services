@@ -317,6 +317,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(requestType);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
