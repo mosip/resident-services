@@ -328,7 +328,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setConsent(dto.getConsent());
-		residentTransactionEntity.setIndividualId(individualId);
 		return residentTransactionEntity;
 	}
 

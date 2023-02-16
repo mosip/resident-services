@@ -1,35 +1,38 @@
 package io.mosip.resident.interceptor;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.commons.codec.binary.Base64;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import io.mosip.commons.khazana.config.LoggerConfiguration;
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
+
 @Component
 public class ResidentEntityInterceptor extends EmptyInterceptor {
-	private static final String APP_ID = "mosip.resident.keymanager.application-name";
-	private static final String REF_ID = "mosip.resident.keymanager.reference-id";
-	
+	private static final String INDIVIDUAL_ID = "individualId";
+
 	@Autowired
 	private transient ObjectStoreHelper objectStoreHelper;
 	
-	@Autowired
-	private Environment env;
+	@Value("${mosip.resident.keymanager.application-name}")
+	private String appId;
 	
-/** The mosip logger. */
+	@Value("${mosip.resident.keymanager.reference-id}")
+	private String refId;
+
+	/** The mosip logger. */
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentEntityInterceptor.class);
-	
+
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
@@ -38,68 +41,61 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 				encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
 			}
 		} catch (ResidentServiceException e) {
-		
+			logger.error(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
+					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
+			throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
+					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
 		}
 		return super.onSave(entity, id, state, propertyNames, types);
 	}
 
-	private <T extends ResidentTransactionEntity> void encryptDataOnSave(Serializable id, Object[] state, List<String> propertyNamesList,
-			Type[] types, T uinEntity) throws ResidentServiceException {
+	private <T extends ResidentTransactionEntity> void encryptDataOnSave(Serializable id, Object[] state,
+			List<String> propertyNamesList, Type[] types, T uinEntity) throws ResidentServiceException {
 		if (Objects.nonNull(uinEntity.getIndividualId())) {
-			String idividualId=Base64.encodeBase64String(uinEntity.getIndividualId().getBytes());
-			String encryptedData = objectStoreHelper.encryptDecryptData(idividualId,true,env.getProperty(APP_ID),env.getProperty(REF_ID));
+			String idividualId = Base64.encodeBase64String(uinEntity.getIndividualId().getBytes());
+			String encryptedData = objectStoreHelper.encryptDecryptData(idividualId, true, appId, refId);
 			uinEntity.setIndividualId(encryptedData);
-			int indexOfData = propertyNamesList.indexOf("individualId");
+			int indexOfData = propertyNamesList.indexOf(INDIVIDUAL_ID);
 			state[indexOfData] = encryptedData;
-			
 		}
-
-	
 	}
 	
-	
-
-
-//	 * (non-Javadoc)
-//	 * 
-//	 * @see org.hibernate.EmptyInterceptor#onLoad(java.lang.Object,
-//	 * java.io.Serializable, java.lang.Object[], java.lang.String[],
-//	 * org.hibernate.type.Type[])
-//	 */
 	@Override
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
 			List<String> propertyNamesList = Arrays.asList(propertyNames);
 			if (entity instanceof ResidentTransactionEntity) {
-				int indexOfData = propertyNamesList.indexOf("individualId");
+				int indexOfData = propertyNamesList.indexOf(INDIVIDUAL_ID);
 				if (Objects.nonNull(state[indexOfData])) {
-					decryptDataOnLoad(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);		
-
+					decryptDataOnLoad(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
 				}
 			}
 		} catch (ResidentServiceException e) {
-			//logger.error(IdRepoSecurityManager.getUser(), ID_REPO_ENTITY_INTERCEPTOR, "onLoad", "\n" + e.getMessage());
-		//throw new IdRepoAppUncheckedException(ENCRYPTION_DECRYPTION_FAILED, e);
+			logger.error(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
+					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
+			throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
+					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
 		}
 		return super.onLoad(entity, id, state, propertyNames, types);
 	}
-	
-	
-	private <T extends ResidentTransactionEntity> void decryptDataOnLoad(Serializable id, Object[] state, List<String> propertyNamesList,
-			Type[] types, T uinEntity) throws ResidentServiceException {
-		if (Objects.nonNull(uinEntity.getIndividualId())) {
-			String idividualId=Base64.encodeBase64String(uinEntity.getIndividualId().getBytes());
 
-			String decryptedData = objectStoreHelper.encryptDecryptData(idividualId,false,env.getProperty(APP_ID),env.getProperty(REF_ID));
-			uinEntity.setIndividualId(decryptedData);
-			int indexOfData = propertyNamesList.indexOf("individualId");
-			state[indexOfData] = decryptedData;
-			
-		}
-
-	
+	@Override
+	public boolean onFlushDirty(Object entity, Serializable id, Object[] state, Object[] previousState,
+			String[] propertyNames, Type[] types) {
+		List<String> propertyNamesList = Arrays.asList(propertyNames);
+		encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
+		return super.onFlushDirty(entity, id, state, previousState, propertyNames, types);
 	}
 
-	
-
+	private <T extends ResidentTransactionEntity> void decryptDataOnLoad(Serializable id, Object[] state,
+			List<String> propertyNamesList, Type[] types, T uinEntity) throws ResidentServiceException {
+		int indexOfData = propertyNamesList.indexOf(INDIVIDUAL_ID);
+		if (Objects.nonNull(state[indexOfData])) {
+			String individualId = (String) state[indexOfData];
+			String decryptedData = objectStoreHelper.encryptDecryptData(individualId, false, appId, refId);
+			String decodedIndividualId = new String(Base64.decodeBase64(decryptedData));
+			uinEntity.setIndividualId(decodedIndividualId);
+			state[indexOfData] = decodedIndividualId;
+		}
+	}
 }
