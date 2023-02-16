@@ -109,7 +109,7 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
-        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributeValue(replaceNullWithEmptyString(
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()), languageCode));
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
                 getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode));
@@ -123,16 +123,15 @@ import java.util.Optional;
     }
 
     /**
-     *
-     * @param attributes attribute values having comma separated attributes.
-     * @param languageCode logged in language code.
-     * @return attribute value stored in the template.
      * This method accepts a string having comma-separated attributes with camel case convention
      * and splits it by a comma.
      * Then it takes each attribute value from the template in logged-in language and appends it to a string
      * with comma-separated value.
+     * @param attributes attribute values having comma separated attributes.
+     * @param languageCode logged in language code.
+     * @return attribute value stored in the template.
      */
-    private String getAttributeValue(String attributes, String languageCode) {
+    private String getAttributesDisplayText(String attributes, String languageCode) {
         String phoneAttributeName = this.env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME);
         List<String> attributeListTemplateValue = new ArrayList<>();
         if (attributes != null && attributes.contains(Objects.requireNonNull(phoneAttributeName))) {
@@ -308,19 +307,18 @@ import java.util.Optional;
     }
 
     /**
-     *
+     * This method will replace attribute placeholder in template and add attribute list into it.
      * @param fileText This contains value of template.
      * @param purpose This contains purpose of request type stored in template.
      * @param languageCode This contains logged-in language code.
      * @return purpose after adding attributes.
-     * This method will replace attribute placeholder in template and add attribute list into it.
      */
     private String addAttributeInPurpose(String fileText, String purpose,
                                          String languageCode) {
         if(fileText!=null &&
                 fileText.contains(ResidentConstants.ATTRIBUTES)){
             fileText = fileText.replace(
-                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributeValue(purpose,
+                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
                             languageCode)
             );
         }
