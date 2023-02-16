@@ -72,6 +72,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
 		residentTransactionEntity.setStatusCode(status);
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat((String) eventModel.getEvent().getData().get(INDIVIDUAL_ID)));
+		residentTransactionEntity.setIndividualId((String) eventModel.getEvent().getData().get(INDIVIDUAL_ID));
 		residentTransactionEntity.setRequestSummary("");
 		residentTransactionEntity.setTokenId((String) eventModel.getEvent().getData().get(TOKEN_ID));
 		residentTransactionEntity.setRequestedEntityId((String) eventModel.getEvent().getData().get(ENTITY_ID));

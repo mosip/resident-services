@@ -109,6 +109,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		} else{
 			residentTransactionEntity.setRefId(utility.getRefIdHash(otpRequestDTO.getIndividualId()));
 		}
+		residentTransactionEntity.setIndividualId(otpRequestDTO.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setCrBy("mosip");
 		residentTransactionEntity.setCrDtimes(LocalDateTime.now());

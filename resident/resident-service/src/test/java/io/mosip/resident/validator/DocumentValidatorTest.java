@@ -6,7 +6,11 @@ import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.ProxyMasterdataService;
+import reactor.util.function.Tuples;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
@@ -43,26 +49,31 @@ public class DocumentValidatorTest {
 	private RequestValidator requestValidator;
 
 	@Mock
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Mock
 	private VirusScanner<Boolean, InputStream> virusScanner;
 
 	private MockEnvironment env = new MockEnvironment();
 	
 	@Before
-	public void init() {
+	public void init() throws Exception {
 		ReflectionTestUtils.setField(validator, "env", env);
+		when(proxyMasterdataService.getValidDocCatAndTypeList(any()))
+				.thenReturn(Tuples.of(List.of("poi", "poa"), Map.of("poi", List.of("cob"), "poa", List.of("coa"))));
 	}
 	
 	@Test
-	public void testValidateRequestSuccess() {
+	public void testValidateRequestSuccess() throws ResidentServiceCheckedException {
 		DocumentRequestDTO request = new DocumentRequestDTO();
-		request.setDocCatCode("a");
-		request.setDocTypCode("b");
+		request.setDocCatCode("poi");
+		request.setDocTypCode("cob");
 		request.setLangCode("c");
 		validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 	}
 
 	@Test
-	public void testNullDocCatCode() {
+	public void testNullDocCatCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode(null);
@@ -75,7 +86,7 @@ public class DocumentValidatorTest {
 	}
 	
 	@Test
-	public void testBlankDocCatCode() {
+	public void testBlankDocCatCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("");
@@ -85,7 +96,7 @@ public class DocumentValidatorTest {
 	}
 	
 	@Test
-	public void testNullDocTypCode() {
+	public void testNullDocTypCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("a");
@@ -97,7 +108,7 @@ public class DocumentValidatorTest {
 	}
 	
 	@Test
-	public void testBlankDocTypCode() {
+	public void testBlankDocTypCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("a");
@@ -109,11 +120,11 @@ public class DocumentValidatorTest {
 	}
 	
 	@Test
-	public void testNullLangCode() {
+	public void testNullLangCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
-			request.setDocCatCode("a");
-			request.setDocTypCode("b");
+			request.setDocCatCode("poa");
+			request.setDocTypCode("coa");
 			request.setLangCode(null);
 			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (InvalidInputException e) {
@@ -122,11 +133,11 @@ public class DocumentValidatorTest {
 	}
 	
 	@Test
-	public void testBlankLangCode() {
+	public void testBlankLangCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
-			request.setDocCatCode("a");
-			request.setDocTypCode("b");
+			request.setDocCatCode("poi");
+			request.setDocTypCode("cob");
 			request.setLangCode(" ");
 			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (ResidentServiceException e) {
