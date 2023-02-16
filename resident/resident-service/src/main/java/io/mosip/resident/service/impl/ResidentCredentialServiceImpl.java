@@ -279,6 +279,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.REQUEST_RECEIVED,
 					eventId, additionalAttributes);
+			
 			updateResidentTransaction(dto, residentCredentialResponseDto, residentTransactionEntity);
 			residentCredentialResponseDtoV2.setStatus(ResidentConstants.SUCCESS);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {

@@ -17,6 +17,10 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 
+/**
+ * @author Neha Farheen
+ *
+ */
 @Component
 public class ResidentEntityInterceptor extends EmptyInterceptor {
 	private static final String INDIVIDUAL_ID = "individualId";
