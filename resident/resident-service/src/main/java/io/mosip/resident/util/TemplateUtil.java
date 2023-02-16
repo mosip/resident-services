@@ -121,6 +121,17 @@ import java.util.Optional;
         }
         return Tuples.of(templateVariables, residentTransactionEntity);
     }
+
+    /**
+     *
+     * @param attributes attribute values having comma separated attributes.
+     * @param languageCode logged in language code.
+     * @return attribute value stored in the template.
+     * This method accepts a string having comma-separated attributes with camel case convention
+     * and splits it by a comma.
+     * Then it takes each attribute value from the template in logged-in language and appends it to a string
+     * with comma-separated value.
+     */
     private String getAttributeValue(String attributes, String languageCode) {
         String phoneAttributeName = this.env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME);
         List<String> attributeListTemplateValue = new ArrayList<>();
@@ -296,6 +307,14 @@ import java.util.Optional;
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
 
+    /**
+     *
+     * @param fileText This contains value of template.
+     * @param purpose This contains purpose of request type stored in template.
+     * @param languageCode This contains logged-in language code.
+     * @return purpose after adding attributes.
+     * This method will replace attribute placeholder in template and add attribute list into it.
+     */
     private String addAttributeInPurpose(String fileText, String purpose,
                                          String languageCode) {
         if(fileText!=null &&
