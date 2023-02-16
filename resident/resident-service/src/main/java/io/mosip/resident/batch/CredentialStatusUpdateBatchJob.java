@@ -21,7 +21,6 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static io.mosip.resident.constant.CredentialUpdateStatus.DELIVERED;
 import static io.mosip.resident.constant.CredentialUpdateStatus.FAILED;
 import static io.mosip.resident.constant.CredentialUpdateStatus.IN_TRANSIT;
 import static io.mosip.resident.constant.CredentialUpdateStatus.ISSUED;
@@ -50,7 +48,6 @@ import static io.mosip.resident.constant.CredentialUpdateStatus.PAYMENT_CONFIRME
 import static io.mosip.resident.constant.CredentialUpdateStatus.PRINTING;
 import static io.mosip.resident.constant.CredentialUpdateStatus.PROCESSING;
 import static io.mosip.resident.constant.CredentialUpdateStatus.RECEIVED;
-import static io.mosip.resident.constant.RequestType.DOWNLOAD_PERSONALIZED_CARD;
 import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
 import static io.mosip.resident.constant.RequestType.SHARE_CRED_WITH_PARTNER;
 import static io.mosip.resident.constant.RequestType.UPDATE_MY_UIN;
@@ -111,14 +108,25 @@ public class CredentialStatusUpdateBatchJob {
 	@Autowired
 	private IdentityService identityService;
 
+	@Value("${resident.batchjob.process.status.list}")
+	private String statusCodes;
+
+	@Value("${resident.async.request.types}")
+	private String requestTypeCodes;
+
 	private void handleWithTryCatch(RunnableWithException runnableWithException) {
 		try {
 			runnableWithException.run();
 		} catch (ApisResourceAccessException e) {
-			logger.error(ExceptionUtils.getStackTrace(e));
+			logErrorForBatchJob(e);
 		} catch (ResidentServiceCheckedException e){
-			logger.error(ExceptionUtils.getStackTrace(e));
+			logErrorForBatchJob(e);
 		}
+	}
+
+	private void logErrorForBatchJob(Exception e) {
+		logger.error(String.format("Error in batch job: %s : %s : %s", e.getClass().getSimpleName(), e.getMessage(),
+				(e.getCause() != null ? "rootcause: " + e.getCause().getMessage() : "")));
 	}
 
 	@Scheduled(initialDelayString = "${" + CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY + ":"
@@ -127,26 +135,15 @@ public class CredentialStatusUpdateBatchJob {
 					+ "}")
 	public void scheduleCredentialStatusUpdateJob() throws ResidentServiceCheckedException {
 		List<ResidentTransactionEntity> residentTxnList = repo
-				.findByStatusCodeIn(List.of(NEW, ISSUED, RECEIVED, PRINTING, FAILED, DELIVERED,PAYMENT_CONFIRMED,IN_TRANSIT));
+				.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(List.of(statusCodes.split(",")), List.of(requestTypeCodes.split(",")));
 			for (ResidentTransactionEntity txn : residentTxnList) {
 				logger.info("Processing event:" + txn.getEventId());
-				handleWithTryCatch( () -> updateDownloadPersonalizedCardTxnStatus(txn));
 				handleWithTryCatch( () -> updateVidCardDownloadTxnStatus(txn));
 				handleWithTryCatch( () -> updateOrderPhysicalCardTxnStatus(txn));
 				handleWithTryCatch( () -> updateShareCredentialWithPartnerTxnStatus(txn));
 				handleWithTryCatch( () -> updateUinDemoDataUpdateTxnStatus(txn));
 			}
 		repo.saveAll(residentTxnList);
-	}
-
-	private void updateDownloadPersonalizedCardTxnStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getRequestTypeCode().contentEquals(DOWNLOAD_PERSONALIZED_CARD.name())) {
-			trackAndUpdateNewOrIssuedStatus(txn);
-			trackAnddownloadPrintingOrReceivedStatus(txn,TemplateType.SUCCESS,RequestType.DOWNLOAD_PERSONALIZED_CARD);
-			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.DOWNLOAD_PERSONALIZED_CARD);
-			
-		}
 	}
 
 	private void updateVidCardDownloadTxnStatus(ResidentTransactionEntity txn)
