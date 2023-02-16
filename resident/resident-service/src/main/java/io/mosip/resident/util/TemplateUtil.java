@@ -145,7 +145,7 @@ import java.util.Optional;
 
     private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
         return getTemplateValueFromTemplateTypeCodeAndLangCode
-                (AuthenticationModeEnum.getTemplatePropertyName(authenticationMode), languageCode);
+                (AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env), languageCode);
     }
 
     public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode){
