@@ -124,7 +124,8 @@ public enum ResidentErrorCode {
 			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session."),
 	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB."),
 	CHAR_LIMIT_EXCEEDS("RES-SER-514","Input text size exceeds the limit; Character limit=%d; inputType=%s"),
-	CONTAINS_SPECIAL_CHAR("RES-SER-515","Input text contains special characters;inputType=%s");
+	CONTAINS_SPECIAL_CHAR("RES-SER-515","Input text contains special characters;inputType=%s"),
+	UN_SUPPORTED_FILE_TYPE("RES-SER-516", "Unsupported file type. Supported file extensions: jpg, jpeg, png, pdf");
 	
 
 
