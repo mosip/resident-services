@@ -1137,6 +1137,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
+		residentTransactionEntity.setIndividualId(dto.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		Map<String, ?> identityMap;
@@ -1299,6 +1300,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
@@ -1907,11 +1909,11 @@ public class ResidentServiceImpl implements ResidentService {
 		Map<String, String> templateResponse = new LinkedHashMap<>(
 				(Map<String, String>) proxyResponseWrapper.getResponse());
 		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
-		return replacePlaceholderValueInTemplate(fileText, eventId, requestType);
+		return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 	}
 
-	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
-		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText);
+	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType, String langCode) {
+		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText, langCode);
 	}
 
 	public String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
@@ -1924,7 +1926,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 			Map<String, String> templateResponse = new LinkedHashMap<>(
 					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType);
+			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType, langCode);
 		} else {
 			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}
@@ -2023,6 +2025,7 @@ public class ResidentServiceImpl implements ResidentService {
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
 			} else {
+				audit.setAuditRequestDto(EventEnum.CHECK_AID_STATUS_REQUEST_FAILED);
 				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 			}
 			RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);

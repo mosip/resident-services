@@ -225,7 +225,9 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
         residentTransactionEntity.setAttributeList(userId);
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
+        String individualId = identityServiceImpl.getResidentIndvidualId();
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
 		if (requestValidator.phoneValidator(userId)) {

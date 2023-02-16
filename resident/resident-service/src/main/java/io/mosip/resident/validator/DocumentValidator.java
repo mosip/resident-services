@@ -8,7 +8,10 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.ProxyMasterdataService;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -22,10 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 
 import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
+import static io.mosip.resident.constant.ResidentErrorCode.UN_SUPPORTED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
 /**
@@ -35,6 +40,10 @@ import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
  */
 @Component
 public class DocumentValidator implements Validator {
+
+	private static final String DOC_TYP_CODE = "docTypCode";
+
+	private static final String DOC_CAT_CODE = "docCatCode";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(DocumentValidator.class);
 
@@ -46,7 +55,10 @@ public class DocumentValidator implements Validator {
 
 	@Autowired
 	private RequestValidator requestValidator;
-	
+
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
+
 	@Value("${mosip.max.file.upload.size.in.bytes}")
 	private int maxFileUploadSize;
 
@@ -65,17 +77,36 @@ public class DocumentValidator implements Validator {
 	 * @param langCode 
 	 * @param docTypCode 
 	 * @param docCatCode 
+	 * @throws ResidentServiceCheckedException 
 	 *
 	 */
-	public void validateRequest(String docCatCode, String docTypCode, String langCode) {
+	public void validateRequest(String docCatCode, String docTypCode, String langCode) throws ResidentServiceCheckedException {
 
 		if (docCatCode == null || StringUtils.isEmpty(docCatCode)) {
-			throw new InvalidInputException("docCatCode");
+			throw new InvalidInputException(DOC_CAT_CODE);
 		}
 		if (docTypCode == null || StringUtils.isEmpty(docTypCode)) {
-			throw new InvalidInputException("docTypCode");
+			throw new InvalidInputException(DOC_TYP_CODE);
 		}
 		requestValidator.validateOnlyLanguageCode(langCode);
+		validateDocCatCode(docCatCode, langCode);
+		validateDocTypeCode(docCatCode, docTypCode, langCode);
+	}
+
+	public void validateDocCatCode(String docCatCode, String langCode) throws ResidentServiceCheckedException {
+		List<String> docCatCodeList = proxyMasterdataService.getValidDocCatAndTypeList(langCode).getT1();
+		if (!docCatCodeList.contains(docCatCode.toLowerCase())) {
+			throw new InvalidInputException(DOC_CAT_CODE);
+		}
+	}
+
+	public void validateDocTypeCode(String docCatCode, String docTypeCode, String langCode)
+			throws ResidentServiceCheckedException {
+		List<String> docTypeCodeList = proxyMasterdataService.getValidDocCatAndTypeList(langCode).getT2()
+				.get(docCatCode);
+		if (!docTypeCodeList.contains(docTypeCode.toLowerCase())) {
+			throw new InvalidInputException(DOC_TYP_CODE);
+		}
 	}
 
 	/**
@@ -128,7 +159,7 @@ public class DocumentValidator implements Validator {
 		String extension = Objects.requireNonNull(FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase();
 		String extensionProperty = Objects.requireNonNull(env.getProperty(ALLOWED_FILE_TYPE)).toLowerCase();
 		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
-			throw new InvalidInputException(ResidentConstants.FILE_NAME);
+			throw new ResidentServiceException(UN_SUPPORTED_FILE_TYPE.getErrorCode(), UN_SUPPORTED_FILE_TYPE.getErrorMessage());
 		}
 		if (file.getSize() > maxFileUploadSize) {
 			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());

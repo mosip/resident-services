@@ -206,6 +206,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setStatusComment(String.valueOf(CARD_DOWNLOADED));
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(
                 downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
+        residentTransactionEntity.setIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
         residentTransactionEntity.setTokenId(identityService.getIDAToken(
                 downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
         residentTransactionEntity.setRequestTrnId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
@@ -268,7 +269,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
         residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
-        residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityService.getResidentIndvidualId()));
+        String individualId = identityService.getResidentIndvidualId();
+        residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+        residentTransactionEntity.setIndividualId(individualId);
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
         return residentTransactionEntity;
 	}
@@ -332,6 +335,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     			if(!uinForIndividualId.equals(uinForVid)) {
                 		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
                     	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+                    	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
                     	throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
     							Map.of(ResidentConstants.EVENT_ID, eventId));
     			}
@@ -367,6 +371,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
         } catch (ApisResourceAccessException e) {
+        	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
         	if (residentTransactionEntity != null) {
         		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -422,6 +427,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
         residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(uin));
+        residentTransactionEntity.setIndividualId(uin);
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
         residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
         residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());

@@ -95,12 +95,13 @@ public class DocumentController {
 		try {
 			validator.validateRequest(docCatCode,docTypCode,langCode);
 			validator.validateFileName(file);
+			validator.scanForViruses(file);
 			DocumentRequestDTO docRequest = new DocumentRequestDTO();
 			docRequest.setDocCatCode(docCatCode.toLowerCase());
 			docRequest.setDocTypCode(docTypCode);
 			docRequest.setLangCode(langCode);
 			docRequest.setReferenceId(referenceId);
-			validator.scanForViruses(file);
+
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
