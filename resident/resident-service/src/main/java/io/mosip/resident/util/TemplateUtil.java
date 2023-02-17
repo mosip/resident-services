@@ -446,7 +446,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = new HashMap<>();
  		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
- 		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode(), dto.getEventId()));
+ 		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode()));
  		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().name());
  		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
  		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
@@ -471,13 +471,13 @@ import java.util.Optional;
  		return DateUtils.getUTCCurrentDateTimeString(templateDatePattern);
  	}
      
-     private String getName(String language, String eventId) {
+     private String getName(String language) {
  		String name = "";
  		try {
- 			String id = getEntityFromEventId(eventId).getIndividualId();
+ 			String id = identityServiceImpl.getResidentIndvidualId();
  			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
  			name=identityServiceImpl.getNameForNotification(idMap, language);
- 		} catch (ResidentServiceCheckedException | IOException e) {
+ 		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException e) {
  			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                      ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
  		}
