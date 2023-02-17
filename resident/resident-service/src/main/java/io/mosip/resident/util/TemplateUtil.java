@@ -155,7 +155,7 @@ import java.util.Optional;
 
     private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
         return getTemplateValueFromTemplateTypeCodeAndLangCode
-                (AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env), languageCode);
+                (languageCode, AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env));
     }
 
     public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode){
@@ -254,7 +254,8 @@ import java.util.Optional;
 	}
 
     public String getFeatureName(String eventId){
-    	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, null, ResidentConstants.UTC_TIMEZONE_OFFSET);
+    	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
+                this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), ResidentConstants.UTC_TIMEZONE_OFFSET);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         return templateVariables.get(TemplateVariablesConstants.EVENT_TYPE);
     }
