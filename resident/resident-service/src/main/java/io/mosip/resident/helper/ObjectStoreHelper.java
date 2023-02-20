@@ -209,7 +209,7 @@ public class ObjectStoreHelper {
 	 * @param toEncrypt true if you want to encrypt, false if you want to decrypt
 	 * @return ResponseWrapper<Map<String, Object>>
 	 */
-	private String encryptDecryptData(String data, boolean toEncrypt, String applicationId, String referenceId) {
+	public String encryptDecryptData(String data, boolean toEncrypt, String applicationId, String referenceId) {
 		try {
 			CryptomanagerRequestDto request = new CryptomanagerRequestDto();
 			request.setApplicationId(applicationId);
