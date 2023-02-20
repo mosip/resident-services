@@ -80,8 +80,8 @@ public class DocumentValidator implements Validator {
 	 * @throws ResidentServiceCheckedException 
 	 *
 	 */
-	public void validateRequest(String docCatCode, String docTypCode, String langCode) throws ResidentServiceCheckedException {
-
+	public void validateRequest(String transactionId, String docCatCode, String docTypCode, String langCode) throws ResidentServiceCheckedException {
+		requestValidator.validateTransactionId(transactionId);
 		if (docCatCode == null || StringUtils.isEmpty(docCatCode)) {
 			throw new InvalidInputException(DOC_CAT_CODE);
 		}

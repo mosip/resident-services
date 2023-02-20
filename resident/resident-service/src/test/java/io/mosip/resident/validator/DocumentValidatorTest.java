@@ -69,7 +69,7 @@ public class DocumentValidatorTest {
 		request.setDocCatCode("poi");
 		request.setDocTypCode("cob");
 		request.setLangCode("c");
-		validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+		validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class DocumentValidatorTest {
 			request.setDocCatCode(null);
 			request.setDocTypCode("poi12");
 			request.setLangCode("eng");
-			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (InvalidInputException e) {
 			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"), e.getMessage());
 		}
@@ -90,7 +90,7 @@ public class DocumentValidatorTest {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("");
-			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (InvalidInputException e) {
 			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"), e.getMessage());		}
 	}
@@ -101,7 +101,7 @@ public class DocumentValidatorTest {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("a");
 			request.setDocTypCode(null);
-			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (InvalidInputException e) {
 			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"), e.getMessage());		
 		}
@@ -113,7 +113,7 @@ public class DocumentValidatorTest {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("a");
 			request.setDocTypCode("");
-			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (InvalidInputException e) {
 			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"), e.getMessage());
 		}
@@ -126,7 +126,7 @@ public class DocumentValidatorTest {
 			request.setDocCatCode("poa");
 			request.setDocTypCode("coa");
 			request.setLangCode(null);
-			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (InvalidInputException e) {
 			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "langCode"), e.getMessage());
 		}
@@ -139,7 +139,7 @@ public class DocumentValidatorTest {
 			request.setDocCatCode("poi");
 			request.setDocTypCode("cob");
 			request.setLangCode(" ");
-			validator.validateRequest(request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
 		} catch (ResidentServiceException e) {
 			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "langCode"), e.getMessage());
 		}
