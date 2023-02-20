@@ -98,11 +98,23 @@ public class LoginCheck {
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
 	
+	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..))")
+	public void login() {
+	}
+
+	@AfterThrowing(pointcut = "login()", throwing = "e")
+	public void onLoginReqFailure(RuntimeException e) {
+		logger.debug("LoginCheck::onLoginReqFailure()::entry");
+		audit.setAuditRequestDto(EventEnum.LOGIN_REQ_FAILURE);
+	}
+
 	@Before("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..)) && args(state,redirectURI,stateParam,res)")
 	public void onLoginReq(String state, String redirectURI, String stateParam, HttpServletResponse res) {
+		logger.debug("LoginCheck::onLoginReq()::entry");
 		if (res.getStatus() == resStatusCode) {
 			audit.setAuditRequestDto(EventEnum.LOGIN_REQ);
 		}
+		logger.debug("LoginCheck::onLoginReq()::exit");
 	}
 
 	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..))")
@@ -111,17 +123,20 @@ public class LoginCheck {
 
 	@AfterThrowing(pointcut = "loginRedirect()", throwing = "e")
 	public void onLoginFailure(RuntimeException e) {
+		logger.debug("LoginCheck::onLoginFailure()::entry");
 		audit.setAuditRequestDto(EventEnum.LOGIN_REQ_FAILURE);
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..)) && args(token,redirectURI,res)")
 	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) {
+		logger.debug("LoginCheck::onLogoutSuccess()::entry");
 		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ);
 		if (res.getStatus() == resStatusCode) {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_SUCCESS);
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
+		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}
 
 	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..))")
@@ -130,11 +145,13 @@ public class LoginCheck {
 
 	@AfterThrowing(pointcut = "logoutUser()", throwing = "e")
 	public void onLogoutFailure(RuntimeException e) {
+		logger.debug("LoginCheck::onLogoutFailure()::entry");
 		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.validateAdminToken(..)) && args(request,res)")
 	public void onValidateTokenSuccess(HttpServletRequest request, HttpServletResponse res) {
+		logger.debug("LoginCheck::onValidateTokenSuccess()::entry");
 		String authToken = null;
 		Cookie[] cookies = request.getCookies();
 		for (Cookie cookie : cookies) {
@@ -146,6 +163,7 @@ public class LoginCheck {
 		if (authToken == null) {
 			audit.setAuditRequestDto(EventEnum.VALIDATE_TOKEN_FAILURE);
 		}
+		logger.debug("LoginCheck::onValidateTokenSuccess()::exit");
 	}
 
 	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.validateAdminToken(..))")
@@ -154,6 +172,7 @@ public class LoginCheck {
 
 	@AfterThrowing(pointcut = "validateAdminToken()", throwing = "e")
 	public void onValidateTokenFailure(RuntimeException e) {
+		logger.debug("LoginCheck::onValidateTokenFailure()::entry");
 		audit.setAuditRequestDto(EventEnum.VALIDATE_TOKEN_FAILURE);
 	}
 	
