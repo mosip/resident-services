@@ -8,10 +8,12 @@ import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AutnTxnDto;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -20,6 +22,7 @@ import io.mosip.resident.service.impl.PartnerServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
@@ -78,6 +82,15 @@ public class ResidentServiceGetServiceHistoryTest {
 
     @Mock
     private IdAuthService idAuthServiceImpl;
+
+    @Mock
+    private Environment environment;
+
+    @Mock
+    private ResidentSessionRepository residentSessionRepository;
+
+    @Mock
+    private Utility utility;
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -95,6 +108,8 @@ public class ResidentServiceGetServiceHistoryTest {
 
     private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper;
     private Query query;
+
+    private ResidentSessionEntity residentSessionEntity;
 
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
@@ -137,6 +152,13 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+
+        Mockito.when(identityServiceImpl.getAvailableclaimValue(Mockito.anyString())).thenReturn("Kamesh");
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
+        residentSessionEntity = new ResidentSessionEntity();
+        residentSessionEntity.setHost("localhost");
+        Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(
+                Mockito.anyString())).thenReturn(List.of(residentSessionEntity));
     }
 
     @Test
@@ -251,5 +273,18 @@ public class ResidentServiceGetServiceHistoryTest {
         assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, false).getAidStatus());
     }
 
+    @Test
+    public void testGetUserinfo() throws ApisResourceAccessException {
+        assertEquals("Kamesh",
+                residentServiceImpl.getUserinfo("ida_token", 0).getResponse().getFullName());
+    }
+
+    @Test
+    public void testGetUserinfoMultipleLoginTime() throws ApisResourceAccessException {
+        Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(
+                Mockito.anyString())).thenReturn(List.of(residentSessionEntity, residentSessionEntity));
+        assertEquals("Kamesh",
+                residentServiceImpl.getUserinfo("ida_token", 0).getResponse().getFullName());
+    }
 
 }
