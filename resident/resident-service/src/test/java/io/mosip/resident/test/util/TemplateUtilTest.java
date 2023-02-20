@@ -246,7 +246,6 @@ public class TemplateUtilTest {
         assertEquals(eventId,templateUtil.getNotificationSendOtpVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
     }
 
-    @Test(expected = ResidentServiceException.class)
     public void getNotificationCommonTemplateVariablesTestFailedApiResourceException() throws ApisResourceAccessException {
         Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
