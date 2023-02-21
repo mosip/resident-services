@@ -66,6 +66,7 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
+				auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION);
 				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
