@@ -1720,10 +1720,7 @@ public class ResidentServiceImpl implements ResidentService {
 		Pageable pageable = PageRequest.of(pageStart, pageFetch,
 				combinedSort);
 		Page<ResidentTransactionEntity> residentTransactionEntityPage = null;
-		if(statusFilter==null && searchText == null && fromDateTime == null && toDateTime == null && serviceType == null){
-			residentTransactionEntityPage =
-					residentTransactionRepository.findByTokenId(tokenId, pageable);
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase(ALL)
+		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase(ALL)
 				&& statusFilter != null && searchText != null) {
 			residentTransactionEntityPage= residentTransactionRepository.
 					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
@@ -1787,6 +1784,9 @@ public class ResidentServiceImpl implements ResidentService {
 			);
 		} else if(searchText != null){
 			residentTransactionEntityPage = residentTransactionRepository.findByEventIdLike(searchText, pageable);
+		} else {
+			residentTransactionEntityPage =
+					residentTransactionRepository.findByTokenId(tokenId, pageable);
 		}
 		if(residentTransactionEntityPage == null ){
 			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB.getErrorCode(),
