@@ -737,13 +737,62 @@ public enum EventEnum {
 			"get gender code by genderName and langCode is succeeded", "RES-SER", "Residence service", "NO_ID",
 			"NO_ID_TYPE", RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	INVALID_PAGE_INDEX_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
-			"Invalid page index value %s", "RES-SER", "Residence service", "%s", "pageIndex",
+	INVALID_PAGE_START_VALUE("RES-SER-446", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page start value %s", "RES-SER", "Residence service", "%s", "pageStart",
 			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
 	
-	INVALID_PAGE_SIZE_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
-			"Invalid page size value %s", "RES-SER", "Residence service", "%s", "pageSize",
-			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME);
+	INVALID_PAGE_FETCH_VALUE("RES-SER-447", RegistrationConstants.SYSTEM, "%s",
+			"Invalid page fetch value %s", "RES-SER", "Residence service", "%s", "pageFetch",
+			RegistrationConstants.APPLICATIONID, RegistrationConstants.APPLICATIONNAME),
+	
+	LOGIN_REQ("RES-SER-281", RegistrationConstants.SYSTEM,
+			"Login Request",
+			"Login Request", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	LOGIN_REQ_SUCCESS("RES-SER-282", RegistrationConstants.SYSTEM,
+			"Login Request Success",
+			"Login request is success", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	LOGIN_REQ_FAILURE("RES-SER-283", RegistrationConstants.SYSTEM,
+			"Login Request Failed",
+			"Login request is failed", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	LOGOUT_REQ("RES-SER-284", RegistrationConstants.SYSTEM,
+			"Logout Request",
+			"Logout Request", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	LOGOUT_REQ_SUCCESS("RES-SER-285", RegistrationConstants.SYSTEM,
+			"Logout Request Success",
+			"Logout request is success", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	LOGOUT_REQ_FAILURE("RES-SER-286", RegistrationConstants.SYSTEM,
+			"Logout Request Failed",
+			"Logout request is failed", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	VALIDATE_TOKEN_SUCCESS("RES-SER-287", RegistrationConstants.SYSTEM,
+			"Validate Token Success",
+			"Validate token is success", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME),
+	
+	VALIDATE_TOKEN_FAILURE("RES-SER-288", RegistrationConstants.SYSTEM,
+			"Validate Token Failed",
+			"Validate token is failed", "RES-SER",
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
+			RegistrationConstants.APPLICATION_NAME);
+	
 
 
 	private final String eventId;

@@ -107,9 +107,15 @@ public class AuditUtil {
 			} catch (ApisResourceAccessException e) {
 				throw new RuntimeException(e);
 			}
-			auditRequestDto.setSessionUserId(name);
-			auditRequestDto.setSessionUserName(name);
-			auditRequestDto.setCreatedBy(name);
+			if (name == null || name.trim().isEmpty()) {
+				auditRequestDto.setSessionUserId("UnknownSessionId");
+				auditRequestDto.setSessionUserName("UnknownSessionName");
+				auditRequestDto.setCreatedBy("Unknown");
+			} else {
+				auditRequestDto.setSessionUserId(name);
+				auditRequestDto.setSessionUserName(name);
+				auditRequestDto.setCreatedBy(name);
+			}
 		}
 		auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
 		auditRequestDto.setDescription(eventEnum.getDescription());
