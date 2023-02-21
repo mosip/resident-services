@@ -1683,7 +1683,7 @@ public class RegistrationConstants {
 	
 	public static final  String RESIDENT_APPLICATION_NAME="Resident Service";
 	
-	public static final  String RESIDENT_APPLICATION_ID="10011";
+	public static final  String RESIDENT_APPLICATION_ID="RES_SER";
 	
 	
 
