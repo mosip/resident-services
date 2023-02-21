@@ -1681,7 +1681,7 @@ public class RegistrationConstants {
 	public static final String SYNCSTATUSCOMMENT = "UIN Reactivation and Deactivation By External Resources";
 	public static final String EXTENSION_OF_FILE = ".zip";
 	
-	public static final  String RESIDENT_APPLICATION_NAME="Resident portal";
+	public static final  String RESIDENT_APPLICATION_NAME="Resident Service";
 	
 	public static final  String RESIDENT_APPLICATION_ID="10011";
 	
