@@ -748,50 +748,50 @@ public enum EventEnum {
 	LOGIN_REQ("RES-SER-281", RegistrationConstants.SYSTEM,
 			"Login Request",
 			"Login Request", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	LOGIN_REQ_SUCCESS("RES-SER-282", RegistrationConstants.SYSTEM,
 			"Login Request Success",
 			"Login request is success", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	LOGIN_REQ_FAILURE("RES-SER-283", RegistrationConstants.SYSTEM,
 			"Login Request Failed",
 			"Login request is failed", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	LOGOUT_REQ("RES-SER-284", RegistrationConstants.SYSTEM,
 			"Logout Request",
 			"Logout Request", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	LOGOUT_REQ_SUCCESS("RES-SER-285", RegistrationConstants.SYSTEM,
 			"Logout Request Success",
 			"Logout request is success", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	LOGOUT_REQ_FAILURE("RES-SER-286", RegistrationConstants.SYSTEM,
 			"Logout Request Failed",
 			"Logout request is failed", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	VALIDATE_TOKEN_SUCCESS("RES-SER-287", RegistrationConstants.SYSTEM,
 			"Validate Token Success",
 			"Validate token is success", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME),
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME),
 	
 	VALIDATE_TOKEN_FAILURE("RES-SER-288", RegistrationConstants.SYSTEM,
 			"Validate Token Failed",
 			"Validate token is failed", "RES-SER",
-			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATION_ID,
-			RegistrationConstants.APPLICATION_NAME);
+			"Resident service", "NO_ID", "NO_ID_TYPE", RegistrationConstants.APPLICATIONID,
+			RegistrationConstants.APPLICATIONNAME);
 	
 
 
