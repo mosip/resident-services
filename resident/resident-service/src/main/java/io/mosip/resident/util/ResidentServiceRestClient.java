@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +8,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -46,15 +44,8 @@ public class ResidentServiceRestClient {
 
 	private RestTemplate residentRestTemplate;
 	
-
 	@Autowired
 	Environment environment;
-	
-	@Value("${mosip.resident.revokevid.url}")
-	private String allowedUrl;
-	
-	@Value("${mosip.kernel.vid.length}")
-	private int vidLength;
 	
 	public ResidentServiceRestClient() {
 		this(new RestTemplate());
@@ -239,21 +230,6 @@ public class ResidentServiceRestClient {
 			throw new ApisResourceAccessException("Exception occurred while accessing " + uri, e);
 		}
 	}
-	
-	
-	/**
-	 * Method to validate URL
-	 *
-	 * @param uri
-	 * @throws ApisResourceAccessException
-	 */
-	public void validateUrl(String uri) throws ApisResourceAccessException {
-		String url = uri.substring(0, uri.length() - vidLength);
-		if (allowedUrl.contains(url));
-		else {
-			throw new ApisResourceAccessException("Exception occurred while accessing" + uri);
-		}
-	}
 
 	/**
 	 * Patch api.
@@ -265,14 +241,13 @@ public class ResidentServiceRestClient {
 	 * @return the t
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T patchApi(URI uri, MediaType mediaType, Object requestType, Class<?> responseClass)
+	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		T result = null;
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-
-			validateUrl(uri.toString());
+			
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
@@ -286,7 +261,7 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	public <T> T patchApi(URI uri, Object requestType, Class<?> responseClass) throws Exception {
+	public <T> T patchApi(String uri, Object requestType, Class<?> responseClass) throws Exception {
 		return patchApi(uri, null, requestType, responseClass);
 	}
 
