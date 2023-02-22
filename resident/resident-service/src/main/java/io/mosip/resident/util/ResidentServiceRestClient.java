@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -48,6 +49,12 @@ public class ResidentServiceRestClient {
 
 	@Autowired
 	Environment environment;
+	
+	@Value("${mosip.resident.revokevid.url}")
+	private String allowedUrl;
+	
+	@Value("${mosip.kernel.vid.length}")
+	private int vidLength;
 	
 	public ResidentServiceRestClient() {
 		this(new RestTemplate());
@@ -237,17 +244,14 @@ public class ResidentServiceRestClient {
 	/**
 	 * Method to validate URL
 	 *
-	 * @param url  
-	 * @throws ApisResourceAccessException 
+	 * @param uri
+	 * @throws ApisResourceAccessException
 	 */
-	public void validateURL(String url) throws ApisResourceAccessException {
-		try {
-			new URL(url).toURI();
-		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(), e.getMessage() + ExceptionUtils.getStackTrace(e));
-
-			throw new ApisResourceAccessException("Invalid URL" + url, e);
+	public void validateUrl(String uri) throws ApisResourceAccessException {
+		String url = uri.substring(0, uri.length() - vidLength);
+		if (allowedUrl.contains(url));
+		else {
+			throw new ApisResourceAccessException("Exception occurred while accessing" + uri);
 		}
 	}
 
@@ -267,8 +271,8 @@ public class ResidentServiceRestClient {
 		try {
 			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
-			
-			validateURL(uri.toString());
+
+			validateUrl(uri.toString());
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 

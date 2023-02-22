@@ -56,6 +56,7 @@ public class ResidentServiceRestClientTest {
 	public void setup() {
 		ReflectionTestUtils.setField(residentServiceRestClient, "builder", builder);
 		ReflectionTestUtils.setField(residentServiceRestClient, "environment", environment);
+		ReflectionTestUtils.setField(residentServiceRestClient, "allowedUrl", "https://int.mosip.io/idrepository/v1/vid/4275865915328409");
 	}
 
 	@Test
@@ -277,7 +278,7 @@ public class ResidentServiceRestClientTest {
 	public void testpatchApi() throws Exception {
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		autnTxnResponseDto.setId("ancd");
-		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234").build(false).encode().toUri();
+		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/idrepository/v1/vid/4275865915328409").build(false).encode().toUri();
 		
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
 		when(residentRestTemplate.patchForObject(any(URI.class), any(), Matchers.<Class<AutnTxnResponseDto>>any()))
@@ -290,7 +291,7 @@ public class ResidentServiceRestClientTest {
 	public void testpatchApiException() throws Exception {
 		AutnTxnResponseDto autnTxnResponseDto = new AutnTxnResponseDto();
 		autnTxnResponseDto.setId("ancd");
-		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/individualIdType/UIN/individualId/1234").build(false).encode().toUri();
+		URI uri = UriComponentsBuilder.fromUriString("https://int.mosip.io/idrepository/v1/vid/4275865915328409").build(false).encode().toUri();
 
 		ResidentServiceRestClient client = Mockito.spy(residentServiceRestClient);
 		when(residentRestTemplate.patchForObject(any(URI.class), any(), Matchers.<Class<AutnTxnResponseDto>>any()))
