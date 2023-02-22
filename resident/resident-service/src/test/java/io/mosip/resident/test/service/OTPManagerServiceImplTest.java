@@ -141,7 +141,6 @@ public class OTPManagerServiceImplTest {
         Mockito.when(environment.getProperty("otp.request.flooding.duration", Long.class)).thenReturn(45L);
         Mockito.when(environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)).thenReturn(45L);
         Mockito.when(environment.getProperty("otp.request.flooding.max-count", Integer.class)).thenReturn(8);
-        Mockito.when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("EMAIL"));
 }
 
     @Test

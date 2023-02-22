@@ -28,6 +28,8 @@ import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuple2;
+
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -180,14 +182,16 @@ public class OtpManagerServiceImpl implements OtpManager {
     }
 
     @Override
-    public boolean validateOtp(String otp, String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public boolean 	validateOtp(String otp, String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
         logger.info("sessionId", "idType", "id", "In validateOtp method of otpmanager service ");
         String otpHash;
         otpHash = digestAsPlainText(
                 (userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+transactionId).getBytes());
 
-        if (!otpRepo.existsByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS))
+        if (!otpRepo.existsByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS)) {
             return false;
+        }
+        
         OtpTransactionEntity otpTxn = otpRepo.findTopByOtpHashAndStatusCode(otpHash, PreRegLoginConstant.ACTIVE_STATUS);
         otpTxn.setStatusCode(PreRegLoginConstant.USED_STATUS);
         otpRepo.save(otpTxn);
@@ -197,11 +201,10 @@ public class OtpManagerServiceImpl implements OtpManager {
             throw new ResidentServiceException(ResidentErrorCode.EXPIRED_OTP.getErrorCode(),
                     ResidentErrorCode.EXPIRED_OTP.getErrorMessage());
         }
-        updateUinData(userId, transactionId);
         return true;
     }
 
-    public void updateUinData(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
         String individualId= identityService.getResidentIndvidualId();
         String individualIdType = templateUtil.getIndividualIdType();
@@ -209,7 +212,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         residentUpdateRequestDto.setConsent(ACCEPTED);
         residentUpdateRequestDto.setIdentityJson(getIdentityJson(individualId, transactionId, userId, individualIdType));
         residentUpdateRequestDto.setIndividualIdType(individualIdType);
-        residentService.reqUinUpdate(residentUpdateRequestDto);
+        return residentService.reqUinUpdate(residentUpdateRequestDto);
     }
 
     public String getIdentityJson(String individualId, String transactionId, String userId, String individualIdType) {
