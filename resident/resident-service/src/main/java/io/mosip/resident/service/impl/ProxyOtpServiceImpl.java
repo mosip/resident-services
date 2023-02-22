@@ -147,10 +147,11 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         try {
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
+            String transactionId = user.getTransactionId();
+			boolean validated = otpManager.validateOtp(user.getOtp(), userid, transactionId);
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
-                Tuple2<Object, String> updateResult = otpManager.updateUserId(userid, eventId);
+                Tuple2<Object, String> updateResult = otpManager.updateUserId(userid, transactionId);
                 eventId = updateResult.getT2();
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
                 authresponse.setStatus(PreRegLoginConstant.SUCCESS);
@@ -162,8 +163,8 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             isSuccess = true;
         } catch (ResidentServiceException ex) {
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
+            ex.setMetadata(Map.of(ResidentConstants.EVENT_ID, eventId));
+			throw ex;
         } catch (RuntimeException ex) {
             log.error("In calluserIdOtp method of login service- ", ex);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
