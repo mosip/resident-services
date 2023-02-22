@@ -218,9 +218,4 @@ public class ResidentConstants {
     public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
     public static final CharSequence ATTRIBUTES = "attributes";
-
-    public static final String DEFAULT_START_YEAR_OF_VIEW_SERVICE_HISTORY = "mosip.default.start.year.of.view.service.history";
-    public static final String DEFAULT_START_MONTH_OF_VIEW_SERVICE_HISTORY = "mosip.default.start.month.of.view.service.history";
-    public static final String DEFAULT_START_DAY_OF_VIEW_SERVICE_HISTORY = "mosip.default.start.day.of.view.service.history";
-
 }

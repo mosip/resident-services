@@ -2165,12 +2165,7 @@ public class ResidentServiceImpl implements ResidentService {
 			eventReqDateTime = DateUtils.getUTCCurrentDateTime();
 		}
 		if(fromDate == null){
-			fromDate = LocalDate.of(Integer.parseInt(Objects.requireNonNull(
-					this.env.getProperty(ResidentConstants.DEFAULT_START_YEAR_OF_VIEW_SERVICE_HISTORY))),
-					Month.of(Integer.parseInt((Objects.requireNonNull(this.env.getProperty(
-							ResidentConstants.DEFAULT_START_MONTH_OF_VIEW_SERVICE_HISTORY))))),
-					Integer.parseInt(Objects.requireNonNull(this.env.getProperty(
-							ResidentConstants.DEFAULT_START_DAY_OF_VIEW_SERVICE_HISTORY))));
+			fromDate = LocalDate.of(LocalDate.now().getYear(), Month.JANUARY, 1);
 		}
 		if(toDate == null){
 			toDate = LocalDate.now();
