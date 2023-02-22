@@ -82,10 +82,16 @@ public class LoginCheckTest {
 
 	@Test
 	public void tearDown() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Mockito.when(identityServiceImpl.createSessionId()).thenReturn(null);
 		loginCheck.getUserDetails("aHR0cHM6Ly9yZXNpZGVudC5kZ", "ce0dfae2-5dc3-4c2b", "733d8aa0-a53b-42e1",
 				"51a3f4c2-c029-490b.730-0c60476d94f2", "ce0dfae2-5dc3-4c2b", request, response);
 	}
 
+	@Test
+	public void tearDownFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		loginCheck.getUserDetails("aHR0cHM6Ly9yZXNpZGVudC5kZ", "ce0dfae2-5dc3-4c2b", "733d8aa0-a53b-42e1",
+				"51a3f4c2-c029-490b.730-0c60476d94f2", "ce0dfae2-5dc3-4c2b", request, response);
+	}
 	@Test
 	public void testGetUserDetailsWithMac() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("User-Agent:Mac");
@@ -124,6 +130,31 @@ public class LoginCheckTest {
 	@Test
 	public void testOnLoginReqFailure(){
 		loginCheck.onLoginReqFailure(null);
+	}
+
+	@Test
+	public void testLogin(){
+		loginCheck.login();
+	}
+
+	@Test
+	public void testLogoutUser(){
+		loginCheck.logoutUser();
+	}
+
+	@Test
+	public void testValidateAdminToken(){
+		loginCheck.validateAdminToken();
+	}
+
+	@Test
+	public void testOnValidateTokenFailureFailed(){
+		loginCheck.onValidateTokenFailure(new RuntimeException());
+	}
+
+	@Test
+	public void testLoginRedirect(){
+		loginCheck.loginRedirect();
 	}
 
 	@Test
