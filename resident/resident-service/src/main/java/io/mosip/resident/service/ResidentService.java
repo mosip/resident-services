@@ -46,7 +46,7 @@ public interface ResidentService {
 
 	public AuthHistoryResponseDTO reqAuthHistory(AuthHistoryRequestDTO dto) throws ResidentServiceCheckedException;
 
-	public Object reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 	
 	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject) throws ResidentServiceCheckedException;
 	

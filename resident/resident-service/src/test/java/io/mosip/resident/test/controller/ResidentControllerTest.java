@@ -71,6 +71,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
+
+import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 import javax.crypto.SecretKey;
@@ -411,7 +413,7 @@ public class ResidentControllerTest {
 		reqWrapper.setRequest(dto);
 		reqWrapper.setId("mosip.resident.uin");
 		reqWrapper.setVersion("v1");
-		Mockito.when(residentService.reqUinUpdate(Mockito.any())).thenReturn(new Object());
+		Mockito.when(residentService.reqUinUpdate(Mockito.any())).thenReturn(Tuples.of(new Object(), "123"));
 		String requestAsString = gson.toJson(reqWrapper);
 		this.mockMvc.perform(post("/req/update-uin").contentType(MediaType.APPLICATION_JSON).content(requestAsString))
 				.andExpect(status().isOk());
