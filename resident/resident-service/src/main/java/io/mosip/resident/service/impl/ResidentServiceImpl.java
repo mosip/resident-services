@@ -9,7 +9,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -31,7 +30,6 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -39,6 +37,10 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -183,13 +185,16 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String UIN = "uin";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
-	private static final Integer DEFAULT_PAGE_INDEX = 0;
-	private static final Integer DEFAULT_PAGE_SIZE = 10;
+	private static final Integer DEFAULT_PAGE_START = 0;
+	private static final Integer DEFAULT_PAGE_COUNT = 10;
 	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
+	private static final String CREATED_DATE_TIME = "crDtimes";
+	private static final String PINNED_STATUS = "pinnedStatus";
+	private static final String MODULO_OPERATOR = "%";
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -261,9 +266,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
 
-	@Value("${ida.online-verification-partner-id}")
-	private String onlineVerificationPartnerId;
-
 	@Autowired
 	private AuditUtil audit;
 
@@ -278,9 +280,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
-
-	@Autowired
-	private EntityManager entityManager;
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
@@ -1542,36 +1541,36 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 	
 	@Override
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageIndex, Integer pageSize,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																				 String statusFilter, String searchText, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
-		if (pageIndex == null) {
-			if (pageSize == null) {
-				// If both Page index and page size values are null return all records
-				pageIndex = DEFAULT_PAGE_INDEX;
-				pageSize = DEFAULT_PAGE_SIZE;
+		if (pageStart == null) {
+			if (pageFetch == null) {
+				// If both Page start and page fetch values are null return all records
+				pageStart = DEFAULT_PAGE_START;
+				pageFetch = DEFAULT_PAGE_COUNT;
 			} else {
-				pageIndex = DEFAULT_PAGE_INDEX;
+				pageStart = DEFAULT_PAGE_START;
 			}
 		} else {
-			if (pageSize == null) {
-				pageSize = DEFAULT_PAGE_SIZE;
+			if (pageFetch == null) {
+				pageFetch = DEFAULT_PAGE_COUNT;
 			}
 		}
-		if (pageIndex < 0) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_INDEX_VALUE,
-					pageIndex.toString(), "Invalid page index value"));
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_INDEX_VALUE);
-		} else if (pageSize < 0) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_SIZE_VALUE,
-					pageSize.toString(), "Invalid page size value"));
-			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_SIZE_VALUE);
+		if (pageStart < 0) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_START_VALUE,
+					pageStart.toString(), "Invalid page start value"));
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
+		} else if (pageFetch < 0) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_FETCH_VALUE,
+					pageFetch.toString(), "Invalid page fetch value"));
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 		}
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
-				sortType, pageIndex, pageSize, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
+				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
 				langCode, timeZoneOffset);
 		return serviceHistoryResponseDtoList;
 	}
@@ -1679,12 +1678,12 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
-																						 Integer pageIndex, Integer pageSize, LocalDate fromDateTime, LocalDate toDateTime,
+																						 Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime,
 																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
-		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageIndex, pageSize, idaToken, statusFilter,
+		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
@@ -1693,114 +1692,116 @@ public class ResidentServiceImpl implements ResidentService {
 		return responseWrapper;
 	}
 
-	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageIndex,
-																		Integer pageSize, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
-																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
+	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
+																		Integer pageFetch, String tokenId, String statusFilter,
+																		String searchText, LocalDate fromDateTime,
+																		LocalDate toDateTime, String serviceType, String langCode,
+																		int timeZoneOffset)
 			throws ResidentServiceCheckedException {
-		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageIndex, pageSize, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
-		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
-		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
-				.getResultList();
-		String[] split = nativeQueryString.split("order by");
-		String nativeQueryStringWithoutOrderBy = split[0];
-		nativeQueryStringWithoutOrderBy = nativeQueryStringWithoutOrderBy.replace("*", "count(*)");
-		Query nativeQuery2 = entityManager.createNativeQuery(nativeQueryStringWithoutOrderBy);
-		BigInteger count = (BigInteger) nativeQuery2.getSingleResult();
-		int size = count.intValue();
-		return new PageDto<>(pageIndex, pageSize, size, (size / pageSize) + 1,
-				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList, langCode, timeZoneOffset));
-	}
-
-	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageIndex, Integer pageSize,
-											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-											  String serviceType, int timeZoneOffset) {
-		String query = "SELECT * FROM resident_transaction  where token_id = '"
-				+ idaToken+"'";
-		String dynamicQuery = "";
-		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase("ALL")
-				&& statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType)
-					+ getStatusFilterQuery(statusFilter) + getSearchQuery(searchText);
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null
-				&& !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
-					+ getStatusFilterQuery(statusFilter );
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null
-				&& !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
-					+ getSearchQuery(searchText );
-		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter )
-					+ getSearchQuery(searchText );
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null
-				&& searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter )
-					+ getSearchQuery(searchText );
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter );
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getSearchQuery(searchText );
-		} else if (statusFilter != null && searchText != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter ) + getSearchQuery(searchText );
-		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getSearchQuery(searchText );
-		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter );
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null
-				&& !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType );
-		} else if (fromDateTime != null && toDateTime != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getServiceQuery(serviceType );
-		} else if (statusFilter != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter );
-		} else if (searchText != null) {
-			dynamicQuery = getSearchQuery(searchText );
-		}
-		if(serviceType == null){
-			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
-		}
-		dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
+		Tuple2<LocalDateTime, LocalDateTime> date = null;
+		if(fromDateTime!=null && toDateTime!=null){
+			date = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
+		}
+		if(searchText !=null){
+			searchText = MODULO_OPERATOR + searchText + MODULO_OPERATOR;
+		}
+		Sort sortCreatedDateTime = Sort.by(Sort.Direction.fromString(sortType), CREATED_DATE_TIME);
+		Sort sortPinnedStatus = Sort.by(PINNED_STATUS).descending();
 
-		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageSize
-				+ " offset " + (pageIndex) * pageSize;
-		return query + dynamicQuery + orderByQuery;
+// Combine the two Sort objects using the and() method
+		Sort combinedSort = sortCreatedDateTime.and(sortPinnedStatus);
+		Pageable pageable = PageRequest.of(pageStart, pageFetch,
+				combinedSort);
+		Page<ResidentTransactionEntity> residentTransactionEntityPage = null;
+		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase(ALL)
+				&& statusFilter != null && searchText != null) {
+			residentTransactionEntityPage= residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
+					tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
+							getStatusFilterQuery(statusFilter), searchText ,pageable);
+		} else if (fromDateTime != null && toDateTime != null && serviceType != null
+				&& !serviceType.equalsIgnoreCase(ALL) && statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeIn(
+					tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
+					getStatusFilterQuery(statusFilter) ,pageable);
+		} else if (fromDateTime != null && toDateTime != null && serviceType != null
+				&& !serviceType.equalsIgnoreCase(ALL) && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLike(
+				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType), searchText, pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLike(
+					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), searchText, pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && statusFilter != null
+				&& searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
+					tokenId, convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter), searchText, pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeIn(
+					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter), pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndEventIdLike(
+					tokenId, convertServiceTypeToResidentTransactionType(serviceType), searchText, pageable
+			);
+		} else if (statusFilter != null && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeInAndEventIdLike(
+				tokenId,  getStatusFilterQuery(statusFilter), searchText, pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndEventIdLike(
+					tokenId, date.getT1(), date.getT2(), searchText, pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeIn(
+					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && serviceType != null
+				&& !serviceType.equalsIgnoreCase(ALL)) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeIn(
+				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType), pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetween(
+					tokenId, date.getT1(), date.getT2(), pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL)) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeIn(
+					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), pageable
+			);
+		} else if (statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeIn(
+					tokenId, getStatusFilterQuery(statusFilter), pageable
+			);
+		} else if(searchText != null){
+			residentTransactionEntityPage = residentTransactionRepository.findByEventIdLike(searchText, pageable);
+		} else {
+			residentTransactionEntityPage =
+					residentTransactionRepository.findByTokenId(tokenId, pageable);
+		}
+		if(residentTransactionEntityPage == null ){
+			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB.getErrorCode(),
+					ResidentErrorCode.UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB.getErrorMessage());
+		}
+		return new PageDto<>(pageStart, pageFetch, residentTransactionEntityPage.getTotalElements(),
+				residentTransactionEntityPage.getTotalPages(),
+				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityPage.getContent(), langCode, timeZoneOffset));
 	}
 
-	private String getOlvPartnerIdQuery() {
-		return " AND (olv_partner_id is null OR olv_partner_id='" + onlineVerificationPartnerId + "')";
-	}
 
-	private String getServiceQueryForNullServiceType() {
-		return " and request_type_code in (" + convertServiceTypeListToString(
-				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestType())) +")";
-	}
-
-	private String getServiceQuery(String serviceType) {
-		List<String> requestTypeList = convertServiceTypeToResidentTransactionType(serviceType);
-		String requestTypeListString = convertServiceTypeListToString(requestTypeList);
-		return " and request_type_code in (" + requestTypeListString + ")";
-	}
-
-	private String getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
+	private Tuple2<LocalDateTime, LocalDateTime> getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
 		//Converting local time to UTC before using in db query
 		LocalDateTime fromDateTime = fromDate.atStartOfDay().plusMinutes(timeZoneOffset);
 		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay().plusMinutes(timeZoneOffset);
-		return " and cr_dtimes between '" +  fromDateTime + "' and '" +
-				toDateTime+ "'";
+		return Tuples.of(fromDateTime, toDateTime);
 	}
 
-	private String getSearchQuery(String searchText) {
-		String text= "%" + searchText.replace(AUTH_TYPE_SEPERATOR, "") + "%";
-		return " and Replace(event_id,'-','') like '"+text+ "'";
-	}
-
-	public String getStatusFilterQuery(String statusFilter) {
+	public List<String> getStatusFilterQuery(String statusFilter) {
 		List<String> statusFilterList = List.of(statusFilter.split(",")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
@@ -1817,24 +1818,7 @@ public class ResidentServiceImpl implements ResidentService {
 						.map(Enum::toString).collect(Collectors.toList()));
 			}
 		}
-		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingALlStatus);
-		return " and status_code in (" + statusFilterListString + ")";
-	}
-
-	public String convertStatusFilterListToString(List<String> statusFilterListContainingALlStatus) {
-		String statusFilterListString = "";
-		for (String status : statusFilterListContainingALlStatus) {
-			statusFilterListString = statusFilterListString + "'" + status + "',";
-		}
-		return statusFilterListString.substring(0, statusFilterListString.length() - 1);
-	}
-
-	public String convertServiceTypeListToString(List<String> serviceTypeList) {
-		String serviceTypeListString = "";
-		for (String serviceType : serviceTypeList) {
-			serviceTypeListString = serviceTypeListString + "'" + serviceType + "',";
-		}
-		return serviceTypeListString.substring(0, serviceTypeListString.length() - 1);
+		return statusFilterListContainingALlStatus;
 	}
 
 	private List<String> convertServiceTypeToResidentTransactionType(String serviceType) {
@@ -2137,9 +2121,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	}
 
-	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageIndex,
-			Integer pageSize, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageIndex, pageSize,
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
+			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
 																				 null, null, ServiceType.ASYNC.name(), null,
 																				 null, null, languageCode, timeZoneOffset);
 		responseWrapper.setId(unreadnotificationlist);
@@ -2166,17 +2150,15 @@ public class ResidentServiceImpl implements ResidentService {
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
-			IntStream.range(0, serviceHistoryDtlsList.size()).forEach(i -> {				
-				try {
+			IntStream.range(0, serviceHistoryDtlsList.size()).forEach(i -> {
 					addServiceHistoryDtls(i, serviceHistoryDtlsList.get(i));
-				} catch (Exception e) {
-					throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS, e);
-				}
 			});
 		}
-		for (ServiceHistoryResponseDto dto : serviceHistoryDtlsList) {
-			if (dto.getDescription() == null)
-				dto.setDescription("");
+		if(serviceHistoryDtlsList!=null){
+			for (ServiceHistoryResponseDto dto : serviceHistoryDtlsList) {
+				if (dto.getDescription() == null)
+					dto.setDescription("");
+			}
 		}
 		Map<String, Object> servHistoryMap = new HashMap<>();
 		if(eventReqDateTime == null){
@@ -2251,11 +2233,8 @@ public class ResidentServiceImpl implements ResidentService {
 	/**
 	 * 
 	 * @param index
-	 * @throws ResidentServiceCheckedException
-	 * @throws Exception
 	 */
-	private void addServiceHistoryDtls(int index, ServiceHistoryResponseDto serviceHistoryDto)
-			throws ResidentServiceCheckedException, Exception {
+	private void addServiceHistoryDtls(int index, ServiceHistoryResponseDto serviceHistoryDto) {
 		serviceHistoryDto.setSerialNumber(index + 1);
 		if (serviceHistoryDto.getDescription() == null)
 			serviceHistoryDto.setDescription("");
