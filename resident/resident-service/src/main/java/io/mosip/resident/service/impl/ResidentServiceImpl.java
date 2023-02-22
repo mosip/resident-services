@@ -1071,10 +1071,6 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
-
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED,
-					dto.getTransactionID(), "Request for UIN update"));
-
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
 			if (Utility.isSecureSession()) {
