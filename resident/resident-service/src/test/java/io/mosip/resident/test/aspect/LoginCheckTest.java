@@ -166,36 +166,4 @@ public class LoginCheckTest {
 		loginCheck.onValidateTokenSuccess(request, response);
 	}
 
-//	@Test
-//	public void testGetUserDetails() {
-//		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("Windows");
-//	}
-
-//	@Test
-//	public void testGetUserDetailsNewEntryInDB() {
-//		Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-//		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("");
-//		Mockito.when(request.getRemoteHost()).thenReturn("1.2.3");
-//	}
-
-//	@Test
-//	public void testGetMachineTypeMac() {
-//		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("Mac");
-//	}
-//
-//	@Test
-//	public void testGetMachineTypeUnix() {
-//		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("x11");
-//	}
-//
-//	@Test
-//	public void testGetMachineTypeAndroid() {
-//		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("Android");
-//	}
-//
-//	@Test
-//	public void testGetMachineTypeIphone() {
-//		Mockito.when(request.getHeader(Mockito.anyString())).thenReturn("IPhone");
-//	}
-
 }
