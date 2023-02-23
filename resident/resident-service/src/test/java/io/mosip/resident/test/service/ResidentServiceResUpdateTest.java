@@ -73,6 +73,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuple2;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
@@ -282,8 +283,8 @@ public class ResidentServiceResUpdateTest {
 
 	@Test
 	public void reqUinUpdateGetMachineIdTest() throws BaseCheckedException, IOException {
-		Object residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
-		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO).getRegistrationId(), updateDto.getRegistrationId());
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 	}
 
 	@Test
@@ -322,15 +323,15 @@ public class ResidentServiceResUpdateTest {
 		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
 		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
 				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
-		Object residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
-		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO).getRegistrationId(), updateDto.getRegistrationId());
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
 	}
 
 	@Test
 	public void reqUinUpdateGetMachineIdReturnsTest() throws BaseCheckedException, IOException {
-		Object residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
-		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO).getRegistrationId(), updateDto.getRegistrationId());
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(2)).postApi(any(), any(), any(), any(Class.class));
 	}
 
