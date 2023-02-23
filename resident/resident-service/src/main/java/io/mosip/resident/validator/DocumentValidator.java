@@ -61,10 +61,10 @@ public class DocumentValidator implements Validator {
 	@Value("${mosip.max.file.upload.size.in.bytes}")
 	private int maxFileUploadSize;
 
-	@Value("${resident.document.validation.transaction-id}")
+	@Value("${resident.document.validation.transaction-id.regex}")
 	private String transactionIdRegex;
 
-	@Value("${resident.document.validation.document-id}")
+	@Value("${resident.document.validation.document-id.regex}")
 	private String documentIdRegex;
 
 	@Override

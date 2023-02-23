@@ -234,13 +234,13 @@ public class RequestValidator {
 	@Value("${resident.id.allowed.special.char.regex}") 
 	private String idAllowedSpecialCharRegex;
 
-	@Value("${resident.validation.is-numeric}")
+	@Value("${resident.validation.is-numeric.regex}")
 	private String numericDataRegex;
 
-	@Value("${resident.otp.validation.transaction-id}")
+	@Value("${resident.otp.validation.transaction-id.regex}")
 	private String transactionIdRegex;
 
-	@Value("${resident.validation.event-id}")
+	@Value("${resident.validation.event-id.regex}")
 	private String eventIdRegex;
 
 	@PostConstruct
