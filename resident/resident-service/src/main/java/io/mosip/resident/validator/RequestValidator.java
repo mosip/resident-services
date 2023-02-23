@@ -81,7 +81,6 @@ import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNE
 @Component
 public class RequestValidator {
 
-	private static final int EVENT_ID_LENGTH = 16;
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
 	@Autowired
 	private UinValidator<String> uinValidator;
@@ -234,6 +233,15 @@ public class RequestValidator {
 	
 	@Value("${resident.id.allowed.special.char.regex}") 
 	private String idAllowedSpecialCharRegex;
+
+	@Value("${resident.validation.is-numeric.regex}")
+	private String numericDataRegex;
+
+	@Value("${resident.otp.validation.transaction-id.regex}")
+	private String transactionIdRegex;
+
+	@Value("${resident.validation.event-id.regex}")
+	private String eventIdRegex;
 
 	@PostConstruct
 	public void setMap() {
@@ -538,11 +546,11 @@ public class RequestValidator {
 
 		if (!(StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
 				|| StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()))) {
-			if (isNumeric(requestDTO.getRequest().getPageStart())) {
+			if (!isNumeric(requestDTO.getRequest().getPageStart())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageStart", msg));
 				throw new InvalidInputException("pageStart");
 			}
-			if (isNumeric(requestDTO.getRequest().getPageFetch())) {
+			if (!isNumeric(requestDTO.getRequest().getPageFetch())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageFetch", msg));
 				throw new InvalidInputException("pageFetch");
 			}
@@ -760,8 +768,8 @@ public class RequestValidator {
 
 	}
 
-	public static boolean isNumeric(String strNum) {
-		return !strNum.matches(("[0-9]+"));
+	public boolean isNumeric(String strNum) {
+		return strNum.matches(numericDataRegex);
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
@@ -889,7 +897,7 @@ public class RequestValidator {
 		}
 		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
+		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
@@ -1041,7 +1049,7 @@ public class RequestValidator {
 
 	public void validateEventId(String eventId) {
 		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID);
-		if (isNumeric(eventId) || eventId.length()!=EVENT_ID_LENGTH) {
+		if (!isDataValidWithRegex(eventId, eventIdRegex)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID));
 			throw new InvalidInputException(TemplateVariablesConstants.EVENT_ID);
@@ -1119,11 +1127,15 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must not be null"));
 			throw new InvalidInputException("transactionID");
-		} else if(isNumeric(transactionID) || transactionID.length()!=10){
+		} else if(!isDataValidWithRegex(transactionID, transactionIdRegex)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"transactionID", "transactionID must be 10 digit containing numbers"));
 			throw new InvalidInputException("transactionID");
 		}
+	}
+
+	private boolean isDataValidWithRegex(String inputData, String regex) {
+		return inputData.matches(regex);
 	}
 
 	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
@@ -1148,7 +1160,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp must not be null"));
 			throw new InvalidInputException("otp");
-		} else if(isNumeric(otp)){
+		} else if (!isNumeric(otp) || otp.length() != otpLength){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp is invalid"));
 			throw new InvalidInputException("otp");
