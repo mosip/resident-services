@@ -139,6 +139,9 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "messageAllowedSpecialCharRegex", "[A-Za-z0-9 .,-]+");
 		ReflectionTestUtils.setField(requestValidator, "purposeAllowedSpecialCharRegex", "[A-Za-z0-9 .,-]+");
 		ReflectionTestUtils.setField(requestValidator, "idAllowedSpecialCharRegex", "[A-Za-z0-9 -]+");
+		ReflectionTestUtils.setField(requestValidator, "numericDataRegex", "^[0-9]+$");
+		ReflectionTestUtils.setField(requestValidator, "transactionIdRegex", "^[0-9]{10}$");
+		ReflectionTestUtils.setField(requestValidator, "eventIdRegex", "^[0-9]{16}$");
 		Mockito.when(uinValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(vidValidator.validateId(Mockito.anyString())).thenReturn(true);
 		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);

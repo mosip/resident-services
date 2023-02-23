@@ -93,7 +93,7 @@ public class DocumentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			validator.validateRequest(docCatCode,docTypCode,langCode);
+			validator.validateRequest(transactionId,docCatCode,docTypCode,langCode);
 			validator.validateFileName(file);
 			validator.scanForViruses(file);
 			DocumentRequestDTO docRequest = new DocumentRequestDTO();
@@ -136,7 +136,7 @@ public class DocumentController {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
-			validator.validateTransactionId(transactionId);
+			validator.validateTransactionIdForDocument(transactionId);
 			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setId(residentDocumentListId);
 			responseWrapper.setVersion(residentDocumentListVersion);
