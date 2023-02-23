@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
-import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
 import static io.mosip.resident.constant.ResidentErrorCode.UN_SUPPORTED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
@@ -62,6 +61,12 @@ public class DocumentValidator implements Validator {
 	@Value("${mosip.max.file.upload.size.in.bytes}")
 	private int maxFileUploadSize;
 
+	@Value("${resident.document.validation.transaction-id.regex}")
+	private String transactionIdRegex;
+
+	@Value("${resident.document.validation.document-id.regex}")
+	private String documentIdRegex;
+
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return clazz.isAssignableFrom(RequestWrapper.class);
@@ -80,8 +85,8 @@ public class DocumentValidator implements Validator {
 	 * @throws ResidentServiceCheckedException 
 	 *
 	 */
-	public void validateRequest(String docCatCode, String docTypCode, String langCode) throws ResidentServiceCheckedException {
-
+	public void validateRequest(String transactionId, String docCatCode, String docTypCode, String langCode) throws ResidentServiceCheckedException {
+		validateTransactionIdForDocument(transactionId);
 		if (docCatCode == null || StringUtils.isEmpty(docCatCode)) {
 			throw new InvalidInputException(DOC_CAT_CODE);
 		}
@@ -128,30 +133,28 @@ public class DocumentValidator implements Validator {
 		}
 	}
 
-	public void validateTransactionId(String transactionId) {
-		if(!isNumeric(transactionId)){
-			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
-					INVALID_INPUT.getErrorMessage() + "transactionId");
+	public void validateTransactionIdForDocument(String transactionId) {
+		if (transactionId == null || StringUtils.isEmpty(transactionId)) {
+			throw new InvalidInputException("transactionId");
+		} else if (!isDataValidWithRegex(transactionId, transactionIdRegex)) {
+			throw new InvalidInputException("transactionId");
 		}
 	}
-	private boolean isNumeric(String transactionId) {
-		return transactionId.matches("[0-9]*");
+
+	private boolean isDataValidWithRegex(String inputData, String regex) {
+		return inputData.matches(regex);
 	}
 
 	public void validateDocumentIdAndTransactionId(String documentId, String transactionId) {
-		if(!isNumeric(transactionId) && documentId.length() <20){
-			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
-					INVALID_INPUT.getErrorMessage() + "documentId/transactionId");
-		} else{
-			validateTransactionId(transactionId);
-			validateDocumentId(documentId);
-		}
+		validateTransactionIdForDocument(transactionId);
+		validateDocumentId(documentId);
 	}
 
 	public void validateDocumentId(String documentId) {
-		if(documentId == null || documentId.length() < 20){
-			throw new ResidentServiceException(INVALID_INPUT.getErrorCode(),
-					INVALID_INPUT.getErrorMessage() + "documentId");
+		if (documentId == null || StringUtils.isEmpty(documentId)) {
+			throw new InvalidInputException("documentId");
+		} else if (!isDataValidWithRegex(documentId, documentIdRegex)) {
+			throw new InvalidInputException("documentId");
 		}
 	}
 
