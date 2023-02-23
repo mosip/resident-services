@@ -546,11 +546,11 @@ public class RequestValidator {
 
 		if (!(StringUtils.isEmpty(requestDTO.getRequest().getPageStart())
 				|| StringUtils.isEmpty(requestDTO.getRequest().getPageFetch()))) {
-			if (isNotNumeric(requestDTO.getRequest().getPageStart())) {
+			if (!isNumeric(requestDTO.getRequest().getPageStart())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageStart", msg));
 				throw new InvalidInputException("pageStart");
 			}
-			if (isNotNumeric(requestDTO.getRequest().getPageFetch())) {
+			if (!isNumeric(requestDTO.getRequest().getPageFetch())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "pageFetch", msg));
 				throw new InvalidInputException("pageFetch");
 			}
@@ -768,8 +768,8 @@ public class RequestValidator {
 
 	}
 
-	public boolean isNotNumeric(String strNum) {
-		return !strNum.matches(numericDataRegex);
+	public boolean isNumeric(String strNum) {
+		return strNum.matches(numericDataRegex);
 	}
 
 	public void validateReprintRequest(RequestWrapper<ResidentReprintRequestDto> requestDTO) {
@@ -897,7 +897,7 @@ public class RequestValidator {
 		}
 		validateAuthType(authTypes,
 				"Request auth " + authTypeStatus.toString().toLowerCase() + " API");
-		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || isNotNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
+		if (StringUtils.isEmpty(requestDTO.getRequest().getUnlockForSeconds()) || !isNumeric(requestDTO.getRequest().getUnlockForSeconds())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "unlockForSeconds",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("UnlockForSeconds must be greater than or equal to 0");
@@ -1160,7 +1160,7 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp must not be null"));
 			throw new InvalidInputException("otp");
-		} else if (isNotNumeric(otp) || otp.length() != otpLength){
+		} else if (!isNumeric(otp) || otp.length() != otpLength){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					"otp", "otp is invalid"));
 			throw new InvalidInputException("otp");
