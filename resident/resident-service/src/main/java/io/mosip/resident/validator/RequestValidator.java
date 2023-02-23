@@ -235,7 +235,7 @@ public class RequestValidator {
 	private String idAllowedSpecialCharRegex;
 
 	@Value("${resident.validation.is-numeric}")
-	private static String numericDataRegex;
+	private String numericDataRegex;
 
 	@Value("${resident.otp.validation.transaction-id}")
 	private String transactionIdRegex;
@@ -768,7 +768,7 @@ public class RequestValidator {
 
 	}
 
-	public static boolean isNotNumeric(String strNum) {
+	public boolean isNotNumeric(String strNum) {
 		return !strNum.matches(numericDataRegex);
 	}
 
