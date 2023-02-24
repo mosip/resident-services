@@ -4,12 +4,14 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
 import org.apache.commons.codec.binary.Base64;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import io.mosip.commons.khazana.config.LoggerConfiguration;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -98,10 +100,20 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 		int indexOfData = propertyNamesList.indexOf(INDIVIDUAL_ID);
 		if (Objects.nonNull(state[indexOfData])) {
 			String individualId = (String) state[indexOfData];
-			String decryptedData = objectStoreHelper.encryptDecryptData(individualId, false, appId, refId);
-			String decodedIndividualId = new String(Base64.decodeBase64(decryptedData));
+			String decodedIndividualId = tryDecryption(individualId, INDIVIDUAL_ID);
 			uinEntity.setIndividualId(decodedIndividualId);
 			state[indexOfData] = decodedIndividualId;
+		}
+	}
+
+	private String tryDecryption(String data, String attributeName) {
+		try {
+			String decryptedData = objectStoreHelper.encryptDecryptData(data, false, appId, refId);
+			String decodedIndividualId = new String(Base64.decodeBase64(decryptedData));
+			return decodedIndividualId;
+		} catch (ResidentServiceException e) {
+			logger.debug(String.format("Unable to decrpt data in interceptor: %s", attributeName));
+			return data;
 		}
 	}
 }

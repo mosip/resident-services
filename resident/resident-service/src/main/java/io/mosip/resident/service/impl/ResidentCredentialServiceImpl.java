@@ -9,6 +9,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
@@ -320,7 +321,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
+		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 		List<String> sharableAttributes = dto.getSharableAttributes();
 		if(sharableAttributes != null){
 			residentTransactionEntity.setAttributeList(String.join(", ", sharableAttributes));
@@ -338,8 +339,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			ResidentTransactionEntity residentTransactionEntity) {
 		// TODO: need to fix transaction ID (need partner's end transactionId)
 		residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
-		residentTransactionEntity.setStatusComment(EventStatusSuccess.DATA_SHARED_SUCCESSFULLY.name());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
 	}
