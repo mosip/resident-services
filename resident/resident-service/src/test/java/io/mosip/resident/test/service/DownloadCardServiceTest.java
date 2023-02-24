@@ -121,7 +121,7 @@ public class DownloadCardServiceTest {
         Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn(pdfbytes);
         Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
-        Mockito.when(residentService.getUINCard(Mockito.anyString())).thenReturn(pdfbytes);
+        Mockito.when(residentService.getCard(Mockito.anyString())).thenReturn(pdfbytes);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenReturn("7841261580");
         Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
