@@ -141,7 +141,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.CARD_DELIVERED.name());
+		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setConsent(requestDto.getConsent());
 		// TODO: need to fix transaction ID (need partner's end transactionId)
 		residentTransactionEntity.setRequestTrnId(requestDto.getTransactionID());
@@ -150,8 +150,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	private void updateResidentTransaction(ResidentTransactionEntity residentTransEntity,
 			ResidentCredentialResponseDto residentCredentialResponseDto) {
-		residentTransEntity.setStatusCode(EventStatusSuccess.CARD_DELIVERED.name());
-		residentTransEntity.setStatusComment(EventStatusSuccess.CARD_DELIVERED.name());
+		residentTransEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionRepository.save(residentTransEntity);
 	}
@@ -287,8 +287,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorCode(),
 						ResidentErrorCode.REDIRECT_URL_NOT_FOUND.getErrorMessage());
 			}
-			residentTransactionEntity.setStatusCode(EventStatusSuccess.PHYSICAL_CARD_ORDERED.name());
-			residentTransactionEntity.setStatusComment(EventStatusSuccess.PHYSICAL_CARD_ORDERED.name());
+			residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+			residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 			residentTransactionRepository.save(residentTransactionEntity);
 			String newUrl = redirectUrl.contains("?") ? redirectUrl + "&" : redirectUrl + "?";
 			StringBuilder builder = new StringBuilder();
@@ -317,7 +317,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.PHYSICAL_CARD_ORDERED.name());
+		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 		return residentTransactionEntity;
 	}
 
