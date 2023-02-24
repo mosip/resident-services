@@ -818,13 +818,13 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public Object reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
 		byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 		JSONObject demographicJsonObject;
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
-			return reqUinUpdate(dto, demographicIdentity).getT1();
+			return reqUinUpdate(dto, demographicIdentity);
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
