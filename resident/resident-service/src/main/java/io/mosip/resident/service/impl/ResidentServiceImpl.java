@@ -946,14 +946,7 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
 		} catch (OtpValidationFailedException e) {
-			if (Utility.isSecureSession()) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setRequestSummary("failed");
-				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
-			} else {
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
-			}
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
 
