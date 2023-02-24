@@ -40,8 +40,8 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
-			List<String> propertyNamesList = Arrays.asList(propertyNames);
 			if (entity instanceof ResidentTransactionEntity) {
+				List<String> propertyNamesList = Arrays.asList(propertyNames);
 				encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
 			}
 		} catch (ResidentServiceException e) {
@@ -67,8 +67,8 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 	@Override
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
 		try {
-			List<String> propertyNamesList = Arrays.asList(propertyNames);
 			if (entity instanceof ResidentTransactionEntity) {
+				List<String> propertyNamesList = Arrays.asList(propertyNames);
 				int indexOfData = propertyNamesList.indexOf(INDIVIDUAL_ID);
 				if (Objects.nonNull(state[indexOfData])) {
 					decryptDataOnLoad(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
@@ -86,8 +86,10 @@ public class ResidentEntityInterceptor extends EmptyInterceptor {
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] state, Object[] previousState,
 			String[] propertyNames, Type[] types) {
-		List<String> propertyNamesList = Arrays.asList(propertyNames);
-		encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
+		if(entity instanceof ResidentTransactionEntity) {
+			List<String> propertyNamesList = Arrays.asList(propertyNames);
+			encryptDataOnSave(id, state, propertyNamesList, types, (ResidentTransactionEntity) entity);
+		}
 		return super.onFlushDirty(entity, id, state, previousState, propertyNames, types);
 	}
 

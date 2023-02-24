@@ -218,5 +218,4 @@ public class ResidentConstants {
     public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
     public static final CharSequence ATTRIBUTES = "attributes";
-
 }

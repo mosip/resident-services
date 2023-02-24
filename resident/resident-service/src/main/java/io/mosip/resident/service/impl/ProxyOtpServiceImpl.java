@@ -143,60 +143,39 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         String userid = null;
         boolean isSuccess = false;
         String eventId = ResidentConstants.NOT_AVAILABLE;
-		ResidentTransactionEntity residentTransactionEntity=null;
 
         try {
-        	residentTransactionEntity = createResidentTransactionEntity(userIdOtpRequest.getRequest().getUserId());
-			if (residentTransactionEntity != null) {
-    			eventId = residentTransactionEntity.getEventId();
-    		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
+            String transactionId = user.getTransactionId();
+			boolean validated = otpManager.validateOtp(user.getOtp(), userid, transactionId);
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
+                Tuple2<Object, String> updateResult = otpManager.updateUserId(userid, transactionId);
+                eventId = updateResult.getT2();
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
                 authresponse.setStatus(PreRegLoginConstant.SUCCESS);
-
             } else {
-            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-            	residentTransactionEntity.setRequestSummary("failed");
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
             response.setResponse(authresponse);
             isSuccess = true;
         } catch (ResidentServiceException ex) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
+            ex.setMetadata(Map.of(ResidentConstants.EVENT_ID, eventId));
+			throw ex;
         } catch (RuntimeException ex) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ResidentServiceCheckedException e) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
         	throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ApisResourceAccessException e) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } finally {
-        	if(residentTransactionEntity.getStatusCode()==null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			}
-        	if (residentTransactionEntity.getRequestSummary() == null) {
-				residentTransactionEntity.setRequestSummary("failed");
-			}
-			residentTransactionRepository.save(residentTransactionEntity);
-			
             response.setResponsetime(GenericUtil.getCurrentResponseTime());
 
             if (isSuccess) {

@@ -242,6 +242,30 @@ public class ResidentServiceDownloadCardTest {
         assertNotNull(pdfDocument);
     }
 
+    @Test
+    public void testDownloadServiceHistoryFail() throws ResidentServiceCheckedException, IOException {
+        ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
+        ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+        serviceHistoryResponseDto.setEventId("123");
+        PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
+        responseDtoPageDto.setData(null);
+        responseWrapper.setResponse(responseDtoPageDto);
+        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
+        Map<String, Object> templateResponse = new LinkedHashMap<>();
+        templateResponse.put("fileText", "test");
+        responseWrapper1.setResponse(templateResponse);
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(responseWrapper1);
+        Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
+        Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+        byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
+                LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
+                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0);
+        assertNotNull(pdfDocument);
+    }
+
+
+
     @Ignore
     //FIXME to be corrected
     @Test
