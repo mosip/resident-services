@@ -218,7 +218,6 @@ public class NotificationService {
 	private String getTemplate(String langCode, String templatetypecode) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
 				"NotificationService::getTemplate()::entry");
-		langCode = getFirstLanguageCode(langCode);
 		List<String> pathSegments = new ArrayList<>();
 		pathSegments.add(langCode);
 		pathSegments.add(templatetypecode);
@@ -262,16 +261,6 @@ public class NotificationService {
 			}
 		}
 
-	}
-
-	private String getFirstLanguageCode(String langCode) {
-		if(langCode!=null){
-			if(langCode.contains(ResidentConstants.COMMA)){
-				String[] words = langCode.split(ResidentConstants.COMMA); // split the string by comma into an array of strings
-				return words[0].trim();
-			}
-		}
-		return langCode;
 	}
 
 	private String templateMerge(String fileText, Map<String, Object> mailingAttributes)
