@@ -9,18 +9,18 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import reactor.util.function.Tuples;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import reactor.util.function.Tuples;
 
 import java.io.InputStream;
 import java.util.List;
@@ -55,6 +55,9 @@ public class DocumentValidatorTest {
 	private VirusScanner<Boolean, InputStream> virusScanner;
 
 	private MockEnvironment env = new MockEnvironment();
+
+	@Mock
+	private Environment environment;
 	
 	@Before
 	public void init() throws Exception {
@@ -214,6 +217,17 @@ public class DocumentValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
+	public void testValidateGetDocumentByDocumentIdNull() {
+		validator.validateTransactionIdForDocument(null);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateGetDocumentByDocumentIdEmpty() {
+		String transactionId = "";
+		validator.validateTransactionIdForDocument(transactionId);
+	}
+
+	@Test(expected = InvalidInputException.class)
 	public void testValidateDocumentIdAndTransactionId() {
 		validator.validateDocumentIdAndTransactionId("d", "1a");
 	}
@@ -229,7 +243,60 @@ public class DocumentValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
+	public void testValidateDocumentIdEmpty() {
+		validator.validateDocumentId("");
+	}
+
+	@Test(expected = InvalidInputException.class)
 	public void testValidateDocumentIdLessCharacterDocumentId() {
 		validator.validateDocumentId("12");
+	}
+
+	@Test
+	public void testValidateFileName() {
+		// Set up test data
+		String allowedFileType = "pdf,doc,docx";
+
+		int maxFileUploadSize = 1024 * 1024 * 10; // 10MB
+		ReflectionTestUtils.setField(validator, "maxFileUploadSize", maxFileUploadSize);
+		env.setProperty(ResidentConstants.ALLOWED_FILE_TYPE, allowedFileType);
+		// Create mock file
+		byte[] fileContent = "test file content".getBytes();
+		MockMultipartFile mockFile = new MockMultipartFile("file", "test.pdf", "application/pdf", fileContent);
+
+		// Call method under test
+		validator.validateFileName(mockFile);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateFileNameWithInvalidFileType() {
+		// Set up test data
+		String allowedFileType = "pdf,doc,docx";
+
+		int maxFileUploadSize = 1024 * 1024 * 10; // 10MB
+		ReflectionTestUtils.setField(validator, "maxFileUploadSize", maxFileUploadSize);
+		env.setProperty(ResidentConstants.ALLOWED_FILE_TYPE, allowedFileType);
+		// Create mock file
+		byte[] fileContent = "test file content".getBytes();
+		MockMultipartFile mockFile = new MockMultipartFile("file", "test.xslx", "application/pdf", fileContent);
+
+		// Call method under test
+		validator.validateFileName(mockFile);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateFileNameWithMaxFileSize() {
+		// Set up test data
+		String allowedFileType = "pdf,doc,docx";
+
+		int maxFileUploadSize = 0;
+		ReflectionTestUtils.setField(validator, "maxFileUploadSize", maxFileUploadSize);
+		env.setProperty(ResidentConstants.ALLOWED_FILE_TYPE, allowedFileType);
+		// Create mock file
+		byte[] fileContent = "test file content".getBytes();
+		MockMultipartFile mockFile = new MockMultipartFile("file", "test.pdf", "application/pdf", fileContent);
+
+		// Call method under test
+		validator.validateFileName(mockFile);
 	}
 }
