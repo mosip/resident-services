@@ -286,12 +286,12 @@ public class Utility {
 				preferredLang = String.valueOf(object);
 				if(preferredLang.contains(ResidentConstants.COMMA)){
 					String[] preferredLangArray = preferredLang.split(ResidentConstants.COMMA);
-					return Arrays.stream(preferredLangArray).collect(Collectors.toSet());
+					return Set.of(preferredLangArray);
 				}
 			}
 		}
 		if(preferredLang!=null){
-			return new HashSet<>(List.of(preferredLang));
+			return Set.of(preferredLang);
 		}
 		return Set.of();
 	}
