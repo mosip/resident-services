@@ -1,42 +1,6 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.FileNotFoundException;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -73,7 +37,41 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
@@ -287,6 +285,29 @@ public class ResidentServiceResUpdateTest {
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetMachineIdTestWithSecureSession() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		dto.setConsent(null);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetMachineIdTestWithSecureSessionDemographicEntityFailed() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		Mockito.when(utility.getMappingJson()).thenReturn(null);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
+	}
+
+	@Test
+	public void reqUinUpdateGetMachineIdTestWithSecureSessionSuccess() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals("10008100670001720191120095702", updateDto.getRegistrationId());
+	}
+
 	@Test
 	public void reqUinUpdateGetMachineIdIsNullTest() throws BaseCheckedException, IOException {
 		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
@@ -345,6 +366,16 @@ public class ResidentServiceResUpdateTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
+	public void validateOtpExceptionWithSecureSession()
+			throws OtpValidationFailedException, IOException, ResidentServiceCheckedException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(false);
+		residentServiceImpl.reqUinUpdate(dto);
+
+	}
+
+	@Test(expected = ResidentServiceException.class)
 	public void JsonParsingException() throws ResidentServiceCheckedException {
 		Mockito.when(utility.getMappingJson()).thenReturn(null);
 		residentServiceImpl.reqUinUpdate(dto);
@@ -384,6 +415,19 @@ public class ResidentServiceResUpdateTest {
 	@Test
 	public void testValidationOfAuthIndividualIdWithUIN() throws ResidentServiceCheckedException,
 			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
+		dto.setIndividualId("3527812407");
+		try {
+			residentServiceImpl.reqUinUpdate(dto);
+		} catch (ResidentServiceException e) {
+			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
+					((ValidationFailedException) e.getCause()).getErrorCode());
+		}
+	}
+
+	@Test
+	public void testValidationOfAuthIndividualIdWithUINWithSecureSession() throws ResidentServiceCheckedException,
+			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 		dto.setIndividualId("3527812407");
 		try {
 			residentServiceImpl.reqUinUpdate(dto);
