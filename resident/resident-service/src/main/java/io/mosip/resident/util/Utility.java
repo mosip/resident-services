@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -285,14 +286,14 @@ public class Utility {
 				preferredLang = String.valueOf(object);
 				if(preferredLang.contains(ResidentConstants.COMMA)){
 					String[] preferredLangArray = preferredLang.split(ResidentConstants.COMMA);
-					return new HashSet<>(Arrays.asList(preferredLangArray));
+					return Arrays.stream(preferredLangArray).collect(Collectors.toSet());
 				}
 			}
 		}
 		if(preferredLang!=null){
 			return new HashSet<>(List.of(preferredLang));
 		}
-		return new HashSet<>(List.of());
+		return Set.of();
 	}
 
 	private Set<String> getDataCapturedLanguages(JSONObject mapperIdentity, JSONObject demographicIdentity)
