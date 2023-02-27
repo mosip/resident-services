@@ -1148,7 +1148,7 @@ public class ResidentServiceImpl implements ResidentService {
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(attributeList+UPDATED);
 		return residentTransactionEntity;
 	}
@@ -1157,7 +1157,7 @@ public class ResidentServiceImpl implements ResidentService {
 			PacketGeneratorResDto response) {
 		residentTransactionEntity.setAid(response.getRegistrationId());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 	}
 
 	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument)
@@ -1227,7 +1227,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (requestId != null) {
-					residentTransactionEntity.setRequestSummary(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
+					residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 					residentTransactionEntity.setPurpose(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -1290,8 +1290,8 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.COMPLETED.name());
-		residentTransactionEntity.setStatusComment(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));

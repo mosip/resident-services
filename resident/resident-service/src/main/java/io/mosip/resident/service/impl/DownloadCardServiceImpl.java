@@ -8,6 +8,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
@@ -429,9 +430,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(uin));
         residentTransactionEntity.setIndividualId(uin);
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
-        residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
-        residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
-        residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
+        residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
         /**
          * Here we are setting vid in aid column.
          */
