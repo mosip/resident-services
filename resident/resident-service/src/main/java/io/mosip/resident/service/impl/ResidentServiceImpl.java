@@ -1570,7 +1570,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public byte[] downloadCard(String eventId, String idType) {
+	public byte[] downloadCard(String eventId) {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);

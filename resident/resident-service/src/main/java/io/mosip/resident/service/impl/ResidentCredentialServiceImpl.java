@@ -1,6 +1,28 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -10,7 +32,6 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ConsentStatusType;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
-import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.constant.RequestType;
@@ -49,27 +70,8 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
-import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import java.io.IOException;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
@@ -362,21 +364,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
 			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
 			if(appId!=null){
-				String downloadedData = residentServiceRestClient.getApi(dataShareUri, String.class);
-				RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
-				CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
-				cryptomanagerRequestDto.setApplicationId(appId);
-				cryptomanagerRequestDto.setData(downloadedData);
-				cryptomanagerRequestDto.setReferenceId(partnerRefId);
-				cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
-				LocalDateTime localdatetime = DateUtils.getUTCCurrentDateTime();
-				request.setRequesttime(DateUtils.formatToISOString(localdatetime));
-				cryptomanagerRequestDto.setTimeStamp(localdatetime);
-				request.setRequest(cryptomanagerRequestDto);
-				String response = residentServiceRestClient.postApi(env.getProperty(ApiName.DECRYPT_API_URL.name()),
-						MediaType.APPLICATION_JSON, request, String.class);
-				CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
-				return CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
+				return getDataShareData(appId, partnerRefId, dataShareUri);
 			}else {
 				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
 			}
@@ -394,6 +382,25 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
 
+	}
+
+	public byte[] getDataShareData(String appId, String partnerRefId, URI dataShareUri)
+			throws ApisResourceAccessException, JsonProcessingException, JsonMappingException {
+		String downloadedData = residentServiceRestClient.getApi(dataShareUri, String.class);
+		RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
+		CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
+		cryptomanagerRequestDto.setApplicationId(appId);
+		cryptomanagerRequestDto.setData(downloadedData);
+		cryptomanagerRequestDto.setReferenceId(partnerRefId);
+		cryptomanagerRequestDto.setPrependThumbprint(isPrependThumbprintEnabled);
+		LocalDateTime localdatetime = DateUtils.getUTCCurrentDateTime();
+		request.setRequesttime(DateUtils.formatToISOString(localdatetime));
+		cryptomanagerRequestDto.setTimeStamp(localdatetime);
+		request.setRequest(cryptomanagerRequestDto);
+		String response = residentServiceRestClient.postApi(env.getProperty(ApiName.DECRYPT_API_URL.name()),
+				MediaType.APPLICATION_JSON, request, String.class);
+		CryptomanagerResponseDto responseObject = mapper.readValue(response, CryptomanagerResponseDto.class);
+		return CryptoUtil.decodeURLSafeBase64(responseObject.getResponse().getData());
 	}
 
 	@Override
