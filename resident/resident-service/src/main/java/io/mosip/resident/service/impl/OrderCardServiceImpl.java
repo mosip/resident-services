@@ -153,6 +153,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 		residentTransEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransEntity.setAid(residentCredentialResponseDto.getRequestId());
+		residentTransEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
 		residentTransactionRepository.save(residentTransEntity);
 	}
 	

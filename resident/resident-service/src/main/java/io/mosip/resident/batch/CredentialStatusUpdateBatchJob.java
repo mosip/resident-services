@@ -57,7 +57,9 @@ import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.function.RunnableWithException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdentityService;
@@ -124,6 +126,10 @@ public class CredentialStatusUpdateBatchJob {
 			logErrorForBatchJob(e);
 		} catch (ResidentServiceCheckedException e) {
 			logErrorForBatchJob(e);
+		} catch (ResidentServiceException e) {
+			logErrorForBatchJob(e);
+		} catch (IdRepoAppException e) {
+			logErrorForBatchJob(e);
 		}
 	}
 
@@ -175,7 +181,6 @@ public class CredentialStatusUpdateBatchJob {
 		if (txn.getRequestTypeCode().contentEquals(SHARE_CRED_WITH_PARTNER.name())) {
 			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
 			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.SHARE_CRED_WITH_PARTNER);
-
 		}
 	}
 
@@ -191,13 +196,15 @@ public class CredentialStatusUpdateBatchJob {
 	private Map<String, String> trackAndUpdateNewOrIssuedStatus(ResidentTransactionEntity txn)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getStatusCode().contentEquals(NEW.name()) || txn.getStatusCode().contentEquals(ISSUED.name())) {
-			Map<String, String> eventDetails = getCredentialEventDetails(txn.getCredentialRequestId());
-			txn.setStatusCode(eventDetails.get(STATUS_CODE));
-			txn.setReadStatus(false);
-			txn.setUpdBy(RESIDENT);
-			txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-			repo.save(txn);
-			return eventDetails;
+			if (txn.getCredentialRequestId() != null && !txn.getCredentialRequestId().isEmpty()) {
+				Map<String, String> eventDetails = getCredentialEventDetails(txn.getCredentialRequestId());
+				txn.setStatusCode(eventDetails.get(STATUS_CODE));
+				txn.setReadStatus(false);
+				txn.setUpdBy(RESIDENT);
+				txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+				repo.save(txn);
+				return eventDetails;
+			}
 		}
 		return Map.of();
 	}
