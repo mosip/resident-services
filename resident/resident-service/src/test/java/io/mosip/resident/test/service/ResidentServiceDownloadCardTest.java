@@ -166,14 +166,14 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertNotNull(response);
     }
 
     @Test(expected = EventIdNotPresentException.class)
     public void testEventIdNotPresentException() throws ResidentServiceCheckedException {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertEquals(response, result);
     }
 
@@ -184,7 +184,7 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.REVOKE_VID.name());
         residentTransactionEntity.get().setAid(eventId);
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertEquals(response, result);
     }
 
