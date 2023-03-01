@@ -8,6 +8,7 @@ import static io.mosip.resident.constant.EventStatusInProgress.PAYMENT_CONFIRMED
 import static io.mosip.resident.constant.EventStatusInProgress.PRINTING;
 import static io.mosip.resident.constant.EventStatusInProgress.PROCESSING;
 import static io.mosip.resident.constant.EventStatusSuccess.RECEIVED;
+import static io.mosip.resident.constant.EventStatusSuccess.STORED;
 import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
 import static io.mosip.resident.constant.RequestType.SHARE_CRED_WITH_PARTNER;
 import static io.mosip.resident.constant.RequestType.UPDATE_MY_UIN;
@@ -225,14 +226,15 @@ public class CredentialStatusUpdateBatchJob {
 
 	private void trackAndUpdatePrintingOrReceivedStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(RECEIVED.name())) {
+		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(RECEIVED.name())
+				|| txn.getStatusCode().contentEquals(STORED.name())) {
 			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
 		}
 	}
 
 	private void trackAnddownloadPrintingOrReceivedStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name())) {
+		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(STORED.name())) {
 			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
 		}
 	}
@@ -240,8 +242,8 @@ public class CredentialStatusUpdateBatchJob {
 	private void trackAnddownloadPrintingOrIntransitStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name())
-				|| txn.getStatusCode().contentEquals(IN_TRANSIT.name())) {
+		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(IN_TRANSIT.name())
+				|| txn.getStatusCode().contentEquals(STORED.name())) {
 			String trackingId = getTrackingId(txn.getRequestTrnId(), txn.getIndividualId());
 			txn.setTrackingId(trackingId);
 			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
