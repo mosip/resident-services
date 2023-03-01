@@ -220,4 +220,6 @@ public class ResidentConstants {
     public static final CharSequence ATTRIBUTES = "attributes";
 
     public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
+
+    public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 }
