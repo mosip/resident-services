@@ -444,14 +444,16 @@ public class UtilityTest {
 
 	@Test
 	public void testCreateDownloadLinkFailure(){
-		assertEquals("NA", utility.getDownloadLinkFromEntity(new ResidentTransactionEntity()));
+		assertEquals("NA", utility.createDownloadCardLinkFromEventId(new ResidentTransactionEntity()));
 	}
 
 	@Test
 	public void testCreateDownloadLinkSuccess(){
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		ReflectionTestUtils.setField(utility, "downloadCardUrl", "http://mosip/event/{eventId}");
 		residentTransactionEntity.setReferenceLink("http://mosip");
-		assertEquals("http://mosip", utility.getDownloadLinkFromEntity(residentTransactionEntity));
+		residentTransactionEntity.setEventId("123455678");
+		assertEquals("http://mosip/event/123455678", utility.createDownloadCardLinkFromEventId(residentTransactionEntity));
 	}
 
 	@Test

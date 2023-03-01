@@ -363,7 +363,11 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
         		residentTransactionEntity, languageCode));
-        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.getDownloadLinkFromEntity(residentTransactionEntity));
+        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
+				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
+						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
+								? utility.createDownloadCardLinkFromEventId(residentTransactionEntity)
+								: ResidentConstants.NOT_AVAILABLE);
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY)));
     }
@@ -424,7 +428,11 @@ import java.util.Optional;
          ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
          templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
                  residentTransactionEntity, languageCode));
-         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.getDownloadLinkFromEntity(residentTransactionEntity));
+         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
+				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
+						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
+								? utility.createDownloadCardLinkFromEventId(residentTransactionEntity)
+								: ResidentConstants.NOT_AVAILABLE);
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));

@@ -140,7 +140,10 @@ public class Utility {
 	
 	@Value("${resident.ui.track-service-request-url}")
 	private String trackServiceUrl;
-	
+
+	@Value("${mosip.resident.download-card.url}")
+	private String downloadCardUrl;
+
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
@@ -410,10 +413,10 @@ public class Utility {
 		return trackServiceUrl + eventId;
 	}
 	
-	public String getDownloadLinkFromEntity(ResidentTransactionEntity residentTransactionEntity) {
+	public String createDownloadCardLinkFromEventId(ResidentTransactionEntity residentTransactionEntity) {
 		if (residentTransactionEntity.getReferenceLink() != null
 				&& !residentTransactionEntity.getReferenceLink().isEmpty()) {
-			return residentTransactionEntity.getReferenceLink();
+			return downloadCardUrl.replace("{eventId}", residentTransactionEntity.getEventId());
 		}
 		return ResidentConstants.NOT_AVAILABLE;
 	}
