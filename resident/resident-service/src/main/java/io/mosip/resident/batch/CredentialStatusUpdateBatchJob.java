@@ -76,7 +76,7 @@ import reactor.util.function.Tuples;
  *
  */
 @Component
-@Transactional
+//@Transactional
 @ConditionalOnProperty(name = IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED, havingValue = "true", matchIfMissing = true)
 public class CredentialStatusUpdateBatchJob {
 
