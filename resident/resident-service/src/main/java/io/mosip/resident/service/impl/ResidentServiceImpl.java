@@ -48,7 +48,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jackson.JsonLoader;
 
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
@@ -59,6 +61,8 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
+import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -159,6 +163,7 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import net.logstash.logback.encoder.org.apache.commons.lang3.StringUtils;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -235,6 +240,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private Utilities utilities;
+	
+	/** The json validator. */
+	@Autowired
+	private IdObjectValidator idObjectValidator;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -899,6 +908,31 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
+			
+			JSONObject object = dto.getIdentity();
+			ResponseWrapper<?> idSchemaResponse;
+			Double idSchemaVersion = (Double) object.get("IDSchemaVersion");
+			if (idSchemaVersion != null) {
+				idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+			} else {
+				throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER.getErrorCode(),
+						String.format(ResidentErrorCode.MISSING_INPUT_PARAMETER.getErrorMessage(), "IDSchemaVersion"));
+			}
+			Object idSchema = idSchemaResponse.getResponse();
+			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+			String schemaJson = (String) map.get("schemaJson");
+			try {
+				idObjectValidator.validateIdObject(schemaJson, jsonObject);
+			} catch (IdObjectValidationFailedException e) {
+				String error = e.getErrorTexts().toString();
+				if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
+					List<String> errors = e.getErrorTexts();
+					String errorMessage = errors.get(0);
+					throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+							errorMessage);
+				}
+			}
+			
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
 					|| mappingJson.trim().isEmpty()) {
 				audit.setAuditRequestDto(
