@@ -92,6 +92,8 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 @Component
 public class Utility {
 
+	private static final String EVENT_ID_PLACEHOLDER = "{eventId}";
+
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 
 	@Autowired
@@ -416,7 +418,7 @@ public class Utility {
 	public String createDownloadCardLinkFromEventId(ResidentTransactionEntity residentTransactionEntity) {
 		if (residentTransactionEntity.getReferenceLink() != null
 				&& !residentTransactionEntity.getReferenceLink().isEmpty()) {
-			return downloadCardUrl.replace("{eventId}", residentTransactionEntity.getEventId());
+			return downloadCardUrl.replace(EVENT_ID_PLACEHOLDER, residentTransactionEntity.getEventId());
 		}
 		return ResidentConstants.NOT_AVAILABLE;
 	}

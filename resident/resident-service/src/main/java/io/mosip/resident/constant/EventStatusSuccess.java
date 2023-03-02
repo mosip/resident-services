@@ -7,6 +7,7 @@ Enum to store the event status success
 public enum EventStatusSuccess {
     AUTHENTICATION_SUCCESSFUL,
     STORED,
+    CARD_READY_TO_DOWNLOAD,
     CARD_DOWNLOADED,
     CARD_DELIVERED,
     RECEIVED,
