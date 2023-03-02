@@ -78,6 +78,7 @@ import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
@@ -130,6 +131,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -148,6 +150,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
 import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
@@ -1579,17 +1582,11 @@ public class ResidentServiceImpl implements ResidentService {
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
-					String rid = residentTransactionEntity.get().getAid();
-					if (rid != null) {
-						return getCard(rid);
-					}
+					return getCardFromDataShareUrl(residentTransactionEntity.get());
 				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
 				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
 					cardType = IdType.VID.name();
-					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
-					if (credentialRequestId != null) {
-						return getCard(credentialRequestId);
-					}
+					return getCardFromDataShareUrl(residentTransactionEntity.get());
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
@@ -1609,6 +1606,29 @@ public class ResidentServiceImpl implements ResidentService {
 		} catch (Exception e) {
 			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_FOUND.getErrorCode(),
 					ResidentErrorCode.CARD_NOT_FOUND.getErrorMessage(), e);
+		}
+	}
+
+	public byte[] getCardFromDataShareUrl(ResidentTransactionEntity residentTransactionEntity) {
+		try {
+			if (residentTransactionEntity.getReferenceLink() != null
+					&& !residentTransactionEntity.getReferenceLink().isEmpty() && residentTransactionEntity
+							.getStatusCode().equals(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name())) {
+				URI dataShareUri = URI.create(residentTransactionEntity.getReferenceLink());
+				byte[] pdfBytes = residentServiceRestClient.getApi(dataShareUri, byte[].class);
+				if (pdfBytes.length == 0) {
+					throw new CardNotReadyException();
+				}
+				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
+				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
+				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
+				residentTransactionRepository.save(residentTransactionEntity);
+				return pdfBytes;
+			}
+		} catch (Exception e) {
+			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
 		}
 		return new byte[0];
 	}
