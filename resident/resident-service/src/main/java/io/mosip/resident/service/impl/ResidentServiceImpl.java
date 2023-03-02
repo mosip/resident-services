@@ -1613,11 +1613,11 @@ public class ResidentServiceImpl implements ResidentService {
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
-					return getCardFromDataShareUrl(residentTransactionEntity.get());
+					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
 				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
 					cardType = IdType.VID.name();
-					return getCardFromDataShareUrl(residentTransactionEntity.get());
+					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
@@ -1640,7 +1640,7 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 	}
 
-	public byte[] getCardFromDataShareUrl(ResidentTransactionEntity residentTransactionEntity) {
+	public byte[] downloadCardFromDataShareUrl(ResidentTransactionEntity residentTransactionEntity) {
 		try {
 			if (residentTransactionEntity.getReferenceLink() != null
 					&& !residentTransactionEntity.getReferenceLink().isEmpty() && residentTransactionEntity
