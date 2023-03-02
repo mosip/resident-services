@@ -64,8 +64,7 @@ public interface ResidentService {
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																		  String searchColumn, String searchText, String langCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	byte[] downloadCard(String individualId, String idType)
-			throws ResidentServiceCheckedException;
+	byte[] downloadCard(String eventId) throws ResidentServiceCheckedException;
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
