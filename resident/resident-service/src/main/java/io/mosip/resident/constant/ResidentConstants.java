@@ -49,6 +49,7 @@ public class ResidentConstants {
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
+    public static final String URL = "url";
     public static final String RESIDENT = "RESIDENT";
 
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
