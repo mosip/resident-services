@@ -11,7 +11,7 @@ public enum ResidentErrorCode {
 	CREDENTIAL_ISSUED_EXCEPTION("RES-SER-24", "Credential is issued"),
 	VID_CREATION_EXCEPTION("RES-SER-406", "Exception while creating VID"),
 	VID_ALREADY_PRESENT("RES-SER-405", "Maximum allowed VIDs are active. Deactivate VID to generate new one."),
-	INVALID_INPUT("RES-SER-410", "Invalid Input Parameter- %s"), INVALID_VID("RES-SER-010", "Invalid VID"),
+	INVALID_INPUT("RES-SER-410", "Invalid Input Parameter- "), INVALID_VID("RES-SER-010", "Invalid VID"),
 	INVALID_UIN("RES-SER-011", "Invalid UIN"), INVALID_RID("RES-SER-413", "Invalid RID"),
 	INVALID_VID_UIN("RES-SER-013", "Invalid UIN for given VID"),
 	REQUEST_FAILED("RES-SER-402", "Your request is not successful, please try again later."),
