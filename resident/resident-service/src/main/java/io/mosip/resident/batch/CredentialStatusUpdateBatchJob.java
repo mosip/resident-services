@@ -7,6 +7,7 @@ import static io.mosip.resident.constant.EventStatusInProgress.NEW;
 import static io.mosip.resident.constant.EventStatusInProgress.PAYMENT_CONFIRMED;
 import static io.mosip.resident.constant.EventStatusInProgress.PRINTING;
 import static io.mosip.resident.constant.EventStatusInProgress.PROCESSING;
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_READY_TO_DOWNLOAD;
 import static io.mosip.resident.constant.EventStatusSuccess.RECEIVED;
 import static io.mosip.resident.constant.EventStatusSuccess.STORED;
 import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
@@ -228,6 +229,8 @@ public class CredentialStatusUpdateBatchJob {
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
 		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(RECEIVED.name())
 				|| txn.getStatusCode().contentEquals(STORED.name())) {
+			txn.setStatusCode(CARD_READY_TO_DOWNLOAD.name());
+			txn.setReadStatus(false);
 			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
 		}
 	}
@@ -235,6 +238,8 @@ public class CredentialStatusUpdateBatchJob {
 	private void trackAnddownloadPrintingOrReceivedStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
 		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(STORED.name())) {
+			txn.setStatusCode(CARD_READY_TO_DOWNLOAD.name());
+			txn.setReadStatus(false);
 			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
 		}
 	}
