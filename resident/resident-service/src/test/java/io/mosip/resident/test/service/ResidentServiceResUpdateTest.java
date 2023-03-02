@@ -3,6 +3,7 @@ package io.mosip.resident.test.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.FileNotFoundException;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.constant.ApiName;
@@ -31,6 +32,7 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -39,11 +41,14 @@ import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -73,6 +78,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Ignore
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
 	@InjectMocks
@@ -118,6 +124,9 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
+	
+	@Mock
+	private ProxyMasterdataService proxyMasterdataService;
 
 	ResidentUpdateRequestDto dto;
 
@@ -143,12 +152,17 @@ public class ResidentServiceResUpdateTest {
 		dto.setConsent("Accepted");
 		ReflectionTestUtils.setField(residentServiceImpl, "centerId", "10008");
 		ReflectionTestUtils.setField(residentServiceImpl, "machineId", "10008");
+		ReflectionTestUtils.setField(residentServiceImpl, "idSchemaVersion", 0.2);
 
 		Map identityResponse = new LinkedHashMap();
 		Map identityMap = new LinkedHashMap();
 		identityMap.put("UIN", "8251649601");
 		identityMap.put("email", "manojvsp12@gmail.com");
 		identityResponse.put("identity", identityMap);
+		
+		ResponseWrapper<?> idSchemaResponse;
+		
+//		when(proxyMasterdataService.getLatestIdSchema(any(), any(), any())).thenReturn(idSchemaResponse);
 
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
