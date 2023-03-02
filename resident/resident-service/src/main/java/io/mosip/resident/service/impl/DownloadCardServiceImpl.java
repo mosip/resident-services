@@ -8,6 +8,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
@@ -77,6 +78,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String TRANSACTION_COUNT = "transactionCount";
     private static final String CARD_FORMAT = "cardFormat";
     private static final Object VID_CARD = "vidCard";
+    private static final String TEMPLATE_TYPE_CODE = "templateTypeCode";
 
     @Autowired
     private Utilities utilities;
@@ -130,7 +132,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
                     String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
                     if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.getName()) && aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
-                    	pdfBytes = residentService.getUINCard(rid);
+                    	pdfBytes = residentService.getCard(rid);
                     } else {
                          throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
                                 ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
@@ -146,7 +148,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     }
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
-                    pdfBytes = residentService.getUINCard(rid);
+                    pdfBytes = residentService.getCard(rid);
                 }
                 if(pdfBytes.length==0){
                     insertDataForDownloadCard(downloadCardRequestDTOMainRequestDTO, eventId, EventStatus.FAILED.name());
@@ -348,6 +350,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             credentialReqestDto.setEncrypt(Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
             credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid, uinForVid, timeZoneOffset);
+            additionalAttributes.put(TEMPLATE_TYPE_CODE, this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
             credentialReqestDto.setAdditionalData(additionalAttributes);
             requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
             requestDto.setRequest(credentialReqestDto);
@@ -429,9 +432,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(uin));
         residentTransactionEntity.setIndividualId(uin);
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
-        residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
-        residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
-        residentTransactionEntity.setRequestSummary(RequestType.VID_CARD_DOWNLOAD.name());
+        residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
+        residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
         /**
          * Here we are setting vid in aid column.
          */

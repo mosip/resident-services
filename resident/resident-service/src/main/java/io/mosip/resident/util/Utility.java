@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -138,7 +140,10 @@ public class Utility {
 	
 	@Value("${resident.ui.track-service-request-url}")
 	private String trackServiceUrl;
-	
+
+	@Value("${mosip.resident.download-card.url}")
+	private String downloadCardUrl;
+
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
@@ -233,8 +238,8 @@ public class Utility {
 			JSONObject mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 			List<String> mapperJsonKeys = new ArrayList<>(mapperIdentity.keySet());
 
-			String preferredLanguage = getPreferredLanguage(demographicIdentity);
-			if (StringUtils.isBlank(preferredLanguage)) {
+			Set<String> preferredLanguage = getPreferredLanguage(demographicIdentity);
+			if (preferredLanguage.isEmpty()) {
 				List<String> defaultTemplateLanguages = getDefaultTemplateLanguages();
 				if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
 					Set<String> dataCapturedLanguages = getDataCapturedLanguages(mapperIdentity, demographicIdentity);
@@ -243,7 +248,7 @@ public class Utility {
 					templateLangauges.addAll(defaultTemplateLanguages);
 				}
 			} else {
-				templateLangauges.add(preferredLanguage);
+				templateLangauges.addAll(preferredLanguage);
 			}
 
 			for (String key : mapperJsonKeys) {
@@ -275,16 +280,23 @@ public class Utility {
 		return attributes;
 	}
 
-	private String getPreferredLanguage(JSONObject demographicIdentity) {
+	private Set<String> getPreferredLanguage(JSONObject demographicIdentity) {
 		String preferredLang = null;
 		String preferredLangAttribute = env.getProperty("mosip.default.user-preferred-language-attribute");
 		if (!StringUtils.isBlank(preferredLangAttribute)) {
 			Object object = demographicIdentity.get(preferredLangAttribute);
 			if(object!=null) {
 				preferredLang = String.valueOf(object);
+				if(preferredLang.contains(ResidentConstants.COMMA)){
+					String[] preferredLangArray = preferredLang.split(ResidentConstants.COMMA);
+					return Set.of(preferredLangArray);
+				}
 			}
 		}
-		return preferredLang;
+		if(preferredLang!=null){
+			return Set.of(preferredLang);
+		}
+		return Set.of();
 	}
 
 	private Set<String> getDataCapturedLanguages(JSONObject mapperIdentity, JSONObject demographicIdentity)
@@ -401,10 +413,10 @@ public class Utility {
 		return trackServiceUrl + eventId;
 	}
 	
-	public String getDownloadLinkFromEntity(ResidentTransactionEntity residentTransactionEntity) {
+	public String createDownloadCardLinkFromEventId(ResidentTransactionEntity residentTransactionEntity) {
 		if (residentTransactionEntity.getReferenceLink() != null
 				&& !residentTransactionEntity.getReferenceLink().isEmpty()) {
-			return residentTransactionEntity.getReferenceLink();
+			return downloadCardUrl.replace("{eventId}", residentTransactionEntity.getEventId());
 		}
 		return ResidentConstants.NOT_AVAILABLE;
 	}

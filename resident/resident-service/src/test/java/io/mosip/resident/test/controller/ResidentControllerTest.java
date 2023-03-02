@@ -491,7 +491,7 @@ public class ResidentControllerTest {
 		resultResponseWrapper.setResponse(list);
 		resultResponseWrapper.setResponsetime(null);
 		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
-		when(residentService.downloadCard(Mockito.anyString(), Mockito.anyString())).thenReturn(bytes);
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
 				.downloadCard("9876543210", 0);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());

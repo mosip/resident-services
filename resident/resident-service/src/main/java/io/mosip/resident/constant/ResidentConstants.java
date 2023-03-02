@@ -49,6 +49,7 @@ public class ResidentConstants {
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
+    public static final String URL = "url";
     public static final String RESIDENT = "RESIDENT";
 
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
@@ -219,4 +220,6 @@ public class ResidentConstants {
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
     public static final CharSequence ATTRIBUTES = "attributes";
     public static final String INVALID_INPUT_PARAMETER="Invalid input parameter";
+
+    public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
 }

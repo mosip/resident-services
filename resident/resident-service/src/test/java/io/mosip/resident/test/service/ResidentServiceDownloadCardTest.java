@@ -141,19 +141,10 @@ public class ResidentServiceDownloadCardTest {
         responseDto.setId("io.mosip.digital.card");
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
+        Mockito.when(residentCredentialServiceImpl.getCard("123", null, null)).thenReturn(result);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
-    }
-    @Test(expected = ResidentServiceException.class)
-    public void testUpdateMyUinException() throws ResidentServiceCheckedException{
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-        residentTransactionEntity.get().setAid(eventId);
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
-        assertEquals(response, result);
     }
 
     @Test
@@ -175,14 +166,14 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertNotNull(response);
     }
 
     @Test(expected = EventIdNotPresentException.class)
     public void testEventIdNotPresentException() throws ResidentServiceCheckedException {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertEquals(response, result);
     }
 
@@ -193,7 +184,7 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.REVOKE_VID.name());
         residentTransactionEntity.get().setAid(eventId);
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertEquals(response, result);
     }
 
