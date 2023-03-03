@@ -41,6 +41,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -93,9 +94,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private IdAuthService idAuthService;
 
     @Autowired
-    private ResidentServiceImpl residentService;
-
-    @Autowired
     private Utility utility;
 
     @Autowired
@@ -112,6 +110,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     @Autowired
     private ResidentCredentialService residentCredentialService;
+
+    @Value("${mosip.registration.processor.rid.delimiter}")
+	private String ridSuffix;
 
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardServiceImpl.class);
 
@@ -132,7 +133,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
                     String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
                     if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.getName()) && aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
-                    	pdfBytes = residentService.getCard(rid);
+                    	pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
                     } else {
                          throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
                                 ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
@@ -148,7 +149,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     }
                 } else {
                     rid = utilities.getRidByIndividualId(individualId);
-                    pdfBytes = residentService.getCard(rid);
+                    pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
                 }
                 if(pdfBytes.length==0){
                     insertDataForDownloadCard(downloadCardRequestDTOMainRequestDTO, eventId, EventStatus.FAILED.name());
@@ -173,13 +174,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             audit.setAuditRequestDto(EventEnum.REQ_CARD);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
-        } catch (ResidentServiceException e) {
-            audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
-            logger.error("Unable to get attributes- "+e);
-            throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
+	}
         return Tuples.of(pdfBytes, eventId);
     }
 

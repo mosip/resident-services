@@ -293,6 +293,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
 
+	@Value("${mosip.registration.processor.rid.delimiter}")
+	private String ridSuffix;
+
 	private static String authTypes;
 
 	@Autowired
@@ -1169,7 +1172,7 @@ public class ResidentServiceImpl implements ResidentService {
 			PacketGeneratorResDto response) {
 		String rid = response.getRegistrationId();
 		residentTransactionEntity.setAid(rid);
-		residentTransactionEntity.setCredentialRequestId(rid);
+		residentTransactionEntity.setCredentialRequestId(rid + ridSuffix);
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 	}
@@ -1659,16 +1662,6 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
 		}
 		return new byte[0];
-	}
-
-	public byte[] getCard(String rid) {
-		try {
-			return residentCredentialServiceImpl.getCard(rid, null, null);
-		} catch (Exception e) {
-				audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-				throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-						ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
-		}
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
