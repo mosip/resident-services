@@ -78,7 +78,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String CARD_FORMAT = "cardFormat";
     private static final Object VID_CARD = "vidCard";
     private static final String TEMPLATE_TYPE_CODE = "templateTypeCode";
-    private static final String IMAGE = "image";
+    private static final String APPLICANT_PHOTO = "ApplicantPhoto";
 
     @Autowired
     private Utilities utilities;
@@ -351,7 +351,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid, uinForVid, timeZoneOffset);
             additionalAttributes.put(TEMPLATE_TYPE_CODE, this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
-            additionalAttributes.put(IMAGE, identityService.getAvailableclaimValue(environment.getProperty(ResidentConstants.IMAGE)));
+            additionalAttributes.put(APPLICANT_PHOTO, identityService.getAvailableclaimValue(environment.getProperty(ResidentConstants.IMAGE)));
             credentialReqestDto.setAdditionalData(additionalAttributes);
             requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
             requestDto.setRequest(credentialReqestDto);
