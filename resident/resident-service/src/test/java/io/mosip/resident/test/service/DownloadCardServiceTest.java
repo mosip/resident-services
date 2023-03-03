@@ -22,10 +22,10 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.DownloadCardServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
@@ -53,6 +53,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 
 /**
  * This class is used to create service class test  for getting acknowledgement API.
@@ -82,7 +83,7 @@ public class DownloadCardServiceTest {
     private AuditUtil auditUtil;
 
     @Mock
-    private ResidentServiceImpl residentService;
+    private ResidentCredentialService residentCredentialService;
 
     @Mock
     private IdentityServiceImpl identityService;
@@ -121,7 +122,7 @@ public class DownloadCardServiceTest {
         Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn(pdfbytes);
         Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
-        Mockito.when(residentService.getCard(Mockito.anyString())).thenReturn(pdfbytes);
+        Mockito.when(residentCredentialService.getCard(Mockito.anyString(), isNull(), isNull())).thenReturn(pdfbytes);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenReturn("7841261580");
         Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());

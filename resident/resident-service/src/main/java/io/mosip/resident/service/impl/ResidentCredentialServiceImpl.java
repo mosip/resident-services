@@ -138,6 +138,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	
 	@Value("${mosip.resident.request.credential.encryption.key}")
 	private String encryptionKey;
+
+	@Value("${mosip.registration.processor.rid.delimiter}")
+	private String ridSuffix;
 	
 	@Override
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto dto)
@@ -356,8 +359,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
 		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		try {
-			UUID requestUUID = UUID.fromString(requestId);
-			String credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
+			String credentialUrl = "";
+			if(requestId.contains(ridSuffix)) {
+				credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+			} else {
+				UUID requestUUID = UUID.fromString(requestId);
+				credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
+			}
 			URI credentailStatusUri = URI.create(credentialUrl);
 			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
