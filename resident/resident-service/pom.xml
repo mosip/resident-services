@@ -29,6 +29,7 @@
 		<kernel.khazana.version>1.2.1-SNAPSHOT</kernel.khazana.version>
 		<pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
 		<kernel-openid-bridge-api.version>1.2.1-SNAPSHOT</kernel-openid-bridge-api.version>
+		<kernel.idobjectvalidator.version>1.2.1-SNAPSHOT</kernel.idobjectvalidator.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -389,6 +390,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.mosip.kernel</groupId>
+			<artifactId>kernel-idobjectvalidator</artifactId>
+			<version>${kernel.idobjectvalidator.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-io</groupId>

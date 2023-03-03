@@ -10,6 +10,8 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
+import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -78,6 +80,7 @@ import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
@@ -130,6 +133,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -148,6 +152,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
 import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
@@ -226,6 +231,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private Utilities utilities;
+	
+	/** The json validator. */
+	@Autowired
+	private IdObjectValidator idObjectValidator;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -256,6 +265,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
+	
+	@Value("${IDSchema.Version}")
+	private double idSchemaVersion;
 
 	@Autowired
 	private AuditUtil audit;
@@ -887,6 +899,25 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
+			
+			JSONObject object = dto.getIdentity(); 
+			ResponseWrapper<?> idSchemaResponse;
+			idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+			Object idSchema = idSchemaResponse.getResponse();
+			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+			String schemaJson = (String) map.get("schemaJson");
+			try {
+				idObjectValidator.validateIdObject(schemaJson, jsonObject);
+			} catch (IdObjectValidationFailedException e) {
+				String error = e.getErrorTexts().toString();
+				if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
+					List<String> errors = e.getErrorTexts();
+					String errorMessage = errors.get(0);
+					throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+							errorMessage);
+				}
+			}
+			
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
 					|| mappingJson.trim().isEmpty()) {
 				audit.setAuditRequestDto(
@@ -1579,17 +1610,11 @@ public class ResidentServiceImpl implements ResidentService {
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
-					String rid = residentTransactionEntity.get().getAid();
-					if (rid != null) {
-						return getCard(rid);
-					}
+					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
 				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
 					cardType = IdType.VID.name();
-					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
-					if (credentialRequestId != null) {
-						return getCard(credentialRequestId);
-					}
+					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
@@ -1609,6 +1634,29 @@ public class ResidentServiceImpl implements ResidentService {
 		} catch (Exception e) {
 			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_FOUND.getErrorCode(),
 					ResidentErrorCode.CARD_NOT_FOUND.getErrorMessage(), e);
+		}
+	}
+
+	public byte[] downloadCardFromDataShareUrl(ResidentTransactionEntity residentTransactionEntity) {
+		try {
+			if (residentTransactionEntity.getReferenceLink() != null
+					&& !residentTransactionEntity.getReferenceLink().isEmpty() && residentTransactionEntity
+							.getStatusCode().equals(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name())) {
+				URI dataShareUri = URI.create(residentTransactionEntity.getReferenceLink());
+				byte[] pdfBytes = residentServiceRestClient.getApi(dataShareUri, byte[].class);
+				if (pdfBytes.length == 0) {
+					throw new CardNotReadyException();
+				}
+				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
+				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
+				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
+				residentTransactionRepository.save(residentTransactionEntity);
+				return pdfBytes;
+			}
+		} catch (Exception e) {
+			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
+			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
 		}
 		return new byte[0];
 	}
