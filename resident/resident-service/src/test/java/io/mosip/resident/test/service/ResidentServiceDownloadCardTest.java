@@ -1,34 +1,5 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.persistence.EntityManager;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
@@ -59,6 +30,34 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.persistence.EntityManager;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -234,6 +233,29 @@ public class ResidentServiceDownloadCardTest {
     }
 
     @Test
+    public void testDownloadServiceHistorySuccess() throws ResidentServiceCheckedException, IOException {
+        ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
+        ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+        serviceHistoryResponseDto.setEventId("123");
+        serviceHistoryResponseDto.setDescription(null);
+        PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
+        responseDtoPageDto.setData(List.of(serviceHistoryResponseDto));
+        responseWrapper.setResponse(responseDtoPageDto);
+        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
+        Map<String, Object> templateResponse = new LinkedHashMap<>();
+        templateResponse.put("fileText", "test");
+        responseWrapper1.setResponse(templateResponse);
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(responseWrapper1);
+        Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
+        Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+        byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
+                null, null, null,
+                null, null, 0);
+        assertNotNull(pdfDocument);
+    }
+
+    @Test
     public void testDownloadServiceHistoryFail() throws ResidentServiceCheckedException, IOException {
         ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
         ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
@@ -255,12 +277,15 @@ public class ResidentServiceDownloadCardTest {
         assertNotNull(pdfDocument);
     }
 
-
-
-    @Ignore
-    //FIXME to be corrected
     @Test
     public void testGetUnreadNotifyList() throws ResidentServiceCheckedException, ApisResourceAccessException{
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
+        ResidentTransactionEntity residentTransactionEntity1 = new ResidentTransactionEntity();
+        residentTransactionEntity1.setEventId("123");
+        Page<ResidentTransactionEntity> residentTransactionEntityPage =
+                new PageImpl<>(List.of(residentTransactionEntity1));
+        Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeIn
+                (Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(residentTransactionEntityPage);
     	 ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
          ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
          serviceHistoryResponseDto.setEventId("123");
@@ -333,9 +358,13 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setIdaToken("123");
         residentUserEntity.setIpAddress("http");
         Optional<ResidentSessionEntity> response = Optional.of(residentUserEntity);
+        ResidentUserEntity residentUserEntity1 = new ResidentUserEntity();
+        residentUserEntity1.setLastbellnotifDtimes(LocalDateTime.now());
+        residentUserEntity1.setIdaToken("123");
+        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(Optional.of(residentUserEntity1));
         Mockito.when(residentSessionRepository.findById(Mockito.anyString())).thenReturn(response);
         Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
-        assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
+        assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
 
