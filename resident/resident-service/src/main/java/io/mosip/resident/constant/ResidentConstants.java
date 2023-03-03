@@ -222,4 +222,8 @@ public class ResidentConstants {
     public static final String INVALID_INPUT_PARAMETER="Invalid input parameter";
 
     public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
+
+    public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
+    public static final String VID = "VID";
+    public static final String FULL_NAME = "fullName";
 }
