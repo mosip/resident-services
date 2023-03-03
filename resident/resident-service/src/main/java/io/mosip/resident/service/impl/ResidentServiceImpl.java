@@ -155,6 +155,7 @@ import java.util.stream.IntStream;
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
 import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
@@ -1650,6 +1651,8 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
 				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
+				residentTransactionEntity.setUpdBy(RESIDENT);
+				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 				residentTransactionRepository.save(residentTransactionEntity);
 				return pdfBytes;
 			}
