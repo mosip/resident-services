@@ -265,9 +265,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
-	
-	@Value("${IDSchema.Version}")
-	private double idSchemaVersion;
 
 	@Autowired
 	private AuditUtil audit;
@@ -899,10 +896,10 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
-			
-			JSONObject object = dto.getIdentity(); 
-			ResponseWrapper<?> idSchemaResponse;
-			idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+
+			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
+			Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 			Object idSchema = idSchemaResponse.getResponse();
 			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
 			String schemaJson = (String) map.get("schemaJson");
