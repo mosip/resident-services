@@ -56,7 +56,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.TemplateVariablesConstants.NAME;
 import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
@@ -79,6 +78,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String CARD_FORMAT = "cardFormat";
     private static final Object VID_CARD = "vidCard";
     private static final String TEMPLATE_TYPE_CODE = "templateTypeCode";
+    private static final String APPLICANT_PHOTO = "ApplicantPhoto";
 
     @Autowired
     private Utilities utilities;
@@ -351,6 +351,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
             Map<String, Object> additionalAttributes = getVidDetails(vid, uinForVid, timeZoneOffset);
             additionalAttributes.put(TEMPLATE_TYPE_CODE, this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
+            additionalAttributes.put(APPLICANT_PHOTO, identityService.getAvailableclaimValue(environment.getProperty(ResidentConstants.IMAGE)));
             credentialReqestDto.setAdditionalData(additionalAttributes);
             requestDto.setId(this.environment.getProperty(ResidentConstants.CREDENTIAL_REQUEST_SERVICE_ID));
             requestDto.setRequest(credentialReqestDto);
@@ -455,7 +456,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
             if(vidList.size()>0){
                 for(Map<String, ?> vidData: vidList){
                     if(vidData.get(VID).toString().equalsIgnoreCase(vid)){
-                        additionalAttributes.put(VID, vid);
+                        additionalAttributes.put(ResidentConstants.VID, vid);
                         additionalAttributes.put(VID_TYPE, vidData.get(VID_TYPE));
                         additionalAttributes.put(MASKED_VID, vidData.get(MASKED_VID));
                         additionalAttributes.put(EXPIRY_TIMESTAMP, vidData.get(EXPIRY_TIMESTAMP));
@@ -464,7 +465,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         additionalAttributes.put(TRANSACTION_COUNT, vidData.get(TRANSACTION_COUNT));
                         additionalAttributes.put(CARD_FORMAT, VID_CARD);
                         if(name!=null){
-                            additionalAttributes.put(NAME, name);
+                            additionalAttributes.put(ResidentConstants.FULL_NAME, name);
                         }
                         break;
                     }

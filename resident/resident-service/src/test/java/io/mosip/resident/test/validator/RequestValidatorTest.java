@@ -25,6 +25,7 @@ import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
@@ -33,6 +34,7 @@ import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentVidRequestDto;
 import io.mosip.resident.dto.ResidentVidRequestDtoV2;
+import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
@@ -1300,6 +1302,18 @@ public class RequestValidatorTest {
 	}
 
 	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2InvalidAuthTypeV2() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.auth.lock.unlock");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
 	public void testValidateAuthLockOrUnlockRequestV2EmptyAuthType() throws Exception{
 		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
 		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
@@ -2448,6 +2462,42 @@ public class RequestValidatorTest {
 		requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateGrievanceRequestDtoInvalidMessageLength() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
+		ReflectionTestUtils.setField(requestValidator, "messageCharsLimit", 1);
+		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
+		grievanceRequestDTO.setMessage("message");
+		grievanceRequestDTO.setEventId("1212121212121211");
+		grievanceRequestDTOMainRequestDTO.setRequest(grievanceRequestDTO);
+		grievanceRequestDTOMainRequestDTO.setId("id");
+		grievanceRequestDTOMainRequestDTO.setVersion("version");
+		grievanceRequestDTOMainRequestDTO.setRequesttime(DateTime.now().toDate());
+		requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateGrievanceRequestDtoInvalidAllowedChars() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
+		ReflectionTestUtils.setField(requestValidator, "messageAllowedSpecialCharRegex", "[A-Za-z .,-]+");
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
+		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
+		grievanceRequestDTO.setMessage("message1");
+		grievanceRequestDTO.setEventId("1212121212121211");
+		grievanceRequestDTOMainRequestDTO.setRequest(grievanceRequestDTO);
+		grievanceRequestDTOMainRequestDTO.setId("id");
+		grievanceRequestDTOMainRequestDTO.setVersion("version");
+		grievanceRequestDTOMainRequestDTO.setRequesttime(DateTime.now().toDate());
+		requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
+	}
+
 	@Test(expected = InvalidInputException.class)
 	public void testValidateEventIdNonNumeric(){
 		requestValidator.validateEventId("a");
@@ -2478,6 +2528,54 @@ public class RequestValidatorTest {
 	public void testValidatePhone() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
 		ReflectionTestUtils.invokeMethod(requestValidator, "validatePhoneNumber", "w");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateSharableAttributes() {
+		requestValidator.validateSharableAttributes(List.of());
+	}
+
+	@Test
+	public void testValidateSharableAttributesSuccess() {
+		requestValidator.validateSharableAttributes(List.of(new SharableAttributesDTO()));
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidatePurposeNull() {
+		requestValidator.validatePurpose(null);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidatePurposeEmpty() {
+		requestValidator.validatePurpose("");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidatePurposeWithMoreCharacter() {
+		ReflectionTestUtils.setField(requestValidator, "purposeCharsLimit", 1);
+		requestValidator.validatePurpose("HR");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidatePurposeWithAllowedRegex() {
+		ReflectionTestUtils.setField(requestValidator, "purposeCharsLimit", 10);
+		ReflectionTestUtils.setField(requestValidator, "purposeAllowedSpecialCharRegex", "^[A-Za-z .,-]+$");
+		requestValidator.validatePurpose("H2R");
+	}
+
+	@Test
+	public void testValidatePurposeSuccess() {
+		ReflectionTestUtils.setField(requestValidator, "purposeCharsLimit", 10);
+		ReflectionTestUtils.setField(requestValidator, "purposeAllowedSpecialCharRegex", "^[A-Za-z .,-]+$");
+		requestValidator.validatePurpose("HR");
+	}
+
+	@Test
+	public void testValidateReqOtp() {
+		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = new IndividualIdOtpRequestDTO();
+		individualIdOtpRequestDTO.setIndividualId("1234567890");
+		individualIdOtpRequestDTO.setTransactionId("1234567890");
+		requestValidator.validateReqOtp(individualIdOtpRequestDTO);
 	}
 
 }

@@ -67,7 +67,6 @@ import reactor.util.function.Tuples;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
