@@ -155,6 +155,7 @@ import java.util.stream.IntStream;
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
 import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
@@ -265,9 +266,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
-	
-	@Value("${IDSchema.Version}")
-	private double idSchemaVersion;
 
 	@Autowired
 	private AuditUtil audit;
@@ -292,6 +290,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
+
+	@Value("${mosip.registration.processor.rid.delimiter}")
+	private String ridSuffix;
 
 	private static String authTypes;
 
@@ -899,10 +900,10 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
-			
-			JSONObject object = dto.getIdentity(); 
-			ResponseWrapper<?> idSchemaResponse;
-			idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+
+			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
+			Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 			Object idSchema = idSchemaResponse.getResponse();
 			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
 			String schemaJson = (String) map.get("schemaJson");
@@ -1169,7 +1170,7 @@ public class ResidentServiceImpl implements ResidentService {
 			PacketGeneratorResDto response) {
 		String rid = response.getRegistrationId();
 		residentTransactionEntity.setAid(rid);
-		residentTransactionEntity.setCredentialRequestId(rid);
+		residentTransactionEntity.setCredentialRequestId(rid + ridSuffix);
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 	}
@@ -1650,6 +1651,8 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
 				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
+				residentTransactionEntity.setUpdBy(RESIDENT);
+				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 				residentTransactionRepository.save(residentTransactionEntity);
 				return pdfBytes;
 			}
@@ -1659,16 +1662,6 @@ public class ResidentServiceImpl implements ResidentService {
 					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
 		}
 		return new byte[0];
-	}
-
-	public byte[] getCard(String rid) {
-		try {
-			return residentCredentialServiceImpl.getCard(rid, null, null);
-		} catch (Exception e) {
-				audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-				throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-						ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
-		}
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
