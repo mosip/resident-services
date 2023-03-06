@@ -114,6 +114,7 @@ public class ResidentCredentialServiceTest {
     	random=new SecureRandom();
     	ReflectionTestUtils.setField(residentCredentialService, "max", 982608);
     	ReflectionTestUtils.setField(residentCredentialService, "min", 120078);
+    	ReflectionTestUtils.setField(residentCredentialService, "ridSuffix", "-pdf");
     	List<String> attributeList=new ArrayList<>();
     	attributeList.add("name");
     	attributeList.add("gender");
