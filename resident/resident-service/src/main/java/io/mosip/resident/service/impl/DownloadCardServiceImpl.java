@@ -139,16 +139,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                          throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
                                 ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
                     }
-                } else if (idType.equalsIgnoreCase(VID)) {
-                    ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.findTopByAidOrderByCrDtimesDesc(individualId);
-                    if(residentTransactionEntity !=null ){
-                        String credentialRequestId = residentTransactionEntity.getCredentialRequestId();
-                        if (credentialRequestId != null) {
-                            pdfBytes =residentCredentialService.getCard
-                                    (credentialRequestId, null, null);
-                        }
-                    }
-                } else {
+                }else {
                     rid = utilities.getRidByIndividualId(individualId);
                     pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
                 }
@@ -459,13 +450,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         additionalAttributes.put(ResidentConstants.VID, vid);
                         additionalAttributes.put(VID_TYPE, vidData.get(VID_TYPE));
                         additionalAttributes.put(MASKED_VID, vidData.get(MASKED_VID));
-                        additionalAttributes.put(EXPIRY_TIMESTAMP, vidData.get(EXPIRY_TIMESTAMP));
+                        additionalAttributes.put(EXPIRY_TIMESTAMP, replaceNullValueWithNA(vidData.get(EXPIRY_TIMESTAMP)));
                         additionalAttributes.put(GENERATED_ON_TIMESTAMP, replaceNullValueWithNA(vidData.get(GENERATED_ON_TIMESTAMP)));
                         additionalAttributes.put(TRANSACTION_LIMIT, replaceNullValueWithNA(vidData.get(TRANSACTION_LIMIT)));
                         additionalAttributes.put(TRANSACTION_COUNT, replaceNullValueWithNA(vidData.get(TRANSACTION_COUNT)));
                         additionalAttributes.put(CARD_FORMAT, VID_CARD);
                         if(name!=null){
-                            additionalAttributes.put(ResidentConstants.FULL_NAME, name);
+                            additionalAttributes.put(ResidentConstants.NAME, name);
                         }
                         break;
                     }
