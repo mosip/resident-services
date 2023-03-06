@@ -225,5 +225,5 @@ public class ResidentConstants {
 
     public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
     public static final String VID = "VID";
-    public static final String FULL_NAME = "fullName";
+    public static final String NAME = "name";
 }
