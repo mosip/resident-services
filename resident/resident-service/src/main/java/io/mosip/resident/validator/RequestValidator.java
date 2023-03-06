@@ -826,9 +826,9 @@ public class RequestValidator {
 		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionId",
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
 					"Request for update uin"));
-			throw new InvalidInputException("transactionId");
+			throw new InvalidInputException("transactionID");
 		}
 
 		if(!isPatch) {
@@ -1125,12 +1125,12 @@ public class RequestValidator {
 	public void validateTransactionId(String transactionID) {
 		if(transactionID== null || transactionID.isEmpty()){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"transactionID", "transactionID must not be null"));
-			throw new InvalidInputException("transactionID");
+					"transactionId", "transactionId must not be null"));
+			throw new InvalidInputException("transactionId");
 		} else if(!isDataValidWithRegex(transactionID, transactionIdRegex)){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"transactionID", "transactionID must be 10 digit containing numbers"));
-			throw new InvalidInputException("transactionID");
+					"transactionId", "transactionId must be 10 digit containing numbers"));
+			throw new InvalidInputException("transactionId");
 		}
 	}
 
