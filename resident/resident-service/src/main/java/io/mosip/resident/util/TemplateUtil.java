@@ -1,8 +1,11 @@
 package io.mosip.resident.util;
 
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.AttributeNameEnum;
+import io.mosip.resident.constant.AuthenticationModeEnum;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -18,6 +21,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
@@ -31,10 +35,11 @@ import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,6 +74,9 @@ import java.util.Optional;
     @Autowired Environment env;
 
     @Autowired
+    private ProxyMasterdataService proxyMasterdataService;
+
+    @Autowired
     private ResidentCredentialServiceImpl residentCredentialServiceImpl;
     
     @Value("${resident.template.date.pattern}")
@@ -101,10 +109,10 @@ import java.util.Optional;
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
-        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, replaceNullWithEmptyString(
-                residentTransactionEntity.getAttributeList()));
+        templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
+                residentTransactionEntity.getAttributeList()), languageCode));
         templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-                replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()));
+                getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode));
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
@@ -112,6 +120,127 @@ import java.util.Optional;
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, "");
         }
         return Tuples.of(templateVariables, residentTransactionEntity);
+    }
+
+    /**
+     * This method accepts a string having comma-separated attributes with camel case convention
+     * and splits it by a comma.
+     * Then it takes each attribute value from the template in logged-in language and appends it to a string
+     * with comma-separated value.
+     * @param attributes attribute values having comma separated attributes.
+     * @param languageCode logged in language code.
+     * @return attribute value stored in the template.
+     */
+    private String getAttributesDisplayText(String attributes, String languageCode) {
+        String phoneAttributeName = this.env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME);
+        List<String> attributeListTemplateValue = new ArrayList<>();
+        if (attributes != null && attributes.contains(Objects.requireNonNull(phoneAttributeName))) {
+            attributes = attributes.replace(phoneAttributeName, "");
+        }
+        if (attributes != null) {
+            List<String> attributeList = List.of(attributes.trim().split(ResidentConstants.COMMA));
+            for (String attribute : attributeList) {
+                attribute = attribute.trim();
+                attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+                        AttributeNameEnum.getTemplatePropertyName(attribute)));
+            }
+        }
+        if(attributeListTemplateValue.isEmpty()){
+            return "";
+        } else {
+            return String.join(ResidentConstants.COMMA, attributeListTemplateValue);
+        }
+
+    }
+
+    private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
+        return getTemplateValueFromTemplateTypeCodeAndLangCode
+                (languageCode, AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env));
+    }
+
+    public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode){
+        ResponseWrapper<?> proxyResponseWrapper = null;
+        try {
+            proxyResponseWrapper = proxyMasterdataService
+                    .getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, templateTypeCode);
+        } catch (ResidentServiceCheckedException e) {
+            throw new RuntimeException(e);
+        }
+        Map<String, String> templateResponse = new LinkedHashMap<>(
+                (Map<String, String>) proxyResponseWrapper.getResponse());
+        return templateResponse.get(ResidentConstants.FILE_TEXT);
+    }
+
+
+    public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText, String languageCode){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText, String languageCode) {
+         ResidentTransactionEntity residentTransactionEntity =getEntityFromEventId(eventId);
+         return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
+                    residentTransactionEntity.getAttributeList()));
+    }
+
+    public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText, String languageCode){
+        return addAttributeInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+    }
+
+    public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText, String languageCode){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForGetMyId(String eventId, String fileText, String languageCode){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText, String languageCode){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText, String languageCode) {
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
+                replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
+        fileText = fileText.replace(ResidentConstants.MASKED_VID, replaceNullWithEmptyString(
+                residentTransactionEntity.getRefId()));
+        String requestType = residentTransactionEntity.getRequestTypeCode();
+        if (requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())) {
+            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, GENERATED);
+        } else if (requestType.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
+            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, REVOKED);
+        }
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForVidCardDownload(String eventId, String fileText, String languageCode){
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText, String languageCode) {
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        String purpose = residentTransactionEntity.getPurpose();
+        if (purpose != null && !purpose.isEmpty()) {
+            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
+                    purpose);
+        }
+        return fileText;
+    }
+
+    public String getDescriptionTemplateVariablesForSecureMyId(String eventId, String fileText, String languageCode){
+        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+            String purpose = residentTransactionEntity.getPurpose();
+            if (purpose != null && !purpose.isEmpty())
+                return purpose;
+            return fileText;
+    }
+
+    public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId, String languageCode, Integer timeZoneOffset){
+        return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset).getT1(), "");
+    }
+
+    public String replaceNullWithEmptyString(String input) {
+        return input == null ? "" : input;
     }
 
     public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText){
@@ -196,7 +325,8 @@ import java.util.Optional;
 	}
 
     public String getFeatureName(String eventId){
-    	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, null, ResidentConstants.UTC_TIMEZONE_OFFSET);
+    	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
+                this.env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), ResidentConstants.UTC_TIMEZONE_OFFSET);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         return templateVariables.get(TemplateVariablesConstants.EVENT_TYPE);
     }
@@ -242,13 +372,32 @@ import java.util.Optional;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeInPurpose(getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode), getEntityFromEventId(eventId).getPurpose(), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
 
-     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId, String languageCode, Integer timeZoneOffset) {
+    /**
+     * This method will replace attribute placeholder in template and add attribute list into it.
+     * @param fileText This contains value of template.
+     * @param purpose This contains purpose of request type stored in template.
+     * @param languageCode This contains logged-in language code.
+     * @return purpose after adding attributes.
+     */
+    private String addAttributeInPurpose(String fileText, String purpose,
+                                         String languageCode) {
+        if(fileText!=null &&
+                fileText.contains(ResidentConstants.ATTRIBUTES)){
+            fileText = fileText.replace(
+                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
+                            languageCode)
+            );
+        }
+        return fileText;
+    }
+
+    public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId, String languageCode, Integer timeZoneOffset) {
     	 Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	 Map<String, String> templateVariables = tupleResponse.getT1();
          ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
@@ -285,7 +434,11 @@ import java.util.Optional;
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
         		residentTransactionEntity, languageCode));
-        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.getDownloadLinkFromEntity(residentTransactionEntity));
+        templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
+				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
+						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
+								? utility.createDownloadCardLinkFromEventId(residentTransactionEntity)
+								: ResidentConstants.NOT_AVAILABLE);
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_UIN_TEMPLATE_PROPERTY)));
     }
@@ -346,7 +499,11 @@ import java.util.Optional;
          ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
          templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
                  residentTransactionEntity, languageCode));
-         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.getDownloadLinkFromEntity(residentTransactionEntity));
+         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
+				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
+						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
+								? utility.createDownloadCardLinkFromEventId(residentTransactionEntity)
+								: ResidentConstants.NOT_AVAILABLE);
          templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
          return Tuples.of(templateVariables, Objects.requireNonNull(
                  this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));
@@ -369,7 +526,7 @@ import java.util.Optional;
      public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = new HashMap<>();
  		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
- 		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode()));
+ 		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode(), dto.getEventId()));
  		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().name());
  		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
  		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
@@ -394,15 +551,23 @@ import java.util.Optional;
  		return DateUtils.getUTCCurrentDateTimeString(templateDatePattern);
  	}
      
-     private String getName(String language) {
+     private String getName(String language, String eventId) {
  		String name = "";
+ 		String individualId = "";
  		try {
- 			String id=identityServiceImpl.getResidentIndvidualId();
- 			Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(id,UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
- 			name=identityServiceImpl.getNameForNotification(idMap, language);
- 		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException e) {
- 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
+			if (Utility.isSecureSession()) {
+				individualId = identityServiceImpl.getResidentIndvidualId();
+			} else {
+				individualId = getEntityFromEventId(eventId).getIndividualId();
+			}
+			
+			if (individualId != null && !individualId.isEmpty()) {
+				Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(individualId, UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
+	 			name=identityServiceImpl.getNameForNotification(idMap, language);
+			}
+ 		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException | ResidentServiceException e) {
+ 			logger.error(String.format("Error occured while getting individualId: %s : %s : %s", e.getClass().getSimpleName(), e.getMessage(),
+ 					(e.getCause() != null ? "rootcause: " + e.getCause().getMessage() : "")));
  		}
  		return name;
  	}

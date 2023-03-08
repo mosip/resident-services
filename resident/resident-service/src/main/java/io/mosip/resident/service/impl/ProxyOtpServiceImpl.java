@@ -143,7 +143,6 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         String userid = null;
         boolean isSuccess = false;
         String eventId = ResidentConstants.NOT_AVAILABLE;
-		ResidentTransactionEntity residentTransactionEntity=null;
 
         try {
         	residentTransactionEntity = createResidentTransactionEntity(userIdOtpRequest.getRequest().getUserId());
@@ -152,15 +151,15 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            boolean validated = otpManager.validateOtp(user.getOtp(), user.getUserId(), user.getTransactionId());
+            String transactionId = user.getTransactionId();
+			boolean validated = otpManager.validateOtp(user.getOtp(), userid, transactionId);
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
+                Tuple2<Object, String> updateResult = otpManager.updateUserId(userid, transactionId);
+                eventId = updateResult.getT2();
                 authresponse.setMessage(PreRegLoginConstant.VALIDATION_SUCCESS);
                 authresponse.setStatus(PreRegLoginConstant.SUCCESS);
-
             } else {
-            	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-            	residentTransactionEntity.setRequestSummary("failed");
 				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
             }
@@ -170,8 +169,8 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
-			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
+            ex.setMetadata(Map.of(ResidentConstants.EVENT_ID, eventId));
+			throw ex;
         } catch (RuntimeException ex) {
         	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
         	residentTransactionEntity.setRequestSummary("failed");
@@ -179,13 +178,9 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ResidentServiceCheckedException e) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
         	throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (ApisResourceAccessException e) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } finally {
@@ -225,7 +220,9 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
         residentTransactionEntity.setAttributeList(userId);
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(identityServiceImpl.getResidentIndvidualId()));
+        String individualId = identityServiceImpl.getResidentIndvidualId();
+		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
 		if (requestValidator.phoneValidator(userId)) {

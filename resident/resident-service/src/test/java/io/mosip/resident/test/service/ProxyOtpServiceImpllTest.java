@@ -25,6 +25,8 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -150,8 +152,6 @@ public class ProxyOtpServiceImpllTest {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
         responseEntity = new ResponseEntity<>(HttpStatus.OK);
-        Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
-        Mockito.when(utility.createEventId()).thenReturn("12345");
     }
 
     @Test
@@ -214,6 +214,7 @@ public class ProxyOtpServiceImpllTest {
         otpRequestDTOV3.setTransactionId("122222222");
         requestDTO1.setRequest(otpRequestDTOV3);
         Mockito.when(otpManager.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(otpManager.updateUserId(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(new Object(), "12345"));
         assertEquals("12345", proxyOtpService.validateWithUserIdOtp(requestDTO1).getT2());
     }
 

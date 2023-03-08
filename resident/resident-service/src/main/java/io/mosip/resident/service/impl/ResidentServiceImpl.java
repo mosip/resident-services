@@ -1,50 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
@@ -55,7 +10,8 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
+import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -125,7 +81,7 @@ import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.DigitalCardRidNotFoundException;
+import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
@@ -138,7 +94,6 @@ import io.mosip.resident.exception.ResidentServiceTPMSignKeyException;
 import io.mosip.resident.exception.ValidationFailedException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
@@ -156,8 +111,54 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -189,6 +190,9 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
+	private static final String CREATED_DATE_TIME = "crDtimes";
+	private static final String PINNED_STATUS = "pinnedStatus";
+	private static final String MODULO_OPERATOR = "%";
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -229,6 +233,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private Utilities utilities;
+	
+	/** The json validator. */
+	@Autowired
+	private IdObjectValidator idObjectValidator;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -279,19 +287,16 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
 
 	@Autowired
-	private EntityManager entityManager;
-
-	@Autowired
 	private ResidentUserRepository residentUserRepository;
 	
 	@Autowired
 	private ResidentSessionRepository residentSessionRepository;
 
-	@Autowired
-	private ObjectStoreHelper objectStoreHelper;
-
 	@Value("${resident.service.unreadnotificationlist.id}")
 	private String unreadnotificationlist;
+
+	@Value("${mosip.registration.processor.rid.delimiter}")
+	private String ridSuffix;
 
 	private static String authTypes;
 
@@ -818,13 +823,13 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public Object reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException {
 		byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 		JSONObject demographicJsonObject;
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
-			return reqUinUpdate(dto, demographicIdentity).getT1();
+			return reqUinUpdate(dto, demographicIdentity);
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
@@ -899,6 +904,25 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
+
+			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
+			Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+			Object idSchema = idSchemaResponse.getResponse();
+			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+			String schemaJson = (String) map.get("schemaJson");
+			try {
+				idObjectValidator.validateIdObject(schemaJson, jsonObject);
+			} catch (IdObjectValidationFailedException e) {
+				String error = e.getErrorTexts().toString();
+				if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
+					List<String> errors = e.getErrorTexts();
+					String errorMessage = errors.get(0);
+					throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+							errorMessage);
+				}
+			}
+			
 			if (demographicIdentity == null || demographicIdentity.isEmpty() || mappingJson == null
 					|| mappingJson.trim().isEmpty()) {
 				audit.setAuditRequestDto(
@@ -958,14 +982,7 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_SUCCESS,
 					dto.getTransactionID(), "Request for UIN update"));
 		} catch (OtpValidationFailedException e) {
-			if (Utility.isSecureSession()) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setRequestSummary("failed");
-				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
-			} else {
-				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
-			}
+			sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 					dto.getTransactionID(), "Request for UIN update"));
 
@@ -1070,10 +1087,6 @@ public class ResidentServiceImpl implements ResidentService {
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
-
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED,
-					dto.getTransactionID(), "Request for UIN update"));
-
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
 					dto.getTransactionID(), "Request for UIN update"));
 			if (Utility.isSecureSession()) {
@@ -1136,6 +1149,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
+		residentTransactionEntity.setIndividualId(dto.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		Map<String, ?> identityMap;
@@ -1151,16 +1165,18 @@ public class ResidentServiceImpl implements ResidentService {
 		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(attributeList+UPDATED);
 		return residentTransactionEntity;
 	}
 
 	private void updateResidentTransaction(ResidentTransactionEntity residentTransactionEntity,
 			PacketGeneratorResDto response) {
-		residentTransactionEntity.setAid(response.getRegistrationId());
+		String rid = response.getRegistrationId();
+		residentTransactionEntity.setAid(rid);
+		residentTransactionEntity.setCredentialRequestId(rid + ridSuffix);
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
-		residentTransactionEntity.setRequestSummary("in-progress");
+		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 	}
 
 	private List<ResidentDocuments> getResidentDocuments(ResidentUpdateRequestDto dto, JSONObject mappingDocument)
@@ -1230,7 +1246,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (requestId != null) {
-					residentTransactionEntity.setRequestSummary(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
+					residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
 					residentTransactionEntity.setPurpose(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -1293,11 +1309,12 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.COMPLETED.name());
-		residentTransactionEntity.setStatusComment(EventStatusSuccess.AUTHENTICATION_TYPE_UPDATED.name());
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
+		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
@@ -1589,7 +1606,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public byte[] downloadCard(String eventId, String idType) throws ResidentServiceCheckedException {
+	public byte[] downloadCard(String eventId) {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
@@ -1598,17 +1615,11 @@ public class ResidentServiceImpl implements ResidentService {
 				RequestType requestType = RequestType.valueOf(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
-					String rid = residentTransactionEntity.get().getAid();
-					if (rid != null) {
-						return getUINCard(rid);
-					}
+					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
 				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
 					cardType = IdType.VID.name();
-					String credentialRequestId = residentTransactionEntity.get().getCredentialRequestId();
-					if (credentialRequestId != null) {
-						return residentCredentialServiceImpl.getCard(credentialRequestId, null, null);
-					}
+					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
@@ -1632,51 +1643,32 @@ public class ResidentServiceImpl implements ResidentService {
 			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_FOUND.getErrorCode(),
 					ResidentErrorCode.CARD_NOT_FOUND.getErrorMessage(), e);
 		}
-		return new byte[0];
 	}
 
-	public byte[] getUINCard(String rid) {
+	public byte[] downloadCardFromDataShareUrl(ResidentTransactionEntity residentTransactionEntity) {
 		try {
-			DigitalCardStatusResponseDto digitalCardStatusResponseDto = getDigitalCardStatus(rid);
-			if (digitalCardStatusResponseDto != null) {
-				if (!digitalCardStatusResponseDto.getStatusCode().equals(AVAILABLE)) {
-					audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-					throw new DigitalCardRidNotFoundException(ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorCode(),
-							ResidentErrorCode.DIGITAL_CARD_RID_NOT_FOUND.getErrorMessage());
+			if (residentTransactionEntity.getReferenceLink() != null
+					&& !residentTransactionEntity.getReferenceLink().isEmpty() && residentTransactionEntity
+							.getStatusCode().equals(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name())) {
+				URI dataShareUri = URI.create(residentTransactionEntity.getReferenceLink());
+				byte[] pdfBytes = residentServiceRestClient.getApi(dataShareUri, byte[].class);
+				if (pdfBytes.length == 0) {
+					throw new CardNotReadyException();
 				}
-				URI dataShareUri = URI.create(digitalCardStatusResponseDto.getUrl());
-				if (isDigitalCardPdfEncryptionEnabled) {
-					return decryptDataShareData(residentServiceRestClient.getApi(dataShareUri, String.class));
-				}
-				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
+				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
+				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
+				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
+				residentTransactionEntity.setUpdBy(RESIDENT);
+				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+				residentTransactionRepository.save(residentTransactionEntity);
+				return pdfBytes;
 			}
-		} catch (ApisResourceAccessException e) {
+		} catch (Exception e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		} catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
-			throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+			throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+					ResidentErrorCode.CARD_NOT_READY.getErrorMessage(), e);
 		}
 		return new byte[0];
-	}
-
-	private byte[] decryptDataShareData(String encryptedData) {
-		String decryptedData = objectStoreHelper.decryptData(encryptedData,
-				env.getProperty(ResidentConstants.DATA_SHARE_APPLICATION_ID),
-				env.getProperty(ResidentConstants.DATA_SHARE_REFERENCE_ID));
-		return HMACUtils2.decodeBase64(decryptedData);
-	}
-
-	private DigitalCardStatusResponseDto getDigitalCardStatus(String individualId)
-			throws ApisResourceAccessException, IOException {
-		String digitalCardStatusUrl = env.getProperty(ApiName.DIGITAL_CARD_STATUS_URL.name()) + individualId;
-		URI digitalCardStatusUri = URI.create(digitalCardStatusUrl);
-		ResponseWrapper<DigitalCardStatusResponseDto> responseDto = residentServiceRestClient
-				.getApi(digitalCardStatusUri, ResponseWrapper.class);
-		return JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
-				DigitalCardStatusResponseDto.class);
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
@@ -1695,113 +1687,115 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
-																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
-																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
+																		Integer pageFetch, String tokenId, String statusFilter,
+																		String searchText, LocalDate fromDateTime,
+																		LocalDate toDateTime, String serviceType, String langCode,
+																		int timeZoneOffset)
 			throws ResidentServiceCheckedException {
-		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageStart, pageFetch, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
-		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
-		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
-				.getResultList();
-		String[] split = nativeQueryString.split("order by");
-		String nativeQueryStringWithoutOrderBy = split[0];
-		nativeQueryStringWithoutOrderBy = nativeQueryStringWithoutOrderBy.replace("*", "count(*)");
-		Query nativeQuery2 = entityManager.createNativeQuery(nativeQueryStringWithoutOrderBy);
-		BigInteger count = (BigInteger) nativeQuery2.getSingleResult();
-		int size = count.intValue();
-		return new PageDto<>(pageStart, pageFetch, size, (size / pageFetch) + 1,
-				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityList, langCode, timeZoneOffset));
-	}
-
-	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
-											  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-											  String serviceType, int timeZoneOffset) {
-		String query = "SELECT * FROM resident_transaction  where token_id = '"
-				+ idaToken+"'";
-		String dynamicQuery = "";
-		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase("ALL")
-				&& statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType)
-					+ getStatusFilterQuery(statusFilter) + getSearchQuery(searchText);
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null
-				&& !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
-					+ getStatusFilterQuery(statusFilter );
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null
-				&& !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
-					+ getSearchQuery(searchText );
-		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter )
-					+ getSearchQuery(searchText );
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null
-				&& searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter )
-					+ getSearchQuery(searchText );
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter );
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getSearchQuery(searchText );
-		} else if (statusFilter != null && searchText != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter ) + getSearchQuery(searchText );
-		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getSearchQuery(searchText );
-		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter );
-		} else if (fromDateTime != null && toDateTime != null && serviceType != null
-				&& !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType );
-		} else if (fromDateTime != null && toDateTime != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
-		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL")) {
-			dynamicQuery = getServiceQuery(serviceType );
-		} else if (statusFilter != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter );
-		} else if (searchText != null) {
-			dynamicQuery = getSearchQuery(searchText );
-		}
-		if(serviceType == null){
-			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
-		}
-		dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
+		Tuple2<LocalDateTime, LocalDateTime> date = null;
+		if(fromDateTime!=null && toDateTime!=null){
+			date = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
+		}
+		if(searchText !=null){
+			searchText = MODULO_OPERATOR + searchText + MODULO_OPERATOR;
+		}
+		Sort sortCreatedDateTime = Sort.by(Sort.Direction.fromString(sortType), CREATED_DATE_TIME);
+		Sort sortPinnedStatus = Sort.by(PINNED_STATUS).descending();
 
-		String orderByQuery = " order by pinned_status desc, " + "cr_dtimes " + sortType + " limit " + pageFetch
-				+ " offset " + (pageStart) * pageFetch;
-		return query + dynamicQuery + orderByQuery;
+// Combine the two Sort objects using the and() method
+		Sort combinedSort = sortCreatedDateTime.and(sortPinnedStatus);
+		Pageable pageable = PageRequest.of(pageStart, pageFetch,
+				combinedSort);
+		Page<ResidentTransactionEntity> residentTransactionEntityPage = null;
+		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase(ALL)
+				&& statusFilter != null && searchText != null) {
+			residentTransactionEntityPage= residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
+					tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
+							getStatusFilterQuery(statusFilter), searchText ,pageable);
+		} else if (fromDateTime != null && toDateTime != null && serviceType != null
+				&& !serviceType.equalsIgnoreCase(ALL) && statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeIn(
+					tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
+					getStatusFilterQuery(statusFilter) ,pageable);
+		} else if (fromDateTime != null && toDateTime != null && serviceType != null
+				&& !serviceType.equalsIgnoreCase(ALL) && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLike(
+				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType), searchText, pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLike(
+					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), searchText, pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && statusFilter != null
+				&& searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
+					tokenId, convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter), searchText, pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeIn(
+					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter), pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndEventIdLike(
+					tokenId, convertServiceTypeToResidentTransactionType(serviceType), searchText, pageable
+			);
+		} else if (statusFilter != null && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeInAndEventIdLike(
+				tokenId,  getStatusFilterQuery(statusFilter), searchText, pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndEventIdLike(
+					tokenId, date.getT1(), date.getT2(), searchText, pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeIn(
+					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null && serviceType != null
+				&& !serviceType.equalsIgnoreCase(ALL)) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeIn(
+				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType), pageable
+			);
+		} else if (fromDateTime != null && toDateTime != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetween(
+					tokenId, date.getT1(), date.getT2(), pageable
+			);
+		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL)) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeIn(
+					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), pageable
+			);
+		} else if (statusFilter != null) {
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeIn(
+					tokenId, getStatusFilterQuery(statusFilter), pageable
+			);
+		} else if(searchText != null){
+			residentTransactionEntityPage = residentTransactionRepository.findByEventIdLike(searchText, pageable);
+		} else {
+			residentTransactionEntityPage =
+					residentTransactionRepository.findByTokenId(tokenId, pageable);
+		}
+		if(residentTransactionEntityPage == null ){
+			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB.getErrorCode(),
+					ResidentErrorCode.UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB.getErrorMessage());
+		}
+		return new PageDto<>(pageStart, pageFetch, residentTransactionEntityPage.getTotalElements(),
+				residentTransactionEntityPage.getTotalPages(),
+				convertResidentEntityListToServiceHistoryDto(residentTransactionEntityPage.getContent(), langCode, timeZoneOffset));
 	}
 
-	private String getOlvPartnerIdQuery() {
-		return " AND (olv_partner_id is null OR olv_partner_id='" + onlineVerificationPartnerId + "')";
-	}
 
-	private String getServiceQueryForNullServiceType() {
-		return " and request_type_code in (" + convertServiceTypeListToString(
-				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestType())) +")";
-	}
-
-	private String getServiceQuery(String serviceType) {
-		List<String> requestTypeList = convertServiceTypeToResidentTransactionType(serviceType);
-		String requestTypeListString = convertServiceTypeListToString(requestTypeList);
-		return " and request_type_code in (" + requestTypeListString + ")";
-	}
-
-	private String getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
+	private Tuple2<LocalDateTime, LocalDateTime> getDateQuery(LocalDate fromDate, LocalDate toDate, int timeZoneOffset) {
 		//Converting local time to UTC before using in db query
 		LocalDateTime fromDateTime = fromDate.atStartOfDay().plusMinutes(timeZoneOffset);
 		LocalDateTime toDateTime = toDate.plusDays(1).atStartOfDay().plusMinutes(timeZoneOffset);
-		return " and cr_dtimes between '" +  fromDateTime + "' and '" +
-				toDateTime+ "'";
+		return Tuples.of(fromDateTime, toDateTime);
 	}
 
-	private String getSearchQuery(String searchText) {
-		String text= "%" + searchText.replace(AUTH_TYPE_SEPERATOR, "") + "%";
-		return " and Replace(event_id,'-','') like '"+text+ "'";
-	}
-
-	public String getStatusFilterQuery(String statusFilter) {
+	public List<String> getStatusFilterQuery(String statusFilter) {
 		List<String> statusFilterList = List.of(statusFilter.split(",")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
@@ -1818,24 +1812,7 @@ public class ResidentServiceImpl implements ResidentService {
 						.map(Enum::toString).collect(Collectors.toList()));
 			}
 		}
-		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingALlStatus);
-		return " and status_code in (" + statusFilterListString + ")";
-	}
-
-	public String convertStatusFilterListToString(List<String> statusFilterListContainingALlStatus) {
-		String statusFilterListString = "";
-		for (String status : statusFilterListContainingALlStatus) {
-			statusFilterListString = statusFilterListString + "'" + status + "',";
-		}
-		return statusFilterListString.substring(0, statusFilterListString.length() - 1);
-	}
-
-	public String convertServiceTypeListToString(List<String> serviceTypeList) {
-		String serviceTypeListString = "";
-		for (String serviceType : serviceTypeList) {
-			serviceTypeListString = serviceTypeListString + "'" + serviceType + "',";
-		}
-		return serviceTypeListString.substring(0, serviceTypeListString.length() - 1);
+		return statusFilterListContainingALlStatus;
 	}
 
 	private List<String> convertServiceTypeToResidentTransactionType(String serviceType) {
@@ -1906,11 +1883,11 @@ public class ResidentServiceImpl implements ResidentService {
 		Map<String, String> templateResponse = new LinkedHashMap<>(
 				(Map<String, String>) proxyResponseWrapper.getResponse());
 		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
-		return replacePlaceholderValueInTemplate(fileText, eventId, requestType);
+		return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 	}
 
-	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType) {
-		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText);
+	private String replacePlaceholderValueInTemplate(String fileText, String eventId, RequestType requestType, String langCode) {
+		return requestType.getDescriptionTemplateVariables(templateUtil, eventId, fileText, langCode);
 	}
 
 	public String getSummaryForLangCode(String langCode, String statusCode, RequestType requestType, String eventId)
@@ -1923,7 +1900,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 			Map<String, String> templateResponse = new LinkedHashMap<>(
 					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType);
+			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType, langCode);
 		} else {
 			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}
@@ -2022,6 +1999,7 @@ public class ResidentServiceImpl implements ResidentService {
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
 			} else {
+				audit.setAuditRequestDto(EventEnum.CHECK_AID_STATUS_REQUEST_FAILED);
 				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 			}
 			RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
@@ -2166,17 +2144,15 @@ public class ResidentServiceImpl implements ResidentService {
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
-			IntStream.range(0, serviceHistoryDtlsList.size()).forEach(i -> {				
-				try {
+			IntStream.range(0, serviceHistoryDtlsList.size()).forEach(i -> {
 					addServiceHistoryDtls(i, serviceHistoryDtlsList.get(i));
-				} catch (Exception e) {
-					throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS, e);
-				}
 			});
 		}
-		for (ServiceHistoryResponseDto dto : serviceHistoryDtlsList) {
-			if (dto.getDescription() == null)
-				dto.setDescription("");
+		if(serviceHistoryDtlsList!=null){
+			for (ServiceHistoryResponseDto dto : serviceHistoryDtlsList) {
+				if (dto.getDescription() == null)
+					dto.setDescription("");
+			}
 		}
 		Map<String, Object> servHistoryMap = new HashMap<>();
 		if(eventReqDateTime == null){
@@ -2251,11 +2227,8 @@ public class ResidentServiceImpl implements ResidentService {
 	/**
 	 * 
 	 * @param index
-	 * @throws ResidentServiceCheckedException
-	 * @throws Exception
 	 */
-	private void addServiceHistoryDtls(int index, ServiceHistoryResponseDto serviceHistoryDto)
-			throws ResidentServiceCheckedException, Exception {
+	private void addServiceHistoryDtls(int index, ServiceHistoryResponseDto serviceHistoryDto) {
 		serviceHistoryDto.setSerialNumber(index + 1);
 		if (serviceHistoryDto.getDescription() == null)
 			serviceHistoryDto.setDescription("");

@@ -49,6 +49,7 @@ public class ResidentConstants {
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
+    public static final String URL = "url";
     public static final String RESIDENT = "RESIDENT";
 
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
@@ -211,28 +212,18 @@ public class ResidentConstants {
     public static final int UTC_TIMEZONE_OFFSET = 0;
     public static final String INDIVIDUAL_ID = "individualId";
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
-    public static final String REQUEST = "request";
-    public static final String VERSION = "version";
-    public static final String REQUEST_TIME = "requestTime";
+
     public static final String ID = "id";
-    public static final String REQUEST_GENERATE_VID = "Request to generate VID";
-    public static final String GENERATE_ID = "generateId";
-    public static final String UNLOCK_FOR_SECONDS = "unlockForSeconds";
-    public static final String REQUEST_FOR_EUIN = "Request for EUIN";
-    public static final String CARD_TYPE = "cardType";
-    public static final String PAGE_NUMBER_ERROR = "please provide Page size and Page number to be Fetched";
-    public static final String PAGE_FETCH_PAGE_START_GREATER_THAN_ZERO = "Page Fetch or Page Start must be greater than 0";
-    public static final String PAGE_START_PAGE_FETCH = "Page Start Page Fetch";
-    public static final String PAGE_START = "Page Start";
-    public static final String PAGE_FETCH = "Page Fetch";
-    public static final String VID_STATUS = "vidStatus";
-    public static final String REQUEST_REVOKE_VID = "Request to revoke VID";
     public static final String REVOKE_VID = "revokeVidId";
-    public static final String REQUEST_PRINT_UIN = "Request for print UIN API";
-    public static final String IDENTITY_JSON = "identityJson";
     public static final String SCHEMA_TYPE = "schemaType";
-    public static final String FILE_NAME = "fileName";
     public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
+    public static final CharSequence ATTRIBUTES = "attributes";
+    public static final String INVALID_INPUT_PARAMETER="Invalid input parameter";
 
+    public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
+
+    public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
+    public static final String VID = "vid";
+    public static final String NAME = "name";
 }

@@ -265,7 +265,11 @@ public class IdentityServiceImpl implements IdentityService {
 						if(a.equals(env.getProperty(PHOTO_ATTRIB_PROP))) {
 							String photo;
 							try {
-								photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
+								if (Utility.isSecureSession()) {
+									photo = this.getAvailableclaimValue(env.getProperty(IMAGE));
+								} else {
+									photo = null;
+								}
 							} catch (ApisResourceAccessException e) {
 								logger.error("Error occured in accessing picture from claims %s", e.getMessage());
 								throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
