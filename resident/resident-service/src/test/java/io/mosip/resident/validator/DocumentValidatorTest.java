@@ -300,23 +300,4 @@ public class DocumentValidatorTest {
 		validator.validateFileName(mockFile);
 	}
 
-	@Test(expected = ResidentServiceException.class)
-	public void testValidateDocumentIdAndTransactionId() {
-		validator.validateDocumentIdAndTransactionId("d", "1a");
-	}
-
-	@Test
-	public void testValidateDocumentIdAndTransactionIDSuccess(){
-		validator.validateDocumentIdAndTransactionId(UUID.randomUUID().toString(), "1232323232");
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testValidateDocumentId() {
-		validator.validateDocumentId(null);
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testValidateDocumentIdLessCharacterDocumentId() {
-		validator.validateDocumentId("12");
-	}
 }

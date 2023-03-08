@@ -530,8 +530,6 @@ public class Utility {
 		}else {
 			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
 		}
-		logger.debug("Utilitiy::getClientIp()::exit - excecuted till end");
-		return req.getRemoteAddr();
 	}
 	
 	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {

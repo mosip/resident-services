@@ -145,10 +145,6 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         String eventId = ResidentConstants.NOT_AVAILABLE;
 
         try {
-        	residentTransactionEntity = createResidentTransactionEntity(userIdOtpRequest.getRequest().getUserId());
-			if (residentTransactionEntity != null) {
-    			eventId = residentTransactionEntity.getEventId();
-    		}
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
             String transactionId = user.getTransactionId();
@@ -166,14 +162,10 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             response.setResponse(authresponse);
             isSuccess = true;
         } catch (ResidentServiceException ex) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
             ex.setMetadata(Map.of(ResidentConstants.EVENT_ID, eventId));
 			throw ex;
         } catch (RuntimeException ex) {
-        	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-        	residentTransactionEntity.setRequestSummary("failed");
             log.error("In calluserIdOtp method of login service- ", ex);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED, ex,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
@@ -184,14 +176,6 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } finally {
-        	if(residentTransactionEntity.getStatusCode()==null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-			}
-        	if (residentTransactionEntity.getRequestSummary() == null) {
-				residentTransactionEntity.setRequestSummary("failed");
-			}
-			residentTransactionRepository.save(residentTransactionEntity);
-			
             response.setResponsetime(GenericUtil.getCurrentResponseTime());
 
             if (isSuccess) {

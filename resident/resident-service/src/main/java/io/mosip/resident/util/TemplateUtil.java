@@ -306,14 +306,6 @@ import java.util.Optional;
             return fileText;
     }
 
-    public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId, String languageCode, Integer timeZoneOffset){
-        return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset).getT1(), "");
-    }
-
-    public String replaceNullWithEmptyString(String input) {
-        return input == null ? "" : input;
-    }
-
     private ResidentTransactionEntity getEntityFromEventId(String eventId) {
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 		if (residentTransactionEntity.isPresent()) {

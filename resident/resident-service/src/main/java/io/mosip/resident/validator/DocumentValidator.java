@@ -169,14 +169,4 @@ public class DocumentValidator implements Validator {
 		}
 	}
 
-	public void validateFileName(MultipartFile file) {
-		String extension = Objects.requireNonNull(FilenameUtils.getExtension(file.getOriginalFilename())).toLowerCase();
-		String extensionProperty = Objects.requireNonNull(env.getProperty(ALLOWED_FILE_TYPE)).toLowerCase();
-		if (!extensionProperty.contains(Objects.requireNonNull(extension))) {
-			throw new InvalidInputException(ResidentConstants.FILE_NAME);
-		}
-		if (file.getSize() > maxFileUploadSize) {
-			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
-		}
-	}
 }
