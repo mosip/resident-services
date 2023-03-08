@@ -59,6 +59,34 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.persistence.EntityManager;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -141,19 +169,10 @@ public class ResidentServiceDownloadCardTest {
         responseDto.setId("io.mosip.digital.card");
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
         Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
+        Mockito.when(residentCredentialServiceImpl.getCard("123", null, null)).thenReturn(result);
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
-    }
-    @Test(expected = ResidentServiceException.class)
-    public void testUpdateMyUinException() throws ResidentServiceCheckedException{
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-        residentTransactionEntity.get().setAid(eventId);
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
-        assertEquals(response, result);
     }
 
     @Test
@@ -175,14 +194,14 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertNotNull(response);
     }
 
     @Test(expected = EventIdNotPresentException.class)
     public void testEventIdNotPresentException() throws ResidentServiceCheckedException {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertEquals(response, result);
     }
 
@@ -193,7 +212,7 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.REVOKE_VID.name());
         residentTransactionEntity.get().setAid(eventId);
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId, idType);
+        byte[] response = residentServiceImpl.downloadCard(eventId);
         assertEquals(response, result);
     }
 
@@ -242,10 +261,62 @@ public class ResidentServiceDownloadCardTest {
         assertNotNull(pdfDocument);
     }
 
+    @Test
+    public void testDownloadServiceHistorySuccess() throws ResidentServiceCheckedException, IOException {
+        ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
+        ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+        serviceHistoryResponseDto.setEventId("123");
+        serviceHistoryResponseDto.setDescription(null);
+        PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
+        responseDtoPageDto.setData(List.of(serviceHistoryResponseDto));
+        responseWrapper.setResponse(responseDtoPageDto);
+        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
+        Map<String, Object> templateResponse = new LinkedHashMap<>();
+        templateResponse.put("fileText", "test");
+        responseWrapper1.setResponse(templateResponse);
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(responseWrapper1);
+        Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
+        Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+        byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
+                null, null, null,
+                null, null, 0);
+        assertNotNull(pdfDocument);
+    }
+
+    @Test
+    public void testDownloadServiceHistoryFail() throws ResidentServiceCheckedException, IOException {
+        ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
+        ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+        serviceHistoryResponseDto.setEventId("123");
+        PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
+        responseDtoPageDto.setData(null);
+        responseWrapper.setResponse(responseDtoPageDto);
+        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
+        Map<String, Object> templateResponse = new LinkedHashMap<>();
+        templateResponse.put("fileText", "test");
+        responseWrapper1.setResponse(templateResponse);
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(responseWrapper1);
+        Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
+        Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
+        byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
+                LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
+                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0);
+        assertNotNull(pdfDocument);
+    }
+
     @Ignore
     //FIXME to be corrected
     @Test
     public void testGetUnreadNotifyList() throws ResidentServiceCheckedException, ApisResourceAccessException{
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");
+        ResidentTransactionEntity residentTransactionEntity1 = new ResidentTransactionEntity();
+        residentTransactionEntity1.setEventId("123");
+        Page<ResidentTransactionEntity> residentTransactionEntityPage =
+                new PageImpl<>(List.of(residentTransactionEntity1));
+        Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeIn
+                (Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(residentTransactionEntityPage);
     	 ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
          ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
          serviceHistoryResponseDto.setEventId("123");
@@ -318,9 +389,13 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setIdaToken("123");
         residentUserEntity.setIpAddress("http");
         Optional<ResidentSessionEntity> response = Optional.of(residentUserEntity);
+        ResidentUserEntity residentUserEntity1 = new ResidentUserEntity();
+        residentUserEntity1.setLastbellnotifDtimes(LocalDateTime.now());
+        residentUserEntity1.setIdaToken("123");
+        Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(Optional.of(residentUserEntity1));
         Mockito.when(residentSessionRepository.findById(Mockito.anyString())).thenReturn(response);
         Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
-        assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
+        assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
 

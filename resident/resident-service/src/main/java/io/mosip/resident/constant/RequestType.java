@@ -1,21 +1,14 @@
 package io.mosip.resident.constant;
 
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
+import io.mosip.resident.function.QuadFunction;
 import io.mosip.resident.util.TemplateUtil;
-import org.apache.commons.lang3.function.TriFunction;
 import reactor.util.function.Tuple2;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-
-import org.apache.commons.lang3.function.TriFunction;
-
-import io.mosip.resident.dto.NotificationTemplateVariableDTO;
-import io.mosip.resident.function.QuadFunction;
-import io.mosip.resident.util.TemplateUtil;
-import reactor.util.function.Tuple2;
 
 /**
  * The Enum RequestType.
@@ -86,7 +79,7 @@ public enum RequestType {
 	private List<EventStatusInProgress> inProgressStatusList;
 	private String featureName;
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
-	private TriFunction<TemplateUtil, String, String, String> getDescriptionTemplateVariables;
+	private QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables;
 
 	private String name;
 
@@ -94,7 +87,7 @@ public enum RequestType {
 						List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
 						List<EventStatusInProgress> inProgressStatusList, String featureName,
 						BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-						TriFunction<TemplateUtil, String, String, String> getDescriptionTemplateVariables) {
+						QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
 		this.successStatusList = Collections.unmodifiableList(successStatusList);
@@ -164,8 +157,8 @@ public enum RequestType {
 		return notificationTemplateVariablesFunction.apply(templateUtil, dto);
 	}
 
-	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, String eventId, String fileText){
-		return getDescriptionTemplateVariables.apply(templateUtil, eventId, fileText);
+	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, String eventId, String fileText, String languageCode){
+		return getDescriptionTemplateVariables.apply(templateUtil, eventId, fileText, languageCode);
 	}
 
 }

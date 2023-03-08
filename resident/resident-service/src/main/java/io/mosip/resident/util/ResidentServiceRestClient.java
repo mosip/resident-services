@@ -45,7 +45,6 @@ public class ResidentServiceRestClient {
 
 	private RestTemplate residentRestTemplate;
 	
-
 	@Autowired
 	Environment environment;
 	
@@ -261,7 +260,7 @@ public class ResidentServiceRestClient {
 	 * @return the t
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T patchApi(URI uri, MediaType mediaType, Object requestType, Class<?> responseClass)
+	public <T> T patchApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		T result = null;
 		try {
@@ -282,7 +281,7 @@ public class ResidentServiceRestClient {
 		return result;
 	}
 
-	public <T> T patchApi(URI uri, Object requestType, Class<?> responseClass) throws Exception {
+	public <T> T patchApi(String uri, Object requestType, Class<?> responseClass) throws Exception {
 		return patchApi(uri, null, requestType, responseClass);
 	}
 

@@ -67,7 +67,6 @@ import reactor.util.function.Tuples;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -434,6 +433,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
+		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_GENERATED.name());
@@ -711,6 +711,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
+		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualId());
 		try {
 			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
 		} catch (Exception exception){
@@ -744,15 +745,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		request.setRequest(vidRequestDto);
 		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 		String apiUrl=env.getProperty(ApiName.IDAUTHREVOKEVID.name()) + "/" + vid;
-		URI apiUri=URI.create(apiUrl);
-
+		
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),
 				"",
 				"ResidentVidServiceImpl::vidDeactivator():: post REVOKEVID service call started with request data : "
 						+ JsonUtils.javaObjectToJsonString(request));
 
 		try {
-			response = (ResponseWrapper) residentServiceRestClient.patchApi(apiUri, MediaType.APPLICATION_JSON, request,
+			response = (ResponseWrapper) residentServiceRestClient.patchApi(apiUrl, MediaType.APPLICATION_JSON, request,
 					ResponseWrapper.class);
 		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(),

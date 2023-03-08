@@ -36,6 +36,7 @@ import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import reactor.util.function.Tuple2;
 
 /**
  * Resident proxy masterdata service test class.
@@ -59,7 +60,7 @@ public class ProxyMasterdataServiceTest {
 	@InjectMocks
 	private ProxyMasterdataService proxyMasterdataService = new ProxyMasterdataServiceImpl();
 
-	private ResponseWrapper<?> responseWrapper;
+	private ResponseWrapper responseWrapper;
 	
 	private ResponseWrapper<TemplateResponseDto> templateWrapper;
 
@@ -120,6 +121,19 @@ public class ProxyMasterdataServiceTest {
 		when(residentServiceRestClient.getApi((ApiName) (ApiName) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getValidDocumentByLangCode("eng");
+	}
+
+	@Test
+	public void testGetValidDocCatAndTypeList() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		List<Map<String, Object>> docCatList = new ArrayList<>();
+		docCatList.add(Map.of("code", "poi", "documenttypes", List.of(Map.of("code", "cob"))));
+		docCatList.add(Map.of("code", "poa", "documenttypes", List.of(Map.of("code", "coa"))));
+		responseWrapper.setResponse(Map.of("documentcategories", docCatList));
+		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		Tuple2<List<String>, Map<String, List<String>>> result = proxyMasterdataService
+				.getValidDocCatAndTypeList("eng");
+		assertEquals("poi", result.getT1().get(0));
+		assertEquals("coa", result.getT2().get("poa").get(0));
 	}
 
 	@Test
