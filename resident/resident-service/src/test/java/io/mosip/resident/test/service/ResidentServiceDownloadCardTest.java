@@ -154,7 +154,6 @@ public class ResidentServiceDownloadCardTest {
         eventId = "123";
         idType = "RID";
         resultResponse = "[B@3a7e365";
-
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.toString());
@@ -315,8 +314,8 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity1.setEventId("123");
         Page<ResidentTransactionEntity> residentTransactionEntityPage =
                 new PageImpl<>(List.of(residentTransactionEntity1));
-        Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeIn
-                (Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(residentTransactionEntityPage);
+        Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId
+                (Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
     	 ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
          ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
          serviceHistoryResponseDto.setEventId("123");

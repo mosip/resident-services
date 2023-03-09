@@ -100,58 +100,58 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	@Query("update ResidentTransactionEntity set read_status='true' where event_id=:eventId")
 	int updateReadStatus(@Param("eventId") String eventId);
 
-	Page<ResidentTransactionEntity> findByTokenId(String tokenId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndOlvPartnerIdIsNullOrOlvPartnerId(String tokenId, String olvPartnerId,Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
 			String tokenId,
 			LocalDateTime startDate,
 			LocalDateTime endDate,
 			List<String> requestTypeCodes,
 			List<String> statusCodes,
 			String eventId,
-			Pageable pageable
+			String onlineVerificationPartnerId, Pageable pageable
 	);
 
-	Page<ResidentTransactionEntity> findByEventIdLike(String eventId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeIn(
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
 			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> requestTypeCodes,
-			List<String> statusCodes, Pageable pageable);
+			List<String> statusCodes, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLike(
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
 			String tokenId, LocalDateTime startDate,
 			LocalDateTime endDate,
-			List<String> requestTypeCodes, String eventId, Pageable pageable);
+			List<String> requestTypeCodes, String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLike(
-			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> statusCodes, String eventId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> statusCodes, String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
-			String tokenId, List<String> requestTypeCodes, List<String> statusCodes, String eventId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, List<String> requestTypeCodes, List<String> statusCodes, String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndStatusCodeIn(
-			String tokenId, List<String> requestTypeCodes, List<String> statusCodes, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, List<String> requestTypeCodes, List<String> statusCodes, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndEventIdLike(
-			String tokenId, List<String> requestTypeCodes, String eventId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, List<String> requestTypeCodes, String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndStatusCodeInAndEventIdLike(
-			String tokenId, List<String> statusCodes, String eventId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, List<String> statusCodes, String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndEventIdLike(
-			String tokenId, LocalDateTime startDate, LocalDateTime endDate, String eventId, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, LocalDateTime startDate, LocalDateTime endDate, String eventId, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndStatusCodeIn(
-			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> statusCodes, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> statusCodes, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeIn(
-			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> requestTypeCodes, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, LocalDateTime startDate, LocalDateTime endDate, List<String> requestTypeCodes, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetween(
-			String tokenId, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndCrDtimesBetweenAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, LocalDateTime startDate, LocalDateTime endDate, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeIn(
-			String tokenId, List<String> requestTypeCodes, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+			String tokenId, List<String> requestTypeCodes, String onlineVerificationPartnerId, Pageable pageable);
 
-	Page<ResidentTransactionEntity> findByTokenIdAndStatusCodeIn(String tokenId, List<String> statusCodes, Pageable pageable);
+	Page<ResidentTransactionEntity> findByTokenIdAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(String tokenId, List<String> statusCodes, String onlineVerificationPartnerId, Pageable pageable);
 }
