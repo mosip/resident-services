@@ -1685,6 +1685,7 @@ public class ResidentServiceImpl implements ResidentService {
 																		LocalDate toDateTime, String serviceType, String langCode,
 																		int timeZoneOffset)
 			throws ResidentServiceCheckedException {
+		String onlineVerificationPartnerId = this.env.getProperty(ResidentConstants.ONLINE_VERIFICATION_PARTNER_ID);
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();
 		}
@@ -1706,70 +1707,88 @@ public class ResidentServiceImpl implements ResidentService {
 		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase(ALL)
 				&& statusFilter != null && searchText != null) {
 			residentTransactionEntityPage= residentTransactionRepository.
-					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
+					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
 					tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
-							getStatusFilterQuery(statusFilter), searchText ,pageable);
+							getStatusFilterQuery(statusFilter), searchText ,onlineVerificationPartnerId,pageable);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase(ALL) && statusFilter != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeIn(
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
 					tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
-					getStatusFilterQuery(statusFilter) ,pageable);
+					getStatusFilterQuery(statusFilter) ,onlineVerificationPartnerId, pageable);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase(ALL) && searchText != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLike(
-				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType), searchText, pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
+							searchText, onlineVerificationPartnerId, pageable
 			);
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLike(
-					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), searchText, pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), searchText,
+							onlineVerificationPartnerId, pageable
 			);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && statusFilter != null
 				&& searchText != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLike(
-					tokenId, convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter), searchText, pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter),
+							searchText, onlineVerificationPartnerId, pageable
 			);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && statusFilter != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeIn(
-					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter), pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), getStatusFilterQuery(statusFilter),
+							onlineVerificationPartnerId, pageable
 			);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL) && searchText != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndEventIdLike(
-					tokenId, convertServiceTypeToResidentTransactionType(serviceType), searchText, pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndRequestTypeCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, convertServiceTypeToResidentTransactionType(serviceType), searchText, onlineVerificationPartnerId, pageable
 			);
 		} else if (statusFilter != null && searchText != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeInAndEventIdLike(
-				tokenId,  getStatusFilterQuery(statusFilter), searchText, pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+				tokenId,  getStatusFilterQuery(statusFilter), searchText, onlineVerificationPartnerId, pageable
 			);
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndEventIdLike(
-					tokenId, date.getT1(), date.getT2(), searchText, pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, date.getT1(), date.getT2(), searchText, onlineVerificationPartnerId, pageable
 			);
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeIn(
-					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, date.getT1(), date.getT2(), getStatusFilterQuery(statusFilter), onlineVerificationPartnerId, pageable
 			);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase(ALL)) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeIn(
-				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType), pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+				tokenId, date.getT1(), date.getT2(), convertServiceTypeToResidentTransactionType(serviceType),
+							onlineVerificationPartnerId, pageable
 			);
 		} else if (fromDateTime != null && toDateTime != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetween(
-					tokenId, date.getT1(), date.getT2(), pageable
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, date.getT1(), date.getT2(), onlineVerificationPartnerId, pageable
 			);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase(ALL)) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndRequestTypeCodeIn(
-					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), pageable
+			residentTransactionEntityPage = residentTransactionRepository.
+					findByTokenIdAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId,  convertServiceTypeToResidentTransactionType(serviceType), onlineVerificationPartnerId, pageable
 			);
 		} else if (statusFilter != null) {
-			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeIn(
-					tokenId, getStatusFilterQuery(statusFilter), pageable
+			residentTransactionEntityPage = residentTransactionRepository.findByTokenIdAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
+					tokenId, getStatusFilterQuery(statusFilter), onlineVerificationPartnerId, pageable
 			);
 		} else if(searchText != null){
-			residentTransactionEntityPage = residentTransactionRepository.findByEventIdLike(searchText, pageable);
+			residentTransactionEntityPage = residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
+					searchText, onlineVerificationPartnerId, pageable);
 		} else {
 			residentTransactionEntityPage =
-					residentTransactionRepository.findByTokenId(tokenId, pageable);
+					residentTransactionRepository.findByTokenIdAndOlvPartnerIdIsNullOrOlvPartnerId(
+							tokenId, onlineVerificationPartnerId, pageable);
 		}
 		if(residentTransactionEntityPage == null ){
 			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB.getErrorCode(),
