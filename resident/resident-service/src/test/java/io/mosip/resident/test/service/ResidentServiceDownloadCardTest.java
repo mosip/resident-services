@@ -118,7 +118,6 @@ public class ResidentServiceDownloadCardTest {
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
     private ResponseWrapper<DigitalCardStatusResponseDto> responseDto;
     DigitalCardStatusResponseDto digitalCardStatusResponseDto;
-    private String onlineVerificationPartnerId;
 
     @Before
     public void setup() throws Exception {
@@ -126,8 +125,6 @@ public class ResidentServiceDownloadCardTest {
         eventId = "123";
         idType = "RID";
         resultResponse = "[B@3a7e365";
-        onlineVerificationPartnerId = "m-partner-default-auth";
-
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.toString());
@@ -287,7 +284,7 @@ public class ResidentServiceDownloadCardTest {
         Page<ResidentTransactionEntity> residentTransactionEntityPage =
                 new PageImpl<>(List.of(residentTransactionEntity1));
         Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId
-                (Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                (Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
     	 ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
          ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
          serviceHistoryResponseDto.setEventId("123");

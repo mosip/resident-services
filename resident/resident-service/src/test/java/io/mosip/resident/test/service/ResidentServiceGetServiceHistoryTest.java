@@ -118,12 +118,9 @@ public class ResidentServiceGetServiceHistoryTest {
 
     private ResidentSessionEntity residentSessionEntity;
 
-    private String onlineVerificationPartnerId;
-
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         statusFilter = EventStatus.SUCCESS.toString();
-        onlineVerificationPartnerId = "m-partner-default-auth";
         searchText = "1";
         details = new ArrayList<>();
         pageSize = 10;
@@ -165,43 +162,43 @@ public class ResidentServiceGetServiceHistoryTest {
                 Mockito.anyString())).thenReturn(List.of(residentSessionEntity));
         Page<ResidentTransactionEntity> residentTransactionEntityPage =
                 new PageImpl<>(residentTransactionEntityList);
-        Mockito.when(residentTransactionRepository.findByTokenIdAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.anyString(), Mockito.anyList(), onlineVerificationPartnerId, Mockito.any()))
+        Mockito.when(residentTransactionRepository.findByTokenIdAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.any()))
                 .thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId
-                (Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                (Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId
-                        (Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any()))
+                        (Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any()))
                 .thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndOlvPartnerIdIsNullOrOlvPartnerId(
                 Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any()
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any()
         )).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any()
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any()
         )).thenReturn(residentTransactionEntityPage);
-        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), Mockito.any()
-        , onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+        , Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId
-                (Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+                (Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndStatusCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any() , Mockito.any() , Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any()))
+                Mockito.any(), Mockito.any() , Mockito.any() , Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any()))
                 .thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndCrDtimesBetweenAndRequestTypeCodeInAndEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId
-                (Mockito.any(), Mockito.any() , Mockito.any() , Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any()))
+                (Mockito.any(), Mockito.any() , Mockito.any() , Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any()))
                 .thenReturn(residentTransactionEntityPage);
         Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(
-                Mockito.any(), Mockito.any(), Mockito.any(), onlineVerificationPartnerId, Mockito.any()
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any()
         )).thenReturn(residentTransactionEntityPage);
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("1234");
 
@@ -336,7 +333,7 @@ public class ResidentServiceGetServiceHistoryTest {
     @Test(expected = ResidentServiceException.class)
     public void testGetServiceHistoryFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn(null);
-        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(null);
+        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(null);
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, sortType,
                 null, "123", "eng", 0).getResponse().getPageSize());
@@ -349,7 +346,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntityList.add(residentTransactionEntity);
         Page<ResidentTransactionEntity> residentTransactionEntityPage =
                 new PageImpl<>(residentTransactionEntityList);
-        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), onlineVerificationPartnerId, Mockito.any())).thenReturn(residentTransactionEntityPage);
+        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, sortType,
                 null, "123", "eng", 0).getResponse().getPageSize());
