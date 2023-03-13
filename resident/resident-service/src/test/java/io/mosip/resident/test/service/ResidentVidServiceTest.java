@@ -178,6 +178,7 @@ public class ResidentVidServiceTest {
         when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(LocalDateTime.now());
         when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
         Mockito.lenient().when(utility.createEventId()).thenReturn(UUID.randomUUID().toString());
+        Mockito.lenient().when(utility.createEntity()).thenReturn(Mockito.mock(ResidentTransactionEntity.class));
     }
 
     @Test
