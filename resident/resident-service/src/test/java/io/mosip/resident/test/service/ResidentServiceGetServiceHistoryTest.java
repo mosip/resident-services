@@ -238,6 +238,14 @@ public class ResidentServiceGetServiceHistoryTest {
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
     }
 
+    @Test
+    public void testGetServiceHistoryAllStatusFilter() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        fromDate = LocalDate.now();
+        toDate = LocalDate.now();
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType,
+                sortType, statusFilter, null, "eng", 0).getResponse().getPageSize());
+    }
+
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetServiceHistoryCheckedException() throws ResidentServiceCheckedException, ApisResourceAccessException {
         Integer pageStart = 1;
@@ -386,6 +394,12 @@ public class ResidentServiceGetServiceHistoryTest {
                 Mockito.anyString())).thenReturn(List.of(residentSessionEntity, residentSessionEntity));
         assertEquals("Kamesh",
                 residentServiceImpl.getUserinfo("ida_token", 0).getResponse().getFullName());
+    }
+
+    @Test
+    public void testGetFileName(){
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("Ack");
+        assertEquals("Ack", residentServiceImpl.getFileName("123", 0));
     }
 
 }

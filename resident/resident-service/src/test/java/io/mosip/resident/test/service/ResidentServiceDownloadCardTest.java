@@ -3,6 +3,7 @@ package io.mosip.resident.test.service;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
@@ -164,6 +165,107 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
+        byte[] response = residentServiceImpl.downloadCard(eventId);
+        assertNotNull(response);
+    }
+
+    @Test
+    public void testVidCardDownloadSuccess() throws Exception {
+        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
+        String digitalCardStatusUri= "http://datashare.datashare/123";
+        residentTransactionEntity.get().setEventId(eventId);
+        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
+        residentTransactionEntity.get().setAid(eventId);
+        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
+        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
+        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
+        responseDto.setResponse(digitalCardStatusResponseDto);
+        responseDto.setVersion("v1");
+        responseDto.setId("io.mosip.digital.card");
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
+        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
+        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
+                .thenReturn("data".getBytes());
+        byte[] response = residentServiceImpl.downloadCard(eventId);
+        assertNotNull(response);
+    }
+
+    @Test
+    public void testGetFileName() throws Exception {
+        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
+        String digitalCardStatusUri= "http://datashare.datashare/123";
+        residentTransactionEntity.get().setEventId(eventId);
+        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
+        residentTransactionEntity.get().setAid(eventId);
+        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
+        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
+        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
+        responseDto.setResponse(digitalCardStatusResponseDto);
+        responseDto.setVersion("v1");
+        responseDto.setId("io.mosip.digital.card");
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
+        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
+        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
+                .thenReturn("data".getBytes());
+        byte[] response = residentServiceImpl.downloadCard(eventId);
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("Ack");
+        assertEquals("Ack", residentServiceImpl.getFileName("123", 0));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testVidCardDownloadFailure() throws Exception {
+        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
+        String digitalCardStatusUri= "http://datashare.datashare/123";
+        residentTransactionEntity.get().setEventId(eventId);
+        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
+        residentTransactionEntity.get().setAid(eventId);
+        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
+        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
+        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
+        responseDto.setResponse(digitalCardStatusResponseDto);
+        responseDto.setVersion("v1");
+        responseDto.setId("io.mosip.digital.card");
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
+        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
+        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
+                .thenReturn("".getBytes());
+        byte[] response = residentServiceImpl.downloadCard(eventId);
+        assertNotNull(response);
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testVidCardDownloadFailureWithApiResourceException() throws Exception {
+        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
+        String digitalCardStatusUri= "http://datashare.datashare/123";
+        residentTransactionEntity.get().setEventId(eventId);
+        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
+        residentTransactionEntity.get().setAid(eventId);
+        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
+        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
+        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
+        responseDto.setResponse(digitalCardStatusResponseDto);
+        responseDto.setVersion("v1");
+        responseDto.setId("io.mosip.digital.card");
+        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
+        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
+        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
+        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
+        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
+                .thenThrow(new ApisResourceAccessException());
         byte[] response = residentServiceImpl.downloadCard(eventId);
         assertNotNull(response);
     }
