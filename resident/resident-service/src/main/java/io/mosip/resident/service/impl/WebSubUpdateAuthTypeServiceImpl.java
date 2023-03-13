@@ -50,20 +50,20 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try{
             logger.info( "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
-            String eventId = updateInResidentTransactionTable(eventModel,"COMPLETED");
+            String eventId = insertInResidentTransactionTable(eventModel,"COMPLETED");
             sendNotificationV2(TemplateType.SUCCESS,eventId);
         }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::exception");
-            String eventId = updateInResidentTransactionTable(eventModel,"FAILED");
+            String eventId = insertInResidentTransactionTable(eventModel,"FAILED");
             sendNotificationV2(TemplateType.FAILURE, eventId);
             throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
                     ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
         }
     }
 
-    private String updateInResidentTransactionTable(EventModel eventModel,  String status) {
+    private String insertInResidentTransactionTable(EventModel eventModel,  String status) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
@@ -76,7 +76,6 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
                 if(residentTransactionEntity!=null){
                     residentTransactionEntity.stream().forEach(residentTransactionEntity1 -> {
                         residentTransactionEntity1.setStatusCode(status);
-                        residentTransactionEntity1.setReadStatus(false);
                     });
                     residentTransactionRepository.saveAll(residentTransactionEntity);
                 }
