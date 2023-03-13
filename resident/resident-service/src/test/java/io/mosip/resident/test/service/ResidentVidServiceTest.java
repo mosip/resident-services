@@ -177,6 +177,7 @@ public class ResidentVidServiceTest {
         vid = "2038096257310540";
         when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(LocalDateTime.now());
         when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+        Mockito.lenient().when(utility.createEventId()).thenReturn(UUID.randomUUID().toString());
     }
 
     @Test
