@@ -103,7 +103,7 @@ public class ResidentVidServiceTest {
     private IdentityServiceImpl identityServiceImpl;
 
     @InjectMocks
-    private ResidentVidService residentVidService=new ResidentVidServiceImpl();
+    private ResidentVidServiceImpl residentVidService;
     
     @Mock
 	private ResidentTransactionRepository residentTransactionRepository;
