@@ -452,7 +452,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return credentialRequestStatusResponseDto;
 	}
 
-	public CredentialReqestDto prepareCredentialRequest(ResidentCredentialRequestDto residentCreDto, String individualId) {
+	private CredentialReqestDto prepareCredentialRequest(ResidentCredentialRequestDto residentCreDto, String individualId) {
 		CredentialReqestDto crDto = new CredentialReqestDto();
 		if(Utility.isSecureSession()){
 			crDto.setId(individualId);
