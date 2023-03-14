@@ -1,5 +1,7 @@
 package io.mosip.resident.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 /**
@@ -13,5 +15,6 @@ public class SharableAttributesDTO {
 	
 	private String format;
 	
-	private boolean masked;
+	@JsonProperty("isMasked")
+	private boolean isMasked;
 }
