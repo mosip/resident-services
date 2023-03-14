@@ -13,5 +13,5 @@ public class SharableAttributesDTO {
 	
 	private String format;
 	
-	private boolean isMasked;
+	private boolean masked;
 }
