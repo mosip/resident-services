@@ -38,6 +38,7 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
+import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -221,11 +222,17 @@ public class ResidentCredentialController {
 				requestDTO.getRequest().getSharableAttributes(), UISchemaTypes.SHARE_CREDENTIAL.getFileIdentifier());
 		if (Objects.nonNull(requestDTO.getRequest().getSharableAttributes())) {
 			request.getRequest().setSharableAttributes(sharableAttr);
+			Map<String, String> formattingAttributes = requestDTO.getRequest().getSharableAttributes()
+															.stream()
+															.filter(attrib -> attrib.getFormat() != null && !attrib.getFormat().isEmpty())
+															.collect(Collectors.toMap(SharableAttributesDTO::getAttributeName, SharableAttributesDTO::getFormat));
 			request.getRequest()
-					.setAdditionalData(Map.of("formatingAttributes", requestDTO.getRequest().getSharableAttributes(),
+					.setAdditionalData(Map.of("formatingAttributes", formattingAttributes,
 							"maskingAttributes",
-							requestDTO.getRequest().getSharableAttributes().stream().filter(attr -> attr.isMasked())
-									.map(attr -> attr.getAttributeName()).collect(Collectors.toList())));
+							requestDTO.getRequest().getSharableAttributes().stream()
+									.filter(attr -> attr.isMasked())
+									.map(attr -> attr.getAttributeName())
+									.collect(Collectors.toList())));
 
 		}
 	}
