@@ -353,6 +353,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setVersion(version);
 		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		if(eventId == null) {
+			eventId = ResidentConstants.NOT_AVAILABLE;
+		}
 		return Tuples.of(responseDto, eventId);
 	}
 
@@ -703,6 +706,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		responseDto.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
+		if(eventId == null) {
+			eventId = ResidentConstants.NOT_AVAILABLE;
+		}
 		return Tuples.of(responseDto, eventId);
 	}
 
