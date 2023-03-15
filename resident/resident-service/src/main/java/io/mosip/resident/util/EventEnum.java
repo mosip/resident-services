@@ -171,7 +171,7 @@ public enum EventEnum {
 			"RES-SER", "Residence service", "RS-PACK", "Create packet", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	UNKNOWN_EXCEPTION("RES-SER-423", RegistrationConstants.SYSTEM, "Request to create packet",
-			"Unknown exception occured", "RES-SER", "Residence service", "RS-ESCE", "Unknown exception",
+			"Unknown exception occured", "RES-SER", "Residence service", "RS-EXCE", "Unknown exception",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	PACKET_CREATED("RES-SER-119", RegistrationConstants.SYSTEM, "Request to upload UIN packet", "Uploading UIN packet",
