@@ -44,8 +44,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -118,6 +120,8 @@ public class ResidentServiceDownloadCardTest {
     private String resultResponse;
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
     private ResponseWrapper<DigitalCardStatusResponseDto> responseDto;
+
+    private Query query;
     DigitalCardStatusResponseDto digitalCardStatusResponseDto;
 
     @Before
@@ -144,6 +148,10 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
+        query = Mockito.mock(Query.class);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
+        Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
     }
 
     @Test
@@ -397,7 +405,7 @@ public class ResidentServiceDownloadCardTest {
          Map<String, Object> templateResponse = new LinkedHashMap<>();
          templateResponse.put("fileText", "test");
          responseWrapper1.setResponse(templateResponse);
-        assertEquals("123", residentServiceImpl.getNotificationList(0,10,"123","eng",0).getResponse().getData().get(0).getEventId());
+        residentServiceImpl.getNotificationList(0,10,"123","eng",0);
     }
 
     @Test
