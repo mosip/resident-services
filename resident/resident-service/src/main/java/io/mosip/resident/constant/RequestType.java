@@ -1,14 +1,14 @@
 package io.mosip.resident.constant;
 
-import io.mosip.resident.dto.NotificationTemplateVariableDTO;
-import io.mosip.resident.function.QuadFunction;
-import io.mosip.resident.util.TemplateUtil;
-import reactor.util.function.Tuple2;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
+import io.mosip.resident.function.QuadFunction;
+import io.mosip.resident.util.TemplateUtil;
+import reactor.util.function.Tuple2;
 
 /**
  * The Enum RequestType.

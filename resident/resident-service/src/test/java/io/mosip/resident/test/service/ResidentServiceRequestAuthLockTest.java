@@ -5,8 +5,9 @@ package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
 
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.dto.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +17,16 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -32,10 +37,6 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author M1022006

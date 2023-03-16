@@ -1,8 +1,7 @@
 package io.mosip.resident.interceptor;
 
-import io.mosip.resident.entity.ResidentSessionEntity;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.helper.ObjectStoreHelper;
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +11,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertFalse;
+import io.mosip.resident.entity.ResidentSessionEntity;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.helper.ObjectStoreHelper;
 
 /**
  * @author Kamesh Shekhar Prasad

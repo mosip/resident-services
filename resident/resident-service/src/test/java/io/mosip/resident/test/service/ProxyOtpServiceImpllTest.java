@@ -1,31 +1,12 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.authmanager.model.AuthNResponse;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.preregistration.application.constant.PreRegLoginConstant;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.MainResponseDTO;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTOV2;
-import io.mosip.resident.dto.OtpRequestDTOV3;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.OtpTransactionRepository;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.OtpManager;
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ProxyOtpServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
-import reactor.util.function.Tuples;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -49,13 +30,31 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import io.mosip.kernel.core.authmanager.model.AuthNResponse;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.preregistration.application.constant.PreRegLoginConstant;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.MainResponseDTO;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.OtpTransactionRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.OtpManager;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyOtpServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to test proxy otp service impl class.

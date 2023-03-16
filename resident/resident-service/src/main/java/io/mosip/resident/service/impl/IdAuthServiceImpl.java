@@ -53,7 +53,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.AuthRequestDTO;
 import io.mosip.resident.dto.AuthResponseDTO;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
@@ -119,10 +118,6 @@ public class IdAuthServiceImpl implements IdAuthService {
     @Autowired
     RequestValidator requestValidator;
 	
-	private String thumbprint=null;
-
-	private String requestIdForAuthLockUnLock=null;
-
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException {
@@ -282,7 +277,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 		// rbase64 encoded for request
 		authRequestDTO.setRequest(CryptoUtil.encodeToURLSafeBase64(encryptedIdentityBlock));
 		// encrypted with MOSIP public key and encoded session key
-		byte[] encryptedSessionKeyByte = encryptRSA(secretKey.getEncoded(), "INTERNAL");
+		Tuple2<byte[], String> encryptionResult = encryptRSA(secretKey.getEncoded(), "INTERNAL");
+		byte[] encryptedSessionKeyByte = encryptionResult.getT1();
 		authRequestDTO.setRequestSessionKey(CryptoUtil.encodeToURLSafeBase64(encryptedSessionKeyByte));
 
 		// sha256 of the request block before encryption and the hash is encrypted
@@ -290,6 +286,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
 				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
 		authRequestDTO.setRequestHMAC(CryptoUtil.encodeToURLSafeBase64(byteArray));
+		String thumbprint = encryptionResult.getT2();
 		authRequestDTO.setThumbprint(thumbprint);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 				"internelOtpAuth()::INTERNALAUTH POST service call started with request data "
@@ -314,7 +311,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	}
 
-	private byte[] encryptRSA(final byte[] sessionKey, String refId) throws ApisResourceAccessException,
+	private Tuple2<byte[], String> encryptRSA(final byte[] sessionKey, String refId) throws ApisResourceAccessException,
 			InvalidKeySpecException, java.security.NoSuchAlgorithmException, IOException, JsonProcessingException, CertificateEncodingException {
 
 		// encrypt AES Session Key using RSA public key
@@ -341,10 +338,17 @@ public class IdAuthServiceImpl implements IdAuthService {
 		publicKeyResponsedto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 				PublicKeyResponseDto.class);
 		X509Certificate req509 = (X509Certificate) convertToCertificate(publicKeyResponsedto.getCertificate());
-		thumbprint = CryptoUtil.encodeBase64(getCertificateThumbprint(req509));
+		String thumbprint = CryptoUtil.encodeToURLSafeBase64(getCertificateThumbprint(req509));
 
 		PublicKey publicKey = req509.getPublicKey();
-		return encryptor.asymmetricEncrypt(publicKey, sessionKey);
+		if (thumbprint == null) {
+			thumbprint = "";
+		}
+		byte[] asymmetricEncrypt = encryptor.asymmetricEncrypt(publicKey, sessionKey);
+		if(asymmetricEncrypt == null) {
+			asymmetricEncrypt = new byte[0];
+		}
+		return Tuples.of(asymmetricEncrypt, thumbprint);
 	}
 	
 	@Override
@@ -352,20 +356,22 @@ public class IdAuthServiceImpl implements IdAuthService {
 			throws ApisResourceAccessException{
 		Map<String, AuthTypeStatus> authTypeStatusMap=authType.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> authTypeStatus));
 		Map<String, Long> unlockForSecondsMap=authType.stream().distinct().filter(str -> unlockForSeconds!=null).collect(Collectors.toMap(Function.identity(), str -> unlockForSeconds));
-		return authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+		String requestIdForAuthLockUnLock = authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+		return requestIdForAuthLockUnLock != null && !requestIdForAuthLockUnLock.isEmpty();
 	}
 
 	@Override
 	public String authTypeStatusUpdateForRequestId(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap) throws ApisResourceAccessException {
-		if(authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap)){
+		String requestIdForAuthLockUnLock = authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+		if(requestIdForAuthLockUnLock != null){
 			return requestIdForAuthLockUnLock;
 		}
 		return "";
 	}
+	
 	@Override
-	public boolean authTypeStatusUpdate(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap)
+	public String authTypeStatusUpdate(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap)
 			throws ApisResourceAccessException {
-		boolean isAuthTypeStatusSuccess = false;
 		AuthTypeStatusRequestDto authTypeStatusRequestDto = new AuthTypeStatusRequestDto();
 		authTypeStatusRequestDto.setConsentObtained(true);
 		authTypeStatusRequestDto.setId(authTypeStatusId);
@@ -373,15 +379,16 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authTypeStatusRequestDto.setVersion(internalAuthVersion);
 		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 		List<io.mosip.resident.dto.AuthTypeStatus> authTypes = new ArrayList<>();
+		String requestIdForAuthLockUnLock = null;
 		for (Entry<String, AuthTypeStatus> entry : authTypeStatusMap.entrySet()) {
 
 			String[] types = entry.getKey().split("-");
 			io.mosip.resident.dto.AuthTypeStatus authTypeStatus = new io.mosip.resident.dto.AuthTypeStatus();
-			String requestId = UUID.randomUUID().toString();
-			authTypeStatus.setRequestId(requestId);
 			if(requestIdForAuthLockUnLock==null){
+				String requestId = UUID.randomUUID().toString();
 				requestIdForAuthLockUnLock = requestId;
 			}
+			authTypeStatus.setRequestId(requestIdForAuthLockUnLock);
 			if (types.length == 1) {
 				authTypeStatus.setAuthType(types[0]);
 			} else {
@@ -403,7 +410,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 		}
 		authTypeStatusRequestDto.setRequest(authTypes);
 		AuthTypeStatusResponseDto response;
-		;
 		try {
 			response = restClient.postApi(environment.getProperty(ApiName.AUTHTYPESTATUSUPDATE.name()),
 					MediaType.APPLICATION_JSON, authTypeStatusRequestDto, AuthTypeStatusResponseDto.class);
@@ -422,11 +428,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
 
-		} else {
-			isAuthTypeStatusSuccess = true;
 		}
 
-		return isAuthTypeStatusSuccess;
+		return requestIdForAuthLockUnLock;
 	}
 
 	@Override

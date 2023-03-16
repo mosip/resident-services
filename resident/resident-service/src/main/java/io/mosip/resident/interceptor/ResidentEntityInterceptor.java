@@ -25,6 +25,11 @@ import io.mosip.resident.helper.ObjectStoreHelper;
  */
 @Component
 public class ResidentEntityInterceptor extends EmptyInterceptor {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3428378823034671471L;
+
 	private static final String INDIVIDUAL_ID = "individualId";
 
 	@Autowired

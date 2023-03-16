@@ -1,8 +1,8 @@
 package io.mosip.resident.dto;
 
-import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
+
+import lombok.NoArgsConstructor;
 
 /**
  * This DTO class is used to accept the response values for document upload.

@@ -1,10 +1,10 @@
 package io.mosip.resident.dto;
 
+import java.util.Map;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Map;
 
 /**
  * This class is used to test the TemplateUtil class

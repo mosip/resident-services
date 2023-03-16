@@ -2,10 +2,6 @@ package io.mosip.resident.dto;
 
 import java.io.Serializable;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
-import io.mosip.resident.constant.IdType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

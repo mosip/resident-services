@@ -1,15 +1,14 @@
 package io.mosip.resident.test.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.http.RequestWrapper;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.dto.AuditRequestDTO;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditResponseDto;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+import java.net.InetAddress;
+import java.time.LocalDateTime;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,14 +30,17 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.InetAddress;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
+import io.mosip.kernel.core.http.RequestWrapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditResponseDto;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 
 /**
  * @author Abubacker Siddik

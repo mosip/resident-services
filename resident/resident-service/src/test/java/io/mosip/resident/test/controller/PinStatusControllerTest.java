@@ -1,11 +1,7 @@
 package io.mosip.resident.test.controller;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.PinStatusController;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.service.PinUnpinStatusService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.RequestValidator;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,7 +11,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertEquals;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.controller.PinStatusController;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.service.PinUnpinStatusService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * This class is used to test pin or unpin status api based on event id.

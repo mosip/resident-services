@@ -1,22 +1,27 @@
 package io.mosip.resident.test.util;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
-import io.mosip.kernel.core.util.HMACUtils2;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.dto.IdRepoResponseDto;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -37,27 +42,23 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
+import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.IdRepoResponseDto;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})

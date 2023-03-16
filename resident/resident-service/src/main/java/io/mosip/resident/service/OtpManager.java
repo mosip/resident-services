@@ -1,12 +1,12 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
+
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import reactor.util.function.Tuple2;
-
-import java.io.IOException;
 
 /**
  * @author Kamesh Shekhar Prasad

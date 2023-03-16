@@ -1,10 +1,11 @@
 package io.mosip.resident.dto;
 
-import lombok.Data;
+import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+
+import lombok.Data;
 
 @Data
 public class UinCardRequestDto1 implements Serializable {

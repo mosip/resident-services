@@ -1,8 +1,8 @@
 package io.mosip.resident.service;
 
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-
 import java.io.IOException;
+
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
  * This class is used to create service class for getting acknowledgement API.

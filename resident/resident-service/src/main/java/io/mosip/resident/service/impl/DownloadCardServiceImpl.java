@@ -1,5 +1,24 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
+import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
+import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.CryptoUtil;
@@ -40,26 +59,8 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
-import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
-import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
 
 /**
  * @author Kamesh Shekhar Prasad

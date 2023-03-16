@@ -1,35 +1,22 @@
 package io.mosip.resident.mock.service.impl;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.mock.service.MockService;
-import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.mock.service.MockService;
+
 @Service
 public class MockServiceImpl implements MockService {
 
     @Value("${mosip.resident.service.mock.pdf.url}")
     private String residentServicePdfUrl;
-
-    @Autowired
-    private AuditUtil audit;
-
-    private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialServiceImpl.class);
-
-    @Autowired
-    private ResidentServiceRestClient residentServiceRestClient;
 
     @Override
     public byte[] getRIDDigitalCardV2(String rid) throws ApisResourceAccessException, IOException {

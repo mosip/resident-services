@@ -1,27 +1,12 @@
 package io.mosip.resident.test.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.core.authmanager.model.AuthNResponse;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.preregistration.application.constant.PreRegLoginConstant;
-import io.mosip.resident.controller.ProxyOtpController;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.MainResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTOV2;
-import io.mosip.resident.dto.OtpRequestDTOV3;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.ProxyOtpService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
-import reactor.util.function.Tuples;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import javax.crypto.SecretKey;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,12 +31,29 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.mosip.kernel.core.authmanager.model.AuthNResponse;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.preregistration.application.constant.PreRegLoginConstant;
+import io.mosip.resident.controller.ProxyOtpController;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.MainResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.ProxyOtpService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * @author Kamesh Shekhar Prasad

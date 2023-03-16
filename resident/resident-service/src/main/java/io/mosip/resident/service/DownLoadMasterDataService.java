@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**

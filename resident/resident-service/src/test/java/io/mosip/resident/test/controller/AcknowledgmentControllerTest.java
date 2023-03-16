@@ -1,16 +1,10 @@
 package io.mosip.resident.test.controller;
 
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.controller.AcknowledgementController;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.AcknowledgementService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentVidServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,10 +20,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-
-import static org.junit.Assert.assertEquals;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.controller.AcknowledgementController;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.AcknowledgementService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentVidServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * Acknowledgment Controller Test

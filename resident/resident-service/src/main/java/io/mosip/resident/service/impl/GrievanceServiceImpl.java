@@ -1,5 +1,14 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
+
+import java.util.HashMap;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -10,21 +19,10 @@ import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.entity.ResidentGrievanceEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
 import io.mosip.resident.service.GrievanceService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.UUID;
-
-import static io.mosip.resident.constant.RegistrationConstants.SUCCESS;
 
 /**
  * @author Kamesh Shekhar Prasad

@@ -1,13 +1,9 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.PinUnpinStatusService;
-import io.mosip.resident.service.impl.PinUnpinStatusServiceImpl;
-import io.mosip.resident.util.AuditUtil;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,9 +15,14 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.PinUnpinStatusService;
+import io.mosip.resident.service.impl.PinUnpinStatusServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 
 /**
  * This class is used to test service class of pin or unpin status api based on event id.

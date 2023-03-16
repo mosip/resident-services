@@ -1,16 +1,9 @@
 package io.mosip.resident.test.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.core.exception.BaseCheckedException;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.JsonUtils;
-import io.mosip.kernel.core.util.exception.JsonProcessingException;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.SyncAndUploadService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,9 +20,25 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import io.mosip.kernel.core.exception.BaseCheckedException;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.JsonUtils;
+import io.mosip.kernel.core.util.exception.JsonProcessingException;
+import io.mosip.resident.dto.PacketGeneratorResDto;
+import io.mosip.resident.dto.PacketReceiverResponseDTO;
+import io.mosip.resident.dto.PacketReceiverSubResponseDTO;
+import io.mosip.resident.dto.RegSyncResponseDTO;
+import io.mosip.resident.dto.RegistrationType;
+import io.mosip.resident.dto.SyncResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.handler.service.SyncAndUploadService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EncryptorUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})

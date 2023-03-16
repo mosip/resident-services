@@ -3,12 +3,13 @@
  */
 package io.mosip.resident.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-import org.json.simple.JSONArray;
-
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+
+import org.json.simple.JSONArray;
+
+import io.swagger.annotations.ApiModelProperty;
 
 // TODO: Auto-generated Javadoc
 

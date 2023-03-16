@@ -3,9 +3,9 @@
  */
 package io.mosip.resident.dto;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * @author M1022006
