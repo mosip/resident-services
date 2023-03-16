@@ -6,6 +6,7 @@ import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
@@ -97,6 +98,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.name());
         residentTransactionEntity.setRequestSummary("Test");
         residentTransactionEntity.setAuthTypeCode("otp");
+        residentTransactionEntity.setAttributeList("YYYY-MM-DD HH:MM:SS");
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(eventId);
@@ -331,5 +333,41 @@ public class TemplateUtilTest {
     public void getSummaryTemplateTypeCodeTest() {
         assertEquals(PROPERTY,
                 templateUtil.getSummaryTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
+    }
+
+    @Test
+    public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCard(){
+        assertEquals("VID", templateUtil.
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, "VID", "eng"));
+    }
+
+    @Test
+    public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCardNullFileText(){
+        templateUtil.
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, null, "eng");
+    }
+
+    @Test
+    public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCardSuccess(){
+        templateUtil.
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, ResidentConstants.ATTRIBUTES.toString(), "eng");
+    }
+
+    @Test
+    public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCardFailure(){
+        residentTransactionEntity.setAttributeList(null);
+        residentTransactionEntity.setPurpose(null);
+        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
+        templateUtil.
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, ResidentConstants.ATTRIBUTES.toString(), "eng");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testGetTemplateValueFromTemplateTypeCodeAndLangCode() throws ResidentServiceCheckedException {
+        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
+                        .thenThrow(new ResidentServiceCheckedException());
+        assertEquals(PROPERTY,
+                templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode("eng", "ack"));
+
     }
 }

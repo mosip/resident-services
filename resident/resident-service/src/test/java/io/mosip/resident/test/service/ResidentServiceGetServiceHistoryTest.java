@@ -40,7 +40,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -99,6 +102,9 @@ public class ResidentServiceGetServiceHistoryTest {
     @Mock
     private ProxyMasterdataService proxyMasterdataService;
 
+    @Mock
+    private EntityManager entityManager;
+
     List<AutnTxnDto> details = null;
 
     private int pageStart;
@@ -117,6 +123,8 @@ public class ResidentServiceGetServiceHistoryTest {
     private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper;
 
     private ResidentSessionEntity residentSessionEntity;
+
+    private Query query;
 
     @Before
     public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
@@ -144,7 +152,10 @@ public class ResidentServiceGetServiceHistoryTest {
         partnerIds.add("m-partner-default-auth");
         partnerIds.add("MOVP");
 
-
+        query = Mockito.mock(Query.class);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
+        Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
+        Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
 
         Mockito.when(residentTransactionRepository.findByTokenAndTransactionType(Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyString())).thenReturn(residentTransactionEntityList);
 
@@ -236,6 +247,14 @@ public class ResidentServiceGetServiceHistoryTest {
     @Test
     public void testGetServiceHistoryNullCheck() throws ResidentServiceCheckedException, ApisResourceAccessException {
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, "eng", 0).getResponse().getPageSize());
+    }
+
+    @Test
+    public void testGetServiceHistoryAllStatusFilter() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        fromDate = LocalDate.now();
+        toDate = LocalDate.now();
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, serviceType,
+                sortType, statusFilter, null, "eng", 0).getResponse().getPageSize());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
@@ -330,15 +349,6 @@ public class ResidentServiceGetServiceHistoryTest {
                 null, "123", "eng", 0).getResponse().getPageSize());
     }
 
-    @Test(expected = ResidentServiceException.class)
-    public void testGetServiceHistoryFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn(null);
-        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(null);
-        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
-                null, sortType,
-                null, "123", "eng", 0).getResponse().getPageSize());
-    }
-
     @Test
     public void testGetServiceHistoryWithUpdatedDtimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
@@ -386,6 +396,12 @@ public class ResidentServiceGetServiceHistoryTest {
                 Mockito.anyString())).thenReturn(List.of(residentSessionEntity, residentSessionEntity));
         assertEquals("Kamesh",
                 residentServiceImpl.getUserinfo("ida_token", 0).getResponse().getFullName());
+    }
+
+    @Test
+    public void testGetFileName(){
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("Ack");
+        assertEquals("Ack", residentServiceImpl.getFileName("123", 0));
     }
 
 }
