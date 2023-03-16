@@ -341,7 +341,14 @@ public class IdAuthServiceImpl implements IdAuthService {
 		String thumbprint = CryptoUtil.encodeToURLSafeBase64(getCertificateThumbprint(req509));
 
 		PublicKey publicKey = req509.getPublicKey();
-		return Tuples.of(encryptor.asymmetricEncrypt(publicKey, sessionKey), thumbprint);
+		if (thumbprint == null) {
+			thumbprint = "";
+		}
+		byte[] asymmetricEncrypt = encryptor.asymmetricEncrypt(publicKey, sessionKey);
+		if(asymmetricEncrypt == null) {
+			asymmetricEncrypt = new byte[0];
+		}
+		return Tuples.of(asymmetricEncrypt, thumbprint);
 	}
 	
 	@Override
