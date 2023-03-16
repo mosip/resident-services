@@ -22,6 +22,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.impl.DownloadCardServiceImpl;
@@ -89,6 +90,9 @@ public class DownloadCardServiceTest {
     private IdentityServiceImpl identityService;
 
     @Mock
+    private NotificationService notificationService;
+
+    @Mock
     private Utility utility;
 
     @Mock
@@ -141,7 +145,7 @@ public class DownloadCardServiceTest {
         Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ISSUER)).thenReturn("credentialType");
         Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)).thenReturn("true");
         Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY)).thenReturn("true");
-        Mockito.when(identityService.getResidentIndvidualId()).thenReturn("1234567890");
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
         Mockito.when(identityService.getUinForIndividualId(Mockito.anyString())).thenReturn("3425636374");
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
         identityMap = new LinkedHashMap();

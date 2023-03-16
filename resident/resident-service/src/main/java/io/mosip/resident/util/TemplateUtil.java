@@ -261,7 +261,7 @@ import java.util.Optional;
     }
 
     public String getIndividualIdType() throws ApisResourceAccessException {
-        String individualId= identityServiceImpl.getResidentIndvidualId();
+        String individualId= identityServiceImpl.getResidentIndvidualIdFromSession();
         return identityServiceImpl.getIndividualIdType(individualId);
     }
 
@@ -460,9 +460,7 @@ import java.util.Optional;
  		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
  		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
  		templateVariables.put(TemplateVariablesConstants.STATUS, dto.getTemplateType().getType());
-         if(TemplateType.FAILURE.getType().equals(dto.getTemplateType().getType())) {
- 			templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
- 		}
+		templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
  		return templateVariables;
  	}
 
@@ -485,7 +483,7 @@ import java.util.Optional;
  		String individualId = "";
  		try {
 			if (Utility.isSecureSession()) {
-				individualId = identityServiceImpl.getResidentIndvidualId();
+				individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 			} else {
 				individualId = getEntityFromEventId(eventId).getIndividualId();
 			}
@@ -552,9 +550,6 @@ import java.util.Optional;
      
      public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto) {
     	 Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
-    	 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
-    		}
     	 return templateVariables;
   	}
      
