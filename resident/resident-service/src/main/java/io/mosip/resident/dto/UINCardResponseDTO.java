@@ -3,7 +3,6 @@ package io.mosip.resident.dto;
 import java.io.Serializable;
 import java.util.Arrays;
 
-
 import lombok.Data;
 @Data
 public class UINCardResponseDTO implements Serializable{

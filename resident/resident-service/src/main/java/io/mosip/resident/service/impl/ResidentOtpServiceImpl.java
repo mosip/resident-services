@@ -1,6 +1,16 @@
 package io.mosip.resident.service.impl;
 
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
@@ -21,14 +31,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 @Service
 public class ResidentOtpServiceImpl implements ResidentOtpService {
@@ -53,9 +55,6 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 	
-	@Autowired
-	private ResidentServiceImpl residentServiceImpl;
-
 	@Autowired
 	private Utility utility;
 	

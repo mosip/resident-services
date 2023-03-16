@@ -1,10 +1,11 @@
 package io.mosip.resident.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.io.Serializable;
 
 import javax.validation.Valid;
-import java.io.Serializable;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Instantiates a new resident service re-print request dto.

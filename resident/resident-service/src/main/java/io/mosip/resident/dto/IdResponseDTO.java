@@ -1,10 +1,11 @@
 package io.mosip.resident.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.List;
 
 /**
  * The Class IdResponseDTO.

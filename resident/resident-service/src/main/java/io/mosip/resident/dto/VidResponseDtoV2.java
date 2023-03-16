@@ -1,7 +1,6 @@
 package io.mosip.resident.dto;
 
 import lombok.Data;
-import java.io.Serializable;
 
 @Data
 public class VidResponseDtoV2 extends  VidResponseDto{

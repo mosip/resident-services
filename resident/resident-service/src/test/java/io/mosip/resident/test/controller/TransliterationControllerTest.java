@@ -1,17 +1,7 @@
 package io.mosip.resident.test.controller;
 
-import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
-import io.mosip.preregistration.application.dto.TransliterationResponseDTO;
-import io.mosip.preregistration.application.service.TransliterationService;
-import io.mosip.preregistration.core.common.dto.MainRequestDTO;
-import io.mosip.preregistration.core.common.dto.MainResponseDTO;
-import io.mosip.resident.controller.TransliterationController;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentVidServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.RequestValidator;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -25,7 +15,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertEquals;
+import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
+import io.mosip.preregistration.application.dto.TransliterationResponseDTO;
+import io.mosip.preregistration.application.service.TransliterationService;
+import io.mosip.preregistration.core.common.dto.MainRequestDTO;
+import io.mosip.preregistration.core.common.dto.MainResponseDTO;
+import io.mosip.resident.controller.TransliterationController;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentVidServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * Acknowledgment Controller Test

@@ -1,7 +1,5 @@
 package io.mosip.resident.util;
 
-import java.time.LocalDateTime;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;

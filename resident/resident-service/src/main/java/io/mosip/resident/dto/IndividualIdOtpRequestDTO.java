@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * This class is used to provide request for OTP generation.

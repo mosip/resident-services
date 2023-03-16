@@ -1,13 +1,13 @@
 package io.mosip.resident.dto;
 
+import java.io.Serializable;
+import java.util.List;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * 

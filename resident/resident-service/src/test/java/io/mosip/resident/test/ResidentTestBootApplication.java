@@ -1,7 +1,5 @@
 package io.mosip.resident.test;
 
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;

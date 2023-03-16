@@ -1,7 +1,5 @@
 package io.mosip.resident.dto;
 
-import javax.validation.constraints.NotBlank;
-
 import lombok.Data;
 
 @Data

@@ -1,8 +1,8 @@
 package io.mosip.resident.dto;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * The base DTO class that would be extended by all DTOs in Registration Module.

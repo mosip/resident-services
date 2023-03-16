@@ -17,18 +17,11 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 
 @Component
 public class VerificationServiceImpl implements VerificationService {
 
-    @Autowired
-    private AuditUtil auditUtil;
-
-    @Autowired
-    private IdentityServiceImpl identityServiceImpl;
-    
     @Autowired
 	private Utility utility;
 

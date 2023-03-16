@@ -7,10 +7,6 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.controller.AcknowledgementController;
-import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,12 +27,15 @@ import org.springframework.web.client.RestTemplate;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.controller.AcknowledgementController;
 import io.mosip.resident.controller.ProxyMasterdataController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 

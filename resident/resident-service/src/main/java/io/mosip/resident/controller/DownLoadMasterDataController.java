@@ -1,15 +1,12 @@
 package io.mosip.resident.controller;
 
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.DownLoadMasterDataService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
@@ -20,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.DownLoadMasterDataService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 /**
  * 

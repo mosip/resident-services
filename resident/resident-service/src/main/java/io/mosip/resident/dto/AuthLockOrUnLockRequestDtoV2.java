@@ -1,10 +1,11 @@
 package io.mosip.resident.dto;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import lombok.Data;
 
 
 @Data

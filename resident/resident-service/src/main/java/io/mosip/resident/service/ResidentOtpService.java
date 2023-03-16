@@ -1,13 +1,13 @@
 package io.mosip.resident.service;
 
+import java.security.NoSuchAlgorithmException;
+
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-
-import java.security.NoSuchAlgorithmException;
 
 
 public interface ResidentOtpService {

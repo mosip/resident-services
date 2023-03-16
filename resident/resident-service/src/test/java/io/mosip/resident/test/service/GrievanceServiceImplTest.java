@@ -1,13 +1,6 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.GrievanceRequestDTO;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.repository.ResidentGrievanceRepository;
-import io.mosip.resident.service.impl.GrievanceServiceImpl;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditUtil;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +13,14 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.Assert.assertNotNull;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.GrievanceRequestDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.repository.ResidentGrievanceRepository;
+import io.mosip.resident.service.impl.GrievanceServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 
 /**
  * This class is used to create service class test  for grievance API.

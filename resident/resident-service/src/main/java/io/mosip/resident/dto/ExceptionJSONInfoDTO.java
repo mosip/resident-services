@@ -1,8 +1,12 @@
 package io.mosip.resident.dto;
 
-import lombok.*;
-
 import java.io.Serializable;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * This DTO class defines the errorcodes and errormessages during exception handling.

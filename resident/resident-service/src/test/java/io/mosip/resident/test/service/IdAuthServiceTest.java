@@ -117,8 +117,8 @@ public class IdAuthServiceTest {
         authTypes.add("bio");
         Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
         Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
-        assertTrue(isUpdated);
+        String requestId = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
+        assertTrue(requestId != null && !requestId.isEmpty());
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -129,8 +129,8 @@ public class IdAuthServiceTest {
         authTypes.add("bio-FIR");
         Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
         Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
-        assertTrue(isUpdated);
+        String requestId = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
+        assertTrue(requestId != null && !requestId.isEmpty());
     }
 
     @Test(expected = CertificateException.class)
@@ -368,7 +368,7 @@ public class IdAuthServiceTest {
         authTypes.add("bio-FIR");
         Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
         Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
+        idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
     }
 
     @Test
