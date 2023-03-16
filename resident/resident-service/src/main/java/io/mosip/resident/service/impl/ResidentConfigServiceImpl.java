@@ -22,16 +22,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utility;
 
 /**
@@ -44,20 +41,11 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	private static final String VALUE = "value";
 
 	private static final String UI_SCHEMA_ATTRIBUTE_NAME = "mosip.resident.schema.attribute-name";
-
-	private static final String CONTROL_TYPE = "controlType";
-
-	private static final String FILEUPLOAD = "fileupload";
-
-	private static final String INPUT_REQUIRED = "inputRequired";
 	
 	private static final String MASK_REQUIRED = "maskRequired";
 
 	private static final String IDENTITY = "identity";
 
-	/** The Constant logger. */
-	private static final Logger logger = LoggerConfiguration.logConfig(ResidentConfigServiceImpl.class);
-	
 	/** The prop keys. */
 	@Value("${resident.ui.propertyKeys:}")
 	private String[] propKeys;
@@ -66,10 +54,6 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Autowired
 	private Environment env;
 
-	/** The audit util. */
-	@Autowired
-	private AuditUtil auditUtil;
-	
 	/** The resident ui schema json file. */
 	@Value("${resident-ui-schema-file-source-prefix}")
 	private String residentUiSchemaJsonFilePrefix;

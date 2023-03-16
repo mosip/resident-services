@@ -1,13 +1,12 @@
 package io.mosip.resident.test.aspect;
 
-import io.mosip.resident.aspect.LoginCheck;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentSessionRepository;
-import io.mosip.resident.repository.ResidentUserRepository;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +18,14 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
+import io.mosip.resident.aspect.LoginCheck;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentSessionRepository;
+import io.mosip.resident.repository.ResidentUserRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utility;
 
 /**
  * Aspect test class for login redirect API

@@ -1,6 +1,5 @@
 package io.mosip.resident.dto;
 
-import io.mosip.resident.constant.RequestType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
