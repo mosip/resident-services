@@ -102,7 +102,7 @@ public class OrderCardServiceTest {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId("5092d4bf-8f77-4608-a167-76371cc38b5d");
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);

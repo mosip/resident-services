@@ -99,7 +99,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setAuthTypeCode("otp");
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(eventId);
+        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(eventId);
         Mockito.when(validator.validateUin(Mockito.anyString())).thenReturn(true);
         ReflectionTestUtils.setField(templateUtil, "templateDatePattern", "dd-MM-yyyy");
         ReflectionTestUtils.setField(templateUtil, "templateTimePattern", "HH:mm:ss");
@@ -247,7 +247,7 @@ public class TemplateUtilTest {
     }
 
     public void getNotificationCommonTemplateVariablesTestFailedApiResourceException() throws ApisResourceAccessException {
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
+        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
         assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
     }
