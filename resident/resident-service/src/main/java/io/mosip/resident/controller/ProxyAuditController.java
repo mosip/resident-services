@@ -77,7 +77,7 @@ public class ProxyAuditController {
 		auditRequestDto.setApplicationName(requestDto.getApplicationName());
 		auditRequestDto.setSessionUserId(requestDto.getSessionUserId());
 		auditRequestDto.setSessionUserName(requestDto.getSessionUserName());
-		String individualId = identityService.getResidentIndvidualId();
+		String individualId = identityService.getResidentIndvidualIdFromSession();
 		auditRequestDto.setId(utility.getRefIdHash(individualId));
 		auditRequestDto.setIdType(identityService.getIndividualIdType(individualId));
 		auditRequestDto.setCreatedBy(requestDto.getCreatedBy());

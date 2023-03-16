@@ -60,9 +60,6 @@ public class WebSubUpdateAuthTypeServiceTest {
     private WebSubUpdateAuthTypeServiceImpl webSubUpdateAuthTypeService;
 
     @Mock
-    private IdentityServiceImpl identityServiceImpl;
-
-    @Mock
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
@@ -88,7 +85,6 @@ public class WebSubUpdateAuthTypeServiceTest {
         event=new Event();
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
         notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
@@ -107,12 +103,6 @@ public class WebSubUpdateAuthTypeServiceTest {
         webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
         webSubUpdateAuthTypeService = mock(WebSubUpdateAuthTypeServiceImpl.class);
         Mockito.lenient().doNothing().when(webSubUpdateAuthTypeService).updateAuthTypeStatus(Mockito.any());
-    }
-
-    @Test(expected = Exception.class)
-    public void testWebSubUpdateAuthFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
     }
 
     @Test
