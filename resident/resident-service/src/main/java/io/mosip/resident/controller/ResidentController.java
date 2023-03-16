@@ -260,7 +260,7 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update auth Type status API"));
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
@@ -392,7 +392,7 @@ public class ResidentController {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
 		if (request != null) {
 			request.setIndividualId(individualId);
@@ -420,7 +420,7 @@ public class ResidentController {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		try {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));
 			responseWrapper = residentService.getAuthLockStatus(individualId);

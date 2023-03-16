@@ -436,7 +436,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
-		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualId());
+		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_GENERATED.name());
@@ -717,7 +717,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
-		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualId());
+		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		try {
 			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
 		} catch (Exception exception){

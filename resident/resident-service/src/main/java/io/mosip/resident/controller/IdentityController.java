@@ -90,7 +90,7 @@ public class IdentityController {
 	}
 
 	private String getIdFromUser() throws ApisResourceAccessException {
-		return idServiceImpl.getResidentIndvidualId();
+		return idServiceImpl.getResidentIndvidualIdFromSession();
 	}
 	
 

@@ -126,7 +126,7 @@ public class OTPManagerServiceImplTest {
         otpRequestDTOV2.setTransactionId("1234567891");
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("2123456");
+        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("2123456");
         when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(0);
         ResponseWrapper<Map<String, String>> responseMap1=new ResponseWrapper<>();
         responseMap1.setResponse(responseMap);
