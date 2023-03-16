@@ -1,9 +1,9 @@
 package io.mosip.resident.dto;
 
+import java.io.Serializable;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
 
 /**
  * @author Sowmya The Class PackerGeneratorFailureDto.

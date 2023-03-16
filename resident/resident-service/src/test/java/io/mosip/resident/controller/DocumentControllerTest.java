@@ -1,13 +1,12 @@
 package io.mosip.resident.controller;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.dto.DocumentDTO;
-import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.validator.DocumentValidator;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,12 +17,14 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.DocumentDTO;
+import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.DocumentValidator;
 
 /**
  * @author Manoj SP

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -26,8 +25,6 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
 
 @Component
 public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeService {

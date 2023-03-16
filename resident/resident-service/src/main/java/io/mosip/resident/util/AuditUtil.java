@@ -7,9 +7,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,8 +30,11 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ValidationException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 @Component
 public class AuditUtil {
@@ -65,9 +65,6 @@ public class AuditUtil {
 
 	private String hostName = null;
 	
-	@Autowired
-	private TokenGenerator tokenGenerator;
-
 	public String getServerIp() {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
@@ -90,7 +87,6 @@ public class AuditUtil {
 		hostName = getServerName();
 	}
 	
-	//TODO rename to sendAuditRequest
 	public  void setAuditRequestDto(EventEnum eventEnum) {
 		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
