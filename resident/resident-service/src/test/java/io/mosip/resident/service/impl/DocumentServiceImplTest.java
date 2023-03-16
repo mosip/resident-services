@@ -1,9 +1,12 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.commons.khazana.dto.ObjectDto;
-import io.mosip.resident.dto.DocumentRequestDTO;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.helper.ObjectStoreHelper;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +19,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertNotNull;
+import io.mosip.commons.khazana.dto.ObjectDto;
+import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
 
 /**
  * 

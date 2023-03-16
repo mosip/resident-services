@@ -1,8 +1,8 @@
 package io.mosip.resident.constant;
 
-import org.springframework.core.env.Environment;
-
 import java.util.Objects;
+
+import org.springframework.core.env.Environment;
 
 /**
  * @author Kamesh Shekhar Prasad

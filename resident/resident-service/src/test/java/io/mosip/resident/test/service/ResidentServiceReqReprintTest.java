@@ -41,7 +41,6 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceReqReprintTest {

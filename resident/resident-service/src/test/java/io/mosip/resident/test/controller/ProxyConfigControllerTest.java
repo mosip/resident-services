@@ -31,7 +31,6 @@ import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.controller.IdentityController;
 import io.mosip.resident.controller.ProxyConfigController;
 import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;

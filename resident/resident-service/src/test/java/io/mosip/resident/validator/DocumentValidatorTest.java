@@ -1,14 +1,17 @@
 package io.mosip.resident.validator;
 
-import io.mosip.kernel.core.http.RequestWrapper;
-import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
-import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.dto.DocumentRequestDTO;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.ProxyMasterdataService;
+import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,19 +23,17 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import io.mosip.kernel.core.http.RequestWrapper;
+import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
+import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.dto.DocumentRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.ProxyMasterdataService;
 import reactor.util.function.Tuples;
-
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Manoj SP
