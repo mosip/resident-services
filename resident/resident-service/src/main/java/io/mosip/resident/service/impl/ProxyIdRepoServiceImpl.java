@@ -41,7 +41,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
 		try {
-			String individualId=identityServiceImpl.getResidentIndvidualId();
+			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put("individualId", individualId);
 			

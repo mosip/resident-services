@@ -94,7 +94,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         this.logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
-        notificationRequestDto.setId(identityService.getResidentIndvidualId());
+        notificationRequestDto.setId(identityService.getResidentIndvidualIdFromSession());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
@@ -207,7 +207,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
-        String individualId= identityService.getResidentIndvidualId();
+        String individualId= identityService.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);

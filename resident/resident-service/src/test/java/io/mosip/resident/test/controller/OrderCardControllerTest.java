@@ -124,7 +124,7 @@ public class OrderCardControllerTest {
 		MockitoAnnotations.initMocks(this);
 		this.mockMvc = MockMvcBuilders.standaloneSetup(orderCardController).build();
 		Mockito.doNothing().when(auditUtil).setAuditRequestDto(Mockito.any());
-		Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234Id");
+		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234Id");
 	}
 
 	@Test

@@ -131,7 +131,7 @@ public class ResidentCredentialServiceTest {
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId("e65c86f5-8929-4547-a156-9b349c29ab8b");
 		when(utility.createEntity()).thenReturn(residentTransactionEntity);
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("1234567890");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
         when(utility.createEventId()).thenReturn("1111111111111111");
     }
 

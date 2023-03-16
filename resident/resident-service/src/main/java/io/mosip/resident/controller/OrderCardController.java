@@ -94,7 +94,7 @@ public class OrderCardController {
 			@RequestParam(name = "redirectUri") String redirectUri )
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::getphysicalCardOrder()::entry");
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		String redirectURL = orderCardService.getRedirectUrl(partnerId,individualId);
 		logger.debug("OrderCardController::getphysicalCardOrder()::exit");
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectURL)).build();
@@ -117,7 +117,7 @@ public class OrderCardController {
 			@RequestParam(name = "error_message",required = false) String errorMessage)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::physicalCardOrderRedirect()::entry");
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		String response = orderCardService.physicalCardOrder(redirectUrl, paymentTransactionId, eventId,
 				residentFullAddress,individualId,errorCode,errorMessage);
 		logger.debug("OrderCardController::physicalCardOrderRedirect()::exit");

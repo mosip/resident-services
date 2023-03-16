@@ -473,7 +473,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return decodedJWT.getPayload();
 	}
 
-	public String getResidentIndvidualId() throws ApisResourceAccessException {
+	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
 		return  getClaimValue(INDIVIDUAL_ID);
 	}
 
@@ -492,7 +492,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		return getIDATokenForIndividualId(getResidentIndvidualId());
+		return getIDATokenForIndividualId(getResidentIndvidualIdFromSession());
 	}
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {

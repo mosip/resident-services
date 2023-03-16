@@ -534,7 +534,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualId());
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
 	@Test(expected = Exception.class)
@@ -547,7 +547,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualId());
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
 	@Test(expected = Exception.class)
@@ -559,7 +559,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(token);
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualId());
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
 	@Test
@@ -569,7 +569,7 @@ public class IdentityServiceTest {
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("3956038419",identityService.getResidentIndvidualId());
+		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
 
 	@Test

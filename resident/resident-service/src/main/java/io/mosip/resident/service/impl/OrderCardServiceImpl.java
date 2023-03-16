@@ -90,7 +90,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardServiceImpl::sendPhysicalCard()::entry");
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto, individualId);
 		if (requestDto.getConsent() == null || requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
 				|| requestDto.getConsent().trim().isEmpty() || requestDto.getConsent().equals("null") || !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
