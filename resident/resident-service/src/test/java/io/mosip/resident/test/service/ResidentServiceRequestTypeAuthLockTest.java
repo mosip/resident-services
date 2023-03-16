@@ -119,7 +119,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO.setStatus("success");
 		notificationResponseDTO.setMessage("Notification success");
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-		individualId = identityServiceImpl.getResidentIndvidualId();
+		individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();

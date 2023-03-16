@@ -47,7 +47,7 @@ public class ProxyIdRepoServiceTest {
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
 		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId(List.of());
@@ -58,7 +58,7 @@ public class ProxyIdRepoServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetRemainingUpdateCountByIndividualIdException()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		service.getRemainingUpdateCountByIndividualId(List.of());

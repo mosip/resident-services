@@ -1211,7 +1211,7 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdate():: entry");
 		ResponseDTO response = new ResponseDTO();
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
