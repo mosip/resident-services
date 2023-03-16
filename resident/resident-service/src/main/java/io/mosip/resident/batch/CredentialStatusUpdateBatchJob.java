@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -147,6 +145,7 @@ public class CredentialStatusUpdateBatchJob {
 	public void scheduleCredentialStatusUpdateJob() throws ResidentServiceCheckedException {
 		List<ResidentTransactionEntity> residentTxnList = repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(
 				List.of(statusCodes.split(",")), List.of(requestTypeCodes.split(",")));
+		logger.info("Total records picked from resident_transaction table for processing is " + residentTxnList.size());
 		for (ResidentTransactionEntity txn : residentTxnList) {
 			logger.info("Processing event:" + txn.getEventId());
 			handleWithTryCatch(() -> updateVidCardDownloadTxnStatus(txn));

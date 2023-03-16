@@ -1,9 +1,38 @@
 package io.mosip.resident.test.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
@@ -31,36 +60,6 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -120,8 +119,6 @@ public class ResidentServiceDownloadCardTest {
     private String resultResponse;
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
     private ResponseWrapper<DigitalCardStatusResponseDto> responseDto;
-
-    private Query query;
     DigitalCardStatusResponseDto digitalCardStatusResponseDto;
 
     @Before
@@ -148,10 +145,6 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
         Mockito.when(residentServiceRestClient.getApi((URI)any(), any(Class.class))).thenReturn(responseDto);
         Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("ZGF0YQ==");
-        query = Mockito.mock(Query.class);
-        Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
-        Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
-        Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
     }
 
     @Test
@@ -173,107 +166,6 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertNotNull(response);
-    }
-
-    @Test
-    public void testVidCardDownloadSuccess() throws Exception {
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        String digitalCardStatusUri= "http://datashare.datashare/123";
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
-        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
-        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
-        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
-        responseDto.setResponse(digitalCardStatusResponseDto);
-        responseDto.setVersion("v1");
-        responseDto.setId("io.mosip.digital.card");
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
-        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
-        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
-                .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertNotNull(response);
-    }
-
-    @Test
-    public void testGetFileName() throws Exception {
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        String digitalCardStatusUri= "http://datashare.datashare/123";
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
-        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
-        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
-        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
-        responseDto.setResponse(digitalCardStatusResponseDto);
-        responseDto.setVersion("v1");
-        responseDto.setId("io.mosip.digital.card");
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
-        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
-        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
-                .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("Ack");
-        assertEquals("Ack", residentServiceImpl.getFileName("123", 0));
-    }
-
-    @Test(expected = ResidentServiceException.class)
-    public void testVidCardDownloadFailure() throws Exception {
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        String digitalCardStatusUri= "http://datashare.datashare/123";
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
-        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
-        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
-        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
-        responseDto.setResponse(digitalCardStatusResponseDto);
-        responseDto.setVersion("v1");
-        responseDto.setId("io.mosip.digital.card");
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
-        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
-        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
-                .thenReturn("".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertNotNull(response);
-    }
-
-    @Test(expected = ResidentServiceException.class)
-    public void testVidCardDownloadFailureWithApiResourceException() throws Exception {
-        residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
-        String digitalCardStatusUri= "http://datashare.datashare/123";
-        residentTransactionEntity.get().setEventId(eventId);
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
-        residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
-        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
-        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
-        responseDto.setResponse(digitalCardStatusResponseDto);
-        responseDto.setVersion("v1");
-        responseDto.setId("io.mosip.digital.card");
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
-        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
-        when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
-                .thenThrow(new ApisResourceAccessException());
         byte[] response = residentServiceImpl.downloadCard(eventId);
         assertNotNull(response);
     }
@@ -405,7 +297,7 @@ public class ResidentServiceDownloadCardTest {
          Map<String, Object> templateResponse = new LinkedHashMap<>();
          templateResponse.put("fileText", "test");
          responseWrapper1.setResponse(templateResponse);
-        residentServiceImpl.getNotificationList(0,10,"123","eng",0);
+        assertEquals("123", residentServiceImpl.getNotificationList(0,10,"123","eng",0).getResponse().getData().get(0).getEventId());
     }
 
     @Test

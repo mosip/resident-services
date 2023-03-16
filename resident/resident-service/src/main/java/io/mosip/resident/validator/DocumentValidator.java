@@ -1,16 +1,14 @@
 package io.mosip.resident.validator;
 
-import io.mosip.kernel.core.http.RequestWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
-import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.ProxyMasterdataService;
+import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
+import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
+import static io.mosip.resident.constant.ResidentErrorCode.UN_SUPPORTED_FILE_TYPE;
+import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,15 +21,17 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Objects;
-
-import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
-import static io.mosip.resident.constant.ResidentErrorCode.UN_SUPPORTED_FILE_TYPE;
-import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
+import io.mosip.kernel.core.http.RequestWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.virusscanner.exception.VirusScannerException;
+import io.mosip.kernel.core.virusscanner.spi.VirusScanner;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.ProxyMasterdataService;
 /**
  * It validates the request and scans the file for viruses
  * 

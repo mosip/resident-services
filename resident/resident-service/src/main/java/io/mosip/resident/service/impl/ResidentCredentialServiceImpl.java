@@ -76,6 +76,7 @@ import reactor.util.function.Tuples;
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
+	private static final String NULL = "null";
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
 	private static final String INDIVIDUAL_ID = "individualId";
@@ -255,7 +256,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
     			eventId = residentTransactionEntity.getEventId();
     		}
 			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name()) || dto.getConsent().trim().isEmpty()
-					|| dto.getConsent().equals("null") || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
+					|| dto.getConsent().equals(NULL) || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
@@ -291,14 +292,16 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
-						eventId, additionalAttributes);
 			}
+			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
+					eventId, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
 		} catch (IOException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			if (residentTransactionEntity != null) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
 					eventId, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);

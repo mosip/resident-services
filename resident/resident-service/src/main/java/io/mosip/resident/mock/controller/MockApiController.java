@@ -1,9 +1,20 @@
 package io.mosip.resident.mock.controller;
 
+import java.io.ByteArrayInputStream;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.mock.dto.PaymentSuccessResponseDto;
 import io.mosip.resident.mock.exception.CantPlaceOrderException;
@@ -19,14 +30,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.ByteArrayInputStream;
-import java.util.UUID;
 
 /**
  * Mock API Controller class.
@@ -43,8 +46,6 @@ public class MockApiController {
 
     @Autowired
     private MockService mockService;
-
-    private static final Logger logger = LoggerConfiguration.logConfig(MockApiController.class);
 
 	/**
 	 * Get order status.
