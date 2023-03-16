@@ -1,7 +1,6 @@
 package io.mosip.resident.handler.service;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonParseException;

@@ -1,19 +1,20 @@
 package io.mosip.resident.service.impl;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.PartnerService;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.PartnerService;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
  * The Class PartnerServiceImpl.

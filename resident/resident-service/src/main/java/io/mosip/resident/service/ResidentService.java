@@ -3,7 +3,6 @@ package io.mosip.resident.service;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 

@@ -1,8 +1,9 @@
 package io.mosip.resident.repository;
 
-import io.mosip.resident.entity.ResidentGrievanceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import io.mosip.resident.entity.ResidentGrievanceEntity;
 
 /**
  * The Interface ResidentGrievanceRepository.
