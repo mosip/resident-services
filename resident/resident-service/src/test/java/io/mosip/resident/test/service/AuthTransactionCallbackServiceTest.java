@@ -1,20 +1,10 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.websub.model.Event;
-import io.mosip.kernel.core.websub.model.EventModel;
-import io.mosip.kernel.core.websub.spi.PublisherClient;
-import io.mosip.kernel.core.websub.spi.SubscriptionClient;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
-import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.impl.AuthTransactionCallBackServiceImpl;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
+import static org.powermock.api.mockito.PowerMockito.mock;
+
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,11 +22,21 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.Map;
-
-import static org.powermock.api.mockito.PowerMockito.mock;
+import io.mosip.kernel.core.websub.model.Event;
+import io.mosip.kernel.core.websub.model.EventModel;
+import io.mosip.kernel.core.websub.spi.PublisherClient;
+import io.mosip.kernel.core.websub.spi.SubscriptionClient;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
+import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.AuthTransactionCallBackServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
