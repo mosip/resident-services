@@ -1,5 +1,20 @@
 package io.mosip.resident.util;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -27,22 +42,8 @@ import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * The Class TemplateUtil.
@@ -242,71 +243,8 @@ import java.util.Optional;
     public String replaceNullWithEmptyString(String input) {
         return input == null ? "" : input;
     }
-
-    public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText) {
-         ResidentTransactionEntity residentTransactionEntity =getEntityFromEventId(eventId);
-         return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
-                    residentTransactionEntity.getAttributeList()));
-    }
-
-    public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForGetMyId(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText) {
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
-                replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
-        fileText = fileText.replace(ResidentConstants.MASKED_VID, replaceNullWithEmptyString(
-                residentTransactionEntity.getRefId()));
-        String requestType = residentTransactionEntity.getRequestTypeCode();
-        if (requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())) {
-            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, GENERATED);
-        } else if (requestType.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
-            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, REVOKED);
-        }
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForVidCardDownload(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText) {
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        String purpose = residentTransactionEntity.getPurpose();
-        if (purpose != null && !purpose.isEmpty()) {
-            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
-                    purpose);
-        }
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForSecureMyId(String eventId, String fileText){
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-            String purpose = residentTransactionEntity.getPurpose();
-            if (purpose != null && !purpose.isEmpty())
-                return purpose;
-            return fileText;
-    }
-
-    private ResidentTransactionEntity getEntityFromEventId(String eventId) {
+    
+	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 		if (residentTransactionEntity.isPresent()) {
 			return residentTransactionEntity.get();
@@ -519,7 +457,7 @@ import java.util.Optional;
  		Map<String, Object> templateVariables = new HashMap<>();
  		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
  		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode(), dto.getEventId()));
- 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().name());
+ 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
  		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
  		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
  		templateVariables.put(TemplateVariablesConstants.STATUS, dto.getTemplateType().getType());

@@ -1,20 +1,19 @@
 package io.mosip.resident.batch;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.controller.ResidentController;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import static io.mosip.resident.constant.CredentialUpdateStatus.FAILED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.IN_TRANSIT;
+import static io.mosip.resident.constant.CredentialUpdateStatus.ISSUED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.NEW;
+import static io.mosip.resident.constant.CredentialUpdateStatus.PAYMENT_CONFIRMED;
+import static io.mosip.resident.constant.CredentialUpdateStatus.PRINTING;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,19 +30,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static io.mosip.resident.constant.CredentialUpdateStatus.FAILED;
-import static io.mosip.resident.constant.CredentialUpdateStatus.IN_TRANSIT;
-import static io.mosip.resident.constant.CredentialUpdateStatus.ISSUED;
-import static io.mosip.resident.constant.CredentialUpdateStatus.NEW;
-import static io.mosip.resident.constant.CredentialUpdateStatus.PAYMENT_CONFIRMED;
-import static io.mosip.resident.constant.CredentialUpdateStatus.PRINTING;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.controller.ResidentController;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
  * @author Kamesh Shekhar Prasad

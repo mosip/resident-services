@@ -1,29 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
-import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.RegistrationCenterDto;
-import io.mosip.resident.dto.RegistrationCenterResponseDto;
-import io.mosip.resident.dto.WorkingDaysDto;
-import io.mosip.resident.dto.WorkingDaysResponseDto;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.DownLoadMasterDataService;
-import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.Utility;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +16,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.IntStream;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.RegistrationCenterDto;
+import io.mosip.resident.dto.RegistrationCenterResponseDto;
+import io.mosip.resident.dto.WorkingDaysDto;
+import io.mosip.resident.dto.WorkingDaysResponseDto;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.DownLoadMasterDataService;
+import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.util.Utility;
 
 /**
  * 

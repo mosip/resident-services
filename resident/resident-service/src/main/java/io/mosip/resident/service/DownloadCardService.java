@@ -1,5 +1,7 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
+
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
@@ -9,9 +11,6 @@ import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import reactor.util.function.Tuple2;
-import reactor.util.function.Tuple3;
-
-import java.io.IOException;
 
 /**
  * This class is used to create service class to download uin card.
