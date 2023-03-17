@@ -286,8 +286,6 @@ public class ResidentServiceDownloadCardTest {
         assertNotNull(pdfDocument);
     }
 
-    @Ignore
-    //FIXME to be corrected
     @Test
     public void testGetUnreadNotifyList() throws ResidentServiceCheckedException, ApisResourceAccessException{
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123");

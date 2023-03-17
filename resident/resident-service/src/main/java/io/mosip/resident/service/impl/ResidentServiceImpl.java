@@ -1756,17 +1756,10 @@ public class ResidentServiceImpl implements ResidentService {
 			dynamicQuery = getStatusFilterQuery(statusFilter );
 		} else if (searchText != null) {
 			dynamicQuery = getSearchQuery(searchText );
-<<<<<<< HEAD
 		}
 		if(serviceType == null){
 			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
 		}
-=======
-		}
-		if(serviceType == null){
-			dynamicQuery = dynamicQuery + getServiceQueryForNullServiceType();
-		}
->>>>>>> upstream/develop
 		dynamicQuery = dynamicQuery + getOlvPartnerIdQuery();
 		if (sortType == null) {
 			sortType = SortType.DESC.toString();

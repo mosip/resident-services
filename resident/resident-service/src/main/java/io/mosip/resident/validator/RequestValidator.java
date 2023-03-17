@@ -1135,17 +1135,6 @@ public class RequestValidator {
 			throw new InvalidInputException("transactionId");
 		}
 	}
-	
-	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
-		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
-		validateVersion(userOtpRequest.getVersion());
-		validateDate(userOtpRequest.getRequesttime());
-		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
-	}
-
-	private boolean isDataValidWithRegex(String inputData, String regex) {
-		return inputData.matches(regex);
-	}
 
 	private boolean isDataValidWithRegex(String inputData, String regex) {
 		return inputData.matches(regex);

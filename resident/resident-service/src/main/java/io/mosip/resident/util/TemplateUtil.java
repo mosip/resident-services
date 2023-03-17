@@ -306,7 +306,6 @@ import reactor.util.function.Tuples;
         		residentTransactionEntity, languageCode), getEntityFromEventId(eventId).getPurpose(), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
-<<<<<<< HEAD
     }
 
     /**
@@ -328,29 +327,6 @@ import reactor.util.function.Tuples;
         return fileText;
     }
 
-=======
-    }
-
-    /**
-     * This method will replace attribute placeholder in template and add attribute list into it.
-     * @param fileText This contains value of template.
-     * @param purpose This contains purpose of request type stored in template.
-     * @param languageCode This contains logged-in language code.
-     * @return purpose after adding attributes.
-     */
-    private String addAttributeInPurpose(String fileText, String purpose,
-                                         String languageCode) {
-        if(fileText!=null &&
-                fileText.contains(ResidentConstants.ATTRIBUTES)){
-            fileText = fileText.replace(
-                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
-                            languageCode)
-            );
-        }
-        return fileText;
-    }
-
->>>>>>> upstream/develop
     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId, String languageCode, Integer timeZoneOffset) {
     	 Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	 Map<String, String> templateVariables = tupleResponse.getT1();
