@@ -41,6 +41,8 @@ import io.mosip.resident.util.Utility;
 @Component
 public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
+	private static final String VALUE = "value";
+
 	private static final String UI_SCHEMA_ATTRIBUTE_NAME = "mosip.resident.schema.attribute-name";
 
 	private static final String CONTROL_TYPE = "controlType";
@@ -189,24 +191,24 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME))))
 				.collect(Collectors.toList());
 
-		// attribute list from format present in both identity-mapping & ui-schema json
-		List<String> sharableList1 = sharableAttrList.stream()
-				.filter(map -> identityMap.containsKey(map.getAttributeName()) && map.getFormat()!=null)
-				.flatMap(attr -> Stream.of(attr.getFormat().split(",")))
+		List<String> shareableAttributes = sharableAttrList.stream()
+				.flatMap(attribute -> {
+					// Get the attributes from the format if specified
+					if(attribute.getFormat()!=null && !attribute.getFormat().isEmpty()) {
+						return Stream.of(attribute.getFormat().split(","));
+					}
+					// Get the attributes from the identity mapping
+					if(identityMap.containsKey(attribute.getAttributeName())) {
+						return Stream.of(String.valueOf(((Map) identityMap.get(attribute.getAttributeName())).get(VALUE))
+								.split(","));
+					}
+					// Return the attribute name itself
+					return Stream.of(attribute.getAttributeName());
+				})
 				.filter(idsListFromUISchema::contains)
 				.collect(Collectors.toList());
 
-		// attribute list from format not present in identity-mapping & but in ui-schema json
-		List<String> sharableList2 = sharableAttrList.stream()
-				.filter(map -> !identityMap.containsKey(map.getAttributeName()) && map.getFormat()!=null)
-				.map(map -> map.getFormat())
-				.filter(idsListFromUISchema::contains)
-				.collect(Collectors.toList());
-
-		return Stream.of(sharableList1, sharableList2)
-                .flatMap(x -> x.stream())
-                .distinct()
-                .collect(Collectors.toList());
+		return shareableAttributes;
 	}
 
 }

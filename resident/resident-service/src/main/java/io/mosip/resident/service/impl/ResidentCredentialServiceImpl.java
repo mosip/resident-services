@@ -245,7 +245,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
 		URI partnerUri = URI.create(partnerUrl);
-		String individualId = identityServiceImpl.getResidentIndvidualId();
+		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
@@ -291,14 +291,16 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
-						eventId, additionalAttributes);
 			}
+			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
+					eventId, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
 		} catch (IOException e) {
-			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			if (residentTransactionEntity != null) {
+				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+			}
 			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.FAILURE,
 					eventId, additionalAttributes);
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
@@ -452,7 +454,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		return credentialRequestStatusResponseDto;
 	}
 
-	public CredentialReqestDto prepareCredentialRequest(ResidentCredentialRequestDto residentCreDto, String individualId) {
+	private CredentialReqestDto prepareCredentialRequest(ResidentCredentialRequestDto residentCreDto, String individualId) {
 		CredentialReqestDto crDto = new CredentialReqestDto();
 		if(Utility.isSecureSession()){
 			crDto.setId(individualId);
