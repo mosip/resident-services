@@ -3,7 +3,6 @@ package io.mosip.resident.exception;
 import java.util.Map;
 
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.util.ObjectWithMetadata;
 
 public class VidRevocationException extends BaseResidentUncheckedExceptionWithMetadata {
 
@@ -11,7 +10,6 @@ public class VidRevocationException extends BaseResidentUncheckedExceptionWithMe
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Map<String, Object> metadata;
 	
 	public VidRevocationException() {
 		super(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorCode(), ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorMessage());

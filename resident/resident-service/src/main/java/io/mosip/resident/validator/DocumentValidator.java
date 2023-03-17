@@ -168,5 +168,4 @@ public class DocumentValidator implements Validator {
 			throw new ResidentServiceException(DOCUMENT_FILE_SIZE.getErrorCode(), DOCUMENT_FILE_SIZE.getErrorMessage());
 		}
 	}
-
 }
