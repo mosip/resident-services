@@ -457,7 +457,7 @@ import reactor.util.function.Tuples;
  		Map<String, Object> templateVariables = new HashMap<>();
  		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
  		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode(), dto.getEventId()));
- 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().name());
+ 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
  		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
  		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
  		templateVariables.put(TemplateVariablesConstants.STATUS, dto.getTemplateType().getType());
