@@ -277,9 +277,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
 
-	@Value("${ida.online-verification-partner-id}")
-	private String onlineVerificationPartnerId;
-
 	@Autowired
 	private AuditUtil audit;
 
