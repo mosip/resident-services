@@ -1147,6 +1147,17 @@ public class RequestValidator {
 		return inputData.matches(regex);
 	}
 
+	private boolean isDataValidWithRegex(String inputData, String regex) {
+		return inputData.matches(regex);
+	}
+
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
+		validateVersion(userOtpRequest.getVersion());
+		validateDate(userOtpRequest.getRequesttime());
+		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+	}
+
 	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
 		String inputRequestId = userIdOtpRequest.getId();
 		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);

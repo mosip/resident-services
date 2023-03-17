@@ -1,26 +1,5 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -49,6 +28,29 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * This class is used to test the get service history service
@@ -315,6 +317,7 @@ public class ResidentServiceGetServiceHistoryTest {
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, fromDate, toDate, "ALL", sortType,
                 null, "a", "eng", 0).getResponse().getPageSize());
     }
+<<<<<<< HEAD
 
     @Test
     public void testGetServiceHistoryWithStatusFilterServiceType() throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -402,4 +405,93 @@ public class ResidentServiceGetServiceHistoryTest {
         assertEquals("Ack", residentServiceImpl.getFileName("123", 0));
     }
 
+=======
+
+    @Test
+    public void testGetServiceHistoryWithStatusFilterServiceType() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
+                ServiceType.ALL.toString(), sortType,
+                "SUCCESS", null, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
+                "In Progress", null, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
+                null, "1", "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                null, sortType,
+                "SUCCESS", "1", "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
+                ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
+                null, null, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
+                null, sortType,
+                null, null, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
+                null, null, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                null, sortType,
+                "FAILED", null, "eng", 0).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                null, sortType,
+                null, "123", "eng", 0).getResponse().getPageSize());
+    }
+
+    @Test
+    public void testGetServiceHistoryWithUpdatedDtimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
+        residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
+        residentTransactionEntityList.add(residentTransactionEntity);
+        Page<ResidentTransactionEntity> residentTransactionEntityPage =
+                new PageImpl<>(residentTransactionEntityList);
+        Mockito.when(residentTransactionRepository.findByEventIdLikeAndOlvPartnerIdIsNullOrOlvPartnerId(Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
+                null, sortType,
+                null, "123", "eng", 0).getResponse().getPageSize());
+
+    }
+    @Test
+    public void testGetAidStatus() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+        aidStatusRequestDTO.setIndividualId("10087100401001420220929210144");
+        aidStatusRequestDTO.setOtp("111111");
+        aidStatusRequestDTO.setTransactionId("1234567890");
+        Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO).getAidStatus());
+    }
+
+    @Test
+    public void testGetAidStatusOtpValidationFalse() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+        aidStatusRequestDTO.setIndividualId("10087100401001420220929210144");
+        aidStatusRequestDTO.setOtp("111111");
+        aidStatusRequestDTO.setTransactionId("1234567890");
+        Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+        Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, false).getAidStatus());
+    }
+
+    @Test
+    public void testGetUserinfo() throws ApisResourceAccessException {
+        assertEquals("Kamesh",
+                residentServiceImpl.getUserinfo("ida_token", 0).getResponse().getFullName());
+    }
+
+    @Test
+    public void testGetUserinfoMultipleLoginTime() throws ApisResourceAccessException {
+        Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(
+                Mockito.anyString())).thenReturn(List.of(residentSessionEntity, residentSessionEntity));
+        assertEquals("Kamesh",
+                residentServiceImpl.getUserinfo("ida_token", 0).getResponse().getFullName());
+    }
+
+    @Test
+    public void testGetFileName(){
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("Ack");
+        assertEquals("Ack", residentServiceImpl.getFileName("123", 0));
+    }
+
+>>>>>>> upstream/develop
 }

@@ -300,5 +300,4 @@ public class DocumentValidatorTest {
 		// Call method under test
 		validator.validateFileName(mockFile);
 	}
-
 }

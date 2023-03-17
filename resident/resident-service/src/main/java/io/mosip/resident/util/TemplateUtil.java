@@ -243,71 +243,8 @@ import reactor.util.function.Tuples;
     public String replaceNullWithEmptyString(String input) {
         return input == null ? "" : input;
     }
-
-    public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText) {
-         ResidentTransactionEntity residentTransactionEntity =getEntityFromEventId(eventId);
-         return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
-                    residentTransactionEntity.getAttributeList()));
-    }
-
-    public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForGetMyId(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText) {
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
-                replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
-        fileText = fileText.replace(ResidentConstants.MASKED_VID, replaceNullWithEmptyString(
-                residentTransactionEntity.getRefId()));
-        String requestType = residentTransactionEntity.getRequestTypeCode();
-        if (requestType.equalsIgnoreCase(RequestType.GENERATE_VID.name())) {
-            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, GENERATED);
-        } else if (requestType.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
-            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ACTION_PERFORMED, REVOKED);
-        }
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForVidCardDownload(String eventId, String fileText){
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText) {
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        String purpose = residentTransactionEntity.getPurpose();
-        if (purpose != null && !purpose.isEmpty()) {
-            fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
-                    purpose);
-        }
-        return fileText;
-    }
-
-    public String getDescriptionTemplateVariablesForSecureMyId(String eventId, String fileText){
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-            String purpose = residentTransactionEntity.getPurpose();
-            if (purpose != null && !purpose.isEmpty())
-                return purpose;
-            return fileText;
-    }
-
-    private ResidentTransactionEntity getEntityFromEventId(String eventId) {
+    
+	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 		if (residentTransactionEntity.isPresent()) {
 			return residentTransactionEntity.get();
@@ -369,6 +306,7 @@ import reactor.util.function.Tuples;
         		residentTransactionEntity, languageCode), getEntityFromEventId(eventId).getPurpose(), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
+<<<<<<< HEAD
     }
 
     /**
@@ -390,6 +328,29 @@ import reactor.util.function.Tuples;
         return fileText;
     }
 
+=======
+    }
+
+    /**
+     * This method will replace attribute placeholder in template and add attribute list into it.
+     * @param fileText This contains value of template.
+     * @param purpose This contains purpose of request type stored in template.
+     * @param languageCode This contains logged-in language code.
+     * @return purpose after adding attributes.
+     */
+    private String addAttributeInPurpose(String fileText, String purpose,
+                                         String languageCode) {
+        if(fileText!=null &&
+                fileText.contains(ResidentConstants.ATTRIBUTES)){
+            fileText = fileText.replace(
+                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
+                            languageCode)
+            );
+        }
+        return fileText;
+    }
+
+>>>>>>> upstream/develop
     public  Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId, String languageCode, Integer timeZoneOffset) {
     	 Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	 Map<String, String> templateVariables = tupleResponse.getT1();
