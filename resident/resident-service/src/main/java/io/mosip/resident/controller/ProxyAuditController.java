@@ -132,5 +132,5 @@ public class ProxyAuditController {
 		auditUtil.callAuditManager(auditRequestDto);
 		return ResponseEntity.ok().build();
 	}
-	
+
 }

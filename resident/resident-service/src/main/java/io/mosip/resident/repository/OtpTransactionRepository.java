@@ -1,12 +1,13 @@
 package io.mosip.resident.repository;
 
-import io.mosip.resident.entity.OtpTransactionEntity;
+import java.time.LocalDateTime;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import io.mosip.resident.entity.OtpTransactionEntity;
 
 /**
  * The Interface OtpTxnRepository.

@@ -1,8 +1,9 @@
 package io.mosip.resident.service;
 
+import org.springframework.stereotype.Service;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.ResponseDTO;
-import org.springframework.stereotype.Service;
 
 /**
  * This class is service class of pin or unpin status api based on event id.

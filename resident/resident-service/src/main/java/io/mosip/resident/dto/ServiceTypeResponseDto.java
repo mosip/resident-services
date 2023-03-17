@@ -1,9 +1,9 @@
 package io.mosip.resident.dto;
 
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
+
+import lombok.Data;
 
 /**
  * @author Kamesh Shekhar Prasad

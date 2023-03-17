@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,7 +33,6 @@ import io.mosip.resident.util.Utility;
  * @author Ritik Jain
  */
 @RunWith(MockitoJUnitRunner.class)
-@Ignore
 @RefreshScope
 @ContextConfiguration
 public class LoginCheckTest {
