@@ -1,24 +1,13 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTOV2;
-import io.mosip.resident.entity.OtpTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.OtpTransactionRepository;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.OtpManagerServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.validator.RequestValidator;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,14 +29,25 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.when;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.entity.OtpTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.OtpTransactionRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.OtpManagerServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * This class is used to test Otp Manger service impl class.
@@ -126,7 +126,7 @@ public class OTPManagerServiceImplTest {
         otpRequestDTOV2.setTransactionId("1234567891");
         otpRequestDTOV2.setUserId("kamesh@gmail.com");
         requestDTO.setRequest(otpRequestDTOV2);
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("2123456");
+        Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("2123456");
         when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(0);
         ResponseWrapper<Map<String, String>> responseMap1=new ResponseWrapper<>();
         responseMap1.setResponse(responseMap);

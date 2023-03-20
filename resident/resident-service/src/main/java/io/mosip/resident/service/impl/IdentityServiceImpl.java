@@ -62,7 +62,6 @@ import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentSessionRepository;
-import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.JsonUtil;
@@ -156,9 +155,6 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
     private Utilities  utilities;
-	
-	@Autowired
-	private ResidentUserRepository  residentUserRepo;
 	
 	@Autowired
 	private ResidentSessionRepository  residentSessionRepo;
@@ -477,7 +473,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return decodedJWT.getPayload();
 	}
 
-	public String getResidentIndvidualId() throws ApisResourceAccessException {
+	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
 		return  getClaimValue(INDIVIDUAL_ID);
 	}
 
@@ -496,7 +492,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getResidentIdaToken() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		return getIDATokenForIndividualId(getResidentIndvidualId());
+		return getIDATokenForIndividualId(getResidentIndvidualIdFromSession());
 	}
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException {

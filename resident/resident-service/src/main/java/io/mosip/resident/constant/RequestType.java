@@ -1,14 +1,14 @@
 package io.mosip.resident.constant;
 
-import io.mosip.resident.dto.NotificationTemplateVariableDTO;
-import io.mosip.resident.function.QuadFunction;
-import io.mosip.resident.util.TemplateUtil;
-import reactor.util.function.Tuple2;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
+import io.mosip.resident.function.QuadFunction;
+import io.mosip.resident.util.TemplateUtil;
+import reactor.util.function.Tuple2;
 
 /**
  * The Enum RequestType.
@@ -29,37 +29,37 @@ public enum RequestType {
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"cust-and-down-my-card",
 			TemplateUtil::getNotificationTemplateVariablesForDownloadPersonalizedCard,
 			TemplateUtil::getDescriptionTemplateVariablesForDownloadPersonalizedCard),
-	ORDER_PHYSICAL_CARD("Order Physical Card", TemplateUtil::getAckTemplateVariablesForOrderPhysicalCard,
+	ORDER_PHYSICAL_CARD("Order a Physical Card", TemplateUtil::getAckTemplateVariablesForOrderPhysicalCard,
 			List.of(EventStatusSuccess.CARD_DELIVERED),
 			List.of(EventStatusFailure.FAILED, EventStatusFailure.PAYMENT_FAILED),
 			List.of(EventStatusInProgress.PAYMENT_CONFIRMED, EventStatusInProgress.NEW, EventStatusInProgress.ISSUED,
 					EventStatusInProgress.PRINTING, EventStatusInProgress.IN_TRANSIT),"order-a-physical-card",
 			TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard, TemplateUtil::getDescriptionTemplateVariablesForOrderPhysicalCard),
-	GET_MY_ID("Get My Id",TemplateUtil::getAckTemplateVariablesForGetMyId,
+	GET_MY_ID("Get UIN Card",TemplateUtil::getAckTemplateVariablesForGetMyId,
 			List.of(EventStatusSuccess.CARD_DOWNLOADED, EventStatusSuccess.OTP_VERIFIED),
 			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED),
 			"get-my-uin-card", TemplateUtil::getNotificationTemplateVariablesForGetMyId, TemplateUtil::getDescriptionTemplateVariablesForGetMyId),
 	BOOK_AN_APPOINTMENT("Book An Appointment", TemplateUtil::getAckTemplateVariablesForBookAnAppointment, List.of(), List.of(), List.of(),"",
 			null, null),
-	UPDATE_MY_UIN("Update My Uin", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
+	UPDATE_MY_UIN("Update UIN Data", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			List.of(EventStatusSuccess.PROCESSED, EventStatusSuccess.DATA_UPDATED),
 			List.of(EventStatusFailure.FAILED, EventStatusFailure.REJECTED, EventStatusFailure.REPROCESS_FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.PROCESSING, EventStatusInProgress.PAUSED,
 					EventStatusInProgress.RESUMABLE, EventStatusInProgress.REPROCESS,
 					EventStatusInProgress.PAUSED_FOR_ADDITIONAL_INFO),"update-demo-data",
 			TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin, TemplateUtil::getDescriptionTemplateVariablesForUpdateMyUin),
-	GENERATE_VID("Generate Vid", TemplateUtil::getAckTemplateVariablesForGenerateVid, List.of(EventStatusSuccess.VID_GENERATED),
+	GENERATE_VID("Generate VID", TemplateUtil::getAckTemplateVariablesForGenerateVid, List.of(EventStatusSuccess.VID_GENERATED),
 			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid, TemplateUtil::getDescriptionTemplateVariablesForManageMyVid),
-	REVOKE_VID("Revoke Vid", TemplateUtil::getAckTemplateVariablesForRevokeVid, List.of(EventStatusSuccess.VID_REVOKED),
+	REVOKE_VID("Revoke VID", TemplateUtil::getAckTemplateVariablesForRevokeVid, List.of(EventStatusSuccess.VID_REVOKED),
 			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid, TemplateUtil::getDescriptionTemplateVariablesForManageMyVid),
-	AUTH_TYPE_LOCK_UNLOCK("Authentication type Lock Unlock", TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
+	AUTH_TYPE_LOCK_UNLOCK("Lock or/and Unlock Authentication Types", TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			List.of(EventStatusSuccess.LOCKED, EventStatusSuccess.UNLOCKED,
 					EventStatusSuccess.AUTHENTICATION_TYPE_LOCKED, EventStatusSuccess.AUTHENTICATION_TYPE_UNLOCKED),
 			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW),"lock-unlock-auth",
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock, TemplateUtil::getDescriptionTemplateVariablesForSecureMyId),
-	VID_CARD_DOWNLOAD("Vid Card Download", TemplateUtil::getAckTemplateVariablesForVidCardDownload,
+	VID_CARD_DOWNLOAD("Download VID Card", TemplateUtil::getAckTemplateVariablesForVidCardDownload,
 			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
 			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),"vid-card-download",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload, TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload),

@@ -1,21 +1,14 @@
 package io.mosip.resident.test.service;
 
-import io.mosip.kernel.core.websub.model.Event;
-import io.mosip.kernel.core.websub.model.EventModel;
-import io.mosip.kernel.core.websub.spi.PublisherClient;
-import io.mosip.kernel.core.websub.spi.SubscriptionClient;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
-import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.WebSubUpdateAuthTypeServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mock;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,14 +25,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
+import io.mosip.kernel.core.websub.model.Event;
+import io.mosip.kernel.core.websub.model.EventModel;
+import io.mosip.kernel.core.websub.spi.PublisherClient;
+import io.mosip.kernel.core.websub.spi.SubscriptionClient;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
+import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.WebSubUpdateAuthTypeServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -57,9 +58,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 
     @InjectMocks
     private WebSubUpdateAuthTypeServiceImpl webSubUpdateAuthTypeService;
-
-    @Mock
-    private IdentityServiceImpl identityServiceImpl;
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
@@ -87,7 +85,6 @@ public class WebSubUpdateAuthTypeServiceTest {
         event=new Event();
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn("8251649601");
         notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
@@ -106,12 +103,6 @@ public class WebSubUpdateAuthTypeServiceTest {
         webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
         webSubUpdateAuthTypeService = mock(WebSubUpdateAuthTypeServiceImpl.class);
         Mockito.lenient().doNothing().when(webSubUpdateAuthTypeService).updateAuthTypeStatus(Mockito.any());
-    }
-
-    @Test(expected = Exception.class)
-    public void testWebSubUpdateAuthFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenThrow(new ApisResourceAccessException());
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
     }
 
     @Test

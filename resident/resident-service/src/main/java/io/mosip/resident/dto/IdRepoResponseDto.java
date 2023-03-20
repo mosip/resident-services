@@ -3,7 +3,6 @@ package io.mosip.resident.dto;
 import java.io.Serializable;
 import java.util.List;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

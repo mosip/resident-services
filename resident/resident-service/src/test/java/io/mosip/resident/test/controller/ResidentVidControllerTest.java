@@ -107,7 +107,7 @@ public class ResidentVidControllerTest {
 	public void setup() throws ApisResourceAccessException {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
-		Mockito.when(identityServiceImpl.getResidentIndvidualId()).thenReturn(null);
+		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(null);
 	}
 
 	@Test

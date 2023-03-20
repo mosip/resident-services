@@ -252,7 +252,7 @@ public class ResidentVidController {
 	}
 	
 	private String getResidentIndividualId() throws ApisResourceAccessException {
-		return identityServiceImpl.getResidentIndvidualId();
+		return identityServiceImpl.getResidentIndvidualIdFromSession();
 	}
 	
 	@PreAuthorize("@scopeValidator.hasAllScopes("

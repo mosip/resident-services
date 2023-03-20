@@ -3,7 +3,6 @@ package io.mosip.resident.test.controller;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.mosip.resident.dto.IndividualIdResponseDto;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,9 +31,9 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.resident.controller.ResidentOtpController;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.helper.ObjectStoreHelper;
