@@ -108,7 +108,7 @@ public class DocumentValidator implements Validator {
 	public void validateDocTypeCode(String docCatCode, String docTypeCode, String langCode)
 			throws ResidentServiceCheckedException {
 		List<String> docTypeCodeList = proxyMasterdataService.getValidDocCatAndTypeList(langCode).getT2()
-				.get(docCatCode);
+				.get(docCatCode.toLowerCase());
 		if (!docTypeCodeList.contains(docTypeCode.toLowerCase())) {
 			throw new InvalidInputException(DOC_TYP_CODE);
 		}
