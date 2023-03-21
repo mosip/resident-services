@@ -2010,7 +2010,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (residentTransactionEntity.isPresent()) {
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
-					throw new EidNotBelongToSessionException();
+					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
