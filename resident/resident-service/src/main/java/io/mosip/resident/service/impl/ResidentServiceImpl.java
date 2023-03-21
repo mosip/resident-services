@@ -834,7 +834,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
-			return reqUinUpdate(dto, demographicIdentity);
+			return reqUinUpdate(dto, demographicIdentity, false);
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
@@ -847,7 +847,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity)
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity, boolean validateIdObject)
 			throws ResidentServiceCheckedException {
 		Object responseDto = null;
 		ResidentUpdateResponseDTO residentUpdateResponseDTO = null;
@@ -910,21 +910,23 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
 
-			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-			Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
-			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-			Object idSchema = idSchemaResponse.getResponse();
-			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-			String schemaJson = (String) map.get("schemaJson");
-			try {
-				idObjectValidator.validateIdObject(schemaJson, jsonObject);
-			} catch (IdObjectValidationFailedException e) {
-				String error = e.getErrorTexts().toString();
-				if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
-					List<String> errors = e.getErrorTexts();
-					String errorMessage = errors.get(0);
-					throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-							errorMessage);
+			if(validateIdObject) {
+				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
+				Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+				Object idSchema = idSchemaResponse.getResponse();
+				Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+				String schemaJson = (String) map.get("schemaJson");
+				try {
+					idObjectValidator.validateIdObject(schemaJson, jsonObject);
+				} catch (IdObjectValidationFailedException e) {
+					String error = e.getErrorTexts().toString();
+					if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
+						List<String> errors = e.getErrorTexts();
+						String errorMessage = errors.get(0);
+						throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+								errorMessage);
+					}
 				}
 			}
 			
