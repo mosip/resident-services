@@ -1591,6 +1591,10 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_FETCH_VALUE,
 					pageFetch.toString(), "Invalid page fetch value"));
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
+		} else if(pageFetch ==0){
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_FETCH_VALUE,
+					pageFetch.toString(), "Invalid Page fetch value"));
+			throw new ResidentServiceCheckedException(ResidentErrorCode.GREATER_THAN_ZERO);
 		}
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
