@@ -203,7 +203,7 @@ public class ResidentControllerTest {
 		authStatusRequestToJson = gson.toJson(authTypeStatusRequest);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("5734728510");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
 	}
 
 	@Test
@@ -433,7 +433,7 @@ public class ResidentControllerTest {
 		requestDTO.setId("mosip.resident.demographic");
 		requestDTO.setVersion("v1");
 
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
@@ -444,7 +444,7 @@ public class ResidentControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testAuthLockStatus() throws Exception {
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any())).thenReturn(responseWrapper);
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();
 		assertEquals(responseWrapper, resultRequestWrapper);
@@ -458,7 +458,7 @@ public class ResidentControllerTest {
 				ResidentErrorCode.AUTH_LOCK_STATUS_FAILED.getErrorMessage())));
 		responseWrapper.setResponsetime(null);
 
-		when(identityServiceImpl.getResidentIndvidualId()).thenReturn("9876543210");
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.getAuthLockStatus(Mockito.any()))
 				.thenThrow(new ResidentServiceCheckedException("error", "error"));
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> resultRequestWrapper = residentController.getAuthLockStatus();

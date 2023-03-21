@@ -148,6 +148,11 @@ public class CredentialStatusUpdateBatchJob {
 		logger.info("Total records picked from resident_transaction table for processing is " + residentTxnList.size());
 		for (ResidentTransactionEntity txn : residentTxnList) {
 			logger.info("Processing event:" + txn.getEventId());
+			if (txn.getIndividualId() == null) {
+				txn.setStatusCode(FAILED.name());
+				txn.setStatusComment("individualId is null");
+				repo.save(txn);
+			}
 			handleWithTryCatch(() -> updateVidCardDownloadTxnStatus(txn));
 			handleWithTryCatch(() -> updateOrderPhysicalCardTxnStatus(txn));
 			handleWithTryCatch(() -> updateShareCredentialWithPartnerTxnStatus(txn));
@@ -160,7 +165,7 @@ public class CredentialStatusUpdateBatchJob {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getRequestTypeCode().contentEquals(VID_CARD_DOWNLOAD.name())) {
 			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
-			trackAnddownloadPrintingOrReceivedStatus(txn, TemplateType.SUCCESS, RequestType.VID_CARD_DOWNLOAD,
+			trackAnddownloadPrintingOrStoredStatus(txn, TemplateType.SUCCESS, RequestType.VID_CARD_DOWNLOAD,
 					eventDetails);// mentioned in sheet and in story also
 			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.VID_CARD_DOWNLOAD);
 		}
@@ -181,6 +186,7 @@ public class CredentialStatusUpdateBatchJob {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getRequestTypeCode().contentEquals(SHARE_CRED_WITH_PARTNER.name())) {
 			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
+			trackAndUpdatePrintingOrStoredStatus(txn, TemplateType.SUCCESS, RequestType.SHARE_CRED_WITH_PARTNER);
 			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.SHARE_CRED_WITH_PARTNER);
 		}
 	}
@@ -189,7 +195,7 @@ public class CredentialStatusUpdateBatchJob {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getRequestTypeCode().contentEquals(UPDATE_MY_UIN.name())) {
 			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
-			trackAndUpdatePrintingOrReceivedStatus(txn, TemplateType.SUCCESS, RequestType.UPDATE_MY_UIN, eventDetails);
+			trackAndUpdatePrintingOrReceivedOrStoredStatus(txn, TemplateType.SUCCESS, RequestType.UPDATE_MY_UIN, eventDetails);
 			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.UPDATE_MY_UIN);
 		}
 	}
@@ -224,22 +230,24 @@ public class CredentialStatusUpdateBatchJob {
 		}
 	}
 
-	private void trackAndUpdatePrintingOrReceivedStatus(ResidentTransactionEntity txn, TemplateType templateType,
+	private void trackAndUpdatePrintingOrReceivedOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
 		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(RECEIVED.name())
 				|| txn.getStatusCode().contentEquals(STORED.name())) {
 			txn.setStatusCode(CARD_READY_TO_DOWNLOAD.name());
 			txn.setReadStatus(false);
-			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
+			createResidentDwldUrl(txn, templateType, requestType, eventDetails);
+			sendNotification(txn, templateType, requestType);
 		}
 	}
 
-	private void trackAnddownloadPrintingOrReceivedStatus(ResidentTransactionEntity txn, TemplateType templateType,
+	private void trackAnddownloadPrintingOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
 		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(STORED.name())) {
 			txn.setStatusCode(CARD_READY_TO_DOWNLOAD.name());
 			txn.setReadStatus(false);
-			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
+			createResidentDwldUrl(txn, templateType, requestType, eventDetails);
+			sendNotification(txn, templateType, requestType);
 		}
 	}
 
@@ -250,7 +258,15 @@ public class CredentialStatusUpdateBatchJob {
 				|| txn.getStatusCode().contentEquals(STORED.name())) {
 			String trackingId = getTrackingId(txn.getRequestTrnId(), txn.getIndividualId());
 			txn.setTrackingId(trackingId);
-			createResidentDwldUrlAndNotify(txn, templateType, requestType, eventDetails);
+			createResidentDwldUrl(txn, templateType, requestType, eventDetails);
+			sendNotification(txn, templateType, requestType);
+		}
+	}
+
+	private void trackAndUpdatePrintingOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
+			RequestType requestType) throws ResidentServiceCheckedException {
+		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(STORED.name())) {
+			sendNotification(txn, templateType, requestType);
 		}
 	}
 
@@ -265,12 +281,16 @@ public class CredentialStatusUpdateBatchJob {
 		}
 	}
 
-	private void createResidentDwldUrlAndNotify(ResidentTransactionEntity txn, TemplateType templateType,
+	private void createResidentDwldUrl(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
 		txn.setReferenceLink(eventDetails.get(URL));
 		txn.setUpdBy(RESIDENT);
 		txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 		repo.save(txn);
+	}
+
+	private void sendNotification(ResidentTransactionEntity txn, TemplateType templateType, RequestType requestType)
+			throws ResidentServiceCheckedException {
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setRequestType(requestType);
@@ -282,12 +302,7 @@ public class CredentialStatusUpdateBatchJob {
 	private void trackAndUpdateFailedStatus(ResidentTransactionEntity txn, TemplateType templateType,
 			RequestType requestType) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		if (txn.getStatusCode().contentEquals(FAILED.name())) {
-			NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
-			notificationRequestDtoV2.setTemplateType(templateType);
-			notificationRequestDtoV2.setRequestType(requestType);
-			notificationRequestDtoV2.setEventId(txn.getEventId());
-			notificationRequestDtoV2.setId(txn.getIndividualId());
-			notificationService.sendNotification(notificationRequestDtoV2);
+			sendNotification(txn, templateType, requestType);
 		}
 	}
 
