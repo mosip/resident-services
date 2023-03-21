@@ -9,7 +9,7 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
-public class BaseVidRevokeRequestDTO implements Serializable {
+public class BaseVidRevokeRequestDTO implements Serializable, ObjectWithTransactionID {
 
 	
 	
