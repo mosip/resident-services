@@ -911,7 +911,8 @@ public class ResidentServiceImpl implements ResidentService {
 			String mappingJson = utility.getMappingJson();
 
 			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-			Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+			String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+			Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
 			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 			Object idSchema = idSchemaResponse.getResponse();
 			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
