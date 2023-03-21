@@ -911,7 +911,8 @@ public class ResidentServiceImpl implements ResidentService {
 			String mappingJson = utility.getMappingJson();
 
 			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-			Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+			String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+			Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
 			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 			Object idSchema = idSchemaResponse.getResponse();
 			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
@@ -1587,9 +1588,9 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_START_VALUE,
 					pageStart.toString(), "Invalid page start value"));
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
-		} else if (pageFetch < 0) {
+		} else if(pageFetch <=0){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_FETCH_VALUE,
-					pageFetch.toString(), "Invalid page fetch value"));
+					pageFetch.toString(), "Invalid Page fetch value"));
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 		}
 
