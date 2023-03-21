@@ -519,33 +519,33 @@ public class Utility {
 	}
 	
 	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
-		if (featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.toString())) {
+		if (featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.getName())) {
 			return getFileNameAck(featureName, eventId,
 					Objects.requireNonNull(
 							this.env.getProperty(ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)),
 					timeZoneOffset);
-		} else if (featureName.equalsIgnoreCase(RequestType.GENERATE_VID.toString())
-				|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
+		} else if (featureName.equalsIgnoreCase(RequestType.GENERATE_VID.getName())
+				|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.getName())) {
 			return getFileNameAck(featureName, eventId,
 					Objects.requireNonNull(
 							this.env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)),
 					timeZoneOffset);
-		} else if (featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.toString())) {
+		} else if (featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.getName())) {
 			return getFileNameAck(featureName, eventId,
 					Objects.requireNonNull(
 							this.env.getProperty(ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)),
 					timeZoneOffset);
-		} else if (featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())) {
+		} else if (featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.getName())) {
 			return getFileNameAck(featureName, eventId,
 					Objects.requireNonNull(
 							this.env.getProperty(ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)),
 					timeZoneOffset);
-		} else if (featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.toString())) {
+		} else if (featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.getName())) {
 			return getFileNameAck(featureName, eventId,
 					Objects.requireNonNull(
 							this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)),
 					timeZoneOffset);
-		} else if (featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())) {
+		} else if (featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.getName())) {
 			return getFileNameAck(featureName, eventId,
 					Objects.requireNonNull(
 							this.env.getProperty(ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)),
