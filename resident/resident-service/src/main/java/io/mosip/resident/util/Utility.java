@@ -503,30 +503,57 @@ public class Utility {
 		}
 		return HMACUtils2.digestAsPlainText(id.getBytes());
 	}
-
-	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
-		if(featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		} else if(featureName.equalsIgnoreCase(RequestType.GENERATE_VID.toString())
-		|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.name())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		} else if(featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		} else if(featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		}else if(featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
+	
+	public String getFileNameAck(String featureName, String eventId, String propertyName, int timeZoneOffset) {
+		if (eventId != null && propertyName.contains("{" + TemplateVariablesConstants.FEATURE_NAME + "}")) {
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.FEATURE_NAME + "}", featureName);
 		}
-		else if(featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		}else {
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
+		if (eventId != null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")) {
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.EVENT_ID + "}", eventId);
+		}
+		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}",
+					formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+		}
+		return propertyName;
+	}
+	
+	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
+		if (featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.toString())) {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(
+							this.env.getProperty(ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
+		} else if (featureName.equalsIgnoreCase(RequestType.GENERATE_VID.toString())
+				|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.name())) {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(
+							this.env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
+		} else if (featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.toString())) {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(
+							this.env.getProperty(ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
+		} else if (featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())) {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(
+							this.env.getProperty(ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
+		} else if (featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.toString())) {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(
+							this.env.getProperty(ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
+		} else if (featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())) {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(
+							this.env.getProperty(ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
+		} else {
+			return getFileNameAck(featureName, eventId,
+					Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)),
+					timeZoneOffset);
 		}
 	}
 	
