@@ -157,7 +157,7 @@ public class ResidentServiceGetEventStatusTest {
         residentService.getEventStatus(eventId, langCode, 0);
     }
     
-    @Test(expected = EidNotBelongToSessionException.class)
+    @Test(expected = ResidentServiceCheckedException.class)
     public void getEventStatusNestedIfTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
     	Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("abcd");
         residentService.getEventStatus(eventId, langCode, 0);
