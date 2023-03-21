@@ -834,7 +834,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
-			return reqUinUpdate(dto, demographicIdentity);
+			return reqUinUpdate(dto, demographicIdentity, false);
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.IO_EXCEPTION, dto.getTransactionID(),
 					"Request for UIN update"));
@@ -847,7 +847,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity)
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity, boolean validateIdObject)
 			throws ResidentServiceCheckedException {
 		Object responseDto = null;
 		ResidentUpdateResponseDTO residentUpdateResponseDTO = null;
@@ -910,7 +910,7 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
 
-			if(Utility.isSecureSession()) {
+			if(validateIdObject) {
 				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
 				String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
 				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
