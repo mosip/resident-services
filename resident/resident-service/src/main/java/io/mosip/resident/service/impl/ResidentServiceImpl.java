@@ -910,22 +910,24 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
 
-			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-			String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
-			Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
-			ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-			Object idSchema = idSchemaResponse.getResponse();
-			Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-			String schemaJson = (String) map.get("schemaJson");
-			try {
-				idObjectValidator.validateIdObject(schemaJson, jsonObject);
-			} catch (IdObjectValidationFailedException e) {
-				String error = e.getErrorTexts().toString();
-				if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
-					List<String> errors = e.getErrorTexts();
-					String errorMessage = errors.get(0);
-					throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-							errorMessage);
+			if(validateIdObject) {
+				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
+				String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
+				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+				Object idSchema = idSchemaResponse.getResponse();
+				Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+				String schemaJson = (String) map.get("schemaJson");
+				try {
+					idObjectValidator.validateIdObject(schemaJson, jsonObject);
+				} catch (IdObjectValidationFailedException e) {
+					String error = e.getErrorTexts().toString();
+					if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
+						List<String> errors = e.getErrorTexts();
+						String errorMessage = errors.get(0);
+						throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+								errorMessage);
+					}
 				}
 			}
 			
