@@ -519,7 +519,7 @@ public class Utility {
 	}
 
 	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
-		String namingProperty = RequestType.getRequestTypeFromString(featureName).getNamingProperty();
+		String namingProperty = RequestType.getRequestTypebyName(featureName).getNamingProperty();
 		if (namingProperty == null) {
 			namingProperty = ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY;
 		}

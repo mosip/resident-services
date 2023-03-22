@@ -133,6 +133,15 @@ public enum RequestType {
 
 	public static RequestType getRequestTypeFromString(String requestTypeString) {
         for (RequestType requestType : values()) {
+            if (requestType.name().equalsIgnoreCase(requestTypeString)) {
+                return requestType;
+            }
+        }
+        return RequestType.DEFAULT;
+    }
+	
+	public static RequestType getRequestTypebyName(String requestTypeString) {
+        for (RequestType requestType : values()) {
             if (requestType.getName().equalsIgnoreCase(requestTypeString)) {
                 return requestType;
             }
