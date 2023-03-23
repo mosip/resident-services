@@ -208,7 +208,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
         residentTransactionEntity.setIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
         residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(
-        		getIndividualIdForAid(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())));
+        getIndividualIdForAid(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())));
         residentTransactionEntity.setRequestTrnId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
         residentTransactionRepository.save(residentTransactionEntity);
 
