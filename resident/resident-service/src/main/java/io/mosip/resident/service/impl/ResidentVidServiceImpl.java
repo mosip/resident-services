@@ -201,6 +201,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 							requestDto.getTransactionID(), "Request to generate VID"));
 					notificationRequestDto.setTemplateTypeCode(NotificationTemplateCode.RS_VIN_GEN_FAILURE);
 					notificationService.sendNotification(notificationRequestDto);
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_NOTIFICATION_FAILURE,
+							requestDto.getTransactionID(), "Request to generate VID"));
 					throw e;
 				}
 			}
