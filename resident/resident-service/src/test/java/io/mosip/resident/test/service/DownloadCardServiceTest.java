@@ -206,7 +206,7 @@ public class DownloadCardServiceTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testGetDownloadCardPdfApiResourceException() throws OtpValidationFailedException, ApisResourceAccessException {
+    public void testGetDownloadCardPdfApiResourceException() throws OtpValidationFailedException, ApisResourceAccessException, ResidentServiceCheckedException {
         Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
@@ -214,7 +214,7 @@ public class DownloadCardServiceTest {
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testGetDownloadCardPdfOtpValidationException() throws OtpValidationFailedException, ApisResourceAccessException {
+    public void testGetDownloadCardPdfOtpValidationException() throws OtpValidationFailedException, ApisResourceAccessException, ResidentServiceCheckedException {
         Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new OtpValidationFailedException());
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
