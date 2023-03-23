@@ -1050,7 +1050,7 @@ public class RequestValidator {
 	}
 
 	public void validateEventId(String eventId) {
-		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID);
+		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID);
 		if (!isDataValidWithRegex(eventId, eventIdRegex)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID));
@@ -1058,10 +1058,10 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateMissingInputParameter(String variableValue, String variableName) {
-		if (variableValue==null || StringUtils.isEmpty(variableValue)) {
+	private void validateMissingInputParameter(String variableValue, String variableName, String eventEnumName) {
+		if (variableValue==null || variableValue.trim().isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					variableName, VALIDATE_EVENT_ID));
+					variableName, eventEnumName));
 			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, variableName);
 		}
 	}
@@ -1289,7 +1289,7 @@ public class RequestValidator {
     }
 
 	private void validateMessage(String message) {
-		validateMissingInputParameter(message, MESSAGE_CODE);
+		validateMissingInputParameter(message, MESSAGE_CODE, "Validating message");
 		if (message.length() > messageCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),messageCharsLimit,message));
@@ -1337,9 +1337,7 @@ public class RequestValidator {
 	
 
 	public void validatePurpose(String purpose) {
-		if (purpose == null || purpose.trim().isEmpty()) {
-			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, purpose);
-		}
+		validateMissingInputParameter(purpose, TemplateVariablesConstants.PURPOSE, "Validating purpose");
 		if (purpose.length() > purposeCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
@@ -1353,8 +1351,8 @@ public class RequestValidator {
 	public void validateSharableAttributes(List<SharableAttributesDTO> sharableAttributes) {
 		if(sharableAttributes.isEmpty()){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					sharableAttributes.toString(), VALIDATE_EVENT_ID));
-			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, sharableAttributes.toString());
+					TemplateVariablesConstants.ATTRIBUTE_LIST, "Validating sharable attributes"));
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, TemplateVariablesConstants.ATTRIBUTE_LIST);
 		}
 	}
 
