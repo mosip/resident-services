@@ -20,6 +20,7 @@ import io.mosip.resident.dto.IdAuthResponseDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ValidateOtpResponseDto;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -57,6 +58,7 @@ public class IdAuthController {
 	 * @param requestWrapper
 	 * @return ResponseWrapper<IdAuthResponseDto> object
 	 * @throws OtpValidationFailedException
+	 * @throws ResidentServiceCheckedException 
 	 */
 	@ResponseFilter
 	@PostMapping("/validate-otp")
@@ -67,7 +69,7 @@ public class IdAuthController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
-			throws OtpValidationFailedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthController::validateOtp()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request"));
