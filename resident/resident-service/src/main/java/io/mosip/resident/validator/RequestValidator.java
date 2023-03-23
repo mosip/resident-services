@@ -1357,4 +1357,12 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, sharableAttributes.toString());
 		}
 	}
+
+	public void validateName(List<String> name) throws ResidentServiceCheckedException {
+		if (name == null || name.isEmpty()) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PARAM_VALUE.getErrorCode(),
+					ResidentErrorCode.INVALID_PARAM_VALUE.getErrorMessage());
+		}
+		
+	}
 }
