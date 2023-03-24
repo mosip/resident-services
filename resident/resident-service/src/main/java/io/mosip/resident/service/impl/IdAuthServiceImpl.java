@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -239,6 +241,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
+			residentTransactionEntity.setUpdBy(RESIDENT_SERVICES);
+			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
 		return residentTransactionEntity;
