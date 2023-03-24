@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -390,7 +391,7 @@ public class Utility {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setCrBy("resident-services");
+		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		return residentTransactionEntity;
 	}

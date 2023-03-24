@@ -516,6 +516,10 @@ public class IdentityServiceImpl implements IdentityService {
 				.orElseGet(this::createSessionId);
 	}
 
+	/**
+     * @param individualId - it can be UIN, VID or AID.
+     * @return UIN or VID based on the flag "useVidOnly"
+     */
 	public String getIndividualIdForAid(String aid)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 			IdentityDTO identity = getIdentity(aid);
