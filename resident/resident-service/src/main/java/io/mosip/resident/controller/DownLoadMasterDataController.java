@@ -80,6 +80,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER);
 		validator.validateOnlyLanguageCode(langCode);
+		validator.validateName(name);
 		InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
 		InputStreamResource resource = new InputStreamResource(pdfInputStream);
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
