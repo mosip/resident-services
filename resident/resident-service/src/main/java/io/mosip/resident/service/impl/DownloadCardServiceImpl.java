@@ -131,7 +131,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         byte[] pdfBytes = new byte[0];
         try {
             if (idAuthService.validateOtpv2(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId(),
-                    getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
+            		getIndividualIdForAid(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())
                     , downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
                 String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
                 String idType = identityService.getIndividualIdType(individualId);
@@ -208,7 +208,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId()));
         residentTransactionEntity.setIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
         residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(
-        		getUINForIndividualId(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())));
+        getIndividualIdForAid(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId())));
         residentTransactionEntity.setRequestTrnId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
         residentTransactionRepository.save(residentTransactionEntity);
 
@@ -495,9 +495,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return null;
     }
 
-    private String getUINForIndividualId(String individualId)  {
+    /**
+     * @param individualId - it can be UIN, VID or AID.
+     * @return UIN or VID based on the flag "useVidOnly"
+     */
+    private String getIndividualIdForAid(String individualId)  {
         String idType = identityService.getIndividualIdType(individualId);
-        if(idType.equalsIgnoreCase(IdType.UIN.toString())){
+        if(idType.equalsIgnoreCase(IdType.UIN.toString()) || idType.equalsIgnoreCase(IdType.VID.toString())){
             return individualId;
         } else {
             try {

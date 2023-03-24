@@ -1,4 +1,5 @@
 package io.mosip.resident.service.impl;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
 
 import java.security.NoSuchAlgorithmException;
 
@@ -77,7 +78,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 		residentTransactionEntity.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
 		residentTransactionEntity.setRequestDtimes(DateUtils.parseToLocalDateTime(eventModel.getEvent().getTimestamp()));
 		residentTransactionEntity.setResponseDtime(DateUtils.parseToLocalDateTime(eventModel.getEvent().getTimestamp()));
-		residentTransactionEntity.setCrBy("resident-services");
+		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionRepository.save(residentTransactionEntity);
         
