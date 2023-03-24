@@ -67,6 +67,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -120,13 +121,13 @@ public class IdAuthServiceImpl implements IdAuthService {
 	
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
-			throws OtpValidationFailedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		return validateOtpV1(transactionId, individualId, otp).getT1();
 	}
 	
 	@Override
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
-			throws OtpValidationFailedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
@@ -154,14 +155,14 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Override
 	public boolean validateOtpv2(String transactionId, String individualId, String otp)
-			throws OtpValidationFailedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		return validateOtpV2(transactionId, individualId, otp).getT1();
 	}
 	
 	@SuppressWarnings("null")
 	@Override
 	public Tuple2<Boolean, String> validateOtpV2(String transactionId, String individualId, String otp)
-			throws OtpValidationFailedException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		requestValidator.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
@@ -170,7 +171,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		try {
 			residentTransactionEntity = residentTransactionRepository
 					.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId,
-							identityService.getIDAToken(individualId), EventStatusInProgress.OTP_REQUESTED.toString());
+							identityService.getIDATokenForIndividualId(individualId), EventStatusInProgress.OTP_REQUESTED.toString());
 			if (residentTransactionEntity != null) {
 				authType = residentTransactionEntity.getAuthTypeCode();
 			}
@@ -229,9 +230,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}
 		
-	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException {
+	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
-				findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId, identityService.getIDAToken(individualId)
+				findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId, identityService.getIDATokenForIndividualId(individualId)
 				, EventStatusInProgress.OTP_REQUESTED.toString());
 		if (residentTransactionEntity != null ) {
 			residentTransactionEntity.setRequestTypeCode(RequestType.VALIDATE_OTP.name());
