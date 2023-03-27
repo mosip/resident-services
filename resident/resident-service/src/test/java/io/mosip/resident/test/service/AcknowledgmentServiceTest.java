@@ -33,6 +33,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -105,7 +106,7 @@ public class AcknowledgmentServiceTest {
         values.put("test", String.class);
         templateVariables.put("eventId", eventId);
         responseWrapper = new ResponseWrapper<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper.setResponse(templateResponse);
         result = "test".getBytes(StandardCharsets.UTF_8);
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
