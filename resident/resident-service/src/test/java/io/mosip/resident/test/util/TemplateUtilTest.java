@@ -114,7 +114,7 @@ public class TemplateUtilTest {
         values.put("test", String.class);
         templateVariables.put("eventId", eventId);
         responseWrapper = new ResponseWrapper<>();
-        templateResponse.put("fileText", "otp");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "otp");
         responseWrapper.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 responseWrapper);

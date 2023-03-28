@@ -36,6 +36,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.dto.PageDto;
@@ -229,7 +230,7 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(responseDtoPageDto);
         ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
         Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper1.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(responseWrapper1);
@@ -252,7 +253,7 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(responseDtoPageDto);
         ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
         Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper1.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(responseWrapper1);
@@ -274,7 +275,7 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(responseDtoPageDto);
         ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
         Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper1.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(responseWrapper1);
@@ -303,7 +304,7 @@ public class ResidentServiceDownloadCardTest {
          responseWrapper.setResponse(responseDtoPageDto);
          ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
          Map<String, Object> templateResponse = new LinkedHashMap<>();
-         templateResponse.put("fileText", "test");
+         templateResponse.put(ResidentConstants.FILE_TEXT, "test");
          responseWrapper1.setResponse(templateResponse);
          residentServiceImpl.getNotificationList(0,10,"123","eng",0);
     }
