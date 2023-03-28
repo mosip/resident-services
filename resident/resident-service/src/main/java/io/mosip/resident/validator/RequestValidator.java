@@ -1363,4 +1363,11 @@ public class RequestValidator {
 		}
 		
 	}
+
+	public void validateDataToCheckNullOrEmpty(String variableValue, String variableName) {
+		if (StringUtils.isBlank(variableValue)) {
+			throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+					ResidentErrorCode.INVALID_INPUT.getErrorMessage() + variableName);
+		}
+	}
 }
