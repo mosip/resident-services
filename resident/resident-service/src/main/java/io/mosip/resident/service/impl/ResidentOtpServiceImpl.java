@@ -1,7 +1,6 @@
 package io.mosip.resident.service.impl;
 
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,10 +88,8 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestDtimes(LocalDateTime.now());
-		residentTransactionEntity.setResponseDtime(LocalDateTime.now());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
 		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(", "));
@@ -109,9 +106,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			residentTransactionEntity.setRefId(utility.getRefIdHash(otpRequestDTO.getIndividualId()));
 		}
 		residentTransactionEntity.setIndividualId(otpRequestDTO.getIndividualId());
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(otpRequestDTO.getIndividualId()));
-		residentTransactionEntity.setCrBy("mosip");
-		residentTransactionEntity.setCrDtimes(LocalDateTime.now());
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDATokenForIndividualId(otpRequestDTO.getIndividualId()));
 		residentTransactionEntity.setPurpose(String.join(ResidentConstants.COMMA, otpRequestDTO.getOtpChannel()));
 		residentTransactionRepository.save(residentTransactionEntity);
 	}

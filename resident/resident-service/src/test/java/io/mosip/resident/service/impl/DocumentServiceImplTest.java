@@ -21,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import io.mosip.commons.khazana.dto.ObjectDto;
 import io.mosip.resident.dto.DocumentRequestDTO;
-import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 
 /**
@@ -68,7 +68,7 @@ public class DocumentServiceImplTest {
 		assertNotNull(documentServiceImpl.fetchAllDocumentsMetadata("transactionId"));
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = ResidentServiceCheckedException.class)
 	public void testFetchAllDocumentsMetadataFailure() throws Exception{
 		Map<String, Object> metaData = getMetaData();
 		Mockito.when(objectStoreHelper.getAllObjects("transactionId")).thenReturn(null);
