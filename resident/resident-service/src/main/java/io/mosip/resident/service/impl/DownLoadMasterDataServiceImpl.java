@@ -54,7 +54,6 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
-	public static final String FILE_TEXT = "fileText";
 	
 	@Autowired
 	Environment env;
@@ -116,7 +115,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
 		Map<String, Object> templateResponse = new LinkedHashMap<>(
 				(Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get(FILE_TEXT);
+		String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
 		InputStream downLoadRegCenterTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream downLoadRegCenterTemplateData = templateManager.merge(downLoadRegCenterTemplate, regCentersMap);
 
@@ -147,7 +146,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.SUPPORTING_DOCS_TEMPLATE_PROPERTY));
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
 		Map<String, Object> templateResponse = new LinkedHashMap<>((Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get(FILE_TEXT);		
+		String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
 		Map<String, Object> supportingsDocsMap = new HashMap<>();
 		supportingsDocsMap.put("supportingsDocMap", supportingsDocsMap);
 		InputStream supportingDocsTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
