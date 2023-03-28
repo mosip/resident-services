@@ -25,7 +25,9 @@ import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -93,6 +95,8 @@ public class DocumentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
+			responseWrapper.setId(residentUploadDocumentId);
+			responseWrapper.setVersion(residentDocumentResponseVersion);
 			validator.validateRequest(transactionId,docCatCode,docTypCode,langCode);
 			validator.validateFileName(file);
 			validator.scanForViruses(file);
@@ -105,8 +109,6 @@ public class DocumentController {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
-			responseWrapper.setId(residentUploadDocumentId);
-			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setResponse(uploadDocumentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_SUCCESS, transactionId));
@@ -115,10 +117,14 @@ public class DocumentController {
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			responseWrapper.setId(residentUploadDocumentId);
-			responseWrapper.setVersion(residentDocumentResponseVersion);
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
-		} 
+		} catch (InvalidInputException | ResidentServiceException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		}
 		return responseWrapper;
 	}
 
@@ -134,16 +140,23 @@ public class DocumentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get documents API"));
 		ResponseWrapper<List<DocumentResponseDTO>> responseWrapper = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
-			validator.validateTransactionIdForDocument(transactionId);
-			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setId(residentDocumentListId);
 			responseWrapper.setVersion(residentDocumentListVersion);
+			validator.validateTransactionIdForDocument(transactionId);
+
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
+			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_SUCCESS, transactionId));
 		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		} catch (InvalidInputException | ResidentServiceException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -167,16 +180,23 @@ public class DocumentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get document API"));
 		ResponseWrapper<DocumentDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
-			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
-			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
-			responseWrapper.setResponse(documentResponse);
 			responseWrapper.setId(residentGetDocumentId);
 			responseWrapper.setVersion(residentGetDocumentVersion);
+			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
+
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
+			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
+			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_SUCCESS, transactionId));
 		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		} catch (InvalidInputException | ResidentServiceException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -200,13 +220,13 @@ public class DocumentController {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Delete document API"));
 		ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
-			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
 			responseWrapper.setId(residentDeleteId);
 			responseWrapper.setVersion(residentDeleteVersion);
-			ResponseDTO documentResponse = service
-					.deleteDocument(transactionId, documentId);
+			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
+
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
+			ResponseDTO documentResponse = service.deleteDocument(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_SUCCESS, transactionId));
@@ -215,8 +235,12 @@ public class DocumentController {
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			responseWrapper.setId(residentDeleteId);
-			responseWrapper.setVersion(residentDeleteVersion);
+			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
+		} catch (InvalidInputException | ResidentServiceException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			responseWrapper.setErrors(List.of(new ServiceError(e.getErrorCode(), e.getErrorText())));
 		}
 		return responseWrapper;
