@@ -66,7 +66,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
         
-		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
 		residentTransactionEntity.setStatusCode(status);
@@ -76,10 +76,6 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 		residentTransactionEntity.setTokenId((String) eventModel.getEvent().getData().get(TOKEN_ID));
 		residentTransactionEntity.setRequestedEntityId((String) eventModel.getEvent().getData().get(ENTITY_ID));
 		residentTransactionEntity.setOlvPartnerId((String) eventModel.getEvent().getData().get(OLV_PARTNER_ID));
-		residentTransactionEntity.setRequestDtimes(DateUtils.parseToLocalDateTime(eventModel.getEvent().getTimestamp()));
-		residentTransactionEntity.setResponseDtime(DateUtils.parseToLocalDateTime(eventModel.getEvent().getTimestamp()));
-		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
-		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionRepository.save(residentTransactionEntity);
         
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
