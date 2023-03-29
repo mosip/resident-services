@@ -1106,7 +1106,7 @@ public class RequestValidator {
 			throw new InvalidInputException("id");
 		}
 		if (requestDTO.getRequest().getFromFieldLang().equalsIgnoreCase(requestDTO.getRequest().getToFieldLang())) {
-			throw new InvalidInputException("from and to language are same");
+			throw new InvalidInputException("'from' and 'to' languages cannot be same");
 		}
 	}
 
