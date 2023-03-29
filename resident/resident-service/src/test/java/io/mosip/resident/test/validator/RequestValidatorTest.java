@@ -2074,6 +2074,10 @@ public class RequestValidatorTest {
 		ReflectionTestUtils.setField(requestValidator, "transliterateId", "mosip.resident.transliteration.transliterate");
 		MainRequestDTO<TransliterationRequestDTO> requestDTO = new MainRequestDTO<>();
 		TransliterationRequestDTO transliterationRequestDTO = new TransliterationRequestDTO();
+		transliterationRequestDTO.setFromFieldLang("eng");
+		transliterationRequestDTO.setToFieldLang("fra");
+		transliterationRequestDTO.setFromFieldValue("demo");
+		requestDTO.setRequest(transliterationRequestDTO);
 		requestDTO.setId("mosip.resident.transliteration.transliterate");
 		requestValidator.validateId(requestDTO);
 	}
