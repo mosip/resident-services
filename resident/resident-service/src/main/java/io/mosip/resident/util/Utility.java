@@ -514,7 +514,7 @@ public class Utility {
 		}
 		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}",
-					 formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+					formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}
