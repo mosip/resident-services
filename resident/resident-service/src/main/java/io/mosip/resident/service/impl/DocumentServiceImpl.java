@@ -98,7 +98,7 @@ public class DocumentServiceImpl implements DocumentService {
 			throws ResidentServiceCheckedException {
 		List<ObjectDto> allObjects = objectStoreHelper.getAllObjects(transactionId);
 		if(allObjects == null){
-			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
 					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId);
 		}
 		return allObjects.stream().map(object -> this.fetchDocumentMetadata(transactionId, object.getObjectName()))
@@ -121,7 +121,7 @@ public class DocumentServiceImpl implements DocumentService {
 		}catch (ResidentServiceException | ObjectStoreAdapterException e){
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			throw new ResidentServiceException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
+			throw new ResidentServiceCheckedException(ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorCode(),
 					ResidentErrorCode.NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID.getErrorMessage()+transactionId+ " & documentId: "+documentId, e);
 		}
 		return document;

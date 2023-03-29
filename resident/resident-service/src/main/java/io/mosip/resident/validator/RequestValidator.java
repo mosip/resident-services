@@ -1355,4 +1355,12 @@ public class RequestValidator {
 			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, TemplateVariablesConstants.ATTRIBUTE_LIST);
 		}
 	}
+
+	public void validateName(List<String> name) throws ResidentServiceCheckedException {
+		if (name == null || name.isEmpty()) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorCode(),
+					ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorMessage());
+		}
+		
+	}
 }
