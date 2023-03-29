@@ -2079,19 +2079,22 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
-		Long residentTransactionEntity;
+		Long countOfUnreadNotifications;
 		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
 		List<String> asyncRequestTypes = getAsyncRequestTypes();
 		if (residentUserEntity.isPresent()) {
+			//Get the last bell notification click time
 			time = residentUserEntity.get().getLastbellnotifDtimes();
-			residentTransactionEntity = residentTransactionRepository
+			//Get count of unread events after bell notification click time
+			countOfUnreadNotifications = residentTransactionRepository
 					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
 		} else {
-			residentTransactionEntity = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(idaToken,
+			//Get count of all unread events
+			countOfUnreadNotifications = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(idaToken,
 					asyncRequestTypes);
 		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
-		notification.setUnreadCount(residentTransactionEntity);
+		notification.setUnreadCount(countOfUnreadNotifications);
 		responseWrapper.setId(serviceEventId);
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponse(notification);
