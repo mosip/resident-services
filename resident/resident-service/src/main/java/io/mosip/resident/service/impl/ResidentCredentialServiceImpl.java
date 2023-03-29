@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -79,7 +78,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String NULL = "null";
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
-	private static final String INDIVIDUAL_ID = "individualId";
 	private static final String DATA = "data";
 
 	@Autowired
@@ -148,11 +146,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			throws ResidentServiceCheckedException {
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		try {
-			if (StringUtils.isBlank(dto.getIndividualId())) {
-				throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
-						ResidentErrorCode.INVALID_INPUT.getErrorMessage() + INDIVIDUAL_ID);
-			}
-			
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				return reqCredential(dto, null);
 			} else {
