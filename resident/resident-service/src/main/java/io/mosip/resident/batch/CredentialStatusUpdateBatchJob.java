@@ -6,7 +6,6 @@ import static io.mosip.resident.constant.EventStatusInProgress.ISSUED;
 import static io.mosip.resident.constant.EventStatusInProgress.NEW;
 import static io.mosip.resident.constant.EventStatusInProgress.PAYMENT_CONFIRMED;
 import static io.mosip.resident.constant.EventStatusInProgress.PRINTING;
-import static io.mosip.resident.constant.EventStatusInProgress.PROCESSING;
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_READY_TO_DOWNLOAD;
 import static io.mosip.resident.constant.EventStatusSuccess.RECEIVED;
 import static io.mosip.resident.constant.EventStatusSuccess.STORED;
@@ -214,20 +213,6 @@ public class CredentialStatusUpdateBatchJob {
 			}
 		}
 		return Map.of();
-	}
-
-	private void updateStatusForAID(ResidentTransactionEntity txn) throws ResidentServiceCheckedException {
-		if (isRecordAvailableInIdRepo(txn.getAid())) {
-			txn.setStatusCode(PROCESSING.name());
-			txn.setReadStatus(false);
-			txn.setUpdBy(RESIDENT);
-			txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-		} else {
-			txn.setStatusCode(getAIDStatusFromRegProc(txn.getAid()));
-			txn.setReadStatus(false);
-			txn.setUpdBy(RESIDENT);
-			txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-		}
 	}
 
 	private void trackAndUpdatePrintingOrReceivedOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
