@@ -61,6 +61,7 @@ import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
@@ -83,6 +84,7 @@ import io.mosip.resident.util.EventEnum;
 @Component
 public class RequestValidator {
 
+	private static final String REQUEST = "request";
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
 	@Autowired
 	private UinValidator<String> uinValidator;
@@ -286,7 +288,7 @@ public class RequestValidator {
 
 		if (requestDto.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
+			throw new InvalidInputException(REQUEST);
 		}
 
 		if (StringUtils.isEmpty(individualId)
@@ -341,7 +343,7 @@ public class RequestValidator {
 
 		if (requestDto.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
+			throw new InvalidInputException(REQUEST);
 		}
 
 		if (StringUtils.isEmpty(individualId)
@@ -675,7 +677,7 @@ public class RequestValidator {
 		}
 		if (request.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
+			throw new InvalidInputException(REQUEST);
 		}
 	}
 
@@ -728,7 +730,7 @@ public class RequestValidator {
 		}
 		if (request.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
+			throw new InvalidInputException(REQUEST);
 		}
 	}
 
@@ -745,7 +747,7 @@ public class RequestValidator {
 
 		if (request.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
+			throw new InvalidInputException(REQUEST);
 		}
 		return true;
 
@@ -764,7 +766,7 @@ public class RequestValidator {
 
 		if (request.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
+			throw new InvalidInputException(REQUEST);
 		}
 		return true;
 
@@ -1050,7 +1052,7 @@ public class RequestValidator {
 	}
 
 	public void validateEventId(String eventId) {
-		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID);
+		validateMissingInputParameter(eventId, TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID);
 		if (!isDataValidWithRegex(eventId, eventIdRegex)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
 					TemplateVariablesConstants.EVENT_ID, VALIDATE_EVENT_ID));
@@ -1058,10 +1060,10 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateMissingInputParameter(String variableValue, String variableName) {
-		if (variableValue==null || StringUtils.isEmpty(variableValue)) {
+	private void validateMissingInputParameter(String variableValue, String variableName, String eventEnumName) {
+		if (variableValue==null || variableValue.trim().isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					variableName, VALIDATE_EVENT_ID));
+					variableName, eventEnumName));
 			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, variableName);
 		}
 	}
@@ -1104,6 +1106,9 @@ public class RequestValidator {
 		} else {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
 			throw new InvalidInputException("id");
+		}
+		if (requestDTO.getRequest().getFromFieldLang().equalsIgnoreCase(requestDTO.getRequest().getToFieldLang())) {
+			throw new InvalidInputException("'from' and 'to' languages cannot be same");
 		}
 	}
 
@@ -1249,22 +1254,44 @@ public class RequestValidator {
 		}
 	}
 
-	public boolean validateRequestNewApi(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+	public boolean validateRequestNewApi(RequestWrapper<?> requestWrapper, RequestIdType requestIdType) {
+		if (StringUtils.isEmpty(requestWrapper.getId()) || !requestWrapper.getId().equals(map.get(requestIdType)))
 			throw new InvalidInputException("id");
 		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
+			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(reqResVersion))
+		if (StringUtils.isEmpty(requestWrapper.getVersion()) || !requestWrapper.getVersion().equals(reqResVersion))
 			throw new InvalidInputException("version");
 
-		if (request.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException("request");
-		}
+		validateAPIRequestToCheckNull(requestWrapper);
 		return true;
+	}
+
+	private void validateAPIRequestToCheckNull(RequestWrapper<?> requestWrapper) {
+		if (requestWrapper.getRequest() == null) {
+			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
+			throw new InvalidInputException(REQUEST);
+		}
+	}
+
+	public void validateReqCredentialRequest(RequestWrapper<ResidentCredentialRequestDto> requestWrapper) {
+		validateAPIRequestToCheckNull(requestWrapper);
+		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getIndividualId(), ResidentConstants.INDIVIDUAL_ID);
+		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getCredentialType(),
+				ResidentConstants.CREDENTIAL_TYPE);
+		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getIssuer(), ResidentConstants.ISSUER);
+		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getOtp(), ResidentConstants.OTP);
+		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getTransactionID(),
+				ResidentConstants.TRANSACTION_ID_OLD);
+	}
+
+	private void validateDataToCheckNullOrEmpty(String variableValue, String variableName) {
+		if (StringUtils.isBlank(variableValue)) {
+			throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+					ResidentErrorCode.INVALID_INPUT.getErrorMessage() + variableName);
+		}
 	}
 
 	public void validateGrievanceRequestDto(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
@@ -1289,7 +1316,7 @@ public class RequestValidator {
     }
 
 	private void validateMessage(String message) {
-		validateMissingInputParameter(message, MESSAGE_CODE);
+		validateMissingInputParameter(message, MESSAGE_CODE, "Validating message");
 		if (message.length() > messageCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					String.format(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage(),messageCharsLimit,message));
@@ -1337,9 +1364,7 @@ public class RequestValidator {
 	
 
 	public void validatePurpose(String purpose) {
-		if (purpose == null || purpose.trim().isEmpty()) {
-			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, purpose);
-		}
+		validateMissingInputParameter(purpose, TemplateVariablesConstants.PURPOSE, "Validating purpose");
 		if (purpose.length() > purposeCharsLimit) {
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
@@ -1353,8 +1378,16 @@ public class RequestValidator {
 	public void validateSharableAttributes(List<SharableAttributesDTO> sharableAttributes) {
 		if(sharableAttributes.isEmpty()){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					sharableAttributes.toString(), VALIDATE_EVENT_ID));
-			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, sharableAttributes.toString());
+					TemplateVariablesConstants.ATTRIBUTE_LIST, "Validating sharable attributes"));
+			throw new ResidentServiceException(ResidentErrorCode.MISSING_INPUT_PARAMETER, TemplateVariablesConstants.ATTRIBUTE_LIST);
 		}
+	}
+
+	public void validateName(List<String> name) throws ResidentServiceCheckedException {
+		if (name == null || name.isEmpty()) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorCode(),
+					ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorMessage());
+		}
+		
 	}
 }

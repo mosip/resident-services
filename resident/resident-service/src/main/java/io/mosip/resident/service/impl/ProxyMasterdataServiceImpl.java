@@ -21,6 +21,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.GenderCodeResponseDTO;
 import io.mosip.resident.dto.GenderTypeListDTO;
@@ -420,7 +421,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			String template = templateResponse.getTemplates().get(0).getFileText();
 			ResponseWrapper<Map> responseWrapper = new ResponseWrapper<>();
 			Map<String, String> responseMap = new HashMap<>();
-			responseMap.put("fileText", template);
+			responseMap.put(ResidentConstants.FILE_TEXT, template);
 			responseWrapper.setResponse(responseMap);
 			logger.debug("ProxyMasterdataServiceImpl::getAllTemplateBylangCodeAndTemplateTypeCode()::exit");
 			return responseWrapper;

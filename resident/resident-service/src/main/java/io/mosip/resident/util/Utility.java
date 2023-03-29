@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -390,8 +391,10 @@ public class Utility {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setCrBy("resident-services");
+		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+		// Initialize with true, so that it is updated as false in later when needed for notification
+		residentTransactionEntity.setReadStatus(true);
 		return residentTransactionEntity;
 	}
 
@@ -503,31 +506,28 @@ public class Utility {
 		}
 		return HMACUtils2.digestAsPlainText(id.getBytes());
 	}
+	
+	public String getFileNameAck(String featureName, String eventId, String propertyName, int timeZoneOffset) {
+		if (eventId != null && propertyName.contains("{" + TemplateVariablesConstants.FEATURE_NAME + "}")) {
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.FEATURE_NAME + "}", featureName);
+		}
+		if (eventId != null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")) {
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.EVENT_ID + "}", eventId);
+		}
+		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
+			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}",
+					formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+		}
+		return propertyName;
+	}
 
 	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
-		if(featureName.equalsIgnoreCase(RequestType.SHARE_CRED_WITH_PARTNER.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		} else if(featureName.equalsIgnoreCase(RequestType.GENERATE_VID.toString())
-		|| featureName.equalsIgnoreCase(RequestType.REVOKE_VID.name())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		} else if(featureName.equalsIgnoreCase(RequestType.ORDER_PHYSICAL_CARD.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		} else if(featureName.equalsIgnoreCase(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		}else if(featureName.equalsIgnoreCase(RequestType.UPDATE_MY_UIN.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
+		String namingProperty = RequestType.getRequestTypeByName(featureName).getNamingProperty();
+		if (namingProperty == null) {
+			namingProperty = ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY;
 		}
-		else if(featureName.equalsIgnoreCase(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString())){
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(
-					ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		}else {
-			return getFileName(eventId, Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY)), timeZoneOffset);
-		}
+		return getFileNameAck(featureName, eventId, Objects.requireNonNull(this.env.getProperty(namingProperty)),
+				timeZoneOffset);
 	}
 	
 	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {

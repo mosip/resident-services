@@ -912,7 +912,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 			if(validateIdObject) {
 				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-				Double idSchemaVersion = (Double) obj.get("IDSchemaVersion");
+				String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
 				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 				Object idSchema = idSchemaResponse.getResponse();
 				Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
@@ -1589,9 +1590,9 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_START_VALUE,
 					pageStart.toString(), "Invalid page start value"));
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_START_VALUE);
-		} else if (pageFetch < 0) {
+		} else if(pageFetch <=0){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_FETCH_VALUE,
-					pageFetch.toString(), "Invalid page fetch value"));
+					pageFetch.toString(), "Invalid Page fetch value"));
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_PAGE_FETCH_VALUE);
 		}
 
@@ -2011,7 +2012,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (residentTransactionEntity.isPresent()) {
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
-					throw new EidNotBelongToSessionException();
+					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
@@ -2078,19 +2079,22 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResponseWrapper<UnreadNotificationDto> getnotificationCount(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResponseWrapper<UnreadNotificationDto> responseWrapper = new ResponseWrapper<>();
 		LocalDateTime time = null;
-		Long residentTransactionEntity;
+		Long countOfUnreadNotifications;
 		Optional<ResidentUserEntity> residentUserEntity = residentUserRepository.findById(idaToken);
 		List<String> asyncRequestTypes = getAsyncRequestTypes();
 		if (residentUserEntity.isPresent()) {
+			//Get the last bell notification click time
 			time = residentUserEntity.get().getLastbellnotifDtimes();
-			residentTransactionEntity = residentTransactionRepository
+			//Get count of unread events after bell notification click time
+			countOfUnreadNotifications = residentTransactionRepository
 					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
 		} else {
-			residentTransactionEntity = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(idaToken,
+			//Get count of all unread events
+			countOfUnreadNotifications = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(idaToken,
 					asyncRequestTypes);
 		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
-		notification.setUnreadCount(residentTransactionEntity);
+		notification.setUnreadCount(countOfUnreadNotifications);
 		responseWrapper.setId(serviceEventId);
 		responseWrapper.setVersion(serviceEventVersion);
 		responseWrapper.setResponse(notification);
@@ -2158,7 +2162,7 @@ public class ResidentServiceImpl implements ResidentService {
 		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
 		Map<String, Object> templateResponse = new LinkedHashMap<>(
 				(Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get("fileText");
+		String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
