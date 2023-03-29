@@ -711,27 +711,24 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateRevokeVidV2RequestWrapper(RequestWrapper<?> request,String msg) {
+	public void validateRevokeVidV2RequestWrapper(RequestWrapper<?> requestWrapper,String msg) {
 
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equalsIgnoreCase(revokeVidIdNew)) {
+		if (StringUtils.isEmpty(requestWrapper.getId()) || !requestWrapper.getId().equalsIgnoreCase(revokeVidIdNew)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "revokeVidIdNew", msg));
 			throw new InvalidInputException("revokeVidIdNew");
 		}
 		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
+			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", msg));
 			throw new InvalidInputException("requesttime");
 		}
 
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equalsIgnoreCase(revokeVidVersion)) {
+		if (StringUtils.isEmpty(requestWrapper.getVersion()) || !requestWrapper.getVersion().equalsIgnoreCase(revokeVidVersion)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "revokeVidVersion", msg));
 			throw new InvalidInputException("revokeVidVersion");
 		}
-		if (request.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException(REQUEST);
-		}
+		validateAPIRequestToCheckNull(requestWrapper);
 	}
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
@@ -753,23 +750,19 @@ public class RequestValidator {
 
 	}
 
-	public boolean validateAidStatusRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
+	public boolean validateAidStatusRequest(RequestWrapper<?> requestWrapper, RequestIdType requestIdType) {
+		if (StringUtils.isEmpty(requestWrapper.getId()) || !requestWrapper.getId().equals(map.get(requestIdType)))
 			throw new InvalidInputException("id");
 		try {
-			DateUtils.parseToLocalDateTime(request.getRequesttime());
+			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
 			throw new InvalidInputException("requesttime");
 		}
-		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(newVersion))
+		if (StringUtils.isEmpty(requestWrapper.getVersion()) || !requestWrapper.getVersion().equals(newVersion))
 			throw new InvalidInputException("version");
 
-		if (request.getRequest() == null) {
-			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
-			throw new InvalidInputException(REQUEST);
-		}
+		validateAPIRequestToCheckNull(requestWrapper);
 		return true;
-
 	}
 
 	public boolean isNumeric(String strNum) {
@@ -1358,7 +1351,6 @@ public class RequestValidator {
 		validateIndividualIdV2(individualIdRequestDto.getIndividualId());
 		validateTransactionId(individualIdRequestDto.getTransactionId());
 	}
-	
 
 	public void validatePurpose(String purpose) {
 		validateMissingInputParameter(purpose, TemplateVariablesConstants.PURPOSE, "Validating purpose");
@@ -1385,6 +1377,5 @@ public class RequestValidator {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorCode(),
 					ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorMessage());
 		}
-		
 	}
 }
