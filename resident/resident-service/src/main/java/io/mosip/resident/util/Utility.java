@@ -393,6 +393,8 @@ public class Utility {
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
+		// Initialize with true, so that it is updated as false in later when needed for notification
+		residentTransactionEntity.setReadStatus(true);
 		return residentTransactionEntity;
 	}
 
