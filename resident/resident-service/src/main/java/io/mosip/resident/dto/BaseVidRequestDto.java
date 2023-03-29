@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class BaseVidRequestDto implements Serializable {
+public class BaseVidRequestDto implements ObjectWithTransactionID, Serializable {
 
     /**
 	 * 

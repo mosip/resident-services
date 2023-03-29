@@ -105,7 +105,7 @@ public class AcknowledgmentServiceTest {
         values.put("test", String.class);
         templateVariables.put("eventId", eventId);
         responseWrapper = new ResponseWrapper<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper.setResponse(templateResponse);
         result = "test".getBytes(StandardCharsets.UTF_8);
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";

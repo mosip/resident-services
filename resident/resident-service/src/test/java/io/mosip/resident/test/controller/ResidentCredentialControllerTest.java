@@ -33,11 +33,11 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.resident.controller.ResidentCredentialController;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
@@ -137,7 +137,9 @@ public class ResidentCredentialControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(residentCredentialController).build();
         ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
         credentialRequestDto.setIndividualId("123456");
-        reqJson = gson.toJson(credentialRequestDto);
+        RequestWrapper<ResidentCredentialRequestDto> requestDTO = new RequestWrapper<>();
+        requestDTO.setRequest(credentialRequestDto);
+        reqJson = gson.toJson(requestDTO);
         pdfbytes = "uin".getBytes();
     }
 

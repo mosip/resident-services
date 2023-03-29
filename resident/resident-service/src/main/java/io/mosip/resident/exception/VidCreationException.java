@@ -23,6 +23,10 @@ public class VidCreationException extends BaseResidentUncheckedExceptionWithMeta
 	public VidCreationException(String errorMessage) {
 		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), errorMessage);
 	}
+	
+	public VidCreationException(String errorMessage, Throwable cause) {
+		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), errorMessage, cause);
+	}
 
 	public VidCreationException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
 		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), errorMessage, rootCause, metadata);
