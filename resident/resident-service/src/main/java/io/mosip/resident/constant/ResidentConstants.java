@@ -211,9 +211,13 @@ public class ResidentConstants {
 
     public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
     public static final int UTC_TIMEZONE_OFFSET = 0;
+
     public static final String INDIVIDUAL_ID = "individualId";
     public static final String ISSUER = "issuer";
     public static final String CREDENTIAL_TYPE = "credentialType";
+    public static final String OTP = "otp";
+    public static final String TRANSACTION_ID_OLD = "transactionID";
+
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
 
     public static final String ID = "id";
