@@ -315,21 +315,19 @@ public class UtilitiesTest {
 
     @Test
     public void testGetTransactionTypeCode() throws ApisResourceAccessException, IOException {
-        ArrayList transactionTypeCode = new ArrayList<>();
+    	when(env.getProperty(any())).thenReturn("PACKET_UPLOAD,PACKET_RECEIVER");
         HashMap<String ,Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "PACKET_RECEIVER");
-        transactionTypeCode.add(packetStatus);
         assertEquals("Request received",
-                ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", transactionTypeCode));
+                ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus));
     }
 
     @Test
     public void testGetTransactionTypeCodeFailed() throws ApisResourceAccessException, IOException {
-        ArrayList transactionTypeCode = new ArrayList<>();
+    	when(env.getProperty(any())).thenReturn("status,packet");
         HashMap<String ,Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "test");
-        transactionTypeCode.add(packetStatus);
-        ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", transactionTypeCode);
+        ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus);
     }
 
     @Test

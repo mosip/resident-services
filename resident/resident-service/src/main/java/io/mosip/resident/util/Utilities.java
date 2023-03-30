@@ -254,18 +254,14 @@ public class Utilities {
 	}
 
 	public HashMap<String, String> getPacketStatus(String rid) throws ApisResourceAccessException, IOException {
-		String aidStatus="";
-		String transactionTypeCode="";
 		HashMap<String, String> packetStatusMap = new HashMap<>();
 		ArrayList regTransactionResponseDTO = getRidStatus(rid);
-		for(Object object : regTransactionResponseDTO){
-			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
-			String statusCode = (String) packetStatus.get(STATUS_CODE);
-			String packetStatusCode = PacketStatus.getStatusCode(statusCode);
-			if(!packetStatusCode.isEmpty()){
-				aidStatus = packetStatusCode;
-				transactionTypeCode = getTransactionTypeCode(regTransactionResponseDTO);
-				packetStatusMap.put(AID_STATUS, aidStatus);
+		for (Object object : regTransactionResponseDTO) {
+			HashMap<String, Object> packetData = (HashMap<String, Object>) object;
+			String packetStatusCode = getPacketStatusCode(packetData);
+			String transactionTypeCode = getTransactionTypeCode(packetData);
+			if (!packetStatusCode.isEmpty() && !transactionTypeCode.isEmpty()) {
+				packetStatusMap.put(AID_STATUS, packetStatusCode);
 				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
 				return packetStatusMap;
 			}
@@ -273,16 +269,15 @@ public class Utilities {
 		return packetStatusMap;
 	}
 
-	private String getTransactionTypeCode(ArrayList regTransactionResponseDTO) {
-		String typeCode="";
-		for(Object object : regTransactionResponseDTO){
-			HashMap<String ,Object> packetStatus = (HashMap<String, Object>) object;
-			String transactionTypeCode = (String) packetStatus.get(TRANSACTION_TYPE_CODE);
-			typeCode = TransactionStage.getTypeCode(transactionTypeCode);
-			if(!typeCode.isEmpty()){
-				break;
-			}
-		}
+	private String getPacketStatusCode(HashMap<String, Object> packetData) {
+		String statusCode = (String) packetData.get(STATUS_CODE);
+		String packetStatusCode = PacketStatus.getStatusCode(statusCode, env);
+		return packetStatusCode;
+	}
+
+	private String getTransactionTypeCode(HashMap<String, Object> packetData) {
+		String transactionTypeCode = (String) packetData.get(TRANSACTION_TYPE_CODE);
+		String typeCode = TransactionStage.getTypeCode(transactionTypeCode, env);
 		return typeCode;
 	}
 
