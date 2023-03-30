@@ -90,6 +90,7 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
+		validator.validateReqCredentialRequest(requestDTO);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
