@@ -1100,6 +1100,9 @@ public class RequestValidator {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
 			throw new InvalidInputException("id");
 		}
+		if (requestDTO.getRequest().getFromFieldLang().equalsIgnoreCase(requestDTO.getRequest().getToFieldLang())) {
+			throw new InvalidInputException("'from' and 'to' languages cannot be same");
+		}
 	}
 
 	public List<String> validateUserIdAndTransactionId(String userId, String transactionID) {
