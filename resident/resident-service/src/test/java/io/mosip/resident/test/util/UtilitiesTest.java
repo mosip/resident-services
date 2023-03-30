@@ -318,7 +318,7 @@ public class UtilitiesTest {
     	when(env.getProperty(any())).thenReturn("PACKET_UPLOAD,PACKET_RECEIVER");
         HashMap<String ,Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "PACKET_RECEIVER");
-        assertEquals("Request received",
+        assertEquals("REQUEST_RECEIVED",
                 ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus));
     }
 

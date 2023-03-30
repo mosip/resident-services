@@ -173,7 +173,7 @@ public class DownloadCardServiceTest {
     	String rid = "7841261580";
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put(ResidentConstants.AID_STATUS, "SUCCESS");
-        hashMap.put(ResidentConstants.TRANSACTION_TYPE_CODE, TransactionStage.CARD_READY_TO_DOWNLOAD.getName());
+        hashMap.put(ResidentConstants.TRANSACTION_TYPE_CODE, TransactionStage.CARD_READY_TO_DOWNLOAD.name());
         Mockito.when(utilities.getPacketStatus(rid)).thenReturn(hashMap);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
