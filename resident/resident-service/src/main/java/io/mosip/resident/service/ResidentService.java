@@ -89,5 +89,10 @@ public interface ResidentService {
 
 	public String getFileName(String eventId, int timeZoneOffset);
 
+	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+			LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType, String statusFilter,
+			String searchText, String langCode, int timeZoneOffset, String defaultPageSizeProperty)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
+
 }
 
