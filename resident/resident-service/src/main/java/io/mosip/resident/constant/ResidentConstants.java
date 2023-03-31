@@ -239,6 +239,7 @@ public class ResidentConstants {
     public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
     public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
     public static final String LANGUAGE = "language";
+    public static final String VALUE = "value";
 
 
 }

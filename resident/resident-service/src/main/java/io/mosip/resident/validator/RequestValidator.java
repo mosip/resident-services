@@ -847,25 +847,31 @@ public class RequestValidator {
 	}
 
 	private void validateLanguageCodeInIdentityJson(JSONObject identity) {
-		// Get a set of entries
-		for (Map.Entry entry : (Iterable<Map.Entry>) identity.entrySet()) {
-			// Retrieve the key and value of each entry
-			String key = (String) entry.getKey();
-			Object value = entry.getValue();
-			if (value instanceof ArrayList){
-				ArrayList valueArray = (ArrayList) value;
-				for(Object valueInList: valueArray){
-					if(valueInList instanceof LinkedHashMap){
-						LinkedHashMap<String, String> valueInListMap = (LinkedHashMap<String, String>) valueInList;
-						if(valueInListMap.containsKey(ResidentConstants.LANGUAGE)){
-							validateLanguageCode(valueInListMap.get(ResidentConstants.LANGUAGE));
+		if(identity!=null) {
+			// Get a set of entries
+			for (Map.Entry entry : (Iterable<Map.Entry>) identity.entrySet()) {
+				// Retrieve the key and value of each entry
+				String key = (String) entry.getKey();
+				Object value = entry.getValue();
+				if (value instanceof ArrayList) {
+					ArrayList<?> valueArray = (ArrayList<?>) value;
+					for (Object valueInList : valueArray) {
+						if (valueInList instanceof Map) {
+							Map <String, String> valueInListMap = (Map <String, String>) valueInList;
+							if (valueInListMap.containsKey(ResidentConstants.LANGUAGE)) {
+								String languageCode = valueInListMap.get(ResidentConstants.LANGUAGE);
+								validateLanguageCode(languageCode);
+								String valueOfLanguageCode = valueInListMap.get(ResidentConstants.VALUE);
+								if(valueOfLanguageCode==null || valueOfLanguageCode.isEmpty()){
+									throw new InvalidInputException(key+" "+languageCode+ " "+ResidentConstants.LANGUAGE
+											+" "+ ResidentConstants.VALUE);
+								}
+							}
 						}
 					}
 				}
 			}
 		}
-
-
 	}
 
 	public void validateRidCheckStatusRequestDTO(RequestWrapper<RequestDTO> requestDTO) {
