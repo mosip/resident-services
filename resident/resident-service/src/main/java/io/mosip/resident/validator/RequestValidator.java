@@ -863,8 +863,8 @@ public class RequestValidator {
 								validateLanguageCode(languageCode);
 								String valueOfLanguageCode = valueInListMap.get(ResidentConstants.VALUE);
 								if(valueOfLanguageCode==null || valueOfLanguageCode.isEmpty()){
-									throw new InvalidInputException(key+" "+languageCode+ " "+ResidentConstants.LANGUAGE
-											+" "+ ResidentConstants.VALUE);
+									validateMissingInputParameter(key+" "+languageCode+ " "+ResidentConstants.LANGUAGE
+											+" "+ ResidentConstants.VALUE, ResidentConstants.VALUE, EventEnum.INPUT_INVALID.getName());
 								}
 							}
 						}
