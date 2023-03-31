@@ -30,6 +30,7 @@ import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -137,10 +138,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
-                    HashMap<String, String> ridStatus = utilities.getPacketStatus(rid);
+                    Map<String, String> ridStatus = utilities.getPacketStatus(rid);
                     String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
                     String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-                    if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.getName()) && aidStatus.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
+                    if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name()) && aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
                     	pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
                     } else {
                          throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
@@ -181,7 +182,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return Tuples.of(pdfBytes, eventId);
     }
 
-    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap) {
+    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(Map<String, String> packetStatusMap) {
         ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
         CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
         String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
@@ -411,9 +412,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException {
+    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         individualId = getRidForIndividualId(individualId);
-        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
+        Map<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
         return getCheckStatusResponse(packetStatusMap);
     }
 

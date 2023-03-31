@@ -10,6 +10,7 @@ import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import reactor.util.function.Tuple2;
 
 /**
@@ -23,5 +24,5 @@ public interface DownloadCardService {
 
     Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset) throws BaseCheckedException;
 
-    ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException;
+    ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException;
 }
