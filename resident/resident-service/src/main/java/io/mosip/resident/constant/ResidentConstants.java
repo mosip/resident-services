@@ -211,7 +211,13 @@ public class ResidentConstants {
 
     public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
     public static final int UTC_TIMEZONE_OFFSET = 0;
+
     public static final String INDIVIDUAL_ID = "individualId";
+    public static final String ISSUER = "issuer";
+    public static final String CREDENTIAL_TYPE = "credentialType";
+    public static final String OTP = "otp";
+    public static final String TRANSACTION_ID_OLD = "transactionID";
+
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
 
     public static final String ID = "id";
@@ -228,4 +234,10 @@ public class ResidentConstants {
     public static final String VID = "vid";
     public static final String NAME = "name";
     public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
+
+    public static final String RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE = "resident.notifications.default.page.size";
+    public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
+    public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
+
+
 }
