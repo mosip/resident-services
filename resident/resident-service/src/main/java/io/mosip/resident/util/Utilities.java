@@ -237,47 +237,57 @@ public class Utilities {
 		return rid;
 	}
 
-	public ArrayList getRidStatus(String rid) throws ApisResourceAccessException, IOException {
+	public ArrayList<?> getRidStatus(String rid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Utilities::getRidStatus():: entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("rid", rid);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
 				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
-		ResponseWrapper<?> response = (ResponseWrapper<?>)residentServiceRestClient.getApi(ApiName.GET_RID_STATUS,
+		ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>)residentServiceRestClient.getApi(ApiName.GET_RID_STATUS,
 				pathsegments, ResponseWrapper.class);
+		if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+			logger.debug(responseWrapper.getErrors().get(0).toString());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RID_NOT_FOUND.getErrorCode(),
+					responseWrapper.getErrors().get(0).getMessage());
+		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
-		ArrayList objectArrayList = objMapper.readValue(
-				objMapper.writeValueAsString(response.getResponse()), ArrayList.class);
+		ArrayList<?> objectArrayList = objMapper.readValue(
+				objMapper.writeValueAsString(responseWrapper.getResponse()), ArrayList.class);
 		return objectArrayList;
 	}
 
-	public HashMap<String, String> getPacketStatus(String rid) throws ApisResourceAccessException, IOException {
-		HashMap<String, String> packetStatusMap = new HashMap<>();
-		ArrayList regTransactionResponseDTO = getRidStatus(rid);
-		for (Object object : regTransactionResponseDTO) {
-			HashMap<String, Object> packetData = (HashMap<String, Object>) object;
-			String packetStatusCode = getPacketStatusCode(packetData);
-			String transactionTypeCode = getTransactionTypeCode(packetData);
-			if (!packetStatusCode.isEmpty() && !transactionTypeCode.isEmpty()) {
-				packetStatusMap.put(AID_STATUS, packetStatusCode);
-				packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode);
-				return packetStatusMap;
+	public Map<String, String> getPacketStatus(String rid)
+			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		Map<String, String> packetStatusMap = new HashMap<>();
+		ArrayList<?> regTransactionList = getRidStatus(rid);
+		for (Object object : regTransactionList) {
+			if (object instanceof Map) {
+				Map<String, Object> packetData = (Map<String, Object>) object;
+				Optional<String> packetStatusCode = getPacketStatusCode(packetData);
+				Optional<String> transactionTypeCode = getTransactionTypeCode(packetData);
+				if (packetStatusCode.isPresent() && transactionTypeCode.isPresent()) {
+					packetStatusMap.put(AID_STATUS, packetStatusCode.get());
+					packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode.get());
+					return packetStatusMap;
+				}
 			}
 		}
-		return packetStatusMap;
+		throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
+				String.format("%s - Unable to get the RID status from Reg-proc",
+						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage()));
 	}
 
-	private String getPacketStatusCode(HashMap<String, Object> packetData) {
+	private Optional<String> getPacketStatusCode(Map<String, Object> packetData) {
 		String statusCode = (String) packetData.get(STATUS_CODE);
-		String packetStatusCode = PacketStatus.getStatusCode(statusCode, env);
+		Optional<String> packetStatusCode = PacketStatus.getStatusCode(statusCode, env);
 		return packetStatusCode;
 	}
 
-	private String getTransactionTypeCode(HashMap<String, Object> packetData) {
+	private Optional<String> getTransactionTypeCode(Map<String, Object> packetData) {
 		String transactionTypeCode = (String) packetData.get(TRANSACTION_TYPE_CODE);
-		String typeCode = TransactionStage.getTypeCode(transactionTypeCode, env);
+		Optional<String> typeCode = TransactionStage.getTypeCode(transactionTypeCode, env);
 		return typeCode;
 	}
 

@@ -1,6 +1,7 @@
 package io.mosip.resident.constant;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.core.env.Environment;
 
@@ -26,13 +27,13 @@ public enum PacketStatus {
 		return name;
 	}
 
-	public static String getStatusCode(String statusCode, Environment env) {
+	public static Optional<String> getStatusCode(String statusCode, Environment env) {
 		for (PacketStatus packetStatus : values()) {
 			if (getStatusCodeList(packetStatus, env).contains(statusCode)) {
-				return packetStatus.name;
+				return Optional.of(packetStatus.name);
 			}
 		}
-		return "";
+		return Optional.empty();
 	}
 
 	private static List<String> getStatusCodeList(PacketStatus packetStatus, Environment env) {

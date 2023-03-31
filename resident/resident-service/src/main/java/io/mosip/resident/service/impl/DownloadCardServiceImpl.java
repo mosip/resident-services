@@ -138,7 +138,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                 String idType = identityService.getIndividualIdType(individualId);
                 if (idType.equalsIgnoreCase(AID)) {
                     rid = individualId;
-                    HashMap<String, String> ridStatus = utilities.getPacketStatus(rid);
+                    Map<String, String> ridStatus = utilities.getPacketStatus(rid);
                     String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
                     String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
                     if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name()) && aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
@@ -182,7 +182,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return Tuples.of(pdfBytes, eventId);
     }
 
-    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(HashMap<String, String> packetStatusMap) {
+    private ResponseWrapper<CheckStatusResponseDTO> getCheckStatusResponse(Map<String, String> packetStatusMap) {
         ResponseWrapper<CheckStatusResponseDTO> checkStatusResponseDTOResponseWrapper = new ResponseWrapper<>();
         CheckStatusResponseDTO checkStatusResponseDTO = new CheckStatusResponseDTO();
         String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
@@ -412,9 +412,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     @Override
-    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException {
+    public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         individualId = getRidForIndividualId(individualId);
-        HashMap<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
+        Map<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
         return getCheckStatusResponse(packetStatusMap);
     }
 
