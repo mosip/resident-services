@@ -234,4 +234,12 @@ public class ResidentConstants {
     public static final String VID = "vid";
     public static final String NAME = "name";
     public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
+
+    public static final String RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE = "resident.notifications.default.page.size";
+    public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
+    public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
+    public static final String LANGUAGE = "language";
+    public static final String VALUE = "value";
+
+
 }
