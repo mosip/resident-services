@@ -170,7 +170,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
         } catch (OtpValidationFailedException e) {
-            audit.setAuditRequestDto(EventEnum.REQ_CARD);
+        	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
             throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
                     e);
         } catch (Exception e) {
