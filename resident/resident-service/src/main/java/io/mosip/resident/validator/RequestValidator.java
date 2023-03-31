@@ -853,7 +853,7 @@ public class RequestValidator {
 				// Retrieve the key and value of each entry
 				String key = (String) entry.getKey();
 				Object value = entry.getValue();
-				if (value instanceof ArrayList) {
+				if (value instanceof ArrayList<?>) {
 					ArrayList<?> valueArray = (ArrayList<?>) value;
 					for (Object valueInList : valueArray) {
 						if (valueInList instanceof Map) {
