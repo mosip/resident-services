@@ -127,7 +127,9 @@ public enum ResidentErrorCode {
 	CONTAINS_SPECIAL_CHAR("RES-SER-515","Input text contains special characters;inputType=%s"),
 	UN_SUPPORTED_FILE_TYPE("RES-SER-516", "Unsupported file type. Supported file extensions: jpg, jpeg, png, pdf"),
 	UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB("RES-SER-517", "Unable to fetch service history from database."),
-	INVALID_REG_CENTER_NAME("RES-SER-518", "Name cannot be empty as it is a mandatory field.");
+	INVALID_REG_CENTER_NAME("RES-SER-518", "Name cannot be empty as it is a mandatory field."),
+	SAME_EMAIL_ERROR("RES-SER-519", "Enter a new email ID"),
+	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number");
 	
 
 
