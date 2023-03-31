@@ -1,30 +1,5 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.RegistrationConstants.ID;
-import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
-import static io.mosip.resident.constant.RegistrationConstants.VERSION;
-import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
-import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -55,6 +30,7 @@ import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.IVidRequestDto;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
@@ -80,6 +56,31 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.RegistrationConstants.ID;
+import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
+import static io.mosip.resident.constant.RegistrationConstants.VERSION;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
 @Component
 public class RequestValidator {
@@ -822,6 +823,7 @@ public class RequestValidator {
 		} else {
 			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
+			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
@@ -840,6 +842,33 @@ public class RequestValidator {
 				audit.setAuditRequestDto(
 						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
 				throw new InvalidInputException("identityJson");
+			}
+		}
+	}
+
+	private void validateLanguageCodeInIdentityJson(JSONObject identity) {
+		if(identity!=null) {
+			// Get a set of entries
+			for (Map.Entry entry : (Iterable<Map.Entry>) identity.entrySet()) {
+				// Retrieve the key and value of each entry
+				String key = (String) entry.getKey();
+				Object value = entry.getValue();
+				if (value instanceof ArrayList<?>) {
+					ArrayList<?> valueArray = (ArrayList<?>) value;
+					for (Object valueInList : valueArray) {
+						if (valueInList instanceof Map) {
+							Map <String, String> valueInListMap = (Map <String, String>) valueInList;
+							if (valueInListMap.containsKey(ResidentConstants.LANGUAGE)) {
+								String languageCode = valueInListMap.get(ResidentConstants.LANGUAGE);
+								validateMissingInputParameter(languageCode, ResidentConstants.LANGUAGE, EventEnum.INPUT_INVALID.getName());
+								validateLanguageCode(languageCode);
+								String valueOfLanguageCode = valueInListMap.get(ResidentConstants.VALUE);
+								validateMissingInputParameter(valueOfLanguageCode, key+" "+languageCode+ " "+
+										ResidentConstants.LANGUAGE +" "+ ResidentConstants.VALUE, EventEnum.INPUT_INVALID.getName());
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1145,11 +1174,34 @@ public class RequestValidator {
 		return inputData.matches(regex);
 	}
 
-	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException {
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
 		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
+		validateSameUserId(userOtpRequest.getRequest().getUserId());
+	}
+
+	private void validateSameUserId(String userId) throws ApisResourceAccessException {
+		try {
+			IdentityDTO identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
+			if(phoneValidator(userId)){
+				String phone = identityDTO.getPhone();
+				if(phone!=null && phone.equalsIgnoreCase(userId)) {
+					throw new ResidentServiceException(ResidentErrorCode.SAME_PHONE_ERROR,
+							ResidentErrorCode.SAME_PHONE_ERROR.getErrorMessage());
+				}
+			} else {
+				String email = identityDTO.getEmail();
+				if(email!=null && email.equalsIgnoreCase(userId)){
+					throw new ResidentServiceException(ResidentErrorCode.SAME_EMAIL_ERROR,
+							ResidentErrorCode.SAME_EMAIL_ERROR.getErrorMessage());
+				}
+			}
+		} catch (ResidentServiceCheckedException e) {
+			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
+					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
+		}
 	}
 
 	public void validateUpdateDataRequest(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
