@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -128,9 +131,9 @@ public class ResidentController {
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusId;
 	
-	@Value("${resident.service-history.download.max.count}")
+	@Value("${" + RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT + "}")
 	private Integer maxEventsServiceHistoryPageSize;
-
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
 
 	@ResponseFilter
@@ -342,7 +345,7 @@ public class ResidentController {
 		validator.validateSearchText(searchText);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, langCode, timeZoneOffset);
+				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, langCode, timeZoneOffset, RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE);
 		return responseWrapper;
 	}	
 
