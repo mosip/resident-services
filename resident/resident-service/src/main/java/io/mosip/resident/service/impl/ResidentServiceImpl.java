@@ -1576,20 +1576,16 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {
-			if (pageFetch == null) {
-				// If both Page start and page fetch values are null return all records
-				pageStart = DEFAULT_PAGE_START;
-				pageFetch = defaultPageSizeProperty != null
-						? env.getProperty(defaultPageSizeProperty, Integer.class, DEFAULT_PAGE_COUNT)
-						: DEFAULT_PAGE_COUNT;
-			} else {
-				pageStart = DEFAULT_PAGE_START;
-			}
-		} else {
-			if (pageFetch == null) {
-				pageFetch = DEFAULT_PAGE_COUNT;
-			}
+			//By default page start is 0
+			pageStart = DEFAULT_PAGE_START;
 		}
+		
+		if (pageFetch == null) {
+			// Get the default page size based on the property if mentioned otherwise it
+			// default would be 10
+			pageFetch = getDefaultPageSize(defaultPageSizeProperty);
+		}
+		
 		if (pageStart < 0) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_START_VALUE,
 					pageStart.toString(), "Invalid page start value"));
@@ -1604,6 +1600,12 @@ public class ResidentServiceImpl implements ResidentService {
 				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
 				langCode, timeZoneOffset);
 		return serviceHistoryResponseDtoList;
+	}
+
+	private Integer getDefaultPageSize(String defaultPageSizeProperty) {
+		return defaultPageSizeProperty != null
+				? env.getProperty(defaultPageSizeProperty, Integer.class, DEFAULT_PAGE_COUNT)
+				: DEFAULT_PAGE_COUNT;
 	}
 
 	@Override
