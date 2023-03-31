@@ -2,6 +2,8 @@ package io.mosip.resident.controller;
 
 import java.util.Map;
 
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -72,13 +74,16 @@ public class ProxyOtpController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
-			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException {
 		try {
 			requestValidator.validateProxySendOtpRequest(userOtpRequest);
 		} catch (InvalidInputException e) {
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID)));
+		} catch (ApisResourceAccessException e) {
+			throw new ApisResourceAccessException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
+					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
 		}
 		return proxyOtpService.sendOtp(userOtpRequest);
 	}
