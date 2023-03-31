@@ -860,12 +860,11 @@ public class RequestValidator {
 							Map <String, String> valueInListMap = (Map <String, String>) valueInList;
 							if (valueInListMap.containsKey(ResidentConstants.LANGUAGE)) {
 								String languageCode = valueInListMap.get(ResidentConstants.LANGUAGE);
+								validateMissingInputParameter(languageCode, ResidentConstants.LANGUAGE, EventEnum.INPUT_INVALID.getName());
 								validateLanguageCode(languageCode);
 								String valueOfLanguageCode = valueInListMap.get(ResidentConstants.VALUE);
-								if(valueOfLanguageCode==null || valueOfLanguageCode.isEmpty()){
-									validateMissingInputParameter(key+" "+languageCode+ " "+ResidentConstants.LANGUAGE
-											+" "+ ResidentConstants.VALUE, ResidentConstants.VALUE, EventEnum.INPUT_INVALID.getName());
-								}
+								validateMissingInputParameter(valueOfLanguageCode, key+" "+languageCode+ " "+
+										ResidentConstants.LANGUAGE +" "+ ResidentConstants.VALUE, EventEnum.INPUT_INVALID.getName());
 							}
 						}
 					}
