@@ -1,8 +1,6 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.RegistrationConstants.ID;
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
-import static io.mosip.resident.constant.RegistrationConstants.VERSION;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
@@ -84,8 +82,12 @@ import io.mosip.resident.util.EventEnum;
 @Component
 public class RequestValidator {
 
+	private static final String ID = "id";
+	private static final String VERSION = "version";
+	private static final String REQUESTTIME = "requesttime";
 	private static final String REQUEST = "request";
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
+
 	@Autowired
 	private UinValidator<String> uinValidator;
 
@@ -267,23 +269,23 @@ public class RequestValidator {
 			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", "Request to generate VID"));
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, REQUESTTIME, "Request to generate VID"));
 
-			throw new InvalidInputException("requesttime");
+			throw new InvalidInputException(REQUESTTIME);
 		}
 
 		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(id)) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Request to generate VID"));
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ID, "Request to generate VID"));
 
-			throw new InvalidInputException("id");
+			throw new InvalidInputException(ID);
 		}
 
 		if (StringUtils.isEmpty(requestDto.getVersion()) || !requestDto.getVersion().equalsIgnoreCase(version)) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "version", "Request to generate VID"));
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, VERSION, "Request to generate VID"));
 
-			throw new InvalidInputException("version");
+			throw new InvalidInputException(VERSION);
 		}
 
 		if (requestDto.getRequest() == null) {
@@ -322,9 +324,9 @@ public class RequestValidator {
 			DateUtils.parseToLocalDateTime(requestDto.getRequesttime());
 		} catch (Exception e) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", "Request to generate VID"));
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, REQUESTTIME, "Request to generate VID"));
 
-			throw new InvalidInputException("requesttime");
+			throw new InvalidInputException(REQUESTTIME);
 		}
 
 		if (StringUtils.isEmpty(requestDto.getId()) || !requestDto.getId().equalsIgnoreCase(generateId)) {
@@ -667,13 +669,13 @@ public class RequestValidator {
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", msg));
-			throw new InvalidInputException("requesttime");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, REQUESTTIME, msg));
+			throw new InvalidInputException(REQUESTTIME);
 		}
 
 		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equalsIgnoreCase(version)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "version", msg));
-			throw new InvalidInputException("version");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, VERSION, msg));
+			throw new InvalidInputException(VERSION);
 		}
 		if (request.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
@@ -720,8 +722,8 @@ public class RequestValidator {
 		try {
 			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", msg));
-			throw new InvalidInputException("requesttime");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, REQUESTTIME, msg));
+			throw new InvalidInputException(REQUESTTIME);
 		}
 
 		if (StringUtils.isEmpty(requestWrapper.getVersion()) || !requestWrapper.getVersion().equalsIgnoreCase(revokeVidVersion)) {
@@ -733,14 +735,14 @@ public class RequestValidator {
 
 	public boolean validateRequest(RequestWrapper<?> request, RequestIdType requestIdType) {
 		if (StringUtils.isEmpty(request.getId()) || !request.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
+			throw new InvalidInputException(ID);
 		try {
 			DateUtils.parseToLocalDateTime(request.getRequesttime());
 		} catch (Exception e) {
-			throw new InvalidInputException("requesttime");
+			throw new InvalidInputException(REQUESTTIME);
 		}
 		if (StringUtils.isEmpty(request.getVersion()) || !request.getVersion().equals(version))
-			throw new InvalidInputException("version");
+			throw new InvalidInputException(VERSION);
 
 		if (request.getRequest() == null) {
 			audit.setAuditRequestDto(EventEnum.INPUT_DOESNT_EXISTS);
@@ -748,21 +750,6 @@ public class RequestValidator {
 		}
 		return true;
 
-	}
-
-	public boolean validateAidStatusRequest(RequestWrapper<?> requestWrapper, RequestIdType requestIdType) {
-		if (StringUtils.isEmpty(requestWrapper.getId()) || !requestWrapper.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
-		try {
-			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
-		} catch (Exception e) {
-			throw new InvalidInputException("requesttime");
-		}
-		if (StringUtils.isEmpty(requestWrapper.getVersion()) || !requestWrapper.getVersion().equals(newVersion))
-			throw new InvalidInputException("version");
-
-		validateAPIRequestToCheckNull(requestWrapper);
-		return true;
 	}
 
 	public boolean isNumeric(String strNum) {
@@ -925,7 +912,7 @@ public class RequestValidator {
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
-		validateAidStatusRequest(reqDto, RequestIdType.CHECK_STATUS);
+		validateRequestNewApi(reqDto, RequestIdType.CHECK_STATUS);
 		validateTransactionId(reqDto.getRequest().getTransactionId());
 		if(reqDto.getRequest().getIndividualId() == null) {
 			throw new InvalidInputException("individualId");
@@ -1093,12 +1080,12 @@ public class RequestValidator {
 	public void validateId(io.mosip.preregistration.core.common.dto.MainRequestDTO<TransliterationRequestDTO> requestDTO) {
 		if (Objects.nonNull(requestDTO.getId())) {
 			if (!requestDTO.getId().equals(transliterateId)) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Invalid Transliterate id"));
-				throw new InvalidInputException("id");
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ID, "Invalid Transliterate id"));
+				throw new InvalidInputException(ID);
 			}
 		} else {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
-			throw new InvalidInputException("id");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ID, "id is null"));
+			throw new InvalidInputException(ID);
 		}
 		if (requestDTO.getRequest().getFromFieldLang().equalsIgnoreCase(requestDTO.getRequest().getToFieldLang())) {
 			throw new InvalidInputException("'from' and 'to' languages cannot be same");
@@ -1182,8 +1169,8 @@ public class RequestValidator {
 	public void validateDate(Date requesttime) {
 		if(requesttime==null) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "requesttime", "Request time invalid"));
-			throw new InvalidInputException("requesttime");
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, REQUESTTIME, "Request time invalid"));
+			throw new InvalidInputException(REQUESTTIME);
 		}
 	}
 
@@ -1221,7 +1208,7 @@ public class RequestValidator {
 
 	public void validateVersion(String requestVersion) {
 		if (StringUtils.isEmpty(requestVersion) || !requestVersion.equals(reqResVersion))
-			throw new InvalidInputException("version");
+			throw new InvalidInputException(VERSION);
 	}
 
 	private void validateEncodedString(String html) {
@@ -1249,14 +1236,14 @@ public class RequestValidator {
 
 	public boolean validateRequestNewApi(RequestWrapper<?> requestWrapper, RequestIdType requestIdType) {
 		if (StringUtils.isEmpty(requestWrapper.getId()) || !requestWrapper.getId().equals(map.get(requestIdType)))
-			throw new InvalidInputException("id");
+			throw new InvalidInputException(ID);
 		try {
 			DateUtils.parseToLocalDateTime(requestWrapper.getRequesttime());
 		} catch (Exception e) {
-			throw new InvalidInputException("requesttime");
+			throw new InvalidInputException(REQUESTTIME);
 		}
 		if (StringUtils.isEmpty(requestWrapper.getVersion()) || !requestWrapper.getVersion().equals(reqResVersion))
-			throw new InvalidInputException("version");
+			throw new InvalidInputException(VERSION);
 
 		validateAPIRequestToCheckNull(requestWrapper);
 		return true;
