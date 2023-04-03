@@ -55,6 +55,7 @@ import io.mosip.resident.util.Utility;
 
 /**
  * @author Manoj SP
+ * @author Loganathan S
  *
  */
 @Component
