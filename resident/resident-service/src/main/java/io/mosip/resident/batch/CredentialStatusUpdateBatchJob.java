@@ -135,7 +135,7 @@ public class CredentialStatusUpdateBatchJob {
 				updateEntity(txn);
 				saveEntity(txn);
 			} else {
-				handleWithTryCatch(() -> updateStatus(txn));
+				handleWithTryCatch(() -> updateTransactionStatus(txn));
 			}
 		}
 	}
@@ -144,7 +144,7 @@ public class CredentialStatusUpdateBatchJob {
 		return RequestType.getAllNewOrInprogressStatusList(env);
 	}
 
-	private void updateStatus(ResidentTransactionEntity txn) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	private void updateTransactionStatus(ResidentTransactionEntity txn) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		String requestTypeCode = txn.getRequestTypeCode();
 		if(requestTypeCodesToProcessInBatchJob.contains(requestTypeCode)) {
 			RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
@@ -154,17 +154,21 @@ public class CredentialStatusUpdateBatchJob {
 				if (!credentialStatus.isEmpty()) {
 					// Save the new status to the resident transaction entity
 					String newStatusCode = credentialStatus.get(STATUS_CODE);
+					//If the status did not change, don't process it
 					if (!txn.getStatusCode().equals(newStatusCode)) {
+						logger.debug(String.format("updating status for : %s as %s", txn.getEventId(), newStatusCode));
 						txn.setStatusCode(newStatusCode);
 
 						// Save the reference link if any
 						String referenceLink = credentialStatus.get(URL);
 						if (referenceLink != null) {
+							logger.debug(String.format("saving reference link for : %s", txn.getEventId()));
 							txn.setReferenceLink(referenceLink);
 						}
 
 						// Send Notification
 						if (requestType.isNotificationStatus(env, newStatusCode)) {
+							logger.debug("invoking notifications for status: " + newStatusCode);
 							requestType.preUpdateInBatchJob(env, utility, txn, credentialStatus, newStatusCode);
 
 							// For bell notification

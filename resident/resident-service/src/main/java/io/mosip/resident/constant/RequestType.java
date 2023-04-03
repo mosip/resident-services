@@ -93,6 +93,18 @@ public enum RequestType implements PreUpdateInBatchJob {
 	DEFAULT("Default", TemplateUtil::getDefaultTemplateVariables, "",
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
+	private static final String PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT = "resident.template.email.subject.%s.%s";
+
+	private static final String PREFIX_RESIDENT_TEMPLATE_EMAIL_CONTENT = "resident.template.email.content.%s.%s";
+
+	private static final String PREFIX_RESIDENT_TEMPLATE_SMS = "resident.template.sms.%s.%s";
+
+	private static final String PREFIX_RESIDENT_TEMPLATE_BELL_ICON = "resident.template.bell-icon.%s.%s";
+
+	private static final String PREFIX_RESIDENT_TEMPLATE_PURPOSE = "resident.template.purpose.%s.%s";
+
+	private static final String PREFIX_RESIDENT_TEMPLATE_SUMMARY = "resident.template.summary.%s.%s";
+
 	private static final Logger logger = LoggerConfiguration.logConfig(RequestType.class);
 	
 	private static final String PREFIX_RESIDENT_REQUEST_NOTIFICATION_STATUS_LIST = "resident.request.notification.status.list.";
@@ -228,27 +240,27 @@ public enum RequestType implements PreUpdateInBatchJob {
 	public String getName() { return  name; }
 
 	public String getEmailSubjectTemplateCodeProperty(TemplateType templateType) {
-		return "resident.template.email.subject." + templateType.getType() + "." + getFeatureName();
+		return String.format(PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT, templateType.getType(), getFeatureName());
 	}
 	
 	public String getEmailContentTemplateCodeProperty(TemplateType templateType) {
-		return "resident.template.email.content." + templateType.getType() + "." + getFeatureName();
+		return String.format(PREFIX_RESIDENT_TEMPLATE_EMAIL_CONTENT, templateType.getType(), getFeatureName());
 	}
 
 	public String getSmsTemplateCodeProperty(TemplateType templateType) {
-		return "resident.template.sms." + templateType.getType() + "." + getFeatureName();
+		return String.format(PREFIX_RESIDENT_TEMPLATE_SMS, templateType.getType(), getFeatureName());
 	}
 	
 	public String getBellIconTemplateCodeProperty(TemplateType templateType) {
-		return "resident.template.bell-icon." + templateType.getType() + "." + getFeatureName();
+		return String.format(PREFIX_RESIDENT_TEMPLATE_BELL_ICON, templateType.getType(), getFeatureName());
 	}
 	
 	public String getPurposeTemplateCodeProperty(TemplateType templateType) {
-		return "resident.template.purpose." + templateType.getType() + "." + getFeatureName();
+		return String.format(PREFIX_RESIDENT_TEMPLATE_PURPOSE, templateType.getType(), getFeatureName());
 	}
 	
 	public String getSummaryTemplateCodeProperty(TemplateType templateType) {
-		return "resident.template.summary." + templateType.getType() + "." + getFeatureName();
+		return String.format(PREFIX_RESIDENT_TEMPLATE_SUMMARY, templateType.getType(), getFeatureName());
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode, Integer timeZoneOffset) {

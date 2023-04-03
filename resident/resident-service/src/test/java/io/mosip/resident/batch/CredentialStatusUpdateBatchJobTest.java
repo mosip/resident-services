@@ -82,7 +82,6 @@ public class CredentialStatusUpdateBatchJobTest {
 	@Before
 	public void init() {
 		ReflectionTestUtils.setField(job, "publicUrl", "http://localhost");
-		ReflectionTestUtils.setField(job, "statusCodes", "NEW,ISSUED,RECEIVED,PRINTING,FAILED,CARD_DELIVERED");
 		ReflectionTestUtils.setField(job, "requestTypeCodes", "VID_CARD_DOWNLOAD,ORDER_PHYSICAL_CARD");
 	}
 
