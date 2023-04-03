@@ -1692,7 +1692,7 @@ public class ResidentServiceImpl implements ResidentService {
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
-		responseWrapper.setResponsetime(LocalDateTime.now());
+		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 
 		return responseWrapper;
 	}
