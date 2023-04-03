@@ -1,13 +1,25 @@
 package io.mosip.resident.constant;
 
-import java.util.Collections;
+import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.springframework.core.env.Environment;
+
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.function.QuadFunction;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
 /**
@@ -16,86 +28,80 @@ import reactor.util.function.Tuple2;
  * @author Kamesh Shekhar Prasad
  */
 
-public enum RequestType {
+public enum RequestType implements PreUpdateInBatchJob {
 	AUTHENTICATION_REQUEST("Authentication Request", TemplateUtil::getAckTemplateVariablesForAuthenticationRequest,
-			List.of(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL), List.of(EventStatusFailure.AUTHENTICATION_FAILED),
-			List.of(), "", null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
+			"", null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
 	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForCredentialShare,
-			List.of(EventStatusSuccess.RECEIVED, EventStatusSuccess.DATA_SHARED_SUCCESSFULLY),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED),
 			"share-cred-with-partner", TemplateUtil::getNotificationTemplateVariablesForShareCredentialWithPartner,
 			TemplateUtil::getDescriptionTemplateVariablesForShareCredential,
 			ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY),
 	DOWNLOAD_PERSONALIZED_CARD("Download Personalized Card",
 			TemplateUtil::getAckTemplateVariablesForDownloadPersonalizedCard,
-			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED), "cust-and-down-my-card",
+			"cust-and-down-my-card",
 			TemplateUtil::getNotificationTemplateVariablesForDownloadPersonalizedCard,
 			TemplateUtil::getDescriptionTemplateVariablesForDownloadPersonalizedCard,
 			ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY),
 	ORDER_PHYSICAL_CARD("Order a Physical Card", TemplateUtil::getAckTemplateVariablesForOrderPhysicalCard,
-			List.of(EventStatusSuccess.CARD_DELIVERED),
-			List.of(EventStatusFailure.FAILED, EventStatusFailure.PAYMENT_FAILED),
-			List.of(EventStatusInProgress.PAYMENT_CONFIRMED, EventStatusInProgress.NEW, EventStatusInProgress.ISSUED,
-					EventStatusInProgress.PRINTING, EventStatusInProgress.IN_TRANSIT),
 			"order-a-physical-card", TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard,
 			TemplateUtil::getDescriptionTemplateVariablesForOrderPhysicalCard,
-			ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY),
+			ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY) {
+		@Override
+		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn, Map<String, String> credentialStatus,
+				String newStatusCode)
+				throws ResidentServiceCheckedException, ApisResourceAccessException {
+			if (this.isSuccessStatus(env, credentialStatus.get(STATUS_CODE))) {
+				String trackingId = utility.getCardOrderTrackingId(txn.getRequestTrnId(), txn.getIndividualId());
+				txn.setTrackingId(trackingId);
+			}
+		}
+
+	},
 	GET_MY_ID("Get UIN Card", TemplateUtil::getAckTemplateVariablesForGetMyId,
-			List.of(EventStatusSuccess.CARD_DOWNLOADED, EventStatusSuccess.OTP_VERIFIED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW, EventStatusInProgress.OTP_REQUESTED),
 			"get-my-uin-card", TemplateUtil::getNotificationTemplateVariablesForGetMyId,
 			TemplateUtil::getDescriptionTemplateVariablesForGetMyId),
-	BOOK_AN_APPOINTMENT("Book An Appointment", TemplateUtil::getAckTemplateVariablesForBookAnAppointment, List.of(),
-			List.of(), List.of(), "", null, null),
+	BOOK_AN_APPOINTMENT("Book An Appointment", TemplateUtil::getAckTemplateVariablesForBookAnAppointment, "", null, null),
 	UPDATE_MY_UIN("Update UIN Data", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
-			List.of(EventStatusSuccess.PROCESSED, EventStatusSuccess.DATA_UPDATED),
-			List.of(EventStatusFailure.FAILED, EventStatusFailure.REJECTED, EventStatusFailure.REPROCESS_FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.PROCESSING, EventStatusInProgress.PAUSED,
-					EventStatusInProgress.RESUMABLE, EventStatusInProgress.REPROCESS,
-					EventStatusInProgress.PAUSED_FOR_ADDITIONAL_INFO),
 			"update-demo-data", TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin,
 			TemplateUtil::getDescriptionTemplateVariablesForUpdateMyUin,
 			ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY),
 	GENERATE_VID("Generate VID", TemplateUtil::getAckTemplateVariablesForGenerateVid,
-			List.of(EventStatusSuccess.VID_GENERATED), List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW), "gen-or-revoke-vid",
+			"gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
 			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
-	REVOKE_VID("Revoke VID", TemplateUtil::getAckTemplateVariablesForRevokeVid, List.of(EventStatusSuccess.VID_REVOKED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW), "gen-or-revoke-vid",
+	REVOKE_VID("Revoke VID", TemplateUtil::getAckTemplateVariablesForRevokeVid, "gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
 			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
 	AUTH_TYPE_LOCK_UNLOCK("Lock or/and Unlock Authentication Types",
 			TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
-			List.of(EventStatusSuccess.LOCKED, EventStatusSuccess.UNLOCKED,
-					EventStatusSuccess.AUTHENTICATION_TYPE_LOCKED, EventStatusSuccess.AUTHENTICATION_TYPE_UNLOCKED),
-			List.of(EventStatusFailure.FAILED), List.of(EventStatusInProgress.NEW), "lock-unlock-auth",
+			"lock-unlock-auth",
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock,
 			TemplateUtil::getDescriptionTemplateVariablesForSecureMyId,
 			ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY),
 	VID_CARD_DOWNLOAD("Download VID Card", TemplateUtil::getAckTemplateVariablesForVidCardDownload,
-			List.of(EventStatusSuccess.STORED, EventStatusSuccess.CARD_DOWNLOADED), List.of(EventStatusFailure.FAILED),
-			List.of(EventStatusInProgress.NEW, EventStatusInProgress.ISSUED), "vid-card-download",
+			"vid-card-download",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload,
 			TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload),
 
-	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp, List.of(), List.of(), List.of(), "send-otp",
+	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp, "send-otp",
 			TemplateUtil::getNotificationSendOtpVariables, null),
 	VALIDATE_OTP("Validate OTP", TemplateUtil::getAckTemplateVariablesForValidateOtp,
-			List.of(EventStatusSuccess.OTP_VERIFIED), List.of(EventStatusFailure.OTP_VERIFICATION_FAILED),
-			List.of(EventStatusInProgress.OTP_REQUESTED), "verify-my-phone-email",
+			"verify-my-phone-email",
 			TemplateUtil::getNotificationCommonTemplateVariables,
 			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),
-	DEFAULT("Default", TemplateUtil::getDefaultTemplateVariables, List.of(), List.of(), List.of(), "",
+	DEFAULT("Default", TemplateUtil::getDefaultTemplateVariables, "",
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
+	private static final Logger logger = LoggerConfiguration.logConfig(RequestType.class);
+	
+	private static final String PREFIX_RESIDENT_REQUEST_NOTIFICATION_STATUS_LIST = "resident.request.notification.status.list.";
+	private static final String PREFIX_RESIDENT_REQUEST_FAILED_STATUS_LIST = "resident.request.failed.status.list.";
+	private static final String PREFIX_RESIDENT_REQUEST_SUCCESS_STATUS_LIST = "resident.request.success.status.list.";
+	private static final String PREFIX_RESIDENT_REQUEST_IN_PROGRESS_STATUS_LIST = "resident.request.in-progress.status.list.";
+	private static final String PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST = "resident.request.new.status.list.";
+	private static final String SEPARATOR = ",";
 	private QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
-	private List<EventStatusSuccess> successStatusList;
-	private List<EventStatusFailure> failureStatusList;
-	private List<EventStatusInProgress> inProgressStatusList;
 	private String featureName;
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
 	private QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables;
@@ -105,26 +111,21 @@ public enum RequestType {
 
 	private RequestType(String name,
 			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
-			List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
-			List<EventStatusInProgress> inProgressStatusList, String featureName,
+			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
 			QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables) {
-		this(name, ackTemplateVariablesFunction, successStatusList, failureStatusList, inProgressStatusList,
+		this(name, ackTemplateVariablesFunction,
 				featureName, notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
 	}
 
 	private RequestType(String name,
 			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
-			List<EventStatusSuccess> successStatusList, List<EventStatusFailure> failureStatusList,
-			List<EventStatusInProgress> inProgressStatusList, String featureName,
+			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
 			QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
-		this.successStatusList = Collections.unmodifiableList(successStatusList);
-		this.failureStatusList = Collections.unmodifiableList(failureStatusList);
-		this.inProgressStatusList = Collections.unmodifiableList(inProgressStatusList);
 		this.featureName = featureName;
 		this.notificationTemplateVariablesFunction = notificationTemplateVariablesFunction;
 		this.getDescriptionTemplateVariables = getDescriptionTemplateVariables;
@@ -148,17 +149,76 @@ public enum RequestType {
         }
         return RequestType.DEFAULT;
     }
-
-	public List<EventStatusSuccess> getSuccessStatusList() {
-		return successStatusList;
+	
+	public Stream<String> getNewStatusList(Environment env) {
+		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST);
 	}
 
-	public List<EventStatusFailure> getFailureStatusList() {
-		return failureStatusList;
+	public Stream<String> getSuccessStatusList(Environment env) {
+		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_SUCCESS_STATUS_LIST);
 	}
 
-	public List<EventStatusInProgress> getInProgressStatusList() {
-		return inProgressStatusList;
+	public Stream<String> getFailedStatusList(Environment env) {
+		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_FAILED_STATUS_LIST);
+	}
+	
+	public Stream<String> getInProgressStatusList(Environment env) {
+		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_IN_PROGRESS_STATUS_LIST);
+	}
+	
+	public Stream<String> getNotificationStatusList(Environment env) {
+		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_NOTIFICATION_STATUS_LIST);
+	}
+	
+	public boolean isNewStatus(Environment env, String statusCode) {
+		return isStatusPresent(statusCode, getNewStatusList(env));
+	}
+
+	public boolean isSuccessStatus(Environment env, String statusCode) {
+		return isStatusPresent(statusCode, getSuccessStatusList(env));
+	}
+
+	public boolean isFailedStatus(Environment env, String statusCode) {
+		return isStatusPresent(statusCode, getFailedStatusList(env));
+	}
+	
+	public boolean isSuccessOrFailedStatus(Environment env, String statusCode) {
+		return isSuccessStatus(env, statusCode) || isFailedStatus(env, statusCode);
+	}
+
+	public boolean isInProgressStatus(Environment env, String statusCode) {
+		return isStatusPresent(statusCode, getInProgressStatusList(env));
+	}
+
+	public boolean isNotificationStatus(Environment env, String statusCode) {
+		return isStatusPresent(statusCode, getNotificationStatusList(env));
+	}
+	
+	private boolean isStatusPresent(String statusCode, Stream<String> stream) {
+		return statusCode != null && stream.anyMatch(statusCode::equals);
+	}
+	
+	private Stream<String> getStatusListFromProperty(Environment env, String propertyPrefix) {
+		String propertyName = propertyPrefix + this.name();
+		String statusListStr = env.getProperty(propertyName);
+		if (statusListStr == null) {
+			logger.debug("missing property: " + propertyName);
+			return Stream.empty();
+		} else {
+			return Arrays.stream(statusListStr.split(SEPARATOR));
+		}
+	}
+	
+	public Stream<String> getNewOrInprogressStatusList(Environment env) {
+		return Stream.concat(getNewStatusList(env), getInProgressStatusList(env));
+	}
+	
+	public static List<String> getAllNewOrInprogressStatusList(Environment env) {
+		return Stream.of(values()).flatMap(requestType -> {
+			return Stream.concat(requestType.getNewStatusList(env), requestType.getInProgressStatusList(env));
+		}).filter(str -> !str.isEmpty())
+		.distinct()	
+		.collect(Collectors.toUnmodifiableList());
 	}
 	
 	public String getFeatureName() {
@@ -206,5 +266,13 @@ public enum RequestType {
 	public String getNamingProperty() {
 		return namingProperty;
 	}
+
+	@Override
+	public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
+			Map<String, String> credentialStatus, String newStatusCode)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		//Default does nothing
+	}
+
 
 }

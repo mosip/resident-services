@@ -99,7 +99,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -116,7 +116,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -132,7 +132,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
     }
 
@@ -149,7 +149,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 				ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage())));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -165,7 +165,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -181,7 +181,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -199,7 +199,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -217,7 +217,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -235,7 +235,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -254,7 +254,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 				ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage())));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -272,7 +272,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -290,7 +290,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -308,7 +308,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -330,7 +330,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setFullName("kamesh");
 		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -355,7 +355,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		RegStatusCheckResponseDTO regStatusCheckResponseDTO = new RegStatusCheckResponseDTO();
 		regStatusCheckResponseDTO.setRidStatus("123");
 		when(residentService.getRidStatus(Mockito.anyString())).thenReturn(regStatusCheckResponseDTO);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 }
