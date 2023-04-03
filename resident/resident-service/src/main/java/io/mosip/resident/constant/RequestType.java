@@ -63,7 +63,16 @@ public enum RequestType implements PreUpdateInBatchJob {
 	UPDATE_MY_UIN("Update UIN Data", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			"update-demo-data", TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin,
 			TemplateUtil::getDescriptionTemplateVariablesForUpdateMyUin,
-			ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY),
+			ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY) {
+		@Override
+		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
+				Map<String, String> credentialStatus, String newStatusCode)
+				throws ResidentServiceCheckedException, ApisResourceAccessException {
+			if (this.isSuccessStatus(env, credentialStatus.get(STATUS_CODE))) {
+				txn.setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
+			}
+		}
+	},
 	GENERATE_VID("Generate VID", TemplateUtil::getAckTemplateVariablesForGenerateVid,
 			"gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
@@ -82,7 +91,16 @@ public enum RequestType implements PreUpdateInBatchJob {
 	VID_CARD_DOWNLOAD("Download VID Card", TemplateUtil::getAckTemplateVariablesForVidCardDownload,
 			"vid-card-download",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload,
-			TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload),
+			TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload) {
+		@Override
+		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
+				Map<String, String> credentialStatus, String newStatusCode)
+				throws ResidentServiceCheckedException, ApisResourceAccessException {
+			if (this.isSuccessStatus(env, credentialStatus.get(STATUS_CODE))) {
+				txn.setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
+			}
+		}
+	},
 
 	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp, "send-otp",
 			TemplateUtil::getNotificationSendOtpVariables, null),
