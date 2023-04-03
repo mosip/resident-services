@@ -1,17 +1,66 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
+import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
-import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
@@ -81,7 +130,6 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.entity.ResidentUserEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
-import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.EventIdNotPresentException;
 import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -110,57 +158,8 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -187,14 +186,10 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
 	private static final Integer DEFAULT_PAGE_START = 0;
 	private static final Integer DEFAULT_PAGE_COUNT = 10;
-	private static final String AVAILABLE = "AVAILABLE";
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
-	private static final String CREATED_DATE_TIME = "crDtimes";
-	private static final String PINNED_STATUS = "pinnedStatus";
-	private static final String MODULO_OPERATOR = "%";
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -287,9 +282,6 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
-
-	@Autowired
-	private ResidentCredentialServiceImpl residentCredentialServiceImpl;
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
@@ -1569,23 +1561,31 @@ public class ResidentServiceImpl implements ResidentService {
 	
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
+			 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
+			 String statusFilter, String searchText, String langCode, int timeZoneOffset)
+		throws ResidentServiceCheckedException, ApisResourceAccessException {
+				return getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter,
+						searchText, langCode, timeZoneOffset, null);
+	}
+	
+	@Override
+	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
-																				 String statusFilter, String searchText, String langCode, int timeZoneOffset)
+																				 String statusFilter, String searchText, String langCode, int timeZoneOffset,
+																				 String defaultPageSizeProperty)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {
-			if (pageFetch == null) {
-				// If both Page start and page fetch values are null return all records
-				pageStart = DEFAULT_PAGE_START;
-				pageFetch = DEFAULT_PAGE_COUNT;
-			} else {
-				pageStart = DEFAULT_PAGE_START;
-			}
-		} else {
-			if (pageFetch == null) {
-				pageFetch = DEFAULT_PAGE_COUNT;
-			}
+			//By default page start is 0
+			pageStart = DEFAULT_PAGE_START;
 		}
+		
+		if (pageFetch == null) {
+			// Get the default page size based on the property if mentioned otherwise it
+			// default would be 10
+			pageFetch = getDefaultPageSize(defaultPageSizeProperty);
+		}
+		
 		if (pageStart < 0) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_PAGE_START_VALUE,
 					pageStart.toString(), "Invalid page start value"));
@@ -1600,6 +1600,12 @@ public class ResidentServiceImpl implements ResidentService {
 				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
 				langCode, timeZoneOffset);
 		return serviceHistoryResponseDtoList;
+	}
+
+	private Integer getDefaultPageSize(String defaultPageSizeProperty) {
+		return defaultPageSizeProperty != null
+				? env.getProperty(defaultPageSizeProperty, Integer.class, DEFAULT_PAGE_COUNT)
+				: DEFAULT_PAGE_COUNT;
 	}
 
 	@Override
@@ -2141,7 +2147,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
 																				 null, null, ServiceType.ASYNC.name(), null,
-																				 null, null, languageCode, timeZoneOffset);
+																				 null, null, languageCode, timeZoneOffset, RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE);
 		responseWrapper.setId(unreadnotificationlist);
 		responseWrapper.setVersion(serviceEventVersion);
 		return responseWrapper;
