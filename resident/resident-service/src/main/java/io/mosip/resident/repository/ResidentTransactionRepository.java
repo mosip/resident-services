@@ -77,7 +77,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			@Param("pageStart") int pageStart, @Param("pageFetch") int pageFetch,
 			@Param("searchText") String searchText);
 
-	public List<ResidentTransactionEntity> findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(List<String> statusCodes, List<String> requestTypes);
+	public List<ResidentTransactionEntity> findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(List<String> statusCodes, List<String> requestTypes);
 
 	Long countByTokenId(String tokenId);
 
