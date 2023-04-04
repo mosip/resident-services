@@ -18,6 +18,9 @@ import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.idvalidator.rid.impl.RidValidatorImpl;
 import io.mosip.kernel.idvalidator.uin.impl.UinValidatorImpl;
 import io.mosip.kernel.idvalidator.vid.impl.VidValidatorImpl;
+import io.mosip.preregistration.application.service.TransliterationService;
+import io.mosip.preregistration.application.service.util.TransliterationServiceUtil;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 
 @Configuration
 @ComponentScan(basePackages = { "io.mosip.resident.*" })
@@ -32,6 +35,12 @@ public class ResidentServiceConfigTest {
 
 	@MockBean
 	private PacketWriter packetWriter;
+
+	@MockBean
+	private TransliterationService transliterationService;
+
+	@MockBean
+	private TransliterationServiceUtil transliterationServiceUtil;
 
 	@Bean
 	@Primary
@@ -55,5 +64,8 @@ public class ResidentServiceConfigTest {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
+
+	@MockBean
+	private ResidentTransactionRepository residentTransactionRepository;
 
 }

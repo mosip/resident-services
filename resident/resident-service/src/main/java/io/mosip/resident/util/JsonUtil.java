@@ -9,18 +9,19 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import io.mosip.resident.dto.JsonValue;
 
@@ -95,7 +96,7 @@ public class JsonUtil {
 	/**
 	 * Gets the JSON value.
 	 *
-	 * @param            <T> the generic type
+	 * @param <T>        the generic type
 	 * @param jsonObject the json object
 	 * @param key        the key
 	 * @return the JSON value
@@ -122,7 +123,7 @@ public class JsonUtil {
 	/**
 	 * Object mapper read value. This method maps the jsonString to particular type
 	 * 
-	 * @param            <T> the generic type
+	 * @param <T>        the generic type
 	 * @param jsonString the json string
 	 * @param clazz      the clazz
 	 * @return the t
@@ -158,7 +159,7 @@ public class JsonUtil {
 	/**
 	 * Map json node to java object.
 	 *
-	 * @param                     <T> the generic type
+	 * @param <T>                 the generic type
 	 * @param genericType         the generic type
 	 * @param demographicJsonNode the demographic json node
 	 * @return the t[]
@@ -209,6 +210,10 @@ public class JsonUtil {
 		return objectMapper.writeValueAsString(obj);
 	}
 
+	public static <T> T convertValue(Object fromValue, Class<T> toValueType) {
+		return objectMapper.convertValue(fromValue, toValueType);
+	}
+
 	public static Object inputStreamtoJavaObject(InputStream stream, Class<?> clazz)
 			throws UnsupportedEncodingException {
 		JsonParser jsonParser = new JsonParser();
@@ -225,18 +230,18 @@ public class JsonUtil {
 	 * Object mapper read value. This method maps the jsonString to particular type
 	 *
 	 * @param <T>
-	 *            the generic type
+	 *                   the generic type
 	 * @param jsonString
-	 *            the json string
+	 *                   the json string
 	 * @param clazz
-	 *            the clazz
+	 *                   the clazz
 	 * @return the t
 	 * @throws JsonParseException
-	 *             the json parse exception
+	 *                              the json parse exception
 	 * @throws JsonMappingException
-	 *             the json mapping exception
+	 *                              the json mapping exception
 	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 *                              Signals that an I/O exception has occurred.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T objectMapperReadValue(String jsonString, Class<?> clazz) throws IOException {
@@ -245,6 +250,14 @@ public class JsonUtil {
 
 	public static String objectMapperObjectToJson(Object obj) throws IOException {
 		return objectMapper.writeValueAsString(obj);
+	}
+
+	public static <T> T readValue(String request, TypeReference<T> typeReference) throws IOException {
+		return (T) objectMapper.readValue(request, typeReference);
+	}
+
+	public static <T> T convertValue(Object request, TypeReference<T> typeReference) {
+		return (T) objectMapper.convertValue(request, typeReference);
 	}
 
 }

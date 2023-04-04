@@ -42,7 +42,7 @@ public class UINCardDownloadService {
 		request.setRequest(uincardDTO);
 		request.setId(env.getProperty(PRINT_ID));
 		request.setVersion(env.getProperty(PRINT_VERSION));
-		request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 		byte[]	response;
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),

@@ -1,10 +1,10 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
+import java.util.Map;
+
 import io.mosip.resident.constant.ResidentErrorCode;
 
-
-public class VidCreationException extends BaseUncheckedException {
+public class VidCreationException extends BaseResidentUncheckedExceptionWithMetadata {
 
 	/**
 	 * 
@@ -24,5 +24,12 @@ public class VidCreationException extends BaseUncheckedException {
 		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), errorMessage);
 	}
 	
+	public VidCreationException(String errorMessage, Throwable cause) {
+		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), errorMessage, cause);
+	}
+
+	public VidCreationException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
+		super(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(), errorMessage, rootCause, metadata);
+	}
 
 }

@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -14,8 +16,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
@@ -44,24 +50,33 @@ import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AuthRequestDTO;
 import io.mosip.resident.dto.AuthResponseDTO;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
 import io.mosip.resident.dto.AuthTypeDTO;
-import io.mosip.resident.dto.AuthTypeStatus;
 import io.mosip.resident.dto.AuthTypeStatusRequestDto;
 import io.mosip.resident.dto.AuthTypeStatusResponseDto;
 import io.mosip.resident.dto.AutnTxnDto;
 import io.mosip.resident.dto.AutnTxnResponseDto;
 import io.mosip.resident.dto.OtpAuthRequestDTO;
 import io.mosip.resident.dto.PublicKeyResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CertificateException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 @Component
 public class IdAuthServiceImpl implements IdAuthService {
@@ -82,7 +97,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Value("${mosip.ida.env:Staging}")
 	private String idaEnv;
-
+	
 	@Autowired
 	ObjectMapper mapper;
 
@@ -95,36 +110,146 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Autowired
 	private ResidentServiceRestClient restClient;
 
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
-	
-	private String thumbprint=null;
 
+	@Autowired
+	private IdentityServiceImpl identityService;
+	
+    @Autowired
+    RequestValidator requestValidator;
+	
 	@Override
-	public boolean validateOtp(String transactionID, String individualId, String otp)
-			throws OtpValidationFailedException {
+	public boolean validateOtp(String transactionId, String individualId, String otp)
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
+		return validateOtpV1(transactionId, individualId, otp).getT1();
+	}
+	
+	@Override
+	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		AuthResponseDTO response = null;
+		String eventId = ResidentConstants.NOT_AVAILABLE;
+		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
-			response = internelOtpAuth(transactionID, individualId, otp);
+			response = internelOtpAuth(transactionId, individualId, otp);
+			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
+					individualId);
+			if (residentTransactionEntity != null) {
+				eventId = residentTransactionEntity.getEventId();
+			}
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
-			throw new OtpValidationFailedException(e.getMessage());
+			throw new OtpValidationFailedException(e.getMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
 		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
 			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
-			throw new OtpValidationFailedException(
-					response.getErrors().get(0).getErrorMessage());
-
+			throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
+					Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
-
-		return response.getResponse().isAuthStatus();
+		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
 	}
 
-	public AuthResponseDTO internelOtpAuth(String transactionID, String individualId,
+	@Override
+	public boolean validateOtpv2(String transactionId, String individualId, String otp)
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
+		return validateOtpV2(transactionId, individualId, otp).getT1();
+	}
+	
+	@SuppressWarnings("null")
+	@Override
+	public Tuple2<Boolean, String> validateOtpV2(String transactionId, String individualId, String otp)
+			throws OtpValidationFailedException, ResidentServiceCheckedException {
+		requestValidator.validateOtpCharLimit(otp);
+		AuthResponseDTO response = null;
+		String eventId = ResidentConstants.NOT_AVAILABLE;
+		ResidentTransactionEntity residentTransactionEntity = null;
+		String authType = null;
+		try {
+			residentTransactionEntity = residentTransactionRepository
+					.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId,
+							identityService.getIDATokenForIndividualId(individualId), EventStatusInProgress.OTP_REQUESTED.toString());
+			if (residentTransactionEntity != null) {
+				authType = residentTransactionEntity.getAuthTypeCode();
+			}
+			response = internelOtpAuth(transactionId, individualId, otp);
+			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
+					individualId);
+			if (residentTransactionEntity != null) {
+				eventId = residentTransactionEntity.getEventId();
+			}
+		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
+				| JsonProcessingException | java.security.cert.CertificateException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
+					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
+			throw new OtpValidationFailedException(e.getMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
+		}
+		if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
+					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_EXPIRED_ERR_CODE)) {
+				throw new OtpValidationFailedException(ResidentErrorCode.OTP_EXPIRED.getErrorCode(),
+						ResidentErrorCode.OTP_EXPIRED.getErrorMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
+			}
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_INVALID_ERR_CODE)) {
+				throw new OtpValidationFailedException(ResidentErrorCode.OTP_INVALID.getErrorCode(),
+						ResidentErrorCode.OTP_INVALID.getErrorMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
+			}
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.INVALID_ID_ERR_CODE)) {
+				throw new OtpValidationFailedException(ResidentErrorCode.INVALID_TRANSACTION_ID.getErrorCode(),
+						response.getErrors().get(0).getErrorMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
+			}
+			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE)) {
+				if (authType.equals(ResidentConstants.PHONE)) {
+					throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(),
+							ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
+							Map.of(ResidentConstants.EVENT_ID, eventId));
+				}
+				if (authType.equals(ResidentConstants.EMAIL)) {
+					throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(),
+							ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
+							Map.of(ResidentConstants.EVENT_ID, eventId));
+				}
+				if (authType != null) {
+					boolean containsPhone = authType.contains(ResidentConstants.PHONE);
+					boolean containsEmail = authType.contains(ResidentConstants.EMAIL);
+					if (containsPhone && containsEmail) {
+						throw new OtpValidationFailedException(
+								ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorCode(),
+								ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorMessage(),
+								Map.of(ResidentConstants.EVENT_ID, eventId));
+					}
+				}
+			} else
+				throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
+						Map.of(ResidentConstants.EVENT_ID, eventId));
+		}
+		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
+	}
+		
+	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
+		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
+				findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId, identityService.getIDATokenForIndividualId(individualId)
+				, EventStatusInProgress.OTP_REQUESTED.toString());
+		if (residentTransactionEntity != null ) {
+			residentTransactionEntity.setRequestTypeCode(RequestType.VALIDATE_OTP.name());
+			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
+			residentTransactionEntity.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
+			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
+			residentTransactionEntity.setUpdBy(RESIDENT_SERVICES);
+			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+			residentTransactionRepository.save(residentTransactionEntity);
+		}
+		return residentTransactionEntity;
+	}
+
+	public AuthResponseDTO internelOtpAuth(String transactionId, String individualId,
 			String otp) throws ApisResourceAccessException, InvalidKeySpecException, NoSuchAlgorithmException,
 			IOException, JsonProcessingException, CertificateEncodingException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
@@ -135,7 +260,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authRequestDTO.setVersion(internalAuthVersion);
 
 		authRequestDTO.setRequestTime(dateTime);
-		authRequestDTO.setTransactionID(transactionID);
+		authRequestDTO.setTransactionID(transactionId);
 		authRequestDTO.setEnv(idaEnv);
 		authRequestDTO.setDomainUri(domainUrl);
 
@@ -158,7 +283,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 		// rbase64 encoded for request
 		authRequestDTO.setRequest(CryptoUtil.encodeToURLSafeBase64(encryptedIdentityBlock));
 		// encrypted with MOSIP public key and encoded session key
-		byte[] encryptedSessionKeyByte = encryptRSA(secretKey.getEncoded(), "INTERNAL");
+		Tuple2<byte[], String> encryptionResult = encryptRSA(secretKey.getEncoded(), "INTERNAL");
+		byte[] encryptedSessionKeyByte = encryptionResult.getT1();
 		authRequestDTO.setRequestSessionKey(CryptoUtil.encodeToURLSafeBase64(encryptedSessionKeyByte));
 
 		// sha256 of the request block before encryption and the hash is encrypted
@@ -166,6 +292,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		byte[] byteArray = encryptor.symmetricEncrypt(secretKey,
 				HMACUtils2.digestAsPlainText(identityBlock.getBytes()).getBytes(), null);
 		authRequestDTO.setRequestHMAC(CryptoUtil.encodeToURLSafeBase64(byteArray));
+		String thumbprint = encryptionResult.getT2();
 		authRequestDTO.setThumbprint(thumbprint);
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
 				"internelOtpAuth()::INTERNALAUTH POST service call started with request data "
@@ -190,7 +317,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	}
 
-	private byte[] encryptRSA(final byte[] sessionKey, String refId) throws ApisResourceAccessException,
+	private Tuple2<byte[], String> encryptRSA(final byte[] sessionKey, String refId) throws ApisResourceAccessException,
 			InvalidKeySpecException, java.security.NoSuchAlgorithmException, IOException, JsonProcessingException, CertificateEncodingException {
 
 		// encrypt AES Session Key using RSA public key
@@ -202,7 +329,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 		builder.queryParam("applicationId", "IDA");
 		builder.queryParam("referenceId", refId);
-		builder.queryParam("timeStamp", DateUtils.formatToISOString(LocalDateTime.now()));
+		builder.queryParam("timeStamp", DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 
 		UriComponents uriComponent = builder.build(false).encode();
 
@@ -217,42 +344,69 @@ public class IdAuthServiceImpl implements IdAuthService {
 		publicKeyResponsedto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 				PublicKeyResponseDto.class);
 		X509Certificate req509 = (X509Certificate) convertToCertificate(publicKeyResponsedto.getCertificate());
-		thumbprint = CryptoUtil.encodeBase64(getCertificateThumbprint(req509));
+		String thumbprint = CryptoUtil.encodeToURLSafeBase64(getCertificateThumbprint(req509));
 
 		PublicKey publicKey = req509.getPublicKey();
-		return encryptor.asymmetricEncrypt(publicKey, sessionKey);
+		if (thumbprint == null) {
+			thumbprint = "";
+		}
+		byte[] asymmetricEncrypt = encryptor.asymmetricEncrypt(publicKey, sessionKey);
+		if(asymmetricEncrypt == null) {
+			asymmetricEncrypt = new byte[0];
+		}
+		return Tuples.of(asymmetricEncrypt, thumbprint);
+	}
+	
+	@Override
+	public boolean authTypeStatusUpdate(String individualId, List<String> authType, AuthTypeStatus authTypeStatus, Long unlockForSeconds)
+			throws ApisResourceAccessException{
+		Map<String, AuthTypeStatus> authTypeStatusMap=authType.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> authTypeStatus));
+		Map<String, Long> unlockForSecondsMap=authType.stream().distinct().filter(str -> unlockForSeconds!=null).collect(Collectors.toMap(Function.identity(), str -> unlockForSeconds));
+		String requestIdForAuthLockUnLock = authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+		return requestIdForAuthLockUnLock != null && !requestIdForAuthLockUnLock.isEmpty();
 	}
 
 	@Override
-	public boolean authTypeStatusUpdate(String individualId, List<String> authType,
-			io.mosip.resident.constant.AuthTypeStatus authTypeStatusConstant, Long unlockForSeconds)
+	public String authTypeStatusUpdateForRequestId(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap) throws ApisResourceAccessException {
+		String requestIdForAuthLockUnLock = authTypeStatusUpdate(individualId, authTypeStatusMap, unlockForSecondsMap);
+		if(requestIdForAuthLockUnLock != null){
+			return requestIdForAuthLockUnLock;
+		}
+		return "";
+	}
+	
+	@Override
+	public String authTypeStatusUpdate(String individualId, Map<String, AuthTypeStatus> authTypeStatusMap, Map<String, Long> unlockForSecondsMap)
 			throws ApisResourceAccessException {
-		boolean isAuthTypeStatusSuccess = false;
 		AuthTypeStatusRequestDto authTypeStatusRequestDto = new AuthTypeStatusRequestDto();
 		authTypeStatusRequestDto.setConsentObtained(true);
 		authTypeStatusRequestDto.setId(authTypeStatusId);
 		authTypeStatusRequestDto.setIndividualId(individualId);
 		authTypeStatusRequestDto.setVersion(internalAuthVersion);
-		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(LocalDateTime.now()));
-		List<AuthTypeStatus> authTypes = new ArrayList<>();
-		for (String type : authType) {
+		authTypeStatusRequestDto.setRequestTime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		List<io.mosip.resident.dto.AuthTypeStatus> authTypes = new ArrayList<>();
+		String requestIdForAuthLockUnLock = null;
+		for (Entry<String, AuthTypeStatus> entry : authTypeStatusMap.entrySet()) {
 
-			String[] types = type.split("-");
-			AuthTypeStatus authTypeStatus = new AuthTypeStatus();
-			String requestId = UUID.randomUUID().toString();
-			authTypeStatus.setRequestId(requestId);
+			String[] types = entry.getKey().split("-");
+			io.mosip.resident.dto.AuthTypeStatus authTypeStatus = new io.mosip.resident.dto.AuthTypeStatus();
+			if(requestIdForAuthLockUnLock==null){
+				String requestId = UUID.randomUUID().toString();
+				requestIdForAuthLockUnLock = requestId;
+			}
+			authTypeStatus.setRequestId(requestIdForAuthLockUnLock);
 			if (types.length == 1) {
 				authTypeStatus.setAuthType(types[0]);
 			} else {
 				authTypeStatus.setAuthType(types[0]);
 				authTypeStatus.setAuthSubType(types[1]);
 			}
-			if (authTypeStatusConstant.equals(io.mosip.resident.constant.AuthTypeStatus.LOCK)) {
+			if (entry.getValue().equals(AuthTypeStatus.LOCK)) {
 				authTypeStatus.setLocked(true);
 				authTypeStatus.setUnlockForSeconds(null);
 			} else {
-				if (unlockForSeconds != null) {
-					authTypeStatus.setUnlockForSeconds(unlockForSeconds);
+				if (unlockForSecondsMap.get(entry.getKey()) != null) {
+					authTypeStatus.setUnlockForSeconds(unlockForSecondsMap.get(entry.getKey()));
                 }
 
 				authTypeStatus.setLocked(false);
@@ -262,7 +416,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 		}
 		authTypeStatusRequestDto.setRequest(authTypes);
 		AuthTypeStatusResponseDto response;
-		;
 		try {
 			response = restClient.postApi(environment.getProperty(ApiName.AUTHTYPESTATUSUPDATE.name()),
 					MediaType.APPLICATION_JSON, authTypeStatusRequestDto, AuthTypeStatusResponseDto.class);
@@ -281,11 +434,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 			response.getErrors().stream().forEach(error -> logger.error(LoggerFileConstant.SESSIONID.toString(),
 					LoggerFileConstant.USERID.toString(), error.getErrorCode(), error.getErrorMessage()));
 
-		} else {
-			isAuthTypeStatusSuccess = true;
 		}
 
-		return isAuthTypeStatusSuccess;
+		return requestIdForAuthLockUnLock;
 	}
 
 	@Override
