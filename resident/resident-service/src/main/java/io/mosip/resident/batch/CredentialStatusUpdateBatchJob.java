@@ -36,7 +36,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
@@ -61,8 +60,6 @@ import io.mosip.resident.util.Utility;
 @Component
 @ConditionalOnProperty(name = IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED, havingValue = "true", matchIfMissing = true)
 public class CredentialStatusUpdateBatchJob {
-
-	private static final String ERROR_CODE_REQ_ID_NOT_FOUND = "IDR-CRG-003";
 
 	private static final String DEFAULT_NOTIF_TIME_PATTERN = "HH:mm:ss";
 
@@ -240,20 +237,9 @@ public class CredentialStatusUpdateBatchJob {
 		List<ServiceError> errors = responseWrapper.getErrors();
 		if (Objects.nonNull(errors) && !errors.isEmpty()) {
 			logger.error("CREDENTIAL_STATUS_URL returned error " + errors);
-			Optional<ServiceError> reqIdNotFoundError = findError(errors, ERROR_CODE_REQ_ID_NOT_FOUND);
-			if(reqIdNotFoundError.isPresent()) {
-				logger.info("Marking the record as FAILED");
-				txn.setStatusCode(EventStatusFailure.FAILED.name());
-				txn.setStatusComment(reqIdNotFoundError.get().getMessage());
-				saveEntity(txn);
-			}
 			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 		}
 		return responseWrapper.getResponse();
-	}
-
-	private Optional<ServiceError> findError(List<ServiceError> errors, String errorCodeReqIdNotFound) {
-		return errors.stream().filter(se -> se.getErrorCode().equals(errorCodeReqIdNotFound)).findAny();
 	}
 
 }
