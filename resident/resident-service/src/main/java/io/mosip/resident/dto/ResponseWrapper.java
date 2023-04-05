@@ -1,15 +1,13 @@
 package io.mosip.resident.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.mosip.kernel.core.exception.ServiceError;
-import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
+
+import io.mosip.kernel.core.exception.ServiceError;
+import lombok.Data;
 
 @Data
 public class ResponseWrapper<T> {

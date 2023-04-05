@@ -18,7 +18,19 @@ public enum NotificationTemplateCode {
 	RS_VIN_REV_SUCCESS("RS_VIN_REV_SUCCESS"),
 	RS_VIN_REV_FAILURE("RS_VIN_REV_FAILURE"), RS_CRE_REQ_SUCCESS("RS_CRE_REQ_SUCCESS"),
 	RS_CRE_REQ_FAILURE("RS_CRE_REQ_FAILURE"), RS_CRE_STATUS("RS_CRE_STATUS"),
-	RS_CRE_CANCEL_SUCCESS("RS_CRE_CANCEL_SUCCESS");
+	RS_CRE_CANCEL_SUCCESS("RS_CRE_CANCEL_SUCCESS"), 
+	// FIXME Replace these template codes with the Request type enum methods
+	DOWNLOAD_PERSONALIZED_CARD_RECEIVED("cust-and-down-my-card-request-received"),
+	DOWNLOAD_PERSONALIZED_CARD_FAILED("cust-and-down-my-card-failure"),
+	DOWNLOAD_PERSONALIZED_CARD_SUCCESS("cust-and-down-my-card-success"),
+	UIN_UPDATE_PRINTING("update-demo-data-request-received"),
+	UIN_UPDATE_FAILED("update-demo-data-failure"),
+	SHARE_CREDENTIAL_FAILED(""),
+	VID_CARD_DOWNLOAD_PRINTING(""),
+	VID_CARD_DOWNLOAD_FAILED(""),
+	ORDER_PHYSICAL_CARD_DISPATCHED("order-a-physical-card-request-received"),
+	ORDER_PHYSICAL_CARD_FAILED("order-a-physical-card-failure"),
+	RECEIVE_OTP("receive-otp");
 	
 	private final String templateCode;
 

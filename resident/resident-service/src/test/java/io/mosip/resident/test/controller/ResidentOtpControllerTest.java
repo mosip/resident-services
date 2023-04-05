@@ -1,31 +1,10 @@
 package io.mosip.resident.test.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.ResidentCredentialController;
-import io.mosip.resident.controller.ResidentOtpController;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.service.ResidentOtpService;
-import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
-import io.mosip.resident.validator.RequestValidator;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,90 +17,156 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.mosip.resident.controller.ResidentOtpController;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
+import io.mosip.resident.dto.OtpRequestDTO;
+import io.mosip.resident.dto.OtpResponseDTO;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentOtpControllerTest {
-
+	
     @MockBean
-    private ResidentOtpService residentOtpService;
+    private ProxyIdRepoService proxyIdRepoService;
 
-    @MockBean
-    private RequestValidator validator;
+	@MockBean
+	private ResidentOtpService residentOtpService;
 
-    @MockBean
-    private ResidentUpdateService residentUpdateService;
+	@MockBean
+	private RequestValidator validator;
 
-    @MockBean
-    private IdAuthService idAuthService;
+	@MockBean
+	private ResidentUpdateService residentUpdateService;
 
-    @MockBean
-    private NotificationService notificationService;
+	@MockBean
+	private IdAuthService idAuthService;
 
-    @MockBean
-    private UinCardRePrintService rePrintService;
+	@MockBean
+	private ResidentVidService vidService;
 
-    @MockBean
-    private Utilitiy utilitiy;
+	@MockBean
+	private DocumentService docService;
 
-    @MockBean
-    private Utilities utilities;
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
-    @MockBean
-    @Qualifier("selfTokenRestTemplate")
-    private RestTemplate residentRestTemplate;
+	@MockBean
+	private NotificationService notificationService;
 
-    @Mock
-    private AuditUtil audit;
+	@MockBean
+	private UinCardRePrintService rePrintService;
 
-    @InjectMocks
-    ResidentOtpController residentOtpController;
+	@MockBean
+	private Utility utility;
 
-    @Autowired
-    private MockMvc mockMvc;
+	@MockBean
+	private Utilities utilities;
 
-    Gson gson = new GsonBuilder().serializeNulls().create();
+	@MockBean
+	@Qualifier("selfTokenRestTemplate")
+	private RestTemplate residentRestTemplate;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
-    String reqJson;
+	@Mock
+	private AuditUtil audit;
 
-    OtpResponseDTO otpResponseDTO;
+	@InjectMocks
+	ResidentOtpController residentOtpController;
 
-    @Before
-    public void setup() throws Exception {
-        otpResponseDTO = new OtpResponseDTO();
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(residentOtpController).build();
-        OtpRequestDTO otpRequestDTO = new OtpRequestDTO();
-        otpRequestDTO.setIndividualId("123456");
-        otpRequestDTO.setTransactionID("1234327890");
-        reqJson = gson.toJson(otpRequestDTO);
-    }
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Test
-    public void testCreateRequestGenerationSuccess() throws Exception {
+	Gson gson = new GsonBuilder().serializeNulls().create();
 
-        Mockito.when(residentOtpService.generateOtp(Mockito.any())).thenReturn(otpResponseDTO);
+	String reqJson;
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/req/otp").contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(reqJson)).andExpect(status().isOk());
+	OtpResponseDTO otpResponseDTO;
 
-    }
+	OtpRequestDTO otpRequestDTO;
 
+	@Before
+	public void setup() throws Exception {
+		otpResponseDTO = new OtpResponseDTO();
+		MockitoAnnotations.initMocks(this);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(residentOtpController).build();
+		otpRequestDTO = new OtpRequestDTO();
+		otpRequestDTO.setIndividualId("123456");
+		otpRequestDTO.setTransactionID("1234327890");
+		reqJson = gson.toJson(otpRequestDTO);
+		ReflectionTestUtils.setField(residentOtpController, "otpRequestId", "mosip.identity.otp.internal");
+		ReflectionTestUtils.setField(residentOtpController, "otpRequestVersion", "1.0");
+	}
+
+	@Test
+	public void testCreateRequestGenerationSuccess() throws Exception {
+		Mockito.when(residentOtpService.generateOtp(Mockito.any())).thenReturn(otpResponseDTO);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/req/otp").contentType(MediaType.APPLICATION_JSON_VALUE).content(reqJson))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	public void createRequestGenerationSuccessTest() throws Exception {
+		Mockito.when(residentOtpService.generateOtp(otpRequestDTO)).thenReturn(otpResponseDTO);
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(otpRequestDTO);
+		this.mockMvc
+				.perform(MockMvcRequestBuilders.post("/req/otp").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
+	}
+	
+	@Ignore
+	@Test
+	public void reqOtpForAidTest() throws Exception {
+		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = new IndividualIdOtpRequestDTO();
+		individualIdOtpRequestDTO.setIndividualId("123456789");
+		Mockito.when(residentOtpService.generateOtp(otpRequestDTO)).thenReturn(otpResponseDTO);
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(individualIdOtpRequestDTO);
+		this.mockMvc.perform(
+				MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
+	}
+
+	@WithUserDetails("resident")
+	public void reqOtpForAidNullTest() throws Exception {
+		ReflectionTestUtils.setField(residentOtpController, "otpRequestId", "id");
+		IndividualIdOtpRequestDTO aidOtpRequestDTO = new IndividualIdOtpRequestDTO();
+		aidOtpRequestDTO.setIndividualId(null);
+		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
+		Mockito.when(residentOtpService.generateOtpForIndividualId(Mockito.any())).thenReturn(individualIdResponseDto);
+		assertNotNull(residentOtpController.reqOtpForIndividualId(aidOtpRequestDTO));
+	}
 }

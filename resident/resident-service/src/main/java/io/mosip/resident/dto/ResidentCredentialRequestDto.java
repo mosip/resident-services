@@ -16,21 +16,23 @@ public class ResidentCredentialRequestDto {
 	private String individualId;
 
 	private String otp;
-	
+
 	private String credentialType;
-	
+
 	private boolean encrypt;
-	
+
 	private String issuer;
 
 	private String encryptionKey;
-	
+
 	private String recepiant;
-	
+
 	private String user;
-	
-    private List<String> sharableAttributes;
-    
-    private Map<String,Object> additionalData;
-	
+
+	private List<String> sharableAttributes;
+
+	private Map<String, Object> additionalData;
+
+	private String consent;
+
 }

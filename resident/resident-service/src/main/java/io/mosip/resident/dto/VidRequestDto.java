@@ -1,15 +1,18 @@
 package io.mosip.resident.dto;
 
-import java.io.Serializable;
-
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class VidRequestDto implements Serializable {
+@EqualsAndHashCode(callSuper=true)
+public class VidRequestDto extends BaseVidRequestDto {
 
-    private String transactionID;
-    private String individualId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8496426638724225974L;
+	
+	private String individualId;
     private String otp;
-    private String vidType;
 
 }

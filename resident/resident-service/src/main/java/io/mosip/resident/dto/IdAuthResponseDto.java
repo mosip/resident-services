@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class IdAuthResponseDto {
 
-    private boolean authStatus;
+	private boolean authStatus;
+	private String transactionId;
 }

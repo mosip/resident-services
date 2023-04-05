@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -22,7 +23,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -32,9 +32,14 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.dto.SMSRequestDTO;
 import io.mosip.resident.dto.TemplateDto;
 import io.mosip.resident.dto.TemplateResponseDto;
@@ -45,8 +50,9 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
@@ -56,6 +62,9 @@ import io.mosip.resident.validator.RequestValidator;
  */
 @Component
 public class NotificationService {
+	private static final String LINE_BREAK = "<br>";
+	private static final String EMAIL_CHANNEL = "email";
+	private static final String PHONE_CHANNEL = "phone";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
 	@Autowired
 	private TemplateManager templateManager;
@@ -73,7 +82,7 @@ public class NotificationService {
 	private ResidentServiceRestClient restClient;
 
 	@Autowired
-	private Utilitiy utility;
+	private Utility utility;
 	
 	@Autowired
 	private Utilities utilities;
@@ -83,8 +92,11 @@ public class NotificationService {
 	
 	@Autowired
 	private AuditUtil audit;
+	
+	@Autowired
+	private TemplateUtil templateUtil;
 
-	private static final String LINE_SEPARATOR = new  StringBuilder().append('\n').append('\n').append('\n').toString();
+	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
 	private static final String SUBJECT = "_SUB";
@@ -97,8 +109,12 @@ public class NotificationService {
 	private static final String TEMPLATE_CODE = "Template Code";
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
-
+	
 	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
+		return sendNotification(dto, null, null, null);
+	}
+
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
@@ -108,16 +124,43 @@ public class NotificationService {
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
-		if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
-			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
-			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
-					templateLangauges);
-	} else if (notificationType.equalsIgnoreCase("EMAIL")) {
-			emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), null,
-					templateLangauges);
-	} else if (notificationType.equalsIgnoreCase("SMS")) {
-			smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), templateLangauges);
-	}
+		RequestType notificationRequestType = getNotificationRequestType(dto);
+		TemplateType notificationTemplateType = getNotificationTemplateType(dto);
+		String notificationEventId=getNotificationEventId(dto);
+		String otp = getOtp(dto);
+		if(otp!=null){
+			notificationAttributes.put(TemplateVariablesConstants.OTP, otp);
+		}
+		if(phone!=null){
+			notificationAttributes.put(TemplateVariablesConstants.PHONE, phone);
+		}
+		if(notificationEventId!=null) {
+			notificationAttributes.put(TemplateVariablesConstants.EVENT_ID, notificationEventId);
+		}
+		if(channels == null || channels.isEmpty() || channels.stream().collect(Collectors.joining(",")).isEmpty() || channels.stream().collect(Collectors.joining(",")).equals("null")) {
+			if (notificationType.equalsIgnoreCase("SMS|EMAIL")) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
+						templateLangauges, null);
+			} else if (notificationType.equalsIgnoreCase("EMAIL")) {
+					emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
+							templateLangauges, null);
+			} else if (notificationType.equalsIgnoreCase("SMS")) {
+					smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
+			}
+		} else {
+			List<String> channelsLowerCase = channels.stream().map(String::toLowerCase).collect(Collectors.toList());
+			if (channelsLowerCase.contains(PHONE_CHANNEL) && channelsLowerCase.contains(EMAIL_CHANNEL)) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
+						templateLangauges, null);
+			} else if (channelsLowerCase.contains(PHONE_CHANNEL)) {
+				smsStatus = sendSMSNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, templateLangauges);
+			} else if (channelsLowerCase.contains(EMAIL_CHANNEL)) {
+				emailStatus = sendEmailNotification(notificationAttributes, dto.getTemplateTypeCode(), notificationRequestType, notificationTemplateType, null,
+						templateLangauges, email);
+			}
+		}
 
 		logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				IS_SMS_NOTIFICATION_SUCCESS + smsStatus);
@@ -126,11 +169,21 @@ public class NotificationService {
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		if (smsStatus && emailStatus) {
 			notificationResponse.setMessage(SMS_EMAIL_SUCCESS);
+			if(email != null && phone != null) {
+				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
+				notificationResponse.setMaskedEmail(utility.maskEmail(email));
+			}
 			notificationResponse.setStatus(SUCCESS);
-		} else if (smsStatus) {
+		} else if (smsStatus) {	
 			notificationResponse.setMessage(SMS_SUCCESS);
+			if(phone != null) {
+				notificationResponse.setMaskedPhone(utility.maskPhone(phone));
+			} 
 		} else if (emailStatus) {
 			notificationResponse.setMessage(EMAIL_SUCCESS);
+			if(email != null) {
+				notificationResponse.setMaskedEmail(utility.maskEmail(email));
+			}
 		} else {
 			notificationResponse.setMessage(SMS_EMAIL_FAILED);
 			throw new ResidentServiceException(ResidentErrorCode.NOTIFICATION_FAILURE.getErrorCode(),
@@ -142,6 +195,22 @@ public class NotificationService {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::exit");
 		return notificationResponse;
+	}
+
+	private String getOtp(NotificationRequestDto notificationRequestDto) {
+		return notificationRequestDto instanceof NotificationRequestDtoV2?((NotificationRequestDtoV2) notificationRequestDto).getOtp():null;
+	}
+
+	private RequestType getNotificationRequestType(NotificationRequestDto notificationRequestDto) {
+		return notificationRequestDto instanceof NotificationRequestDtoV2?((NotificationRequestDtoV2) notificationRequestDto).getRequestType():null;
+	}
+
+	private TemplateType getNotificationTemplateType(NotificationRequestDto notificationRequestDto) {
+		return notificationRequestDto instanceof NotificationRequestDtoV2?((NotificationRequestDtoV2) notificationRequestDto).getTemplateType():null;
+	}
+
+	private String getNotificationEventId(NotificationRequestDto notificationRequestDto) {
+		return notificationRequestDto instanceof NotificationRequestDtoV2?((NotificationRequestDtoV2) notificationRequestDto).getEventId():null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -167,7 +236,7 @@ public class NotificationService {
 			List<TemplateDto> response = templateResponse.getTemplates();
 			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
 					"NotificationService::getTemplate()::exit");
-			return response.get(0).getFileText().replaceAll("^\"|\"$", "");
+			return response.get(0).getFileText().replaceAll("(^\")|(\"$)", "");
 		} catch (IOException e) {
 			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
@@ -214,11 +283,18 @@ public class NotificationService {
 	}
 
 	private boolean sendSMSNotification(Map<String, Object> mailingAttributes,
-			NotificationTemplateCode notificationTemplate, Set<String> templateLangauges)
+			NotificationTemplateCode notificationTemplate, RequestType requestType, TemplateType templateType, Set<String> templateLangauges)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendSMSNotification()::entry");
-		String phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
+		String eventId=(String) mailingAttributes.get(TemplateVariablesConstants.EVENT_ID);
+		String phone="";
+		if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
+			phone = (String) mailingAttributes.get(utilities.getPhoneAttribute());
+		} else{
+			phone =  (String) mailingAttributes.get(TemplateVariablesConstants.PHONE);
+		}
+
 		if (nullValueCheck(phone) || !(requestValidator.phoneValidator(phone))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendSMSNotification()::phoneValidatio::" + "false :: invalid phone number");
@@ -226,8 +302,23 @@ public class NotificationService {
 		}
 		String mergedTemplate = "";
 		for (String language : templateLangauges) {
-			String languageTemplate = templateMerge(getTemplate(language, notificationTemplate + SMS),
-					mailingAttributes);
+			String languageTemplate = "";
+			if(notificationTemplate==null) {
+				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+				} else{
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP))));
+				}
+
+			} else {
+				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + SMS),
+						mailingAttributes);
+			}
+			if(languageTemplate.trim().endsWith(LINE_BREAK)) {
+				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - LINE_BREAK.length()).trim();
+			}
 			if (mergedTemplate.isBlank()) {
 				mergedTemplate = languageTemplate;
 			}else {
@@ -300,11 +391,16 @@ public class NotificationService {
 	}
 
 	private boolean sendEmailNotification(Map<String, Object> mailingAttributes,
-			NotificationTemplateCode notificationTemplate, MultipartFile[] attachment, Set<String> templateLangauges)
+			NotificationTemplateCode notificationTemplate, RequestType requestType, TemplateType templateType, MultipartFile[] attachment, Set<String> templateLangauges, String newEmail)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 				"NotificationService::sendEmailNotification()::entry");
+		String eventId=(String) mailingAttributes.get(TemplateVariablesConstants.EVENT_ID);
 		String email = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
+		String otp="";
+		if(newEmail!=null){
+			otp=(String) mailingAttributes.get(TemplateVariablesConstants.OTP);
+		}
 		if (nullValueCheck(email) || !(requestValidator.emailValidator(email))) {
 			logger.info(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), " ",
 					"NotificationService::sendEmailNotification()::emailValidation::" + "false :: invalid email");
@@ -313,9 +409,31 @@ public class NotificationService {
 		String mergedEmailSubject = "";
 		String mergedTemplate = "";
 		for (String language : templateLangauges) {
-			String emailSubject = getTemplate(language, notificationTemplate + EMAIL + SUBJECT);
-			String languageTemplate = templateMerge(getTemplate(language, notificationTemplate + EMAIL),
-					mailingAttributes);
+			String emailSubject = "";
+			String languageTemplate = "";
+			if(notificationTemplate==null) {
+				if(newEmail==null) {
+					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+				}
+				else {
+					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+
+					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+				}
+			} else {
+				emailSubject = getTemplate(language, notificationTemplate + EMAIL + SUBJECT);
+				languageTemplate = templateMerge(getTemplate(language, notificationTemplate + EMAIL),
+						mailingAttributes);
+			}
+			if(languageTemplate.trim().endsWith(LINE_BREAK)) {
+				languageTemplate = languageTemplate.substring(0, languageTemplate.length() - LINE_BREAK.length()).trim();
+			}
 			if (mergedTemplate.isBlank() || mergedEmailSubject.isBlank()) {
 				mergedTemplate = languageTemplate;
 				mergedEmailSubject = emailSubject;
@@ -325,18 +443,32 @@ public class NotificationService {
 			}
 		}
 		LinkedMultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-		String[] mailTo = { String.valueOf(mailingAttributes.get("email")) };
+		String[] mailTo = new String[1];
+		if(newEmail==null){
+			mailTo[0] = String.valueOf(mailingAttributes.get(utilities.getEmailAttribute()));
+		} else{
+			mailTo[0] = newEmail;
+		}
+
 		String[] mailCc = notificationEmails.split("\\|");
 
-		UriComponentsBuilder builder = prepareBuilder(mailTo, mailCc);
+		for (String item : mailTo) {
+			params.add("mailTo", item);
+		}
+
+		if (mailCc != null) {
+			for (String item : mailCc) {
+				params.add("mailCc", item);
+			}
+		}
 
 		try {
-			builder.queryParam("mailSubject", mergedEmailSubject);
-			builder.queryParam("mailContent", mergedTemplate);
+			params.add("mailSubject", mergedEmailSubject);
+			params.add("mailContent", mergedTemplate);
 			params.add("attachments", attachment);
 			ResponseWrapper<NotificationResponseDTO> response;
 
-			response = restClient.postApi(builder.build().toUriString(), MediaType.MULTIPART_FORM_DATA, params,
+			response = restClient.postApi(env.getProperty(ApiName.EMAILNOTIFIER.name()), MediaType.MULTIPART_FORM_DATA, params,
 					ResponseWrapper.class);
 			if (nullCheckForResponse(response)) {
 				throw new ResidentServiceException(ResidentErrorCode.INVALID_API_RESPONSE.getErrorCode(),
@@ -397,18 +529,4 @@ public class NotificationService {
 
 	}
 
-	public UriComponentsBuilder prepareBuilder(String[] mailTo, String[] mailCc) {
-		String apiHost = env.getProperty(ApiName.EMAILNOTIFIER.name());
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(apiHost);
-		for (String item : mailTo) {
-			builder.queryParam("mailTo", item);
-		}
-
-		if (mailCc != null) {
-			for (String item : mailCc) {
-				builder.queryParam("mailCc", item);
-			}
-		}
-		return builder;
-	}
 }

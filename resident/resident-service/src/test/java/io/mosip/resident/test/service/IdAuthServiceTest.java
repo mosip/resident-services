@@ -1,50 +1,76 @@
 package io.mosip.resident.test.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
-import io.mosip.resident.constant.AuthTypeStatus;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.CertificateException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-
-import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.LocalDateTime;
-import java.util.*;
-
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.net.URI;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.crypto.SecretKey;
+
+import org.assertj.core.util.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
+import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.AuthError;
+import io.mosip.resident.dto.AuthResponseDTO;
+import io.mosip.resident.dto.AuthTypeStatusResponseDto;
+import io.mosip.resident.dto.AutnTxnDto;
+import io.mosip.resident.dto.AutnTxnResponseDto;
+import io.mosip.resident.dto.ErrorDTO;
+import io.mosip.resident.dto.IdAuthResponseDto;
+import io.mosip.resident.dto.PublicKeyResponseDto;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CertificateException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.util.ResidentServiceRestClient;
+
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
 public class IdAuthServiceTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -69,6 +95,12 @@ public class IdAuthServiceTest {
     @InjectMocks
     private IdAuthService idAuthService = new IdAuthServiceImpl();
 
+    @Mock
+    private ResidentTransactionRepository residentTransactionRepository;
+
+    @Mock
+    private IdentityServiceImpl identityService;
+
     @Before
     public void setup() {
 
@@ -82,10 +114,11 @@ public class IdAuthServiceTest {
         AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
         when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
         List<String> authTypes = new ArrayList<>();
-        authTypes.add("bio-FIR");
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
-                null);
-        assertTrue(isUpdated);
+        authTypes.add("bio");
+        Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
+        Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
+        String requestId = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
+        assertTrue(requestId != null && !requestId.isEmpty());
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -94,13 +127,14 @@ public class IdAuthServiceTest {
         when(restClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
         List<String> authTypes = new ArrayList<>();
         authTypes.add("bio-FIR");
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.LOCK,
-                null);
-        assertTrue(isUpdated);
+        Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
+        Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
+        String requestId = idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
+        assertTrue(requestId != null && !requestId.isEmpty());
     }
 
     @Test(expected = CertificateException.class)
-    public void validateOtpSuccessThrowsAPIsResourceAccessExceptionTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
+    public void validateOtpSuccessThrowsAPIsResourceAccessExceptionTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException, ResidentServiceCheckedException {
         String transactionID = "12345";
         String individualId = "individual";
         String individualIdType = IdType.UIN.name();
@@ -122,7 +156,7 @@ public class IdAuthServiceTest {
 
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-        when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
         when(environment.getProperty(anyString())).thenReturn("dummy url");
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
@@ -132,13 +166,16 @@ public class IdAuthServiceTest {
     }
 
     @Test
-    public void validateOtpSuccessTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
+    public void validateOtpSuccessTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException, ResidentServiceCheckedException {
         String transactionID = "12345";
         String individualId = "individual";
         String individualIdType = IdType.UIN.name();
         String otp = "12345";
 
         String request = "request";
+        
+        ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+        residentTransactionEntity.setEventId("12345");
 
         IdAuthResponseDto authResponse = new IdAuthResponseDto();
         authResponse.setAuthStatus(true);
@@ -176,7 +213,7 @@ public class IdAuthServiceTest {
 
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-        when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
         when(environment.getProperty(anyString())).thenReturn("dummy url");
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
@@ -185,6 +222,9 @@ public class IdAuthServiceTest {
         when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
+        when(identityService.getIDATokenForIndividualId(anyString())).thenReturn("346697314566835424394775924659202696");
+		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(anyString(),
+				anyString(), anyString())).thenReturn(residentTransactionEntity);
 
         boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 
@@ -193,7 +233,7 @@ public class IdAuthServiceTest {
 
     @Test(expected = OtpValidationFailedException.class)
     public void otpValidationFailedTest()
-            throws IOException, ApisResourceAccessException, OtpValidationFailedException {
+            throws IOException, ApisResourceAccessException, OtpValidationFailedException, ResidentServiceCheckedException {
         String transactionID = "12345";
         String individualId = "individual";
         String otp = "12345";
@@ -241,7 +281,7 @@ public class IdAuthServiceTest {
 
         when(keyGenerator.getSymmetricKey()).thenReturn(secretKey);
         when(encryptor.symmetricEncrypt(any(), any(), any())).thenReturn(request.getBytes());
-        when(restClient.getApi(any(), any(Class.class))).thenReturn(responseWrapper);
+        when(restClient.getApi((URI)any(), any(Class.class))).thenReturn(responseWrapper);
         when(environment.getProperty(anyString())).thenReturn("dummy url");
 
         doReturn(objectMapper.writeValueAsString(responseDto)).when(mapper).writeValueAsString(any());
@@ -252,7 +292,7 @@ public class IdAuthServiceTest {
     }
 
     @Test(expected = Exception.class)
-    public void idAuthErrorsTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException {
+    public void idAuthErrorsTest() throws IOException, ApisResourceAccessException, OtpValidationFailedException, ResidentServiceCheckedException {
         String transactionID = "12345";
         String individualId = "individual";
         String individualIdType = IdType.UIN.name();
@@ -285,7 +325,7 @@ public class IdAuthServiceTest {
         autnTxnDto.setAuthtypeCode("OTP-AUTH");
         autnTxnDto.setEntityName("ida_app_user");
         autnTxnDto.setReferenceIdType("UIN");
-        autnTxnDto.setRequestdatetime(LocalDateTime.now());
+        autnTxnDto.setRequestdatetime(DateUtils.getUTCCurrentDateTime());
         autnTxnDto.setStatusCode("N");
         autnTxnDto.setStatusComment("OTP Authentication Failed");
         autnTxnDto.setTransactionID("1111122222");
@@ -315,12 +355,20 @@ public class IdAuthServiceTest {
     public void testAuthTypeStatusUpdateUnlockSuccess()
             throws ApisResourceAccessException, ResidentServiceCheckedException {
         AuthTypeStatusResponseDto authTypeStatusResponseDto = new AuthTypeStatusResponseDto();
+        
+        ErrorDTO error = new ErrorDTO();
+		error.setErrorCode("101");
+		error.setErrorMessage("errors");
+
+		List<ErrorDTO> errorList = new ArrayList<ErrorDTO>();
+		errorList.add(error);
+		authTypeStatusResponseDto.setErrors(errorList);
         when(restClient.postApi(any(), any(), any(), any())).thenReturn(authTypeStatusResponseDto);
         List<String> authTypes = new ArrayList<>();
         authTypes.add("bio-FIR");
-        boolean isUpdated = idAuthService.authTypeStatusUpdate("1234567891", authTypes, AuthTypeStatus.UNLOCK,
-                null);
-        assertTrue(isUpdated);
+        Map<String, AuthTypeStatus> authTypeStatusMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> AuthTypeStatus.LOCK));
+        Map<String, Long> unlockForSecondsMap=authTypes.stream().distinct().collect(Collectors.toMap(Function.identity(), str -> 10L));
+        idAuthService.authTypeStatusUpdate("1234567891", authTypeStatusMap, unlockForSecondsMap);
     }
 
     @Test

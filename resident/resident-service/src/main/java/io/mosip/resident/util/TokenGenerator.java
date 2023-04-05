@@ -1,7 +1,6 @@
 package io.mosip.resident.util;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.Header;
@@ -64,7 +63,7 @@ public class TokenGenerator {
         TokenRequestDto tokenRequest = new TokenRequestDto();
         tokenRequest.setId(environment.getProperty("token.request.id"));
 
-        tokenRequest.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+        tokenRequest.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
         // tokenRequest.setRequest(setPasswordRequestDTO());
         tokenRequest.setRequest(dto);
         tokenRequest.setVersion(environment.getProperty("token.request.version"));

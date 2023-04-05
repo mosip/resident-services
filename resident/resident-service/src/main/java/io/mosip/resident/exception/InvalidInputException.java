@@ -5,7 +5,12 @@ import io.mosip.resident.constant.ResidentErrorCode;
 
 public class InvalidInputException extends BaseUncheckedException {
 
-    public InvalidInputException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7102528338044174257L;
+
+	public InvalidInputException() {
         super(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage());
     }
 
@@ -14,6 +19,10 @@ public class InvalidInputException extends BaseUncheckedException {
     }
 
     public InvalidInputException(String message, Throwable cause) {
-        super(ResidentErrorCode.INVALID_INPUT.getErrorCode(), message, cause);
+        super(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + message, cause);
+    }
+    
+    public InvalidInputException(String message, String  message2) {
+        super(ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentErrorCode.INVALID_INPUT.getErrorMessage() + message);
     }
 }

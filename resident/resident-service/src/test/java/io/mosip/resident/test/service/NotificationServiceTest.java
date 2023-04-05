@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -35,6 +36,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.NotificationTemplateCode;
 import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.TemplateDto;
 import io.mosip.resident.dto.TemplateResponseDto;
@@ -42,22 +44,27 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utilitiy;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({ JsonUtil.class, IOUtils.class, HashSet.class})
 public class NotificationServiceTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
+    
 	@InjectMocks
 	private NotificationService notificationService;
 
 	@Mock
-	private Utilitiy utility;
+	private Utility utility;
 	
 	@Mock
 	private Utilities utilities;
@@ -286,6 +293,127 @@ public class NotificationServiceTest {
 		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
 		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class))).thenReturn(smsNotificationResponse).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto);
+	}
+
+	@Test
+	public void emailFailedAndSMSSuccessTestV2() throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(false);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("PHONE"),
+				"ka@gm.com", "8897878787");
+		assertEquals(SMS_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void emailFailedAndEmailSuccessTestV2() throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("EMAIL"),
+				"ka@gm.com", "8897878787");
+		assertEquals(EMAIL_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void emailEmailSuccessTestV2() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(notificationService, "notificationType", "EMAIL");
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, null,
+				"ka@gm.com", "8897878787");
+		assertEquals(EMAIL_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void smsSuccessTestV2() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(notificationService, "notificationType", "SMS");
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, null,
+				"ka@gm.com", "8897878787");
+		assertEquals(SMS_SUCCESS, response.getMessage());
+	}
+
+	@Test
+	public void emailAndSMSSuccessTestV2() throws ResidentServiceCheckedException {
+		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
+		notificationRequestDtoV2.setId("3527812406");
+		notificationRequestDtoV2.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);
+		notificationRequestDtoV2.setOtp("111111");
+		notificationRequestDtoV2.setEventId("123");
+		Map<String, Object> additionalAttributes = new HashMap<>();
+		additionalAttributes.put("RID", "10008200070004420191203104356");
+		mailingAttributes = new HashMap<String, Object>();
+		mailingAttributes.put("fullName_eng", "Test");
+		mailingAttributes.put("fullName_ara", "Test");
+		mailingAttributes.put("phone", "9876543210");
+		mailingAttributes.put("email", "test@test.com");
+		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
+		Mockito.when(utility.getMailingAttributes(Mockito.any(), Mockito.any())).thenReturn(mailingAttributes);
+		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
+		NotificationResponseDTO response = notificationService.sendNotification(notificationRequestDtoV2, List.of("PHONE", "EMAIL"),
+				"ka@gm.com", "8897878787");
+		assertEquals(SMS_EMAIL_SUCCESS, response.getMessage());
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testGetTemplateFailed() throws ApisResourceAccessException {
+		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
+				Mockito.any(Class.class))).thenReturn(null);
+		ReflectionTestUtils.invokeMethod(notificationService, "getTemplate",
+						"eng", "ack-download-personalized-card");
+
 	}
 
 }

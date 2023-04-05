@@ -1,23 +1,13 @@
 package io.mosip.resident.test.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.ResidentCredentialController;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.validator.RequestValidator;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.List;
+
+import javax.crypto.SecretKey;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,30 +20,50 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
-import javax.validation.Valid;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.resident.controller.ResidentCredentialController;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
+import io.mosip.resident.dto.SharableAttributesDTO;
+import io.mosip.resident.dto.ShareCredentialRequestDto;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentCredentialControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @MockBean
     private ResidentCredentialService residentCredentialService;
@@ -66,6 +76,24 @@ public class ResidentCredentialControllerTest {
 
     @Mock
     private AuditUtil audit;
+	
+	@MockBean
+	private ResidentVidService vidService;
+	
+	@MockBean
+	private DocumentService docService;
+
+    @MockBean
+    private ResidentServiceImpl residentService;
+    
+    @MockBean
+	private ResidentConfigServiceImpl residentConfigService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
+
+    @MockBean
+    private TemplateUtil templateUtil;
 
     @MockBean
     private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -91,6 +119,8 @@ public class ResidentCredentialControllerTest {
     CredentialRequestStatusResponseDto credentialReqStatusResponse;
 
     PartnerCredentialTypePolicyDto partnerCredentialTypeReqResponse;
+    
+    ResidentCredentialResponseDtoV2 dtoV2;
 
     String reqCredentialEventJson;
 
@@ -102,11 +132,14 @@ public class ResidentCredentialControllerTest {
         credentialCancelReqResponse = new CredentialCancelRequestResponseDto();
         credentialReqResponse = new ResidentCredentialResponseDto();
         partnerCredentialTypeReqResponse = new PartnerCredentialTypePolicyDto();
+        dtoV2 = new ResidentCredentialResponseDtoV2();
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(residentCredentialController).build();
         ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
         credentialRequestDto.setIndividualId("123456");
-        reqJson = gson.toJson(credentialRequestDto);
+        RequestWrapper<ResidentCredentialRequestDto> requestDTO = new RequestWrapper<>();
+        requestDTO.setRequest(credentialRequestDto);
+        reqJson = gson.toJson(requestDTO);
         pdfbytes = "uin".getBytes();
     }
 
@@ -168,4 +201,20 @@ public class ResidentCredentialControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    public void testRequestShareCredWithPartner() throws Exception {
+		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(dtoV2, "12345"));
+        ShareCredentialRequestDto request = new ShareCredentialRequestDto();
+        SharableAttributesDTO attr = new SharableAttributesDTO();
+        attr.setAttributeName("name");
+        attr.setMasked(false);
+		request.setSharableAttributes(List.of(attr));
+		request.setPurpose("banking");
+		RequestWrapper<ShareCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
+    }
+    
 }
