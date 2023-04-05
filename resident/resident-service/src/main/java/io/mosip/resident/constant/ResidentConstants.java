@@ -100,6 +100,7 @@ public class ResidentConstants {
     public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
     public static final String PHOTO_ATTRIBUTE_NAME = "mosip.resident.photo.attribute.name";
     public static final String APPLICANT_NAME_PROPERTY = "mosip.resident.applicant.name.property";
+    public static final String AUTHENTICATION_MODE_PROPERTY = "mosip.resident.authentication.mode.property";
 
     public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
     public static final String MOSIP_CREDENTIAL_TYPE_PROPERTY="mosip.digital.card.credential.type";
@@ -234,4 +235,12 @@ public class ResidentConstants {
     public static final String VID = "vid";
     public static final String NAME = "name";
     public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
+
+    public static final String RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE = "resident.notifications.default.page.size";
+    public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
+    public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
+    public static final String LANGUAGE = "language";
+    public static final String VALUE = "value";
+
+
 }

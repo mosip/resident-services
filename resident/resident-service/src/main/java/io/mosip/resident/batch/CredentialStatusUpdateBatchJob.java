@@ -1,18 +1,6 @@
 package io.mosip.resident.batch;
 
 import static io.mosip.resident.constant.EventStatusFailure.FAILED;
-import static io.mosip.resident.constant.EventStatusInProgress.IN_TRANSIT;
-import static io.mosip.resident.constant.EventStatusInProgress.ISSUED;
-import static io.mosip.resident.constant.EventStatusInProgress.NEW;
-import static io.mosip.resident.constant.EventStatusInProgress.PAYMENT_CONFIRMED;
-import static io.mosip.resident.constant.EventStatusInProgress.PRINTING;
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_READY_TO_DOWNLOAD;
-import static io.mosip.resident.constant.EventStatusSuccess.RECEIVED;
-import static io.mosip.resident.constant.EventStatusSuccess.STORED;
-import static io.mosip.resident.constant.RequestType.ORDER_PHYSICAL_CARD;
-import static io.mosip.resident.constant.RequestType.SHARE_CRED_WITH_PARTNER;
-import static io.mosip.resident.constant.RequestType.UPDATE_MY_UIN;
-import static io.mosip.resident.constant.RequestType.VID_CARD_DOWNLOAD;
 import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY;
 import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT;
 import static io.mosip.resident.constant.ResidentConstants.CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL;
@@ -26,24 +14,23 @@ import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
 import static io.mosip.resident.constant.ResidentConstants.URL;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
@@ -52,7 +39,6 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -61,20 +47,17 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.function.RunnableWithException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
+import io.mosip.resident.util.Utility;
 
 /**
  * @author Manoj SP
+ * @author Loganathan S
  *
  */
 @Component
-//@Transactional
 @ConditionalOnProperty(name = IS_CREDENTIAL_STATUS_UPDATE_JOB_ENABLED, havingValue = "true", matchIfMissing = true)
 public class CredentialStatusUpdateBatchJob {
 
@@ -106,17 +89,14 @@ public class CredentialStatusUpdateBatchJob {
 	@Autowired
 	private NotificationService notificationService;
 
+	@Value("#{'${resident.async.request.types}'.split(',')}") 
+	private List<String> requestTypeCodesToProcessInBatchJob;
+	
 	@Autowired
-	private ResidentService residentService;
-
+	private Environment env;
+	
 	@Autowired
-	private IdentityService identityService;
-
-	@Value("${resident.batchjob.process.status.list}")
-	private String statusCodes;
-
-	@Value("${resident.async.request.types}")
-	private String requestTypeCodes;
+	private Utility utility;
 
 	private void handleWithTryCatch(RunnableWithException runnableWithException) {
 		try {
@@ -142,136 +122,99 @@ public class CredentialStatusUpdateBatchJob {
 					+ CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL + ":" + CREDENTIAL_UPDATE_STATUS_UPDATE_INTERVAL_DEFAULT
 					+ "}")
 	public void scheduleCredentialStatusUpdateJob() throws ResidentServiceCheckedException {
-		List<ResidentTransactionEntity> residentTxnList = repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(
-				List.of(statusCodes.split(",")), List.of(requestTypeCodes.split(",")));
+		List<ResidentTransactionEntity> residentTxnList = repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(
+				getStatusCodesToProcess(), requestTypeCodesToProcessInBatchJob);
 		logger.info("Total records picked from resident_transaction table for processing is " + residentTxnList.size());
 		for (ResidentTransactionEntity txn : residentTxnList) {
 			logger.info("Processing event:" + txn.getEventId());
 			if (txn.getIndividualId() == null) {
 				txn.setStatusCode(FAILED.name());
 				txn.setStatusComment("individualId is null");
-				repo.save(txn);
+				updateEntity(txn);
+				saveEntity(txn);
+			} else {
+				handleWithTryCatch(() -> updateTransactionStatus(txn));
 			}
-			handleWithTryCatch(() -> updateVidCardDownloadTxnStatus(txn));
-			handleWithTryCatch(() -> updateOrderPhysicalCardTxnStatus(txn));
-			handleWithTryCatch(() -> updateShareCredentialWithPartnerTxnStatus(txn));
-			handleWithTryCatch(() -> updateUinDemoDataUpdateTxnStatus(txn));
-		}
-		repo.saveAll(residentTxnList);
-	}
-
-	private void updateVidCardDownloadTxnStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getRequestTypeCode().contentEquals(VID_CARD_DOWNLOAD.name())) {
-			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
-			trackAnddownloadPrintingOrStoredStatus(txn, TemplateType.SUCCESS, RequestType.VID_CARD_DOWNLOAD,
-					eventDetails);// mentioned in sheet and in story also
-			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.VID_CARD_DOWNLOAD);
 		}
 	}
 
-	private void updateOrderPhysicalCardTxnStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getRequestTypeCode().contentEquals(ORDER_PHYSICAL_CARD.name())) {
-			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
-			trackAndUpdatePaymentConfirmedStatus(txn);
-			trackAnddownloadPrintingOrIntransitStatus(txn, TemplateType.SUCCESS, RequestType.ORDER_PHYSICAL_CARD,
-					eventDetails);
-			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.ORDER_PHYSICAL_CARD);
-		}
+	private List<String> getStatusCodesToProcess() {
+		return RequestType.getAllNewOrInprogressStatusList(env);
 	}
 
-	private void updateShareCredentialWithPartnerTxnStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getRequestTypeCode().contentEquals(SHARE_CRED_WITH_PARTNER.name())) {
-			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
-			trackAndUpdatePrintingOrStoredStatus(txn, TemplateType.SUCCESS, RequestType.SHARE_CRED_WITH_PARTNER);
-			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.SHARE_CRED_WITH_PARTNER);
-		}
-	}
+	private void updateTransactionStatus(ResidentTransactionEntity txn) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		String requestTypeCode = txn.getRequestTypeCode();
+		if(requestTypeCodesToProcessInBatchJob.contains(requestTypeCode)) {
+			RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
+			//If it is already a success / failed status, do not process it.
+			if (!requestType.isSuccessOrFailedStatus(env, txn.getStatusCode())) {
+				Map<String, String> credentialStatus = getCredentialStatusForEntity(txn);
+				if (!credentialStatus.isEmpty()) {
+					// Save the new status to the resident transaction entity
+					String newStatusCode = credentialStatus.get(STATUS_CODE);
+					//If the status did not change, don't process it
+					if (!txn.getStatusCode().equals(newStatusCode)) {
+						logger.info(String.format("updating status for : %s as %s", txn.getEventId(), newStatusCode));
+						txn.setStatusCode(newStatusCode);
 
-	private void updateUinDemoDataUpdateTxnStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getRequestTypeCode().contentEquals(UPDATE_MY_UIN.name())) {
-			Map<String, String> eventDetails = trackAndUpdateNewOrIssuedStatus(txn);
-			trackAndUpdatePrintingOrReceivedOrStoredStatus(txn, TemplateType.SUCCESS, RequestType.UPDATE_MY_UIN, eventDetails);
-			trackAndUpdateFailedStatus(txn, TemplateType.FAILURE, RequestType.UPDATE_MY_UIN);
-		}
-	}
+						// Save the reference link if any
+						String referenceLink = credentialStatus.get(URL);
+						if (referenceLink != null) {
+							logger.info(String.format("saving reference link for : %s", txn.getEventId()));
+							txn.setReferenceLink(referenceLink);
+						}
 
-	private Map<String, String> trackAndUpdateNewOrIssuedStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getStatusCode().contentEquals(NEW.name()) || txn.getStatusCode().contentEquals(ISSUED.name())) {
-			if (txn.getCredentialRequestId() != null && !txn.getCredentialRequestId().isEmpty()) {
-				Map<String, String> eventDetails = getCredentialEventDetails(txn.getCredentialRequestId());
-				txn.setStatusCode(eventDetails.get(STATUS_CODE));
-				txn.setReadStatus(false);
-				txn.setUpdBy(RESIDENT);
-				txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-				repo.save(txn);
-				return eventDetails;
+						// Send Notification
+						if (requestType.isNotificationStatus(env, newStatusCode)) {
+							logger.info("invoking notifications for status: " + newStatusCode);
+							requestType.preUpdateInBatchJob(env, utility, txn, credentialStatus, newStatusCode);
+
+							// For bell notification
+							txn.setReadStatus(false);
+							// Email/SMS notification
+							Optional<TemplateType> templateType = getTemplateType(requestType, newStatusCode);
+							sendNotification(txn, templateType.get(), requestType);
+						}
+
+						updateEntity(txn);
+						repo.save(txn);
+					}
+				}
 			}
+		}
+	}
+
+	private Optional<TemplateType> getTemplateType(RequestType requestType, String newStatusCode) {
+		Optional<TemplateType> templateType;
+		if(requestType.isSuccessStatus(env, newStatusCode)) {
+			templateType = Optional.of(TemplateType.SUCCESS);
+		} else if(requestType.isFailedStatus(env, newStatusCode)) {
+			templateType = Optional.of(TemplateType.FAILURE);
+		} else if(requestType.isInProgressStatus(env, newStatusCode)) {
+			templateType = Optional.of(TemplateType.IN_PROGRESS);
+		} else {
+			templateType = Optional.empty();
+		}
+		return templateType;
+	}
+	
+	private Map<String, String> getCredentialStatusForEntity(ResidentTransactionEntity txn)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		if (txn.getCredentialRequestId() != null && !txn.getCredentialRequestId().isEmpty()) {
+			Map<String, String> eventDetails = getCredentialEventDetails(txn.getCredentialRequestId(), txn);
+			return eventDetails;
 		}
 		return Map.of();
 	}
 
-	private void trackAndUpdatePrintingOrReceivedOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
-			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(RECEIVED.name())
-				|| txn.getStatusCode().contentEquals(STORED.name())) {
-			txn.setStatusCode(CARD_READY_TO_DOWNLOAD.name());
-			txn.setReadStatus(false);
-			createResidentDwldUrl(txn, templateType, requestType, eventDetails);
-			sendNotification(txn, templateType, requestType);
-		}
+	private void saveEntity(ResidentTransactionEntity txn) {
+		repo.save(txn);
 	}
 
-	private void trackAnddownloadPrintingOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
-			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(STORED.name())) {
-			txn.setStatusCode(CARD_READY_TO_DOWNLOAD.name());
-			txn.setReadStatus(false);
-			createResidentDwldUrl(txn, templateType, requestType, eventDetails);
-			sendNotification(txn, templateType, requestType);
-		}
-	}
-
-	private void trackAnddownloadPrintingOrIntransitStatus(ResidentTransactionEntity txn, TemplateType templateType,
-			RequestType requestType, Map<String, String> eventDetails)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(IN_TRANSIT.name())
-				|| txn.getStatusCode().contentEquals(STORED.name())) {
-			String trackingId = getTrackingId(txn.getRequestTrnId(), txn.getIndividualId());
-			txn.setTrackingId(trackingId);
-			createResidentDwldUrl(txn, templateType, requestType, eventDetails);
-			sendNotification(txn, templateType, requestType);
-		}
-	}
-
-	private void trackAndUpdatePrintingOrStoredStatus(ResidentTransactionEntity txn, TemplateType templateType,
-			RequestType requestType) throws ResidentServiceCheckedException {
-		if (txn.getStatusCode().contentEquals(PRINTING.name()) || txn.getStatusCode().contentEquals(STORED.name())) {
-			sendNotification(txn, templateType, requestType);
-		}
-	}
-
-	private void trackAndUpdatePaymentConfirmedStatus(ResidentTransactionEntity txn)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getStatusCode().contentEquals(PAYMENT_CONFIRMED.name())) {
-			Map<String, String> eventDetails = getCredentialEventDetails(txn.getCredentialRequestId());
-			txn.setStatusCode(eventDetails.get(STATUS_CODE));
-			txn.setReadStatus(false);
-			txn.setUpdBy(RESIDENT);
-			txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-		}
-	}
-
-	private void createResidentDwldUrl(ResidentTransactionEntity txn, TemplateType templateType,
-			RequestType requestType, Map<String, String> eventDetails) throws ResidentServiceCheckedException {
-		txn.setReferenceLink(eventDetails.get(URL));
+	private void updateEntity(ResidentTransactionEntity txn) {
 		txn.setUpdBy(RESIDENT);
 		txn.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-		repo.save(txn);
+		saveEntity(txn);
 	}
 
 	private void sendNotification(ResidentTransactionEntity txn, TemplateType templateType, RequestType requestType)
@@ -284,70 +227,19 @@ public class CredentialStatusUpdateBatchJob {
 		notificationService.sendNotification(notificationRequestDtoV2);
 	}
 
-	private void trackAndUpdateFailedStatus(ResidentTransactionEntity txn, TemplateType templateType,
-			RequestType requestType) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		if (txn.getStatusCode().contentEquals(FAILED.name())) {
-			sendNotification(txn, templateType, requestType);
-		}
-	}
-
-	private Map<String, String> getCredentialEventDetails(String credentialRequestId)
+	private Map<String, String> getCredentialEventDetails(String credentialRequestId, ResidentTransactionEntity txn)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		Object object = residentServiceRestClient.getApi(ApiName.CREDENTIAL_STATUS_URL, List.of(credentialRequestId),
 				Collections.emptyList(), Collections.emptyList(), ResponseWrapper.class);
 		ResponseWrapper<Map<String, String>> responseWrapper = JsonUtil.convertValue(object,
 				new TypeReference<ResponseWrapper<Map<String, String>>>() {
 				});
-		if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
-			logger.error("CREDENTIAL_STATUS_URL returned error " + responseWrapper.getErrors());
+		List<ServiceError> errors = responseWrapper.getErrors();
+		if (Objects.nonNull(errors) && !errors.isEmpty()) {
+			logger.error("CREDENTIAL_STATUS_URL returned error " + errors);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 		}
 		return responseWrapper.getResponse();
-	}
-
-	private boolean isRecordAvailableInIdRepo(String individualId) throws ResidentServiceCheckedException {
-		try {
-			getNameForIndividualId(individualId);
-		} catch (ResidentServiceCheckedException e) {
-			logger.error("individualId not available in IDRepo");
-			return false;
-		}
-		return true;
-	}
-
-	private String getNameForIndividualId(String individualId) throws ResidentServiceCheckedException {
-		if (individualId == null) {
-			logger.error("individualId is null");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
-		}
-		return identityService.getIdentity(individualId).getFullName();
-	}
-
-	private String getAIDStatusFromRegProc(String aid) {
-		return residentService.getRidStatus(aid).getRidStatus();
-	}
-
-	private Tuple2<String, String> getDateAndTime(LocalDateTime timestamp) {
-		ZonedDateTime dateTime = ZonedDateTime.of(timestamp, ZoneId.of("UTC"))
-				.withZoneSameInstant(ZoneId.of(notificationZone));
-		String date = dateTime.format(DateTimeFormatter.ofPattern(notificationDatePattern));
-		String time = dateTime.format(DateTimeFormatter.ofPattern(notificationTimePattern));
-		return Tuples.of(date, time);
-	}
-
-	private String getTrackingId(String transactionId, String individualId)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Object object = residentServiceRestClient.getApi(ApiName.GET_ORDER_STATUS_URL, List.of(),
-				List.of(TemplateVariablesConstants.TRANSACTION_ID, TemplateVariablesConstants.INDIVIDUAL_ID),
-				List.of(transactionId, individualId), ResponseWrapper.class);
-		ResponseWrapper<Map<String, String>> responseWrapper = JsonUtil.convertValue(object,
-				new TypeReference<ResponseWrapper<Map<String, String>>>() {
-				});
-		if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
-			logger.error("ORDER_STATUS_URL returned error " + responseWrapper.getErrors());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
-		}
-		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
 	}
 
 }
