@@ -431,7 +431,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         }
     }
 
-    private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException {
+    private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
         residentTransactionEntity.setEventId(utility.createEventId());
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
