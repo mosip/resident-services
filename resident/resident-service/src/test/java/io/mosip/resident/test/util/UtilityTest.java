@@ -42,6 +42,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
@@ -71,6 +73,8 @@ public class UtilityTest {
 	private Utility utility;
 
 	private JSONObject identity;
+	
+	private JSONObject amrAcrJson;
 
 	@Mock
 	private Environment env;
@@ -90,6 +94,9 @@ public class UtilityTest {
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+	
+	@Mock
+	private ObjectMapper objectMapper;
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -98,8 +105,15 @@ public class UtilityTest {
 		InputStream is = new FileInputStream(idJson);
 		String idJsonString = IOUtils.toString(is, "UTF-8");
 		identity = JsonUtil.readValue(idJsonString, JSONObject.class);
+		
+		File amrAcrJsonFile = new File(classLoader.getResource("amr-acr-mapping.json").getFile());
+		InputStream insputStream = new FileInputStream(amrAcrJsonFile);
+		String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
+		amrAcrJson = JsonUtil.readValue(amrAcrJsonString, JSONObject.class);
+		
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
+		ReflectionTestUtils.setField(utility, "amrAcrJsonFile", "amr-acr-mapping.json");
         when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
         when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd");
 		request = Mockito.mock(HttpServletRequest.class);
