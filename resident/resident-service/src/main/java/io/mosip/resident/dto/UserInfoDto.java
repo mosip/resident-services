@@ -1,5 +1,6 @@
 package io.mosip.resident.dto;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import lombok.Data;
@@ -15,7 +16,7 @@ public class UserInfoDto {
 	
 	private String fullName;
 	
-	private String lastLogin;
+	private LocalDateTime lastLogin;
 	
 	private Map<String, Object> photo;
 	

@@ -8,12 +8,21 @@ import java.util.stream.Stream;
  * @author Kamesh Shekhar Prasad
  */
 public enum EventStatus {
-    FAILED, SUCCESS, IN_PROGRESS, ALL;
+    FAILED("Failed"), SUCCESS("Success"), IN_PROGRESS("In Progress");
 	
+	private String status;
+	
+	private EventStatus(String status) {
+		this.status = status;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
 	
 	public static Optional<EventStatus> getEventStatusForText(String status) {
 		return Stream.of(values())
-			.filter(event -> event.name()
+			.filter(event -> event.getStatus()
 				.equalsIgnoreCase(status.trim()))
 			.findAny();
 	}

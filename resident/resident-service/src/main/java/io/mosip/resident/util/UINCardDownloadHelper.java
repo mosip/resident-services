@@ -1,7 +1,5 @@
 package io.mosip.resident.util;
 
-import java.time.LocalDateTime;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,7 +40,7 @@ public class UINCardDownloadService {
 		request.setRequest(uincardDTO);
 		request.setId(env.getProperty(PRINT_ID));
 		request.setVersion(env.getProperty(PRINT_VERSION));
-		request.setRequesttime(DateUtils.formatToISOString(LocalDateTime.now()));
+		request.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
 		byte[]	response;
 		try {
 			response = (byte[]) residentServiceRestClient.postApi(env.getProperty(ApiName.REGPROCPRINT.name()),

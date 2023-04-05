@@ -1,7 +1,24 @@
 package io.mosip.resident.aspect;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.Claim;
+import java.net.HttpCookie;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.stereotype.Component;
+
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -13,25 +30,6 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Component;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.net.HttpCookie;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Aspect class for login redirect API
@@ -65,15 +63,9 @@ public class LoginCheck {
 	
 	@Autowired
 	private AuditUtil audit;
-
-	@Autowired
-	private ThreadPoolTaskScheduler taskScheduler;
 	
 	@Value("${auth.token.header:Authorization}")
 	private String authTokenHeader;
-
-	@Value("${mosip.resident.oidc.auth_token.expiry.claim-name:exp}")
-	private String expiryClaimName;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(LoginCheck.class);
 
@@ -88,22 +80,13 @@ public class LoginCheck {
 			if (cookie.contains(AUTHORIZATION_TOKEN)) {
 				Optional<String> authorizationCookie = getCookieValueFromHeader(cookie);
 				if (authorizationCookie.isPresent()) {
-					String accessToken = authorizationCookie.get();
-					Claim decodedToken = JWT.decode(accessToken).getClaim(expiryClaimName);
-					Date expDate = decodedToken.asDate();
-					logger.info("Scheduling clearing auth token cache after : " + expDate);
-					taskScheduler.schedule(() -> {
-						if(accessToken!=null && !accessToken.isEmpty()) {
-							utility.clearUserInfoCache(accessToken);
-							utility.clearIdentityMapCache(accessToken);
-						}
-					}, expDate);
-					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
+					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(authorizationCookie.get());
 					sessionId = identityServiceImpl.createSessionId();
 				}
 				break;
 			}
 		}
+
 		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.LOGIN_REQ_SUCCESS);
 			ResidentSessionEntity newSessionData = new ResidentSessionEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
@@ -114,15 +97,8 @@ public class LoginCheck {
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
-
-	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..)) && args(redirectURI,state,sessionState,code,error,stateCookie,req,res)")
-	public void getUserDetails(String redirectURI, String state, String sessionState, String code, String error, String stateCookie,
-							   HttpServletRequest req, HttpServletResponse res) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		getUserDetails(redirectURI, state, sessionState, code, stateCookie, req, res);
-	}
-
-
-		@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..))")
+	
+	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..))")
 	public void login() {
 	}
 
@@ -141,12 +117,7 @@ public class LoginCheck {
 		logger.debug("LoginCheck::onLoginReq()::exit");
 	}
 
-	@Before("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..)) && args(state,redirectURI,stateParam,uiLocales,res)")
-	public void onLoginReq(String state, String redirectURI, String stateParam, String uiLocales, HttpServletResponse res) {
-		onLoginReq(state, redirectURI, stateParam, res);
-	}
-
-		@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..))")
+	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..))")
 	public void loginRedirect() {
 	}
 
@@ -157,17 +128,13 @@ public class LoginCheck {
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..)) && args(token,redirectURI,res)")
-	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) throws ApisResourceAccessException {
+	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) {
 		logger.debug("LoginCheck::onLogoutSuccess()::entry");
 		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ);
 		if (res.getStatus() == resStatusCode) {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_SUCCESS);
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
-		}
-		if(token!=null && !token.isEmpty()){
-			utility.clearUserInfoCache(token);
-			utility.clearIdentityMapCache(token);
 		}
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}

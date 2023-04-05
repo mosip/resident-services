@@ -1,20 +1,20 @@
 package io.mosip.resident.service.impl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.PartnerService;
-import io.mosip.resident.service.ProxyPartnerManagementService;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
  * The Class PartnerServiceImpl.
@@ -23,33 +23,33 @@ import io.mosip.resident.service.ProxyPartnerManagementService;
 @Component
 public class PartnerServiceImpl implements PartnerService {
 
-    @Autowired
-    private ProxyPartnerManagementService proxyPartnerManagementService;
+    @Value("${mosip.pms.pmp.partner.rest.uri}")
+    private String partnerServiceUrl;
 
-    private static final Logger logger = LoggerConfiguration.logConfig(PartnerServiceImpl.class);
+    @Autowired
+    @Qualifier("restClientWithSelfTOkenRestTemplate")
+    private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
     @Override
-    public ArrayList<String> getPartnerDetails(String partnerType) throws ResidentServiceCheckedException {
-    	logger.debug("PartnerServiceImpl::getPartnerDetails()::entry");
+    public ArrayList<String> getPartnerDetails(String partnerId) throws ResidentServiceCheckedException {
         ArrayList<String> partnerIds = new ArrayList<>();
         try {
-            if (partnerType != null) {
-                ResponseWrapper<?> responseWrapper = proxyPartnerManagementService.getPartnersByPartnerType(partnerType);
+            if (partnerId != null && partnerServiceUrl != null) {
+                URI uri = URI.create(partnerServiceUrl);
+                ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(uri, ResponseWrapper.class);
                 if (responseWrapper != null) {
                     Map<String, Object> partnerResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-                    ArrayList<Object> partners = (ArrayList<Object>) partnerResponse.get(ResidentConstants.PARTNERS);
+                    ArrayList<Object> partners = (ArrayList<Object>) partnerResponse.get("partners");
                     for (Object partner : partners) {
                         Map<String, Object> individualPartner = new LinkedHashMap<>((Map<String, Object>) partner);
-                        partnerIds.add(individualPartner.get(ResidentConstants.PMS_PARTNER_ID).toString());
+                        partnerIds.add(individualPartner.get("partnerID").toString());
                     }
                 }
             }
         } catch (Exception e) {
-        	logger.error("Error occurred in getting partner details %s", e.getMessage());
             throw new ResidentServiceCheckedException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorMessage(), e);
         }
-        logger.debug("PartnerServiceImpl::getPartnerDetails()::exit");
         return partnerIds;
     }
 }

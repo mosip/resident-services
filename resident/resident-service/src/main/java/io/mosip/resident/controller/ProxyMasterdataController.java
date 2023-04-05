@@ -1,19 +1,23 @@
 package io.mosip.resident.controller;
 
-import io.micrometer.core.annotation.Timed;
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.OrderEnum;
-import io.mosip.resident.dto.LocationImmediateChildrenResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,17 +25,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
-import java.util.List;
-
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 
 /**
  * Resident proxy masterdata controller class.
@@ -48,13 +41,7 @@ public class ProxyMasterdataController {
 	@Autowired
 	private AuditUtil auditUtil;
 
-	@Autowired
-	private Utility utility;
-
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
-
-	@Autowired
-	private Utilities utilities;
 
 	/**
 	 * Get valid documents by language code.
@@ -74,16 +61,11 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getValidDocumentByLangCode(@PathVariable("langCode") String langCode)
 			throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = utility.getValidDocumentByLangCode(langCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_EXCEPTION);
-			throw e;
-		}
+		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode():: entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getValidDocumentByLangCode(langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_SUCCESS);
-		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::exit");
+		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode():: exit");
 		return responseWrapper;
 	}
 
@@ -106,13 +88,8 @@ public class ProxyMasterdataController {
 	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(@PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::exit");
 		return responseWrapper;
@@ -139,13 +116,9 @@ public class ProxyMasterdataController {
 			@PathVariable("locationcode") String locationCode, @PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getImmediateChildrenByLocCodeAndLangCode()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getImmediateChildrenByLocCodeAndLangCode(locationCode, langCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getImmediateChildrenByLocCodeAndLangCode(locationCode, langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_SUCCESS);
 		logger.debug("ProxyMasterdataController::getImmediateChildrenByLocCodeAndLangCode()::exit");
 		return responseWrapper;
@@ -171,13 +144,9 @@ public class ProxyMasterdataController {
 	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(@PathVariable("locationcode") String locationCode,
 			@PathVariable("langcode") String langCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getLocationDetailsByLocCodeAndLangCode()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode(locationCode, langCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode(locationCode,
+				langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationDetailsByLocCodeAndLangCode()::exit");
 		return responseWrapper;
@@ -206,14 +175,9 @@ public class ProxyMasterdataController {
 			@PathVariable("longitude") double longitude, @PathVariable("latitude") double latitude,
 			@PathVariable("proximitydistance") int proximityDistance) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getCoordinateSpecificRegistrationCenters()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
-					longitude, latitude, proximityDistance);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
+				longitude, latitude, proximityDistance);
 		auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_SUCCESS);
 		logger.debug("ProxyMasterdataController::getCoordinateSpecificRegistrationCenters()::exit");
 		return responseWrapper;
@@ -239,13 +203,8 @@ public class ProxyMasterdataController {
 	public ResponseWrapper<?> getApplicantValidDocument(@PathVariable("applicantId") String applicantId,
 			@RequestParam("languages") List<String> languages) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getApplicantValidDocument()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getApplicantValidDocument(applicantId, languages);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getApplicantValidDocument(applicantId, languages);
 		auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT_SUCCESS);
 		logger.debug("ProxyMasterdataController::getApplicantValidDocument()::exit");
 		return responseWrapper;
@@ -273,14 +232,9 @@ public class ProxyMasterdataController {
 			@PathVariable("hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode,
-					hierarchyLevel, name);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode,
+				hierarchyLevel, name);
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_SUCCESS);
 		logger.debug("ProxyMasterdataController::getRegistrationCentersByHierarchyLevel()::exit");
 		return responseWrapper;
@@ -300,8 +254,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
+	@GetMapping("/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
 	@Operation(summary = "getRegistrationCenterByHierarchyLevelAndTextPaginated", description = "getRegistrationCenterByHierarchyLevelAndTextPaginated", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -318,14 +271,10 @@ public class ProxyMasterdataController {
 			@RequestParam(name = "orderBy", defaultValue = "desc") @ApiParam(value = "order the requested data based on param", defaultValue = "desc") OrderEnum orderBy)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getRegistrationCenterByHierarchyLevelAndTextPaginated()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(langCode, hierarchyLevel, name, pageNumber,
-					pageSize, orderBy, sortBy);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getRegistrationCenterByHierarchyLevelAndTextPaginated(langCode, hierarchyLevel, name, pageNumber,
+						pageSize, orderBy, sortBy);
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_SUCCESS);
 		logger.debug("ProxyMasterdataController::getRegistrationCenterByHierarchyLevelAndTextPaginated()::exit");
 		return responseWrapper;
@@ -340,8 +289,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}")
+	@GetMapping("/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}")
 	@Operation(summary = "getRegistrationCenterWorkingDays", description = "getRegistrationCenterWorkingDays", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -353,13 +301,9 @@ public class ProxyMasterdataController {
 			@PathVariable("registrationCenterID") String registrationCenterID,
 			@PathVariable("langCode") String langCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getRegistrationCenterWorkingDays()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getRegistrationCenterWorkingDays(registrationCenterID, langCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getRegistrationCenterWorkingDays(registrationCenterID, langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_SUCCESS);
 		logger.debug("ProxyMasterdataController::getRegistrationCenterWorkingDays()::exit");
 		return responseWrapper;
@@ -375,8 +319,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/proxy/masterdata/idschema/latest")
+	@GetMapping("/proxy/masterdata/idschema/latest")
 	@Operation(summary = "getLatestIdSchema", description = "getLatestIdSchema", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -390,13 +333,8 @@ public class ProxyMasterdataController {
 			@RequestParam(name = "type", required = false) @ApiParam(value = "type of the ui spec. Supported comma separted values") String type)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getLatestIdSchema()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getLatestIdSchema(schemaVersion, domain, type);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getLatestIdSchema(schemaVersion, domain, type);
 		auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLatestIdSchema()::exit");
 		return responseWrapper;
@@ -411,8 +349,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}")
+	@GetMapping("/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}")
 	@Operation(summary = "getAllTemplateBylangCodeAndTemplateTypeCode", description = "getAllTemplateBylangCodeAndTemplateTypeCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -423,13 +360,9 @@ public class ProxyMasterdataController {
 	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(@PathVariable("langcode") String langCode,
 			@PathVariable("templatetypecode") String templateTypeCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getAllTemplateBylangCodeAndTemplateTypeCode()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService
+				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_SUCCESS);
 		logger.debug("ProxyMasterdataController::getAllTemplateBylangCodeAndTemplateTypeCode()::exit");
 		return responseWrapper;
@@ -443,29 +376,21 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/auth-proxy/masterdata/dynamicfields/{fieldName}/{langCode}")
-	@Operation(summary = "getDynamicFieldBasedOnLangCodeAndFieldName", description = "Service to fetch  dynamic field based on langcode and field name", tags = {
+	@GetMapping("/auth-proxy/masterdata/gendertypes/{langcode}")
+	@Operation(summary = "getGenderTypesByLangCode", description = "getGenderTypesByLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(@PathVariable("fieldName") String fieldName,
-																		 @PathVariable("langCode") String langCode,
-																		 @RequestParam(value = "withValue", defaultValue = "false") boolean withValue)
+	public ResponseWrapper<?> getGenderTypesByLangCode(@PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
-			throw e;
-		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_SUCCESS);
-		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
+		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getGenderTypesByLangCode(langCode);
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_SUCCESS);
+		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::exit");
 		return responseWrapper;
 	}
 	
@@ -478,8 +403,7 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}")
+	@GetMapping("/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}")
 	@Operation(summary = "getDocumentTypesByDocumentCategoryLangCode", description = "getDocumentTypesByDocumentCategoryLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -490,13 +414,8 @@ public class ProxyMasterdataController {
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(@PathVariable("documentcategorycode") String documentcategorycode,@PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataController::getDocumentTypesByDocumentCategoryLangCode::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(documentcategorycode,langCode);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(documentcategorycode,langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_SUCCESS);
 		logger.debug("ProxyMasterdataController::getDocumentTypesByDocumentCategoryLangCode::exit");
 		return responseWrapper;
@@ -511,8 +430,7 @@ public class ProxyMasterdataController {
 	 * @throws IOException 
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/proxy/masterdata/gendercode/{gendertype}/{langcode}")
+	@GetMapping("/proxy/masterdata/gendercode/{gendertype}/{langcode}")
 	@Operation(summary = "getGenderCodeByGenderTypeAndLangCode", description = "getGenderCodeByGenderTypeAndLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -523,71 +441,10 @@ public class ProxyMasterdataController {
 	public ResponseWrapper<?> getGenderCodeByGenderTypeAndLangCode(@PathVariable("gendertype") String gendertype,@PathVariable("langcode") String langCode)
 			throws ResidentServiceCheckedException, IOException {
 		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(gendertype,langCode);
-		} catch (ResidentServiceCheckedException | IOException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_EXCEPTION);
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(gendertype,langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_SUCCESS);
 		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::exit");
-		return responseWrapper;
-	}
-
-	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@GetMapping("/proxy/masterdata/locationHierarchyLevels")
-	@Operation(summary = "Retrieve all location Hierarchy Level details", description = "Retrieve all location Hierarchy Level details", tags = {
-			"proxy-masterdata-controller" })
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
-			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
-			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getLocationHierarchyLevel(
-			@RequestParam(name = "lastUpdated", required = false) @ApiParam(value = "last updated rows", required = false) String lastUpdated) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getLocationHierarchyLevels(lastUpdated);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
-			throw e;
-		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
-		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::exit");
-		return responseWrapper;
-	}
-
-	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@GetMapping("/proxy/masterdata/dynamicfields/all/{fieldName}")
-	@ApiOperation(value = "Service to fetch all dynamic field value for all languages")
-	public ResponseWrapper<?> getAllDynamicFieldByName(
-			@PathVariable("fieldName") String fieldName) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::entry");
-		ResponseWrapper<?> responseWrapper;
-		try {
-			responseWrapper = proxyMasterdataService.getAllDynamicFieldByName(fieldName);
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION);
-			throw e;
-		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS);
-		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::exit");
-		return responseWrapper;
-	}
-
-	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@GetMapping(value = "/auth-proxy/masterdata/locations/immediatechildren/{locationcode}")
-	public ResponseWrapper<LocationImmediateChildrenResponseDto> getImmediateChildrenByLocCode(
-			@PathVariable("locationcode") String locationCode, @RequestParam("languageCodes") List<String> languageCodes) throws ResidentServiceCheckedException {
-
-		ResponseWrapper<LocationImmediateChildrenResponseDto> responseWrapper = new ResponseWrapper<>();
-		responseWrapper
-				.setResponse(proxyMasterdataService.getImmediateChildrenByLocCode(locationCode, languageCodes));
 		return responseWrapper;
 	}
 

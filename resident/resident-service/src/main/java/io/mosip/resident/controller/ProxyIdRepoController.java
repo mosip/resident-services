@@ -1,7 +1,6 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
 
@@ -17,13 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.micrometer.core.annotation.Timed;
 import io.mosip.idrepository.core.exception.IdRepoAppException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -50,10 +46,7 @@ public class ProxyIdRepoController {
 	@Autowired
 	private AuditUtil auditUtil;
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
-
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get Remaining update count by Individual Id Request", description = "Get Remaining update count by Individual Id Request", tags = {
 			"proxy-id-repo-identity-update-controller" })
 	@ApiResponses(value = {
@@ -64,12 +57,11 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<ResponseWrapper<?>> getRemainingUpdateCountByIndividualId(
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
-		logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::entry");
+		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
 			ResponseWrapper<?> responseWrapper = proxySerivce
 					.getRemainingUpdateCountByIndividualId(filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
-			logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::exit");
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_EXCEPTION);

@@ -1,11 +1,10 @@
-package io.mosip.resident.service.impl;
+package io.mosip.resident.test.service;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -24,14 +23,12 @@ import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
-import io.mosip.resident.dto.IdentityDTO;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -62,10 +59,10 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -104,17 +101,12 @@ public class IdAuthServiceTest {
     @Mock
     private IdentityServiceImpl identityService;
 
-    @Mock
-    private NotificationService notificationService;
-    
-    @Mock
-    private Utility utility;
-
     @Before
-    public void setup() throws ResidentServiceCheckedException {
-        IdentityDTO identityDTO1 = new IdentityDTO();
-        identityDTO1.setUIN("234");
-        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO1);
+    public void setup() {
+
+        // when(environment.getProperty(ApiName.KERNELENCRYPTIONSERVICE.name()))
+        // .thenReturn("https://dev.mosip.net/idauthentication/v1/internal/getCertificate");
+
     }
 
     @Test
@@ -230,6 +222,9 @@ public class IdAuthServiceTest {
         when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
+        when(identityService.getIDATokenForIndividualId(anyString())).thenReturn("346697314566835424394775924659202696");
+		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(anyString(),
+				anyString(), anyString())).thenReturn(residentTransactionEntity);
 
         boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 
@@ -329,7 +324,7 @@ public class IdAuthServiceTest {
         AutnTxnDto autnTxnDto = new AutnTxnDto();
         autnTxnDto.setAuthtypeCode("OTP-AUTH");
         autnTxnDto.setEntityName("ida_app_user");
-        autnTxnDto.setReferenceIdType(IdType.UIN.name());
+        autnTxnDto.setReferenceIdType("UIN");
         autnTxnDto.setRequestdatetime(DateUtils.getUTCCurrentDateTime());
         autnTxnDto.setStatusCode("N");
         autnTxnDto.setStatusComment("OTP Authentication Failed");

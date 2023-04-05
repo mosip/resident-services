@@ -1,4 +1,4 @@
-package io.mosip.resident.util;
+package io.mosip.resident.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,7 +6,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,8 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.util.EncryptorUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
  * @author Abubacker Siddik
@@ -54,9 +55,6 @@ public class EncryptorUtilTest {
     @Mock
     private ResidentServiceRestClient restClientService;
 
-    @Mock
-    private Utilities utilities;
-
     @Captor
     ArgumentCaptor<RequestWrapper<CryptomanagerRequestDto>> requestCaptor;
 
@@ -74,7 +72,6 @@ public class EncryptorUtilTest {
 
         localDateTime = DateUtils.getUTCCurrentDateTime();
         when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
-        when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
     }
 
     @Test

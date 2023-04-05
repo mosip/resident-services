@@ -1,13 +1,8 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
-
 import java.net.URI;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,12 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
@@ -56,9 +49,6 @@ public class OrderCardController {
 	
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
-	
-	@Autowired
-	private Environment env;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardController.class);
 
@@ -71,8 +61,7 @@ public class OrderCardController {
 	 * @throws ApisResourceAccessException 
 	 */
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostSendPhysicalCard()" + ")")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostSendPhysicalCard()" + ")")
 	@PostMapping(value = "/sendCard")
 	@Operation(summary = "sendPhysicalCard", description = "sendPhysicalCard", tags = { "order-card-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -84,21 +73,16 @@ public class OrderCardController {
 			@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestWrapper)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::sendPhysicalCard()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD);
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
-		try {
-			responseWrapper.setResponse(orderCardService.sendPhysicalCard(requestWrapper.getRequest()));
-		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_EXCEPTION);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.SEND_CARD_ID)));
-		}
+		responseWrapper.setResponse(orderCardService.sendPhysicalCard(requestWrapper.getRequest()));
 		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_SUCCESS);
 		logger.debug("OrderCardController::sendPhysicalCard()::exit");
 		return responseWrapper;
 	}
 	
 	@ResponseFilter 
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetOrderRedirect()" + ")")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetOrderRedirect()" + ")")
 	@GetMapping("/physical-card/order")
 	@Operation(summary = "get", description = "Get redirect-url", tags = { "order-card-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -117,8 +101,7 @@ public class OrderCardController {
 	}
 	
 	@ResponseFilter
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetOrderRedirect()" + ")")
+	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetOrderRedirect()" + ")")
 	@GetMapping("/physical-card/order-redirect")
 	@Operation(summary = "get", description = "Get redirect-url", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

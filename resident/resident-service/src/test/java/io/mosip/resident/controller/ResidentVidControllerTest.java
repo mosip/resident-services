@@ -1,12 +1,15 @@
 package io.mosip.resident.test.controller;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -32,7 +35,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.IdType;
+import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentVidRequestDto;
 import io.mosip.resident.dto.ResponseWrapper;
@@ -40,36 +43,52 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.ResidentVidServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentVidControllerTest {
-
-	private static final String JSON_STRING_RESPONSE = "";
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private ResidentVidServiceImpl residentVidService;
 
 	@MockBean
 	private IdAuthServiceImpl idAuthService;
+	
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
 
 	@MockBean
 	private ResidentServiceImpl residentService;
 
 	@MockBean
+	@Qualifier("restClientWithPlainRestTemplate")
 	private ResidentServiceRestClient residentServiceRestClient;
+	
+	@MockBean
+	private DocumentService docService;
+	
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
 	@MockBean
 	@Qualifier("selfTokenRestTemplate")
@@ -85,9 +104,10 @@ public class ResidentVidControllerTest {
 	private AuditUtil audit;
 
 	@Before
-	public void setup() {
+	public void setup() throws ApisResourceAccessException {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn(null);
 	}
 
 	@Test
@@ -101,7 +121,7 @@ public class ResidentVidControllerTest {
 		ResponseWrapper<VidResponseDto> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(dto);
 
-		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class))).thenReturn(responseWrapper);
+		Mockito.when(residentVidService.generateVid(Mockito.any(), Mockito.anyString())).thenReturn(responseWrapper);
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(getRequest());
@@ -114,7 +134,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("resident")
 	public void otpValidationFailureTest() throws Exception {
 
-		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class)))
+		Mockito.when(residentVidService.generateVid(Mockito.any(), Mockito.anyString()))
 				.thenThrow(new OtpValidationFailedException());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -128,7 +148,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("resident")
 	public void vidCreationFailureTest() throws Exception {
 
-		Mockito.when(residentVidService.generateVid(Mockito.any(VidRequestDto.class)))
+		Mockito.when(residentVidService.generateVid(Mockito.any(), Mockito.anyString()))
 				.thenThrow(new VidCreationException());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -187,7 +207,8 @@ public class ResidentVidControllerTest {
 		String json = gson.toJson(request);
 
 		this.mockMvc.perform(post("/vid").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk()).andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
 	}
 
 	@Test
@@ -218,7 +239,7 @@ public class ResidentVidControllerTest {
 
 	@Test
 	@WithUserDetails("resident")
-	public void vidRevokingSuccessTest() throws Exception {
+	public void vidRevokingFailureTest() throws Exception {
 
 		VidRevokeResponseDTO dto = new VidRevokeResponseDTO();
 		dto.setMessage("Successful");
@@ -226,7 +247,7 @@ public class ResidentVidControllerTest {
 		ResponseWrapper<VidRevokeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(dto);
 
-		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))
+		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -237,21 +258,21 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk());
-				//.andExpect(jsonPath("$.response.message", is("Successful")));
+		// .andExpect(jsonPath("$.response.message", is("Successful")));
 
 	}
 
 	@Test
 	@WithUserDetails("resident")
-	public void vidRevokingFailureTest() throws Exception {
+	public void vidRevokingFailureTest2() throws Exception {
 
-		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString()))
+		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new VidRevocationException());
 
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(getRevokeRequest());
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -269,7 +290,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -286,7 +307,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -303,7 +324,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -325,7 +346,7 @@ public class ResidentVidControllerTest {
 				.characterEncoding("UTF-8");
 
 		this.mockMvc.perform(builder).andExpect(status().isOk())
-				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-410")));
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-471")));
 	}
 
 	@Test
@@ -333,7 +354,6 @@ public class ResidentVidControllerTest {
 	public void invalidIndividualIdTypeRevokeTest() throws Exception {
 
 		RequestWrapper<VidRevokeRequestDTO> request = getRevokeRequest();
-		request.getRequest().setIndividualIdType(null);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
@@ -353,7 +373,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -370,7 +390,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -387,7 +407,7 @@ public class ResidentVidControllerTest {
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(request);
 
-		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310540")
+		MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.patch("/vid/{vid}", "2038096257310541")
 				.content(json).contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
 				.characterEncoding("UTF-8");
 
@@ -414,7 +434,6 @@ public class ResidentVidControllerTest {
 	private static RequestWrapper<VidRevokeRequestDTO> getRevokeRequest() {
 		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
 		vidRevokeRequestDTO.setIndividualId("2038096257310540");
-		vidRevokeRequestDTO.setIndividualIdType(IdType.VID.name());
 		vidRevokeRequestDTO.setOtp("974436");
 		vidRevokeRequestDTO.setTransactionID("1111122222");
 		vidRevokeRequestDTO.setVidStatus("REVOKED");
@@ -425,6 +444,67 @@ public class ResidentVidControllerTest {
 		request.setRequesttime(DateUtils.getUTCCurrentDateTimeString("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 		request.setRequest(vidRevokeRequestDTO);
 		return request;
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetVidPolicy() throws Exception {
+		when(residentVidService.getVidPolicy()).thenReturn("policy");
+		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print())
+				.andExpect(jsonPath("$.response", is("policy")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetVidPolicyFailed() throws Exception {
+		when(residentVidService.getVidPolicy()).thenThrow(new ResidentServiceCheckedException());
+		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print())
+				.andExpect(jsonPath("$.errors[0].errorCode", is("RES-SER-426")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void vidCreationV2SuccessTest() throws Exception {
+
+		VidResponseDto dto = new VidResponseDto();
+		dto.setVid("12345");
+		dto.setMessage("Successful");
+
+		ResponseWrapper<VidResponseDto> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(dto);
+
+		Mockito.when(residentVidService.generateVid(Mockito.any(BaseVidRequestDto.class), any())).thenReturn(responseWrapper);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(getRequest());
+
+		this.mockMvc.perform(post("/generate-vid").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")));
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void vidRevokingV2SuccessTest() throws Exception {
+
+		VidRevokeResponseDTO dto = new VidRevokeResponseDTO();
+		dto.setMessage("Successful");
+
+		ResponseWrapper<VidRevokeResponseDTO> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(dto);
+
+		Mockito.when(residentVidService.revokeVid(Mockito.any(VidRevokeRequestDTO.class), any(), Mockito.anyString()))
+				.thenReturn(responseWrapper);
+
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(getRevokeRequest());
+
+		RequestBuilder builder = MockMvcRequestBuilders.patch("/revoke-vid/{vid}", "2038096257310540").content(json)
+				.contentType(MediaType.APPLICATION_JSON_VALUE).accept(MediaType.APPLICATION_JSON_VALUE)
+				.characterEncoding("UTF-8");
+
+		this.mockMvc.perform(builder).andExpect(status().isOk());
+		// .andExpect(jsonPath("$.response.message", is("Successful")));
+
 	}
 
 }

@@ -7,7 +7,6 @@ package io.mosip.resident.constant;
  * @author Manoj SP
  */
 public class ResidentConstants {
-
     private ResidentConstants() {
 	}
 
@@ -28,8 +27,6 @@ public class ResidentConstants {
     public static final String VIRUS_SCANNER_ENABLED = "mosip.resident.virus-scanner.enabled";
 
     public static final String SUBSCRIPTIONS_DELAY_ON_STARTUP = "subscriptions-delay-on-startup_millisecs";
-    
-	public static final String RESUBSCRIPTIONS_INTERVAL_SECS = "re-subscription-interval-in-seconds";
     
     public static final String CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY = "mosip.resident.update.service.status.job.initial-delay";
     
@@ -52,7 +49,6 @@ public class ResidentConstants {
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
-    public static final String STATUS = "status";
     public static final String URL = "url";
     public static final String RESIDENT = "RESIDENT";
     public static final String RESIDENT_SERVICES = "resident-services";
@@ -92,8 +88,6 @@ public class ResidentConstants {
     public static final String CREATE_PASSWORD_METHOD_NAME = "resident.create.password.method.name";
 
     public static final String DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.personalized.card.naming.convention";
-    
-    public static final String DOWNLOAD_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.card.naming.convention";
 
     public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
 
@@ -104,11 +98,8 @@ public class ResidentConstants {
     public static final String VID_DOWNLOAD_CARD_VERSION = "mosip.resident.request.vid.card.version";
 
     public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
-    public static final String RESIDENT_ALL_TEMPLATE_PROPERTY = "resident.ALL.template.property";
-    public static final String RESIDENT_UNKNOWN_TEMPLATE_PROPERTY = "resident.UNKNOWN.template.property";
     public static final String PHOTO_ATTRIBUTE_NAME = "mosip.resident.photo.attribute.name";
     public static final String APPLICANT_NAME_PROPERTY = "mosip.resident.applicant.name.property";
-    public static final String AUTHENTICATION_MODE_PROPERTY = "mosip.resident.authentication.mode.property";
 
     public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
     public static final String MOSIP_CREDENTIAL_TYPE_PROPERTY="mosip.digital.card.credential.type";
@@ -137,29 +128,13 @@ public class ResidentConstants {
     public static final String DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.service.history.file.name.convention";
     public static final String GRIEVANCE_REQUEST_ID = "mosip.resident.grievance.ticket.request.id";
     public static final String GRIEVANCE_REQUEST_VERSION = "mosip.resident.grievance.ticket.request.version";
-    public static final String DOWNLOAD_REG_CENTER_ID = "resident.download.reg.centers.list.id";
-    public static final String DOWNLOAD_NEAREST_REG_CENTER_ID = "resident.download.nearest.reg.centers.id";
-    public static final String DOWNLOAD_SUPPORTING_DOCS_ID = "resident.download.supporting.documents.id";
-    public static final String SEND_CARD_ID = "resident.send.card.id";
-    public static final String PINNED_EVENTID_ID = "resident.pinned.eventid.id";
-    public static final String UNPINNED_EVENTID_ID = "resident.unpinned.eventid.id";
-    public static final String AUTH_PROXY_PARTNERS_ID = "resident.auth.proxy.partners.id";
-    public static final String AUTH_HISTORY_ID = "resident.authhistory.id";
-    public static final String EVENTS_EVENTID_ID = "resident.events.eventid.id";
-    public static final String UPDATE_UIN_ID = "resident.updateuin.id";
-	public static final String NOTIFICATION_CLICK_ID = "resident.notification.click.id";
-	public static final String NOTIFICATION_ID = "resident.notification.id";
-	public static final String SERVICE_HISTORY_ID = "resident.service.history.id";
-	public static final String PROFILE_ID = "resident.profile.id";
-	public static final String CREDENTIAL_STORE_ID = "mosip.credential.store.id";
-	public static final String GET_VIDS_ID = "resident.vids.id";
-	public static final String TRANSLITERATE_ID = "mosip.resident.transliteration.transliterate.id";
-	public static final String VERIFICATION_STATUS_ID = "resident.channel.verification.status.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
-    public static final String UNKNOWN = "Unknown";
+
     public static final String EMAIL_FROM_PROFILE = "mosip.resident.email.token.claim-email";
     public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
+
+    public static final String MESSAGE_CODE_MAXIMUM_LENGTH = "mosip.resident.message.code.maximum.length";
 
     public static final String TRANSACTION_TYPE_CODE = "transactionTypeCode";
     public static final String AID_STATUS = "aidStatus";
@@ -174,16 +149,15 @@ public class ResidentConstants {
     public static final String ADDITIONAL_ATTRIBUTE_TO_FETCH = "resident.additional.identity.attribute.to.fetch";
     public static final String COMMA = ",";
     public static final String COLON = ":";
-    public static final String SEMI_COLON = ";";
-    public static final String OPEN_PARENTHESIS = "(";
-    public static final String CLOSE_PARENTHESIS = ")";
 
     public static final String FILE_TEXT = "fileText";
     public static final String DOLLAR = "$";
     public static final String AUTH_TYPE = "authType";
 
-    public static final String ATTRIBUTE_LIST_DELIMITER = ",";
-    public static final String UI_ATTRIBUTE_DATA_DELIMITER = ", ";
+    public static final String CHANNEL = "channel";
+
+    public static final String MASK_PREFIX = "masked_";
+    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
 
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
     public static final String REQ_RES_ID = "reqResId";
@@ -200,11 +174,11 @@ public class ResidentConstants {
     public static final String ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY = "resident.template.ack.secure-my-id";
     public static final String ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY = "resident.template.ack.vid.card.download";
     public static final String ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY = "resident.template.ack.verify-email-id-or-phone-number";
-
-    public static final String MOSIP_PDF_HEADER_LOGO_URL = "mosip.pdf.header.logo.url";
-
-    public static final String UI_DATE_TIME_PATTERN_DEFAULT = "resident.ui.datetime.pattern.default";
-    public static final String FILENAME_DATETIME_PATTERN_DEFAULT = "resident.filename.datetime.pattern.default";
+    public static final String ACTION_PERFORMED = "actionPerformed";
+    public static final String VID_TYPE = "vidType";
+    public static final String MASKED_VID = "*masked VID*";
+    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
+    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
@@ -240,9 +214,8 @@ public class ResidentConstants {
 
     public static final String INDIVIDUAL_ID = "individualId";
     public static final String ISSUER = "issuer";
-    public static final String PARTNER_ID = "partnerId";
     public static final String CREDENTIAL_TYPE = "credentialType";
-    public static final String OTP = "OTP";
+    public static final String OTP = "otp";
     public static final String TRANSACTION_ID_OLD = "transactionID";
 
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
@@ -258,63 +231,7 @@ public class ResidentConstants {
     public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
 
     public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
+    public static final String VID = "vid";
     public static final String NAME = "name";
     public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
-
-    public static final String RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE = "resident.notifications.default.page.size";
-    public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
-    public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
-    public static final String LANGUAGE = "language";
-    public static final String VALUE = "value";
-    
-    public static final String RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT = "resident.registration-centers.download.max.count";
-
-    public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
-    public static final String PREFERRED_LANGUAGE = "preferredLanguage";
-    public static final String RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED = "resident.attribute.names.without.documents.required";
-    
-//    UI Schema keys
-    public static final String FORMAT_REQUIRED = "formatRequired";
-    public static final String ATTRIBUTE_NAME = "attributeName";
-    public static final String FORMAT_OPTION = "formatOption";
-	public static final String LABEL = "label";
-	public static final String MASK_REQUIRED = "maskRequired";
-	public static final String MASK_ATTRIBUTE_NAME = "maskAttributeName";
-    public static final String MASK_PREFIX = "masked_";
-    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
-    public static final String RESIDENT_FUTURE_TIME_LIMIT = "resident.future.time.limit";
-    public static final String RESIDENT_PAST_TIME_LIMIT = "resident.past.time.limit";
-
-//    websub attributes
-    public static final String EVENT = "event";
-    public static final String DATA = "data";
-    public static final String REQUEST_ID = "requestId";
-    public static final String AUTH_TYPES = "authTypes";
-    public static final String RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.logging.interceptor.filter.enabled";
-    public static final String RESIDENT_REST_TEMPLATE_METRICS_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.metrics.interceptor.filter.enabled";
-    public static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
-
-//    Partner related constant
-    public static final String PARTNERS = "partners";
-	public static final String PMS_PARTNER_ID = "partnerID";
-    public static final String PARTNER_TYPE = "partnerType";
-	public static final String ORGANIZATION_NAME = "organizationName";
-	public static final String AUTH_PARTNER = "Auth_Partner";
-	public static final String PRINT_PARTNER = "Print_Partner";
-	public static final String RESIDENT_SHARE_CREDENTIAL_PARTNER_TYPE = "resident.share-credential.partner.type";
-	public static final String RESIDENT_AUTHENTICATION_REQUEST_PARTNER_TYPE = "resident.authentication-request.partner.type";
-	public static final String RESIDENT_ORDER_PHYSICAL_CARD_PARTNER_TYPE = "resident.order-physical-card.partner.type";
-
-	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
-
-    public static final String API_RESPONSE_TIME_ID = "api.response.time";
-    
-    public static final String DB_QUERY_RESPONSE_TIME_DESCRIPTION = "DB Query Response Time";
-    public static final String DB_QUERY_RESPONSE_TIME_ID = "db.query.response.time";
-    
-    public static final String REST_CLIENT_RESPONSE_TIME_DESCRIPTION = "Rest Client Response Time";
-    public static final String REST_CLIENT_RESPONSE_TIME_ID = "rest.client.response.time";
-    public static final String UNDER_SCORE = "_";
-    public static final String IDENTITY = "identity";
-    public static final String HYPHEN = "-";
 }

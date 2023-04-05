@@ -1,13 +1,10 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
-import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +17,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownLoadMasterDataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -57,12 +50,15 @@ public class DownLoadMasterDataController {
 	private RequestValidator validator;
 
 	@Autowired
+	private AuditUtil audit;
+
+	@Autowired
 	private Utility utility;
 
 	@Autowired
 	private Environment environment;
 
-	private static final Logger logger = LoggerConfiguration.logConfig(DownLoadMasterDataController.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
 
 	/**
 	 * download registration centers based on language code and selected names  of
@@ -74,101 +70,70 @@ public class DownLoadMasterDataController {
 	 * @return
 	 * @throws ResidentServiceCheckedException
 	 */
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/download/registration-centers-list")
+	@GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
-			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") String name,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
-            @RequestHeader(name = "locale", required = false) String locale)
+			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::downloadRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
-		InputStreamResource resource = null;
-		try {
-			validator.validateLanguageCode(langCode);
-			validator.validateName(name);
-			InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
-					hierarchyLevel, name);
-			resource = new InputStreamResource(pdfInputStream);
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
-			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
-		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
-			throw e;
-		}
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition",
-						"attachment; filename=\"" + utility.getFileName(null,
-								Objects.requireNonNull(this.environment.getProperty(
-										ResidentConstants.DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)),
-								timeZoneOffset, locale) + ".pdf\"")
-				.body(resource);
-	}
-	
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping("/download/nearestRegistrationcenters")
-	public ResponseEntity<Object> downloadNearestRegistrationcenters(@RequestParam(name="langcode") String langCode,
-			@RequestParam(name="longitude") double longitude, @RequestParam(name="latitude") double latitude,
-			@RequestParam(name="proximitydistance") int proximityDistance,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
-            @RequestHeader(name = "locale", required = false) String locale)
-			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::downloadNearestRegistrationcenters()::entry");
-		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
-		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
-		InputStreamResource resource = null;
-		try {
-			validator.validateLanguageCode(langCode);
-			InputStream pdfInputStream = downLoadMasterDataService.getNearestRegistrationcenters(langCode, longitude,
-					latitude, proximityDistance);
-			resource = new InputStreamResource(pdfInputStream);
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS);
-			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
-		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER);
+		validator.validateOnlyLanguageCode(langCode);
+		validator.validateName(name);
+		InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,hierarchyLevel, name);
+		InputStreamResource resource = new InputStreamResource(pdfInputStream);
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
+		logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
-								ResidentConstants.DOWNLOAD_NEAREST_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)),
-						timeZoneOffset, locale) + ".pdf\"")
+								ResidentConstants.DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);
 	}
 	
-	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
-    @GetMapping(path = "/download/supporting-documents", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@RequestParam(name = "langcode") String langCode,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
-            @RequestHeader(name = "locale", required = false) String locale)
+	@GetMapping("/download/nearestRegistrationcenters")
+	public ResponseEntity<Object> downloadNearestRegistrationcenters(@RequestParam(name="langcode") String langCode,
+			@RequestParam(name="longitude") double longitude, @RequestParam(name="latitude") double latitude,
+			@RequestParam(name="proximitydistance") int proximityDistance,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::downloadSupportingDocsByLanguage()::entry");
+		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
+		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
+		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
+		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER);
+		validator.validateOnlyLanguageCode(langCode);
+		InputStream pdfInputStream = downLoadMasterDataService.getNearestRegistrationcenters(langCode,longitude, latitude, proximityDistance);
+		InputStreamResource resource = new InputStreamResource(pdfInputStream);
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
+		logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
+						Objects.requireNonNull(this.environment.getProperty(
+								ResidentConstants.DOWNLOAD_NEAREST_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
+				.body(resource);
+	}
+	
+	@GetMapping(path = "/download/supporting-documents", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@RequestParam(name = "langcode") String langCode,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			throws ResidentServiceCheckedException, IOException, Exception {
+		logger.debug("DownLoadMasterDataController::getSupportingDocsByLanguageCode()::entry");
 		DOWNLOADABLE_SUPPORTING_FILENAME = "supportingDocs-";
 		DOWNLOADABLE_SUPPORTING_FILENAME = DOWNLOADABLE_SUPPORTING_FILENAME + getCurrentDateAndTime();
-		InputStreamResource resource = null;
-		try {
-			validator.validateLanguageCode(langCode);
-			InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
-			resource = new InputStreamResource(pdfInputStream);
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
-			logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
-		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
-			throw e;
-		}
+		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS);
+		validator.validateOnlyLanguageCode(langCode);
+		InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
+		InputStreamResource resource = new InputStreamResource(pdfInputStream);
+		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
+		logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition",
-						"attachment; filename=\"" + utility.getFileName(null,
-								Objects.requireNonNull(this.environment.getProperty(
-										ResidentConstants.DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY)),
-								timeZoneOffset, locale) + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
+						Objects.requireNonNull(this.environment.getProperty(
+								ResidentConstants.DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
 				.body(resource);
 	}
 	/**
@@ -178,7 +143,7 @@ public class DownLoadMasterDataController {
 	 */
 	private String getCurrentDateAndTime() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm:ss");
-		LocalDateTime now = DateUtils.getUTCCurrentDateTime();
+		LocalDateTime now = LocalDateTime.now();
 		return dtf.format(now);
 	}
 }

@@ -11,7 +11,6 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -29,12 +28,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ResidentTransactionEntity {
 
 	@Id
 	@Column(name = "event_id")
-	@EqualsAndHashCode.Include
 	private String eventId;
 
 	@Column(name = "request_trn_id")
@@ -216,46 +213,5 @@ public class ResidentTransactionEntity {
 
 	public boolean getPinnedStatus() {
 		return this.pinnedStatus;
-	}
-
-	/**
-	 * Constructor used to get data
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenId(String, String, List<String>, Pageable))
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdBetweenCrDtimes(String, String, List<String>, LocalDateTime, LocalDateTime, Pageable))
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatus(String, String, List<String>, List<String>, Pageable))
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdAndSearchEventId(String, String, List<String>, String, Pageable))
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(String, String, List<String>, List<String>, LocalDateTime, LocalDateTime, Pageable))
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(String, String, List<String>, LocalDateTime, LocalDateTime, String, Pageable))
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusSearchEventId(String, String, List<String>, List<String>, String, Pageable))
-	 * 
-	 * not in use
-	 */
-	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String statusComment,
-			String refIdType, String refId, LocalDateTime crDtimes, LocalDateTime updDtimes, boolean readStatus,
-			boolean pinnedStatus, String purpose, String attributeList, String authTypeCode) {
-		this.eventId = eventId;
-		this.requestTypeCode = requestTypeCode;
-		this.statusCode = statusCode;
-		this.statusComment = statusComment;
-		this.refIdType = refIdType;
-		this.refId = refId;
-		this.crDtimes = crDtimes;
-		this.updDtimes = updDtimes;
-		this.readStatus = readStatus;
-		this.pinnedStatus = pinnedStatus;
-		this.purpose = purpose;
-		this.attributeList = attributeList;
-		this.authTypeCode = authTypeCode;
-	}
-
-	/**
-	 * Constructor used to get data
-	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByEventId(String))
-	 */
-	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String referenceLink) {
-		this.eventId = eventId;
-		this.requestTypeCode = requestTypeCode;
-		this.statusCode = statusCode;
-		this.referenceLink = referenceLink;
 	}
 }

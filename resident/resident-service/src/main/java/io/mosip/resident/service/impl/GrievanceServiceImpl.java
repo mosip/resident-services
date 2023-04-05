@@ -21,6 +21,8 @@ import io.mosip.resident.entity.ResidentGrievanceEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
 import io.mosip.resident.service.GrievanceService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -37,13 +39,15 @@ public class GrievanceServiceImpl implements GrievanceService {
     private Environment environment;
 
     @Autowired
+    private AuditUtil auditUtil;
+
+    @Autowired
     private ResidentGrievanceRepository residentGrievanceRepository;
 
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceServiceImpl.class);
 
     @Override
     public ResponseWrapper<Object> getGrievanceTicket(MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO) throws ApisResourceAccessException {
-    	logger.debug("GrievanceServiceImpl::getGrievanceTicket()::entry");
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setId(grievanceRequestDTOMainRequestDTO.getId());
         responseWrapper.setVersion(grievanceRequestDTOMainRequestDTO.getVersion());
@@ -56,10 +60,9 @@ public class GrievanceServiceImpl implements GrievanceService {
             response.put(TICKET_ID, ticketId);
             responseWrapper.setResponse(response);
         } catch (ApisResourceAccessException e) {
-        	logger.error("%s - %s", ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorMessage(), e.getMessage());
+        	auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
             throw new ApisResourceAccessException(ResidentErrorCode.GRIEVANCE_TICKET_GENERATION_FAILED.getErrorCode(), e);
         }
-        logger.debug("GrievanceServiceImpl::getGrievanceTicket()::exit");
         return responseWrapper;
     }
 

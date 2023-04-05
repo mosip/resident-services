@@ -1,4 +1,4 @@
-package io.mosip.resident.service.impl;
+package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,7 +20,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.ErrorDTO;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RegistrationStatusDTO;
@@ -30,6 +29,8 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,6 +52,9 @@ public class RidStatusServiceTest {
 	@Mock
 	private RidValidator<String> ridValidator;
 	
+	@Mock
+	private AuditUtil audit;
+
 	@InjectMocks
 	ResidentServiceImpl residentService = new ResidentServiceImpl();
 
@@ -63,7 +67,7 @@ public class RidStatusServiceTest {
 	public void setup() throws IOException, ApisResourceAccessException {
 		requestDTO = new RequestDTO();
 		requestDTO.setIndividualId("10006100435989220191202104224");
-		requestDTO.setIndividualIdType(IdType.RID.name());
+		requestDTO.setIndividualIdType("RID");
 
 		Mockito.when(env.getProperty(STATUS_CHECK_ID)).thenReturn("id");
 		Mockito.when(env.getProperty(STATUS_CHECEK_VERSION)).thenReturn("version");
@@ -82,6 +86,7 @@ public class RidStatusServiceTest {
 		responseWrapper.setResponse(list);
 
 		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test

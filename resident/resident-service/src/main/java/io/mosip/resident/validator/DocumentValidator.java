@@ -4,7 +4,6 @@ import static io.mosip.resident.constant.ResidentConstants.ALLOWED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.DOCUMENT_FILE_SIZE;
 import static io.mosip.resident.constant.ResidentErrorCode.UN_SUPPORTED_FILE_TYPE;
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,7 +93,7 @@ public class DocumentValidator implements Validator {
 		if (docTypCode == null || StringUtils.isEmpty(docTypCode)) {
 			throw new InvalidInputException(DOC_TYP_CODE);
 		}
-		requestValidator.validateLanguageCode(langCode);
+		requestValidator.validateOnlyLanguageCode(langCode);
 		validateDocCatCode(docCatCode, langCode);
 		validateDocTypeCode(docCatCode, docTypCode, langCode);
 	}
@@ -123,11 +122,7 @@ public class DocumentValidator implements Validator {
 	public void scanForViruses(MultipartFile file) {
 		if (env.getProperty(ResidentConstants.VIRUS_SCANNER_ENABLED, Boolean.class, true)) {
 			try {
-				boolean isInputFileClean = virusScanner.scanFile(file.getInputStream());
-				if(!isInputFileClean) {
-					throw new ResidentServiceException(VIRUS_SCAN.getErrorCode(),
-							VIRUS_SCAN.getErrorMessage());
-				}
+				virusScanner.scanFile(file.getInputStream());
 			} catch (VirusScannerException | IOException e) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 						LoggerFileConstant.APPLICATIONID.toString(),

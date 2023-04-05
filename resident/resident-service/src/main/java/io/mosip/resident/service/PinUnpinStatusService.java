@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
  * This class is service class of pin or unpin status api based on event id.
@@ -12,6 +11,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
  */
 @Service
 public interface PinUnpinStatusService {
-	ResponseWrapper<ResponseDTO> pinStatus(String eventId, boolean status) throws ResidentServiceCheckedException;
+	ResponseWrapper<ResponseDTO> pinStatus(String eventId, boolean status);
 
 }

@@ -3,7 +3,6 @@ package io.mosip.resident.util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +14,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,15 +31,10 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AuditRequestDTO;
-import io.mosip.resident.dto.AuditResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.ValidationException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
 
 @Component
 public class AuditUtil {
@@ -60,13 +56,8 @@ public class AuditUtil {
 
 	@Autowired
 	private Environment environment;
-
-	@Autowired
-	private Utility utility;
 	
-	@Autowired
-	private AsyncUtil asyncUtil;
-
+  
 	/** The Constant UNKNOWN_HOST. */
 	private static final String UNKNOWN_HOST = "Unknown Host";
 
@@ -95,49 +86,44 @@ public class AuditUtil {
 		hostIpAddress = getServerIp();
 		hostName = getServerName();
 	}
+	
+	public  void setAuditRequestDto(EventEnum eventEnum) {
+		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
-	public void setAuditRequestDto(EventEnum eventEnum) {
-		asyncUtil.asyncRun(() -> {
-			AuditRequestDTO auditRequestDto = new AuditRequestDTO();
-
-			auditRequestDto.setHostIp(hostIpAddress);
-			auditRequestDto.setHostName(hostName);
-			auditRequestDto.setApplicationId(eventEnum.getApplicationId());
-			auditRequestDto.setApplicationName(eventEnum.getApplicationName());
-			if(Utility.isSecureSession()) {
-				String name = null;
-				try {
-					name = identityService.getAvailableclaimValue(
-							this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
-				} catch (ApisResourceAccessException e) {
-					throw new RuntimeException(e);
-				}
-				if (name == null || name.trim().isEmpty()) {
-					auditRequestDto.setSessionUserId("UnknownSessionId");
-					auditRequestDto.setSessionUserName("UnknownSessionName");
-					auditRequestDto.setCreatedBy("Unknown");
-				} else {
-					auditRequestDto.setSessionUserId(name);
-					auditRequestDto.setSessionUserName(name);
-					auditRequestDto.setCreatedBy(name);
-				}
-			} else {
+		auditRequestDto.setHostIp(hostIpAddress);
+		auditRequestDto.setHostName(hostName);
+		auditRequestDto.setApplicationId(eventEnum.getApplicationId());
+		auditRequestDto.setApplicationName(eventEnum.getApplicationName());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication != null) {
+			String name = null;
+			try {
+				name = identityService.getAvailableclaimValue(
+						this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			} catch (ApisResourceAccessException e) {
+				throw new RuntimeException(e);
+			}
+			if (name == null || name.trim().isEmpty()) {
 				auditRequestDto.setSessionUserId("UnknownSessionId");
 				auditRequestDto.setSessionUserName("UnknownSessionName");
 				auditRequestDto.setCreatedBy("Unknown");
+			} else {
+				auditRequestDto.setSessionUserId(name);
+				auditRequestDto.setSessionUserName(name);
+				auditRequestDto.setCreatedBy(name);
 			}
-			auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
-			auditRequestDto.setDescription(eventEnum.getDescription());
-			auditRequestDto.setEventType(eventEnum.getType());
-			auditRequestDto.setEventName(eventEnum.getName());
-			auditRequestDto.setModuleId(eventEnum.getModuleId());
-			auditRequestDto.setModuleName(eventEnum.getModuleName());
-			auditRequestDto.setEventId(eventEnum.getEventId());
-			Tuple2<String, String> refIdHashAndType = getRefIdHashAndType();
-			auditRequestDto.setId(refIdHashAndType.getT1());
-			auditRequestDto.setIdType(refIdHashAndType.getT2());
-			callAuditManager(auditRequestDto);
-		});
+		}
+		auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
+		auditRequestDto.setDescription(eventEnum.getDescription());
+		auditRequestDto.setEventType(eventEnum.getType());
+		auditRequestDto.setEventName(eventEnum.getName());
+		auditRequestDto.setModuleId(eventEnum.getModuleId());
+		auditRequestDto.setModuleName(eventEnum.getModuleName());
+		auditRequestDto.setEventId(eventEnum.getEventId());
+		auditRequestDto.setId(eventEnum.getId());
+		auditRequestDto.setIdType(eventEnum.getIdType());
+		auditRequestDto.setCreatedBy(ResidentConstants.RESIDENT);
+		callAuditManager(auditRequestDto);
 	}
 	
 	public void callAuditManager(AuditRequestDTO auditRequestDto) {
@@ -180,28 +166,6 @@ public class AuditUtil {
 		}
 
 		return auditResponseDto;
-	}
-	
-	public Tuple2<String, String> getRefIdHashAndType() {
-		try {
-			if (Utility.isSecureSession()) {
-				String individualId = identityService.getResidentIndvidualIdFromSession();
-				if (individualId != null && !individualId.isEmpty()) {
-					return getRefIdHashAndTypeFromIndividualId(individualId);
-				}
-			}
-			return Tuples.of(ResidentConstants.NO_ID, ResidentConstants.NO_ID_TYPE);
-
-		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
-			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-	}
-
-	public Tuple2<String, String> getRefIdHashAndTypeFromIndividualId(String individualId) throws NoSuchAlgorithmException {
-		String refIdHash = utility.getRefIdHash(individualId);
-		String idType = identityService.getIndividualIdType(individualId).name();
-		return Tuples.of(refIdHash, idType);
 	}
 
 }

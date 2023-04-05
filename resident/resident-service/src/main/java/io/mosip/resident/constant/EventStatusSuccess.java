@@ -5,7 +5,7 @@ Enum to store the event status success
 @author Kamesh Shekhar Prasad
  */
 public enum EventStatusSuccess {
-    AUTHENTICATION_SUCCESSFULL,
+    AUTHENTICATION_SUCCESSFUL,
     STORED,
     CARD_READY_TO_DOWNLOAD,
     CARD_DOWNLOADED,
@@ -25,8 +25,7 @@ public enum EventStatusSuccess {
     OTP_VERIFIED,
     COMPLETED,
     AUTHENTICATION_TYPE_UPDATED,
-    PHYSICAL_CARD_ORDERED,
-    Y;
+    PHYSICAL_CARD_ORDERED;
 
     public static boolean containsStatus(String status) {
         for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {
