@@ -2055,6 +2055,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 			String name = identityServiceImpl.getClaimValue(env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
 			eventStatusMap.put(env.getProperty(ResidentConstants.APPLICANT_NAME_PROPERTY), name);
+			String authenticationMode = identityServiceImpl.getResidentAuthenticationMode();
+			eventStatusMap.put(env.getProperty(ResidentConstants.AUTHENTICATION_MODE_PROPERTY), authenticationMode);
 
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
