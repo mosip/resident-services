@@ -86,7 +86,7 @@ public class LoginCheck {
 				break;
 			}
 		}
-
+		audit.setAuditRequestDto(EventEnum.LOGIN_REQ);
 		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.LOGIN_REQ_SUCCESS);
 			ResidentSessionEntity newSessionData = new ResidentSessionEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),

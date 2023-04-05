@@ -24,10 +24,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.util.Lists;
@@ -51,6 +53,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
 
@@ -122,6 +125,7 @@ public class Utility {
 
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
+	private static final String ACR_AMR = "acr_amr";
 	private static String regProcessorIdentityJson = "";
 
 	private static String ANONYMOUS_USER = "anonymousUser";
@@ -150,13 +154,41 @@ public class Utility {
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+	
+	/** The acr-amr mapping json file. */
+	@Value("${amr-acr.json.filename}")
+	private String amrAcrJsonFile;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
-    }
+	}
+
+	@Cacheable(value = "amr-acr-mapping")
+	public Map<String, String> getAmrAcrMapping() throws ResidentServiceCheckedException {
+		String amrAcrJson = residentRestTemplate.getForObject(configServerFileStorageURL + amrAcrJsonFile,
+				String.class);
+		Map<String, Object> amrAcrMap = null;
+		try {
+			amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		Object obj = amrAcrMap.get(ACR_AMR);
+		Map<String, Object> map = (Map<String, Object>) obj;
+		Map<String, String> acrAmrMap = map.entrySet().stream().collect(
+				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
+		return acrAmrMap;
+	}
+
+	public String getAuthTypeCodefromkey(String reqTypeCode) throws ResidentServiceCheckedException {
+		Map<String, String> map = getAmrAcrMapping();
+		String authTypeCode = map.get(reqTypeCode);
+		return authTypeCode;
+	}
 
 	@SuppressWarnings("unchecked")
 	public JSONObject retrieveIdrepoJson(String id) throws ResidentServiceCheckedException {
@@ -577,6 +609,21 @@ public class Utility {
 		}
 		logger.debug("Utilitiy::getClientIp()::exit - excecuted till end");
 		return req.getRemoteAddr();
+	}
+	
+	public String getCardOrderTrackingId(String transactionId, String individualId)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Object object = residentServiceRestClient.getApi(ApiName.GET_ORDER_STATUS_URL, RequestType.getAllNewOrInprogressStatusList(env),
+				List.of(TemplateVariablesConstants.TRANSACTION_ID, TemplateVariablesConstants.INDIVIDUAL_ID),
+				List.of(transactionId, individualId), ResponseWrapper.class);
+		ResponseWrapper<Map<String, String>> responseWrapper = JsonUtil.convertValue(object,
+				new TypeReference<ResponseWrapper<Map<String, String>>>() {
+				});
+		if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
+			logger.error("ORDER_STATUS_URL returned error " + responseWrapper.getErrors());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
+		}
+		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
 	}
 	
 }

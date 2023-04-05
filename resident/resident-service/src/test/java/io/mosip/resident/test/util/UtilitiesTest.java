@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
@@ -50,6 +51,7 @@ import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.IndividualIdNotFoundException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -304,7 +306,7 @@ public class UtilitiesTest {
     }
 
     @Test
-    public void testGetRidStatus() throws ApisResourceAccessException, IOException {
+    public void testGetRidStatus() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
         ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
         ArrayList arrayList = new ArrayList<>();
         arrayList.add("123");
@@ -315,21 +317,19 @@ public class UtilitiesTest {
 
     @Test
     public void testGetTransactionTypeCode() throws ApisResourceAccessException, IOException {
-        ArrayList transactionTypeCode = new ArrayList<>();
+    	when(env.getProperty(any())).thenReturn("PACKET_UPLOAD,PACKET_RECEIVER");
         HashMap<String ,Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "PACKET_RECEIVER");
-        transactionTypeCode.add(packetStatus);
-        assertEquals("Request received",
-                ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", transactionTypeCode));
+        assertEquals(Optional.of("REQUEST_RECEIVED"),
+                ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus));
     }
 
     @Test
     public void testGetTransactionTypeCodeFailed() throws ApisResourceAccessException, IOException {
-        ArrayList transactionTypeCode = new ArrayList<>();
+    	when(env.getProperty(any())).thenReturn("status,packet");
         HashMap<String ,Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "test");
-        transactionTypeCode.add(packetStatus);
-        ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", transactionTypeCode);
+        ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus);
     }
 
     @Test
