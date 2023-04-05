@@ -575,9 +575,16 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetResidentAuthenticationMode() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		String authTypeCode = "OTP";
+		Authentication authentication= Mockito.mock(Authentication.class);
+		SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+		SecurityContextHolder.setContext(securityContext);
+		when(securityContext.getAuthentication()).thenReturn(authentication);
+		
+		when(utility.getAuthTypeCodefromkey(Mockito.any())).thenReturn(authTypeCode);
 		tuple3.getT3().put("individual_id", "3956038419");
 		getAuthUserDetailsFromAuthentication();
-		assertEquals("",ReflectionTestUtils.invokeMethod(identityService,
+		assertEquals("OTP",ReflectionTestUtils.invokeMethod(identityService,
 				"getResidentAuthenticationMode"));
 	}
 

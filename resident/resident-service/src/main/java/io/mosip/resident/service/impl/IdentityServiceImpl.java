@@ -538,8 +538,11 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 	
-	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+	public String getResidentAuthenticationMode() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String authenticationMode = getClaimFromIdToken(
+				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
+		return authTypeCode;
 	}
 	
 	public String getClaimFromAccessToken(String claim) {
