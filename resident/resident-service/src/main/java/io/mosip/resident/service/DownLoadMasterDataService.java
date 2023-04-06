@@ -25,7 +25,7 @@ public interface DownLoadMasterDataService {
 	 * @throws ResidentServiceCheckedException
 	 */
 	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
-			List<String> name) throws ResidentServiceCheckedException, IOException, Exception;
+			String name) throws ResidentServiceCheckedException, IOException, Exception;
 	
 	/**
 	 * 
