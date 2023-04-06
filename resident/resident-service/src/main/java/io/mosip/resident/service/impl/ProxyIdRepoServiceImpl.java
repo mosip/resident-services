@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -49,7 +50,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			queryParamName.add("attribute_list");
 
 			List<Object> queryParamValue = new ArrayList<>();
-			queryParamValue.add(attributeList.stream().collect(Collectors.joining(",")));
+			queryParamValue.add(Objects.isNull(attributeList) ? "" : attributeList.stream().collect(Collectors.joining(",")));
 			
 			ResponseWrapper<?> responseWrapper = residentServiceRestClient.getApi(ApiName.IDREPO_IDENTITY_UPDATE_COUNT,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);

@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,6 +24,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +35,11 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.RegistrationCenterDto;
-import io.mosip.resident.dto.RegistrationCenterResponseDto;
+import io.mosip.resident.dto.RegistrationCenterInfoResponseDto;
 import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.dto.WorkingDaysResponseDto;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -73,6 +77,9 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	@Autowired
 	private Utility utility;
 
+	@Value("${" + RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT + "}")
+	private Integer maxRegistrationCenterPageSize;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@PostConstruct
@@ -86,21 +93,21 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 	 * center names
 	 */
 	public InputStream downloadRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
-			List<String> name) throws ResidentServiceCheckedException, IOException, Exception {
+			String name) throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
-		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
-		return getRegistrationCentrePdf(langCode, regCentResponseWrapper);
+		ResponseWrapper<?> regCentResponseWrapper = proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(langCode, hierarchyLevel, name, 0, maxRegistrationCenterPageSize, OrderEnum.desc, null);
+		return getRegistrationCentersPdf(langCode, regCentResponseWrapper);
 	}
 
-	public InputStream getRegistrationCentrePdf(String langCode, ResponseWrapper<?> regCentResponseWrapper) throws ResidentServiceCheckedException, IOException {
+	public InputStream getRegistrationCentersPdf(String langCode, ResponseWrapper<?> regCentResponseWrapper) throws ResidentServiceCheckedException, IOException {
 		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
 				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, this.env.getProperty(ResidentConstants.REGISTRATION_CENTRE_TEMPLATE_PROPERTY));
 		Map<String, Object> regCentersMap = new LinkedHashMap<>();
 		if (regCentResponseWrapper != null) {
-			RegistrationCenterResponseDto registrationCentersDtls = mapper.readValue(
+			RegistrationCenterInfoResponseDto registrationCentersDtls = mapper.readValue(
 					mapper.writeValueAsString(regCentResponseWrapper.getResponse()),
-					RegistrationCenterResponseDto.class);
-			List<RegistrationCenterDto> regCenterIntialList = registrationCentersDtls.getRegistrationCenters();
+					RegistrationCenterInfoResponseDto.class);
+			List<RegistrationCenterDto> regCenterIntialList = getRegCenterList(registrationCentersDtls);
 			if (regCenterIntialList != null && !regCenterIntialList.isEmpty()) {
 				IntStream.range(0, regCenterIntialList.size()).forEach(i -> {
 					try {
@@ -123,6 +130,15 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		IOUtils.copy(downLoadRegCenterTemplateData, writer, "UTF-8");
 		return new ByteArrayInputStream(utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null));
 	}
+
+	private List<RegistrationCenterDto> getRegCenterList(RegistrationCenterInfoResponseDto registrationCentersDtls) {
+		if (registrationCentersDtls.getData() != null && !registrationCentersDtls.getData().isEmpty()) {
+			return registrationCentersDtls.getData();
+		} else if (registrationCentersDtls.getRegistrationCenters() != null && !registrationCentersDtls.getRegistrationCenters().isEmpty()) {
+			return registrationCentersDtls.getRegistrationCenters();
+		}
+		return List.of();
+	}
 	
 	/**
 	 * download the nearest registration centers
@@ -132,7 +148,7 @@ public class DownLoadMasterDataServiceImpl implements DownLoadMasterDataService 
 		logger.debug("DownLoadMasterDataService::downloadRegistrationCentersByHierarchyLevel()::entry");
 		ResponseWrapper<?> regCentResponseWrapper =  proxyMasterdataService.getCoordinateSpecificRegistrationCenters(langCode,
 				longitude, latitude, proximityDistance);
-		return getRegistrationCentrePdf(langCode, regCentResponseWrapper);
+		return getRegistrationCentersPdf(langCode, regCentResponseWrapper);
 	}
 
 
