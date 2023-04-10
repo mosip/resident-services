@@ -70,8 +70,6 @@ public class LoggingFilter implements Filter{
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
