@@ -113,7 +113,7 @@ public class CredentialStatusUpdateBatchJob {
 	}
 
 	private void logErrorForBatchJob(Exception e) {
-		logger.error(String.format("Error in batch job: %s : %s : %s", e.getClass().getSimpleName(), e.getMessage(),
+		logger.debug(String.format("Error in batch job: %s : %s : %s", e.getClass().getSimpleName(), e.getMessage(),
 				(e.getCause() != null ? "rootcause: " + e.getCause().getMessage() : "")));
 	}
 
@@ -124,9 +124,9 @@ public class CredentialStatusUpdateBatchJob {
 	public void scheduleCredentialStatusUpdateJob() throws ResidentServiceCheckedException {
 		List<ResidentTransactionEntity> residentTxnList = repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(
 				getStatusCodesToProcess(), requestTypeCodesToProcessInBatchJob);
-		logger.info("Total records picked from resident_transaction table for processing is " + residentTxnList.size());
+		logger.debug("Total records picked from resident_transaction table for processing is " + residentTxnList.size());
 		for (ResidentTransactionEntity txn : residentTxnList) {
-			logger.info("Processing event:" + txn.getEventId());
+			logger.debug("Processing event:" + txn.getEventId());
 			if (txn.getIndividualId() == null) {
 				txn.setStatusCode(FAILED.name());
 				txn.setStatusComment("individualId is null");
@@ -154,19 +154,19 @@ public class CredentialStatusUpdateBatchJob {
 					String newStatusCode = credentialStatus.get(STATUS_CODE);
 					//If the status did not change, don't process it
 					if (!txn.getStatusCode().equals(newStatusCode)) {
-						logger.info(String.format("updating status for : %s as %s", txn.getEventId(), newStatusCode));
+						logger.debug(String.format("updating status for : %s as %s", txn.getEventId(), newStatusCode));
 						txn.setStatusCode(newStatusCode);
 
 						// Save the reference link if any
 						String referenceLink = credentialStatus.get(URL);
 						if (referenceLink != null) {
-							logger.info(String.format("saving reference link for : %s", txn.getEventId()));
+							logger.debug(String.format("saving reference link for : %s", txn.getEventId()));
 							txn.setReferenceLink(referenceLink);
 						}
 
 						// Send Notification
 						if (requestType.isNotificationStatus(env, newStatusCode)) {
-							logger.info("invoking notifications for status: " + newStatusCode);
+							logger.debug("invoking notifications for status: " + newStatusCode);
 							requestType.preUpdateInBatchJob(env, utility, txn, credentialStatus, newStatusCode);
 
 							// For bell notification
@@ -236,7 +236,7 @@ public class CredentialStatusUpdateBatchJob {
 				});
 		List<ServiceError> errors = responseWrapper.getErrors();
 		if (Objects.nonNull(errors) && !errors.isEmpty()) {
-			logger.error("CREDENTIAL_STATUS_URL returned error " + errors);
+			logger.debug("CREDENTIAL_STATUS_URL returned error " + errors);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 		}
 		return responseWrapper.getResponse();
