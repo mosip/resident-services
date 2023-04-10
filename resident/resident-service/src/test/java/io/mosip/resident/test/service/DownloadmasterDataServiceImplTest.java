@@ -101,7 +101,7 @@ public class DownloadmasterDataServiceImplTest {
 
     private String langCode;
     private Short hierarchyLevel;
-    private List<String> name;
+    private String name;
 
     @Before
     public void setup() throws Exception {
@@ -133,12 +133,12 @@ public class DownloadmasterDataServiceImplTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
         langCode="eng";
         hierarchyLevel=4;
-        name = new ArrayList<>();
-        name.add("name1");
+        name = "name1";
     }
 
     @Test
     public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
+    	ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
           byte[] actualResult = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name).readAllBytes();
           assertNotNull(actualResult);
     }

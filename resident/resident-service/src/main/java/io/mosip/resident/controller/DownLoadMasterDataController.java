@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -72,7 +72,7 @@ public class DownLoadMasterDataController {
 	 */
 	@GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
-			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name,
+			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") String name,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
@@ -143,7 +143,7 @@ public class DownLoadMasterDataController {
 	 */
 	private String getCurrentDateAndTime() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy-HH:mm:ss");
-		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime now = DateUtils.getUTCCurrentDateTime();
 		return dtf.format(now);
 	}
 }
