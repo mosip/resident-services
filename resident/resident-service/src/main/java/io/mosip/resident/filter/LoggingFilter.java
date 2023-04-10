@@ -18,7 +18,12 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 
-
+/**
+ * Servlet filter for logging purpose
+ * 
+ * @author Loganathan S
+ *
+ */
 @Component
 public class LoggingFilter implements Filter{
 	

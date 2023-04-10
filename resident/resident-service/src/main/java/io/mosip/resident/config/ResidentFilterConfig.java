@@ -9,7 +9,7 @@ import io.mosip.resident.filter.LoggingFilter;
 /**
  * The configuration for adding filters.
  *
- * @author Manoj SP
+ * @author Loganathan S
  */
 
 @Configuration
