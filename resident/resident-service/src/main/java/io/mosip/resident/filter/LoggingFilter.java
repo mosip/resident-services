@@ -54,7 +54,9 @@ public class LoggingFilter implements Filter{
 		if(request instanceof HttpServletRequest) {
 			HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 			String body = httpServletRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-			logger.debug(String.format("Body:\n%s", body));
+			if(!body.isEmpty()) {
+				logger.debug(String.format("Body:\n%s", body));
+			}
 		}
 	}
 
@@ -65,6 +67,10 @@ public class LoggingFilter implements Filter{
 			StringBuffer headers = new StringBuffer();
 			headerNames.forEachRemaining(header -> headers.append(String.format("%s -> %s; ", header, httpServletRequest.getHeader(header))));
 			logger.debug(String.format("Headers: %s", headers));
+			String headersTxt = headers.toString();
+			if(!headersTxt.isEmpty()) {
+				logger.debug(String.format("Headers: %s", headersTxt));
+			}
 		}
 	}
 
