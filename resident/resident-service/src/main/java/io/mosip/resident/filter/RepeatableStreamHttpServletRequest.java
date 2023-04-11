@@ -22,7 +22,7 @@ import io.mosip.resident.util.ObjectWithMetadata;
  *
  * @author Loganathan Sekar
  */
-public class ResettableStreamHttpServletRequest extends HttpServletRequestWrapper implements ObjectWithMetadata {
+public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrapper implements ObjectWithMetadata {
 
 	/** The raw data. */
 	private byte[] rawData;
@@ -31,7 +31,7 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 	private HttpServletRequest request;
 
 	/** The servlet stream. */
-	private ResettableServletInputStream servletStream;
+	private RepeatableServletInputStream servletStream;
 	
 	private Map<String, Object> metadata;
 	
@@ -40,17 +40,21 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 	 *
 	 * @param request the request
 	 */
-	public ResettableStreamHttpServletRequest(HttpServletRequest request) {
+	public RepeatableStreamHttpServletRequest(HttpServletRequest request) {
 		super(request);
 		this.request = request;
-		this.servletStream = new ResettableServletInputStream();
+		this.servletStream = new RepeatableServletInputStream();
 	}
 
 	/**
 	 * Reset input stream.
 	 */
 	public void resetInputStream() {
-		servletStream.stream = new ResettableServletInputStream(new ByteArrayInputStream(rawData));
+		servletStream.stream = createServletInputStream();
+	}
+
+	private RepeatableServletInputStream createServletInputStream() {
+		return new RepeatableServletInputStream(new ByteArrayInputStream(rawData));
 	}
 
 	/*
@@ -62,9 +66,13 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 	public ServletInputStream getInputStream() throws IOException {
 		if (rawData == null) {
 			rawData = StreamUtils.copyToByteArray(this.request.getInputStream());
-			servletStream.stream = new ByteArrayInputStream(rawData);
+			servletStream.stream = createServletInputStream();
 		}
-		return servletStream;
+		RepeatableServletInputStream servletStreamOldRef = servletStream;
+		//Reset the servlet stream with a new copy
+		resetInputStream();
+		//Return the old copy of servlet stream
+		return servletStreamOldRef;
 	}
 
 	/*
@@ -76,9 +84,13 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 	public BufferedReader getReader() throws IOException {
 		if (rawData == null) {
 			rawData = StreamUtils.copyToByteArray(this.request.getInputStream());
-			servletStream.stream = new ByteArrayInputStream(rawData);
+			servletStream.stream = createServletInputStream();
 		}
-		return new BufferedReader(new InputStreamReader(servletStream));
+		RepeatableServletInputStream servletStreamOldRef = servletStream;
+		//Reset the servlet stream with a new copy
+		resetInputStream();
+		//Return the reader with the old copy of servlet stream
+		return new BufferedReader(new InputStreamReader(servletStreamOldRef));
 	}
 
 	/**
@@ -92,10 +104,10 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 	}
 
 	/**
-	 * The Class ResettableServletInputStream - used in
+	 * The Class RepeatableServletInputStream - used in
 	 * ResettableStreamHttpServletRequest
 	 */
-	private class ResettableServletInputStream extends ServletInputStream {
+	private class RepeatableServletInputStream extends ServletInputStream {
 
 		/** The stream. */
 		private InputStream stream;
@@ -111,14 +123,14 @@ public class ResettableStreamHttpServletRequest extends HttpServletRequestWrappe
 		 *
 		 * @param stream the stream
 		 */
-		public ResettableServletInputStream(InputStream stream) {
+		public RepeatableServletInputStream(InputStream stream) {
 			this.stream = stream;
 		}
 
 		/**
 		 * Instantiates a new resettable servlet input stream.
 		 */
-		public ResettableServletInputStream() {
+		public RepeatableServletInputStream() {
 		}
 
 		/*
