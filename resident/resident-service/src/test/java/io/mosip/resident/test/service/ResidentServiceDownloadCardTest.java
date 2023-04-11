@@ -352,7 +352,7 @@ public class ResidentServiceDownloadCardTest {
         UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
         unreadServiceNotificationDto.setUnreadCount(4L);
         responseWrapper.setResponse(unreadServiceNotificationDto);
-        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList(), Mockito.anyString())).thenReturn(4L);
         assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
@@ -373,7 +373,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity1.setIdaToken("123");
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(Optional.of(residentUserEntity1));
         Mockito.when(residentSessionRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList(), Mockito.anyString())).thenReturn(4L);
         assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
