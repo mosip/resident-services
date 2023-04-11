@@ -47,9 +47,6 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     @Autowired
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-    @Value("${resident.websub.authtype-status.topic}")
-    private String autTypeStatusTopic;
-
     @Value("${websub.publish.url}")
     private String publishUrl;
 
@@ -64,6 +61,9 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     @Value("${resident.websub.callback.authTransaction-status.url}")
     private String authTransactionCallbackUrl;
+    
+    @Value("${resident.websub.authtype-status.topic}")
+    private String autTypeStatusTopic;
 
     @Value("${resident.websub.authTransaction-status.topic}")
     private String authTransactionTopic;
