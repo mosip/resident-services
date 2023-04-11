@@ -1,25 +1,5 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.ApiName;
@@ -35,7 +15,26 @@ import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
 import reactor.util.function.Tuple2;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Resident proxy masterdata service test class.
@@ -63,6 +62,9 @@ public class ProxyMasterdataServiceTest {
 	
 	private ResponseWrapper<TemplateResponseDto> templateWrapper;
 
+	private String fieldName;
+	private boolean withValue;
+
 	@Before
 	public void setup() {
 		responseWrapper = new ResponseWrapper<>();
@@ -78,6 +80,8 @@ public class ProxyMasterdataServiceTest {
 		templateList.add(templateDto);
 		templateResp.setTemplates(templateList);
 		templateWrapper.setResponse(templateResp);
+		fieldName = "gender";
+		withValue = true;
 	}
 
 	@Test
@@ -558,14 +562,16 @@ public class ProxyMasterdataServiceTest {
 	
 	@Test
 	public void testGetGenderTypesByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getGenderTypesByLangCode("eng");
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
+				any())).thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
 		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetGenderTypesByLangCodeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
+				any())).thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
@@ -574,23 +580,25 @@ public class ProxyMasterdataServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		proxyMasterdataService.getGenderTypesByLangCode("xyz");
+		proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "xyz", withValue);
 	}
 
 	@Test
 	public void testGetGenderTypesByLangCodeElse() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
+				any())).thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> result = proxyMasterdataService.getGenderTypesByLangCode("eng");
+		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
 		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetGenderTypesByLangCodeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any()))
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
+				any()))
 				.thenThrow(new ApisResourceAccessException());
-		proxyMasterdataService.getGenderTypesByLangCode("eng");
+		proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
 	}
 	
 	@Test
@@ -638,7 +646,8 @@ public class ProxyMasterdataServiceTest {
 		response.setGenderType(List.of(genderTypeDTO));
 		ResponseWrapper res = new ResponseWrapper(); 
 		res.setResponse(response);
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(res);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
+				any())).thenReturn(res);
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
 		assertEquals(genderTypeDTO.getCode(),responseWrapper.getResponse().getGenderCode());
 	}
@@ -650,7 +659,8 @@ public class ProxyMasterdataServiceTest {
 		response.setGenderType(List.of());
 		ResponseWrapper res = new ResponseWrapper(); 
 		res.setResponse(response);
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(res);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
+				any())).thenReturn(res);
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
 	}
 

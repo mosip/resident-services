@@ -376,21 +376,23 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/auth-proxy/masterdata/gendertypes/{langcode}")
-	@Operation(summary = "getGenderTypesByLangCode", description = "getGenderTypesByLangCode", tags = {
+	@GetMapping("/auth-proxy/masterdata/dynamicfields/{fieldName}/{langCode}")
+	@Operation(summary = "getDynamicFieldBasedOnLangCodeAndFieldName", description = "Service to fetch  dynamic field based on langcode and field name", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getGenderTypesByLangCode(@PathVariable("langcode") String langCode)
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(@PathVariable("fieldName") String fieldName,
+																		 @PathVariable("langCode") String langCode,
+																		 @RequestParam(value = "withValue", defaultValue = "false") boolean withValue)
 			throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES);
-		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getGenderTypesByLangCode(langCode);
+		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME);
+		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_SUCCESS);
-		logger.debug("ProxyMasterdataController::getGenderTypesByLangCode()::exit");
+		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
 		return responseWrapper;
 	}
 	
