@@ -198,8 +198,8 @@ public class ProxyMasterdataControllerTest {
 	
 	@Test
 	public void testGetGenderTypesByLangCode() throws Exception {
-		Mockito.when(proxyMasterdataService.getGenderTypesByLangCode(Mockito.anyString())).thenReturn(responseWrapper);
-		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/gendertypes/langcode"))
+		Mockito.when(proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
 				.andExpect(status().isOk());
 	}
 	
