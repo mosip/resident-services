@@ -31,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
@@ -154,6 +155,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
+        ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "partner1");
     }
 
     @Test
