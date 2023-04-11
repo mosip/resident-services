@@ -25,7 +25,7 @@ public class ResidentFilterConfig {
 	 */
 	@Bean
 	@ConditionalOnProperty(value = "resident.logging.filter.enabled", havingValue = "true", matchIfMissing = false)
-	public FilterRegistrationBean<LoggingFilter> getIdAuthFilter(LoggingFilter loggingFilter) {
+	public FilterRegistrationBean<LoggingFilter> getLoggingFilter(LoggingFilter loggingFilter) {
 		FilterRegistrationBean<LoggingFilter> registrationBean = new FilterRegistrationBean<>();
 		registrationBean.setFilter(loggingFilter);
 		registrationBean.addUrlPatterns("/*");
