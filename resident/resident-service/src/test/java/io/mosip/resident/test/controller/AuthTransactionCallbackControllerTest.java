@@ -114,7 +114,7 @@ public class AuthTransactionCallbackControllerTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        authTransactionCallbackController.authTypeCallback(eventModel);
+        authTransactionCallbackController.authTransactionCallback(eventModel);
 
         mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction"))
                 .contentType(MediaType.APPLICATION_JSON)
