@@ -145,7 +145,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setStatusCode(ServiceType.AUTHENTICATION_REQUEST.name());
         residentTransactionEntity.setStatusComment("Success");
         residentTransactionEntity.setCrDtimes(LocalDateTime.now());
-        residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.toString());
+        residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFULL.toString());
 
         residentTransactionEntityList.add(residentTransactionEntity);
 
