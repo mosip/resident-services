@@ -74,8 +74,7 @@ public class WebSubUpdateAuthTypeServiceTest {
     @Mock
 	private NotificationService notificationService;
     
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private NotificationResponseDTO notificationResponseDTO;
 

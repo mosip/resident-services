@@ -76,8 +76,7 @@ public class AuthTransactionCallbackServiceTest {
     @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper = new ObjectMapper();
     
     EventModel eventModel;
 
