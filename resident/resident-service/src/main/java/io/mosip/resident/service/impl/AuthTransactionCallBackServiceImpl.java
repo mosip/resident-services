@@ -11,7 +11,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
-import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -27,7 +26,8 @@ import io.mosip.resident.util.Utility;
 @Component
 public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBackService {
 
-    private static final String REQUESTDATETIME = "requestdatetime";
+    private static final String AUTHTYPE_CODE = "authtypeCode";
+	private static final String REQUESTDATETIME = "requestdatetime";
 	private static final String STATUS_COMMENT = "statusComment";
 	private static final String STATUS_CODE = "statusCode";
 	private static final String RESPONSE_SIGNATURE = "responseSignature";
@@ -91,6 +91,8 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 		if(status == null) {
 			residentTransactionEntity.setStatusCode((String) eventModel.getEvent().getData().get(STATUS_CODE));
 		}
+		residentTransactionEntity.setAuthTypeCode((String) eventModel.getEvent().getData().get(AUTHTYPE_CODE));
+		residentTransactionEntity.setAuthTknId((String) eventModel.getEvent().getData().get(TOKEN_ID));
 		residentTransactionEntity.setStatusComment((String) eventModel.getEvent().getData().get(STATUS_COMMENT));
 		Object reqdatetimeObj = eventModel.getEvent().getData().get(REQUESTDATETIME);
 		if(reqdatetimeObj != null) {
