@@ -59,6 +59,7 @@ import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -100,6 +101,9 @@ public class IdAuthServiceTest {
 
     @Mock
     private IdentityServiceImpl identityService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @Before
     public void setup() {
