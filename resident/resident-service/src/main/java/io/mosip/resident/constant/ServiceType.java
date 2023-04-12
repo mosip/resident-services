@@ -19,7 +19,7 @@ public enum ServiceType {
     DATA_SHARE_REQUEST(List.of(RequestType.SHARE_CRED_WITH_PARTNER)),
 	ASYNC(List.of(RequestType.VID_CARD_DOWNLOAD, RequestType.ORDER_PHYSICAL_CARD, RequestType.SHARE_CRED_WITH_PARTNER,
 			RequestType.UPDATE_MY_UIN, RequestType.AUTH_TYPE_LOCK_UNLOCK)),
-    ALL(List.of(RequestType.VALIDATE_OTP, RequestType.DOWNLOAD_PERSONALIZED_CARD, RequestType.ORDER_PHYSICAL_CARD,
+    ALL(List.of(RequestType.AUTHENTICATION_REQUEST, RequestType.VALIDATE_OTP, RequestType.DOWNLOAD_PERSONALIZED_CARD, RequestType.ORDER_PHYSICAL_CARD,
             RequestType.GET_MY_ID, RequestType.BOOK_AN_APPOINTMENT, RequestType.VID_CARD_DOWNLOAD, RequestType.UPDATE_MY_UIN,
             RequestType.GENERATE_VID, RequestType.REVOKE_VID, RequestType.AUTH_TYPE_LOCK_UNLOCK,
             RequestType.SHARE_CRED_WITH_PARTNER));
