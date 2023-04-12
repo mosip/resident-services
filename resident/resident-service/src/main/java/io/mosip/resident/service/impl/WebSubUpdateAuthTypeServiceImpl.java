@@ -125,7 +125,19 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 					}
 				}
 			}
-		}
+            
+            //Update status
+			if (residentTransactionEntities != null) {
+				residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
+					residentTransactionEntity.setStatusCode(status);
+					residentTransactionEntity.setReadStatus(false);
+					residentTransactionEntity.setUpdBy(RESIDENT);
+					residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+
+				});
+			}
+			residentTransactionRepository.saveAll(residentTransactionEntities);
+        }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::exception");
