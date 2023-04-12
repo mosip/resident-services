@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.controller.VerificationController;
@@ -92,6 +94,9 @@ public class WebSubUpdateAuthTypeControllerTest {
     
     @MockBean
     private ResidentServiceImpl residentService;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Before
     public void setup() throws Exception {
@@ -115,7 +120,7 @@ public class WebSubUpdateAuthTypeControllerTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        webSubUpdateAuthTypeController.authTypeCallback(eventModel);
+        webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
 
         mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback"))
                 .contentType(MediaType.APPLICATION_JSON)
