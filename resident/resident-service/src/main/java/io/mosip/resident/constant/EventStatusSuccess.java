@@ -25,7 +25,8 @@ public enum EventStatusSuccess {
     OTP_VERIFIED,
     COMPLETED,
     AUTHENTICATION_TYPE_UPDATED,
-    PHYSICAL_CARD_ORDERED;
+    PHYSICAL_CARD_ORDERED,
+    Y;
 
     public static boolean containsStatus(String status) {
         for (EventStatusSuccess eventStatusSuccess : EventStatusSuccess.values()) {
