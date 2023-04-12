@@ -174,7 +174,8 @@ import reactor.util.function.Tuples;
 
 
     public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText, String languageCode){
-        return fileText;
+		ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+		return residentTransactionEntity.getStatusComment();
     }
 
     public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText, String languageCode) {
