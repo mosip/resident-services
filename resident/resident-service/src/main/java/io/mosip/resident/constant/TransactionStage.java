@@ -34,8 +34,11 @@ public enum TransactionStage {
 
 	private static List<String> getTransactionTypeCodeList(TransactionStage transactionStage, Environment env) {
 		List<String> transactionTypeCode = List.of();
-		if (env.getProperty(transactionStage.transactionTypeCodePropertyName) != null) {
-			transactionTypeCode = List.of(env.getProperty(transactionStage.transactionTypeCodePropertyName).split(","));
+		if (transactionStage.transactionTypeCodePropertyName != null) {
+			if (env != null) {
+				transactionTypeCode = List
+						.of(env.getProperty(transactionStage.transactionTypeCodePropertyName).split(","));
+			}
 		}
 		return transactionTypeCode;
 	}

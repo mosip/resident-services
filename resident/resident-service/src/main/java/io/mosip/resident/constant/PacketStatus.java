@@ -38,8 +38,10 @@ public enum PacketStatus {
 
 	private static List<String> getStatusCodeList(PacketStatus packetStatus, Environment env) {
 		List<String> statusCode = List.of();
-		if (env.getProperty(packetStatus.statusCodePropertyName) != null) {
-			statusCode = List.of(env.getProperty(packetStatus.statusCodePropertyName).split(","));
+		if (packetStatus.statusCodePropertyName != null) {
+			if (env != null) {
+				statusCode = List.of(env.getProperty(packetStatus.statusCodePropertyName).split(","));
+			}
 		}
 		return statusCode;
 	}
