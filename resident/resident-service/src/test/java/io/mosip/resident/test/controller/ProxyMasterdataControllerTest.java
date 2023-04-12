@@ -216,19 +216,5 @@ public class ProxyMasterdataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/gendercode/gendertype/langcode"))
 				.andExpect(status().isOk());
 	}
-	
-	@Test
-	public void testGetDocumentTypesByDocumentCategoryCodeAndLangCode() throws Exception {
-		Mockito.when(proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
-		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/documenttypes/documentcategorycode/langcode"))
-				.andExpect(status().isOk());
-	}
-	
-	@Test
-	public void testGetGenderCodeByGenderTypeAndLangCode() throws Exception {
-		Mockito.when(proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
-		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/gendercode/gendertype/langcode"))
-				.andExpect(status().isOk());
-	}
 
 }
