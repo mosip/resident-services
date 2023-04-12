@@ -1,16 +1,21 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
@@ -56,14 +61,14 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try{
 			logger.info("WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
-			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, "COMPLETED");
+			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
 			sendNotificationV2(TemplateType.SUCCESS, tupleResponse.getT1(), tupleResponse.getT2());
         }
         catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::exception");
-			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, "FAILED");
+			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
 			sendNotificationV2(TemplateType.FAILURE, tupleResponse.getT1(), tupleResponse.getT2());
 			throw new ResidentServiceCheckedException(
 					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
@@ -77,20 +82,16 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
 		String eventId = "";
 		String individualId = "";
-        List<ResidentTransactionEntity> residentTransactionEntities = new ArrayList<>();
+        List<ResidentTransactionEntity> residentTransactionEntities = List.of();
         try {
             List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) eventModel.getEvent().getData().get(AUTH_TYPES);
-            for(Map<String, Object> authType:authTypeStatusList){
-                residentTransactionEntities = residentTransactionRepository.findByCredentialRequestId((String)authType.get(REQUEST_ID));
-                if(residentTransactionEntities!=null){
-                    residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
-                        residentTransactionEntity.setStatusCode(status);
-                        residentTransactionEntity.setReadStatus(false);
-                    });
-                }
-            }
-			residentTransactionRepository.saveAll(residentTransactionEntities);
-			if (residentTransactionEntities != null && !residentTransactionEntities.isEmpty()) {
+            
+            residentTransactionEntities = authTypeStatusList.stream()
+            				.flatMap(authTypeStatus -> residentTransactionRepository.findByRequestTrnId((String)authTypeStatus.get(REQUEST_ID)).stream())
+            				.distinct()
+            				.collect(Collectors.toList());
+            //Get the values before saving, otherwise individual ID will be updated in encrypted format in the entity
+            if (residentTransactionEntities != null && !residentTransactionEntities.isEmpty()) {
 				eventId = residentTransactionEntities.stream()
 						.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
 						.map(entity -> entity.getEventId())
@@ -103,6 +104,15 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 						.findAny()
 						.orElse(ResidentConstants.NOT_AVAILABLE);
 			}
+            
+            //Update status
+            residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
+                residentTransactionEntity.setStatusCode(status);
+                residentTransactionEntity.setReadStatus(false);
+                residentTransactionEntity.setUpdBy(RESIDENT);
+                residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+            });
+			residentTransactionRepository.saveAll(residentTransactionEntities);
         }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

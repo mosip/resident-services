@@ -1692,7 +1692,7 @@ public class ResidentServiceImpl implements ResidentService {
 				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
-		responseWrapper.setResponsetime(LocalDateTime.now());
+		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
 
 		return responseWrapper;
 	}
@@ -2095,11 +2095,11 @@ public class ResidentServiceImpl implements ResidentService {
 			time = residentUserEntity.get().getLastbellnotifDtimes();
 			//Get count of unread events after bell notification click time
 			countOfUnreadNotifications = residentTransactionRepository
-					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes);
+					.countByIdAndUnreadStatusForRequestTypesAfterNotificationClick(idaToken, time, asyncRequestTypes, onlineVerificationPartnerId);
 		} else {
 			//Get count of all unread events
 			countOfUnreadNotifications = residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(idaToken,
-					asyncRequestTypes);
+					asyncRequestTypes, onlineVerificationPartnerId);
 		}
 		UnreadNotificationDto notification = new UnreadNotificationDto();
 		notification.setUnreadCount(countOfUnreadNotifications);

@@ -1415,8 +1415,8 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateName(List<String> name) throws ResidentServiceCheckedException {
-		if (name == null || name.isEmpty()) {
+	public void validateName(String name) throws ResidentServiceCheckedException {
+		if (StringUtils.isBlank(name)) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorCode(),
 					ResidentErrorCode.INVALID_REG_CENTER_NAME.getErrorMessage());
 		}

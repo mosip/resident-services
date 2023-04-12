@@ -53,6 +53,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
 
@@ -608,6 +609,21 @@ public class Utility {
 		}
 		logger.debug("Utilitiy::getClientIp()::exit - excecuted till end");
 		return req.getRemoteAddr();
+	}
+	
+	public String getCardOrderTrackingId(String transactionId, String individualId)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Object object = residentServiceRestClient.getApi(ApiName.GET_ORDER_STATUS_URL, RequestType.getAllNewOrInprogressStatusList(env),
+				List.of(TemplateVariablesConstants.TRANSACTION_ID, TemplateVariablesConstants.INDIVIDUAL_ID),
+				List.of(transactionId, individualId), ResponseWrapper.class);
+		ResponseWrapper<Map<String, String>> responseWrapper = JsonUtil.convertValue(object,
+				new TypeReference<ResponseWrapper<Map<String, String>>>() {
+				});
+		if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
+			logger.error("ORDER_STATUS_URL returned error " + responseWrapper.getErrors());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
+		}
+		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
 	}
 	
 }
