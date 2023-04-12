@@ -172,7 +172,9 @@ public class Utility {
 				String.class);
 		Map<String, Object> amrAcrMap = null;
 		try {
-			amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+			if (amrAcrJson != null) {
+				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+			}
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
