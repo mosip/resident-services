@@ -36,6 +36,8 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
+
 /**
  * Resident proxy masterdata service implementation class.
  * 
@@ -438,14 +440,20 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataServiceImpl::getGenderTypesByLangCode()::entry");
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("langcode", langCode);
+		pathsegments.put("fieldName", fieldName);
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("withValue");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(withValue);
 		try {
-			responseWrapper = residentServiceRestClient.getApi(ApiName.GENDER_TYPE_BY_LANGCODE, pathsegments,
-					ResponseWrapper.class);
+			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
+					queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
@@ -457,7 +465,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
-		logger.debug("ProxyMasterdataServiceImpl::getGenderTypesByLangCode()::exit");
+		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
 		return responseWrapper;
 	}
 	
@@ -491,7 +499,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
-		ResponseWrapper<?> res = getGenderTypesByLangCode(langCode);
+		ResponseWrapper<?> res = getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
 		GenderTypeListDTO response = JsonUtil.readValue(JsonUtil.writeValueAsString(res.getResponse()),
 				GenderTypeListDTO.class);
 		Optional<String> genderCode = response.getGenderType().stream()

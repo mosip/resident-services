@@ -33,7 +33,14 @@ public enum TransactionStage {
 	}
 
 	private static List<String> getTransactionTypeCodeList(TransactionStage transactionStage, Environment env) {
-		return List.of(env.getProperty(transactionStage.transactionTypeCodePropertyName).split(","));
+		List<String> transactionTypeCode = List.of();
+		if (transactionStage.transactionTypeCodePropertyName != null) {
+			if (env.getProperty(transactionStage.transactionTypeCodePropertyName).split(",") != null) {
+				transactionTypeCode = List
+						.of(env.getProperty(transactionStage.transactionTypeCodePropertyName).split(","));
+			}
+		}
+		return transactionTypeCode;
 	}
 
 	public static boolean containsStatus(String status) {

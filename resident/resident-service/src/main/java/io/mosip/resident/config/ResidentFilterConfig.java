@@ -1,6 +1,7 @@
 package io.mosip.resident.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,9 @@ import io.mosip.resident.filter.WebsubCallbackRequestDecoratorFilter;
 
 @Configuration
 public class ResidentFilterConfig {
+	
+	@Value("${resident.logging.filter.url.pattern:/*}")
+	private String loggingFilterUrlPattern;
 
 	/**
 	 * Gets the auth filter.
@@ -28,7 +32,7 @@ public class ResidentFilterConfig {
 	public FilterRegistrationBean<LoggingFilter> getLoggingFilter(LoggingFilter loggingFilter) {
 		FilterRegistrationBean<LoggingFilter> registrationBean = new FilterRegistrationBean<>();
 		registrationBean.setFilter(loggingFilter);
-		registrationBean.addUrlPatterns("/*");
+		registrationBean.addUrlPatterns(loggingFilterUrlPattern);
 		return registrationBean;
 	}
 	

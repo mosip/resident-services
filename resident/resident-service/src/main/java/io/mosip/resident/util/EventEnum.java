@@ -665,8 +665,8 @@ public enum EventEnum {
 	DOWNLOAD_SERVICE_HISTORY_SUCCESS("RES-SER-266", RegistrationConstants.SYSTEM, "download service history success", "download service history success based on language code", "RES-SER",
 			"Resident service", "RS-DOWN_SER", "Download service history", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
-	GET_GENDER_TYPES("RES-SER-261", RegistrationConstants.SYSTEM, "get gender types",
-			"get gender types by langCode", "RES-SER", "Residence service", "RS-GEND", "Gender",
+	GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME("RES-SER-261", RegistrationConstants.SYSTEM, "get dynamic field based on lang code and field name",
+			"get dynamic field based on langCode and field name", "RES-SER", "Residence service", "RS-GEND", "Dynamic Field",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_GENDER_TYPES_SUCCESS("RES-SER-262", RegistrationConstants.SYSTEM, "get gender types success",
 			"get gender types by langCode is succeeded", "RES-SER", "Residence service", "RS-GEND",

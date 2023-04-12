@@ -22,6 +22,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.controller.AuthTransactionCallbackController;
@@ -92,6 +94,9 @@ public class AuthTransactionCallbackControllerTest {
 
     @InjectMocks
     VerificationController verificationController;
+    
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Before
     public void setup() throws Exception {
@@ -114,7 +119,7 @@ public class AuthTransactionCallbackControllerTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        authTransactionCallbackController.authTypeCallback(eventModel);
+        authTransactionCallbackController.authTransactionCallback(objectMapper.convertValue(eventModel, Map.class));
 
         mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction"))
                 .contentType(MediaType.APPLICATION_JSON)
