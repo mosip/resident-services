@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.ResidentConstants.CHANNEL_DELIMITER;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.stream.Collectors;
 
@@ -92,7 +94,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
-		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(", "));
+		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(CHANNEL_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setAuthTypeCode(attributeList);
 		residentTransactionEntity.setRequestSummary("OTP Generated");
