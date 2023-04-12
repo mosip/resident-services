@@ -90,7 +90,7 @@ public class ResidentServiceGetEventStatusTest {
         eventStatusResponseDTO.setEventStatus("COMPLETED");
         responseWrapper.setResponse(eventStatusResponseDTO);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
-        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.name());
+        residentTransactionEntity.get().setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFULL.name());
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setLangCode(langCode);
         residentTransactionEntity.get().setRequestSummary("requestSummary");

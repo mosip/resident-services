@@ -96,7 +96,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
         residentTransactionEntity.setPurpose("Test");
-        residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFUL.name());
+        residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFULL.name());
         residentTransactionEntity.setRequestSummary("Test");
         residentTransactionEntity.setAuthTypeCode("otp");
         residentTransactionEntity.setAttributeList("YYYY-MM-DD HH:MM:SS");

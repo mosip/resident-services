@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -62,7 +63,11 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         try{
 			logger.info("WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
 			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
-			sendNotificationV2(TemplateType.SUCCESS, tupleResponse.getT1(), tupleResponse.getT2());
+			// only if the event belongs to the current online verification partner, the
+			// individualId will not be blank, and hence the notification will be sent
+			if(!StringUtils.isBlank(tupleResponse.getT1()) && !StringUtils.isBlank(tupleResponse.getT2())) {
+				sendNotificationV2(TemplateType.SUCCESS, tupleResponse.getT1(), tupleResponse.getT2());
+			}
         }
         catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
