@@ -28,6 +28,8 @@ public class ResidentConstants {
 
     public static final String SUBSCRIPTIONS_DELAY_ON_STARTUP = "subscriptions-delay-on-startup_millisecs";
     
+	public static final String RESUBSCRIPTIONS_INTERVAL_SECS = "re-subscription-interval-in-seconds";
+    
     public static final String CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY = "mosip.resident.update.service.status.job.initial-delay";
     
     public static final String CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT = "60000";
@@ -241,6 +243,8 @@ public class ResidentConstants {
     public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
     public static final String LANGUAGE = "language";
     public static final String VALUE = "value";
+    
+    public static final String RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT = "resident.registration-centers.download.max.count";
 
 
 }

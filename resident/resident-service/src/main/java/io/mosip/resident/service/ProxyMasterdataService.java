@@ -152,13 +152,15 @@ public interface ProxyMasterdataService {
 			throws ResidentServiceCheckedException;
 	
 	/**
-	 * Get gender types by language code.
-	 * 
-	 * @param langCode
-	 * @return ResponseWrapper object
-	 * @throws ResidentServiceCheckedException
-	 */
-	public ResponseWrapper<?> getGenderTypesByLangCode(String langCode) throws ResidentServiceCheckedException;
+     * Get gender types by language code.
+     *
+     * @param fieldName
+     * @param langCode
+     * @param withValue
+     * @return ResponseWrapper object
+     * @throws ResidentServiceCheckedException
+     */
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException;
 
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException;
 

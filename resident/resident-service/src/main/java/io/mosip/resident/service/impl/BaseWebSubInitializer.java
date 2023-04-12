@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,10 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
      * The task subsctiption delay.
      */
     @Value("${" + ResidentConstants.SUBSCRIPTIONS_DELAY_ON_STARTUP + ":60000}")
-    private int taskSubsctiptionDelay;
+    private int taskSubscriptionInitialDelay;
+    
+    @Value("${" + ResidentConstants.RESUBSCRIPTIONS_INTERVAL_SECS + ":43200}")
+    private int reSubscriptionIntervalSecs;
 
     /**
      * The publisher.
@@ -42,9 +47,6 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     @Autowired
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-    @Value("${resident.websub.authtype-status.topic}")
-    private String topic;
-
     @Value("${websub.publish.url}")
     private String publishUrl;
 
@@ -52,13 +54,16 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     private String hubUrl;
 
     @Value("${resident.websub.authtype-status.secret}")
-    private String secret;
+    private String authTypeStatusSecret;
 
     @Value("${resident.websub.callback.authtype-status.url}")
-    private String callbackUrl;
+    private String authTypeStatusCallbackUrl;
 
     @Value("${resident.websub.callback.authTransaction-status.url}")
-    private String callbackAuthTransactionUrl;
+    private String authTransactionCallbackUrl;
+    
+    @Value("${resident.websub.authtype-status.topic}")
+    private String autTypeStatusTopic;
 
     @Value("${resident.websub.authTransaction-status.topic}")
     private String authTransactionTopic;
@@ -69,20 +74,47 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         logger.info("onApplicationEvent", "BaseWebSubInitializer", "Application is ready");
+		logger.info("Scheduling event subscriptions after (milliseconds): " + taskSubscriptionInitialDelay);
         taskScheduler.schedule(() -> {
             //Invoke topic registrations. This is done only once.
             //Note: With authenticated websub, only register topics which are only published by IDA
-            tryRegisterTopicEvent(topic);
-            tryRegisterTopicEvent(authTransactionTopic);
+            tryRegisteringTopics();
             //Init topic subscriptions
-            initSubsriptions();
-            authTransactionSubscription();
-        }, new Date(System.currentTimeMillis() + taskSubsctiptionDelay));
+            initTopicSubscriptions();
+        }, new Date(System.currentTimeMillis() + taskSubscriptionInitialDelay));
+        
+        if (reSubscriptionIntervalSecs > 0) {
+			logger.info("Work around for web-sub notification issue after some time.");
+			scheduleRetrySubscriptions();
+		} else {
+			logger.info("Scheduling for re-subscription is Disabled as the re-subsctription delay value is: "
+							+ reSubscriptionIntervalSecs);
+		}
 
     }
 
-    public void authTransactionSubscription() {
-        subscribe(authTransactionTopic, callbackAuthTransactionUrl, authTransactionSecret, hubUrl);
+	private void initTopicSubscriptions() {
+		authTypStatusTopicSubsriptions();
+		authTransactionTopicSubscription();
+	}
+
+	private void tryRegisteringTopics() {
+		tryRegisterTopicEvent(autTypeStatusTopic);
+		tryRegisterTopicEvent(authTransactionTopic);
+	}
+
+    private void scheduleRetrySubscriptions() {
+    	taskScheduler.scheduleAtFixedRate(this::initTopicSubscriptions, Instant.now().plusSeconds(reSubscriptionIntervalSecs),
+				Duration.ofSeconds(reSubscriptionIntervalSecs));		
+	}
+
+	public void authTransactionTopicSubscription() {
+    	logger.debug("subscribe", "",
+                "Trying to subscribe to topic: " + authTransactionTopic + " callback-url: "
+                        + authTransactionCallbackUrl);
+        subscribe(authTransactionTopic, authTransactionCallbackUrl, authTransactionSecret, hubUrl);
+        logger.info("subscribe", "",
+                "Subscribed to topic: " + authTransactionTopic);
     }
 
     protected void tryRegisterTopicEvent(String eventTopic) {
@@ -98,13 +130,13 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         }
     }
 
-    protected void initSubsriptions() {
+    protected void authTypStatusTopicSubsriptions() {
         logger.debug("subscribe", "",
-                "Trying to subscribe to topic: " + topic + " callback-url: "
-                        + callbackUrl);
-        subscribe(topic, callbackUrl, secret, hubUrl);
+                "Trying to subscribe to topic: " + autTypeStatusTopic + " callback-url: "
+                        + authTypeStatusCallbackUrl);
+        subscribe(autTypeStatusTopic, authTypeStatusCallbackUrl, authTypeStatusSecret, hubUrl);
         logger.info("subscribe", "",
-                "Subscribed to topic: " + topic);
+                "Subscribed to topic: " + autTypeStatusTopic);
 
     }
 
