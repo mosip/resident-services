@@ -1,6 +1,7 @@
 package io.mosip.resident.constant;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.core.env.Environment;
@@ -39,9 +40,8 @@ public enum PacketStatus {
 	private static List<String> getStatusCodeList(PacketStatus packetStatus, Environment env) {
 		List<String> statusCode = List.of();
 		if (packetStatus.statusCodePropertyName != null) {
-			if (env.getProperty(packetStatus.statusCodePropertyName).split(",") != null) {
-				statusCode = List.of(env.getProperty(packetStatus.statusCodePropertyName).split(","));
-			}
+			statusCode = List
+					.of(Objects.requireNonNull(env.getProperty(packetStatus.statusCodePropertyName).split(",")));
 		}
 		return statusCode;
 	}
