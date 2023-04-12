@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +72,7 @@ public class DownLoadMasterDataController {
 	 */
 	@GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
-			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") List<String> name,
+			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") String name,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");

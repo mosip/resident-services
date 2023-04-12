@@ -502,7 +502,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
      */
     private String getIndividualIdForAid(String individualId)  {
         String idType = identityService.getIndividualIdType(individualId);
-        if(idType.equalsIgnoreCase(IdType.UIN.toString()) || idType.equalsIgnoreCase(IdType.VID.toString())){
+        if(idType.equalsIgnoreCase(IdType.UIN.toString())){
             return individualId;
         } else {
             try {
