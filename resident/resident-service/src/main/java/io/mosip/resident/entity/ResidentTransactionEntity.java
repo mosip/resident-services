@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -28,10 +29,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ResidentTransactionEntity {
 
 	@Id
 	@Column(name = "event_id")
+	@EqualsAndHashCode.Include
 	private String eventId;
 
 	@Column(name = "request_trn_id")
