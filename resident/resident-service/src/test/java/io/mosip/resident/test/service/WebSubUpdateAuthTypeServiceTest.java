@@ -87,7 +87,7 @@ public class WebSubUpdateAuthTypeServiceTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
         notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
-		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
+		//Mockito.lenient().when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
     }
 
     @Test
