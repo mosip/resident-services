@@ -228,7 +228,7 @@ public class ResidentVidServiceTest {
         residentVidService.generateVid(requestDto, "12345");
     }
 
-    @Test(expected = VidAlreadyPresentException.class)
+    @Test(expected = VidCreationException.class)
     public void vidCreationExceptionTest() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
 
         String ERROR_CODE = "err";
@@ -248,7 +248,7 @@ public class ResidentVidServiceTest {
         residentVidService.generateVid(requestDto, "12345");
     }
 
-    @Test(expected = VidAlreadyPresentException.class)
+    @Test(expected = VidCreationException.class)
     public void apiResourceAccessExceptionTest() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
 
         String ERROR_CODE = "err";

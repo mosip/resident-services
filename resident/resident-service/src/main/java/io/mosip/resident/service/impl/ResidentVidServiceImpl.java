@@ -621,9 +621,19 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			NotificationRequestDto notificationRequestDto, String eventId,
 			ResidentTransactionEntity residentTransactionEntity, E e)
 			throws ResidentServiceCheckedException, VidAlreadyPresentException {
-		notifyFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId,
-				residentTransactionEntity, e, RequestType.GENERATE_VID, NotificationTemplateCode.RS_VIN_GEN_FAILURE,
-				"Request to generate VID", this::createVidAlreadyPresentException, VidAlreadyPresentException.class);
+		if(e instanceof VidAlreadyPresentException) {
+			notifyFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId,
+					residentTransactionEntity, e, RequestType.GENERATE_VID, NotificationTemplateCode.RS_VIN_GEN_FAILURE,
+					"Request to generate VID", this::createVidAlreadyPresentException, VidAlreadyPresentException.class);
+		} else{
+			notifyFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId,
+					residentTransactionEntity, e, RequestType.GENERATE_VID, NotificationTemplateCode.RS_VIN_GEN_FAILURE,
+					"Request to generate VID", this::createVidCreationException, VidCreationException.class);
+		}
+	}
+
+	private VidCreationException createVidCreationException(String eventId, Throwable rootCause) {
+		return eventId == null ? new VidCreationException(rootCause.getMessage(), rootCause): new VidCreationException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
 	}
 
 
