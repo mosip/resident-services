@@ -1,6 +1,7 @@
 package io.mosip.resident.constant;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.core.env.Environment;
@@ -35,9 +36,9 @@ public enum TransactionStage {
 	private static List<String> getTransactionTypeCodeList(TransactionStage transactionStage, Environment env) {
 		List<String> transactionTypeCode = List.of();
 		if (transactionStage.transactionTypeCodePropertyName != null) {
-			if (env.getProperty(transactionStage.transactionTypeCodePropertyName).split(",") != null) {
-				transactionTypeCode = List
-						.of(env.getProperty(transactionStage.transactionTypeCodePropertyName).split(","));
+			String propertyName = env.getProperty(transactionStage.transactionTypeCodePropertyName);
+			if (propertyName != null) {
+				transactionTypeCode = List.of(propertyName.split(","));
 			}
 		}
 		return transactionTypeCode;
