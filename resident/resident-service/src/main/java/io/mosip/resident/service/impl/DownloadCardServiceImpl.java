@@ -1,7 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_lIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
 import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
@@ -130,41 +130,38 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
 			throws ResidentServiceCheckedException {
 		String rid = "";
-		String individualId = "";
+		String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		byte[] pdfBytes = new byte[0];
 		try {
-			individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
 			residentTransactionEntity = insertDataForGetMyUin(individualId, transactionId);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
-			}
-			if (idAuthService.validateOtpv2(transactionId, getIndividualIdForAid(individualId),
-					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
-				String idType = identityService.getIndividualIdType(individualId);
-				if (idType.equalsIgnoreCase(AID)) {
-					rid = individualId;
-					Map<String, String> ridStatus = utilities.getPacketStatus(rid);
-					String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-					String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-					if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
-							&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
-						pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
+				if (idAuthService.validateOtpv2(transactionId, getIndividualIdForAid(individualId),
+						downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+					String idType = identityService.getIndividualIdType(individualId);
+					if (idType.equalsIgnoreCase(AID)) {
+						rid = individualId;
+						Map<String, String> ridStatus = utilities.getPacketStatus(rid);
+						String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+						String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
+						if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
+								&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
+							pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
+						} else {
+							throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+									ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
+						}
 					} else {
-						throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-								ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
+						rid = utilities.getRidByIndividualId(individualId);
+						pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
 					}
-				} else {
-					rid = utilities.getRidByIndividualId(individualId);
-					pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
-				}
-				if (residentTransactionEntity != null) {
 					if (pdfBytes.length == 0) {
 						residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-						residentTransactionEntity
-								.setStatusComment(ResidentErrorCode.CARD_NOT_READY.getErrorMessage() + " - zero length");
+						residentTransactionEntity.setStatusComment(
+								ResidentErrorCode.CARD_NOT_READY.getErrorMessage() + " - zero length");
 						residentTransactionEntity
 								.setRequestSummary(RequestType.GET_MY_ID.name() + " - " + ResidentConstants.FAILED);
 					} else {
@@ -173,18 +170,17 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						residentTransactionEntity
 								.setRequestSummary(RequestType.GET_MY_ID.name() + " - " + ResidentConstants.SUCCESS);
 					}
-				}
-			} else {
-				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
-				audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-				if (residentTransactionEntity != null) {
+				} else {
+					logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+							LoggerFileConstant.APPLICATIONID.toString(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+					audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setStatusComment(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+					residentTransactionEntity
+							.setStatusComment(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
+							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 				}
-				throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
-						ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 			}
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
@@ -261,23 +257,22 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset)
 			throws ResidentServiceCheckedException {
         String encodeHtml = downloadPersonalizedCardMainRequestDTO.getRequest().getHtml();
-        byte[] decodedData;
+        byte[] decodedData = new byte[0];
         String password=null;
         String individualId = "";
         String eventId = ResidentConstants.NOT_AVAILABLE;
         ResidentTransactionEntity residentTransactionEntity = null;
         try {
-        	individualId = identityService.getResidentIndvidualIdFromSession();
-        	residentTransactionEntity = createResidentTransactionEntity(individualId, downloadPersonalizedCardMainRequestDTO.getRequest());
-        	if (residentTransactionEntity != null) {
-    			eventId = residentTransactionEntity.getEventId(); 
-    		}
-            decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
-            List<String> attributeValues = getAttributeList();
-            if(Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))){
-                password = utility.getPassword(attributeValues);
-            }
+			individualId = identityService.getResidentIndvidualIdFromSession();
+			residentTransactionEntity = createResidentTransactionEntity(individualId,
+					downloadPersonalizedCardMainRequestDTO.getRequest());
 			if (residentTransactionEntity != null) {
+				eventId = residentTransactionEntity.getEventId();
+				decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
+				List<String> attributeValues = getAttributeList();
+				if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))) {
+					password = utility.getPassword(attributeValues);
+				}
 				residentTransactionEntity.setRequestSummary(
 						RequestType.DOWNLOAD_PERSONALIZED_CARD.name() + " - " + ResidentConstants.SUCCESS);
 				residentTransactionEntity.setStatusCode(CARD_DOWNLOADED.name());
@@ -328,7 +323,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
 			residentTransactionEntity.setAttributeList(
-					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(ATTRIBUTE_lIST_DELIMITER)));
+					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER)));
 		}
         return residentTransactionEntity;
 	}
