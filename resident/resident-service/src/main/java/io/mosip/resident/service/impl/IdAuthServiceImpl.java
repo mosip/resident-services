@@ -1,6 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentConstants.CHANNEL_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
 
 import java.io.ByteArrayInputStream;
@@ -183,7 +183,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationService.sendNotification(notificationRequestDtoV2,
-				channels != null ? List.of(channels.split(CHANNEL_DELIMITER)) : null, null, null);
+				channels != null ? List.of(channels.split(ATTRIBUTE_LIST_DELIMITER)) : null, null, null);
 	}
 
 	@Override
