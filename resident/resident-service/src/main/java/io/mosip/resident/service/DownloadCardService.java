@@ -22,7 +22,9 @@ public interface DownloadCardService {
 			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
 			throws ResidentServiceCheckedException;
 
-    Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset);
+	Tuple2<byte[], String> downloadPersonalizedCard(
+			MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset)
+			throws ResidentServiceCheckedException;
 
     Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset) throws BaseCheckedException;
 

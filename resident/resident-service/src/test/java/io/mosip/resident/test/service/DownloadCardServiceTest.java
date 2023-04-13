@@ -222,7 +222,7 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadPersonalizedCardSuccess() {
+    public void testDownloadPersonalizedCardSuccess() throws ResidentServiceCheckedException {
     	Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
         assertEquals(pdfbytes, actualResult.getT1());
     }
@@ -239,14 +239,14 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadPersonalizedCardPassword(){
+    public void testDownloadPersonalizedCardPassword() throws ResidentServiceCheckedException{
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
         Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testDownloadPersonalizedCardPasswordFailed(){
+    public void testDownloadPersonalizedCardPasswordFailed() throws ResidentServiceCheckedException{
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
         Mockito.when(utility.getPassword(Mockito.anyList())).thenThrow(
                 new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD));

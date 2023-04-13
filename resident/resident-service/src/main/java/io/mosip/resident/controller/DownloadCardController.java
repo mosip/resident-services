@@ -101,8 +101,10 @@ public class DownloadCardController {
     
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
-    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
-    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset){
+	public ResponseEntity<Object> downloadPersonalizedCard(
+			@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			throws ResidentServiceCheckedException {
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 		try {
