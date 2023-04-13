@@ -1254,7 +1254,7 @@ public class RequestValidator {
     }
 
 	private void validateAttributeList(List<String> attributes) {
-		if(attributes.isEmpty()){
+		if (attributes == null || attributes.isEmpty()) {
 			throw new InvalidInputException(TemplateVariablesConstants.ATTRIBUTES);
 		}
 	}
