@@ -20,6 +20,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidAlreadyPresentException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -207,7 +208,7 @@ public class ResidentVidServiceTest {
         residentVidService.generateVid(requestDto, "12345");
     }
 
-    @Test(expected = VidCreationException.class)
+    @Test(expected = VidAlreadyPresentException.class)
     public void vidAlreadyExistsExceptionTest() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
 
         String VID_ALREADY_EXISTS_ERROR_CODE = "IDR-VID-003";
