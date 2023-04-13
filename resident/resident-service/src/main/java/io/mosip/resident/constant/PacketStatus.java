@@ -41,7 +41,9 @@ public enum PacketStatus {
 		List<String> statusCode = List.of();
 		if (packetStatus.statusCodePropertyName != null) {
 			String propertyName = Objects.requireNonNull(env.getProperty(packetStatus.statusCodePropertyName));
-			statusCode = List.of(propertyName.split(","));
+			if (propertyName != null) {
+				statusCode = List.of(propertyName.split(","));
+			}
 		}
 		return statusCode;
 	}
