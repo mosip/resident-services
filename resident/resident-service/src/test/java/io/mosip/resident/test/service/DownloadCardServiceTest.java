@@ -156,13 +156,13 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadCardServiceTest()  {
+    public void testDownloadCardServiceTest() throws ResidentServiceCheckedException  {
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test
-    public void testGetDownloadCardPdfVID(){
+    public void testGetDownloadCardPdfVID() throws ResidentServiceCheckedException{
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertNotNull(actualResult);

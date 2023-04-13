@@ -18,7 +18,9 @@ import reactor.util.function.Tuple2;
  * @Author Kamesh Shekhar Prasad
  */
 public interface DownloadCardService {
-    Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO);
+	Tuple2<byte[], String> getDownloadCardPDF(
+			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
+			throws ResidentServiceCheckedException;
 
     Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset);
 
