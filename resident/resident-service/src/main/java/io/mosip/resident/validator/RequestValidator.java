@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import io.mosip.kernel.core.idvalidator.spi.VidValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
-import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.EventStatus;
@@ -1094,21 +1092,6 @@ public class RequestValidator {
 		if(!allowedMandatoryLanguage.contains(languageCode) && !allowedOptionalLanguage.contains(languageCode)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INVALID_LANGUAGE_CODE, "languageCode", "Request service history API"));
 			throw new InvalidInputException("languageCode");
-		}
-	}
-
-	public void validateId(io.mosip.preregistration.core.common.dto.MainRequestDTO<TransliterationRequestDTO> requestDTO) {
-		if (Objects.nonNull(requestDTO.getId())) {
-			if (!requestDTO.getId().equals(transliterateId)) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "Invalid Transliterate id"));
-				throw new InvalidInputException("id");
-			}
-		} else {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "id", "id is null"));
-			throw new InvalidInputException("id");
-		}
-		if (requestDTO.getRequest().getFromFieldLang().equalsIgnoreCase(requestDTO.getRequest().getToFieldLang())) {
-			throw new InvalidInputException("'from' and 'to' languages cannot be same");
 		}
 	}
 
