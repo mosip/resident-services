@@ -11,6 +11,11 @@ public enum AttributeNameEnum {
     PHONE("phone", "mosip.phone.template.property"),
     EMAIL("email", "mosip.email.template.property"),
     ADDRESS("addressLine1", "mosip.address.template.property"),
+    PROVINCE("province", "mosip.province.template.property"),
+    CITY("city", "mosip.city.template.property"),
+    ZONE("zone", "mosip.zone.template.property"),
+    POSTAL_CODE("postalCode", "mosip.postal.code.template.property"),
+    REGION("region", "mosip.region.template.property"),
     GENDER("gender", "mosip.gender.template.property"),
     DEFAULT("Default", "mosip.defualt.template.property");
     private String attributeValue;
