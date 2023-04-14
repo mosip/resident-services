@@ -13,12 +13,12 @@
 	<name>resident-service</name>
 	<version>1.2.0.1-B2</version>
 	<properties>
-		<commons.packet.manager.version>1.2.1-SNAPSHOT</commons.packet.manager.version>
+		<commons.packet.manager.version>1.2.0.1-B2</commons.packet.manager.version>
 		<kernel.core.version>1.2.0.1-B1</kernel.core.version>
-		<kernel.virusscanner.clamav.version>1.2.1-SNAPSHOT</kernel.virusscanner.clamav.version>
+		<kernel.virusscanner.clamav.version>1.2.0.1-B2</kernel.virusscanner.clamav.version>
 		<id-repository-core.version>1.2.0.1-B2</id-repository-core.version>
 		<kernel-keymanager-service.version>1.2.0.1-B1</kernel-keymanager-service.version>
-		<kernel.authcodeflowproxy.api.version>1.2.1-SNAPSHOT</kernel.authcodeflowproxy.api.version>
+		<kernel.authcodeflowproxy.api.version>1.2.0.1-B2</kernel.authcodeflowproxy.api.version>
 		<kernel.parent.version>1.2.0</kernel.parent.version>
 		<kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
 
@@ -26,10 +26,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fasterxml.jackson.module.jsr310.version>2.12.0</fasterxml.jackson.module.jsr310.version>
 		<fasterxml.jackson.module.afterburner.version>2.12.0</fasterxml.jackson.module.afterburner.version>
-		<kernel.khazana.version>1.2.1-SNAPSHOT</kernel.khazana.version>
-		<pre-registration-application-service.version>1.2.1-SNAPSHOT</pre-registration-application-service.version>
-		<kernel-openid-bridge-api.version>1.2.1-SNAPSHOT</kernel-openid-bridge-api.version>
-		<kernel.idobjectvalidator.version>1.2.1-SNAPSHOT</kernel.idobjectvalidator.version>
+		<kernel.khazana.version>1.2.0.1-B2</kernel.khazana.version>
+		<pre-registration-application-service.version>1.2.0.1-B2</pre-registration-application-service.version>
+		<kernel-openid-bridge-api.version>1.2.0.1-B2</kernel-openid-bridge-api.version>
+		<kernel.idobjectvalidator.version>1.2.0.1-B2</kernel.idobjectvalidator.version>
 	</properties>
 	<dependencies>
 		<dependency>
