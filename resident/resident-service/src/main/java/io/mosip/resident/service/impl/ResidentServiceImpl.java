@@ -1904,11 +1904,7 @@ public class ResidentServiceImpl implements ResidentService {
 			templateType = TemplateType.FAILURE;
 		}
 		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-		Map<String, String> templateResponse = new LinkedHashMap<>(
-				(Map<String, String>) proxyResponseWrapper.getResponse());
-		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 	}
 
@@ -1922,11 +1918,8 @@ public class ResidentServiceImpl implements ResidentService {
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
 			templateType = TemplateType.SUCCESS;
 			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-			ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-			Map<String, String> templateResponse = new LinkedHashMap<>(
-					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType, langCode);
+			String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+			return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 		} else {
 			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}

@@ -293,7 +293,7 @@ import reactor.util.function.Tuples;
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
         templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeInPurpose(getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode), getEntityFromEventId(eventId).getPurpose(), languageCode));
+        		residentTransactionEntity, languageCode), residentTransactionEntity.getPurpose(), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -381,7 +381,7 @@ import reactor.util.function.Tuples;
         try {
             purpose = residentService.getSummaryForLangCode(languageCode, residentService.getEventStatusCode(
                             residentTransactionEntity.getStatusCode()),
-                    RequestType.valueOf(residentTransactionEntity.getRequestTypeCode().trim()), residentTransactionEntity.getEventId());
+                    RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()), residentTransactionEntity.getEventId());
         } catch (ResidentServiceCheckedException e) {
             return "";
         }
