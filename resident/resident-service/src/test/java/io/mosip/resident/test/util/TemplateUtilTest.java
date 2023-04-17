@@ -118,6 +118,7 @@ public class TemplateUtilTest {
         responseWrapper.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 responseWrapper);
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.SUCCESS.getStatus());
     }
 
     @Test
@@ -203,7 +204,7 @@ public class TemplateUtilTest {
     @Test
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
-        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.FAILED.getStatus());
         assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
@@ -212,7 +213,7 @@ public class TemplateUtilTest {
     @Test
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
-        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
         assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));

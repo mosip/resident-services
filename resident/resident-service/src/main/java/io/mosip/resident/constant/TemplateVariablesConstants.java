@@ -16,6 +16,7 @@ public class TemplateVariablesConstants {
     public static final String SUMMARY = "summary";
     public static final String TRACKING_ID = "trackingId";
     public static final String ORDER_TRACKING_LINK = "orderTrackingLink";
+    public static final String PARTNER_ID = "partner";
     public static final String PARTNER_NAME = "partnerName";
     public static final String PARTNER_LOGO = "partnerLogo";
     public static final String ATTRIBUTE_LIST = "attributeList";
