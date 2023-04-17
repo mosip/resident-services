@@ -1,6 +1,5 @@
 package io.mosip.resident.test.service;
 
-import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 import java.time.LocalDateTime;
@@ -25,6 +24,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.kernel.core.websub.spi.PublisherClient;
@@ -37,7 +38,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.WebSubUpdateAuthTypeServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -73,6 +73,8 @@ public class WebSubUpdateAuthTypeServiceTest {
     
     @Mock
 	private NotificationService notificationService;
+    
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private NotificationResponseDTO notificationResponseDTO;
 
@@ -87,7 +89,7 @@ public class WebSubUpdateAuthTypeServiceTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
         notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
-		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
+		//Mockito.lenient().when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
     }
 
     @Test
@@ -100,7 +102,7 @@ public class WebSubUpdateAuthTypeServiceTest {
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
 
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(objectMapper.convertValue(eventModel, Map.class));
         webSubUpdateAuthTypeService = mock(WebSubUpdateAuthTypeServiceImpl.class);
         Mockito.lenient().doNothing().when(webSubUpdateAuthTypeService).updateAuthTypeStatus(Mockito.any());
     }
@@ -116,6 +118,6 @@ public class WebSubUpdateAuthTypeServiceTest {
         data.put("requestId", "0839c2bf-5be5-4359-b860-6f9bda908378");
         event.setData(data);
         eventModel.setEvent(event);
-        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(objectMapper.convertValue(eventModel, Map.class));
     }
 }

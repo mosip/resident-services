@@ -2,7 +2,6 @@ package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.websub.model.EventModel;
+import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
@@ -55,14 +54,18 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 	private String onlineVerificationPartnerId;
 
     @Override
-    public void updateAuthTypeStatus(EventModel eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException {
+    public void updateAuthTypeStatus(Map<String, Object> eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::entry");
         auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try{
 			logger.info("WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
 			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
-			sendNotificationV2(TemplateType.SUCCESS, tupleResponse.getT1(), tupleResponse.getT2());
+			// only if the event belongs to the current online verification partner, the
+			// individualId will not be blank, and hence the notification will be sent
+			if(!StringUtils.isBlank(tupleResponse.getT1()) && !StringUtils.isBlank(tupleResponse.getT2())) {
+				sendNotificationV2(TemplateType.SUCCESS, tupleResponse.getT1(), tupleResponse.getT2());
+			}
         }
         catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -76,42 +79,65 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         }
     }
 
-    private Tuple2<String, String> updateInResidentTransactionTable(EventModel eventModel,  String status) {
+    private Tuple2<String, String> updateInResidentTransactionTable(Map<String, Object> eventModel,  String status) {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
 		String eventId = "";
 		String individualId = "";
         List<ResidentTransactionEntity> residentTransactionEntities = List.of();
-        try {
-            List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) eventModel.getEvent().getData().get(AUTH_TYPES);
-            
-            residentTransactionEntities = authTypeStatusList.stream()
-            				.flatMap(authTypeStatus -> residentTransactionRepository.findByRequestTrnId((String)authTypeStatus.get(REQUEST_ID)).stream())
-            				.distinct()
-            				.collect(Collectors.toList());
-            //Get the values before saving, otherwise individual ID will be updated in encrypted format in the entity
-            if (residentTransactionEntities != null && !residentTransactionEntities.isEmpty()) {
-				eventId = residentTransactionEntities.stream()
-						.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
-						.map(entity -> entity.getEventId())
-						.findAny()
-						.orElse(ResidentConstants.NOT_AVAILABLE);
-				
-				individualId = residentTransactionEntities.stream()
-						.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
-						.map(entity -> entity.getIndividualId())
-						.findAny()
-						.orElse(ResidentConstants.NOT_AVAILABLE);
+		try {
+			Object eventObj = eventModel.get("event");
+			if (eventObj instanceof Map) {
+				Map<String, Object> eventMap = (Map<String, Object>) eventObj;
+				Object dataObject = eventMap.get("data");
+				if (dataObject instanceof Map) {
+					Map<String, Object> dataMap = (Map<String, Object>) dataObject;
+					Object authStatusListObj = (List<Map<String, Object>>) dataMap.get(AUTH_TYPES);
+					if (authStatusListObj instanceof List) {
+						List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) authStatusListObj;
+						residentTransactionEntities = authTypeStatusList.stream()
+								.flatMap(authTypeStatus -> residentTransactionRepository
+										.findByRequestTrnId((String) authTypeStatus.get(REQUEST_ID)).stream())
+								.distinct().collect(Collectors.toList());
+						// Get the values before saving, otherwise individual ID will be updated in
+						// encrypted format in the entity
+						if (residentTransactionEntities != null && !residentTransactionEntities.isEmpty()) {
+							eventId = residentTransactionEntities.stream()
+									.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
+									.map(entity -> entity.getEventId()).findAny()
+									.orElse(ResidentConstants.NOT_AVAILABLE);
+
+							individualId = residentTransactionEntities.stream()
+									.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
+									.map(entity -> entity.getIndividualId()).findAny()
+									.orElse(ResidentConstants.NOT_AVAILABLE);
+						}
+
+						// Update status
+						if (residentTransactionEntities != null) {
+							residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
+								residentTransactionEntity.setStatusCode(status);
+								residentTransactionEntity.setReadStatus(false);
+								residentTransactionEntity.setUpdBy(RESIDENT);
+								residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+							});
+						}
+						residentTransactionRepository.saveAll(residentTransactionEntities);
+					}
+				}
 			}
             
             //Update status
-            residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
-                residentTransactionEntity.setStatusCode(status);
-                residentTransactionEntity.setReadStatus(false);
-                residentTransactionEntity.setUpdBy(RESIDENT);
-                residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-            });
+			if (residentTransactionEntities != null) {
+				residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
+					residentTransactionEntity.setStatusCode(status);
+					residentTransactionEntity.setReadStatus(false);
+					residentTransactionEntity.setUpdBy(RESIDENT);
+					residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+
+				});
+			}
 			residentTransactionRepository.saveAll(residentTransactionEntities);
         }
         catch (Exception e) {
