@@ -144,7 +144,7 @@ import reactor.util.function.Tuples;
             for (String attribute : attributeList) {
                 attribute = attribute.trim();
                 attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-                        AttributeNameEnum.getTemplatePropertyName(attribute)));
+                        AttributeNameEnum.getTemplatePropertyName(attribute, env)));
             }
         }
         if(attributeListTemplateValue.isEmpty()){
