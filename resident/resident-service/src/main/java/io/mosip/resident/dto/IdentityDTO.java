@@ -11,5 +11,6 @@ public class IdentityDTO {
 	private String yearOfBirth;
 	private String fullName;
 	private String face;
+	private String dateOfBirth;
 
 }
