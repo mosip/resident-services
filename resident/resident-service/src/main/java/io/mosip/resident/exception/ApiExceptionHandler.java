@@ -230,7 +230,7 @@ public class ApiExceptionHandler {
 																				 final VidAlreadyPresentException e) throws IOException{
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(VidCreationException.class)
@@ -238,7 +238,7 @@ public class ApiExceptionHandler {
 																				 final VidCreationException e) throws IOException{
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(VidRevocationException.class)
@@ -246,7 +246,7 @@ public class ApiExceptionHandler {
 																				 final VidRevocationException e) throws IOException{
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
-		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
