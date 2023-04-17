@@ -1,6 +1,7 @@
 package io.mosip.resident.validator;
 
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
+import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANG;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
@@ -812,10 +813,20 @@ public class RequestValidator {
 			throw new InvalidInputException("otp");
 		}
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
-					"Request for update uin"));
-			throw new InvalidInputException("transactionID");
+		if(requestDTO.getRequest().getIdentity()!=null) {
+			if(StringUtils.isEmpty((String) requestDTO.getRequest().getIdentity().get(PREFERRED_LANG))) {
+				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
+							"Request for update uin"));
+					throw new InvalidInputException("transactionID");
+				}
+			}
+		} else {
+			if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
+						"Request for update uin"));
+				throw new InvalidInputException("transactionID");
+			}
 		}
 
 		if(!isPatch) {
