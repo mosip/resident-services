@@ -180,6 +180,7 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
 			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
 			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
+				identityDTO.setDateOfBirth(dateOfBirth);
 				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
 				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
