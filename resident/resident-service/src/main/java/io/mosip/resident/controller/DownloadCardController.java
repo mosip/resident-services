@@ -32,6 +32,7 @@ import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DownloadCardService;
 import io.mosip.resident.util.AuditUtil;
@@ -79,7 +80,7 @@ public class DownloadCardController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-    public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO){
+    public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) throws ResidentServiceCheckedException{
         logger.debug("DownloadCardController::downloadCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
         requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
@@ -100,8 +101,10 @@ public class DownloadCardController {
     
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
-    public ResponseEntity<Object> downloadPersonalizedCard(@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
-    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset){
+	public ResponseEntity<Object> downloadPersonalizedCard(
+			@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			throws ResidentServiceCheckedException {
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 		try {
