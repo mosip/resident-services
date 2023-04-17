@@ -86,6 +86,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     private static final String TEMPLATE_TYPE_CODE = "templateTypeCode";
     private static final String APPLICANT_PHOTO = "ApplicantPhoto";
     private static final Object NA = "NA";
+    private static final String DATE_OF_BIRTH = "dob";
 
     @Autowired
     private Utilities utilities;
@@ -521,6 +522,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
                         additionalAttributes.put(TRANSACTION_LIMIT, replaceNullValueWithNA(vidData.get(TRANSACTION_LIMIT)));
                         additionalAttributes.put(TRANSACTION_COUNT, replaceNullValueWithNA(vidData.get(TRANSACTION_COUNT)));
                         additionalAttributes.put(CARD_FORMAT, VID_CARD);
+                        additionalAttributes.put(DATE_OF_BIRTH, identityService.getIdentity(identityService.getResidentIndvidualIdFromSession()).getDateOfBirth());
                         if(name!=null){
                             additionalAttributes.put(ResidentConstants.NAME, name);
                         }
