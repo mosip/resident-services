@@ -139,14 +139,14 @@ import reactor.util.function.Tuples;
         if (attributes != null && attributes.contains(Objects.requireNonNull(photoAttributeName))) {
             attributes = attributes.replace(photoAttributeName, "");
         }
-    	if (!StringUtils.isBlank(attributes)) {
-            List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-            for (String attribute : attributeList) {
-                attribute = attribute.trim();
-                attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-                        AttributeNameEnum.getTemplatePropertyName(attribute, env)));
-            }
-        }
+		if (attributes != null) {
+			List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+			for (String attribute : attributeList) {
+				attribute = attribute.trim();
+				attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+						AttributeNameEnum.getTemplatePropertyName(attribute, env)));
+			}
+		}
         if(attributeListTemplateValue.isEmpty()){
             return "";
         } else {
