@@ -159,7 +159,7 @@ import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
 import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
 import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
 import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANG;
+import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANGUAGE;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
@@ -244,6 +244,9 @@ public class ResidentServiceImpl implements ResidentService {
 	/** The json validator. */
 	@Autowired
 	private IdObjectValidator idObjectValidator;
+
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -1152,7 +1155,16 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private JSONObject getLanguageNameBasedOnFlag(JSONObject demographicIdentity) {
-		String preferredLang = (String) demographicIdentity.get(PREFERRED_LANG);
+		String preferredLangValueInIdentityMapping ="";
+		try {
+			Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
+			if(identityMappingMap.containsKey(PREFERRED_LANGUAGE)) {
+				preferredLangValueInIdentityMapping = String.valueOf(((Map) identityMappingMap.get(PREFERRED_LANGUAGE)).get(VALUE));
+			}
+		} catch (ResidentServiceCheckedException | IOException e ) {
+			throw new RuntimeException(e);
+		}
+		String preferredLang = (String) demographicIdentity.get(preferredLangValueInIdentityMapping);
 		if(preferredLang ==null || preferredLang.isEmpty()){
 			return demographicIdentity;
 		}
@@ -1160,7 +1172,8 @@ public class ResidentServiceImpl implements ResidentService {
 		boolean found = false;
 		if(Boolean.parseBoolean(env.getProperty(ResidentConstants.PREFERRED_LANG_PROPERTY))){
 			try {
-				ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(PREFERRED_LANG,
+				ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
+						proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(preferredLangValueInIdentityMapping,
 						env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
 				DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
 						mapper.writeValueAsString(responseWrapper.getResponse()),
@@ -1182,7 +1195,7 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 		}
 		if(found){
-			demographicIdentity.put(PREFERRED_LANG, preferredLangValue);
+			demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
 		} else {
 			throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
 		}
