@@ -21,7 +21,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.AttributeNameEnum;
 import io.mosip.resident.constant.AuthenticationModeEnum;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -54,7 +53,9 @@ import reactor.util.function.Tuples;
 @Component
  public class TemplateUtil {
 
-    private static final String LOGO_URL = "logoUrl";
+    private static final String DEFAULT = "default";
+	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
+	private static final String LOGO_URL = "logoUrl";
     private static final CharSequence GENERATED = "generated";
     private static final CharSequence REVOKED = "revoked";
 
@@ -142,9 +143,8 @@ import reactor.util.function.Tuples;
     	if (!StringUtils.isBlank(attributes)) {
             List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
             for (String attribute : attributeList) {
-                attribute = attribute.trim();
                 attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-                        AttributeNameEnum.getTemplatePropertyName(attribute, env)));
+                		getAttributeListTemplateTypeCode(attribute.trim())));
             }
         }
         if(attributeListTemplateValue.isEmpty()){
@@ -152,7 +152,6 @@ import reactor.util.function.Tuples;
         } else {
             return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
         }
-
     }
 
     private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
@@ -568,7 +567,16 @@ import reactor.util.function.Tuples;
     	 String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(summaryTemplateCodeProperty);
      }
-    
+
+     public String getAttributeListTemplateTypeCode(String attributeName) {
+    	 String templateTypeCode = getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
+    	 if(!StringUtils.isEmpty(templateTypeCode)) {
+    		 return templateTypeCode;
+    	 } else {
+    		 return getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, DEFAULT));
+    	 }
+	 }
+
      private String getTemplateTypeCode(String templateCodeProperty) {
     	 return env.getProperty(templateCodeProperty);
 	}
