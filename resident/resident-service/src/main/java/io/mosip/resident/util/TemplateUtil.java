@@ -140,7 +140,7 @@ import reactor.util.function.Tuples;
         if (attributes != null && attributes.contains(Objects.requireNonNull(photoAttributeName))) {
             attributes = attributes.replace(photoAttributeName, "");
         }
-    	if (!StringUtils.isBlank(attributes)) {
+    	if (attributes != null && !attributes.isEmpty()) {
             List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
             for (String attribute : attributeList) {
                 attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
