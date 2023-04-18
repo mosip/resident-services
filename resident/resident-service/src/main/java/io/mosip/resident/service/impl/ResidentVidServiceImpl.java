@@ -620,11 +620,22 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private <E extends Exception> void notifyVidCreationFailureAndThrowException(BaseVidRequestDto requestDto, boolean isV2Request,
 			NotificationRequestDto notificationRequestDto, String eventId,
 			ResidentTransactionEntity residentTransactionEntity, E e)
-			throws ResidentServiceCheckedException, VidCreationException {
-		notifyFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId,
-				residentTransactionEntity, e, RequestType.GENERATE_VID, NotificationTemplateCode.RS_VIN_GEN_FAILURE,
-				"Request to generate VID", this::createVidGenerateException, VidCreationException.class);
+			throws ResidentServiceCheckedException, VidAlreadyPresentException {
+		if(e instanceof VidAlreadyPresentException) {
+			notifyFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId,
+					residentTransactionEntity, e, RequestType.GENERATE_VID, NotificationTemplateCode.RS_VIN_GEN_FAILURE,
+					"Request to generate VID", this::createVidAlreadyPresentException, VidAlreadyPresentException.class);
+		} else{
+			notifyFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId,
+					residentTransactionEntity, e, RequestType.GENERATE_VID, NotificationTemplateCode.RS_VIN_GEN_FAILURE,
+					"Request to generate VID", this::createVidCreationException, VidCreationException.class);
+		}
 	}
+
+	private VidCreationException createVidCreationException(String eventId, Throwable rootCause) {
+		return eventId == null ? new VidCreationException(rootCause.getMessage(), rootCause): new VidCreationException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
+	}
+
 
 	private <E extends Exception> void notifyVidRevokeFailureAndThrowException(BaseVidRevokeRequestDTO requestDto, boolean isV2Request,
 			NotificationRequestDto notificationRequestDto, String eventId,
@@ -688,8 +699,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return eventId == null ? new VidRevocationException(rootCause.getMessage(), rootCause): new VidRevocationException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
 	}
 	
-	private VidCreationException createVidGenerateException(String eventId, Throwable rootCause) {
-		return eventId == null ? new VidCreationException(rootCause.getMessage(), rootCause): new VidCreationException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
+	private VidAlreadyPresentException createVidAlreadyPresentException(String eventId, Throwable rootCause) {
+		return eventId == null ? new VidAlreadyPresentException(rootCause.getMessage(), rootCause): new VidAlreadyPresentException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(String vid, String indivudalId) throws ApisResourceAccessException, ResidentServiceCheckedException {

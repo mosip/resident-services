@@ -1254,7 +1254,7 @@ public class RequestValidator {
     }
 
 	private void validateAttributeList(List<String> attributes) {
-		if(attributes.isEmpty()){
+		if (attributes == null || attributes.isEmpty()) {
 			throw new InvalidInputException(TemplateVariablesConstants.ATTRIBUTES);
 		}
 	}
@@ -1398,10 +1398,12 @@ public class RequestValidator {
 	public void validatePurpose(String purpose) {
 		validateMissingInputParameter(purpose, TemplateVariablesConstants.PURPOSE, "Validating purpose");
 		if (purpose.length() > purposeCharsLimit) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorCode(),
 					ResidentErrorCode.CHAR_LIMIT_EXCEEDS.getErrorMessage());
 		}
 		if (!purpose.matches(purposeAllowedSpecialCharRegex)) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
 					String.format(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorMessage(), purpose));
 		}
