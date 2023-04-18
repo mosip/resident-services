@@ -55,7 +55,7 @@ public enum ResidentErrorCode {
 	AUTH_LOCK_STATUS_FAILED("RES-SER-442", "Failed to retrieve auth lock status"),
 
 	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-443", "Callback url is not available for auth type: %s"),
-	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type for resident websub"),
+	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type status for resident"),
 
 	RESIDENT_AUTH_TXN_DETAILS_FAILURE("RES-SER-445", "Failed to retrieve auth transaction details"),
 	INVALID_PAGE_START_VALUE("RES-SER-446", "Invalid page start value"),

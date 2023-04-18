@@ -4,6 +4,7 @@ import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,9 +98,12 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 					if (authStatusListObj instanceof List) {
 						List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) authStatusListObj;
 						residentTransactionEntities = authTypeStatusList.stream()
-								.flatMap(authTypeStatus -> residentTransactionRepository
-										.findByRequestTrnId((String) authTypeStatus.get(REQUEST_ID)).stream())
-								.distinct().collect(Collectors.toList());
+								.map(authTypeStatus -> (String) authTypeStatus.get(REQUEST_ID))
+								.filter(Objects::nonNull)
+								.distinct()
+								.flatMap(authTypeStatusStr -> residentTransactionRepository
+										.findByRequestTrnId(authTypeStatusStr).stream())
+								.collect(Collectors.toList());
 						// Get the values before saving, otherwise individual ID will be updated in
 						// encrypted format in the entity
 						if (residentTransactionEntities != null && !residentTransactionEntities.isEmpty()) {
