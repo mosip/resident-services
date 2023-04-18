@@ -3,6 +3,9 @@ package io.mosip.resident.service.impl;
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
 import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
+import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
@@ -1159,10 +1162,10 @@ public class ResidentServiceImpl implements ResidentService {
 		} else {
 			identityMap = dto.getIdentity();
 		}
-		HashSet<String> keys = new HashSet<String>(identityMap.keySet());
-		keys.remove("IDSchemaVersion");
-		keys.remove("UIN");
-		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
+		
+		String attributeList = identityMap.keySet().stream()
+				.filter(key -> !key.equals(IDSCHEMA_VERSION) && !key.equals(UIN_LABEL))
+				.collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
@@ -1903,11 +1906,7 @@ public class ResidentServiceImpl implements ResidentService {
 			templateType = TemplateType.FAILURE;
 		}
 		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-		Map<String, String> templateResponse = new LinkedHashMap<>(
-				(Map<String, String>) proxyResponseWrapper.getResponse());
-		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 	}
 
@@ -1921,11 +1920,8 @@ public class ResidentServiceImpl implements ResidentService {
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
 			templateType = TemplateType.SUCCESS;
 			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-			ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-			Map<String, String> templateResponse = new LinkedHashMap<>(
-					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType, langCode);
+			String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+			return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 		} else {
 			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}
