@@ -129,7 +129,8 @@ public enum ResidentErrorCode {
 	UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB("RES-SER-517", "Unable to fetch service history from database."),
 	INVALID_REG_CENTER_NAME("RES-SER-518", "Name cannot be empty as it is a mandatory field."),
 	SAME_EMAIL_ERROR("RES-SER-519", "Enter a new email ID"),
-	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number");
+	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number"),
+	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name" );
 	
 
 
