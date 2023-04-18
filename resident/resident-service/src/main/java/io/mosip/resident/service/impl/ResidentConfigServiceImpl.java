@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.resident.constant.MappingJsonConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -193,6 +194,16 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 				.collect(Collectors.toList());
 
 		return shareableAttributes;
+	}
+
+	public Map<String, Object> getIdentityMappingMap()
+			throws ResidentServiceCheckedException, IOException, JsonParseException, JsonMappingException {
+		String identityMapping = getIdentityMapping();
+		Map<String, Object> identityMappingMap = objectMapper
+				.readValue(identityMapping.getBytes(StandardCharsets.UTF_8), Map.class);
+		Object identityObj = identityMappingMap.get(MappingJsonConstants.IDENTITY);
+		Map<String, Object> identityMap = (Map<String, Object>) identityObj;
+		return identityMap;
 	}
 
 }
