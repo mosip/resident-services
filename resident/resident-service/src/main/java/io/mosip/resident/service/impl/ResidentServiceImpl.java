@@ -1191,7 +1191,7 @@ public class ResidentServiceImpl implements ResidentService {
 			} catch (JsonProcessingException e) {
 				throw new RuntimeException(e);
 			}
-			if(preferredLangValue!=null && !preferredLangValue.equals("")){
+			if(preferredLangValue!=null && !preferredLangValue.isEmpty()){
 				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
 			} else {
 				throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
