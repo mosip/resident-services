@@ -570,7 +570,7 @@ import reactor.util.function.Tuples;
 
      public String getAttributeListTemplateTypeCode(String attributeName) {
     	 String templateTypeCode = getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
-    	 if(!StringUtils.isEmpty(templateTypeCode)) {
+    	 if(templateTypeCode != null && !templateTypeCode.isEmpty()) {
     		 return templateTypeCode;
     	 } else {
     		 return getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, DEFAULT));
