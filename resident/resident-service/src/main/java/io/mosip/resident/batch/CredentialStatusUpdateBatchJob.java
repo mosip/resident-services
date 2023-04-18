@@ -173,7 +173,9 @@ public class CredentialStatusUpdateBatchJob {
 							txn.setReadStatus(false);
 							// Email/SMS notification
 							Optional<TemplateType> templateType = getTemplateType(requestType, newStatusCode);
-							sendNotification(txn, templateType.get(), requestType);
+							if (templateType.isPresent()) {
+								sendNotification(txn, templateType.get(), requestType);
+							}
 						}
 
 						updateEntity(txn);

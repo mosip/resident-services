@@ -1,5 +1,7 @@
 package io.mosip.resident.controller;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.annotation.PreAuthenticateContentAndVerifyIntent;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
@@ -57,30 +58,28 @@ public class WebSubUpdateAuthTypeController {
             @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true)))})
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authtype-status.secret}", callback = "${resident.websub.callback.authtype-status.relative.url}", topic = "${resident.websub.authtype-status.topic}")
-    public void authTypeCallback(@RequestBody EventModel eventModel) {
+	public void authTypeCallback(@RequestBody Map<String, Object> eventModel) {
 
-        logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(),
+				"WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
 
-        if(eventModel.getEvent() != null && eventModel.getEvent().getData() != null) {
-            logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
-            try {
-                logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
-                webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
-            } catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-                logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                        LoggerFileConstant.APPLICATIONID.toString(),
-                        ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
-                                + ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
-                                + ExceptionUtils.getStackTrace(e));
-                auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_FAILURE);
-                throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
-                        ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
-            }
-        }
-    }
+		try {
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
+			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
+			webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
+							+ ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
+							+ ExceptionUtils.getStackTrace(e));
+			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_FAILURE);
+			throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
+					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
+		}
+	}
 }

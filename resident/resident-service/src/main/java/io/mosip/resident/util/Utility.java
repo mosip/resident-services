@@ -170,9 +170,11 @@ public class Utility {
 	public Map<String, String> getAmrAcrMapping() throws ResidentServiceCheckedException {
 		String amrAcrJson = residentRestTemplate.getForObject(configServerFileStorageURL + amrAcrJsonFile,
 				String.class);
-		Map<String, Object> amrAcrMap = null;
+		Map<String, Object> amrAcrMap = Map.of();
 		try {
-			amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+			if (amrAcrJson != null) {
+				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+			}
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);

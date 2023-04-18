@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -156,13 +157,13 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadCardServiceTest()  {
+    public void testDownloadCardServiceTest() throws ResidentServiceCheckedException  {
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test
-    public void testGetDownloadCardPdfVID(){
+    public void testGetDownloadCardPdfVID() throws ResidentServiceCheckedException{
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertNotNull(actualResult);
@@ -222,7 +223,7 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadPersonalizedCardSuccess() {
+    public void testDownloadPersonalizedCardSuccess() throws ResidentServiceCheckedException {
     	Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
         assertEquals(pdfbytes, actualResult.getT1());
     }
@@ -239,14 +240,14 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadPersonalizedCardPassword(){
+    public void testDownloadPersonalizedCardPassword() throws ResidentServiceCheckedException{
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
         Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testDownloadPersonalizedCardPasswordFailed(){
+    public void testDownloadPersonalizedCardPasswordFailed() throws ResidentServiceCheckedException{
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
         Mockito.when(utility.getPassword(Mockito.anyList())).thenThrow(
                 new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD));
@@ -337,6 +338,10 @@ public class DownloadCardServiceTest {
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
+        IdentityDTO identityDTO = new IdentityDTO();
+        identityDTO.setDateOfBirth("1892-08-09");
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
         ResponseWrapper<List<Map<String,?>>> vidResponse = new ResponseWrapper<>();
         Map<String, Object> vidDetails = new HashMap<>();
         vidDetails.put("vidType", "perpetual");
