@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.SharableAttributesDTO;
@@ -38,14 +39,8 @@ import io.mosip.resident.util.Utility;
  */
 @Component
 public class ResidentConfigServiceImpl implements ResidentConfigService {
-	
-	private static final String VALUE = "value";
 
 	private static final String UI_SCHEMA_ATTRIBUTE_NAME = "mosip.resident.schema.attribute-name";
-	
-	private static final String MASK_REQUIRED = "maskRequired";
-
-	private static final String IDENTITY = "identity";
 
 	/** The prop keys. */
 	@Value("${resident.ui.propertyKeys:}")
@@ -130,13 +125,13 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	private List<String> doGetUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
 		String uiSchema = getUISchema(schemaType);
 		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
-		Object identityObj = schemaMap.get(IDENTITY);
+		Object identityObj = schemaMap.get(MappingJsonConstants.IDENTITY);
 		if(identityObj instanceof List) {
 			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
 			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
 						.flatMap(map -> {
 							String attribName = (String)map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME));
-							if(Boolean.valueOf(String.valueOf(map.get(MASK_REQUIRED)))) {
+							if(Boolean.valueOf(String.valueOf(map.get(ResidentConstants.MASK_REQUIRED)))) {
 								//Include the attribute and its masked attribute
 								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
 							} else {
@@ -162,16 +157,12 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			throws ResidentServiceCheckedException, JsonParseException, JsonMappingException, IOException {
 		
 		// identity mapping json
-		String identityMapping = getIdentityMapping();
-		Map<String, Object> identityMappingMap = objectMapper
-				.readValue(identityMapping.getBytes(StandardCharsets.UTF_8), Map.class);
-		Object identityObj = identityMappingMap.get(IDENTITY);
-		Map<String, Object> identityMap = (Map<String, Object>) identityObj;
+		Map<String, Object> identityMap = getIdentityMappingMap();
 
 		// ui schema share credential json
 		String uiSchema = getUISchema(schemaType);
 		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
-		Object identitySchemaObj = schemaMap.get(IDENTITY);
+		Object identitySchemaObj = schemaMap.get(MappingJsonConstants.IDENTITY);
 		List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
 		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME))))
 				.collect(Collectors.toList());
@@ -184,7 +175,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 					}
 					// Get the attributes from the identity mapping
 					if(identityMap.containsKey(attribute.getAttributeName())) {
-						return Stream.of(String.valueOf(((Map) identityMap.get(attribute.getAttributeName())).get(VALUE))
+						return Stream.of(String.valueOf(((Map) identityMap.get(attribute.getAttributeName())).get(MappingJsonConstants.VALUE))
 								.split(","));
 					}
 					// Return the attribute name itself
