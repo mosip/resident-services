@@ -1178,14 +1178,12 @@ public class ResidentServiceImpl implements ResidentService {
 				DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
 						mapper.writeValueAsString(responseWrapper.getResponse()),
 						DynamicFieldConsolidateResponseDto.class);
-
-				for(DynamicFieldCodeValueDTO dynamicFieldCodeValueDTO: dynamicFieldConsolidateResponseDto.getValues()) {
-					if(preferredLang.equalsIgnoreCase(dynamicFieldCodeValueDTO.getValue())){
-						preferredLangValue = dynamicFieldCodeValueDTO.getCode();
-						found = true;
-						break;
-					}
-				}
+				preferredLangValue = dynamicFieldConsolidateResponseDto.getValues()
+						.stream()
+						.filter(dynamicFieldCodeValueDTO -> preferredLang.equalsIgnoreCase(dynamicFieldCodeValueDTO.getValue()))
+						.findAny()
+						.map(DynamicFieldCodeValueDTO::getCode)
+						.orElse(null);
 			} catch (ResidentServiceCheckedException e) {
 				throw new RuntimeException(e);
 			} catch (JsonMappingException e) {
@@ -1193,11 +1191,11 @@ public class ResidentServiceImpl implements ResidentService {
 			} catch (JsonProcessingException e) {
 				throw new RuntimeException(e);
 			}
-		}
-		if(found){
-			demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
-		} else {
-			throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
+			if(preferredLangValue!=null && !preferredLangValue.equals("")){
+				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
+			} else {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
+			}
 		}
 		return demographicIdentity;
 	}
