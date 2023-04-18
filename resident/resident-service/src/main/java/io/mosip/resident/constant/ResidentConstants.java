@@ -247,5 +247,7 @@ public class ResidentConstants {
     
     public static final String RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT = "resident.registration-centers.download.max.count";
 
+    public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
+    public static final String PREFERRED_LANG = "preferredLang";
 
 }
