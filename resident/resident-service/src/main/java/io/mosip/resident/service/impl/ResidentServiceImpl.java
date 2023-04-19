@@ -282,6 +282,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
 
+	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
+	private boolean isPreferedLangFlagEnabled;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -1172,29 +1175,9 @@ public class ResidentServiceImpl implements ResidentService {
 		if(preferredLang ==null || preferredLang.isEmpty()){
 			return demographicIdentity;
 		}
-		String preferredLangValue ="";
-		boolean found = false;
-		if(Boolean.parseBoolean(env.getProperty(ResidentConstants.PREFERRED_LANG_PROPERTY))){
-			try {
-				ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
-						proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(preferredLangValueInIdentityMapping,
-						env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
-				DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
-						mapper.writeValueAsString(responseWrapper.getResponse()),
-						DynamicFieldConsolidateResponseDto.class);
-				preferredLangValue = dynamicFieldConsolidateResponseDto.getValues()
-						.stream()
-						.filter(dynamicFieldCodeValueDTO -> preferredLang.equalsIgnoreCase(dynamicFieldCodeValueDTO.getValue()))
-						.findAny()
-						.map(DynamicFieldCodeValueDTO::getCode)
-						.orElse(null);
-			} catch (ResidentServiceCheckedException e) {
-				throw new RuntimeException(e);
-			} catch (JsonMappingException e) {
-				throw new RuntimeException(e);
-			} catch (JsonProcessingException e) {
-				throw new RuntimeException(e);
-			}
+		String preferredLangValue = "";
+		if(isPreferedLangFlagEnabled){
+			preferredLangValue = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangValueInIdentityMapping, preferredLang);
 			if(preferredLangValue!=null && !preferredLangValue.isEmpty()){
 				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
 			} else {
