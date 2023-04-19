@@ -4,6 +4,7 @@ import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,9 +98,12 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 					if (authStatusListObj instanceof List) {
 						List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) authStatusListObj;
 						residentTransactionEntities = authTypeStatusList.stream()
-								.flatMap(authTypeStatus -> residentTransactionRepository
-										.findByRequestTrnId((String) authTypeStatus.get(REQUEST_ID)).stream())
-								.distinct().collect(Collectors.toList());
+								.map(authTypeStatus -> (String) authTypeStatus.get(REQUEST_ID))
+								.filter(Objects::nonNull)
+								.distinct()
+								.flatMap(authTypeStatusStr -> residentTransactionRepository
+										.findByRequestTrnId(authTypeStatusStr).stream())
+								.collect(Collectors.toList());
 						// Get the values before saving, otherwise individual ID will be updated in
 						// encrypted format in the entity
 						if (residentTransactionEntities != null && !residentTransactionEntities.isEmpty()) {
@@ -112,33 +116,21 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 									.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
 									.map(entity -> entity.getIndividualId()).findAny()
 									.orElse(ResidentConstants.NOT_AVAILABLE);
-						}
-
-						// Update status
-						if (residentTransactionEntities != null) {
+							
+							// Update status
 							residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
 								residentTransactionEntity.setStatusCode(status);
 								residentTransactionEntity.setReadStatus(false);
 								residentTransactionEntity.setUpdBy(RESIDENT);
 								residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 							});
+							residentTransactionRepository.saveAll(residentTransactionEntities);
+						} else {
+							logger.debug("No records found to update.");
 						}
-						residentTransactionRepository.saveAll(residentTransactionEntities);
 					}
 				}
 			}
-            
-            //Update status
-			if (residentTransactionEntities != null) {
-				residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
-					residentTransactionEntity.setStatusCode(status);
-					residentTransactionEntity.setReadStatus(false);
-					residentTransactionEntity.setUpdBy(RESIDENT);
-					residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-
-				});
-			}
-			residentTransactionRepository.saveAll(residentTransactionEntities);
         }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

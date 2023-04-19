@@ -168,6 +168,10 @@ import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPT
 @Service
 public class ResidentServiceImpl implements ResidentService {
 
+	private static final String NA = "NA";
+	private static final String IDREPO_DUMMY_ONLINE_VERIFICATION_PARTNER_ID = "idrepo-dummy-online-verification-partner-id";
+	private static final String ONLINE_VERIFICATION_PARTNER = "Online_Verification_Partner";
+	private static final String MOSIP_IDA_PARTNER_TYPE = "mosip.ida.partner.type";
 	private static final int UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY = 1;
 	private static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 	private static final String AUTH_TYPE_SEPERATOR = "-";
@@ -1270,8 +1274,11 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK, "Request for Auth Type Lock"));
-			ArrayList<String> partnerIds = partnerService.getPartnerDetails("Online_Verification_Partner");
-			residentTransactionEntities = partnerIds.stream().map(partnerId -> {
+			ArrayList<String> partnerIds = partnerService.getPartnerDetails(env.getProperty(MOSIP_IDA_PARTNER_TYPE,ONLINE_VERIFICATION_PARTNER));
+			String dummyOnlineVerificationPartnerId = env.getProperty(IDREPO_DUMMY_ONLINE_VERIFICATION_PARTNER_ID, NA);
+			residentTransactionEntities = partnerIds.stream()
+					.filter(partnerId -> !dummyOnlineVerificationPartnerId.equalsIgnoreCase(partnerId))
+					.map(partnerId -> {
 				try {
 					return createResidentTransactionEntity(individualId, partnerId);
 				} catch (ApisResourceAccessException e) {
