@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -821,10 +822,9 @@ public class RequestValidator {
 			List<String> attributesWithoutDocumentsRequired = new ArrayList<>();
 			try {
 				Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
-				attributesWithoutDocumentsRequired = List.of(
+				attributesWithoutDocumentsRequired = Stream.of(
 						(environment.getProperty(ResidentConstants.RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED))
 								.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
-						.stream()
 						.filter(attribute -> identityMappingMap.containsKey(attribute))
 						.map(attribute -> String
 								.valueOf(((Map) identityMappingMap.get(attribute)).get(ResidentConstants.VALUE)))
@@ -835,7 +835,7 @@ public class RequestValidator {
 			}
 			Map<String, ?> identityDataFromRequest = requestDTO.getRequest().getIdentity();
 			List<String> attributeKeysFromRequest = identityDataFromRequest.keySet().stream().collect(Collectors.toList());
-		
+			// checking if the attributes coming from request body present in attributes list coming from properties
 			if(!attributesWithoutDocumentsRequired.containsAll(attributeKeysFromRequest)) {
 				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
