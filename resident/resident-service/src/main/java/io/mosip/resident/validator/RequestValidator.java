@@ -822,8 +822,10 @@ public class RequestValidator {
 			List<String> attributesWithoutDocumentsRequired = new ArrayList<>();
 			try {
 				Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
-				attributesWithoutDocumentsRequired = List.of(ResidentConstants.PREFERRED_LANGUAGE, MappingJsonConstants.EMAIL,
-								MappingJsonConstants.PHONE).stream()
+				attributesWithoutDocumentsRequired = List.of(
+						(environment.getProperty(ResidentConstants.RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED))
+								.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
+						.stream()
 						.filter(attribute -> identityMappingMap.containsKey(attribute))
 						.map(attribute -> String
 								.valueOf(((Map) identityMappingMap.get(attribute)).get(ResidentConstants.VALUE)))
@@ -832,8 +834,8 @@ public class RequestValidator {
 			} catch (ResidentServiceCheckedException | IOException e) {
 				throw new RuntimeException(e);
 			}
-			Map<String, ?> identityData = requestDTO.getRequest().getIdentity();
-			List<String> attributeKeysFromRequest = identityData.keySet().stream().collect(Collectors.toList());
+			Map<String, ?> identityDataFromRequest = requestDTO.getRequest().getIdentity();
+			List<String> attributeKeysFromRequest = identityDataFromRequest.keySet().stream().collect(Collectors.toList());
 		
 			if(!attributesWithoutDocumentsRequired.containsAll(attributeKeysFromRequest)) {
 				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
