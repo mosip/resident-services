@@ -29,6 +29,11 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
+import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
+import io.mosip.resident.service.ProxyMasterdataService;
 import org.springframework.cache.annotation.Cacheable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -154,6 +159,12 @@ public class Utility {
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Autowired
+	private ObjectMapper mapper;
 	
 	/** The acr-amr mapping json file. */
 	@Value("${amr-acr.json.filename}")
@@ -324,14 +335,44 @@ public class Utility {
 				preferredLang = String.valueOf(object);
 				if(preferredLang.contains(ResidentConstants.COMMA)){
 					String[] preferredLangArray = preferredLang.split(ResidentConstants.COMMA);
+					for(int index=0;index<preferredLangArray.length;index++){
+						preferredLangArray[index] = getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, preferredLang);
+					}
 					return Set.of(preferredLangArray);
 				}
 			}
 		}
 		if(preferredLang!=null){
-			return Set.of(preferredLang);
+			return Set.of(getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, preferredLang));
 		}
 		return Set.of();
+	}
+
+	public String getPreferredLanguageCodeForLanguageNameBasedOnFlag(String fieldName, String preferredLang) {
+		if(Boolean.parseBoolean(env.getProperty(ResidentConstants.PREFERRED_LANG_PROPERTY))){
+		try {
+			ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
+					proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
+							env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
+			DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
+					mapper.writeValueAsString(responseWrapper.getResponse()),
+					DynamicFieldConsolidateResponseDto.class);
+			return dynamicFieldConsolidateResponseDto.getValues()
+					.stream()
+					.filter(dynamicFieldCodeValueDTO -> preferredLang.equalsIgnoreCase(dynamicFieldCodeValueDTO.getValue()))
+					.findAny()
+					.map(DynamicFieldCodeValueDTO::getCode)
+					.orElse(null);
+		} catch (ResidentServiceCheckedException e) {
+			throw new RuntimeException(e);
+		} catch (JsonMappingException e) {
+			throw new RuntimeException(e);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		}
+		return preferredLang;
+
 	}
 
 	private Set<String> getDataCapturedLanguages(JSONObject mapperIdentity, JSONObject demographicIdentity)
