@@ -791,7 +791,20 @@ public enum EventEnum {
 			"Validate Token Failed",
 			"Validate token is failed", "RES-SER",
 			"Resident service", "RS-VAL", "Validate token", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME);
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK("RES-SER-289", RegistrationConstants.SYSTEM, "Request credential status update call back url",
+			"Requesting credential status update call back url for transaction id %s", "RES-SER", "Residence service", "RS-CRED_STAT_UPD",
+			"Credential status update", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK_SUCCESS("RES-SER-289", RegistrationConstants.SYSTEM, "Credential status update call back success",
+			"credential status update call back success for transaction id %s", "RES-SER", "Residence service", "RS-CRED_STAT_UPD", "Credential status update",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK_FAILURE("RES-SER-289", RegistrationConstants.SYSTEM, "Credential status update call back failure",
+			"credential status update call back failure for transaction id %s", "RES-SER", "Residence service", "RS-CRED_STAT_UPD", "Credential status update",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	
+	
+	;
 	
 
 
