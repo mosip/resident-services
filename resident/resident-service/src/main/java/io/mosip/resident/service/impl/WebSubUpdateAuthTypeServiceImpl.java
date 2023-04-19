@@ -116,33 +116,21 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 									.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
 									.map(entity -> entity.getIndividualId()).findAny()
 									.orElse(ResidentConstants.NOT_AVAILABLE);
-						}
-
-						// Update status
-						if (residentTransactionEntities != null) {
+							
+							// Update status
 							residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
 								residentTransactionEntity.setStatusCode(status);
 								residentTransactionEntity.setReadStatus(false);
 								residentTransactionEntity.setUpdBy(RESIDENT);
 								residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 							});
+							residentTransactionRepository.saveAll(residentTransactionEntities);
+						} else {
+							logger.debug("No records found to update.");
 						}
-						residentTransactionRepository.saveAll(residentTransactionEntities);
 					}
 				}
 			}
-            
-            //Update status
-			if (residentTransactionEntities != null) {
-				residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
-					residentTransactionEntity.setStatusCode(status);
-					residentTransactionEntity.setReadStatus(false);
-					residentTransactionEntity.setUpdBy(RESIDENT);
-					residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-
-				});
-			}
-			residentTransactionRepository.saveAll(residentTransactionEntities);
         }
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

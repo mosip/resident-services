@@ -223,7 +223,7 @@ public class ObjectStoreHelper {
 					ResponseWrapper.class);
 			if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage());
+						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage() + " \n at: " + Thread.getAllStackTraces());
 				throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
 						ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage());
 			}
