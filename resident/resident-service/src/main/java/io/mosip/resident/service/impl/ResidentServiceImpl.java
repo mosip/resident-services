@@ -1,56 +1,9 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -91,6 +44,8 @@ import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
+import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.dto.MachineCreateRequestDTO;
@@ -158,8 +113,57 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
+import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANGUAGE;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -245,6 +249,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private IdObjectValidator idObjectValidator;
 
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
+
 	@Value("${resident.center.id}")
 	private String centerId;
 
@@ -286,6 +293,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
@@ -852,6 +862,7 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utility.isSecureSession()) {
+				demographicIdentity = getLanguageNameBasedOnFlag(demographicIdentity);
 				residentUpdateResponseDTOV2 = new ResidentUpdateResponseDTOV2();
 				responseDto = residentUpdateResponseDTOV2;
 				residentTransactionEntity = createResidentTransEntity(dto);
@@ -1147,6 +1158,52 @@ public class ResidentServiceImpl implements ResidentService {
 		return Tuples.of(responseDto, eventId);
 	}
 
+	private JSONObject getLanguageNameBasedOnFlag(JSONObject demographicIdentity) {
+		String preferredLangValueInIdentityMapping ="";
+		try {
+			Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
+			if(identityMappingMap.containsKey(PREFERRED_LANGUAGE)) {
+				preferredLangValueInIdentityMapping = String.valueOf(((Map) identityMappingMap.get(PREFERRED_LANGUAGE)).get(VALUE));
+			}
+		} catch (ResidentServiceCheckedException | IOException e ) {
+			throw new RuntimeException(e);
+		}
+		String preferredLang = (String) demographicIdentity.get(preferredLangValueInIdentityMapping);
+		if(preferredLang ==null || preferredLang.isEmpty()){
+			return demographicIdentity;
+		}
+		String preferredLangValue ="";
+		boolean found = false;
+		if(Boolean.parseBoolean(env.getProperty(ResidentConstants.PREFERRED_LANG_PROPERTY))){
+			try {
+				ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
+						proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(preferredLangValueInIdentityMapping,
+						env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
+				DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
+						mapper.writeValueAsString(responseWrapper.getResponse()),
+						DynamicFieldConsolidateResponseDto.class);
+				preferredLangValue = dynamicFieldConsolidateResponseDto.getValues()
+						.stream()
+						.filter(dynamicFieldCodeValueDTO -> preferredLang.equalsIgnoreCase(dynamicFieldCodeValueDTO.getValue()))
+						.findAny()
+						.map(DynamicFieldCodeValueDTO::getCode)
+						.orElse(null);
+			} catch (ResidentServiceCheckedException e) {
+				throw new RuntimeException(e);
+			} catch (JsonMappingException e) {
+				throw new RuntimeException(e);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+			if(preferredLangValue!=null && !preferredLangValue.isEmpty()){
+				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
+			} else {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
+			}
+		}
+		return demographicIdentity;
+	}
+
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
@@ -1163,10 +1220,10 @@ public class ResidentServiceImpl implements ResidentService {
 		} else {
 			identityMap = dto.getIdentity();
 		}
-		HashSet<String> keys = new HashSet<String>(identityMap.keySet());
-		keys.remove("IDSchemaVersion");
-		keys.remove("UIN");
-		String attributeList = keys.stream().collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
+		
+		String attributeList = identityMap.keySet().stream()
+				.filter(key -> !key.equals(IDSCHEMA_VERSION) && !key.equals(UIN_LABEL))
+				.collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
@@ -1910,11 +1967,7 @@ public class ResidentServiceImpl implements ResidentService {
 			templateType = TemplateType.FAILURE;
 		}
 		String templateTypeCode = templateUtil.getPurposeTemplateTypeCode(requestType, templateType);
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-		Map<String, String> templateResponse = new LinkedHashMap<>(
-				(Map<String, String>) proxyResponseWrapper.getResponse());
-		String fileText = templateResponse.get(ResidentConstants.FILE_TEXT);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 		return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 	}
 
@@ -1928,11 +1981,8 @@ public class ResidentServiceImpl implements ResidentService {
 		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
 			templateType = TemplateType.SUCCESS;
 			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
-			ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-					.getAllTemplateBylangCodeAndTemplateTypeCode(langCode, templateTypeCode);
-			Map<String, String> templateResponse = new LinkedHashMap<>(
-					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return replacePlaceholderValueInTemplate(templateResponse.get(ResidentConstants.FILE_TEXT), eventId, requestType, langCode);
+			String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+			return replacePlaceholderValueInTemplate(fileText, eventId, requestType, langCode);
 		} else {
 			return getDescriptionForLangCode(langCode, statusCode, requestType, eventId);
 		}

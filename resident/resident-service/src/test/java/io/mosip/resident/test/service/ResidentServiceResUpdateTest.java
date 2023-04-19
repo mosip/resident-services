@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -131,6 +132,9 @@ public class ResidentServiceResUpdateTest {
 	
 	@Mock
 	private IdObjectValidator idObjectValidator;
+
+	@Mock
+	private ResidentConfigServiceImpl residentConfigService;
 
 	ResidentUpdateRequestDto dto;
 
