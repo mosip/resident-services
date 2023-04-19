@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -335,10 +336,9 @@ public class Utility {
 				preferredLang = String.valueOf(object);
 				if(preferredLang.contains(ResidentConstants.COMMA)){
 					String[] preferredLangArray = preferredLang.split(ResidentConstants.COMMA);
-					for(int index=0;index<preferredLangArray.length;index++){
-						preferredLangArray[index] = getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, preferredLang);
-					}
-					return Set.of(preferredLangArray);
+					return Stream.of(preferredLangArray)
+							.map(lang -> getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, lang))
+							.collect(Collectors.toSet());
 				}
 			}
 		}
