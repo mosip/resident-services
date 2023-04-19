@@ -1,10 +1,10 @@
 package io.mosip.resident.validator;
 
 import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
-import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANG;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +37,7 @@ import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.constant.CardType;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -77,6 +78,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
@@ -108,6 +110,9 @@ public class RequestValidator {
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -814,7 +819,23 @@ public class RequestValidator {
 		}
 
 		if(requestDTO.getRequest().getIdentity()!=null) {
-			if(StringUtils.isEmpty((String) requestDTO.getRequest().getIdentity().get(PREFERRED_LANG))) {
+			List<String> attributeValuesFromIdentityMapping = new ArrayList<>();
+			try {
+				Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
+				attributeValuesFromIdentityMapping = List.of(ResidentConstants.PREFERRED_LANGUAGE, MappingJsonConstants.EMAIL,
+								MappingJsonConstants.PHONE).stream()
+						.filter(attribute -> identityMappingMap.containsKey(attribute))
+						.map(attribute -> String
+								.valueOf(((Map) identityMappingMap.get(attribute)).get(ResidentConstants.VALUE)))
+						.collect(Collectors.toList());
+
+			} catch (ResidentServiceCheckedException | IOException e) {
+				throw new RuntimeException(e);
+			}
+			Map<String, ?> identityData = requestDTO.getRequest().getIdentity();
+			List<String> attributeKeys = identityData.keySet().stream().collect(Collectors.toList());
+		
+			if(!attributeValuesFromIdentityMapping.containsAll(attributeKeys)) {
 				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
 							"Request for update uin"));
