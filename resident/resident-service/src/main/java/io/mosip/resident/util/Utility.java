@@ -113,6 +113,9 @@ public class Utility {
     @Value("${registration.processor.identityjson}")
 	private String residentIdentityJson;
 
+	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
+	private boolean isPreferedLangFlagEnabled;
+
 	@Autowired
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
@@ -349,7 +352,7 @@ public class Utility {
 	}
 
 	public String getPreferredLanguageCodeForLanguageNameBasedOnFlag(String fieldName, String preferredLang) {
-		if(Boolean.parseBoolean(env.getProperty(ResidentConstants.PREFERRED_LANG_PROPERTY))){
+		if(isPreferedLangFlagEnabled){
 		try {
 			ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
 					proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,

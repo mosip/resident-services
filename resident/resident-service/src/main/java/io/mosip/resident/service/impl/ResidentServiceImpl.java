@@ -282,6 +282,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
 
+	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
+	private boolean isPreferedLangFlagEnabled;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -1173,7 +1176,7 @@ public class ResidentServiceImpl implements ResidentService {
 			return demographicIdentity;
 		}
 		String preferredLangValue = "";
-		if(Boolean.parseBoolean(env.getProperty(ResidentConstants.PREFERRED_LANG_PROPERTY))){
+		if(isPreferedLangFlagEnabled){
 			preferredLangValue = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangValueInIdentityMapping, preferredLang);
 			if(preferredLangValue!=null && !preferredLangValue.isEmpty()){
 				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
