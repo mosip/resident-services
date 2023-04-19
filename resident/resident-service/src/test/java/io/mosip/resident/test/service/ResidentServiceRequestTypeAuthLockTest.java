@@ -129,7 +129,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		Mockito.when(utility.createEventId()).thenReturn("12345");
 		ArrayList<String> partnerIds = new ArrayList<>();
 		partnerIds.add("m-partner-default-auth");
-		when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
+		Mockito.lenient().when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "2157245364", "partnerId");
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 	}
