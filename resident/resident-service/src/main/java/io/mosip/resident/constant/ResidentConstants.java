@@ -160,6 +160,7 @@ public class ResidentConstants {
     public static final String CHANNEL = "channel";
     public static final String ATTRIBUTE_LIST_DELIMITER = ",";
 
+    public static final String MASK_REQUIRED = "maskRequired";
     public static final String MASK_PREFIX = "masked_";
     public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
 
@@ -248,5 +249,7 @@ public class ResidentConstants {
     
     public static final String RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT = "resident.registration-centers.download.max.count";
 
+    public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
+    public static final String PREFERRED_LANGUAGE = "preferredLanguage";
 
 }
