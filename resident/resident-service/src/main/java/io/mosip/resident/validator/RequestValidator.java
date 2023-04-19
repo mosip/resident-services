@@ -819,10 +819,10 @@ public class RequestValidator {
 		}
 
 		if(requestDTO.getRequest().getIdentity()!=null) {
-			List<String> attributeValuesFromIdentityMapping = new ArrayList<>();
+			List<String> attributesWithoutDocumentsRequired = new ArrayList<>();
 			try {
 				Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
-				attributeValuesFromIdentityMapping = List.of(ResidentConstants.PREFERRED_LANGUAGE, MappingJsonConstants.EMAIL,
+				attributesWithoutDocumentsRequired = List.of(ResidentConstants.PREFERRED_LANGUAGE, MappingJsonConstants.EMAIL,
 								MappingJsonConstants.PHONE).stream()
 						.filter(attribute -> identityMappingMap.containsKey(attribute))
 						.map(attribute -> String
@@ -833,9 +833,9 @@ public class RequestValidator {
 				throw new RuntimeException(e);
 			}
 			Map<String, ?> identityData = requestDTO.getRequest().getIdentity();
-			List<String> attributeKeys = identityData.keySet().stream().collect(Collectors.toList());
+			List<String> attributeKeysFromRequest = identityData.keySet().stream().collect(Collectors.toList());
 		
-			if(!attributeValuesFromIdentityMapping.containsAll(attributeKeys)) {
+			if(!attributesWithoutDocumentsRequired.containsAll(attributeKeysFromRequest)) {
 				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
 							"Request for update uin"));
