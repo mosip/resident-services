@@ -1,59 +1,9 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
-import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -94,6 +44,8 @@ import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
+import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.dto.MachineCreateRequestDTO;
@@ -161,12 +113,65 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
+import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANGUAGE;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
 
+	private static final String NA = "NA";
+	private static final String IDREPO_DUMMY_ONLINE_VERIFICATION_PARTNER_ID = "idrepo-dummy-online-verification-partner-id";
+	private static final String ONLINE_VERIFICATION_PARTNER = "Online_Verification_Partner";
+	private static final String MOSIP_IDA_PARTNER_TYPE = "mosip.ida.partner.type";
 	private static final int UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY = 1;
 	private static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 	private static final String AUTH_TYPE_SEPERATOR = "-";
@@ -244,6 +249,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private IdObjectValidator idObjectValidator;
 
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
+
 	@Value("${resident.center.id}")
 	private String centerId;
 
@@ -274,6 +282,9 @@ public class ResidentServiceImpl implements ResidentService {
 	@Value("${digital.card.pdf.encryption.enabled:false}")
 	private boolean isDigitalCardPdfEncryptionEnabled;
 
+	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
+	private boolean isPreferedLangFlagEnabled;
+
 	@Autowired
 	private AuditUtil audit;
 
@@ -285,6 +296,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Autowired
 	private ResidentUserRepository residentUserRepository;
@@ -851,6 +865,7 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utility.isSecureSession()) {
+				demographicIdentity = getLanguageNameBasedOnFlag(demographicIdentity);
 				residentUpdateResponseDTOV2 = new ResidentUpdateResponseDTOV2();
 				responseDto = residentUpdateResponseDTOV2;
 				residentTransactionEntity = createResidentTransEntity(dto);
@@ -1146,6 +1161,32 @@ public class ResidentServiceImpl implements ResidentService {
 		return Tuples.of(responseDto, eventId);
 	}
 
+	private JSONObject getLanguageNameBasedOnFlag(JSONObject demographicIdentity) {
+		String preferredLangValueInIdentityMapping ="";
+		try {
+			Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
+			if(identityMappingMap.containsKey(PREFERRED_LANGUAGE)) {
+				preferredLangValueInIdentityMapping = String.valueOf(((Map) identityMappingMap.get(PREFERRED_LANGUAGE)).get(VALUE));
+			}
+		} catch (ResidentServiceCheckedException | IOException e ) {
+			throw new RuntimeException(e);
+		}
+		String preferredLang = (String) demographicIdentity.get(preferredLangValueInIdentityMapping);
+		if(preferredLang ==null || preferredLang.isEmpty()){
+			return demographicIdentity;
+		}
+		String preferredLangValue = "";
+		if(isPreferedLangFlagEnabled){
+			preferredLangValue = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangValueInIdentityMapping, preferredLang);
+			if(preferredLangValue!=null && !preferredLangValue.isEmpty()){
+				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
+			} else {
+				throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
+			}
+		}
+		return demographicIdentity;
+	}
+
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
@@ -1216,8 +1257,11 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_TYPE_LOCK, "Request for Auth Type Lock"));
-			ArrayList<String> partnerIds = partnerService.getPartnerDetails("Online_Verification_Partner");
-			residentTransactionEntities = partnerIds.stream().map(partnerId -> {
+			ArrayList<String> partnerIds = partnerService.getPartnerDetails(env.getProperty(MOSIP_IDA_PARTNER_TYPE,ONLINE_VERIFICATION_PARTNER));
+			String dummyOnlineVerificationPartnerId = env.getProperty(IDREPO_DUMMY_ONLINE_VERIFICATION_PARTNER_ID, NA);
+			residentTransactionEntities = partnerIds.stream()
+					.filter(partnerId -> !dummyOnlineVerificationPartnerId.equalsIgnoreCase(partnerId))
+					.map(partnerId -> {
 				try {
 					return createResidentTransactionEntity(individualId, partnerId);
 				} catch (ApisResourceAccessException e) {

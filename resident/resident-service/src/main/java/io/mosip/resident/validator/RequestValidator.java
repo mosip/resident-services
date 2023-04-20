@@ -4,6 +4,7 @@ import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
 import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
@@ -76,6 +78,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
@@ -107,6 +110,9 @@ public class RequestValidator {
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
@@ -812,10 +818,37 @@ public class RequestValidator {
 			throw new InvalidInputException("otp");
 		}
 
-		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
-					"Request for update uin"));
-			throw new InvalidInputException("transactionID");
+		if(requestDTO.getRequest().getIdentity()!=null) {
+			List<String> attributesWithoutDocumentsRequired = new ArrayList<>();
+			try {
+				Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
+				attributesWithoutDocumentsRequired = Stream.of(
+						(environment.getProperty(ResidentConstants.RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED))
+								.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
+						.filter(attribute -> identityMappingMap.containsKey(attribute))
+						.map(attribute -> String
+								.valueOf(((Map) identityMappingMap.get(attribute)).get(ResidentConstants.VALUE)))
+						.collect(Collectors.toList());
+
+			} catch (ResidentServiceCheckedException | IOException e) {
+				throw new RuntimeException(e);
+			}
+			Map<String, ?> identityDataFromRequest = requestDTO.getRequest().getIdentity();
+			List<String> attributeKeysFromRequest = identityDataFromRequest.keySet().stream().collect(Collectors.toList());
+			// checking if the attributes coming from request body present in attributes list coming from properties
+			if(!attributesWithoutDocumentsRequired.containsAll(attributeKeysFromRequest)) {
+				if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
+					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
+							"Request for update uin"));
+					throw new InvalidInputException("transactionID");
+				}
+			}
+		} else {
+			if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "transactionID",
+						"Request for update uin"));
+				throw new InvalidInputException("transactionID");
+			}
 		}
 
 		if(!isPatch) {
