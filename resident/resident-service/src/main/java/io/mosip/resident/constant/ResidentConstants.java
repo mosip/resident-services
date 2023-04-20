@@ -250,5 +250,6 @@ public class ResidentConstants {
 
     public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
     public static final String PREFERRED_LANGUAGE = "preferredLanguage";
+    public static final String RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED = "resident.attribute.names.without.documents.required";
 
 }
