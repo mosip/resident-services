@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthenticationModeEnum;
 import io.mosip.resident.constant.EventStatusFailure;
@@ -135,11 +134,7 @@ import reactor.util.function.Tuples;
      * @return attribute value stored in the template.
      */
     private String getAttributesDisplayText(String attributes, String languageCode) {
-        String photoAttributeName = this.env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME);
         List<String> attributeListTemplateValue = new ArrayList<>();
-        if (attributes != null && attributes.contains(Objects.requireNonNull(photoAttributeName))) {
-            attributes = attributes.replace(photoAttributeName, "");
-        }
     	if (attributes != null && !attributes.isEmpty()) {
             List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
             for (String attribute : attributeList) {
