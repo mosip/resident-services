@@ -81,7 +81,7 @@ public class CredentialStatusUpdateBatchJobTest {
 
 	@Before
 	public void init() {
-		ReflectionTestUtils.setField(job, "publicUrl", "http://localhost");
+		//ReflectionTestUtils.setField(job, "publicUrl", "http://localhost");
 		ReflectionTestUtils.setField(job, "env", env);
 	}
 
