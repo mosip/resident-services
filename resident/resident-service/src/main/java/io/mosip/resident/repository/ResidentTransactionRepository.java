@@ -2,6 +2,7 @@ package io.mosip.resident.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -156,4 +157,6 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			String tokenId, List<String> requestTypeCodes, String onlineVerificationPartnerId, Pageable pageable);
 
 	Page<ResidentTransactionEntity> findByTokenIdAndStatusCodeInAndOlvPartnerIdIsNullOrOlvPartnerId(String tokenId, List<String> statusCodes, String onlineVerificationPartnerId, Pageable pageable);
+
+	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);
 }
