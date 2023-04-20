@@ -48,6 +48,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -97,6 +98,9 @@ public class RequestValidatorTest {
 
 	@Mock
 	private Environment environment;
+
+	@Mock
+	private ResidentConfigServiceImpl residentConfigService;
 
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
