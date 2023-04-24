@@ -180,7 +180,7 @@ import reactor.util.function.Tuples;
     }
 
     public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText, String languageCode){
-        return addAttributeInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+        return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText, String languageCode){
@@ -192,7 +192,7 @@ import reactor.util.function.Tuples;
     }
 
     public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText, String languageCode){
-        return fileText;
+    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText, String languageCode) {
@@ -286,8 +286,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeInPurpose(getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode), residentTransactionEntity.getPurpose(), languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeListInPurpose(getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode), residentTransactionEntity.getAttributeList(), languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -299,12 +299,12 @@ import reactor.util.function.Tuples;
      * @param languageCode This contains logged-in language code.
      * @return purpose after adding attributes.
      */
-    private String addAttributeInPurpose(String fileText, String purpose,
+    private String addAttributeListInPurpose(String fileText, String attributes,
                                          String languageCode) {
         if(fileText!=null &&
                 fileText.contains(ResidentConstants.ATTRIBUTES)){
             fileText = fileText.replace(
-                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
+                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(attributes,
                             languageCode)
             );
         }
@@ -346,8 +346,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeListInPurpose(getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode), residentTransactionEntity.getAttributeList(), languageCode));
         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
 				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
 						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
