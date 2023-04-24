@@ -174,9 +174,7 @@ import reactor.util.function.Tuples;
     }
 
     public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText, String languageCode) {
-         ResidentTransactionEntity residentTransactionEntity =getEntityFromEventId(eventId);
-         return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
-                    residentTransactionEntity.getAttributeList()));
+    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText, String languageCode){
@@ -266,6 +264,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
+        templateVariables.put(TemplateVariablesConstants.SUMMARY, getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         return Tuples.of(templateVariables, Objects.requireNonNull(
@@ -286,8 +286,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeListInPurpose(getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode), residentTransactionEntity.getAttributeList(), languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -346,8 +346,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeListInPurpose(getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode), residentTransactionEntity.getAttributeList(), languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
 				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
 						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
