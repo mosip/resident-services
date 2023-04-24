@@ -70,6 +70,18 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 
     @Value("${resident.websub.authTransaction-status.secret}")
     private String authTransactionSecret;
+    
+
+    @Value("${resident.websub.callback.credential-status.url}")
+    private String credentialStatusUpdateCallbackUrl;
+    
+    @Value("${resident.websub.credential-status.topic}")
+    private String credentialStatusUpdateTopic;
+
+    @Value("${resident.websub.credential-status.secret}")
+    private String credentialStatusUpdateSecret;
+    
+    
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -96,11 +108,13 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
 	private void initTopicSubscriptions() {
 		authTypStatusTopicSubsriptions();
 		authTransactionTopicSubscription();
+		credentialStatusUpdateTopicSubscription();
 	}
 
 	private void tryRegisteringTopics() {
 		tryRegisterTopicEvent(autTypeStatusTopic);
 		tryRegisterTopicEvent(authTransactionTopic);
+		tryRegisterTopicEvent(credentialStatusUpdateTopic);
 	}
 
     private void scheduleRetrySubscriptions() {
@@ -115,6 +129,15 @@ public class BaseWebSubInitializer implements ApplicationListener<ApplicationRea
         subscribe(authTransactionTopic, authTransactionCallbackUrl, authTransactionSecret, hubUrl);
         logger.info("subscribe", "",
                 "Subscribed to topic: " + authTransactionTopic);
+    }
+	
+	public void credentialStatusUpdateTopicSubscription() {
+    	logger.debug("subscribe", "",
+                "Trying to subscribe to topic: " + credentialStatusUpdateTopic + " callback-url: "
+                        + credentialStatusUpdateCallbackUrl);
+        subscribe(credentialStatusUpdateTopic, credentialStatusUpdateCallbackUrl, credentialStatusUpdateSecret, hubUrl);
+        logger.info("subscribe", "",
+                "Subscribed to topic: " + credentialStatusUpdateTopic);
     }
 
     protected void tryRegisterTopicEvent(String eventTopic) {

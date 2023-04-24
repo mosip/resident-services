@@ -1,7 +1,5 @@
 package io.mosip.resident.constant;
 
-import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +47,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn, Map<String, String> credentialStatus,
 				String newStatusCode)
 				throws ResidentServiceCheckedException, ApisResourceAccessException {
-			if (this.isSuccessStatus(env, credentialStatus.get(STATUS_CODE))) {
+			if (this.isSuccessStatus(env, newStatusCode)) {
 				String trackingId = utility.getCardOrderTrackingId(txn.getRequestTrnId(), txn.getIndividualId());
 				txn.setTrackingId(trackingId);
 			}
@@ -68,7 +66,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
 				Map<String, String> credentialStatus, String newStatusCode)
 				throws ResidentServiceCheckedException, ApisResourceAccessException {
-			if (this.isSuccessStatus(env, credentialStatus.get(STATUS_CODE))) {
+			if (this.isSuccessStatus(env, newStatusCode)) {
 				txn.setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
 			}
 		}
@@ -96,7 +94,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 		public void preUpdateInBatchJob(Environment env, Utility utility, ResidentTransactionEntity txn,
 				Map<String, String> credentialStatus, String newStatusCode)
 				throws ResidentServiceCheckedException, ApisResourceAccessException {
-			if (this.isSuccessStatus(env, credentialStatus.get(STATUS_CODE))) {
+			if (this.isSuccessStatus(env, newStatusCode)) {
 				txn.setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
 			}
 		}
