@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -244,7 +245,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			
-			residentTransactionEntity = createResidentTransactionEntity(dto, requestType, individualId);
+			residentTransactionEntity = createResidentTransactionEntity(dto, requestType, individualId, purpose);
 			if (residentTransactionEntity != null) {
     			eventId = residentTransactionEntity.getEventId();
     		}
@@ -271,11 +272,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResponseWrapper.class);
 			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
 					ResidentCredentialResponseDto.class);
-			if (purpose != null) {
-				String requestSummary = prepareReqSummaryMsg(dto.getSharableAttributes());
-				residentTransactionEntity.setPurpose(purpose);
-				residentTransactionEntity.setRequestSummary(requestSummary);
-			}
 			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotificationV2(individualId, RequestType.valueOf(requestType), TemplateType.REQUEST_RECEIVED,
 					eventId, additionalAttributes);
@@ -314,7 +310,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto dto,
-			String requestType, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+			String requestType, String individualId, String purpose) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTypeCode(requestType);
@@ -323,9 +319,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
+		if (purpose != null) {
+			residentTransactionEntity.setPurpose(purpose);
+		}
 		List<String> sharableAttributes = dto.getSharableAttributes();
 		if(sharableAttributes != null){
-			residentTransactionEntity.setAttributeList(String.join(", ", sharableAttributes));
+			residentTransactionEntity.setAttributeList(sharableAttributes.stream()
+					.collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)));
 		}
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(dto.getIssuer());
