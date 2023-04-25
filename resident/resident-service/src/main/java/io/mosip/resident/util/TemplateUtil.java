@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.core.util.StringUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthenticationModeEnum;
 import io.mosip.resident.constant.EventStatusFailure;
@@ -135,11 +134,7 @@ import reactor.util.function.Tuples;
      * @return attribute value stored in the template.
      */
     private String getAttributesDisplayText(String attributes, String languageCode) {
-        String photoAttributeName = this.env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME);
         List<String> attributeListTemplateValue = new ArrayList<>();
-        if (attributes != null && attributes.contains(Objects.requireNonNull(photoAttributeName))) {
-            attributes = attributes.replace(photoAttributeName, "");
-        }
     	if (attributes != null && !attributes.isEmpty()) {
             List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
             for (String attribute : attributeList) {
@@ -179,13 +174,11 @@ import reactor.util.function.Tuples;
     }
 
     public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText, String languageCode) {
-         ResidentTransactionEntity residentTransactionEntity =getEntityFromEventId(eventId);
-         return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
-                    residentTransactionEntity.getAttributeList()));
+    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText, String languageCode){
-        return addAttributeInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+        return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText, String languageCode){
@@ -197,7 +190,7 @@ import reactor.util.function.Tuples;
     }
 
     public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText, String languageCode){
-        return fileText;
+    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText, String languageCode) {
@@ -271,6 +264,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
+        templateVariables.put(TemplateVariablesConstants.SUMMARY, getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         return Tuples.of(templateVariables, Objects.requireNonNull(
@@ -291,8 +286,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeInPurpose(getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode), residentTransactionEntity.getPurpose(), languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -304,12 +299,12 @@ import reactor.util.function.Tuples;
      * @param languageCode This contains logged-in language code.
      * @return purpose after adding attributes.
      */
-    private String addAttributeInPurpose(String fileText, String purpose,
+    private String addAttributeListInPurpose(String fileText, String attributes,
                                          String languageCode) {
         if(fileText!=null &&
                 fileText.contains(ResidentConstants.ATTRIBUTES)){
             fileText = fileText.replace(
-                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
+                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(attributes,
                             languageCode)
             );
         }
