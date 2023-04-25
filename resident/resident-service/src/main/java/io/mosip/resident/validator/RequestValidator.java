@@ -256,7 +256,10 @@ public class RequestValidator {
 
 	@Value("${resident.validation.event-id.regex}")
 	private String eventIdRegex;
-
+	
+	@Value("${resident.attribute.names.without.documents.required}")
+	private String attributeNamesWithoutDocumentsRequired;
+	
 	@PostConstruct
 	public void setMap() {
 		map = new EnumMap<>(RequestIdType.class);
@@ -822,12 +825,10 @@ public class RequestValidator {
 			List<String> attributesWithoutDocumentsRequired = new ArrayList<>();
 			try {
 				Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
-				if (environment
-						.getProperty(ResidentConstants.RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED) != null) {
+				if (attributeNamesWithoutDocumentsRequired != null) {
 					attributesWithoutDocumentsRequired = Stream
-							.of((environment
-									.getProperty(ResidentConstants.RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED))
-											.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
+							.of(attributeNamesWithoutDocumentsRequired
+									.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
 							.filter(attribute -> identityMappingMap.containsKey(attribute))
 							.map(attribute -> String
 									.valueOf(((Map) identityMappingMap.get(attribute)).get(ResidentConstants.VALUE)))
