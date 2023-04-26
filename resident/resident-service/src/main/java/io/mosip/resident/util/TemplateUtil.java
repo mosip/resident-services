@@ -57,6 +57,7 @@ import reactor.util.function.Tuples;
 	private static final String LOGO_URL = "logoUrl";
     private static final CharSequence GENERATED = "generated";
     private static final CharSequence REVOKED = "revoked";
+    private static final String UNKNOWN = "Unknown";
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
@@ -118,8 +119,15 @@ import reactor.util.function.Tuples;
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()), languageCode));
-        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-                getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode));
+        String authenticationMode =
+                getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode);
+        if(authenticationMode.equalsIgnoreCase(UNKNOWN)){
+            templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+                    replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()));
+        }else {
+            templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+                    authenticationMode);
+        }
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
@@ -298,7 +306,7 @@ import reactor.util.function.Tuples;
     /**
      * This method will replace attribute placeholder in template and add attribute list into it.
      * @param fileText This contains value of template.
-     * @param purpose This contains purpose of request type stored in template.
+     * @param attributes This contains attributes of request type stored in template.
      * @param languageCode This contains logged-in language code.
      * @return purpose after adding attributes.
      */
