@@ -1,8 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
@@ -44,8 +42,6 @@ import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.AuthUnLockRequestDTO;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DocumentResponseDTO;
-import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
-import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.dto.MachineCreateRequestDTO;
@@ -198,6 +194,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
+	private static final int EVENT_STATUS_LIST_LENGTH = 3;
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -1855,16 +1852,20 @@ public class ResidentServiceImpl implements ResidentService {
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
 		List<String> statusFilterListContainingALlStatus = new ArrayList<>();
-		for (String status : statusFilterList) {
-			if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
-				statusFilterListContainingALlStatus.addAll(
-						List.of(EventStatusSuccess.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
-				statusFilterListContainingALlStatus.addAll(
-						List.of(EventStatusFailure.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
-				statusFilterListContainingALlStatus.addAll(List.of(EventStatusInProgress.values()).stream()
-						.map(Enum::toString).collect(Collectors.toList()));
+		if(statusFilterList.size()>EVENT_STATUS_LIST_LENGTH){
+			statusFilterListContainingALlStatus.addAll(statusFilterList);
+		} else {
+			for (String status : statusFilterList) {
+				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
+					statusFilterListContainingALlStatus.addAll(
+							List.of(EventStatusSuccess.values()).stream().map(Enum::toString).collect(Collectors.toList()));
+				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
+					statusFilterListContainingALlStatus.addAll(
+							List.of(EventStatusFailure.values()).stream().map(Enum::toString).collect(Collectors.toList()));
+				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
+					statusFilterListContainingALlStatus.addAll(List.of(EventStatusInProgress.values()).stream()
+							.map(Enum::toString).collect(Collectors.toList()));
+				}
 			}
 		}
 		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingALlStatus);
@@ -2187,9 +2188,21 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ArrayList<String> statusFilterArrayList = new ArrayList<>();
+		statusFilterArrayList.addAll(
+				RequestType.SHARE_CRED_WITH_PARTNER.getNotificationStatusList(env).collect(Collectors.toList()));
+		statusFilterArrayList.addAll(
+				RequestType.UPDATE_MY_UIN.getNotificationStatusList(env).collect(Collectors.toList()));
+		statusFilterArrayList.addAll(
+				RequestType.AUTH_TYPE_LOCK_UNLOCK.getNotificationStatusList(env).collect(Collectors.toList()));
+		statusFilterArrayList.addAll(
+				RequestType.VID_CARD_DOWNLOAD.getNotificationStatusList(env).collect(Collectors.toList()));
+		statusFilterArrayList.addAll(
+				RequestType.ORDER_PHYSICAL_CARD.getNotificationStatusList(env).collect(Collectors.toList()));
+		String statusFilter = String.join(ResidentConstants.COMMA, statusFilterArrayList);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
 																				 null, null, ServiceType.ASYNC.name(), null,
-																				 null, null, languageCode, timeZoneOffset, RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE);
+																				 statusFilter, null, languageCode, timeZoneOffset, RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE);
 		responseWrapper.setId(unreadnotificationlist);
 		responseWrapper.setVersion(serviceEventVersion);
 		return responseWrapper;
