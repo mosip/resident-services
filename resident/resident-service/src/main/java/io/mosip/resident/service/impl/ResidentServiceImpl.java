@@ -1857,14 +1857,11 @@ public class ResidentServiceImpl implements ResidentService {
 		} else {
 			for (String status : statusFilterList) {
 				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
-					statusFilterListContainingALlStatus.addAll(
-							List.of(EventStatusSuccess.values()).stream().map(Enum::toString).collect(Collectors.toList()));
+					statusFilterListContainingALlStatus.addAll(RequestType.getAllSuccessStatusList(env));
 				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
-					statusFilterListContainingALlStatus.addAll(
-							List.of(EventStatusFailure.values()).stream().map(Enum::toString).collect(Collectors.toList()));
+					statusFilterListContainingALlStatus.addAll(RequestType.getAllFailedStatusList(env));
 				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
-					statusFilterListContainingALlStatus.addAll(List.of(EventStatusInProgress.values()).stream()
-							.map(Enum::toString).collect(Collectors.toList()));
+					statusFilterListContainingALlStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
 				}
 			}
 		}
@@ -2188,17 +2185,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ArrayList<String> statusFilterArrayList = new ArrayList<>();
-		statusFilterArrayList.addAll(
-				RequestType.SHARE_CRED_WITH_PARTNER.getNotificationStatusList(env).collect(Collectors.toList()));
-		statusFilterArrayList.addAll(
-				RequestType.UPDATE_MY_UIN.getNotificationStatusList(env).collect(Collectors.toList()));
-		statusFilterArrayList.addAll(
-				RequestType.AUTH_TYPE_LOCK_UNLOCK.getNotificationStatusList(env).collect(Collectors.toList()));
-		statusFilterArrayList.addAll(
-				RequestType.VID_CARD_DOWNLOAD.getNotificationStatusList(env).collect(Collectors.toList()));
-		statusFilterArrayList.addAll(
-				RequestType.ORDER_PHYSICAL_CARD.getNotificationStatusList(env).collect(Collectors.toList()));
+		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestType();
+		List<String> statusFilterArrayList = requestTypeList.stream()
+				.flatMap(requestType -> requestType.getNotificationStatusList(env))
+				.collect(Collectors.toCollection(ArrayList::new));
 		String statusFilter = String.join(ResidentConstants.COMMA, statusFilterArrayList);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
 																				 null, null, ServiceType.ASYNC.name(), null,
