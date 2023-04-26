@@ -180,6 +180,7 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
 			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
 			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
+				identityDTO.setDateOfBirth(dateOfBirth);
 				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
 				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
@@ -538,8 +539,11 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 	
-	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+	public String getResidentAuthenticationMode() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		String authenticationMode = getClaimFromIdToken(
+				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
+		return authTypeCode;
 	}
 	
 	public String getClaimFromAccessToken(String claim) {

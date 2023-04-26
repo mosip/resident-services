@@ -10,6 +10,7 @@ import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import reactor.util.function.Tuple2;
 
 /**
@@ -17,11 +18,15 @@ import reactor.util.function.Tuple2;
  * @Author Kamesh Shekhar Prasad
  */
 public interface DownloadCardService {
-    Tuple2<byte[], String> getDownloadCardPDF(MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO);
+	Tuple2<byte[], String> getDownloadCardPDF(
+			MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO)
+			throws ResidentServiceCheckedException;
 
-    Tuple2<byte[], String> downloadPersonalizedCard(MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset);
+	Tuple2<byte[], String> downloadPersonalizedCard(
+			MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset)
+			throws ResidentServiceCheckedException;
 
     Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset) throws BaseCheckedException;
 
-    ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException;
+    ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException;
 }

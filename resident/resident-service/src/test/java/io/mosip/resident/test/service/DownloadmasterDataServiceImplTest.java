@@ -34,6 +34,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.dto.WorkingDaysResponseDto;
@@ -100,7 +101,7 @@ public class DownloadmasterDataServiceImplTest {
 
     private String langCode;
     private Short hierarchyLevel;
-    private List<String> name;
+    private String name;
 
     @Before
     public void setup() throws Exception {
@@ -110,7 +111,7 @@ public class DownloadmasterDataServiceImplTest {
         values.put("test", String.class);
         templateVariables.put("eventId", eventId);
         responseWrapper = new ResponseWrapper<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper.setResponse(templateResponse);
         result = "test".getBytes(StandardCharsets.UTF_8);
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
@@ -132,12 +133,12 @@ public class DownloadmasterDataServiceImplTest {
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
         langCode="eng";
         hierarchyLevel=4;
-        name = new ArrayList<>();
-        name.add("name1");
+        name = "name1";
     }
 
     @Test
     public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
+    	ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
           byte[] actualResult = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name).readAllBytes();
           assertNotNull(actualResult);
     }

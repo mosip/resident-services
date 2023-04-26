@@ -28,6 +28,8 @@ public class ResidentConstants {
 
     public static final String SUBSCRIPTIONS_DELAY_ON_STARTUP = "subscriptions-delay-on-startup_millisecs";
     
+	public static final String RESUBSCRIPTIONS_INTERVAL_SECS = "re-subscription-interval-in-seconds";
+    
     public static final String CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY = "mosip.resident.update.service.status.job.initial-delay";
     
     public static final String CREDENTIAL_UPDATE_STATUS_UPDATE_INITIAL_DELAY_DEFAULT = "60000";
@@ -49,6 +51,7 @@ public class ResidentConstants {
     public static final String DOWNLOAD_CARD = "/download/card/";
 
     public static final String STATUS_CODE = "statusCode";
+    public static final String STATUS = "status";
     public static final String URL = "url";
     public static final String RESIDENT = "RESIDENT";
     public static final String RESIDENT_SERVICES = "resident-services";
@@ -100,6 +103,7 @@ public class ResidentConstants {
     public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
     public static final String PHOTO_ATTRIBUTE_NAME = "mosip.resident.photo.attribute.name";
     public static final String APPLICANT_NAME_PROPERTY = "mosip.resident.applicant.name.property";
+    public static final String AUTHENTICATION_MODE_PROPERTY = "mosip.resident.authentication.mode.property";
 
     public static final String INDIVIDUALID_CLAIM_NAME = "mosip.resident.individual.id.claim.name";
     public static final String MOSIP_CREDENTIAL_TYPE_PROPERTY="mosip.digital.card.credential.type";
@@ -155,7 +159,9 @@ public class ResidentConstants {
     public static final String AUTH_TYPE = "authType";
 
     public static final String CHANNEL = "channel";
+    public static final String ATTRIBUTE_LIST_DELIMITER = ",";
 
+    public static final String MASK_REQUIRED = "maskRequired";
     public static final String MASK_PREFIX = "masked_";
     public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
 
@@ -211,7 +217,13 @@ public class ResidentConstants {
 
     public static final String VID_ACTIVE_STATUS = "mosip.idrepo.vid.reactive-status";
     public static final int UTC_TIMEZONE_OFFSET = 0;
+
     public static final String INDIVIDUAL_ID = "individualId";
+    public static final String ISSUER = "issuer";
+    public static final String CREDENTIAL_TYPE = "credentialType";
+    public static final String OTP = "otp";
+    public static final String TRANSACTION_ID_OLD = "transactionID";
+
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
 
     public static final String ID = "id";
@@ -228,4 +240,17 @@ public class ResidentConstants {
     public static final String VID = "vid";
     public static final String NAME = "name";
     public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
+
+    public static final String RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE = "resident.notifications.default.page.size";
+    public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
+    public static final String RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE = "resident.view-history.default.page.size";
+    public static final String LANGUAGE = "language";
+    public static final String VALUE = "value";
+    
+    public static final String RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT = "resident.registration-centers.download.max.count";
+
+    public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
+    public static final String PREFERRED_LANGUAGE = "preferredLanguage";
+    public static final String RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED = "resident.attribute.names.without.documents.required";
+
 }

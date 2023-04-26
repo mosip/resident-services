@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,15 +20,14 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.AttributeNameEnum;
 import io.mosip.resident.constant.AuthenticationModeEnum;
-import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
@@ -39,7 +39,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
-import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import reactor.util.function.Tuple2;
@@ -53,9 +52,12 @@ import reactor.util.function.Tuples;
 @Component
  public class TemplateUtil {
 
-    private static final String LOGO_URL = "logoUrl";
+    private static final String DEFAULT = "default";
+	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
+	private static final String LOGO_URL = "logoUrl";
     private static final CharSequence GENERATED = "generated";
     private static final CharSequence REVOKED = "revoked";
+    private static final String UNKNOWN = "Unknown";
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
@@ -77,9 +79,6 @@ import reactor.util.function.Tuples;
     @Autowired
     private ProxyMasterdataService proxyMasterdataService;
 
-    @Autowired
-    private ResidentCredentialServiceImpl residentCredentialServiceImpl;
-    
     @Value("${resident.template.date.pattern}")
 	private String templateDatePattern;
     
@@ -99,12 +98,20 @@ import reactor.util.function.Tuples;
         Map<String, String> templateVariables = new HashMap<>();
         templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        templateVariables.put(TemplateVariablesConstants.EVENT_TYPE,
-                RequestType.valueOf(residentTransactionEntity.getRequestTypeCode()).getName());
+        RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
+		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
+        templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS,
-                getEventStatusForRequestType(residentTransactionEntity.getStatusCode()));
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, replaceNullWithEmptyString(
-                residentTransactionEntity.getRequestSummary()));
+        		residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()));
+		if (serviceType.isPresent()) {
+			if (!serviceType.get().equals(ServiceType.ALL.name())) {
+				templateVariables.put(TemplateVariablesConstants.SUMMARY,
+						getSummaryFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode,
+								requestType));
+			}
+		} else {
+			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
+		}
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
                 utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
@@ -112,8 +119,15 @@ import reactor.util.function.Tuples;
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()), languageCode));
-        templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-                getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode));
+        String authenticationMode =
+                getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode);
+        if(authenticationMode.equalsIgnoreCase(UNKNOWN)){
+            templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+                    replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()));
+        }else {
+            templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+                    authenticationMode);
+        }
         try {
             templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
         } catch (ApisResourceAccessException e) {
@@ -133,25 +147,19 @@ import reactor.util.function.Tuples;
      * @return attribute value stored in the template.
      */
     private String getAttributesDisplayText(String attributes, String languageCode) {
-        String phoneAttributeName = this.env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME);
         List<String> attributeListTemplateValue = new ArrayList<>();
-        if (attributes != null && attributes.contains(Objects.requireNonNull(phoneAttributeName))) {
-            attributes = attributes.replace(phoneAttributeName, "");
-        }
-        if (attributes != null) {
-            List<String> attributeList = List.of(attributes.trim().split(ResidentConstants.COMMA));
+    	if (attributes != null && !attributes.isEmpty()) {
+            List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
             for (String attribute : attributeList) {
-                attribute = attribute.trim();
                 attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-                        AttributeNameEnum.getTemplatePropertyName(attribute)));
+                		getAttributeListTemplateTypeCode(attribute.trim())));
             }
         }
         if(attributeListTemplateValue.isEmpty()){
             return "";
         } else {
-            return String.join(ResidentConstants.COMMA, attributeListTemplateValue);
+            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
         }
-
     }
 
     private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
@@ -174,17 +182,16 @@ import reactor.util.function.Tuples;
 
 
     public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText, String languageCode){
-        return fileText;
+		ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+		return residentTransactionEntity.getStatusComment();
     }
 
     public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText, String languageCode) {
-         ResidentTransactionEntity residentTransactionEntity =getEntityFromEventId(eventId);
-         return residentCredentialServiceImpl.prepareReqSummaryMsg(Collections.singletonList(
-                    residentTransactionEntity.getAttributeList()));
+    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText, String languageCode){
-        return addAttributeInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+        return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText, String languageCode){
@@ -196,7 +203,7 @@ import reactor.util.function.Tuples;
     }
 
     public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText, String languageCode){
-        return fileText;
+    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
     }
 
     public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText, String languageCode) {
@@ -266,18 +273,6 @@ import reactor.util.function.Tuples;
         return identityServiceImpl.getIndividualIdType(individualId);
     }
 
-    private String getEventStatusForRequestType(String requestType) {
-        String eventStatus = "";
-        if(EventStatusSuccess.containsStatus(requestType)){
-            eventStatus = EventStatus.SUCCESS.getStatus();
-        } else if(EventStatusFailure.containsStatus(requestType)){
-            eventStatus = EventStatus.FAILED.getStatus();
-        } else {
-            eventStatus = EventStatus.IN_PROGRESS.getStatus();
-        }
-        return eventStatus;
-    }
-
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForCredentialShare(String eventId, String languageCode, Integer timeZoneOffset) {
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
@@ -302,8 +297,8 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, addAttributeInPurpose(getPurposeFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode), getEntityFromEventId(eventId).getPurpose(), languageCode));
+        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+        		residentTransactionEntity, languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
     }
@@ -311,16 +306,16 @@ import reactor.util.function.Tuples;
     /**
      * This method will replace attribute placeholder in template and add attribute list into it.
      * @param fileText This contains value of template.
-     * @param purpose This contains purpose of request type stored in template.
+     * @param attributes This contains attributes of request type stored in template.
      * @param languageCode This contains logged-in language code.
      * @return purpose after adding attributes.
      */
-    private String addAttributeInPurpose(String fileText, String purpose,
+    private String addAttributeListInPurpose(String fileText, String attributes,
                                          String languageCode) {
         if(fileText!=null &&
                 fileText.contains(ResidentConstants.ATTRIBUTES)){
             fileText = fileText.replace(
-                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(purpose,
+                    ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(attributes,
                             languageCode)
             );
         }
@@ -389,14 +384,25 @@ import reactor.util.function.Tuples;
     public String getPurposeFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity, String languageCode){
         String purpose = "";
         try {
-            purpose = residentService.getSummaryForLangCode(languageCode, residentService.getEventStatusCode(
+            purpose = residentService.getDescriptionForLangCode(languageCode, residentService.getEventStatusCode(
                             residentTransactionEntity.getStatusCode()),
-                    RequestType.valueOf(residentTransactionEntity.getRequestTypeCode().trim()), residentTransactionEntity.getEventId());
+                    RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()), residentTransactionEntity.getEventId());
         } catch (ResidentServiceCheckedException e) {
             return "";
         }
         return purpose;
     }
+
+	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
+			String languageCode, RequestType requestType) {
+		try {
+			return residentService.getSummaryForLangCode(languageCode,
+					residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()), requestType,
+					residentTransactionEntity.getEventId());
+		} catch (ResidentServiceCheckedException e) {
+			return requestType.name();
+		}
+	}
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForRevokeVid(String eventId, String languageCode, Integer timeZoneOffset) {
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
@@ -512,9 +518,6 @@ import reactor.util.function.Tuples;
      
      public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
- 		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-    			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
-    		}
  		return templateVariables;
  	}
      
@@ -530,22 +533,20 @@ import reactor.util.function.Tuples;
      
      public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
- 		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-   			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
-   		}
  		return templateVariables;
  	}
      
      public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
- 		 if(TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
- 			templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK, utility.createTrackServiceRequestLink(dto.getEventId()));
- 		}
  		return templateVariables;
  	}
      
      public Map<String, Object> getNotificationTemplateVariablesForShareCredentialWithPartner(NotificationTemplateVariableDTO dto) {
  		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+		if (TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
+			templateVariables.put(TemplateVariablesConstants.PARTNER_ID,
+					getEntityFromEventId(dto.getEventId()).getRequestedEntityId());
+		}
  		return templateVariables;
  	}
      
@@ -583,7 +584,16 @@ import reactor.util.function.Tuples;
     	 String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
     	 return getTemplateTypeCode(summaryTemplateCodeProperty);
      }
-    
+
+     public String getAttributeListTemplateTypeCode(String attributeName) {
+    	 String templateTypeCode = getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
+    	 if(templateTypeCode != null && !templateTypeCode.isEmpty()) {
+    		 return templateTypeCode;
+    	 } else {
+    		 return getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, DEFAULT));
+    	 }
+	 }
+
      private String getTemplateTypeCode(String templateCodeProperty) {
     	 return env.getProperty(templateCodeProperty);
 	}

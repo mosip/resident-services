@@ -22,6 +22,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.kernel.core.websub.spi.PublisherClient;
@@ -29,6 +31,7 @@ import io.mosip.kernel.core.websub.spi.SubscriptionClient;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
 import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -73,6 +76,8 @@ public class AuthTransactionCallbackServiceTest {
     @Mock
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+    
     EventModel eventModel;
 
     @Before
@@ -92,18 +97,19 @@ public class AuthTransactionCallbackServiceTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
+        Mockito.lenient().when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
     }
 
     @Test
     public void testAuthTransactionCallBackService() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
-        authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
+        authTransactionCallBackService.updateAuthTransactionCallBackService(objectMapper.convertValue(eventModel, Map.class));
         authTransactionCallBackService = mock(AuthTransactionCallBackServiceImpl.class);
         Mockito.lenient().doNothing().when(authTransactionCallBackService).updateAuthTransactionCallBackService(Mockito.any());
     }
 
     @Test
     public void testAuthTransactionCallBackServiceException() throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
-        authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
+        authTransactionCallBackService.updateAuthTransactionCallBackService(objectMapper.convertValue(eventModel, Map.class));
         authTransactionCallBackService = mock(AuthTransactionCallBackServiceImpl.class);
         Mockito.lenient().doThrow(ResidentServiceCheckedException.class).when(authTransactionCallBackService).updateAuthTransactionCallBackService(Mockito.any());
     }

@@ -31,11 +31,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.dto.PageDto;
@@ -153,6 +155,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString(), (Class) Mockito.any())).thenReturn(query);
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
+        ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "partner1");
     }
 
     @Test
@@ -229,7 +232,7 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(responseDtoPageDto);
         ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
         Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper1.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(responseWrapper1);
@@ -252,7 +255,7 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(responseDtoPageDto);
         ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
         Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper1.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(responseWrapper1);
@@ -274,7 +277,7 @@ public class ResidentServiceDownloadCardTest {
         responseWrapper.setResponse(responseDtoPageDto);
         ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
         Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put("fileText", "test");
+        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
         responseWrapper1.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(responseWrapper1);
@@ -303,7 +306,7 @@ public class ResidentServiceDownloadCardTest {
          responseWrapper.setResponse(responseDtoPageDto);
          ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
          Map<String, Object> templateResponse = new LinkedHashMap<>();
-         templateResponse.put("fileText", "test");
+         templateResponse.put(ResidentConstants.FILE_TEXT, "test");
          responseWrapper1.setResponse(templateResponse);
          residentServiceImpl.getNotificationList(0,10,"123","eng",0);
     }
@@ -351,7 +354,7 @@ public class ResidentServiceDownloadCardTest {
         UnreadNotificationDto unreadServiceNotificationDto = new UnreadNotificationDto();
         unreadServiceNotificationDto.setUnreadCount(4L);
         responseWrapper.setResponse(unreadServiceNotificationDto);
-        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList(), Mockito.anyString())).thenReturn(4L);
         assertEquals(Optional. of(4L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
@@ -372,7 +375,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity1.setIdaToken("123");
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(Optional.of(residentUserEntity1));
         Mockito.when(residentSessionRepository.findById(Mockito.anyString())).thenReturn(response);
-        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList())).thenReturn(4L);
+        Mockito.when(residentTransactionRepository.countByIdAndUnreadStatusForRequestTypes(Mockito.anyString(), Mockito.anyList(), Mockito.anyString())).thenReturn(4L);
         assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }

@@ -550,17 +550,17 @@ public enum EventEnum {
 			"Residence service", "RS-ID_MAP", "ID mapping", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
-	RID_DIGITAL_CARD_REQ("RES-SER-230", RegistrationConstants.SYSTEM, "RID digital card request",
-			"Request for downloading digital card based on RID", "RES-SER", "Residence service", "RS-RID_CARD",
+	RID_DIGITAL_CARD_REQ("RES-SER-230", RegistrationConstants.SYSTEM, "Download digital card request",
+			"Download digital card request", "RES-SER", "Residence service", "RS-RID_CARD",
 			"RID digital card", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "RID digital card request",
-			"Downloading digital card based on RID success", "RES-SER", "Residence service", "RS-RID_CARD", "NO_ID_TYPE",
+	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "Download digital card request success",
+			"Download digital card request is succeeded", "RES-SER", "Residence service", "RS-RID_CARD", "NO_ID_TYPE",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	RID_DIGITAL_CARD_REQ_FAILURE("RES-SER-231", RegistrationConstants.SYSTEM, "RID digital card request",
-			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
+	RID_DIGITAL_CARD_REQ_FAILURE("RES-SER-231", RegistrationConstants.SYSTEM, "Download digital card request failure",
+			"Download digital card request is failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-232", RegistrationConstants.SYSTEM, "RID digital card request",
-			"Downloading digital card based on RID failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
+	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-232", RegistrationConstants.SYSTEM, "Download digital card request failure",
+			"Download digital card request is failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	CHECK_AID_STATUS_REQUEST("RES-SER-233", RegistrationConstants.SYSTEM, "Request Application status",
@@ -665,8 +665,8 @@ public enum EventEnum {
 	DOWNLOAD_SERVICE_HISTORY_SUCCESS("RES-SER-266", RegistrationConstants.SYSTEM, "download service history success", "download service history success based on language code", "RES-SER",
 			"Resident service", "RS-DOWN_SER", "Download service history", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
-	GET_GENDER_TYPES("RES-SER-261", RegistrationConstants.SYSTEM, "get gender types",
-			"get gender types by langCode", "RES-SER", "Residence service", "RS-GEND", "Gender",
+	GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME("RES-SER-261", RegistrationConstants.SYSTEM, "get dynamic field based on lang code and field name",
+			"get dynamic field based on langCode and field name", "RES-SER", "Residence service", "RS-GEND", "Dynamic Field",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_GENDER_TYPES_SUCCESS("RES-SER-262", RegistrationConstants.SYSTEM, "get gender types success",
 			"get gender types by langCode is succeeded", "RES-SER", "Residence service", "RS-GEND",
@@ -791,7 +791,20 @@ public enum EventEnum {
 			"Validate Token Failed",
 			"Validate token is failed", "RES-SER",
 			"Resident service", "RS-VAL", "Validate token", RegistrationConstants.RESIDENT_APPLICATION_ID,
-			RegistrationConstants.RESIDENT_APPLICATION_NAME);
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK("RES-SER-289", RegistrationConstants.SYSTEM, "Request credential status update call back url",
+			"Requesting credential status update call back url for transaction id %s", "RES-SER", "Residence service", "RS-CRED_STAT_UPD",
+			"Credential status update", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK_SUCCESS("RES-SER-289", RegistrationConstants.SYSTEM, "Credential status update call back success",
+			"credential status update call back success for transaction id %s", "RES-SER", "Residence service", "RS-CRED_STAT_UPD", "Credential status update",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK_FAILURE("RES-SER-289", RegistrationConstants.SYSTEM, "Credential status update call back failure",
+			"credential status update call back failure for transaction id %s", "RES-SER", "Residence service", "RS-CRED_STAT_UPD", "Credential status update",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	
+	
+	;
 	
 
 

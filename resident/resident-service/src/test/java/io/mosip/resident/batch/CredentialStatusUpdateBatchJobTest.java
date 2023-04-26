@@ -1,11 +1,11 @@
 package io.mosip.resident.batch;
 
-import static io.mosip.resident.constant.CredentialUpdateStatus.FAILED;
-import static io.mosip.resident.constant.CredentialUpdateStatus.IN_TRANSIT;
-import static io.mosip.resident.constant.CredentialUpdateStatus.ISSUED;
-import static io.mosip.resident.constant.CredentialUpdateStatus.NEW;
-import static io.mosip.resident.constant.CredentialUpdateStatus.PAYMENT_CONFIRMED;
-import static io.mosip.resident.constant.CredentialUpdateStatus.PRINTING;
+import static io.mosip.resident.constant.EventStatusFailure.FAILED;
+import static io.mosip.resident.constant.EventStatusInProgress.IN_TRANSIT;
+import static io.mosip.resident.constant.EventStatusInProgress.ISSUED;
+import static io.mosip.resident.constant.EventStatusInProgress.NEW;
+import static io.mosip.resident.constant.EventStatusInProgress.PAYMENT_CONFIRMED;
+import static io.mosip.resident.constant.EventStatusInProgress.PRINTING;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
@@ -81,9 +81,8 @@ public class CredentialStatusUpdateBatchJobTest {
 
 	@Before
 	public void init() {
-		ReflectionTestUtils.setField(job, "publicUrl", "http://localhost");
-		ReflectionTestUtils.setField(job, "statusCodes", "NEW,ISSUED,RECEIVED,PRINTING,FAILED,CARD_DELIVERED");
-		ReflectionTestUtils.setField(job, "requestTypeCodes", "VID_CARD_DOWNLOAD,ORDER_PHYSICAL_CARD");
+		//ReflectionTestUtils.setField(job, "publicUrl", "http://localhost");
+		ReflectionTestUtils.setField(job, "env", env);
 	}
 
 	@Test
@@ -93,13 +92,13 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(NEW);
+		txn.setStatusCode(NEW.name());
         txn.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -110,13 +109,13 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(NEW);
+		txn.setStatusCode(NEW.name());
 		txn.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -126,13 +125,13 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(ISSUED);
+		txn.setStatusCode(ISSUED.name());
 		txn.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
     }
 
@@ -142,14 +141,14 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(ISSUED);
+		txn.setStatusCode(ISSUED.name());
 		txn.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 				ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage())));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -159,13 +158,13 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(NEW);
+		txn.setStatusCode(NEW.name());
 		txn.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -175,13 +174,13 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(PAYMENT_CONFIRMED);
+		txn.setStatusCode(PAYMENT_CONFIRMED.name());
 		txn.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -191,7 +190,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(PRINTING);
+		txn.setStatusCode(PRINTING.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
@@ -199,7 +198,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -209,15 +208,15 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(FAILED);
+		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED, "url", "url"));
+		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -227,15 +226,15 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(FAILED);
+		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED, "url", "url"));
+		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -245,7 +244,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(IN_TRANSIT);
+		txn.setStatusCode(IN_TRANSIT.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
@@ -254,7 +253,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
 				ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage())));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -264,7 +263,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(NEW);
+		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.name());
@@ -272,7 +271,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", "statusCode", "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -282,15 +281,15 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(FAILED);
+		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED, "url", "url"));
+		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenReturn(responseWrapper);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -300,15 +299,15 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(FAILED);
+		txn.setStatusCode(FAILED.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.name());
 		txn.setCredentialRequestId(UUID.randomUUID().toString());
 		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED, "url", "url"));
+		responseWrapper.setResponse(Map.of("requestId", "requestId", "id", "id", "statusCode", FAILED.name(), "url", "url"));
 		when(residentServiceRestClient.getApi(any(), anyList(), anyList(), anyList(), any())).thenThrow(new ApisResourceAccessException());
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -318,7 +317,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(NEW);
+		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setAid("123");
@@ -330,7 +329,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setFullName("kamesh");
 		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 
@@ -340,7 +339,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		txn.setAid("aid");
 		txn.setEventId("eventId");
 		txn.setRefIdType("UIN");
-		txn.setStatusCode(NEW);
+		txn.setStatusCode(NEW.name());
 		txn.setRequestTrnId("123");
 		txn.setIndividualId("123");
 		txn.setAid("123");
@@ -355,7 +354,7 @@ public class CredentialStatusUpdateBatchJobTest {
 		RegStatusCheckResponseDTO regStatusCheckResponseDTO = new RegStatusCheckResponseDTO();
 		regStatusCheckResponseDTO.setRidStatus("123");
 		when(residentService.getRidStatus(Mockito.anyString())).thenReturn(regStatusCheckResponseDTO);
-		when(repo.findByStatusCodeInAndRequestTypeCodeInOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
+		when(repo.findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(anyList(), anyList())).thenReturn(List.of(txn));
 		job.scheduleCredentialStatusUpdateJob();
 	}
 }
