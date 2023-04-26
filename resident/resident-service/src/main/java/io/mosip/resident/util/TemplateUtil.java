@@ -27,6 +27,7 @@ import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
@@ -38,7 +39,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
-import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import reactor.util.function.Tuple2;
@@ -78,9 +78,6 @@ import reactor.util.function.Tuples;
     @Autowired
     private ProxyMasterdataService proxyMasterdataService;
 
-    @Autowired
-    private ResidentCredentialServiceImpl residentCredentialServiceImpl;
-    
     @Value("${resident.template.date.pattern}")
 	private String templateDatePattern;
     
@@ -100,12 +97,20 @@ import reactor.util.function.Tuples;
         Map<String, String> templateVariables = new HashMap<>();
         templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        templateVariables.put(TemplateVariablesConstants.EVENT_TYPE,
-        		RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()).getName());
+        RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
+		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
+        templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
         templateVariables.put(TemplateVariablesConstants.EVENT_STATUS,
         		residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()));
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, replaceNullWithEmptyString(
-                residentTransactionEntity.getRequestSummary()));
+		if (serviceType.isPresent()) {
+			if (!serviceType.get().equals(ServiceType.ALL.name())) {
+				templateVariables.put(TemplateVariablesConstants.SUMMARY,
+						getSummaryFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode,
+								requestType));
+			}
+		} else {
+			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
+		}
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
                 utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
@@ -264,8 +269,6 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.PARTNER_NAME, residentTransactionEntity.getRequestedEntityName());
         templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO, getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
         return Tuples.of(templateVariables, Objects.requireNonNull(
@@ -286,9 +289,7 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-    	templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+    	templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
         		residentTransactionEntity, languageCode));
         return Tuples.of(templateVariables, Objects.requireNonNull(
                 this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
@@ -317,8 +318,6 @@ import reactor.util.function.Tuples;
     	 Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	 Map<String, String> templateVariables = tupleResponse.getT1();
          ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-         templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-         		residentTransactionEntity, languageCode));
          templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
                  residentTransactionEntity, languageCode));
          templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
@@ -335,9 +334,7 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = 	getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
     	ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-    	templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
-        templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
+    	templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
         		residentTransactionEntity, languageCode));
         templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
         return Tuples.of(templateVariables, Objects.requireNonNull(
@@ -352,8 +349,6 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
         		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
@@ -369,8 +364,6 @@ import reactor.util.function.Tuples;
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
                 residentTransactionEntity, languageCode));
         templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
@@ -392,24 +385,21 @@ import reactor.util.function.Tuples;
         return purpose;
     }
 
-    public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity, String languageCode){
-        String summary = "";
-        try {
-        	summary = residentService.getSummaryForLangCode(languageCode, residentService.getEventStatusCode(
-                            residentTransactionEntity.getStatusCode()),
-                    RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()), residentTransactionEntity.getEventId());
-        } catch (ResidentServiceCheckedException e) {
-            return "";
-        }
-        return summary;
-    }
+	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
+			String languageCode, RequestType requestType) {
+		try {
+			return residentService.getSummaryForLangCode(languageCode,
+					residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()), requestType,
+					residentTransactionEntity.getEventId());
+		} catch (ResidentServiceCheckedException e) {
+			return requestType.name();
+		}
+	}
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForRevokeVid(String eventId, String languageCode, Integer timeZoneOffset) {
     	Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	Map<String, String> templateVariables = tupleResponse.getT1();
         ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-        templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-        		residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
                 residentTransactionEntity, languageCode));
         templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
@@ -435,8 +425,6 @@ import reactor.util.function.Tuples;
     	 Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId, languageCode, timeZoneOffset);
     	 Map<String, String> templateVariables = tupleResponse.getT1();
          ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
-         templateVariables.put(TemplateVariablesConstants.SUMMARY, getSummaryFromResidentTransactionEntityLangCode(
-         		residentTransactionEntity, languageCode));
          templateVariables.put(TemplateVariablesConstants.PURPOSE, getPurposeFromResidentTransactionEntityLangCode(
                  residentTransactionEntity, languageCode));
          templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
