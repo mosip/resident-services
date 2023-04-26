@@ -109,6 +109,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		}
 		residentTransactionEntity.setIndividualId(otpRequestDTO.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDATokenForIndividualId(otpRequestDTO.getIndividualId()));
+		residentTransactionEntity.setPurpose(String.join(ResidentConstants.COMMA, otpRequestDTO.getOtpChannel()));
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 

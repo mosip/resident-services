@@ -98,16 +98,16 @@ import reactor.util.function.Tuples;
         Map<String, String> templateVariables = new HashMap<>();
         templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+        String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode());
         RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
         templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
-        templateVariables.put(TemplateVariablesConstants.EVENT_STATUS,
-        		residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()));
+        templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCode);
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
 				templateVariables.put(TemplateVariablesConstants.SUMMARY,
 						getSummaryFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode,
-								requestType));
+								statusCode, requestType));
 			}
 		} else {
 			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
@@ -181,33 +181,31 @@ import reactor.util.function.Tuples;
     }
 
 
-    public String getDescriptionTemplateVariablesForAuthenticationRequest(String eventId, String fileText, String languageCode){
-		ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+    public String getDescriptionTemplateVariablesForAuthenticationRequest(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
 		return residentTransactionEntity.getStatusComment();
     }
 
-    public String getDescriptionTemplateVariablesForShareCredential(String eventId, String fileText, String languageCode) {
-    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+    public String getDescriptionTemplateVariablesForShareCredential(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
+    	return addAttributeListInPurpose(fileText, residentTransactionEntity.getAttributeList(), languageCode);
     }
 
-    public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(String eventId, String fileText, String languageCode){
-        return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+    public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
+        return addAttributeListInPurpose(fileText, residentTransactionEntity.getAttributeList(), languageCode);
     }
 
-    public String getDescriptionTemplateVariablesForOrderPhysicalCard(String eventId, String fileText, String languageCode){
+    public String getDescriptionTemplateVariablesForOrderPhysicalCard(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForGetMyId(String eventId, String fileText, String languageCode){
+    public String getDescriptionTemplateVariablesForGetMyId(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForUpdateMyUin(String eventId, String fileText, String languageCode){
-    	return addAttributeListInPurpose(fileText, getEntityFromEventId(eventId).getAttributeList(), languageCode);
+    public String getDescriptionTemplateVariablesForUpdateMyUin(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
+    	return addAttributeListInPurpose(fileText, residentTransactionEntity.getAttributeList(), languageCode);
     }
 
-    public String getDescriptionTemplateVariablesForManageMyVid(String eventId, String fileText, String languageCode) {
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
+    public String getDescriptionTemplateVariablesForManageMyVid(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
         fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.VID_TYPE,
                 replaceNullWithEmptyString(residentTransactionEntity.getRefIdType()));
         fileText = fileText.replace(ResidentConstants.MASKED_VID, replaceNullWithEmptyString(
@@ -221,13 +219,12 @@ import reactor.util.function.Tuples;
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForVidCardDownload(String eventId, String fileText, String languageCode){
+    public String getDescriptionTemplateVariablesForVidCardDownload(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText, String languageCode) {
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        String channels = residentTransactionEntity.getAttributeList();
+    public String getDescriptionTemplateVariablesForValidateOtp(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
+        String channels = residentTransactionEntity.getPurpose();
         if (channels != null && !channels.isEmpty()) {
             fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
             		channels);
@@ -235,9 +232,8 @@ import reactor.util.function.Tuples;
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForSecureMyId(String eventId, String fileText, String languageCode){
-        ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-            String authTypes = residentTransactionEntity.getAttributeList();
+    public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
+            String authTypes = residentTransactionEntity.getPurpose();
             if (authTypes != null && !authTypes.isEmpty())
                 return authTypes;
             return fileText;
@@ -310,8 +306,7 @@ import reactor.util.function.Tuples;
      * @param languageCode This contains logged-in language code.
      * @return purpose after adding attributes.
      */
-    private String addAttributeListInPurpose(String fileText, String attributes,
-                                         String languageCode) {
+    private String addAttributeListInPurpose(String fileText, String attributes, String languageCode) {
         if(fileText!=null &&
                 fileText.contains(ResidentConstants.ATTRIBUTES)){
             fileText = fileText.replace(
@@ -384,9 +379,9 @@ import reactor.util.function.Tuples;
     public String getPurposeFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity, String languageCode){
         String purpose = "";
         try {
-            purpose = residentService.getDescriptionForLangCode(languageCode, residentService.getEventStatusCode(
+            purpose = residentService.getDescriptionForLangCode(residentTransactionEntity, languageCode, residentService.getEventStatusCode(
                             residentTransactionEntity.getStatusCode()),
-                    RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()), residentTransactionEntity.getEventId());
+                    RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()));
         } catch (ResidentServiceCheckedException e) {
             return "";
         }
@@ -394,11 +389,10 @@ import reactor.util.function.Tuples;
     }
 
 	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
-			String languageCode, RequestType requestType) {
+			String languageCode, String statusCode, RequestType requestType) {
 		try {
-			return residentService.getSummaryForLangCode(languageCode,
-					residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()), requestType,
-					residentTransactionEntity.getEventId());
+			return residentService.getSummaryForLangCode(residentTransactionEntity, languageCode,
+					statusCode, requestType);
 		} catch (ResidentServiceCheckedException e) {
 			return requestType.name();
 		}
