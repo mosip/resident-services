@@ -1293,7 +1293,7 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (requestId != null) {
 					residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
-					residentTransactionEntity.setPurpose(authType);
+					residentTransactionEntity.setAttributeList(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary(EventStatusFailure.FAILED.name());

@@ -227,19 +227,19 @@ import reactor.util.function.Tuples;
 
     public String getDescriptionTemplateVariablesForValidateOtp(String eventId, String fileText, String languageCode) {
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-        String purpose = residentTransactionEntity.getPurpose();
-        if (purpose != null && !purpose.isEmpty()) {
+        String channels = residentTransactionEntity.getAttributeList();
+        if (channels != null && !channels.isEmpty()) {
             fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL,
-                    purpose);
+            		channels);
         }
         return fileText;
     }
 
     public String getDescriptionTemplateVariablesForSecureMyId(String eventId, String fileText, String languageCode){
         ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-            String purpose = residentTransactionEntity.getPurpose();
-            if (purpose != null && !purpose.isEmpty())
-                return purpose;
+            String authTypes = residentTransactionEntity.getAttributeList();
+            if (authTypes != null && !authTypes.isEmpty())
+                return authTypes;
             return fileText;
     }
 
