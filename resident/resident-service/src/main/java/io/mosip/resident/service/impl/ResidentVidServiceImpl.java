@@ -265,6 +265,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_GENERATED.name());
+				residentTransactionEntity.setRequestSummary(RequestType.GENERATE_VID.getName() + " - " + ResidentConstants.SUCCESS);
 			}
 			
 		} catch (JsonProcessingException e) {
@@ -293,10 +294,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			notifyVidCreationFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId, residentTransactionEntity, e);
 		} finally {
 			if (Utility.isSecureSession() && residentTransactionEntity != null) {
-				//if the status code will come as null, it will set it as failed.
-				if(residentTransactionEntity.getStatusCode()==null) {
+				//if the status code or request summary will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode() == null || residentTransactionEntity.getRequestSummary() == null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setRequestSummary("failed");
+					residentTransactionEntity.setStatusComment(ResidentConstants.FAILED);
+					residentTransactionEntity
+							.setRequestSummary(RequestType.GENERATE_VID.getName() + " - " + ResidentConstants.FAILED);
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
@@ -398,7 +401,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_GENERATED.name());
 		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
 		return residentTransactionEntity;
 	}
@@ -516,6 +518,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
 				if(Utility.isSecureSession()) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
+					residentTransactionEntity.setRequestSummary(RequestType.REVOKE_VID.getName() + " - " + ResidentConstants.FAILED);
 					residentTransactionRepository.save(residentTransactionEntity);
 					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
@@ -576,6 +579,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_REVOKED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_REVOKED.name());
+				residentTransactionEntity.setRequestSummary(RequestType.REVOKE_VID.getName() + " - " + ResidentConstants.SUCCESS);
 			}
 		} catch (JsonProcessingException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VID_JSON_PARSING_EXCEPTION,
@@ -591,10 +595,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			notifyVidRevokeFailureAndThrowException(requestDto, isV2Request, notificationRequestDto, eventId, residentTransactionEntity, e);
 		} finally {
 			if (Utility.isSecureSession() && residentTransactionEntity != null) {
-				//if the status code will come as null, it will set it as failed.
-				if(residentTransactionEntity.getStatusCode()==null) {
+				//if the status code or request summary will come as null, it will set it as failed.
+				if(residentTransactionEntity.getStatusCode() == null || residentTransactionEntity.getRequestSummary() == null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setRequestSummary("failed");
+					residentTransactionEntity.setStatusComment(ResidentConstants.FAILED);
+					residentTransactionEntity
+							.setRequestSummary(RequestType.REVOKE_VID.getName() + " - " + ResidentConstants.FAILED);
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
@@ -716,7 +722,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.VID_REVOKED.name());
 		return residentTransactionEntity;
 	}
 
