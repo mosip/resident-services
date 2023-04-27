@@ -170,12 +170,12 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 				.flatMap(attribute -> {
 					// Get the attributes from the format if specified
 					if(attribute.getFormat()!=null && !attribute.getFormat().isEmpty()) {
-						return Stream.of(attribute.getFormat().split(","));
+						return Stream.of(attribute.getFormat().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 					}
 					// Get the attributes from the identity mapping
 					if(identityMap.containsKey(attribute.getAttributeName())) {
 						return Stream.of(String.valueOf(((Map) identityMap.get(attribute.getAttributeName())).get(MappingJsonConstants.VALUE))
-								.split(","));
+								.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 					}
 					// Return the attribute name itself
 					return Stream.of(attribute.getAttributeName());
