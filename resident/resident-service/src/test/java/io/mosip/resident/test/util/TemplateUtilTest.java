@@ -340,19 +340,19 @@ public class TemplateUtilTest {
     @Test
     public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCard(){
         assertEquals("VID", templateUtil.
-                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, "VID", "eng"));
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, "VID", "eng"));
     }
 
     @Test
     public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCardNullFileText(){
         templateUtil.
-                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, null, "eng");
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, null, "eng");
     }
 
     @Test
     public void testGetDescriptionTemplateVariablesForDownloadPersonalizedCardSuccess(){
         templateUtil.
-                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, ResidentConstants.ATTRIBUTES.toString(), "eng");
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, ResidentConstants.ATTRIBUTES.toString(), "eng");
     }
 
     @Test
@@ -361,7 +361,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setPurpose(null);
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         templateUtil.
-                getDescriptionTemplateVariablesForDownloadPersonalizedCard(eventId, ResidentConstants.ATTRIBUTES.toString(), "eng");
+                getDescriptionTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, ResidentConstants.ATTRIBUTES.toString(), "eng");
     }
 
     @Test(expected = RuntimeException.class)
