@@ -248,6 +248,22 @@ public enum RequestType implements PreUpdateInBatchJob {
 		.distinct()	
 		.collect(Collectors.toUnmodifiableList());
 	}
+
+	public static List<String> getAllFailedStatusList(Environment env) {
+		return Stream.of(values()).flatMap(requestType -> {
+					return requestType.getFailedStatusList(env);
+				}).filter(str -> !str.isEmpty())
+				.distinct()
+				.collect(Collectors.toUnmodifiableList());
+	}
+
+	public static List<String> getAllSuccessStatusList(Environment env) {
+		return Stream.of(values()).flatMap(requestType -> {
+					return requestType.getSuccessStatusList(env);
+				}).filter(str -> !str.isEmpty())
+				.distinct()
+				.collect(Collectors.toUnmodifiableList());
+	}
 	
 	public String getFeatureName() {
 		return featureName;
