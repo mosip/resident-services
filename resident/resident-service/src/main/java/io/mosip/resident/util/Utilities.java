@@ -1,9 +1,13 @@
 package io.mosip.resident.util;
 
+import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
+import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
+import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfReader;
 
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.StringUtils;
@@ -35,18 +40,20 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
+import io.mosip.resident.constant.PacketStatus;
 import io.mosip.resident.constant.RegistrationConstants;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdRequestDto;
-import io.mosip.resident.dto.IdResponseDTO;
+import io.mosip.resident.constant.TransactionStage;
 import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.dto.RequestDto1;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 import lombok.Data;
+
 
 /**
  * The Class Utilities.
@@ -60,7 +67,6 @@ import lombok.Data;
  */
 @Data
 public class Utilities {
-
 	private final Logger logger = LoggerConfiguration.logConfig(Utilities.class);
 	/** The reg proc logger. */
 	private static final String sourceStr = "source";
@@ -208,7 +214,84 @@ public class Utilities {
 		return uin;
 	}
 
-    public String getJson(String configServerFileStorageURL, String uri) {
+	public String getRidByIndividualId(String individualId) throws ApisResourceAccessException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
+				"Utilities::getRidByIndividualId():: entry");
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("individualId", individualId);
+		String rid = null;
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
+				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
+
+		ResponseWrapper<?> response = residentServiceRestClient.getApi(ApiName.GET_RID_BY_INDIVIDUAL_ID,
+				pathsegments, ResponseWrapper.class);
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
+
+		if (!response.getErrors().isEmpty()) {
+			throw new IndividualIdNotFoundException("Individual ID not found exception");
+
+		} else {
+			rid = (String) ((Map<String, ?>)response.getResponse()).get(ResidentConstants.RID);
+		}
+		return rid;
+	}
+
+	public ArrayList<?> getRidStatus(String rid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
+				"Utilities::getRidStatus():: entry");
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("rid", rid);
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.REGISTRATIONID.toString(), "",
+				"Stage::methodname():: RETRIEVEIUINBYVID GET service call Started");
+		ResponseWrapper<?> responseWrapper = (ResponseWrapper<?>)residentServiceRestClient.getApi(ApiName.GET_RID_STATUS,
+				pathsegments, ResponseWrapper.class);
+		if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+			logger.debug(responseWrapper.getErrors().get(0).toString());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RID_NOT_FOUND.getErrorCode(),
+					responseWrapper.getErrors().get(0).getMessage());
+		}
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+				"Utilities::getRidByIndividualId():: GET_RID_BY_INDIVIDUAL_ID GET service call ended successfully");
+		ArrayList<?> objectArrayList = objMapper.readValue(
+				objMapper.writeValueAsString(responseWrapper.getResponse()), ArrayList.class);
+		return objectArrayList;
+	}
+
+	public Map<String, String> getPacketStatus(String rid)
+			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		Map<String, String> packetStatusMap = new HashMap<>();
+		ArrayList<?> regTransactionList = getRidStatus(rid);
+		for (Object object : regTransactionList) {
+			if (object instanceof Map) {
+				Map<String, Object> packetData = (Map<String, Object>) object;
+				Optional<String> packetStatusCode = getPacketStatusCode(packetData);
+				Optional<String> transactionTypeCode = getTransactionTypeCode(packetData);
+				if (packetStatusCode.isPresent() && transactionTypeCode.isPresent()) {
+					packetStatusMap.put(AID_STATUS, packetStatusCode.get());
+					packetStatusMap.put(TRANSACTION_TYPE_CODE, transactionTypeCode.get());
+					return packetStatusMap;
+				}
+			}
+		}
+		throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
+				String.format("%s - Unable to get the RID status from Reg-proc",
+						ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage()));
+	}
+
+	private Optional<String> getPacketStatusCode(Map<String, Object> packetData) {
+		String statusCode = (String) packetData.get(STATUS_CODE);
+		Optional<String> packetStatusCode = PacketStatus.getStatusCode(statusCode, env);
+		return packetStatusCode;
+	}
+
+	private Optional<String> getTransactionTypeCode(Map<String, Object> packetData) {
+		String transactionTypeCode = (String) packetData.get(TRANSACTION_TYPE_CODE);
+		Optional<String> typeCode = TransactionStage.getTypeCode(transactionTypeCode, env);
+		return typeCode;
+	}
+
+	public String getJson(String configServerFileStorageURL, String uri) {
         if (StringUtils.isBlank(regProcessorIdentityJson)) {
             return residentRestTemplate.getForObject(configServerFileStorageURL + uri, String.class);
         }
@@ -299,12 +382,12 @@ public class Utilities {
 	public String getLanguageCode() {
 		String langCode=null;
 		String mandatoryLanguages = env.getProperty("mosip.mandatory-languages");
-		if (!StringUtils.isBlank(mandatoryLanguages)) {
+		if (mandatoryLanguages!=null && !StringUtils.isBlank(mandatoryLanguages)) {
 			String[] lanaguages = mandatoryLanguages.split(",");
 			langCode = lanaguages[0];
 		} else {
 			String optionalLanguages = env.getProperty("mosip.optional-languages");
-			if (!StringUtils.isBlank(optionalLanguages)) {
+			if (optionalLanguages!= null && !StringUtils.isBlank(optionalLanguages)) {
 				String[] lanaguages = optionalLanguages.split(",");
 				langCode = lanaguages[0];
 			}
@@ -332,5 +415,10 @@ public class Utilities {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
+		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
+		return pdfReader.getNumberOfPages();
 	}
 }

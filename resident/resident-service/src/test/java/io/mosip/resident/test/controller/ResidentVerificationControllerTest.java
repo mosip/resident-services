@@ -1,15 +1,7 @@
 package io.mosip.resident.test.controller;
 
-import io.mosip.resident.controller.VerificationController;
-import io.mosip.resident.dto.VerificationResponseDTO;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.VerificationService;
-import io.mosip.resident.service.impl.VerificationServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +21,19 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import io.mosip.resident.controller.VerificationController;
+import io.mosip.resident.dto.VerificationResponseDTO;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.VerificationService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.service.impl.VerificationServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * Resident Verification Controller Test
@@ -42,6 +46,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentVerificationControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
     @MockBean
     private VerificationService verificationService;
@@ -62,8 +69,14 @@ public class ResidentVerificationControllerTest {
     private VerificationServiceImpl verificationServiceImpl;
 
     @MockBean
+    private RequestValidator requestValidator;
+
+    @MockBean
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
+    
+    @MockBean
+    private ResidentServiceImpl residentService;
 
     @Mock
     private AuditUtil audit;

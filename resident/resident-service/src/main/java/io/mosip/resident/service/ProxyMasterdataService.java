@@ -1,12 +1,16 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.dto.GenderCodeResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import reactor.util.function.Tuple2;
 
 /**
  * Resident proxy masterdata service class.
@@ -20,16 +24,19 @@ public interface ProxyMasterdataService {
 	 * Get valid documents by language code.
 	 * 
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException;
+
+	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
+			throws ResidentServiceCheckedException;
 
 	/**
 	 * Get location hierarchy levels by language code.
 	 * 
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(String langCode)
@@ -40,7 +47,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param locationCode
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getImmediateChildrenByLocCodeAndLangCode(String locationCode, String langCode)
@@ -51,7 +58,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param locationCode
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(String locationCode, String langCode)
@@ -64,7 +71,7 @@ public interface ProxyMasterdataService {
 	 * @param longitude
 	 * @param latitude
 	 * @param proximityDistance
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, double longitude,
@@ -75,7 +82,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param applicantId
 	 * @param languages
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, List<String> languages)
@@ -87,7 +94,7 @@ public interface ProxyMasterdataService {
 	 * @param langCode
 	 * @param hierarchyLevel
 	 * @param name
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
@@ -103,7 +110,7 @@ public interface ProxyMasterdataService {
 	 * @param pageSize
 	 * @param orderBy
 	 * @param sortBy
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
@@ -115,7 +122,7 @@ public interface ProxyMasterdataService {
 	 * 
 	 * @param registrationCenterID
 	 * @param langCode
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getRegistrationCenterWorkingDays(String registrationCenterID, String langCode)
@@ -127,10 +134,37 @@ public interface ProxyMasterdataService {
 	 * @param schemaVersion
 	 * @param domain
 	 * @param type
-	 * @return ResponseWrapper<?> object
+	 * @return ResponseWrapper object
 	 * @throws ResidentServiceCheckedException
 	 */
 	public ResponseWrapper<?> getLatestIdSchema(double schemaVersion, String domain, String type)
 			throws ResidentServiceCheckedException;
+	
+	/**
+	 * Get templates by language code and template type code.
+	 * 
+	 * @param langCode
+	 * @param templateTypeCode
+	 * @return ResponseWrapper object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
+			throws ResidentServiceCheckedException;
+	
+	/**
+     * Get gender types by language code.
+     *
+     * @param fieldName
+     * @param langCode
+     * @param withValue
+     * @return ResponseWrapper object
+     * @throws ResidentServiceCheckedException
+     */
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException;
 
+	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException;
+
+	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String gendertype, String langCode) throws ResidentServiceCheckedException, IOException;
+
+	
 }

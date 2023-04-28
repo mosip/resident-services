@@ -15,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -44,7 +43,6 @@ public class ResidentServiceRestClient {
 
 	private RestTemplate residentRestTemplate;
 	
-
 	@Autowired
 	Environment environment;
 	
@@ -55,6 +53,13 @@ public class ResidentServiceRestClient {
 	
 	public ResidentServiceRestClient(RestTemplate residentRestTemplate) {
 		this.residentRestTemplate = residentRestTemplate;
+	}
+	
+	public <T> T getApi(String uriStr, Class<?> responseType) throws ApisResourceAccessException {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uriStr);
+		UriComponents uriComponent = builder.build(false).encode();
+		URI uri = uriComponent.toUri();
+		return getApi(uri, responseType);
 	}
 
 	/**
@@ -211,7 +216,7 @@ public class ResidentServiceRestClient {
 	public <T> T postApi(String uri, MediaType mediaType, Object requestType, Class<?> responseClass)
 			throws ApisResourceAccessException {
 		try {
-			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 			T response = (T) residentRestTemplate.postForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
@@ -239,8 +244,9 @@ public class ResidentServiceRestClient {
 			throws ApisResourceAccessException {
 		T result = null;
 		try {
-			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
+			
 			result = (T) residentRestTemplate.patchForObject(uri, setRequestHeader(requestType, mediaType),
 					responseClass);
 
@@ -275,7 +281,7 @@ public class ResidentServiceRestClient {
 		T result = null;
 		ResponseEntity<T> response = null;
 		try {
-			logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), uri);
 
 			response = (ResponseEntity<T>) residentRestTemplate.exchange(uri, HttpMethod.PUT,
@@ -310,8 +316,12 @@ public class ResidentServiceRestClient {
 				HttpEntity<Object> httpEntity = (HttpEntity<Object>) requestType;
 				HttpHeaders httpHeader = httpEntity.getHeaders();
 				for (String key : httpHeader.keySet()) {
-					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type")))
-						headers.add(key, httpHeader.get(key).get(0));
+					if (!(headers.containsKey("Content-Type") && Objects.equals(key, "Content-Type"))){	
+							List<String> headerKeys = httpHeader.get(key);
+							if(headerKeys != null && !headerKeys.isEmpty()){
+								headers.add(key,headerKeys.get(0));
+							}
+					}
 				}
 				return new HttpEntity<>(httpEntity.getBody(), headers);
 			} catch (ClassCastException e) {

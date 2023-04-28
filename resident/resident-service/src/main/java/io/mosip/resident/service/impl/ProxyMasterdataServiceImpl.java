@@ -1,12 +1,18 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +21,22 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.GenderCodeResponseDTO;
+import io.mosip.resident.dto.GenderTypeListDTO;
+import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
+
+import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
 
 /**
  * Resident proxy masterdata service implementation class.
@@ -30,6 +45,12 @@ import io.mosip.resident.util.ResidentServiceRestClient;
  */
 @Component
 public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
+
+	private static final String CODE = "code";
+
+	private static final String DOCUMENTTYPES = "documenttypes";
+
+	private static final String DOCUMENTCATEGORIES = "documentcategories";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -54,7 +75,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -65,6 +86,36 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocumentByLangCode()::exit");
 		return responseWrapper;
+	}
+
+	@Override
+	@Cacheable(value = "valid-doc-cat-and-type-list", key = "#langCode")
+	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
+			throws ResidentServiceCheckedException {
+		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCode(langCode);
+		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
+		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
+
+		List<String> docCatCodes = validDoc.stream()
+				.map(map -> ((String) map.get(CODE)).toLowerCase())
+				.collect(Collectors.toList());
+
+		Map<String, List<String>> docTypeCodes = validDoc.stream()
+				.map(map -> {
+					return Map.entry(((String) map.get(CODE)).toLowerCase(),
+							getDocTypCodeList((List<Map<String, Object>>) map.get(DOCUMENTTYPES)));
+				})
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+		return Tuples.of(docCatCodes, docTypeCodes);
+	}
+
+	private List<String> getDocTypCodeList(List<Map<String, Object>> docTypMap){
+		return docTypMap.stream()
+				.flatMap(map -> {
+					return Stream.of(((String) map.get(CODE)).toLowerCase());
+					})
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -80,7 +131,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -107,7 +158,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -134,7 +185,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -163,7 +214,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -197,7 +248,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -231,7 +282,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -275,7 +326,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -302,7 +353,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -338,7 +389,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				logger.debug(responseWrapper.getErrors().get(0).toString());
-				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
@@ -348,6 +399,118 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 		logger.debug("ProxyMasterdataServiceImpl::getLatestIdSchema()::exit");
+		return responseWrapper;
+	}
+
+	@Override
+	public ResponseWrapper<?> getAllTemplateBylangCodeAndTemplateTypeCode(String langCode, String templateTypeCode)
+			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getAllTemplateBylangCodeAndTemplateTypeCode()::entry");
+		ResponseWrapper<TemplateResponseDto> response = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("langcode", langCode);
+		pathsegments.put("templatetypecode", templateTypeCode);
+
+		try {
+			response = residentServiceRestClient.getApi(ApiName.TEMPLATES_BY_LANGCODE_AND_TEMPLATETYPECODE_URL,
+					pathsegments, ResponseWrapper.class);
+			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+				logger.debug(response.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.TEMPLATE_EXCEPTION);
+			}
+			TemplateResponseDto templateResponse = JsonUtil
+					.readValue(JsonUtil.writeValueAsString(response.getResponse()), TemplateResponseDto.class);
+			String template = templateResponse.getTemplates().get(0).getFileText();
+			ResponseWrapper<Map> responseWrapper = new ResponseWrapper<>();
+			Map<String, String> responseMap = new HashMap<>();
+			responseMap.put(ResidentConstants.FILE_TEXT, template);
+			responseWrapper.setResponse(responseMap);
+			logger.debug("ProxyMasterdataServiceImpl::getAllTemplateBylangCodeAndTemplateTypeCode()::exit");
+			return responseWrapper;
+
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
+			logger.error("Error occured in accessing templates %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		}
+	}
+
+	@Override
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("langcode", langCode);
+		pathsegments.put("fieldName", fieldName);
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("withValue");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(withValue);
+		try {
+			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
+					queryParamValue, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_EXCEPTION);
+			logger.error("Error occured in accessing gender types %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
+		return responseWrapper;
+	}
+	
+	@Override
+	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("documentcategorycode", documentcategorycode);
+		pathsegments.put("langcode", langCode);
+		try {
+			responseWrapper=residentServiceRestClient.getApi(ApiName.DOCUMENT_TYPE_BY_DOCUMENT_CATEGORY_AND_LANG_CODE, pathsegments, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.debug(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_EXCEPTION);
+			logger.error("Error occured in accessing document types %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::exit");
+		return responseWrapper;
+	}
+
+	@Override
+	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String genderName,
+			String langCode) throws ResidentServiceCheckedException, IOException {
+		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
+		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
+		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
+		ResponseWrapper<?> res = getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
+		GenderTypeListDTO response = JsonUtil.readValue(JsonUtil.writeValueAsString(res.getResponse()),
+				GenderTypeListDTO.class);
+		Optional<String> genderCode = response.getGenderType().stream()
+				.filter(map -> map.getGenderName().equalsIgnoreCase(genderName))
+				.map(map -> map.getCode())
+				.findAny();
+		if (genderCode.isPresent()) {
+			genderCodeResponseDTO.setGenderCode(genderCode.get());
+		}
+		responseWrapper.setResponse(genderCodeResponseDTO);
+		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::exit");
 		return responseWrapper;
 	}
 

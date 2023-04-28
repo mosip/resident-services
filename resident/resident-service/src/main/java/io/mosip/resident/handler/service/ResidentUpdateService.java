@@ -3,7 +3,6 @@ package io.mosip.resident.handler.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -142,12 +141,12 @@ public class ResidentUpdateService {
 				if (request.getProofOfAddress() != null && !request.getProofOfAddress().isEmpty())
 					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_ADDRESS, map);
 				if (request.getProofOfDateOfBirth() != null && !request.getProofOfDateOfBirth().isEmpty())
-					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_DOB, map);
+					setDemographicDocuments(request.getProofOfDateOfBirth(), demoJsonObject, PROOF_OF_DOB, map);
 				if (request.getProofOfRelationship() != null && !request.getProofOfRelationship().isEmpty())
-					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_RELATIONSHIP,
+					setDemographicDocuments(request.getProofOfRelationship(), demoJsonObject, PROOF_OF_RELATIONSHIP,
 							map);
 				if (request.getProofOfIdentity() != null && !request.getProofOfIdentity().isEmpty())
-					setDemographicDocuments(request.getProofOfAddress(), demoJsonObject, PROOF_OF_IDENTITY, map);
+					setDemographicDocuments(request.getProofOfIdentity(), demoJsonObject, PROOF_OF_IDENTITY, map);
 
 				PacketDto packetDto = new PacketDto();
 				packetDto.setId(generateRegistrationId(request.getCenterId(), request.getMachineId()));

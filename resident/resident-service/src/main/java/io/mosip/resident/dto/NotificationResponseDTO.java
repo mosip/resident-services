@@ -6,4 +6,6 @@ import lombok.Data;
 public class NotificationResponseDTO {
 	private String status;
 	private String message;
+	private String maskedEmail;
+	private String maskedPhone;
 }
