@@ -1858,10 +1858,10 @@ public class ResidentServiceImpl implements ResidentService {
 				statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
 			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
 				statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
-			} else if (!status.equalsIgnoreCase(EventStatus.ALL.getStatus())) {
-				statusFilterListContainingAllStatus.addAll(statusFilterList);
-				break;
 			}
+		}
+		if(statusFilterListContainingAllStatus.isEmpty()){
+			statusFilterListContainingAllStatus.addAll(statusFilterList);
 		}
 		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingAllStatus);
 		return " and status_code in (" + statusFilterListString + ")";
