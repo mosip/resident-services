@@ -1853,21 +1853,21 @@ public class ResidentServiceImpl implements ResidentService {
 		List<String> statusFilterList = List.of(statusFilter.split(",")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
-		List<String> statusFilterListContainingALlStatus = new ArrayList<>();
+		List<String> statusFilterListContainingAllStatus = new ArrayList<>();
 		if(statusFilterList.size()>EVENT_STATUS_LIST_LENGTH){
-			statusFilterListContainingALlStatus.addAll(statusFilterList);
+			statusFilterListContainingAllStatus.addAll(statusFilterList);
 		} else {
 			for (String status : statusFilterList) {
 				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
-					statusFilterListContainingALlStatus.addAll(RequestType.getAllSuccessStatusList(env));
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
 				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
-					statusFilterListContainingALlStatus.addAll(RequestType.getAllFailedStatusList(env));
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
 				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
-					statusFilterListContainingALlStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
 				}
 			}
 		}
-		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingALlStatus);
+		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingAllStatus);
 		return " and status_code in (" + statusFilterListString + ")";
 	}
 
