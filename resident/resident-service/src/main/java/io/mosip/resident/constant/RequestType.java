@@ -132,7 +132,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private String featureName;
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
-	private QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables;
+	private QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
 	private String namingProperty;
 
 	private String name;
@@ -141,7 +141,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-			QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables) {
+			QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
 		this(name, ackTemplateVariablesFunction,
 				featureName, notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
 	}
@@ -150,7 +150,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-			QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables,
+			QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
@@ -287,8 +287,8 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return notificationTemplateVariablesFunction.apply(templateUtil, dto);
 	}
 
-	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, String eventId, String fileText, String languageCode){
-		return getDescriptionTemplateVariables.apply(templateUtil, eventId, fileText, languageCode);
+	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
+		return getDescriptionTemplateVariables.apply(templateUtil, residentTransactionEntity, fileText, languageCode);
 	}
 	
 	public String getNamingProperty() {
