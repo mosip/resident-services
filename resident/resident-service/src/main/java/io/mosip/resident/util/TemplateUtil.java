@@ -176,7 +176,7 @@ import reactor.util.function.Tuples;
                     (Map<String, String>) proxyResponseWrapper.getResponse());
             return templateResponse.get(ResidentConstants.FILE_TEXT);
         } catch (ResidentServiceCheckedException e) {
-            throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION);
+            throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION, e);
         }
     }
 
