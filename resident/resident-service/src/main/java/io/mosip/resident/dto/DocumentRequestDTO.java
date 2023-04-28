@@ -16,5 +16,7 @@ public class DocumentRequestDTO {
     private String docTypCode;
 
     private String langCode;
+    
+    private String referenceId;
 
 }

@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 
 /**
@@ -51,4 +53,12 @@ public interface DocumentService {
         List<DocumentResponseDTO> fetchAllDocumentsMetadata(String transactionId)
                         throws ResidentServiceCheckedException;
 
+        /**
+         * It fetches the document  from the object store
+         * @param transactionId This is the transaction ID
+         * @param documentId This is the document id
+         */
+        DocumentDTO fetchDocumentByDocId(String transactionId, String documentId) throws ResidentServiceCheckedException;
+
+        ResponseDTO deleteDocument(String transactionId, String documentId) throws ResidentServiceCheckedException;
 }

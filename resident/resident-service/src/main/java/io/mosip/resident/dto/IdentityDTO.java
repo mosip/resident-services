@@ -8,8 +8,9 @@ public class IdentityDTO {
 	private String UIN;
 	private String email;
 	private String phone;
-//	private String dateOfBirth;
-//	private List<Map<String, String>> fullName;
-//	private Map<String, String> individualBiometrics;
+	private String yearOfBirth;
+	private String fullName;
+	private String face;
+	private String dateOfBirth;
 
 }

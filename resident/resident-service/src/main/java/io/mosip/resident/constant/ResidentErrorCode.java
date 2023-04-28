@@ -40,7 +40,7 @@ public enum ResidentErrorCode {
 	MACHINE_MASTER_CREATE_EXCEPTION("RES-SER-431", "Machine is not created in master data"),
 	INDIVIDUAL_ID_TYPE_INVALID("RES-SER-432", "Individual Id type is invalid"),
 	INDIVIDUAL_ID_UIN_MISMATCH("RES-SER-433", "Individual Id in request and identity json UIN is not matching"),
-	
+
 	FAILED_TO_UPLOAD_DOC("RES-SER-434", "Failed to upload document"),
 	FAILED_TO_RETRIEVE_DOC("RES-SER-435", "Failed to retrieve document(s) from object store"),
 	ENCRYPT_DECRYPT_ERROR("RES-SER-436", "Failed to encrypt/decrypt data"),
@@ -48,11 +48,92 @@ public enum ResidentErrorCode {
 	CHANNEL_IS_NOT_VALID("RES-SER-438", "Invalid OTP Channel"),
 
 	CLAIM_NOT_AVAILABLE("RES-SER-439", "Claim not available: %s"),
+
 	NO_CHANNEL_IN_IDENTITY("RES-SER-440", "Identity data does not contain email/phone."),
 
+	PARTNER_SERVICE_EXCEPTION("RES-SER-441", "Exception while calling partner service"),
+	AUTH_LOCK_STATUS_FAILED("RES-SER-442", "Failed to retrieve auth lock status"),
 
-	AUTH_LOCK_STATUS_FAILED("RES-SER-441", "Failed to retrieve auth lock status")
-	;
+	AUTH_TYPE_CALLBACK_NOT_AVAILABLE("RES-SER-443", "Callback url is not available for auth type: %s"),
+	RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED("RES-SER-444", "Failed to update auth type status for resident"),
+
+	RESIDENT_AUTH_TXN_DETAILS_FAILURE("RES-SER-445", "Failed to retrieve auth transaction details"),
+	INVALID_PAGE_START_VALUE("RES-SER-446", "Invalid page start value"),
+	INVALID_PAGE_FETCH_VALUE("RES-SER-447", "Invalid page fetch value"),
+	PERPETUAL_VID_NOT_AVALIABLE("RES-SER-448", "Perpatual VID not available"),
+	AID_STATUS_IS_NOT_READY("RES-SER-449", "AID is not ready"),
+
+	BIOMETRIC_MISSING("RES-SER-450", "Biometric data is not available in database"),
+	EMPTY_COLLECTION_FOUND("RES-SER-451", "Collection is empty"),
+
+	IDVID_NOT_MATCH_TO_SESSION("RES-SER-452", "Provided individualId does not belong to the logged in session."),
+	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
+	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
+	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
+	RID_NOT_FOUND("RES-SER-456", "RID not found"), AID_NOT_FOUND("RES-SER-457", "AID not found"),
+	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-458", "Credential request id not found"),
+	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
+
+	PACKET_ENCRYPTION_FAILURE_EXCEPTION("RES-SER-455", "Packet encryption failed"),
+
+	REQUEST_ID_NOT_FOUND("RES-SER-456", "Request id not found"),
+	DIGITAL_CARD_RID_NOT_FOUND("RES-SER-457", "Digital Card Rid not found"),
+
+	PAYMENT_REQUIRED("RES-SER-402", "Payment is not made for this card"),
+	FAILED_TO_DELETE_DOC("RES-SER-458", "Failed to delete document"),
+	EVENT_STATUS_NOT_FOUND("RES-SER-459", "EID not available in database"),
+	CONSENT_DENIED("RES-SER-461",
+			"Accepting the terms and conditions is a mandatory action to proceed further. Please accept the consent to proceed"),
+
+	ACK_TEMPLATE_NOT_FOUND("RES-SER-460", "Acknowledgment template not found"),
+	NO_DOCUMENT_FOUND_FOR_TRANSACTION_ID("RES-SER-461", "No document found for transactionID: "),
+	CONFIG_FILE_NOT_FOUND_EXCEPTION("RES-SER-462","Config file not found in the config server"),
+	SEND_OTP_FAILED("RES-SER-463", "Send OTP failed."),
+	OTP_ALREADY_SENT("RES-SER-464", "OTP is already sent - Please use the Sent OTP or try again after sometime"),
+	BLOCKED_OTP_VALIDATE("RES-SER-465", "OTP is blocked" ),
+	UNABLE_TO_PROCESS("RES-SER-466", "Unable to process" ),
+	SERVER_ERROR("RES-SER-467", "Server error occurred" ),
+	VALIDATION_UNSUCCESS("RES-SER-468", "Validation un-success"),
+	EXPIRED_OTP("RES-SER-469", "OTP expired - Please send OTP again"),
+	NO_RECORDS_FOUND("RES-SER-470", "No Record(s) found"),
+	VID_VALIDATION("RES-SER-471","This VID cannot be revoked since you have logged in using same VID"),
+	CARD_NOT_FOUND("RES-SER-472", "Card not found." ),
+	INVALID_REQUEST_TYPE_CODE("RES-SER-473", "Invalid Request Type. Please input eventId only for VID_CARD_DOWNLOAD," +
+			"UPDATE_MY_UIN"),
+	INVALID_INDIVIDUAL_ID("RES-SER-474", "Individual ID is invalid." ),
+	PAYMENT_FAILED("RES-SER-475", "Payment has failed"),
+	PAYMENT_CANCELED("RES-SER-476", "Payment has been cancelled"),
+	TECHNICAL_ERROR("RES-SER-477", "Technical error has occurred"),
+	CAN_T_PLACE_ORDER("RES-SER-478", "Cannot place order at the moment"),
+	DOWNLOAD_PERSONALIZED_CARD("RES-SER-479", "Error in downloading personalized card" ),
+	VID_REQUEST_CARD_FAILED("RES-SER-480", "Error in Request card from vid"),
+	PATNER_NOT_FOUND("RES-SER-481","Partner not found."),
+	REDIRECT_URL_NOT_FOUND("RES-SER-482","Redirect url not found."),
+	CARD_NOT_READY("RES_SER_509", "The card is not ready for download."),
+	OTP_REQUEST_FLOODED("RES_SER_510", "Innumerous OTP requests received"),
+	EID_NOT_BELONG_TO_SESSION("RES-SER-511", "The entered EID is not associated with the UIN/VID used to log in."),
+	GRIEVANCE_TICKET_GENERATION_FAILED("RES-SER-512", "Unable to Generate Ticket of grievance"),
+	MISSING_INPUT_PARAMETER("RES-SER-414", "Missing input Parameter- %s"),
+	OTP_EXPIRED("RES-OTP-006","OTP has expired"),
+	OTP_INVALID("RES-OTP-007","OTP is invalid"),
+	INVALID_TRANSACTION_ID("RES-OTP-008","Input transactionId does not match transactionId of OTP Request"),
+	SMS_AUTH_LOCKED("RES-OTP-010","Your SMS OTP authentication is locked"),
+	EMAIL_AUTH_LOCKED("RES-OTP-011","Your email OTP authentication is locked"),
+	SMS_AND_EMAIL_AUTH_LOCKED("RES-OTP-012","Your SMS and email OTP authentication is locked"),
+	VID_CREATION_FAILED_WITH_REVOCATION("RES-SER-513",
+			"Failed to create VID, as the existing VID cannot be revoked since this VID was used to log into the current session."),
+	DOCUMENT_FILE_SIZE("RES-SER-514","File size cannot be more than 2MB."),
+	CHAR_LIMIT_EXCEEDS("RES-SER-514","Input text size exceeds the limit; Character limit=%d; inputType=%s"),
+	CONTAINS_SPECIAL_CHAR("RES-SER-515","Input text contains special characters;inputType=%s"),
+	UN_SUPPORTED_FILE_TYPE("RES-SER-516", "Unsupported file type. Supported file extensions: jpg, jpeg, png, pdf"),
+	UNABLE_TO_FETCH_SERVICE_HISTORY_FROM_DB("RES-SER-517", "Unable to fetch service history from database."),
+	INVALID_REG_CENTER_NAME("RES-SER-518", "Name cannot be empty as it is a mandatory field."),
+	SAME_EMAIL_ERROR("RES-SER-519", "Enter a new email ID"),
+	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number"),
+	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name" );
+	
+
+
 	private final String errorCode;
 	private final String errorMessage;
 

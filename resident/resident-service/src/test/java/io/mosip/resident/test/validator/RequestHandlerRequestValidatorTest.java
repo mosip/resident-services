@@ -40,7 +40,6 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.RequestHandlerValidationException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestHandlerRequestValidator;
 

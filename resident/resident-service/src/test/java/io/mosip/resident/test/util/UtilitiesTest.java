@@ -1,15 +1,25 @@
 package io.mosip.resident.test.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
+import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -27,20 +37,25 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ErrorDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.ResponseDTO1;
+import io.mosip.resident.dto.VidResDTO;
+import io.mosip.resident.dto.VidResponseDTO1;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.IndividualIdNotFoundException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -270,5 +285,55 @@ public class UtilitiesTest {
     	
     	String result=utilities.getLanguageCode();
     	assertNotNull(result);
+    }
+
+    @Test
+    public void testGetRidByIndividualId() throws ApisResourceAccessException {
+        ResponseWrapper response = new ResponseWrapper<>();
+        response.setResponse(Map.of("rid","123"));
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        String rid = utilities.getRidByIndividualId("123");
+        assertEquals("123", rid);
+    }
+
+    @Test(expected = IndividualIdNotFoundException.class)
+    public void testGetRidByIndividualIdFailed() throws ApisResourceAccessException {
+        ResponseWrapper<?> response = new ResponseWrapper<>();
+        response.setErrors(List.of(new ServiceError(ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorCode(),
+                ResidentErrorCode.INVALID_INDIVIDUAL_ID.getErrorMessage())));
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        utilities.getRidByIndividualId("123");
+    }
+
+    @Test
+    public void testGetRidStatus() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+        ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
+        ArrayList arrayList = new ArrayList<>();
+        arrayList.add("123");
+        response.setResponse(arrayList);
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        utilities.getRidStatus("123");
+    }
+
+    @Test
+    public void testGetTransactionTypeCode() throws ApisResourceAccessException, IOException {
+    	when(env.getProperty(any())).thenReturn("PACKET_UPLOAD,PACKET_RECEIVER");
+        HashMap<String ,Object> packetStatus = new HashMap<>();
+        packetStatus.put(TRANSACTION_TYPE_CODE, "PACKET_RECEIVER");
+        assertEquals(Optional.of("REQUEST_RECEIVED"),
+                ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus));
+    }
+
+    @Test
+    public void testGetTransactionTypeCodeFailed() throws ApisResourceAccessException, IOException {
+    	when(env.getProperty(any())).thenReturn("status,packet");
+        HashMap<String ,Object> packetStatus = new HashMap<>();
+        packetStatus.put(TRANSACTION_TYPE_CODE, "test");
+        ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus);
+    }
+
+    @Test
+    public void testGetJson(){
+        utilities.getJson("http://localhost", "http://localhost");
     }
 }

@@ -28,7 +28,7 @@ public interface ResidentConfigService {
 	 *
 	 * @return the UI schema
 	 */
-	String getUISchema();
+	String getUISchema(String schemaType);
 
 	/**
 	 * Gets the ui schema filtered input attributes.
@@ -38,7 +38,7 @@ public interface ResidentConfigService {
 	 * @throws JsonMappingException the json mapping exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	List<String> getUiSchemaFilteredInputAttributes() throws JsonParseException, JsonMappingException, IOException;
+	List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException;
 	
 	/**
 	 * Gets the Identity Mapping json
