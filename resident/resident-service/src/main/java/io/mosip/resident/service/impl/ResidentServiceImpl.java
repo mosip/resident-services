@@ -1851,7 +1851,7 @@ public class ResidentServiceImpl implements ResidentService {
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
 		List<String> statusFilterListContainingAllStatus = new ArrayList<>();
-		if(statusCodeList == null) {
+		if(statusCodeList == null || statusCodeList.isEmpty()) {
 			for (String status : statusFilterList) {
 				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
