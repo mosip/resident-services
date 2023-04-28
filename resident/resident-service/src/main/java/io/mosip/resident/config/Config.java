@@ -10,12 +10,18 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.NullLogChute;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
+import org.mvel2.MVEL;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
@@ -24,6 +30,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.kernel.templatemanager.velocity.impl.TemplateManagerImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 
 
 @Configuration
@@ -39,6 +46,17 @@ public class Config {
 	/** The cache. */
 	private boolean cache = Boolean.TRUE;
 
+	@Value("${resident-data-format-mvel-file-source}")
+	private Resource mvelFile;
+	
+
+	@Bean("varres")
+	public VariableResolverFactory getVariableResolverFactory() {
+		String mvelExpression = Utility.readResourceContent(mvelFile);
+		VariableResolverFactory functionFactory = new MapVariableResolverFactory();
+		MVEL.eval(mvelExpression, functionFactory);
+		return functionFactory;
+	}
 
 	@Bean
 	public FilterRegistrationBean<Filter> registerReqResFilter() {
@@ -87,7 +105,18 @@ public class Config {
 	}
 	
 	@Bean("restClientWithPlainRestTemplate")
-	public ResidentServiceRestClient plainRestClient() {
-		return new ResidentServiceRestClient(new RestTemplate());
+	public ResidentServiceRestClient plainRestClient(@Qualifier("restTemplate")RestTemplate restTemplate) {
+		return new ResidentServiceRestClient(restTemplate);
 	}
+
+	@Bean
+	public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+		threadPoolTaskScheduler.setPoolSize(5);
+		threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
+		return threadPoolTaskScheduler;
+	}
+	
+	
+
 }

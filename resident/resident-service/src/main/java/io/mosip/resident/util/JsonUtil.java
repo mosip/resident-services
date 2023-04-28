@@ -9,8 +9,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import javax.validation.Valid;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -26,9 +24,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import io.mosip.resident.dto.JsonValue;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
 
 /**
  * This class provides JSON utilites.

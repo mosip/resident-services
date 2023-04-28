@@ -27,11 +27,15 @@ import org.springframework.web.client.RestTemplate;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.controller.AcknowledgementController;
 import io.mosip.resident.controller.ProxyMasterdataController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
@@ -44,6 +48,9 @@ import io.mosip.resident.util.AuditUtil;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class ProxyMasterdataControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
 	private ProxyMasterdataService proxyMasterdataService;
@@ -59,6 +66,12 @@ public class ProxyMasterdataControllerTest {
 	private ResidentVidService vidService;
 
 	@MockBean
+	private AcknowledgementController acknowledgementController;
+
+	@MockBean
+	private AcknowledgementServiceImpl acknowledgementService;
+
+	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
 	@InjectMocks
@@ -69,6 +82,9 @@ public class ProxyMasterdataControllerTest {
 
 	@MockBean
 	private ObjectStoreHelper objectStore;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -169,6 +185,35 @@ public class ProxyMasterdataControllerTest {
 				proxyMasterdataService.getLatestIdSchema(Mockito.anyDouble(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=&domain=&type="))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(),
+				Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/templates/eng/OTP-sms-template"))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testGetGenderTypesByLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testGetDocumentTypesByDocumentCategoryCodeAndLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/documenttypes/documentcategorycode/langcode"))
+				.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void testGetGenderCodeByGenderTypeAndLangCode() throws Exception {
+		Mockito.when(proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/gendercode/gendertype/langcode"))
 				.andExpect(status().isOk());
 	}
 

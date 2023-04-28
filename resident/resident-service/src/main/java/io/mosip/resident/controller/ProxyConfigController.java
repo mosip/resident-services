@@ -2,7 +2,7 @@ package io.mosip.resident.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
@@ -26,7 +26,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @author Loganathan. S
  */
 @RestController
-@RequestMapping("/proxy/config")
 @Tag(name = "proxy-config-controller", description = "Proxy Config Controller")
 public class ProxyConfigController {
 
@@ -48,7 +47,7 @@ public class ProxyConfigController {
 	 *                                         exception
 	 */
 	@ResponseFilter
-	@GetMapping("/ui-properties")
+	@GetMapping("/proxy/config/ui-properties")
 	@Operation(summary = "getResidentUIProperties", description = "Get the Resident-UI properties", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -65,7 +64,7 @@ public class ProxyConfigController {
 		return propertiesResponse;
 	}
 
-	@GetMapping("/ui-schema")
+	@GetMapping("/auth-proxy/config/ui-schema/{schemaType}")
 	@Operation(summary = "getResidentUISchema", description = "Get the Resident-UI Schema", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -73,16 +72,17 @@ public class ProxyConfigController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public String getResidentUISchema() throws ResidentServiceCheckedException {
+	public String getResidentUISchema(
+			@PathVariable String schemaType) throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getResidentUISchema()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
-		String propertiesResponse = residentConfigService.getUISchema();
+		String propertiesResponse = residentConfigService.getUISchema(schemaType);
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getResidentUISchema()::exit");
 		return propertiesResponse;
 	}
 
-	@GetMapping("/identity-mapping")
+	@GetMapping("/auth-proxy/config/identity-mapping")
 	@Operation(summary = "getIdentityMapping", description = "Get the identity-mapping", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

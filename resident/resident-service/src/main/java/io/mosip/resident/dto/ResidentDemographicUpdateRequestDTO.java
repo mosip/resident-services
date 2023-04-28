@@ -1,5 +1,7 @@
 package io.mosip.resident.dto;
 
+import org.json.simple.JSONObject;
+
 import lombok.Data;
 
 /**
@@ -11,9 +13,10 @@ import lombok.Data;
 @Data
 public class ResidentDemographicUpdateRequestDTO {
 
-    private String transactionID;
+	private String transactionID;
 
-    private String individualId;
+	private String consent;
+	
+	private JSONObject identity;
 
-    private String identityJson;
 }
