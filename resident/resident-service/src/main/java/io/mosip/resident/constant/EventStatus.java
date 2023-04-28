@@ -8,7 +8,7 @@ import java.util.stream.Stream;
  * @author Kamesh Shekhar Prasad
  */
 public enum EventStatus {
-    FAILED("Failed"), SUCCESS("Success"), IN_PROGRESS("In Progress");
+    FAILED("Failed"), SUCCESS("Success"), IN_PROGRESS("In Progress"), ALL("all");
 	
 	private String status;
 	

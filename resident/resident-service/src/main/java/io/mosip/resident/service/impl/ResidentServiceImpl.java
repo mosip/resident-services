@@ -1851,17 +1851,16 @@ public class ResidentServiceImpl implements ResidentService {
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
 		List<String> statusFilterListContainingAllStatus = new ArrayList<>();
-		if(statusFilterList.size()>EVENT_STATUS_LIST_LENGTH){
-			statusFilterListContainingAllStatus.addAll(statusFilterList);
-		} else {
-			for (String status : statusFilterList) {
-				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
-					statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
-				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
-					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
-				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
-					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
-				}
+		for (String status : statusFilterList) {
+			if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
+				statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
+			} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
+				statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
+			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
+				statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+			} else if (!status.equalsIgnoreCase(EventStatus.ALL.getStatus())) {
+				statusFilterListContainingAllStatus.addAll(statusFilterList);
+				break;
 			}
 		}
 		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingAllStatus);
