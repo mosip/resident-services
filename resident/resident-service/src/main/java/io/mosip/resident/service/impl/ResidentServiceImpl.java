@@ -1669,7 +1669,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.findById(eventId);
 			if (residentTransactionEntity.isPresent()) {
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-				RequestType requestType = RequestType.valueOf(requestTypeCode);
+				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
 					return downloadCardFromDataShareUrl(residentTransactionEntity.get());

@@ -203,7 +203,7 @@ public class ResidentCredentialControllerTest {
 
     @Test
     public void testRequestShareCredWithPartner() throws Exception {
-		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString(), Mockito.anyString()))
+		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString()))
 				.thenReturn(Tuples.of(dtoV2, "12345"));
         ShareCredentialRequestDto request = new ShareCredentialRequestDto();
         SharableAttributesDTO attr = new SharableAttributesDTO();

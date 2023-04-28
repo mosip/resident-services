@@ -77,7 +77,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.valueOf(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset);
+            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.getRequestTypeFromString(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset);
 			String requestProperty = ackTemplateVariables.getT2();
             ResponseWrapper<?> responseWrapper = proxyMasterdataServiceImpl.
                     getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);

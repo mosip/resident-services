@@ -17,11 +17,9 @@ public interface ResidentCredentialService {
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request) throws ResidentServiceCheckedException;
 	
 	public ResidentCredentialResponseDto reqCredential(ResidentCredentialRequestDto request, String id) throws ResidentServiceCheckedException;
-	
-	public Tuple2<ResidentCredentialResponseDtoV2, String> shareCredential(ResidentCredentialRequestDto request, String requestType) throws ResidentServiceCheckedException, ApisResourceAccessException;
-	
-	public Tuple2<ResidentCredentialResponseDtoV2, String> shareCredential(ResidentCredentialRequestDto request, String requestType, String purpose) throws ResidentServiceCheckedException, ApisResourceAccessException;
-	
+
+	public Tuple2<ResidentCredentialResponseDtoV2, String> shareCredential(ResidentCredentialRequestDto request, String purpose) throws ResidentServiceCheckedException, ApisResourceAccessException;
+
 	public CredentialRequestStatusResponseDto getStatus(String requestId) throws ResidentServiceCheckedException;
 
 	public CredentialTypeResponse getCredentialTypes();
