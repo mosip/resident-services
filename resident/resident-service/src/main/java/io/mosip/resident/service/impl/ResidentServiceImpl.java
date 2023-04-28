@@ -1608,14 +1608,14 @@ public class ResidentServiceImpl implements ResidentService {
 			 String statusFilter, String searchText, String langCode, int timeZoneOffset)
 		throws ResidentServiceCheckedException, ApisResourceAccessException {
 				return getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter,
-						searchText, langCode, timeZoneOffset, null);
+						searchText, langCode, timeZoneOffset, null, null);
 	}
 	
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																				 String statusFilter, String searchText, String langCode, int timeZoneOffset,
-																				 String defaultPageSizeProperty)
+																				 String defaultPageSizeProperty, List<String> statusCodeList)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {
@@ -1641,7 +1641,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
 				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
-				langCode, timeZoneOffset);
+				langCode, timeZoneOffset, statusCodeList);
 		return serviceHistoryResponseDtoList;
 	}
 
@@ -1727,12 +1727,12 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
 																						 Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime,
-																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset)
+																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset, List<String> statusCodeList)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset));
+				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset, statusCodeList));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
@@ -1742,10 +1742,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
 																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
-																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
+																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset, List<String> statusCodeList)
 			throws ResidentServiceCheckedException {
 		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageStart, pageFetch, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
+				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset, statusCodeList);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
 				.getResultList();
@@ -1761,39 +1761,39 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
 															   String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-															   String serviceType, int timeZoneOffset) {
+															   String serviceType, int timeZoneOffset, List<String> statusCodeList) {
 		String query = "SELECT * FROM resident_transaction  where token_id = '"
 				+ idaToken+"'";
 		String dynamicQuery = "";
 		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase("ALL")
 				&& statusFilter != null && searchText != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType)
-					+ getStatusFilterQuery(statusFilter) + getSearchQuery(searchText);
+					+ getStatusFilterQuery(statusFilter, statusCodeList) + getSearchQuery(searchText);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
-					+ getStatusFilterQuery(statusFilter );
+					+ getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
 					+ getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter )
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter, statusCodeList)
 					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null
 				&& searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter )
+			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter, statusCodeList)
 					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter );
+			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
 			dynamicQuery = getServiceQuery(serviceType ) + getSearchQuery(searchText );
 		} else if (statusFilter != null && searchText != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter ) + getSearchQuery(searchText );
+			dynamicQuery = getStatusFilterQuery(statusFilter, statusCodeList) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter );
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL")) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType );
@@ -1802,7 +1802,7 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL")) {
 			dynamicQuery = getServiceQuery(serviceType );
 		} else if (statusFilter != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter );
+			dynamicQuery = getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (searchText != null) {
 			dynamicQuery = getSearchQuery(searchText );
 		}
@@ -1846,21 +1846,22 @@ public class ResidentServiceImpl implements ResidentService {
 		return " and Replace(event_id,'-','') like '"+text+ "'";
 	}
 
-	public String getStatusFilterQuery(String statusFilter) {
+	public String getStatusFilterQuery(String statusFilter, List<String> statusCodeList) {
 		List<String> statusFilterList = List.of(statusFilter.split(",")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
 		List<String> statusFilterListContainingAllStatus = new ArrayList<>();
-		for (String status : statusFilterList) {
-			if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
-				statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
-			} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
-				statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
-			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
-				statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+		if(statusCodeList == null) {
+			for (String status : statusFilterList) {
+				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
+				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
+				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+				}
 			}
-		}
-		if(statusFilterListContainingAllStatus.isEmpty()){
+		}else {
 			statusFilterListContainingAllStatus.addAll(statusFilterList);
 		}
 		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingAllStatus);
@@ -2180,13 +2181,13 @@ public class ResidentServiceImpl implements ResidentService {
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestType();
-		List<String> statusFilterArrayList = requestTypeList.stream()
+		List<String> statusCodeList = requestTypeList.stream()
 				.flatMap(requestType -> requestType.getNotificationStatusList(env))
 				.collect(Collectors.toCollection(ArrayList::new));
-		String statusFilter = String.join(ResidentConstants.COMMA, statusFilterArrayList);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
 																				 null, null, ServiceType.ASYNC.name(), null,
-																				 statusFilter, null, languageCode, timeZoneOffset, RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE);
+																				 null, null, languageCode, timeZoneOffset,
+				RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE, statusCodeList);
 		responseWrapper.setId(unreadnotificationlist);
 		responseWrapper.setVersion(serviceEventVersion);
 		return responseWrapper;
