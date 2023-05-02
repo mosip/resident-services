@@ -364,7 +364,7 @@ public class TemplateUtilTest {
                 getDescriptionTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, ResidentConstants.ATTRIBUTES.toString(), "eng");
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = ResidentServiceException.class)
     public void testGetTemplateValueFromTemplateTypeCodeAndLangCode() throws ResidentServiceCheckedException {
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
                         .thenThrow(new ResidentServiceCheckedException());

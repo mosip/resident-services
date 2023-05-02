@@ -60,7 +60,7 @@ public class PageDto<T> {
 
 
     protected boolean canEqual(Object other) {
-        return other instanceof PageDto;
+        return other instanceof io.mosip.resident.dto.PageDto;
     }
 
     public String toString() {

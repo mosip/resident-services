@@ -1480,7 +1480,7 @@ public class RequestValidatorTest {
 		requestValidator.validateChannelVerificationStatus(channel, individualId);
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateChannelVerificationStatusNullIndividualId() throws Exception{
 		String channel ="PHONE";
 		requestValidator.validateChannelVerificationStatus(channel, null);

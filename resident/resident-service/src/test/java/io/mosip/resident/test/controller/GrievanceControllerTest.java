@@ -122,7 +122,7 @@ public class GrievanceControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
-        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
         HashMap<String, String> response = new HashMap<>();
         String ticketId = UUID.randomUUID().toString();
         response.put("ticketId", ticketId);

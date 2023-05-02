@@ -12,10 +12,10 @@
 
 -- This Table is used to save the  transaction related to residents.
 CREATE TABLE resident.resident_transaction(
-	aid character varying(64) NOT NULL,
+    event_id VARCHAR(64) NOT NULL,
+	request_trn_id character varying(64) ,
 	request_dtimes timestamp NOT NULL,
 	response_dtime timestamp NOT NULL,
-	request_trn_id character varying(64),
 	request_type_code character varying(128) NOT NULL,
 	request_summary character varying(1024) NOT NULL,
 	status_code character varying(36) NOT NULL,
@@ -33,11 +33,27 @@ CREATE TABLE resident.resident_transaction(
     upd_dtimes timestamp,
     is_deleted boolean NOT NULL DEFAULT false,
     del_dtimes timestamp,
-    CONSTRAINT pk_restrn_aid PRIMARY KEY (aid)
+    auth_type_code character varying(128),
+    static_tkn_id character varying(64),
+    request_signature character varying,
+    response_signature character varying,
+    olv_partner_id character varying(36),
+    aid character varying(64),
+    reference_link character varying(1024),
+    read_status boolean NOT NULL DEFAULT false,
+    pinned_status boolean NOT NULL DEFAULT false,
+    purpose character varying(1024),
+    credential_request_id character varying(256),
+    attribute_list character varying(255),
+    individual_id character varying(1024),
+    consent character varying(50),
+    tracking_id character varying(50),
+    CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
 );
 
 COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
-COMMENT ON COLUMN resident.resident_transaction.aid IS 'A unique identifier for each transaction';
+COMMENT ON COLUMN resident_transaction.event_id IS 'Unique Id of the transaction.';
+COMMENT ON COLUMN resident.resident_transaction.aid IS 'The Application ID';
 COMMENT ON COLUMN resident.resident_transaction.request_dtimes IS 'The time when the request is received by the service';
 COMMENT ON COLUMN resident.resident_transaction.response_dtime IS 'The time when the response is received by the service';
 COMMENT ON COLUMN resident.resident_transaction.request_trn_id IS 'The unique identifier for each transaction';
@@ -58,5 +74,15 @@ COMMENT ON COLUMN resident.resident_transaction.upd_by IS 'The user who updated 
 COMMENT ON COLUMN resident.resident_transaction.upd_dtimes IS 'The time when the record is updated';
 COMMENT ON COLUMN resident.resident_transaction.is_deleted IS 'The flag to identify if the record is deleted or not';
 COMMENT ON COLUMN resident.resident_transaction.del_dtimes IS 'The time when the record is deleted';
+COMMENT ON COLUMN resident.resident_transaction.auth_type_code IS 'The type of the authentication';
+COMMENT ON COLUMN resident.resident_transaction.static_tkn_id IS 'The static token id';
+COMMENT ON COLUMN resident.resident_transaction.request_signature IS 'The signature of the request';
+COMMENT ON COLUMN resident.resident_transaction.response_signature IS 'The signature of the response';
+COMMENT ON COLUMN resident.resident_transaction.olv_partner_id IS 'The partner id';
+COMMENT ON COLUMN resident.resident_transaction.reference_link IS 'The reference link';
+COMMENT ON COLUMN resident.resident_transaction.read_status IS 'The flag to identify if the request is read or not';
+COMMENT ON COLUMN resident.resident_transaction.pinned_status IS 'The flag to identify if the request is pinned or not';
+COMMENT ON COLUMN resident.resident_transaction.purpose IS 'The purpose of the request';
+COMMENT ON COLUMN resident.resident_transaction.credential_request_id IS 'The credential request id';
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
