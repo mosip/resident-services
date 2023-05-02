@@ -1,56 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
-import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANGUAGE;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.math.BigInteger;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -163,6 +112,56 @@ import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
+import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANGUAGE;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.math.BigInteger;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -197,6 +196,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
+	private static final int EVENT_STATUS_LIST_LENGTH = 3;
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -1608,14 +1608,14 @@ public class ResidentServiceImpl implements ResidentService {
 			 String statusFilter, String searchText, String langCode, int timeZoneOffset)
 		throws ResidentServiceCheckedException, ApisResourceAccessException {
 				return getServiceHistory(pageStart, pageFetch, fromDateTime, toDateTime, serviceType, sortType, statusFilter,
-						searchText, langCode, timeZoneOffset, null);
+						searchText, langCode, timeZoneOffset, null, null);
 	}
 	
 	@Override
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																				 LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																				 String statusFilter, String searchText, String langCode, int timeZoneOffset,
-																				 String defaultPageSizeProperty)
+																				 String defaultPageSizeProperty, List<String> statusCodeList)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 
 		if (pageStart == null) {
@@ -1641,7 +1641,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> serviceHistoryResponseDtoList = getServiceHistoryDetails(
 				sortType, pageStart, pageFetch, fromDateTime, toDateTime, serviceType, statusFilter, searchText,
-				langCode, timeZoneOffset);
+				langCode, timeZoneOffset, statusCodeList);
 		return serviceHistoryResponseDtoList;
 	}
 
@@ -1669,7 +1669,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.findById(eventId);
 			if (residentTransactionEntity.isPresent()) {
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-				RequestType requestType = RequestType.valueOf(requestTypeCode);
+				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
 					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
@@ -1727,12 +1727,12 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
 																						 Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime,
-																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset)
+																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset, List<String> statusCodeList)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset));
+				searchText, fromDateTime, toDateTime, serviceType, langCode, timeZoneOffset, statusCodeList));
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
@@ -1742,10 +1742,10 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
 																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
-																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset)
+																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset, List<String> statusCodeList)
 			throws ResidentServiceCheckedException {
 		String nativeQueryString = getDynamicNativeQueryStringForServiceHistory(sortType, idaToken, pageStart, pageFetch, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset);
+				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset, statusCodeList);
 		Query nativeQuery = entityManager.createNativeQuery(nativeQueryString, ResidentTransactionEntity.class);
 		List<ResidentTransactionEntity> residentTransactionEntityList = (List<ResidentTransactionEntity>) nativeQuery
 				.getResultList();
@@ -1761,39 +1761,39 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public String getDynamicNativeQueryStringForServiceHistory(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
 															   String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-															   String serviceType, int timeZoneOffset) {
+															   String serviceType, int timeZoneOffset, List<String> statusCodeList) {
 		String query = "SELECT * FROM resident_transaction  where token_id = '"
 				+ idaToken+"'";
 		String dynamicQuery = "";
 		if (fromDateTime != null && toDateTime != null && serviceType != null && !serviceType.equalsIgnoreCase("ALL")
 				&& statusFilter != null && searchText != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType)
-					+ getStatusFilterQuery(statusFilter) + getSearchQuery(searchText);
+					+ getStatusFilterQuery(statusFilter, statusCodeList) + getSearchQuery(searchText);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
-					+ getStatusFilterQuery(statusFilter );
+					+ getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType )
 					+ getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && searchText != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter )
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter, statusCodeList)
 					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null
 				&& searchText != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter )
+			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter, statusCodeList)
 					+ getSearchQuery(searchText );
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && statusFilter != null) {
-			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter );
+			dynamicQuery = getServiceQuery(serviceType ) + getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL") && searchText != null) {
 			dynamicQuery = getServiceQuery(serviceType ) + getSearchQuery(searchText );
 		} else if (statusFilter != null && searchText != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter ) + getSearchQuery(searchText );
+			dynamicQuery = getStatusFilterQuery(statusFilter, statusCodeList) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getSearchQuery(searchText );
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter );
+			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (fromDateTime != null && toDateTime != null && serviceType != null
 				&& !serviceType.equalsIgnoreCase("ALL")) {
 			dynamicQuery = getDateQuery(fromDateTime, toDateTime, timeZoneOffset) + getServiceQuery(serviceType );
@@ -1802,7 +1802,7 @@ public class ResidentServiceImpl implements ResidentService {
 		} else if (serviceType != null && !serviceType.equalsIgnoreCase("ALL")) {
 			dynamicQuery = getServiceQuery(serviceType );
 		} else if (statusFilter != null) {
-			dynamicQuery = getStatusFilterQuery(statusFilter );
+			dynamicQuery = getStatusFilterQuery(statusFilter, statusCodeList);
 		} else if (searchText != null) {
 			dynamicQuery = getSearchQuery(searchText );
 		}
@@ -1846,24 +1846,25 @@ public class ResidentServiceImpl implements ResidentService {
 		return " and Replace(event_id,'-','') like '"+text+ "'";
 	}
 
-	public String getStatusFilterQuery(String statusFilter) {
+	public String getStatusFilterQuery(String statusFilter, List<String> statusCodeList) {
 		List<String> statusFilterList = List.of(statusFilter.split(",")).stream().map(String::trim)
 				.collect(Collectors.toList());
 		String statusFilterListString = "";
-		List<String> statusFilterListContainingALlStatus = new ArrayList<>();
-		for (String status : statusFilterList) {
-			if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
-				statusFilterListContainingALlStatus.addAll(
-						List.of(EventStatusSuccess.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
-				statusFilterListContainingALlStatus.addAll(
-						List.of(EventStatusFailure.values()).stream().map(Enum::toString).collect(Collectors.toList()));
-			} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
-				statusFilterListContainingALlStatus.addAll(List.of(EventStatusInProgress.values()).stream()
-						.map(Enum::toString).collect(Collectors.toList()));
+		List<String> statusFilterListContainingAllStatus = new ArrayList<>();
+		if(statusCodeList == null || statusCodeList.isEmpty()) {
+			for (String status : statusFilterList) {
+				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
+				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
+				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
+					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
+				}
 			}
+		}else {
+			statusFilterListContainingAllStatus.addAll(statusFilterList);
 		}
-		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingALlStatus);
+		statusFilterListString = convertStatusFilterListToString(statusFilterListContainingAllStatus);
 		return " and status_code in (" + statusFilterListString + ")";
 	}
 
@@ -2179,9 +2180,14 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestType();
+		List<String> statusCodeList = requestTypeList.stream()
+				.flatMap(requestType -> requestType.getNotificationStatusList(env))
+				.collect(Collectors.toCollection(ArrayList::new));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = getServiceHistory(pageStart, pageFetch,
 																				 null, null, ServiceType.ASYNC.name(), null,
-																				 null, null, languageCode, timeZoneOffset, RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE);
+																				 null, null, languageCode, timeZoneOffset,
+				RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE, statusCodeList);
 		responseWrapper.setId(unreadnotificationlist);
 		responseWrapper.setVersion(serviceEventVersion);
 		return responseWrapper;
@@ -2196,13 +2202,8 @@ public class ResidentServiceImpl implements ResidentService {
 										 String serviceType, String statusFilter, int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
-		String requestProperty = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
-		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
-		Map<String, Object> templateResponse = new LinkedHashMap<>(
-				(Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
+		String templateTypeCode = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
