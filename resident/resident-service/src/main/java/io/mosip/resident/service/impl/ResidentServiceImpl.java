@@ -928,7 +928,7 @@ public class ResidentServiceImpl implements ResidentService {
 					idObjectValidator.validateIdObject(schemaJson, jsonObject);
 				} catch (IdObjectValidationFailedException e) {
 					String error = e.getErrorTexts().toString();
-					if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
+					if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER) && !(error.contains(ResidentConstants.INVALID_INPUT_PARAMETER_LANG))) {
 						List<String> errors = e.getErrorTexts();
 						String errorMessage = errors.get(0);
 						throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
