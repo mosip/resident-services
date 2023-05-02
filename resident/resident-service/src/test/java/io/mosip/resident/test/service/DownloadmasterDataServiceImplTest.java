@@ -89,8 +89,6 @@ public class DownloadmasterDataServiceImplTest {
     private String eventId;
     private String languageCode;
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
-    private Map<String, Object> templateResponse;
-    private ResponseWrapper responseWrapper;
     private Map<String, String> templateVariables;
 
     @Mock
@@ -105,20 +103,17 @@ public class DownloadmasterDataServiceImplTest {
 
     @Before
     public void setup() throws Exception {
-        templateResponse = new LinkedHashMap<>();
         templateVariables = new LinkedHashMap<>();
         values = new LinkedHashMap<>();
         values.put("test", String.class);
         templateVariables.put("eventId", eventId);
-        responseWrapper = new ResponseWrapper<>();
-        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
-        responseWrapper.setResponse(templateResponse);
         result = "test".getBytes(StandardCharsets.UTF_8);
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
         languageCode = "eng";
 
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).
-                thenReturn(responseWrapper);
+		Mockito.when(
+				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn("file text template");
         ReflectionTestUtils.setField(downLoadMasterDataService, "templateManagerBuilder", templateManagerBuilder);
         templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
         InputStream stream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));

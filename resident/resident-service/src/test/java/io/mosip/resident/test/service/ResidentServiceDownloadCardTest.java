@@ -156,6 +156,9 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(entityManager.createNativeQuery(Mockito.anyString())).thenReturn(query);
         Mockito.when(query.getSingleResult()).thenReturn(BigInteger.valueOf(1));
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "partner1");
+        Mockito.when(
+				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn("file text template");
     }
 
     @Test
@@ -230,12 +233,6 @@ public class ResidentServiceDownloadCardTest {
         PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
         responseDtoPageDto.setData(List.of(serviceHistoryResponseDto));
         responseWrapper.setResponse(responseDtoPageDto);
-        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
-        Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
-        responseWrapper1.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(responseWrapper1);
         Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",	
@@ -253,12 +250,6 @@ public class ResidentServiceDownloadCardTest {
         PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
         responseDtoPageDto.setData(List.of(serviceHistoryResponseDto));
         responseWrapper.setResponse(responseDtoPageDto);
-        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
-        Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
-        responseWrapper1.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(responseWrapper1);
         Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
@@ -275,12 +266,6 @@ public class ResidentServiceDownloadCardTest {
         PageDto<ServiceHistoryResponseDto> responseDtoPageDto= new PageDto<>();
         responseDtoPageDto.setData(null);
         responseWrapper.setResponse(responseDtoPageDto);
-        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
-        Map<String, Object> templateResponse = new LinkedHashMap<>();
-        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
-        responseWrapper1.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(responseWrapper1);
         Mockito.when(templateManager.merge(any(), any())).thenReturn(new ByteArrayInputStream("pdf".getBytes()));
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
