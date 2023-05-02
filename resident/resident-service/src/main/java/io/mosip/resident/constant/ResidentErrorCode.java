@@ -130,7 +130,8 @@ public enum ResidentErrorCode {
 	INVALID_REG_CENTER_NAME("RES-SER-518", "Name cannot be empty as it is a mandatory field."),
 	SAME_EMAIL_ERROR("RES-SER-519", "Enter a new email ID"),
 	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number"),
-	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name" );
+	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name" ),
+	INVALID_UIN_VID_ENTERED("RES-SER-522", "Invalid UIN/VID entered");
 	
 
 
