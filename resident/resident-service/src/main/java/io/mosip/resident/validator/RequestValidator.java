@@ -1,31 +1,5 @@
 package io.mosip.resident.validator;
 
-import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
-import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
-import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -83,6 +57,30 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.mosip.resident.constant.RegistrationConstants.MESSAGE_CODE;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.EMAIL_CHANNEL;
+import static io.mosip.resident.service.impl.ResidentOtpServiceImpl.PHONE_CHANNEL;
 
 @Component
 public class RequestValidator {
@@ -979,6 +977,14 @@ public class RequestValidator {
 		}
 	}
 
+	private boolean validateUinOrVid(String individualId) {
+		try {
+			return this.validateUin(individualId) || this.validateVid(individualId);
+		} catch (InvalidIDException e) {
+			return false;
+		}
+	}
+
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {
 		validateRequestNewApi(reqDto, RequestIdType.CHECK_STATUS);
 		validateTransactionId(reqDto.getRequest().getTransactionId());
@@ -995,10 +1001,11 @@ public class RequestValidator {
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "channel", "Request channel verification API"));
 			throw new InvalidInputException("channel");
 		}
-		if (StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
+		if (StringUtils.isEmpty(individualId) || !validateUinOrVid(individualId)) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request channel verification API"));
-			throw new InvalidInputException("individualId");
+			throw new ResidentServiceException(ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorCode(),
+					ResidentErrorCode.INVALID_UIN_VID_ENTERED.getErrorMessage());
 		}
 		if (!individualId.matches(idAllowedSpecialCharRegex)) {
 			throw new ResidentServiceException(ResidentErrorCode.CONTAINS_SPECIAL_CHAR.getErrorCode(),
