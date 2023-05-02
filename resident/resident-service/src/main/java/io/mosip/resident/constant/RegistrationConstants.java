@@ -2,10 +2,8 @@ package io.mosip.resident.constant;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -455,10 +453,6 @@ public class RegistrationConstants {
 	public static final String STATION_NUMBER = "78213";
 	public static final String RID_DATE_FORMAT = "ddMMyyyyHHmmss";
 	public static final String DATE_FORMAT_REG = "dd-MM-yyyy";
-
-	// Logger - Constants
-	public static final String APPLICATION_ID = "REG";
-	public static final String APPLICATION_NAME = "REGISTRATION";
 
 	// Audit - Constants
 	public static final String AUDIT_DEFAULT_USER = "NA";
@@ -1685,9 +1679,9 @@ public class RegistrationConstants {
 	public static final String SYNCSTATUSCOMMENT = "UIN Reactivation and Deactivation By External Resources";
 	public static final String EXTENSION_OF_FILE = ".zip";
 	
-	public static final  String APPLICATIONNAME="Resident portal";
+	public static final  String RESIDENT_APPLICATION_NAME="Resident Service";
 	
-	public static final  String APPLICATIONID="10011";
+	public static final  String RESIDENT_APPLICATION_ID="RES_SER";
 	
 	
 

@@ -1,10 +1,10 @@
 package io.mosip.resident.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.io.Serializable;
 import java.util.List;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Instantiates a new packet receiver response DTO.

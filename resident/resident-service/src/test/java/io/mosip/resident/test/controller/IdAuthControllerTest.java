@@ -29,10 +29,13 @@ import io.mosip.resident.dto.IdAuthRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
+import reactor.util.function.Tuples;
 
 /**
  * Resident IdAuth controller test class.
@@ -43,9 +46,12 @@ import io.mosip.resident.util.AuditUtil;
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 public class IdAuthControllerTest {
+	
+    @MockBean
+    private ProxyIdRepoService proxyIdRepoService;
 
 	@MockBean
-	private IdAuthService idAuthService;
+	private IdAuthServiceImpl idAuthService;
 
 	@Mock
 	private AuditUtil auditUtil;
@@ -68,6 +74,9 @@ public class IdAuthControllerTest {
 	
 	@MockBean
 	private ObjectStoreHelper objectStore;
+	
+	@MockBean
+    private ResidentServiceImpl residentService;
 
 	Gson gson = new GsonBuilder().serializeNulls().create();
 
@@ -79,7 +88,7 @@ public class IdAuthControllerTest {
 		this.mockMvc = MockMvcBuilders.standaloneSetup(idAuthController).build();
 		RequestWrapper<IdAuthRequestDto> requestWrapper = new RequestWrapper<IdAuthRequestDto>();
 		IdAuthRequestDto idAuthRequestDto = new IdAuthRequestDto();
-		idAuthRequestDto.setTransactionID("1234567890");
+		idAuthRequestDto.setTransactionId("1234567890");
 		idAuthRequestDto.setIndividualId("8251649601");
 		idAuthRequestDto.setOtp("111111");
 		requestWrapper.setRequest(idAuthRequestDto);
@@ -89,10 +98,9 @@ public class IdAuthControllerTest {
 
 	@Test
 	public void testValidateOtp() throws Exception {
-		Boolean authStatus = true;
-		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(authStatus);
-		mockMvc.perform(MockMvcRequestBuilders.post("/req/auth").contentType(MediaType.APPLICATION_JSON_VALUE)
+		Mockito.when(idAuthService.validateOtpV1(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(true, "12345"));
+		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}
 

@@ -1,9 +1,10 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
+import java.util.Map;
+
 import io.mosip.resident.constant.ResidentErrorCode;
 
-public class VidRevocationException extends BaseUncheckedException{
+public class VidRevocationException extends BaseResidentUncheckedExceptionWithMetadata {
 
 	/**
 	 * 
@@ -21,6 +22,13 @@ public class VidRevocationException extends BaseUncheckedException{
 	 */
 	public VidRevocationException(String errorMessage) {
 		super(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorCode(), errorMessage);
+	}
+	public VidRevocationException(String errorMessage, Throwable rootCause) {
+		super(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorCode(), errorMessage, rootCause);
+	}
+	
+	public VidRevocationException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
+		super(ResidentErrorCode.VID_REVOCATION_EXCEPTION.getErrorCode(), errorMessage, rootCause, metadata);
 	}
 
 }

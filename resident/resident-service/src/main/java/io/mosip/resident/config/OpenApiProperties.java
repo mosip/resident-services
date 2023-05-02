@@ -1,10 +1,11 @@
 package io.mosip.resident.config;
 
-import lombok.Data;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
+import lombok.Data;
 
 @Configuration
 @ConfigurationProperties(prefix = "openapi")

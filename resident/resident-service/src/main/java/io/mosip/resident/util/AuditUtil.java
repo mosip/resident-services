@@ -10,9 +10,11 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -28,8 +30,11 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ValidationException;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 @Component
 public class AuditUtil {
@@ -45,6 +50,12 @@ public class AuditUtil {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private Environment environment;
 	
   
 	/** The Constant UNKNOWN_HOST. */
@@ -54,9 +65,6 @@ public class AuditUtil {
 
 	private String hostName = null;
 	
-	@Autowired
-	private TokenGenerator tokenGenerator;
-
 	public String getServerIp() {
 		try {
 			return InetAddress.getLocalHost().getHostAddress();
@@ -79,7 +87,6 @@ public class AuditUtil {
 		hostName = getServerName();
 	}
 	
-	//TODO rename to sendAuditRequest
 	public  void setAuditRequestDto(EventEnum eventEnum) {
 		AuditRequestDTO auditRequestDto = new AuditRequestDTO();
 
@@ -87,9 +94,25 @@ public class AuditUtil {
 		auditRequestDto.setHostName(hostName);
 		auditRequestDto.setApplicationId(eventEnum.getApplicationId());
 		auditRequestDto.setApplicationName(eventEnum.getApplicationName());
-		auditRequestDto.setSessionUserId(SecurityContextHolder.getContext().getAuthentication().getName());
-		auditRequestDto.setSessionUserName(SecurityContextHolder.getContext().getAuthentication().getName());
-		auditRequestDto.setCreatedBy(SecurityContextHolder.getContext().getAuthentication().getName());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication != null) {
+			String name = null;
+			try {
+				name = identityService.getAvailableclaimValue(
+						this.environment.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			} catch (ApisResourceAccessException e) {
+				throw new RuntimeException(e);
+			}
+			if (name == null || name.trim().isEmpty()) {
+				auditRequestDto.setSessionUserId("UnknownSessionId");
+				auditRequestDto.setSessionUserName("UnknownSessionName");
+				auditRequestDto.setCreatedBy("Unknown");
+			} else {
+				auditRequestDto.setSessionUserId(name);
+				auditRequestDto.setSessionUserName(name);
+				auditRequestDto.setCreatedBy(name);
+			}
+		}
 		auditRequestDto.setActionTimeStamp(DateUtils.getUTCCurrentDateTime());
 		auditRequestDto.setDescription(eventEnum.getDescription());
 		auditRequestDto.setEventType(eventEnum.getType());
@@ -99,6 +122,7 @@ public class AuditUtil {
 		auditRequestDto.setEventId(eventEnum.getEventId());
 		auditRequestDto.setId(eventEnum.getId());
 		auditRequestDto.setIdType(eventEnum.getIdType());
+		auditRequestDto.setCreatedBy(ResidentConstants.RESIDENT);
 		callAuditManager(auditRequestDto);
 	}
 	

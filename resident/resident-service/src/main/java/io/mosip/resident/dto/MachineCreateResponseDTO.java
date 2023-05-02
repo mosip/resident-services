@@ -1,11 +1,13 @@
 package io.mosip.resident.dto;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * This class is used to get machine data from the master data service.

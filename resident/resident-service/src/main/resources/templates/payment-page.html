@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script type="text/javascript">
+
+		function redirectOrderStatus(transactionId, errorCode, errorMsg) {
+			var redirectUrl = $("#redirectUrl").html();
+			var newUrl = redirectUrl.includes("?") ? redirectUrl + "&" : redirectUrl + "?";
+			var query = new URLSearchParams();
+			if (errorCode && errorMsg) {
+				query.append("paymentTransactionId", transactionId);
+				query.append("error_code", errorCode);
+				query.append("error_message", errorMsg);
+			} else {
+				var eventId = $("#eventId").html();
+				var residentAddress = $("#residentAddress").html();
+				query.append("paymentTransactionId", transactionId);
+				query.append("eventId", eventId);
+				query.append("residentFullAddress", residentAddress);
+			}
+			location.href = newUrl + query.toString();
+		}
+
+	</script>
+
+	<style type="text/css">
+		div {
+			display: flex;
+			justify-content: center;
+		}
+	</style>
+</head>
+
+<body>
+	<h2>Payment Page</h2>
+	<span id="redirectUrl" hidden>[[${redirectUrl}]]</span>
+	<p>
+		<label>Event Id : <span id="eventId">[[${eventId}]]</span></label>
+	</p>
+	<p>
+		<label>Name : [[${residentName}]]</label>
+	</p>
+	<p>
+		<label>Full Address : <span id="residentAddress">[[${residentFullAddress}]]</span></label>
+	</p>
+
+	<div>
+		<button onClick="redirectOrderStatus('1234327890', '', '');">Confirm Order</button>
+		<button onClick="redirectOrderStatus('1234327896', 'RES-SER-457', 'Payment has failed');">Payment
+			failed</button>
+		<button onClick="redirectOrderStatus('1234327897', 'RES-SER-458', 'Payment has been cancelled');">Payment
+			Cancelled</button>
+		<button onClick="redirectOrderStatus('1234327898', 'RES-SER-459', 'Technical error has occurred');">Technical
+			error</button>
+		<button onClick="redirectOrderStatus('1234327899', 'RES-SER-460', 'Cannot place order at the moment');">Cannot
+			placed order</button>
+	</div>
+
+</body>
+
+</html>

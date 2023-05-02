@@ -13,10 +13,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResidentUpdateRequestDto extends ResidentDemographicUpdateRequestDTO {
 
+	private String individualId;
+	
 	private String individualIdType;
 
 	private String otp;
 
 	private List<ResidentDocuments> documents;
+	
+	private String identityJson;
+	
 
 }

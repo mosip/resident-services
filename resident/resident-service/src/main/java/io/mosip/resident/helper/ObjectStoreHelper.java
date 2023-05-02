@@ -106,9 +106,9 @@ public class ObjectStoreHelper {
 	 */
 	public void putObject(String objectName, InputStream data, Map<String, Object> metadata) {
 		try {
-			adapter.putObject(objectStoreAccountName, objectStoreBucketName, null, null, objectName, encryptData(data));
+			adapter.putObject(objectStoreAccountName, null, null, null, objectName, encryptData(data));
 			if (Objects.nonNull(metadata))
-				adapter.addObjectMetaData(objectStoreAccountName, objectStoreBucketName, null, null, objectName,
+				adapter.addObjectMetaData(objectStoreAccountName, null, null, null, objectName,
 						metadata);
 		} catch (ResidentServiceException | ObjectStoreAdapterException | IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -128,7 +128,7 @@ public class ObjectStoreHelper {
 	public String getObject(String objectName) {
 		try {
 			return decryptData(
-					adapter.getObject(objectStoreAccountName, objectStoreBucketName, null, null, objectName));
+					adapter.getObject(objectStoreAccountName, null, null, null, objectName));
 		} catch (ResidentServiceException | ObjectStoreAdapterException | IOException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
@@ -162,7 +162,7 @@ public class ObjectStoreHelper {
 	 */
 	public Map<String, Object> getMetadata(String objectName) {
 		try {
-			return adapter.getMetaData(objectStoreAccountName, objectStoreBucketName, null, null, objectName);
+			return adapter.getMetaData(objectStoreAccountName, null, null, null, objectName);
 		} catch (ObjectStoreAdapterException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
@@ -178,7 +178,8 @@ public class ObjectStoreHelper {
 	 * @return The decrypted data.
 	 */
 	private String decryptData(InputStream data) throws IOException {
-		return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false);
+    return encryptDecryptData(IOUtils.toString(data, Charset.defaultCharset()), false, applicationId, referenceId);
+
 	}
 
 	/**
@@ -192,7 +193,13 @@ public class ObjectStoreHelper {
 	 */
 	private InputStream encryptData(InputStream data) throws IOException {
 		return new ByteArrayInputStream(
-				(encryptDecryptData(CryptoUtil.encodeToURLSafeBase64(IOUtils.toByteArray(data)), true).getBytes()));
+
+				(encryptDecryptData(CryptoUtil.encodeToURLSafeBase64(IOUtils.toByteArray(data)), true, applicationId, referenceId).getBytes()));
+	}
+
+
+	public String decryptData(String data, String applicationId, String referenceId){
+		return encryptDecryptData(data, false, applicationId, referenceId);
 	}
 
 	/**
@@ -202,7 +209,7 @@ public class ObjectStoreHelper {
 	 * @param toEncrypt true if you want to encrypt, false if you want to decrypt
 	 * @return ResponseWrapper<Map<String, Object>>
 	 */
-	private String encryptDecryptData(String data, boolean toEncrypt) {
+	public String encryptDecryptData(String data, boolean toEncrypt, String applicationId, String referenceId) {
 		try {
 			CryptomanagerRequestDto request = new CryptomanagerRequestDto();
 			request.setApplicationId(applicationId);
@@ -216,7 +223,7 @@ public class ObjectStoreHelper {
 					ResponseWrapper.class);
 			if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
 				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage());
+						LoggerFileConstant.APPLICATIONID.toString(), responseWrapper.getErrors().get(0).getMessage() + " \n at: " + Thread.getAllStackTraces());
 				throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
 						ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage());
 			}
@@ -226,6 +233,22 @@ public class ObjectStoreHelper {
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			throw new ResidentServiceException(ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorCode(),
 					ResidentErrorCode.ENCRYPT_DECRYPT_ERROR.getErrorMessage(), e);
+		}
+	}
+
+	/**
+	 * This function returns boolean value indicating whether the object deleted or not.
+	 * @param objectName The name of the object to be deleted.
+	 * @return boolean value indicating whether the object deleted or not.
+	 */
+	public boolean deleteObject(String objectName) {
+		try {
+			return adapter.deleteObject(objectStoreAccountName, null, null, null, objectName);
+		} catch (ResidentServiceException | ObjectStoreAdapterException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			throw new ResidentServiceException(ResidentErrorCode.FAILED_TO_DELETE_DOC.getErrorCode(),
+					ResidentErrorCode.FAILED_TO_DELETE_DOC.getErrorMessage(), e);
 		}
 	}
 }

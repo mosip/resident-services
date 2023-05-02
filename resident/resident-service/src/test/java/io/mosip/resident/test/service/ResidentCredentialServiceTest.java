@@ -1,25 +1,16 @@
 package io.mosip.resident.test.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.util.CryptoUtil;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.dto.*;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.OtpValidationFailedException;
-import io.mosip.resident.exception.ResidentCredentialServiceException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TokenGenerator;
-import io.mosip.resident.util.Utilitiy;
+import java.io.IOException;
+import java.net.URI;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -31,17 +22,48 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.util.CryptoUtil;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
+import io.mosip.resident.dto.CredentialReqestDto;
+import io.mosip.resident.dto.CredentialRequestStatusDto;
+import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.CredentialTypeResponse;
+import io.mosip.resident.dto.CryptomanagerRequestDto;
+import io.mosip.resident.dto.CryptomanagerResponseDto;
+import io.mosip.resident.dto.EncryptResponseDto;
+import io.mosip.resident.dto.Issuer;
+import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
+import io.mosip.resident.dto.PartnerResponseDto;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
+import io.mosip.resident.dto.ResponseWrapper;
+import io.mosip.resident.dto.Type;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.OtpValidationFailedException;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentCredentialService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
+import io.mosip.resident.service.impl.ResidentCredentialServiceImpl;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuple2;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -66,18 +88,36 @@ public class ResidentCredentialServiceTest {
     private ObjectMapper mapper;
 
     @Mock
-    private Utilitiy utilitiy;
+    private Utility utility;
 
     @Mock
     private AuditUtil audit;
+    
+    @Mock
+    private ResidentTransactionRepository residentTransactionRepository;
+    
+    @Mock
+    private IdentityServiceImpl identityServiceImpl;
+    
+    @Mock
+    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
 
     private ResidentCredentialRequestDto residentCredentialRequestDto;
+    
+    private SecureRandom random;
 
     @InjectMocks
     private ResidentCredentialService residentCredentialService = new ResidentCredentialServiceImpl();
 
     @Before
-    public void setup() throws IOException, ResidentServiceCheckedException {
+    public void setup() throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
+    	random=new SecureRandom();
+    	ReflectionTestUtils.setField(residentCredentialService, "max", 982608);
+    	ReflectionTestUtils.setField(residentCredentialService, "min", 120078);
+    	ReflectionTestUtils.setField(residentCredentialService, "ridSuffix", "-pdf");
+    	List<String> attributeList=new ArrayList<>();
+    	attributeList.add("name");
+    	attributeList.add("gender");
         residentCredentialRequestDto = new ResidentCredentialRequestDto();
         residentCredentialRequestDto.setOtp("123");
         residentCredentialRequestDto.setTransactionID("12345");
@@ -86,6 +126,13 @@ public class ResidentCredentialServiceTest {
         residentCredentialRequestDto.setCredentialType("euin");
         residentCredentialRequestDto.setEncrypt(true);
         residentCredentialRequestDto.setEncryptionKey("abc123");
+        residentCredentialRequestDto.setSharableAttributes(attributeList);
+        residentCredentialRequestDto.setConsent("Accepted");
+        ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+		residentTransactionEntity.setEventId("e65c86f5-8929-4547-a156-9b349c29ab8b");
+		when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
+        when(utility.createEventId()).thenReturn("1111111111111111");
     }
 
     @Test
@@ -117,6 +164,13 @@ public class ResidentCredentialServiceTest {
 
         ResidentCredentialResponseDto credentialResponseDto = residentCredentialService.reqCredential(residentCredentialRequestDto);
         assertEquals("10001100010006920211220064226", credentialResponseDto.getRequestId());
+    }
+    
+    @Test(expected = ResidentServiceException.class)
+    public void testGenerateCredentialWithIndividualIdNull() throws ResidentServiceCheckedException {
+    	residentCredentialRequestDto.setIndividualId(null);
+
+        residentCredentialService.reqCredential(residentCredentialRequestDto);
     }
     
     @Test(expected = ResidentServiceException.class)
@@ -183,6 +237,96 @@ public class ResidentCredentialServiceTest {
 
         residentCredentialService.reqCredential(residentCredentialRequestDto);
     }
+
+    @Test
+    public void testShareCredentialPurpose() throws IOException, ApisResourceAccessException, ResidentServiceCheckedException {
+        ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+        residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
+        ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
+        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponse(residentCredentialResponseDto);
+        String valueAsString = objectMapper.writeValueAsString(residentCredentialResponseDto);
+
+        PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
+        partnerResponseDto.setOrganizationName("MOSIP");
+        ResponseWrapper<PartnerResponseDto> partnerResponseDtoResponseWrapper = new ResponseWrapper<>();
+        partnerResponseDtoResponseWrapper.setResponse(partnerResponseDto);
+
+        RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
+        requestDto.setId("mosip.credential.request.service.id");
+        requestDto.setRequest(new CredentialReqestDto());
+        requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+        requestDto.setVersion("1.0");
+
+        String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + residentCredentialRequestDto.getIssuer();
+        URI partnerUri = URI.create(partnerUrl);
+        when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
+
+        Tuple2<ResidentCredentialResponseDtoV2, String> credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto, "Banking");
+        assertNotNull(credentialResponseDto.getT1().getStatus());
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testShareCredentialConsentNull() throws IOException, ApisResourceAccessException, ResidentServiceCheckedException {
+    	residentCredentialRequestDto.setConsent(null);
+        residentCredentialService.shareCredential(residentCredentialRequestDto, "Banking");
+    }
+
+    @Test(expected = ResidentCredentialServiceException.class)
+    public void testShareCredentialWithApisResourceAccessException() throws Exception{
+    	residentCredentialRequestDto.setEncryptionKey(null);
+    	residentCredentialRequestDto.setSharableAttributes(null);
+    	ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+        residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
+        ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
+        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponse(residentCredentialResponseDto);
+        String valueAsString = objectMapper.writeValueAsString(residentCredentialResponseDto);
+
+        PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
+        partnerResponseDto.setOrganizationName("MOSIP");
+        ResponseWrapper<PartnerResponseDto> partnerResponseDtoResponseWrapper = new ResponseWrapper<>();
+        partnerResponseDtoResponseWrapper.setResponse(partnerResponseDto);
+
+        RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
+        requestDto.setId("mosip.credential.request.service.id");
+        requestDto.setRequest(new CredentialReqestDto());
+        requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+        requestDto.setVersion("1.0");
+
+        String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + residentCredentialRequestDto.getIssuer();
+        URI partnerUri = URI.create(partnerUrl);
+        when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(ApisResourceAccessException.class);
+        residentCredentialService.shareCredential(residentCredentialRequestDto, null);
+    }
+
+    @Test(expected = ResidentCredentialServiceException.class)
+    public void testShareCredentialWithIOException() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
+        residentCredentialResponseDto.setRequestId("10001100010006920211220064226");
+        ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
+        response.setResponsetime(DateUtils.getCurrentDateTimeString());
+        response.setResponse(residentCredentialResponseDto);
+
+        PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
+        partnerResponseDto.setOrganizationName("MOSIP");
+        ResponseWrapper<PartnerResponseDto> partnerResponseDtoResponseWrapper = new ResponseWrapper<>();
+        partnerResponseDtoResponseWrapper.setResponse(partnerResponseDto);
+
+        RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
+        requestDto.setId("mosip.credential.request.service.id");
+        requestDto.setRequest(new CredentialReqestDto());
+        requestDto.setRequesttime(DateUtils.getUTCCurrentDateTimeString());
+        requestDto.setVersion("1.0");
+
+        String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + residentCredentialRequestDto.getIssuer();
+        URI partnerUri = URI.create(partnerUrl);
+        when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
+        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(partnerResponseDtoResponseWrapper);
+        residentCredentialService.shareCredential(residentCredentialRequestDto, null);
+    }
     
     @Test
     public void testGetCredentialTypes() throws ApisResourceAccessException {
@@ -202,7 +346,7 @@ public class ResidentCredentialServiceTest {
         credentialTypeResponse.setCredentialTypes(types);
 
         when(env.getProperty(ApiName.CREDENTIAL_TYPES_URL.name())).thenReturn("https://mosip.net/v1/credentialservice/types");
-        when(residentServiceRestClient.getApi(any(), any())).thenReturn(credentialTypeResponse);
+        when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(credentialTypeResponse);
         CredentialTypeResponse credentialTypes = residentCredentialService.getCredentialTypes();
         assertEquals(credentialTypes.getCredentialTypes().size(), 1);
         assertEquals(credentialTypes.getCredentialTypes().get(0).getDescription(), "Secure Digital QR Code");
@@ -213,7 +357,7 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testGetCredentialTypesWithAPIResourceException() throws ApisResourceAccessException {
         when(env.getProperty(ApiName.CREDENTIAL_TYPES_URL.name())).thenReturn("https://mosip.net/v1/credentialservice/types");
-        when(residentServiceRestClient.getApi(any(), any())).thenThrow(ApisResourceAccessException.class);
+        when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(ApisResourceAccessException.class);
         residentCredentialService.getCredentialTypes();
     }
     
@@ -275,7 +419,7 @@ public class ResidentCredentialServiceTest {
     	responseWrapper.setResponse(credentialRequestStatusDto);
     	
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenReturn(responseWrapper);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(responseWrapper);
     	
     	
     	CredentialRequestStatusResponseDto response=residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
@@ -287,14 +431,14 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testGetStatusWithApisResourceAccessException() throws ApisResourceAccessException, ResidentServiceCheckedException {
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(ApisResourceAccessException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(ApisResourceAccessException.class);
     	residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
     
     @Test(expected = ResidentCredentialServiceException.class)
     public void testGetStatusWithIllegalArgumentException() throws IllegalArgumentException, ApisResourceAccessException, ResidentServiceCheckedException {
     	when(env.getProperty(any())).thenReturn("https://credentialUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(IllegalArgumentException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(IllegalArgumentException.class);
     	residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
     
@@ -318,9 +462,8 @@ public class ResidentCredentialServiceTest {
     	
     	when(residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class)).thenReturn(responseWrapper);
     	URI dataShareUri = URI.create(credentialRequestStatusDto.getUrl());
-		
-    	when(residentServiceRestClient.getApi(dataShareUri, String.class)).thenReturn(str);
-    	
+    	when(residentServiceRestClient.getApi(dataShareUri, byte[].class)).thenReturn("str".getBytes());
+
     	RequestWrapper<CryptomanagerRequestDto> request = new RequestWrapper<>();
 		CryptomanagerRequestDto cryptomanagerRequestDto = new CryptomanagerRequestDto();
 		cryptomanagerRequestDto.setApplicationId("APPLICATION_Id");
@@ -332,13 +475,10 @@ public class ResidentCredentialServiceTest {
 		cryptomanagerRequestDto.setTimeStamp(localdatetime);
 		request.setRequest(cryptomanagerRequestDto);
 		
-    	when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(str);
     	CryptomanagerResponseDto responseObject=new CryptomanagerResponseDto();
     	responseObject.setResponse(new EncryptResponseDto(str));
-    	
-    	when(mapper.readValue(str, CryptomanagerResponseDto.class)).thenReturn(responseObject);
-  
-    	byte[] card=residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763");
+        ReflectionTestUtils.setField(residentCredentialService, "applicationId", "resident");
+    	byte[] card=residentCredentialService.getCard("effc56cd-cf3b-4042-ad48-7277cf90f763", null,null);
     	assertNotNull(card);
     }
     
@@ -373,7 +513,7 @@ public class ResidentCredentialServiceTest {
     	response.setResponse(credentialCancelRequestResponseDto);
     	
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenReturn(response);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(response);
     	
     	CredentialCancelRequestResponseDto responseDto=residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
     	assertEquals("ID-1", responseDto.getId());
@@ -393,7 +533,7 @@ public class ResidentCredentialServiceTest {
     	response.setResponse(credentialCancelRequestResponseDto);
     	
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenReturn(response);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenReturn(response);
     	
     	ServiceError error=new ServiceError();
     	error.setErrorCode("invalid-101");
@@ -408,7 +548,7 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testCancelCredentialRequestWithApisResourceAccessException() throws Exception{
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(ApisResourceAccessException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(ApisResourceAccessException.class);
     	
     	residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
@@ -416,7 +556,7 @@ public class ResidentCredentialServiceTest {
     @Test(expected = ResidentCredentialServiceException.class)
     public void testCancelCredentialRequestWithIllegalArgumentException() throws Exception{
     	when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
-    	when(residentServiceRestClient.getApi(any(), any())).thenThrow(IllegalArgumentException.class);
+    	when(residentServiceRestClient.getApi((URI)any(), any())).thenThrow(IllegalArgumentException.class);
     	
     	residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
     }
