@@ -123,7 +123,7 @@ public class ResidentCredentialController {
 		buildAdditionalMetadata(requestDTO, request);
 		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		Tuple2<ResidentCredentialResponseDtoV2, String> tupleResponse;
-		tupleResponse = residentCredentialService.shareCredential(request.getRequest(), RequestType.SHARE_CRED_WITH_PARTNER.name(),purpose);
+		tupleResponse = residentCredentialService.shareCredential(request.getRequest(), purpose);
 		response.setId(shareCredentialId);
 		response.setVersion(shareCredentialVersion);
 		response.setResponse(tupleResponse.getT1());

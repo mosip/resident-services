@@ -1669,7 +1669,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.findById(eventId);
 			if (residentTransactionEntity.isPresent()) {
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-				RequestType requestType = RequestType.valueOf(requestTypeCode);
+				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
 				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
 					cardType = IdType.UIN.name();
 					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
@@ -2202,13 +2202,8 @@ public class ResidentServiceImpl implements ResidentService {
 										 String serviceType, String statusFilter, int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
-		String requestProperty = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
-		ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, requestProperty);
-		logger.debug("template data from DB:" + proxyResponseWrapper.getResponse());
-		Map<String, Object> templateResponse = new LinkedHashMap<>(
-				(Map<String, Object>) proxyResponseWrapper.getResponse());
-		String fileText = (String) templateResponse.get(ResidentConstants.FILE_TEXT);
+		String templateTypeCode = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 		// for avoiding null values in PDF
 		List<ServiceHistoryResponseDto> serviceHistoryDtlsList = responseWrapper.getResponse().getData();
 		if (serviceHistoryDtlsList != null && !serviceHistoryDtlsList.isEmpty()) {
