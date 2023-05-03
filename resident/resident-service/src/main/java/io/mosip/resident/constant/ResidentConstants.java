@@ -160,6 +160,7 @@ public class ResidentConstants {
 
     public static final String CHANNEL = "channel";
     public static final String ATTRIBUTE_LIST_DELIMITER = ",";
+    public static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 
     public static final String MASK_REQUIRED = "maskRequired";
     public static final String MASK_PREFIX = "masked_";
