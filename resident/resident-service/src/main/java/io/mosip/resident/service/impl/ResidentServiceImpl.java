@@ -927,10 +927,11 @@ public class ResidentServiceImpl implements ResidentService {
 				try {
 					idObjectValidator.validateIdObject(schemaJson, jsonObject);
 				} catch (IdObjectValidationFailedException e) {
-					String error = e.getErrorTexts().toString();
-					if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER) && !(error.contains(ResidentConstants.INVALID_INPUT_PARAMETER_LANG))) {
-						List<String> errors = e.getErrorTexts();
-						String errorMessage = errors.get(0);
+					List<String> error = e.getErrorTexts().stream()
+							.filter(t -> t.contains(ResidentConstants.INVALID_INPUT_PARAMETER))
+							.collect(Collectors.toList());
+					if (error.get(0) != null) {
+						String errorMessage = error.get(0);
 						throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
 								errorMessage);
 					}
