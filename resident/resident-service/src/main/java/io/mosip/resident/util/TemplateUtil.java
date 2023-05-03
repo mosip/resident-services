@@ -236,6 +236,7 @@ import reactor.util.function.Tuples;
 		if (residentTransactionEntity.getPurpose() != null && !residentTransactionEntity.getPurpose().isEmpty()) {
 			List<String> authTypeListFromEntity = List
 					.of(residentTransactionEntity.getPurpose().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+			//TODO logic needs to change as per the templates.
 			return authTypeListFromEntity.stream().map(authType -> {
 				String fileTextTemplate = fileText;
 				if (authType.contains(EventStatusSuccess.UNLOCKED.name())) {
