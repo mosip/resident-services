@@ -233,7 +233,6 @@ public class ResidentConstants {
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
     public static final CharSequence ATTRIBUTES = "attributes";
     public static final String INVALID_INPUT_PARAMETER="Invalid input parameter";
-    public static final String INVALID_INPUT_PARAMETER_LANG="Invalid input parameter - identity/preferredLang";
 
     public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
 
