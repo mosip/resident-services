@@ -231,12 +231,30 @@ import reactor.util.function.Tuples;
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
-            String authTypes = residentTransactionEntity.getPurpose();
-            if (authTypes != null && !authTypes.isEmpty())
-                return authTypes;
-            return fileText;
-    }
+	public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity,
+			String fileText, String languageCode) {
+		if (residentTransactionEntity.getPurpose() != null && !residentTransactionEntity.getPurpose().isEmpty()) {
+			List<String> authTypeListFromEntity = List
+					.of(residentTransactionEntity.getPurpose().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+			//TODO logic needs to change as per the templates.
+			return authTypeListFromEntity.stream().map(authType -> {
+				String fileTextTemplate = fileText;
+				if (authType.contains(EventStatusSuccess.UNLOCKED.name())) {
+					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
+							EventStatusSuccess.UNLOCKED.name().toLowerCase());
+				} else {
+					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
+							EventStatusSuccess.LOCKED.name().toLowerCase());
+				}
+				String templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+						getAttributeListTemplateTypeCode(authType.split(ResidentConstants.COLON)[0].trim()));
+				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
+						templateData);
+				return fileTextTemplate;
+			}).collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+		}
+		return fileText;
+	}
 
     public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId, String languageCode, Integer timeZoneOffset){
         return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset).getT1(), "");
