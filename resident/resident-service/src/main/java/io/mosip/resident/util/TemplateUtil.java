@@ -251,7 +251,7 @@ import reactor.util.function.Tuples;
 				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
 						templateData);
 				return fileTextTemplate;
-			}).collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+			}).collect(Collectors.joining(ResidentConstants.AUTH_TYPE_LIST_DELIMITER));
 		}
 		return fileText;
 	}
