@@ -94,7 +94,14 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 				residentTransactionEntity.setRequestSignature((String) dataMap.get(REQUEST_SIGNATURE));
 				residentTransactionEntity.setResponseSignature((String) dataMap.get(RESPONSE_SIGNATURE));
 				if (status == null) {
-					residentTransactionEntity.setStatusCode((String) dataMap.get(STATUS_CODE));
+					Object object = dataMap.get(STATUS_CODE);
+					if (object instanceof String) {
+						residentTransactionEntity.setStatusCode((String) object);
+					} else {
+						residentTransactionEntity.setStatusCode(EventStatusFailure.N.name());
+					}
+				} else {
+					residentTransactionEntity.setStatusCode(status);
 				}
 				residentTransactionEntity.setAuthTypeCode((String) dataMap.get(AUTHTYPE_CODE));
 				residentTransactionEntity.setStatusComment((String) dataMap.get(STATUS_COMMENT));
