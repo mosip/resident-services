@@ -236,17 +236,21 @@ import reactor.util.function.Tuples;
 		if (residentTransactionEntity.getPurpose() != null && !residentTransactionEntity.getPurpose().isEmpty()) {
 			List<String> authTypeListFromEntity = List
 					.of(residentTransactionEntity.getPurpose().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-			//TODO logic needs to change as per the templates.
 			return authTypeListFromEntity.stream().map(authType -> {
 				String fileTextTemplate = fileText;
+				String templateData="";
 				if (authType.contains(EventStatusSuccess.UNLOCKED.name())) {
+					templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							getAttributeListTemplateTypeCode(EventStatusSuccess.UNLOCKED.name()));
 					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
-							EventStatusSuccess.UNLOCKED.name().toLowerCase());
+							templateData);
 				} else {
+					templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							getAttributeListTemplateTypeCode(EventStatusSuccess.LOCKED.name()));
 					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
-							EventStatusSuccess.LOCKED.name().toLowerCase());
+							templateData);
 				}
-				String templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+				templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
 						getAttributeListTemplateTypeCode(authType.split(ResidentConstants.COLON)[0].trim()));
 				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
 						templateData);
