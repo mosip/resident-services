@@ -96,13 +96,12 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 				if (status == null) {
 					Object object = dataMap.get(STATUS_CODE);
 					if (object instanceof String) {
-						residentTransactionEntity.setStatusCode((String) object);
+						status = (String) object;
 					} else {
-						residentTransactionEntity.setStatusCode(EventStatusFailure.N.name());
+						status = EventStatusFailure.N.name();
 					}
-				} else {
-					residentTransactionEntity.setStatusCode(status);
 				}
+				residentTransactionEntity.setStatusCode(status);
 				residentTransactionEntity.setAuthTypeCode((String) dataMap.get(AUTHTYPE_CODE));
 				residentTransactionEntity.setStatusComment((String) dataMap.get(STATUS_COMMENT));
 				Object reqdatetimeObj = dataMap.get(REQUESTDATETIME);
