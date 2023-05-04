@@ -158,7 +158,7 @@ import reactor.util.function.Tuples;
         if(attributeListTemplateValue.isEmpty()){
             return "";
         } else {
-            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
         }
     }
 
@@ -255,7 +255,7 @@ import reactor.util.function.Tuples;
 				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
 						templateData);
 				return fileTextTemplate;
-			}).collect(Collectors.joining(ResidentConstants.AUTH_TYPE_LIST_DELIMITER));
+			}).collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 		return fileText;
 	}
