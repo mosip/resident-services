@@ -559,6 +559,16 @@ public class Utility {
 		}
 		return propertyName;
 	}
+	
+	public String getFileNameforId(String id, String propertyName, int timeZoneOffset){
+		if(id!=null && propertyName.contains("{" + TemplateVariablesConstants.ID + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.ID+ "}", id);
+		}
+		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+		}
+		return propertyName;
+	}
 
 	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		IdentityDTO identityDTO = identityService.getIdentity(individualId);
