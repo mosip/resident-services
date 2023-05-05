@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
@@ -73,10 +72,6 @@ public class DownloadCardController {
     
     @Autowired
     private Environment environment;
-    
-    @Value("${mosip.resident.download.card.naming.convention}")
-    private String downloadCardName;
-    
 
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardController.class);
 
@@ -87,7 +82,10 @@ public class DownloadCardController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-    public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) throws ResidentServiceCheckedException{
+	public ResponseEntity<Object> downloadCard(
+			@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			throws ResidentServiceCheckedException {
 		logger.debug("DownloadCardController::downloadCard()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
 		InputStreamResource resource = null;
@@ -112,8 +110,11 @@ public class DownloadCardController {
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
-						"attachment; filename=\"" + downloadCardName + "_"
-								+ downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
+						"attachment; filename=\"" + utility.getFileNameforId(
+								downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId(),
+								Objects.requireNonNull(this.environment
+										.getProperty(ResidentConstants.DOWNLOAD_CARD_NAMING_CONVENTION_PROPERTY)),
+								timeZoneOffset) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(resource);
 	}
     
