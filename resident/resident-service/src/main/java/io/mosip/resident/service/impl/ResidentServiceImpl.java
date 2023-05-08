@@ -171,7 +171,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ONLINE_VERIFICATION_PARTNER = "Online_Verification_Partner";
 	private static final String MOSIP_IDA_PARTNER_TYPE = "mosip.ida.partner.type";
 	private static final int UPDATE_COUNT_FOR_NEW_USER_ACTION_ENTITY = 1;
-	private static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 	private static final String AUTH_TYPE_SEPERATOR = "-";
 	private static final String PROCESSED = "PROCESSED";
 	private static final String DATETIME_PATTERN = "mosip.utc-datetime-pattern";
@@ -927,10 +926,10 @@ public class ResidentServiceImpl implements ResidentService {
 				try {
 					idObjectValidator.validateIdObject(schemaJson, jsonObject);
 				} catch (IdObjectValidationFailedException e) {
-					String error = e.getErrorTexts().toString();
-					if (error.contains(ResidentConstants.INVALID_INPUT_PARAMETER)) {
-						List<String> errors = e.getErrorTexts();
-						String errorMessage = errors.get(0);
+					Optional<String> error = e.getErrorTexts().stream()
+							.filter(t -> t.contains(ResidentConstants.INVALID_INPUT_PARAMETER)).findAny();
+					if (error.isPresent()) {
+						String errorMessage = error.get();
 						throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
 								errorMessage);
 					}
@@ -1274,7 +1273,7 @@ public class ResidentServiceImpl implements ResidentService {
 			List<AuthTypeStatusDtoV2> authTypesStatusList = authLockOrUnLockRequestDtoV2.getAuthTypes();
 			String authType = authTypesStatusList.stream().map(dto ->ResidentServiceImpl.getAuthTypeBasedOnConfigV2(dto)
 							+ResidentConstants.COLON+ (dto.getLocked()? LOCKED:UNLOCKED))
-					.collect(Collectors.joining(AUTH_TYPE_LIST_DELIMITER));
+					.collect(Collectors.joining(ResidentConstants.AUTH_TYPE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
 					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2,
