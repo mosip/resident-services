@@ -152,13 +152,20 @@ public class DownloadCardController {
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
     		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws BaseCheckedException {
     	auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
-        requestValidator.validateDownloadCardVid(vid);
-        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
-        return ResponseEntity.ok()
-				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+		Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = null;
+		try {
+			requestValidator.validateDownloadCardVid(vid);
+			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
+		} catch (ResidentServiceException | InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID)));
+		}
+		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
-    }
+	}
 
     @GetMapping("/aid-stage/{aid}")
     public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
