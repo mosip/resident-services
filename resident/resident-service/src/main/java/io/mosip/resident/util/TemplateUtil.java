@@ -115,7 +115,6 @@ import reactor.util.function.Tuples;
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
                 utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
-        templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()), languageCode));
