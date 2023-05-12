@@ -6,7 +6,6 @@ import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
 import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
 import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
 import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.PREFERRED_LANGUAGE;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
 import static io.mosip.resident.constant.ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER;
@@ -862,7 +861,6 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			if (Utility.isSecureSession()) {
-				demographicIdentity = getLanguageNameBasedOnFlag(demographicIdentity);
 				residentUpdateResponseDTOV2 = new ResidentUpdateResponseDTOV2();
 				responseDto = residentUpdateResponseDTOV2;
 				residentTransactionEntity = createResidentTransEntity(dto);
@@ -1156,32 +1154,6 @@ public class ResidentServiceImpl implements ResidentService {
 			eventId = ResidentConstants.NOT_AVAILABLE;
 		}
 		return Tuples.of(responseDto, eventId);
-	}
-
-	private JSONObject getLanguageNameBasedOnFlag(JSONObject demographicIdentity) {
-		String preferredLangValueInIdentityMapping ="";
-		try {
-			Map<String, Object> identityMappingMap = residentConfigService.getIdentityMappingMap();
-			if(identityMappingMap.containsKey(PREFERRED_LANGUAGE)) {
-				preferredLangValueInIdentityMapping = String.valueOf(((Map) identityMappingMap.get(PREFERRED_LANGUAGE)).get(VALUE));
-			}
-		} catch (ResidentServiceCheckedException | IOException e ) {
-			throw new RuntimeException(e);
-		}
-		String preferredLang = (String) demographicIdentity.get(preferredLangValueInIdentityMapping);
-		if(preferredLang ==null || preferredLang.isEmpty()){
-			return demographicIdentity;
-		}
-		String preferredLangValue = "";
-		if(isPreferedLangFlagEnabled){
-			preferredLangValue = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangValueInIdentityMapping, preferredLang);
-			if(preferredLangValue!=null && !preferredLangValue.isEmpty()){
-				demographicIdentity.put(preferredLangValueInIdentityMapping, preferredLangValue);
-			} else {
-				throw new ResidentServiceException(ResidentErrorCode.INVALID_LANGUAGE_NAME, ResidentErrorCode.INVALID_LANGUAGE_NAME.getErrorMessage());
-			}
-		}
-		return demographicIdentity;
 	}
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
