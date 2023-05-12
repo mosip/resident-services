@@ -37,9 +37,9 @@ public enum UISchemaTypes {
 		return Optional.empty();
 	}
 
-	public static Optional<String> getUISchemaTypeFromRequestTypeCode(String requestTypeString) {
+	public static Optional<String> getUISchemaTypeFromRequestTypeCode(RequestType requestType) {
 		for (UISchemaTypes uiSchemaType : values()) {
-			if (uiSchemaType.getRequestType().name().equals(requestTypeString)) {
+			if (uiSchemaType.getRequestType().name().equals(requestType.name())) {
 				return Optional.of(uiSchemaType.getFileIdentifier());
 			}
 		}
