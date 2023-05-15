@@ -115,7 +115,6 @@ import reactor.util.function.Tuples;
         templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
                 utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getCrDtimes()));
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
-        templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
                 residentTransactionEntity.getAttributeList()), languageCode));
@@ -158,7 +157,7 @@ import reactor.util.function.Tuples;
         if(attributeListTemplateValue.isEmpty()){
             return "";
         } else {
-            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
         }
     }
 
@@ -231,12 +230,34 @@ import reactor.util.function.Tuples;
         return fileText;
     }
 
-    public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
-            String authTypes = residentTransactionEntity.getPurpose();
-            if (authTypes != null && !authTypes.isEmpty())
-                return authTypes;
-            return fileText;
-    }
+	public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity,
+			String fileText, String languageCode) {
+		if (residentTransactionEntity.getPurpose() != null && !residentTransactionEntity.getPurpose().isEmpty()) {
+			List<String> authTypeListFromEntity = List
+					.of(residentTransactionEntity.getPurpose().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+			return authTypeListFromEntity.stream().map(authType -> {
+				String fileTextTemplate = fileText;
+				String templateData="";
+				if (authType.contains(EventStatusSuccess.UNLOCKED.name())) {
+					templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							getAttributeListTemplateTypeCode(EventStatusSuccess.UNLOCKED.name()));
+					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
+							templateData);
+				} else {
+					templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							getAttributeListTemplateTypeCode(EventStatusSuccess.LOCKED.name()));
+					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
+							templateData);
+				}
+				templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+						getAttributeListTemplateTypeCode(authType.split(ResidentConstants.COLON)[0].trim()));
+				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
+						templateData);
+				return fileTextTemplate;
+			}).collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+		}
+		return fileText;
+	}
 
     public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId, String languageCode, Integer timeZoneOffset){
         return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset).getT1(), "");

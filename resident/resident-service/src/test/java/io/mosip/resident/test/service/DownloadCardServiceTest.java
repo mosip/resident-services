@@ -130,7 +130,7 @@ public class DownloadCardServiceTest {
         Mockito.when(residentCredentialService.getCard(Mockito.anyString(), isNull(), isNull())).thenReturn(pdfbytes);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
         Mockito.when(identityService.getIndividualIdForAid(Mockito.anyString())).thenReturn("7841261580");
-        Mockito.when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEntity(Mockito.anyString())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("12345");
 
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();

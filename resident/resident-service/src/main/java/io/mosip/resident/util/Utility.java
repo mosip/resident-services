@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
 import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -464,15 +465,19 @@ public class Utility {
 		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
 	}
 
-
-	public ResidentTransactionEntity createEntity() {
+	public ResidentTransactionEntity createEntity(String requestType){
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
-		residentTransactionEntity.setReadStatus(true);
+		if(ServiceType.ASYNC.getRequestTypes().contains(RequestType.valueOf(requestType)) ){
+			residentTransactionEntity.setReadStatus(false);
+		}else {
+			residentTransactionEntity.setReadStatus(true);
+		}
+		residentTransactionEntity.setRequestTypeCode(requestType);
 		return residentTransactionEntity;
 	}
 
@@ -515,7 +520,7 @@ public class Utility {
 					env.getProperty(ResidentConstants.REASON), utilities.getTotalNumberOfPageInPdf(pdfValue), password);
 			request.setApplicationId(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID));
 			request.setReferenceId(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID));
-			request.setData(Base64.encodeBase64String(pdfValue.toByteArray()));
+			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));
 			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			LocalDateTime localdatetime = LocalDateTime
 					.parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN))), format);
@@ -553,6 +558,16 @@ public class Utility {
 	public String getFileName(String eventId, String propertyName, int timeZoneOffset){
 		if(eventId!=null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
+		}
+		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+		}
+		return propertyName;
+	}
+	
+	public String getFileNameforId(String id, String propertyName, int timeZoneOffset){
+		if(id!=null && propertyName.contains("{" + TemplateVariablesConstants.ID + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.ID+ "}", id);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));

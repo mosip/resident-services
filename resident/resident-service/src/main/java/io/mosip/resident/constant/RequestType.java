@@ -80,7 +80,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
 			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
-	AUTH_TYPE_LOCK_UNLOCK("Lock or/and Unlock Authentication Types",
+	AUTH_TYPE_LOCK_UNLOCK("Secure My ID",
 			TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			"lock-unlock-auth",
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock,
@@ -102,7 +102,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 
 	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp, "send-otp",
 			TemplateUtil::getNotificationSendOtpVariables, null),
-	VALIDATE_OTP("Validate OTP", TemplateUtil::getAckTemplateVariablesForValidateOtp,
+	VALIDATE_OTP("Verify My Phone/Email", TemplateUtil::getAckTemplateVariablesForValidateOtp,
 			"verify-my-phone-email",
 			TemplateUtil::getNotificationCommonTemplateVariables,
 			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),

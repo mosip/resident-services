@@ -556,7 +556,7 @@ public enum EventEnum {
 	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "Download digital card request success",
 			"Download digital card request is succeeded", "RES-SER", "Residence service", "RS-RID_CARD", "NO_ID_TYPE",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	RID_DIGITAL_CARD_REQ_FAILURE("RES-SER-231", RegistrationConstants.SYSTEM, "Download digital card request failure",
+	RID_DIGITAL_CARD_REQ_FAILURE("RES-SER-232", RegistrationConstants.SYSTEM, "Download digital card request failure",
 			"Download digital card request is failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-232", RegistrationConstants.SYSTEM, "Download digital card request failure",
