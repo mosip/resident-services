@@ -192,28 +192,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         return Tuples.of(response, eventId);
     }
 
-	private ResidentTransactionEntity createResidentTransactionEntity(String userId)
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-        residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
-        residentTransactionEntity.setAttributeList(userId);
-        String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
-		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
-		if (requestValidator.phoneValidator(userId)) {
-			residentTransactionEntity.setStatusComment("Update phone as " + userId);
-		} else if (requestValidator.emailValidator(userId)) {
-			residentTransactionEntity.setStatusComment("Update email as " + userId);
-		}
-		return residentTransactionEntity;
-	}
-
-	/**
+    /**
      * This method will return the MainResponseDTO with id and version
      *
      * @param mainRequestDto

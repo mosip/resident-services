@@ -32,7 +32,6 @@ public class TemplateVariablesConstants {
     public static final String NAME = "name";
     public static final String STATUS = "status";
     public static final String TRACK_SERVICE_REQUEST_LINK = "trackServiceRequestLink";
-    public static final String TRACK_SERVICE_LINK = "trackServiceLink";
     public static final String DOWNLOAD_LINK = "downloadLink";
     public static final String TRANSACTION_ID = "transactionId";
     public static final String OTP = "otp";

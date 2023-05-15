@@ -395,9 +395,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.GENERATE_VID.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.GENERATE_VID.name());
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
@@ -711,14 +710,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return eventId == null ? new VidAlreadyPresentException(rootCause.getMessage(), rootCause): new VidAlreadyPresentException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
 	}
 
-	private ResidentTransactionEntity createResidentTransEntity(String vid, String indivudalId) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity=utility.createEntity();
+	private ResidentTransactionEntity createResidentTransEntity(String vid, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		try {
-			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, indivudalId));
+			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, individualId));
 		} catch (Exception exception){
 			residentTransactionEntity.setRefIdType("");
 		}

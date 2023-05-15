@@ -90,10 +90,9 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SEND_OTP.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
-		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
 		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setAuthTypeCode(attributeList);
