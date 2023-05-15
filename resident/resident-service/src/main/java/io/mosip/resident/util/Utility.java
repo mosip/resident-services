@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
 import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -464,15 +465,19 @@ public class Utility {
 		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
 	}
 
-
-	public ResidentTransactionEntity createEntity() {
+	public ResidentTransactionEntity createEntity(String requestType){
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
-		residentTransactionEntity.setReadStatus(true);
+		if(ServiceType.ASYNC.getRequestTypes().contains(RequestType.valueOf(requestType)) ){
+			residentTransactionEntity.setReadStatus(false);
+		}else {
+			residentTransactionEntity.setReadStatus(true);
+		}
+		residentTransactionEntity.setRequestTypeCode(requestType);
 		return residentTransactionEntity;
 	}
 

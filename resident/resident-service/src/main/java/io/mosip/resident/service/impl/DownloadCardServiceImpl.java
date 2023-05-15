@@ -242,9 +242,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private ResidentTransactionEntity insertDataForGetMyUin(String individualId, String transactionId) throws ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setEventId(utility.createEventId());
-        residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setAuthTypeCode(OTP);
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
         residentTransactionEntity.setIndividualId(individualId);
@@ -314,11 +313,10 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
 			DownloadPersonalizedCardDto downloadPersonalizedCardDto)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-    	ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+    	ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         String eventId = utility.createEventId();
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-        residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
         residentTransactionEntity.setIndividualId(individualId);
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
@@ -484,10 +482,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setEventId(utility.createEventId());
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-        residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(uin));
         residentTransactionEntity.setIndividualId(uin);
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));

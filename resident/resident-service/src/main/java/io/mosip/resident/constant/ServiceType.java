@@ -22,10 +22,10 @@ public enum ServiceType {
 	ASYNC(List.of(RequestType.VID_CARD_DOWNLOAD, RequestType.ORDER_PHYSICAL_CARD, RequestType.SHARE_CRED_WITH_PARTNER,
 			RequestType.UPDATE_MY_UIN, RequestType.AUTH_TYPE_LOCK_UNLOCK)),
     ALL() {
-    	public List<RequestType> getRequestType() {
+    	public List<RequestType> getRequestTypes() {
 			return Stream.of(ServiceType.values())
 					.filter(type -> !type.equals(this))
-					.flatMap(type -> type.getRequestType().stream())
+					.flatMap(type -> type.getRequestTypes().stream())
 					.distinct()
 					.collect(Collectors.toList());
 		}
@@ -40,7 +40,7 @@ public enum ServiceType {
         this.subTypes = Collections.unmodifiableList(subTypes);
     }
     
-    public List<RequestType> getRequestType() {
+    public List<RequestType> getRequestTypes() {
         return subTypes;
     }
     
@@ -55,7 +55,7 @@ public enum ServiceType {
     
     public static Optional<String> getServiceTypeFromRequestType(RequestType requestType) {
         for (ServiceType serviceType : values()) {
-        	List<RequestType> requestTypesList = serviceType.getRequestType();
+        	List<RequestType> requestTypesList = serviceType.getRequestTypes();
             if (requestTypesList.contains(requestType)) {
                 return Optional.of(serviceType.name());
             }

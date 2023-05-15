@@ -85,7 +85,7 @@ public class ResidentOtpServiceImplTest {
 		aidOtpRequestDTO.setOtpChannel(List.of("EMAIL", "PHONE"));
 		Mockito.when(identityServiceImpl.getIndividualIdForAid(any())).thenReturn("9054257143");
 		Mockito.when(objectMapper.convertValue(aidOtpRequestDTO, OtpRequestDTO.class)).thenReturn(otpRequestDTO);
-		when(utility.createEntity()).thenReturn(new ResidentTransactionEntity());
+		when(utility.createEntity(Mockito.anyString())).thenReturn(new ResidentTransactionEntity());
 	}
 
 	@Test
