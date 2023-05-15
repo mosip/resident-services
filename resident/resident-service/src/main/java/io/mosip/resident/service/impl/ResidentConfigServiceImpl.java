@@ -2,6 +2,7 @@ package io.mosip.resident.service.impl;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -168,19 +169,26 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 
 		List<String> shareableAttributes = sharableAttrList.stream()
 				.flatMap(attribute -> {
+					List<String> attributeList = new ArrayList<>();
 					// Get the attributes from the format if specified
 					if(attribute.getFormat()!=null && !attribute.getFormat().isEmpty()) {
-						return Stream.of(attribute.getFormat().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+						attributeList.addAll(
+								Stream.of(attribute.getFormat().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
+										.collect(Collectors.toList()));
 					}
 					// Get the attributes from the identity mapping
-					if(identityMap.containsKey(attribute.getAttributeName())) {
-						return Stream.of(String.valueOf(((Map) identityMap.get(attribute.getAttributeName())).get(MappingJsonConstants.VALUE))
-								.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+					else if(identityMap.containsKey(attribute.getAttributeName())) {
+						attributeList.addAll(Stream.of(String.valueOf(((Map) identityMap.get(attribute.getAttributeName()))
+														.get(MappingJsonConstants.VALUE))
+												.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
+										.collect(Collectors.toList()));
 					}
+					attributeList.add(attribute.getAttributeName());
 					// Return the attribute name itself
-					return Stream.of(attribute.getAttributeName());
+					return attributeList.stream();
 				})
 				.filter(idsListFromUISchema::contains)
+				.distinct()
 				.collect(Collectors.toList());
 
 		return shareableAttributes;

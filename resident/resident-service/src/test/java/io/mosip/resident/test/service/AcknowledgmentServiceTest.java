@@ -33,13 +33,11 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.service.impl.AcknowledgementServiceImpl;
-import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
@@ -59,9 +57,6 @@ public class AcknowledgmentServiceTest {
 
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
-
-    @Mock
-    private ProxyMasterdataServiceImpl proxyMasterdataServiceImpl;
 
     @Mock
     private TemplateUtil templateUtil;
@@ -88,8 +83,6 @@ public class AcknowledgmentServiceTest {
     private String eventId;
     private String languageCode;
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
-    private Map<String, Object> templateResponse;
-    private ResponseWrapper responseWrapper;
     private Map<String, String> templateVariables;
 
     @Mock
@@ -100,14 +93,10 @@ public class AcknowledgmentServiceTest {
 
     @Before
     public void setup() throws Exception {
-        templateResponse = new LinkedHashMap<>();
         templateVariables = new LinkedHashMap<>();
         values = new LinkedHashMap<>();
         values.put("test", String.class);
         templateVariables.put("eventId", eventId);
-        responseWrapper = new ResponseWrapper<>();
-        templateResponse.put(ResidentConstants.FILE_TEXT, "test");
-        responseWrapper.setResponse(templateResponse);
         result = "test".getBytes(StandardCharsets.UTF_8);
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
         languageCode = "eng";
@@ -115,7 +104,6 @@ public class AcknowledgmentServiceTest {
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(proxyMasterdataServiceImpl.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(responseWrapper);
         Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, eventId, languageCode, 0)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         ReflectionTestUtils.setField(acknowledgementService, "templateManagerBuilder", templateManagerBuilder);
@@ -129,6 +117,9 @@ public class AcknowledgmentServiceTest {
         ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
         responseWrapper.setResponse(signatureResponseDto);
         Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
+        Mockito.when(
+				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn("file text template");
     }
 
     @Test

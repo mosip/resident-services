@@ -26,6 +26,8 @@ import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyOtpService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -56,6 +58,9 @@ public class ProxyOtpController {
 
 	@Autowired
 	private Environment environment;
+	
+    @Autowired
+    private AuditUtil audit;
 
 	/**
 	 * This Post api use to send otp to the user by email or sms
@@ -75,13 +80,18 @@ public class ProxyOtpController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException {
-		try {
+		String userid = null;
+		try {	
 			requestValidator.validateProxySendOtpRequest(userOtpRequest);
-		} catch (InvalidInputException e) {
+			userid = userOtpRequest.getRequest().getUserId();
+		}
+		catch (InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID)));
 		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw new ApisResourceAccessException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
 		}
