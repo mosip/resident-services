@@ -157,8 +157,6 @@ public class ResidentVidServiceTest {
 		
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		Mockito.lenient().when(utility.createEntity()).thenReturn(residentTransactionEntity);
-		Mockito.lenient().when(identityServiceImpl.getResidentIdaToken()).thenReturn("idaToken");
 
         vidResponse = new ResponseWrapper<>();
         vidDetails = new HashMap<>();
@@ -176,8 +174,6 @@ public class ResidentVidServiceTest {
         vid = "2038096257310540";
         when(mapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(LocalDateTime.now());
         when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
-        Mockito.lenient().when(utility.createEventId()).thenReturn(UUID.randomUUID().toString());
-        Mockito.lenient().when(utility.createEntity()).thenReturn(Mockito.mock(ResidentTransactionEntity.class));
     }
 
     @Test

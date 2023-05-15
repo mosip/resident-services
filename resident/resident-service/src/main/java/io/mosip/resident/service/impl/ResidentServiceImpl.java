@@ -1158,9 +1158,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
 		residentTransactionEntity.setIndividualId(dto.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
@@ -1323,11 +1322,10 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
-		residentTransactionEntity = utility.createEntity();
+		residentTransactionEntity = utility.createEntity(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
-		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
