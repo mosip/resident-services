@@ -1158,9 +1158,8 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(dto.getIndividualId()));
 		residentTransactionEntity.setIndividualId(dto.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
@@ -1323,11 +1322,10 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
-		residentTransactionEntity = utility.createEntity();
+		residentTransactionEntity = utility.createEntity(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
-		residentTransactionEntity.setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
@@ -1797,7 +1795,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private String getServiceQueryForNullServiceType() {
 		return " and request_type_code in (" + convertServiceTypeListToString(
-				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestType())) +")";
+				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestTypes())) +")";
 	}
 
 	private String getServiceQuery(String serviceType) {
@@ -1864,7 +1862,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.collect(Collectors.toList());
 			for (String service : serviceTypeList) {
 				ServiceType type = ServiceType.valueOf(service);
-				residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(type.getRequestType()));
+				residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(type.getRequestTypes()));
 			}
 		}
 		return residentTransactionTypeList;
@@ -2115,7 +2113,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private List<String> getAsyncRequestTypes() {
-		return ServiceType.ASYNC.getRequestType()
+		return ServiceType.ASYNC.getRequestTypes()
 				.stream()
 				.map(RequestType::name)
 				.collect(Collectors.toList());
@@ -2152,7 +2150,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestType();
+		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestTypes();
 		List<String> statusCodeList = requestTypeList.stream()
 				.flatMap(requestType -> requestType.getNotificationStatusList(env))
 				.collect(Collectors.toCollection(ArrayList::new));
