@@ -472,7 +472,7 @@ public class Utility {
 		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
-		if(ServiceType.ASYNC.getRequestType().contains(RequestType.valueOf(requestType)) ){
+		if(ServiceType.ASYNC.getRequestTypes().contains(RequestType.valueOf(requestType)) ){
 			residentTransactionEntity.setReadStatus(false);
 		}else {
 			residentTransactionEntity.setReadStatus(true);

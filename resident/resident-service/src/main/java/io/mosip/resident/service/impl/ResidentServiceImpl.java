@@ -1795,7 +1795,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private String getServiceQueryForNullServiceType() {
 		return " and request_type_code in (" + convertServiceTypeListToString(
-				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestType())) +")";
+				(List<String>) convertListOfRequestTypeToListOfString(ServiceType.ALL.getRequestTypes())) +")";
 	}
 
 	private String getServiceQuery(String serviceType) {
@@ -1862,7 +1862,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.collect(Collectors.toList());
 			for (String service : serviceTypeList) {
 				ServiceType type = ServiceType.valueOf(service);
-				residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(type.getRequestType()));
+				residentTransactionTypeList.addAll(convertListOfRequestTypeToListOfString(type.getRequestTypes()));
 			}
 		}
 		return residentTransactionTypeList;
@@ -2113,7 +2113,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private List<String> getAsyncRequestTypes() {
-		return ServiceType.ASYNC.getRequestType()
+		return ServiceType.ASYNC.getRequestTypes()
 				.stream()
 				.map(RequestType::name)
 				.collect(Collectors.toList());
@@ -2150,7 +2150,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	public ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart,
 			Integer pageFetch, String id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestType();
+		List<RequestType> requestTypeList = ServiceType.ASYNC.getRequestTypes();
 		List<String> statusCodeList = requestTypeList.stream()
 				.flatMap(requestType -> requestType.getNotificationStatusList(env))
 				.collect(Collectors.toCollection(ArrayList::new));
