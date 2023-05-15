@@ -309,9 +309,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto dto,
 			String individualId, String purpose) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.name());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
