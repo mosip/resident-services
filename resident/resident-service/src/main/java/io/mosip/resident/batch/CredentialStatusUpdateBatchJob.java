@@ -71,13 +71,8 @@ public class CredentialStatusUpdateBatchJob {
 	private void handleWithTryCatch(RunnableWithException runnableWithException) {
 		try {
 			runnableWithException.run();
-		} catch (ApisResourceAccessException e) {
-			logErrorForBatchJob(e);
-		} catch (ResidentServiceCheckedException e) {
-			logErrorForBatchJob(e);
-		} catch (ResidentServiceException e) {
-			logErrorForBatchJob(e);
-		} catch (IdRepoAppException e) {
+		} catch (ApisResourceAccessException | ResidentServiceCheckedException | ResidentServiceException |
+				 IdRepoAppException e) {
 			logErrorForBatchJob(e);
 		}
 	}
