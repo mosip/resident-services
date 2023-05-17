@@ -369,13 +369,11 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
 					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
-			if(credentialRequestStatusResponseDto.getUrl()!=null) {
-				URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
-				if(appId!=null){
-					return getDataShareData(appId, partnerRefId, dataShareUri);
-				} else {
-					return residentServiceRestClient.getApi(dataShareUri, byte[].class);
-				}
+			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
+			if(appId!=null){
+				return getDataShareData(appId, partnerRefId, dataShareUri);
+			}else {
+				return residentServiceRestClient.getApi(dataShareUri, byte[].class);
 			}
 		} catch (ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
@@ -390,7 +388,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			throw new ResidentCredentialServiceException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
-		return null;
 
 	}
 
