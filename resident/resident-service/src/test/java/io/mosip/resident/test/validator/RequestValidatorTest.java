@@ -51,6 +51,7 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
@@ -95,6 +96,9 @@ public class RequestValidatorTest {
 
 	@Mock
 	private AuditUtil audit;
+
+	@Mock
+	private Utilities utilities;
 
 	@Mock
 	private Environment environment;
@@ -917,7 +921,7 @@ public class RequestValidatorTest {
 		requestValidator.validateUpdateRequest(requestWrapper, false);
 	}
 
-	@Test
+	@Test(expected = ResidentServiceException.class)
 	public void testValidUpdateRequestIsPatchTrue() throws Exception{
 		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
 		requestDTO.setIndividualIdType("VID");
@@ -929,7 +933,7 @@ public class RequestValidatorTest {
 		Map<Object, Object> map = new HashMap<>();
 		map.put("identity", "value");
 		jsonObject.put("identity",map);
-		requestDTO.setIdentity(jsonObject);
+		requestDTO.setIdentity(null);
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");

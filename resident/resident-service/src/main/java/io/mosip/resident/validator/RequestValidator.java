@@ -57,6 +57,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utilities;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,6 +91,7 @@ public class RequestValidator {
 	private static final String REQUESTTIME = "requesttime";
 	private static final String REQUEST = "request";
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
+	private static final Object ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 	@Autowired
 	private UinValidator<String> uinValidator;
@@ -114,6 +116,9 @@ public class RequestValidator {
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
+
+	@Autowired
+	private Utilities utilities;
 
 	private String euinId;
 
@@ -798,7 +803,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
+	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) throws ApisResourceAccessException, IOException {
 		if (!isPatch) {
 			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
@@ -811,6 +816,7 @@ public class RequestValidator {
 		} else {
 			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
+			validateAttributeName(requestDTO.getRequest().getIdentity());
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
@@ -860,6 +866,31 @@ public class RequestValidator {
 						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "identityJson", "Request for update uin"));
 				throw new InvalidInputException("identityJson");
 			}
+		}
+	}
+
+	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException {
+		JSONObject obj = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
+		boolean status =false;
+		if(identity!=null) {
+			// Get a set of entries
+			for (Map.Entry entry : (Iterable<Map.Entry>) identity.entrySet()) {
+				// Retrieve the key and value of each entry
+				String key = (String) entry.getKey();
+				if(!Objects.equals(key, ID_SCHEMA_VERSION)){
+					if(obj.containsKey(key)){
+						status = true;
+					} else {
+						audit.setAuditRequestDto(
+								EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+										"identityJson", "Request for update uin"));
+						throw new InvalidInputException("identity");
+					}
+				}
+			}
+		}
+		if(!status){
+			validateMissingInputParameter(null, "identity", EventEnum.INPUT_INVALID.getName());
 		}
 	}
 
