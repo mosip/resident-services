@@ -35,6 +35,7 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -79,6 +80,9 @@ import reactor.util.function.Tuples;
     @Autowired
     private ProxyMasterdataService proxyMasterdataService;
 
+    @Autowired
+    private ResidentConfigService residentConfigService;
+
     @Value("${resident.template.date.pattern}")
 	private String templateDatePattern;
     
@@ -117,7 +121,7 @@ import reactor.util.function.Tuples;
         templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK, utility.createTrackServiceRequestLink(eventId));
         templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
         templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(replaceNullWithEmptyString(
-                residentTransactionEntity.getAttributeList()), languageCode));
+                residentTransactionEntity.getAttributeList()), languageCode, requestType));
         String authenticationMode =
                 getAuthTypeCodeTemplateValue(replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode);
         if(authenticationMode.equalsIgnoreCase(UNKNOWN)){
@@ -141,18 +145,49 @@ import reactor.util.function.Tuples;
      * and splits it by a comma.
      * Then it takes each attribute value from the template in logged-in language and appends it to a string
      * with comma-separated value.
-     * @param attributes attribute values having comma separated attributes.
+     * @param attributesFromDB attribute values having comma separated attributes.
      * @param languageCode logged in language code.
      * @return attribute value stored in the template.
      */
-    private String getAttributesDisplayText(String attributes, String languageCode) {
+    private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
         List<String> attributeListTemplateValue = new ArrayList<>();
-    	if (attributes != null && !attributes.isEmpty()) {
-            List<String> attributeList = List.of(attributes.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-            for (String attribute : attributeList) {
-                attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-                		getAttributeListTemplateTypeCode(attribute.trim())));
-            }
+    	if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
+    		Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
+			if (schemaType.isPresent() && attributesFromDB.contains(ResidentConstants.SEMI_COLON)) {
+//	    		Cacheable UI Schema data
+				Map<String, Map<String, Object>> uiSchemaDataMap = residentConfigService
+						.getUISchemaCacheableData(schemaType.get()).get(languageCode);
+				List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.SEMI_COLON));
+				attributeListTemplateValue = attributeListFromDB.stream().map(attribute -> {
+					attribute = attribute.trim();
+					if (attribute.contains(ResidentConstants.COLON)) {
+						String[] attrArray = attribute.split(ResidentConstants.COLON);
+						if (uiSchemaDataMap.containsKey(attrArray[0])) {
+							Map<String, Object> attributeDataFromUISchema = (Map<String, Object>) uiSchemaDataMap.get(attrArray[0]);
+							attrArray[0] = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
+							Map<String, String> FormatDataMapFromUISchema = (Map<String, String>) attributeDataFromUISchema
+									.get(ResidentConstants.FORMAT_OPTION);
+							attrArray[1] = List.of(attrArray[1].split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
+									.stream().map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
+									.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+						}
+						return String.format("%s%s%s%s", attrArray[0], ResidentConstants.OPEN_PARENTHESIS, attrArray[1],
+								ResidentConstants.CLOSE_PARENTHESIS);
+					} else {
+						if (uiSchemaDataMap.containsKey(attribute)) {
+							attribute = (String) ((Map<String, Object>) uiSchemaDataMap.get(attribute))
+									.get(ResidentConstants.LABEL);
+						}
+						return attribute;
+					}
+				}).collect(Collectors.toList());
+			} else {
+    			List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+                for (String attribute : attributeListFromDB) {
+                    attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+                    		getAttributeListTemplateTypeCode(attribute.trim())));
+                }
+    		}
         }
         if(attributeListTemplateValue.isEmpty()){
             return "";
@@ -331,7 +366,7 @@ import reactor.util.function.Tuples;
                 fileText.contains(ResidentConstants.ATTRIBUTES)){
             fileText = fileText.replace(
                     ResidentConstants.DOLLAR+ResidentConstants.ATTRIBUTES, getAttributesDisplayText(attributes,
-                            languageCode)
+                            languageCode, RequestType.DEFAULT)
             );
         }
         return fileText;
