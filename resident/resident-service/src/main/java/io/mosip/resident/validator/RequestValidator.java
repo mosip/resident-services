@@ -871,29 +871,28 @@ public class RequestValidator {
 
 	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException {
 		JSONObject obj = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
-		boolean status =false;
-		if(identity!=null) {
-			// Get a set of entries
-			for (Map.Entry entry : (Iterable<Map.Entry>) identity.entrySet()) {
-				// Retrieve the key and value of each entry
-				String key = (String) entry.getKey();
-				if(!Objects.equals(key, ID_SCHEMA_VERSION)){
-					if(obj.containsKey(key)){
-						status = true;
-					} else {
-						audit.setAuditRequestDto(
-								EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-										"identityJson", "Request for update uin"));
-						throw new InvalidInputException("identity");
-					}
-				}
+		boolean status = false;
+		if (identity != null) {
+			status = (boolean) identity.keySet().stream()
+					.filter(key -> !((String) key).equals(ID_SCHEMA_VERSION))
+					.map(x -> {
+						if(obj.containsKey(x)) {
+							return true;
+						} else {
+							audit.setAuditRequestDto(
+									EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+											"identityJson", "Request for update uin"));
+							throw new InvalidInputException("identity");
+						}
+					}).findAny().orElse(false);
+			if (!status) {
+				audit.setAuditRequestDto(
+						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+								"identityJson", "Request for update uin"));
+				throw new InvalidInputException("identity");
 			}
 		}
-		if(!status){
-			validateMissingInputParameter(null, "identity", EventEnum.INPUT_INVALID.getName());
-		}
 	}
-
 	private void validateLanguageCodeInIdentityJson(JSONObject identity) {
 		if(identity!=null) {
 			// Get a set of entries
