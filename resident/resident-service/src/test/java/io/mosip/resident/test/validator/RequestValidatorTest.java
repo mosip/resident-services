@@ -921,7 +921,7 @@ public class RequestValidatorTest {
 		requestValidator.validateUpdateRequest(requestWrapper, false);
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test
 	public void testValidUpdateRequestIsPatchTrue() throws Exception{
 		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
 		requestDTO.setIndividualIdType("VID");
