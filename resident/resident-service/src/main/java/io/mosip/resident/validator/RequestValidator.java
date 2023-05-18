@@ -886,10 +886,7 @@ public class RequestValidator {
 						}
 					}).findAny().orElse(false);
 			if (!status) {
-				audit.setAuditRequestDto(
-						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-								"identityJson", "Request for update uin"));
-				throw new InvalidInputException("identity");
+				validateMissingInputParameter(null, "identity", EventEnum.INPUT_INVALID.getName());
 			}
 		}
 	}
