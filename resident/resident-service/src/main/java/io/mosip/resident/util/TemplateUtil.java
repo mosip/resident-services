@@ -153,7 +153,7 @@ import reactor.util.function.Tuples;
         List<String> attributeListTemplateValue = new ArrayList<>();
     	if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
     		Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
-			if (schemaType.isPresent()) {
+			if (schemaType.isPresent() && attributesFromDB.contains(ResidentConstants.SEMI_COLON)) {
 //	    		Cacheable UI Schema data
 				Map<String, Map<String, Object>> uiSchemaDataMap = residentConfigService
 						.getUISchemaCacheableData(schemaType.get()).get(languageCode);
