@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -160,10 +161,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		Map<String, Object> identityMap = getIdentityMappingMap();
 
 		// ui schema share credential json
-		String uiSchema = getUISchema(schemaType);
-		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
-		Object identitySchemaObj = schemaMap.get(MappingJsonConstants.IDENTITY);
-		List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
+		List<Map<String, Object>> identityList = getUISchemaData(schemaType);
 		List<String> idsListFromUISchema = identityList.stream().map(map -> String.valueOf(map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME))))
 				.collect(Collectors.toList());
 
@@ -204,4 +202,54 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		return identityMap;
 	}
 
+	@Override
+	public List<Map<String, Object>> getUISchemaData(String schemaType) {
+		try {
+			String uiSchema = getUISchema(schemaType);
+			Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
+			Object identitySchemaObj = schemaMap.get(MappingJsonConstants.IDENTITY);
+			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
+			return identityList;
+		} catch (IOException e) {
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE, e);
+		}
+	}
+
+	@Override
+	@Cacheable(value = "ui-schema-data-map", key = "#schemaType")
+	public Map<String, Map<String, Map<String, Object>>> getUISchemaCacheableData(String schemaType) {
+		List<Map<String, Object>> uiSchemaDataList = getUISchemaData(schemaType);
+		List<String> languages = uiSchemaDataList.stream().map(map -> {
+			return ((Map<String, String>) map.get(ResidentConstants.LABEL)).keySet().stream()
+					.collect(Collectors.toList());
+		}).findAny().orElse(List.of());
+		Map<String, Map<String, Map<String, Object>>> schemaDataMap = languages.stream().map(langCode -> {
+			return Map.entry(langCode, getUISchemaAttributesData(uiSchemaDataList, langCode));
+		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+		return schemaDataMap;
+	}
+
+	private Map<String, Map<String, Object>> getUISchemaAttributesData(List<Map<String, Object>> uiSchemaDataList,
+			String langCode) {
+		Map<String, Map<String, Object>> attributesDataMap = new HashMap<>();
+		attributesDataMap = uiSchemaDataList.stream().map(map -> {
+			return Map.entry((String) map.get(ResidentConstants.ATTRIBUTE_NAME),
+					Map.of(ResidentConstants.LABEL, ((Map<String, String>) map.get(ResidentConstants.LABEL)).get(langCode),
+							ResidentConstants.FORMAT_OPTION, getAttributeFormatData(map, langCode)));
+		}).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+		return attributesDataMap;
+	}
+
+	private Map<String, String> getAttributeFormatData(Map<String, Object> map, String langCode) {
+		return map.entrySet().stream().filter(formatRequired -> formatRequired.getKey().equals(ResidentConstants.FORMAT_REQUIRED))
+				.filter(formatCheck -> (boolean) formatCheck.getValue())
+				.map(formatData -> {
+					return ((List<Map<String, String>>) ((Map<String, Object>) map.get(ResidentConstants.FORMAT_OPTION))
+							.get(langCode))
+									.stream()
+									.map(map1 -> Map.entry(map1.get(ResidentConstants.VALUE),
+											map1.get(ResidentConstants.LABEL)))
+									.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+				}).findAny().orElse(Map.of());
+	}
 }

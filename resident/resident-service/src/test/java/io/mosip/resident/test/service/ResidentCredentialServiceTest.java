@@ -264,14 +264,14 @@ public class ResidentCredentialServiceTest {
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
-        Tuple2<ResidentCredentialResponseDtoV2, String> credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto, "Banking");
+        Tuple2<ResidentCredentialResponseDtoV2, String> credentialResponseDto = residentCredentialService.shareCredential(residentCredentialRequestDto, "Banking", List.of());
         assertNotNull(credentialResponseDto.getT1().getStatus());
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testShareCredentialConsentNull() throws IOException, ApisResourceAccessException, ResidentServiceCheckedException {
     	residentCredentialRequestDto.setConsent(null);
-        residentCredentialService.shareCredential(residentCredentialRequestDto, "Banking");
+        residentCredentialService.shareCredential(residentCredentialRequestDto, "Banking", List.of());
     }
 
     @Test(expected = ResidentCredentialServiceException.class)
@@ -300,7 +300,7 @@ public class ResidentCredentialServiceTest {
         URI partnerUri = URI.create(partnerUrl);
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(ApisResourceAccessException.class);
-        residentCredentialService.shareCredential(residentCredentialRequestDto, null);
+        residentCredentialService.shareCredential(residentCredentialRequestDto, null, List.of());
     }
 
     @Test(expected = ResidentCredentialServiceException.class)
@@ -326,7 +326,7 @@ public class ResidentCredentialServiceTest {
         URI partnerUri = URI.create(partnerUrl);
         when(residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class)).thenReturn(partnerResponseDtoResponseWrapper);
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(partnerResponseDtoResponseWrapper);
-        residentCredentialService.shareCredential(residentCredentialRequestDto, null);
+        residentCredentialService.shareCredential(residentCredentialRequestDto, null, List.of());
     }
     
     @Test
