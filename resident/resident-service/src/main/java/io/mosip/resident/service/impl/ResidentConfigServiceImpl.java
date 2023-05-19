@@ -24,7 +24,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -72,7 +74,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
 	@Value("${resident.ui.properties.version}")
 	private String residentUiPropertiesVersion;
-	
+
+	private static final Logger logger = LoggerConfiguration.logConfig(ResidentConfigServiceImpl.class);
+
 	/**
 	 * Gets the properties.
 	 *
@@ -118,32 +122,24 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	}
 
 	@Override
-	@Cacheable(value="ui-schema-filtered-attributes", key="#schemaType")
-	public List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
-		return doGetUiSchemaFilteredInputAttributes(schemaType);
-	}
-	
-	private List<String> doGetUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException {
-		String uiSchema = getUISchema(schemaType);
-		Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
-		Object identityObj = schemaMap.get(MappingJsonConstants.IDENTITY);
-		if(identityObj instanceof List) {
-			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identityObj;
-			List<String> uiSchemaFilteredInputAttributesList = identityList.stream()
-						.flatMap(map -> {
-							String attribName = (String)map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME));
-							if(Boolean.valueOf(String.valueOf(map.get(ResidentConstants.MASK_REQUIRED)))) {
-								//Include the attribute and its masked attribute
-								return Stream.of(attribName, ResidentConstants.MASK_PREFIX + attribName);
-							} else {
-								return Stream.of(attribName);
-							}
-						})
-						.collect(Collectors.toList());
-			return uiSchemaFilteredInputAttributesList;
-		}
-		return null;
-		
+	@Cacheable(value = "ui-schema-filtered-attributes", key = "#schemaType")
+	public List<String> getUiSchemaFilteredInputAttributes(String schemaType) {
+		List<Map<String, Object>> identityList = getUISchemaData(schemaType);
+		List<String> uiSchemaFilteredInputAttributesList = identityList.stream().flatMap(map -> {
+			List<String> attributeList = new ArrayList<>();
+			attributeList.add((String) map.get(env.getProperty(UI_SCHEMA_ATTRIBUTE_NAME)));
+			if (Boolean.valueOf(String.valueOf(map.get(ResidentConstants.MASK_REQUIRED)))) {
+				attributeList.add(String.valueOf(map.get(ResidentConstants.MASK_ATTRIBUTE_NAME)));
+			}
+			if (Boolean.valueOf(String.valueOf(map.get(ResidentConstants.FORMAT_REQUIRED)))) {
+				attributeList.addAll(
+						((List<Map<String, String>>) ((Map<String, Object>) map.get(ResidentConstants.FORMAT_OPTION))
+								.entrySet().stream().findFirst().get().getValue()).stream()
+										.map(x -> x.get(ResidentConstants.VALUE)).collect(Collectors.toList()));
+			}
+			return attributeList.stream();
+		}).distinct().collect(Collectors.toList());
+		return uiSchemaFilteredInputAttributesList;
 	}
 
 	@Override
@@ -208,9 +204,15 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			String uiSchema = getUISchema(schemaType);
 			Map<String, Object> schemaMap = objectMapper.readValue(uiSchema.getBytes(StandardCharsets.UTF_8), Map.class);
 			Object identitySchemaObj = schemaMap.get(MappingJsonConstants.IDENTITY);
-			List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
-			return identityList;
+			if(identitySchemaObj instanceof List) {
+				List<Map<String, Object>> identityList = (List<Map<String, Object>>) identitySchemaObj;
+				return identityList;
+			} else {
+				logger.error("Error occured in accessing ui-schema identity data");
+				throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
+			}
 		} catch (IOException e) {
+			logger.error("Error occured in getting ui-schema %s", e.getMessage());
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE, e);
 		}
 	}
