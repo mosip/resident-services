@@ -171,8 +171,11 @@ import reactor.util.function.Tuples;
 									.stream().map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
 									.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
 						}
-						return String.format("%s%s%s%s", attrArray[0], ResidentConstants.OPEN_PARENTHESIS, attrArray[1],
-								ResidentConstants.CLOSE_PARENTHESIS);
+						if(attrArray[1]!=null)
+							return String.format("%s%s%s%s", attrArray[0], ResidentConstants.OPEN_PARENTHESIS, attrArray[1],
+									ResidentConstants.CLOSE_PARENTHESIS);
+						else
+							return attrArray[0];
 					} else {
 						if (uiSchemaDataMap.containsKey(attribute)) {
 							attribute = (String) ((Map<String, Object>) uiSchemaDataMap.get(attribute))
