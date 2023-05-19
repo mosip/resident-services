@@ -1,5 +1,7 @@
 package io.mosip.resident.validator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -52,6 +54,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
@@ -131,6 +134,10 @@ public class RequestValidator {
 	private String authLockId;
 
 	private String uinUpdateId;
+	@Autowired
+	private ProxyMasterdataServiceImpl proxyMasterdataService;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -803,7 +810,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) throws ApisResourceAccessException, IOException {
+	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		if (!isPatch) {
 			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
@@ -869,26 +876,33 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException {
-		JSONObject obj = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
+	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		JSONObject idRepoJson = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
+		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ID_SCHEMA_VERSION));
+		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
+		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+		Object idSchema = idSchemaResponse.getResponse();
+		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+		ArrayList<Map<String, ?>> schema = (ArrayList<Map<String, ?>>) map.get("schema");
+		List<String> attributeList = schema.stream()
+				.map(schemaValue -> (String) schemaValue.get("id"))
+				.collect(Collectors.toList());
+		String preferredLangAttribute = environment.getProperty("mosip.default.user-preferred-language-attribute");
 		boolean status = false;
 		if (identity != null) {
-			status = (boolean) identity.keySet().stream()
+			status = identity.keySet().stream()
 					.filter(key -> !((String) key).equals(ID_SCHEMA_VERSION))
-					.map(x -> {
-						if(obj.containsKey(x)) {
-							return true;
-						} else {
-							audit.setAuditRequestDto(
-									EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-											"identityJson", "Request for update uin"));
-							throw new InvalidInputException("identity");
-						}
-					}).findAny().orElse(false);
+					.allMatch(key -> !((String) key).equals(preferredLangAttribute) || attributeList.contains(key));
 			if (!status) {
-				validateMissingInputParameter(null, "identity", EventEnum.INPUT_INVALID.getName());
+				audit.setAuditRequestDto(
+						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+								"identityJson", "Request for update uin"));
+				throw new InvalidInputException("identity");
 			}
+		} else {
+			validateMissingInputParameter(null, "identity", EventEnum.INPUT_INVALID.getName());
 		}
+
 	}
 	private void validateLanguageCodeInIdentityJson(JSONObject identity) {
 		if(identity!=null) {
