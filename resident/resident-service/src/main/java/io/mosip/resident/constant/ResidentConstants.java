@@ -168,10 +168,6 @@ public class ResidentConstants {
     public static final String UI_ATTRIBUTE_DATA_DELIMITER = ", ";
     public static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 
-    public static final String MASK_REQUIRED = "maskRequired";
-    public static final String MASK_PREFIX = "masked_";
-    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
-
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
     public static final String REQ_RES_ID = "reqResId";
     public static final String REQ_RES_VERSION = "mosip.resident.request.response.version";
@@ -265,5 +261,9 @@ public class ResidentConstants {
     public static final String ATTRIBUTE_NAME = "attributeName";
     public static final String FORMAT_OPTION = "formatOption";
 	public static final String LABEL = "label";
+	public static final String MASK_REQUIRED = "maskRequired";
+	public static final String MASK_ATTRIBUTE_NAME = "maskAttributeName";
+    public static final String MASK_PREFIX = "masked_";
+    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
 
 }
