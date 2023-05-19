@@ -39,7 +39,7 @@ public interface ResidentConfigService {
 	 * @throws JsonMappingException the json mapping exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	List<String> getUiSchemaFilteredInputAttributes(String schemaType) throws JsonParseException, JsonMappingException, IOException;
+	List<String> getUiSchemaFilteredInputAttributes(String schemaType);
 	
 	/**
 	 * Gets the Identity Mapping json
