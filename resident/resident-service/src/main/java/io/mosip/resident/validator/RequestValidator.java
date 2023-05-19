@@ -893,7 +893,7 @@ public class RequestValidator {
 		if (identity != null) {
 			status = identity.keySet().stream()
 					.filter(key -> !((String) key).equals(ID_SCHEMA_VERSION))
-					.allMatch(key -> !((String) key).equals(preferredLangAttribute) || attributeList.contains(key));
+					.allMatch(key -> !((String) key).equals(preferredLangAttribute) && attributeList.contains(key));
 			if (!status) {
 				audit.setAuditRequestDto(
 						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
