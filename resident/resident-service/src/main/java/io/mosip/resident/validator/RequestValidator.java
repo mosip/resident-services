@@ -53,6 +53,7 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
@@ -135,7 +136,7 @@ public class RequestValidator {
 
 	private String uinUpdateId;
 	@Autowired
-	private ProxyMasterdataServiceImpl proxyMasterdataService;
+	private ProxyMasterdataService proxyMasterdataService;
 	@Autowired
 	private ObjectMapper objectMapper;
 
