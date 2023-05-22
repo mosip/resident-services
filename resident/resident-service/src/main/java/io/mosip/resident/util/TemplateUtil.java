@@ -159,27 +159,25 @@ import reactor.util.function.Tuples;
 						.getUISchemaCacheableData(schemaType.get()).get(languageCode);
 				List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.SEMI_COLON));
 				attributeListTemplateValue = attributeListFromDB.stream().map(attribute -> {
-					attribute = attribute.trim();
-					if (attribute.contains(ResidentConstants.COLON)) {
-						String[] attrArray = attribute.split(ResidentConstants.COLON);
-						if (uiSchemaDataMap.containsKey(attrArray[0])) {
-							Map<String, Object> attributeDataFromUISchema = (Map<String, Object>) uiSchemaDataMap.get(attrArray[0]);
-							attrArray[0] = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
+					String[] attrArray = attribute.trim().split(ResidentConstants.COLON);
+					String attr = attrArray[0];
+					if (uiSchemaDataMap.containsKey(attr)) {
+						Map<String, Object> attributeDataFromUISchema = (Map<String, Object>) uiSchemaDataMap.get(attr);
+						attr = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
+						if (attrArray.length > 1) {
+							String formatAttr = attrArray[1];
 							Map<String, String> FormatDataMapFromUISchema = (Map<String, String>) attributeDataFromUISchema
 									.get(ResidentConstants.FORMAT_OPTION);
-							attrArray[1] = List.of(attrArray[1].split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
-									.stream().map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
+							formatAttr = List.of(formatAttr.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
+									.map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
 									.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+							if (formatAttr != null) {
+								return String.format("%s%s%s%s", attr, ResidentConstants.OPEN_PARENTHESIS, formatAttr,
+										ResidentConstants.CLOSE_PARENTHESIS);
+							}
 						}
-						return String.format("%s%s%s%s", attrArray[0], ResidentConstants.OPEN_PARENTHESIS, attrArray[1],
-								ResidentConstants.CLOSE_PARENTHESIS);
-					} else {
-						if (uiSchemaDataMap.containsKey(attribute)) {
-							attribute = (String) ((Map<String, Object>) uiSchemaDataMap.get(attribute))
-									.get(ResidentConstants.LABEL);
-						}
-						return attribute;
 					}
+					return attr;
 				}).collect(Collectors.toList());
 			} else {
     			List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
