@@ -149,10 +149,10 @@ import reactor.util.function.Tuples;
      * @param languageCode logged in language code.
      * @return attribute value stored in the template.
      */
-	private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
-		List<String> attributeListTemplateValue = new ArrayList<>();
-		if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
-			Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
+    private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
+        List<String> attributeListTemplateValue = new ArrayList<>();
+    	if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
+    		Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
 			if (schemaType.isPresent() && attributesFromDB.contains(ResidentConstants.SEMI_COLON)) {
 //	    		Cacheable UI Schema data
 				Map<String, Map<String, Object>> uiSchemaDataMap = residentConfigService
@@ -180,19 +180,19 @@ import reactor.util.function.Tuples;
 					return attr;
 				}).collect(Collectors.toList());
 			} else {
-				List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-				for (String attribute : attributeListFromDB) {
-					attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getAttributeListTemplateTypeCode(attribute.trim())));
-				}
-			}
-		}
-		if (attributeListTemplateValue.isEmpty()) {
-			return "";
-		} else {
-			return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
-		}
-	}
+    			List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+                for (String attribute : attributeListFromDB) {
+                    attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+                    		getAttributeListTemplateTypeCode(attribute.trim())));
+                }
+    		}
+        }
+        if(attributeListTemplateValue.isEmpty()){
+            return "";
+        } else {
+            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+        }
+    }
 
     private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
         return getTemplateValueFromTemplateTypeCodeAndLangCode
