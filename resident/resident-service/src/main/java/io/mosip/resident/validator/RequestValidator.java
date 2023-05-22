@@ -1,5 +1,7 @@
 package io.mosip.resident.validator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -51,12 +53,15 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ProxyMasterdataServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.UISchemaTypes;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utilities;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,6 +95,7 @@ public class RequestValidator {
 	private static final String REQUESTTIME = "requesttime";
 	private static final String REQUEST = "request";
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
+	private static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 	@Autowired
 	private UinValidator<String> uinValidator;
@@ -115,6 +121,9 @@ public class RequestValidator {
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
 
+	@Autowired
+	private Utilities utilities;
+
 	private String euinId;
 
 	private String reprintId;
@@ -126,6 +135,10 @@ public class RequestValidator {
 	private String authLockId;
 
 	private String uinUpdateId;
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -798,7 +811,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) {
+	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		if (!isPatch) {
 			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
@@ -811,6 +824,7 @@ public class RequestValidator {
 		} else {
 			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
+			validateAttributeName(requestDTO.getRequest().getIdentity());
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
@@ -862,6 +876,31 @@ public class RequestValidator {
 			}
 		}
 	}
+
+	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		JSONObject idRepoJson = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
+		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ID_SCHEMA_VERSION));
+		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
+		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+		Object idSchema = idSchemaResponse.getResponse();
+		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+		String schemaJson = ((String) map.get("schemaJson"));
+		String preferredLangAttribute = environment.getProperty("mosip.default.user-preferred-language-attribute");
+		boolean status = false;
+		if (identity != null) {
+			status = identity.keySet().stream()
+					.filter(key -> !Objects.equals(key, ID_SCHEMA_VERSION) && !Objects.equals(key, preferredLangAttribute))
+					.anyMatch(key -> schemaJson.contains(key.toString()));
+		}
+		if (!status) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+							"identityJson", "Request for update uin"));
+			throw new InvalidInputException("identity");
+		}
+
+	}
+
 
 	private void validateLanguageCodeInIdentityJson(JSONObject identity) {
 		if(identity!=null) {
