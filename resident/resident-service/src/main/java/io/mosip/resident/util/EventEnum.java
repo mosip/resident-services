@@ -649,13 +649,13 @@ public enum EventEnum {
 	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url failed",
 			"get acknowledgement download url failed", "RES-SER", "Residence service", "RS-ACK_DOWN", "Acknowledgement download",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
-	SEND_OTP_FAILURE("RES-SER-259", RegistrationConstants.SYSTEM, "send otp failure",
-			"send otp is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
-			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-
+	
 	SEND_OTP_SUCCESS("RES-SER-259", RegistrationConstants.SYSTEM, "send otp success",
 			"send otp is success", "RES-SER", "Residence service", "RS-OTP", "Otp section",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+
+	SEND_OTP_FAILURE("RES-SER-290", RegistrationConstants.SYSTEM, "send otp failure",
+			"send otp is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	DOWNLOAD_SERVICE_HISTORY("RES-SER-260", RegistrationConstants.SYSTEM, "download service histor",
