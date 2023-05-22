@@ -149,55 +149,50 @@ import reactor.util.function.Tuples;
      * @param languageCode logged in language code.
      * @return attribute value stored in the template.
      */
-    private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
-        List<String> attributeListTemplateValue = new ArrayList<>();
-    	if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
-    		Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
+	private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
+		List<String> attributeListTemplateValue = new ArrayList<>();
+		if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
+			Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
 			if (schemaType.isPresent() && attributesFromDB.contains(ResidentConstants.SEMI_COLON)) {
 //	    		Cacheable UI Schema data
 				Map<String, Map<String, Object>> uiSchemaDataMap = residentConfigService
 						.getUISchemaCacheableData(schemaType.get()).get(languageCode);
 				List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.SEMI_COLON));
 				attributeListTemplateValue = attributeListFromDB.stream().map(attribute -> {
-					attribute = attribute.trim();
-					if (attribute.contains(ResidentConstants.COLON)) {
-						String[] attrArray = attribute.split(ResidentConstants.COLON);
-						if (uiSchemaDataMap.containsKey(attrArray[0])) {
-							Map<String, Object> attributeDataFromUISchema = (Map<String, Object>) uiSchemaDataMap.get(attrArray[0]);
-							attrArray[0] = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
+					String[] attrArray = attribute.trim().split(ResidentConstants.COLON);
+					String attr = attrArray[0];
+					if (uiSchemaDataMap.containsKey(attr)) {
+						Map<String, Object> attributeDataFromUISchema = (Map<String, Object>) uiSchemaDataMap.get(attr);
+						attr = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
+						if (attrArray.length > 1) {
+							String formatAttr = attrArray[1];
 							Map<String, String> FormatDataMapFromUISchema = (Map<String, String>) attributeDataFromUISchema
 									.get(ResidentConstants.FORMAT_OPTION);
-							attrArray[1] = List.of(attrArray[1].split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER))
-									.stream().map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
+							formatAttr = List.of(formatAttr.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
+									.map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
 									.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+							if (formatAttr != null) {
+								return String.format("%s%s%s%s", attr, ResidentConstants.OPEN_PARENTHESIS, formatAttr,
+										ResidentConstants.CLOSE_PARENTHESIS);
+							}
 						}
-						if(attrArray[1]!=null)
-							return String.format("%s%s%s%s", attrArray[0], ResidentConstants.OPEN_PARENTHESIS, attrArray[1],
-									ResidentConstants.CLOSE_PARENTHESIS);
-						else
-							return attrArray[0];
-					} else {
-						if (uiSchemaDataMap.containsKey(attribute)) {
-							attribute = (String) ((Map<String, Object>) uiSchemaDataMap.get(attribute))
-									.get(ResidentConstants.LABEL);
-						}
-						return attribute;
 					}
+					return attr;
 				}).collect(Collectors.toList());
 			} else {
-    			List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-                for (String attribute : attributeListFromDB) {
-                    attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-                    		getAttributeListTemplateTypeCode(attribute.trim())));
-                }
-    		}
-        }
-        if(attributeListTemplateValue.isEmpty()){
-            return "";
-        } else {
-            return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
-        }
-    }
+				List<String> attributeListFromDB = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+				for (String attribute : attributeListFromDB) {
+					attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							getAttributeListTemplateTypeCode(attribute.trim())));
+				}
+			}
+		}
+		if (attributeListTemplateValue.isEmpty()) {
+			return "";
+		} else {
+			return attributeListTemplateValue.stream().collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+		}
+	}
 
     private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
         return getTemplateValueFromTemplateTypeCodeAndLangCode
