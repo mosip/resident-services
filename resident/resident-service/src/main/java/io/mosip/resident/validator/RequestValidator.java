@@ -95,7 +95,7 @@ public class RequestValidator {
 	private static final String REQUESTTIME = "requesttime";
 	private static final String REQUEST = "request";
 	private static final String VALIDATE_EVENT_ID = "Validating Event Id.";
-	private static final Object ID_SCHEMA_VERSION = "IDSchemaVersion";
+	private static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 	@Autowired
 	private UinValidator<String> uinValidator;
@@ -884,27 +884,24 @@ public class RequestValidator {
 		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 		Object idSchema = idSchemaResponse.getResponse();
 		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-		ArrayList<Map<String, ?>> schema = (ArrayList<Map<String, ?>>) map.get("schema");
-		List<String> attributeList = schema.stream()
-				.map(schemaValue -> (String) schemaValue.get("id"))
-				.collect(Collectors.toList());
+		String schemaJson = ((String) map.get("schemaJson"));
 		String preferredLangAttribute = environment.getProperty("mosip.default.user-preferred-language-attribute");
 		boolean status = false;
 		if (identity != null) {
 			status = identity.keySet().stream()
-					.filter(key -> !((String) key).equals(ID_SCHEMA_VERSION))
-					.allMatch(key -> !((String) key).equals(preferredLangAttribute) && attributeList.contains(key));
-			if (!status) {
-				audit.setAuditRequestDto(
-						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-								"identityJson", "Request for update uin"));
-				throw new InvalidInputException("identity");
-			}
-		} else {
-			validateMissingInputParameter(null, "identity", EventEnum.INPUT_INVALID.getName());
+					.filter(key -> !Objects.equals(key, ID_SCHEMA_VERSION) && !Objects.equals(key, preferredLangAttribute))
+					.anyMatch(key -> schemaJson.contains(key.toString()));
+		}
+		if (!status) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
+							"identityJson", "Request for update uin"));
+			throw new InvalidInputException("identity");
 		}
 
 	}
+
+
 	private void validateLanguageCodeInIdentityJson(JSONObject identity) {
 		if(identity!=null) {
 			// Get a set of entries
