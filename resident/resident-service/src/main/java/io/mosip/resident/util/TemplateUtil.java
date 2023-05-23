@@ -170,13 +170,16 @@ public class TemplateUtil {
 						attr = (String) attributeDataFromUISchema.get(ResidentConstants.LABEL);
 						if (attrArray.length > 1) {
 							String formatAttr = attrArray[1];
-							Map<String, String> FormatDataMapFromUISchema = (Map<String, String>) attributeDataFromUISchema
+							Map<String, String> formatDataMapFromUISchema = (Map<String, String>) attributeDataFromUISchema
 									.get(ResidentConstants.FORMAT_OPTION);
-							formatAttr = List.of(formatAttr.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
-									.map(String::trim).map(format -> FormatDataMapFromUISchema.get(format))
-									.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
-							if (formatAttr != null) {
-								return String.format("%s%s%s%s", attr, ResidentConstants.OPEN_PARENTHESIS, formatAttr,
+							List<String> formatAttrList = List
+									.of(formatAttr.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
+									.map(String::trim).map(format -> formatDataMapFromUISchema.get(format))
+									.collect(Collectors.toList());
+							if (!formatAttrList.contains(null)) {
+								return String.format("%s%s%s%s", attr, ResidentConstants.OPEN_PARENTHESIS,
+										formatAttrList.stream().collect(
+												Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER)),
 										ResidentConstants.CLOSE_PARENTHESIS);
 							}
 						}
