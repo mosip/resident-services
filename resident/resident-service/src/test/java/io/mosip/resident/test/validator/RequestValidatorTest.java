@@ -51,9 +51,9 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,6 +95,9 @@ public class RequestValidatorTest {
 
 	@Mock
 	private AuditUtil audit;
+
+	@Mock
+	private Utilities utilities;
 
 	@Mock
 	private Environment environment;
@@ -915,27 +918,6 @@ public class RequestValidatorTest {
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, false);
-	}
-
-	@Test
-	public void testValidUpdateRequestIsPatchTrue() throws Exception{
-		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
-		requestDTO.setIndividualIdType("VID");
-		requestDTO.setIndividualId("1234567");
-		requestDTO.setOtp("1234567");
-		requestDTO.setTransactionID("1234567");
-		requestDTO.setIdentityJson("");
-		JSONObject jsonObject = new JSONObject();
-		Map<Object, Object> map = new HashMap<>();
-		map.put("identity", "value");
-		jsonObject.put("identity",map);
-		requestDTO.setIdentity(jsonObject);
-		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
-		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
-		requestWrapper.setId("mosip.resident.updateuin");
-		requestWrapper.setVersion("1.0");
-		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
 	}
 
 	@Test

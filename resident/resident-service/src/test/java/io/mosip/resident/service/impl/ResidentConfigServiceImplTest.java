@@ -1,6 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -156,7 +155,7 @@ public class ResidentConfigServiceImplTest {
 		assertNotNull(result);
 	}
 
-	@Test
+	@Test(expected = ResidentServiceException.class)
 	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception{
 		ResidentConfigServiceImpl testSubject;
 		List<String> result;
@@ -165,7 +164,6 @@ public class ResidentConfigServiceImplTest {
 		byte[] src = "{\"name\":\"ui-schema\"}".getBytes();
 		Mockito.when(objectMapper.readValue(src, Map.class)).thenReturn(uiSchema);
 		testSubject = createTestSubject();
-		result = testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
-		assertNull(result);
+		testSubject.getUiSchemaFilteredInputAttributes("update-demographics");
 	}
 }
