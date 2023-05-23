@@ -521,7 +521,7 @@ public enum EventEnum {
 	CHANNEL_VERIFICATION_STATUS("RES-SER-221", RegistrationConstants.SYSTEM, "Check Channel Verification status Request", "Check Channel Verification status Request",
 			"RES-SER", "Residence service", "RS-CHAN_VER", "Channel verification", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	CHANNEL_VERIFICATION_STATUS_SUCCESS("RES-SER-222", RegistrationConstants.SYSTEM, "Check Channel Verification status Request:: Success",
+	CHANNEL_VERIFICATION_STATUS_SUCCESS("RES-SER-222", RegistrationConstants.SYSTEM, "Check Channel Verification status Request: Success",
 			"Check Channel Verification status Request is success", "RES-SER", "Residence service", "RS-CHAN_VER", "Channel verification",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	CHANNEL_VERIFICATION_STATUS_FAILURE("RES-SER-223", RegistrationConstants.SYSTEM, "Custom Credential Request: Failure",
