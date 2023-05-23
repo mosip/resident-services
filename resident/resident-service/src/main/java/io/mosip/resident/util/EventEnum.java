@@ -87,8 +87,8 @@ public enum EventEnum {
 	GETTING_RID_STATUS("RES-SER-116", RegistrationConstants.SYSTEM, "Checking RID status",
 			"Getting RID status based on individual id", "RES-SER", "Residence service", "RS-RID", "RID section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	SEND_NOTIFICATION_Failed("RES-SER-403", RegistrationConstants.SYSTEM, "Send notification: Failed",
-			"Failed notification sent for transaction id %s", "RES-SER", "Residence service", "RS-NOT", "Notification section",
+	SEND_NOTIFICATION_FAILURE("RES-SER-403", RegistrationConstants.SYSTEM, "Send notification: Failed",
+			"Failure notification sent for transaction id %s", "RES-SER", "Residence service", "RS-NOT", "Notification section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	OBTAINED_RID("RES-SER-114", RegistrationConstants.SYSTEM, "Request print UIN",
@@ -104,7 +104,7 @@ public enum EventEnum {
 	VID_ALREADY_EXISTS("RES-SER-405", RegistrationConstants.SYSTEM, "VID already exists",
 			"VID already exists for transaction id %s", "RES-SER", "Residence service", "RS-VID_GEN", "VID generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	VID_GENERATION_Failed("RES-SER-406", RegistrationConstants.SYSTEM, "Request to generate VID: Failed",
+	VID_GENERATION_FAILURE("RES-SER-406", RegistrationConstants.SYSTEM, "Request to generate VID: Failed",
 			"VID generated failed for transaction id %s", "RES-SER", "Residence service", "RS-VID_GEN", "VID generation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	VID_JSON_PARSING_EXCEPTION("RES-SER-404", RegistrationConstants.SYSTEM, "Json parsing exception",
@@ -177,8 +177,8 @@ public enum EventEnum {
 	PACKET_CREATED("RES-SER-119", RegistrationConstants.SYSTEM, "Request to upload UIN packet", "Uploading UIN packet",
 			"RES-SER", "Residence service", "RS-PACK", "Packet creation", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	PACKET_CREATED_Failed("RES-SER-425", RegistrationConstants.SYSTEM, "Request to upload UIN packet: Failed",
-			"Packet sync Failed", "RES-SER", "Residence service", "RS-PACK", "Packet creation",
+	PACKET_CREATED_FAILURE("RES-SER-425", RegistrationConstants.SYSTEM, "Request to upload UIN packet: Failed",
+			"Packet sync Failure", "RES-SER", "Residence service", "RS-PACK", "Packet creation",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	PACKET_CREATED_EXCEPTION("RES-SER-424", RegistrationConstants.SYSTEM, "Request to create packet: Exception",
 			"Exception while creating packet", "RES-SER", "Residence service", "RS-PACK", "Packet creation",
@@ -356,7 +356,7 @@ public enum EventEnum {
 			"Residence service", "RS-CONF", "Config properties", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_CONFIGURATION_PROPERTIES_EXCEPTION("RES-SER-169", RegistrationConstants.SYSTEM,
-			"get resident configuration properties Failed", "get resident configuration properties: Failed", "RES-SER",
+			"get resident configuration properties failure", "get resident configuration properties: Failed", "RES-SER",
 			"Residence service", "RS-CONF", "Config properties", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
@@ -418,7 +418,7 @@ public enum EventEnum {
 	AUTH_TYPE_CALL_BACK_SUCCESS("RES-SER-183", RegistrationConstants.SYSTEM, "Auth type call back: Success",
 			"auth type call back success for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP", "Auth type",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	AUTH_TYPE_CALL_BACK_Failed("RES-SER-184", RegistrationConstants.SYSTEM, "Auth type call back: Failed",
+	AUTH_TYPE_CALL_BACK_FAILURE("RES-SER-184", RegistrationConstants.SYSTEM, "Auth type call back: Failed",
 			"auth type call back Failed for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP", "Auth type",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -439,7 +439,7 @@ public enum EventEnum {
 	REQ_AUTH_TXN_DETAILS("RES-SER-189", RegistrationConstants.SYSTEM, "Request auth transaction details",
 			"Requesting auth transaction details for individual id %s", "RES-SER", "Residence service", "RS-AUTH_TXN",
 			"Auth transaction", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	REQ_AUTH_TXN_DETAILS_Failed("RES-SER-190", RegistrationConstants.SYSTEM, "Request auth transaction details: Failed",
+	REQ_AUTH_TXN_DETAILS_FAILURE("RES-SER-190", RegistrationConstants.SYSTEM, "Request auth transaction details: Failed",
 			"Requesting auth transaction details for individual id %s failed", "RES-SER", "Residence service", "RS-AUTH_TXN",
 			"Auth transaction", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
@@ -451,7 +451,7 @@ public enum EventEnum {
 			"Residence service", "RS-VID", "VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_VIDS_EXCEPTION("RES-SER-193", RegistrationConstants.SYSTEM,
-			"get vids Failed", "get vids: Failed", "RES-SER",
+			"get vids failure", "get vids: Failed", "RES-SER",
 			"Residence service", "RS-VID", "VID", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -473,7 +473,7 @@ public enum EventEnum {
 			"Residence service", "RS-INP_ATTR", "Input attribute", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_INPUT_ATTRIBUTES_EXCEPTION("RES-SER-199", RegistrationConstants.SYSTEM,
-			"get identity attributes Failed", "get identity attributes: Failed", "RES-SER",
+			"get identity attributes failure", "get identity attributes: Failed", "RES-SER",
 			"Residence service", "RS-INP_ATTR", "Input attribute", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -514,7 +514,7 @@ public enum EventEnum {
 	REQ_CUSTOM_CREDENTIAL_SUCCESS("RES-SER-219", RegistrationConstants.SYSTEM, "Custom Credential Request: Success",
 			"Custom Credential Request is success", "RES-SER", "Residence service", "RES-CUS_CRED", "Custom credential",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	REQ_CUSTOM_CREDENTIAL_Failed("RES-SER-220", RegistrationConstants.SYSTEM, "Custom Credential Request: Failed",
+	REQ_CUSTOM_CREDENTIAL_FAILURE("RES-SER-220", RegistrationConstants.SYSTEM, "Custom Credential Request: Failed",
 			"Custom Credential Request has failed", "RES-SER", "Residence service", "RES-CUS_CRED", "Custom credential",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -524,7 +524,7 @@ public enum EventEnum {
 	CHANNEL_VERIFICATION_STATUS_SUCCESS("RES-SER-222", RegistrationConstants.SYSTEM, "Check Channel Verification status Request: Success",
 			"Check Channel Verification status Request is success", "RES-SER", "Residence service", "RS-CHAN_VER", "Channel verification",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	CHANNEL_VERIFICATION_STATUS_Failed("RES-SER-223", RegistrationConstants.SYSTEM, "Custom Credential Request: Failed",
+	CHANNEL_VERIFICATION_STATUS_FAILURE("RES-SER-223", RegistrationConstants.SYSTEM, "Custom Credential Request: Failed",
 			"Custom Credential Request has failed", "RES-SER", "Residence service", "RS-CHAN_VER", "Channel verification",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -534,7 +534,7 @@ public enum EventEnum {
 	GET_VID_POLICY_SUCCESS("RES-SER-225", RegistrationConstants.SYSTEM, "Get VID Policy Request: Success",
 			"Get VID Policy Request is success", "RES-SER", "Residence service", "RS-VID", "VID",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	GET_VID_POLICY_Failed("RES-SER-226", RegistrationConstants.SYSTEM, "Get VID Policy Request: Failed",
+	GET_VID_POLICY_FAILURE("RES-SER-226", RegistrationConstants.SYSTEM, "Get VID Policy Request: Failed",
 			"Get VID Policy Request has failed", "RES-SER", "Residence service", "RS-VID", "VID",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -546,7 +546,7 @@ public enum EventEnum {
 			"Residence service", "RS-ID_MAP", "ID mapping", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_IDMAPPING_EXCEPTION("RES-SER-229", RegistrationConstants.SYSTEM,
-			"get identity mapping json Failed", "get identity mapping json: Failed", "RES-SER",
+			"get identity mapping json failure", "get identity mapping json: Failed", "RES-SER",
 			"Residence service", "RS-ID_MAP", "ID mapping", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -556,7 +556,7 @@ public enum EventEnum {
 	RID_DIGITAL_CARD_REQ_SUCCESS("RES-SER-231", RegistrationConstants.SYSTEM, "Download digital card request: Success",
 			"Download digital card request is succeeded", "RES-SER", "Residence service", "RS-RID_CARD", "NO_ID_TYPE",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	RID_DIGITAL_CARD_REQ_Failed("RES-SER-232", RegistrationConstants.SYSTEM, "Download digital card request: Failed",
+	RID_DIGITAL_CARD_REQ_FAILURE("RES-SER-232", RegistrationConstants.SYSTEM, "Download digital card request: Failed",
 			"Download digital card request is failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	RID_DIGITAL_CARD_REQ_EXCEPTION("RES-SER-232", RegistrationConstants.SYSTEM, "Download digital card request: Exception",
@@ -630,14 +630,14 @@ public enum EventEnum {
 			"Resident service", "RS-PIN", "Pin status", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	PIN_STATUS_SUCCESS("RES-SER-252", RegistrationConstants.SYSTEM, "pin status success", "pin status success based on event id: Success", "RES-SER",
 			"Resident service", "RS-PIN", "Pin status", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	PIN_STATUS_Failed("RES-SER-253", RegistrationConstants.SYSTEM, "pin status", "pin status Failed based on event id: Failed", "RES-SER",
+	PIN_STATUS_FAILURE("RES-SER-253", RegistrationConstants.SYSTEM, "pin status", "pin status failure based on event id: Failed", "RES-SER",
 			"Resident service", "RS-PIN", "Pin status", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	UN_PIN_STATUS("RES-SER-254", RegistrationConstants.SYSTEM, "un pin status", "un pin status based on event id", "RES-SER",
 			"Resident service", "RS-PIN", "Pin status", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	UN_PIN_STATUS_SUCCESS("RES-SER-255", RegistrationConstants.SYSTEM, "un pin status: Success", "un pin status success based on event id", "RES-SER",
 			"Resident service", "RS-PIN", "Pin status", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	UN_PIN_STATUS_Failed("RES-SER-256", RegistrationConstants.SYSTEM, "un pin status: Failed", "un pin status Failed based on event id", "RES-SER",
+	UN_PIN_STATUS_FAILURE("RES-SER-256", RegistrationConstants.SYSTEM, "un pin status: Failed", "un pin status failure based on event id", "RES-SER",
 			"Resident service", "RS-PIN", "Pin statusE", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL("RES-SER-257", RegistrationConstants.SYSTEM, "get acknowledgement download url",
@@ -646,7 +646,7 @@ public enum EventEnum {
 	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url: Success",
 			"get acknowledgement download url is succeeded", "RES-SER", "Residence service", "RS-ACK_DOWN", "Acknowledgement download",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_Failed("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url: Failed",
+	GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE("RES-SER-258", RegistrationConstants.SYSTEM, "get acknowledgement download url: Failed",
 			"get acknowledgement download url failed", "RES-SER", "Residence service", "RS-ACK_DOWN", "Acknowledgement download",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -654,7 +654,7 @@ public enum EventEnum {
 			"send otp is success", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
-	SEND_OTP_Failed("RES-SER-290", RegistrationConstants.SYSTEM, "send otp: Failed",
+	SEND_OTP_FAILURE("RES-SER-290", RegistrationConstants.SYSTEM, "send otp: Failed",
 			"send otp is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
@@ -757,7 +757,7 @@ public enum EventEnum {
 			"Resident service", "RS-LOGN", "Login req", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
-	LOGIN_REQ_Failed("RES-SER-283", RegistrationConstants.SYSTEM,
+	LOGIN_REQ_FAILURE("RES-SER-283", RegistrationConstants.SYSTEM,
 			"Login Request: Failed",
 			"Login request is failed", "RES-SER",
 			"Resident service", "RS-LOGN", "Login req", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -775,7 +775,7 @@ public enum EventEnum {
 			"Resident service", "RS-LOGO", "Logout req", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
-	LOGOUT_REQ_Failed("RES-SER-286", RegistrationConstants.SYSTEM,
+	LOGOUT_REQ_FAILURE("RES-SER-286", RegistrationConstants.SYSTEM,
 			"Logout Request: Failed",
 			"Logout request is failed", "RES-SER",
 			"Resident service", "RS-LOGO", "Logout req", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -787,7 +787,7 @@ public enum EventEnum {
 			"Resident service", "RS-VAL", "Validate token", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
-	VALIDATE_TOKEN_Failed("RES-SER-288", RegistrationConstants.SYSTEM,
+	VALIDATE_TOKEN_FAILURE("RES-SER-288", RegistrationConstants.SYSTEM,
 			"Validate Token: Failed",
 			"Validate token is failed", "RES-SER",
 			"Resident service", "RS-VAL", "Validate token", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -803,9 +803,9 @@ public enum EventEnum {
 			"credential status update call back success for transaction id %s", "RES-SER", "Residence service",
 			"RS-CRED_STAT_UPD", "Credential status update", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	CREDENTIAL_STAUTS_UPDATE_CALL_BACK_Failed("RES-SER-289", RegistrationConstants.SYSTEM,
+	CREDENTIAL_STAUTS_UPDATE_CALL_BACK_FAILURE("RES-SER-289", RegistrationConstants.SYSTEM,
 			"Credential status update call back: Failed",
-			"credential status update call back Failed for transaction id %s", "RES-SER", "Residence service",
+			"credential status update call back failure for transaction id %s", "RES-SER", "Residence service",
 			"RS-CRED_STAT_UPD", "Credential status update", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	;
