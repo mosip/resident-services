@@ -368,7 +368,7 @@ public enum EventEnum {
 			"Residence service", "RS-REG", "Registration center", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	GET_REG_CENTER_WORKING_DAYS_EXCEPTION("RES-SER-172", RegistrationConstants.SYSTEM,
-			"get registration center working days Failed", "get registration center working days: Failed", "RES-SER",
+			"get registration center working days failure", "get registration center working days: Failed", "RES-SER",
 			"Residence service", "RS-REG", "Registration center", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
@@ -419,7 +419,7 @@ public enum EventEnum {
 			"auth type call back success for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP", "Auth type",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	AUTH_TYPE_CALL_BACK_FAILURE("RES-SER-184", RegistrationConstants.SYSTEM, "Auth type call back: Failed",
-			"auth type call back Failed for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP", "Auth type",
+			"auth type call back failure for transaction id %s", "RES-SER", "Residence service", "RS-AUTH_TYP", "Auth type",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	UPDATE_AUTH_TYPE_STATUS("RES-SER-185", RegistrationConstants.SYSTEM, "Request update auth type status",
