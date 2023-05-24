@@ -92,7 +92,7 @@ public class ResidentUpdateServiceTest {
 
     @Before
     public void setup() throws Exception {
-        ReflectionTestUtils.setField(residentUpdateService, "idschemaVersion", "0.1");
+        ReflectionTestUtils.setField(residentUpdateService, "defaultIdSchemaVersion", "0.1");
 
         residentUpdateDto = new ResidentUpdateDto();
         residentUpdateDto.setIdValue("5984924027");
