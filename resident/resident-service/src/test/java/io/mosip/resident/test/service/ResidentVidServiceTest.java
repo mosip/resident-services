@@ -13,7 +13,6 @@ import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidGeneratorResponseDto;
 import io.mosip.resident.dto.VidRequestDto;
-import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
