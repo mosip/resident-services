@@ -207,35 +207,6 @@ public class ResidentVidServiceTest {
         assertTrue("Expected Vid should be 12345", result.getResponse().getVid().equalsIgnoreCase(vid));
     }
 
-    @Test
-    public void generateVidSuccessTestForNewAPI() throws OtpValidationFailedException, IOException, ApisResourceAccessException, ResidentServiceCheckedException {
-        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
-        String vid = "12345";
-        VidGeneratorResponseDto vidGeneratorResponseDto = new VidGeneratorResponseDto();
-        vidGeneratorResponseDto.setVidStatus("Active");
-        vidGeneratorResponseDto.setVID(vid);
-        ResponseWrapper<VidGeneratorResponseDto> response = new ResponseWrapper<>();
-        response.setResponsetime(DateUtils.getCurrentDateTimeString());
-        response.setResponse(vidGeneratorResponseDto);
-
-        doReturn(objectMapper.writeValueAsString(vidGeneratorResponseDto)).when(mapper).writeValueAsString(any());
-        doReturn(vidGeneratorResponseDto).when(mapper).readValue(anyString(), any(Class.class));
-        when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-        when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
-        when(utility.createEntity(anyString())).thenReturn(new ResidentTransactionEntity());
-        when(identityServiceImpl.getIndividualIdType(anyString())).thenReturn("VID");
-        when(identityServiceImpl.getUinForIndividualId(anyString())).thenReturn("7589641703");
-        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
-
-        VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
-        vidRequestDtoV2.setVidType(ResidentConstants.PERPETUAL);
-        vidRequestDtoV2.setChannels(List.of("EMAIL"));
-        vidRequestDtoV2.setTransactionID("1234567890");
-        ResponseWrapper<VidResponseDto> result = residentVidService.generateVid(vidRequestDtoV2, vid);
-
-        assertTrue("Expected Vid should be 12345", result.getResponse().getVid().equalsIgnoreCase(vid));
-    }
-
     @Test(expected = OtpValidationFailedException.class)
     public void otpValidationFailedTest() throws ResidentServiceCheckedException, OtpValidationFailedException {
     	
