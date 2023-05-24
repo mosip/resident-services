@@ -68,7 +68,7 @@ public class ResidentUpdateService {
 	RequestHandlerRequestValidator validator;
 
 	@Value("${IDSchema.Version}")
-	private String idschemaVersion;
+	private String defaultIdSchemaVersion;
 
 	@Autowired
 	private IdSchemaUtil idSchemaUtil;
@@ -104,14 +104,14 @@ public class ResidentUpdateService {
 	private static final String VALUE = "value";
 
 	public PacketGeneratorResDto createPacket(ResidentUpdateDto request) throws BaseCheckedException, IOException {
-		return createPacket(request, idschemaVersion);
+		return createPacket(request, defaultIdSchemaVersion);
 	}
 
 	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion) throws BaseCheckedException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
 		if(idSchemaVersion == null){
-			idSchemaVersion = idschemaVersion;
+			idSchemaVersion = defaultIdSchemaVersion;
 		}
 		byte[] packetZipBytes = null;
 		audit.setAuditRequestDto(EventEnum.CREATE_PACKET);
