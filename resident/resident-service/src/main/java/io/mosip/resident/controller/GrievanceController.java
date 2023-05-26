@@ -1,8 +1,11 @@
 package io.mosip.resident.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,10 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.GrievanceService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -38,16 +44,34 @@ public class GrievanceController {
 
     @Autowired
     GrievanceService grievanceService;
+    
+	@Autowired
+	private Environment environment;
 
     private static final Logger logger = LoggerConfiguration.logConfig(GrievanceController.class);
 
-    @PostMapping("/grievance/ticket")
-    public ResponseWrapper<Object> grievanceTicket(@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO>
-                                                               grievanceRequestDTOMainRequestDTO) throws ResidentServiceCheckedException,
-            ApisResourceAccessException, IOException {
-        logger.debug("DownloadCardController::grievanceTicket()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
-        requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
-        return grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
-    }
+	@PostMapping("/grievance/ticket")
+	public ResponseWrapper<Object> grievanceTicket(
+			@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO)
+			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+		logger.debug("DownloadCardController::grievanceTicket()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
+		ResponseWrapper<Object> response = null;
+		try {
+			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
+			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
+		} catch (ResidentServiceException | InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
+		}
+		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
+		return response;
+	}
 }

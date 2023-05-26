@@ -129,6 +129,7 @@ public class DownloadCardController {
 		try {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_FAILURE);
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
@@ -169,7 +170,17 @@ public class DownloadCardController {
 
     @GetMapping("/aid-stage/{aid}")
     public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
-        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(aid);
+		ResponseWrapper<CheckStatusResponseDTO> responseWrapper = null;
+		auditUtil.setAuditRequestDto(EventEnum.AID_STAGE);
+		try {
+			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
+		} catch (ResidentServiceException | InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_FAILURE);
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
+							environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID)));
+		}
+    	auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_SUCCESS);
         return ResponseEntity.ok()
                 .body(responseWrapper);
     }
