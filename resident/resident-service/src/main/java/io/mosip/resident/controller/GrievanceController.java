@@ -62,14 +62,14 @@ public class GrievanceController {
 			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
+			throw e;
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
+			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
 		return response;

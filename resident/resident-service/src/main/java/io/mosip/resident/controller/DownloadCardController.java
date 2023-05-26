@@ -102,9 +102,9 @@ public class DownloadCardController {
 			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID)));
+			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
@@ -130,9 +130,9 @@ public class DownloadCardController {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
+			throw e;
 		}
         Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, timeZoneOffset);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
@@ -159,9 +159,9 @@ public class DownloadCardController {
 			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID)));
+			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
@@ -176,9 +176,9 @@ public class DownloadCardController {
 			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID)));
+			throw e;
 		}
     	auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_SUCCESS);
         return ResponseEntity.ok()

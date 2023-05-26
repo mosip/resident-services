@@ -95,14 +95,14 @@ public class DownLoadMasterDataController {
 			logger.debug("AcknowledgementController::acknowledgement()::exit");
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
+			throw e;
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
+			throw e;
 		}
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
@@ -134,14 +134,14 @@ public class DownLoadMasterDataController {
 			logger.debug("AcknowledgementController::acknowledgement()::exit");
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
+			throw e;
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
+			throw e;
 		}
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
@@ -169,14 +169,14 @@ public class DownLoadMasterDataController {
 			logger.debug("AcknowledgementController::acknowledgement()::exit");
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
+			throw e;
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
+			throw e;
 		}
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
