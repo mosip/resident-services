@@ -310,6 +310,7 @@ public class RegistrationConstants {
 
 	// update UIN
 	public static final String UIN_LABEL = "UIN";
+	public static final String VID_LABEL = "VID";
 	public static final String FIRST_TOGGLE_LABEL = "toggleLabel1";
 	public static final String SECOND_TOGGLE_LABEL = "toggleLabel2";
 	public static final String PACKET_TYPE_UPDATE = "Update";
