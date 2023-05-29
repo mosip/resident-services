@@ -916,10 +916,10 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
-
+			String idSchemaVersionStr = null;
 			if(validateIdObject) {
 				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-				String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+				idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
 				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
 				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 				Object idSchema = idSchemaResponse.getResponse();
@@ -973,7 +973,7 @@ public class ResidentServiceImpl implements ResidentService {
 			JSONObject proofOfBirthJson = JsonUtil.getJSONObject(demographicIdentity, pobMapping);
 			regProcReqUpdateDto.setProofOfDateOfBirth(getDocumentValue(proofOfBirthJson, documents));
 
-			PacketGeneratorResDto response = residentUpdateService.createPacket(regProcReqUpdateDto);
+			PacketGeneratorResDto response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr);
 			Map<String, Object> additionalAttributes = new HashMap<>();
 			additionalAttributes.put("RID", response.getRegistrationId());
 			audit.setAuditRequestDto(

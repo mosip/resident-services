@@ -885,11 +885,10 @@ public class RequestValidator {
 		Object idSchema = idSchemaResponse.getResponse();
 		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
 		String schemaJson = ((String) map.get("schemaJson"));
-		String preferredLangAttribute = environment.getProperty("mosip.default.user-preferred-language-attribute");
 		boolean status = false;
 		if (identity != null) {
 			status = identity.keySet().stream()
-					.filter(key -> !Objects.equals(key, ID_SCHEMA_VERSION) && !Objects.equals(key, preferredLangAttribute))
+					.filter(key -> !Objects.equals(key, ID_SCHEMA_VERSION))
 					.anyMatch(key -> schemaJson.contains(key.toString()));
 		}
 		if (!status) {

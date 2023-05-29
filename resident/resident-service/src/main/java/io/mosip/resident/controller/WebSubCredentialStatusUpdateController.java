@@ -73,16 +73,16 @@ public class WebSubCredentialStatusUpdateController {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubCredentialStatusUpdateController :: credentialStatusUpdateCallback() :: Start");
-			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STAUTS_UPDATE_CALL_BACK);
+			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK);
 			webSubCredentialStatusUpdateService.updateCredentialStatus(eventModel);
-			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STAUTS_UPDATE_CALL_BACK_SUCCESS);
+			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode()
 							+ ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage()
 							+ ExceptionUtils.getStackTrace(e));
-			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STAUTS_UPDATE_CALL_BACK_FAILURE);
+			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_FAILURE);
 			throw new ResidentServiceException(ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.AUTH_TYPE_CALLBACK_NOT_AVAILABLE.getErrorMessage(), e);
 		}

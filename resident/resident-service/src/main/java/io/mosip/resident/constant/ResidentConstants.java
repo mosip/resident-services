@@ -134,6 +134,9 @@ public class ResidentConstants {
     public static final String DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.service.history.file.name.convention";
     public static final String GRIEVANCE_REQUEST_ID = "mosip.resident.grievance.ticket.request.id";
     public static final String GRIEVANCE_REQUEST_VERSION = "mosip.resident.grievance.ticket.request.version";
+    public static final String DOWNLOAD_REG_CENTER_ID = "resident.download.reg.centers.list.id";
+    public static final String DOWNLOAD_NEAREST_REG_CENTER_ID = "resident.download.nearest.reg.centers.id";
+    public static final String DOWNLOAD_SUPPORTING_DOCS_ID = "resident.download.supporting.documents.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
 
