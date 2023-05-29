@@ -1,7 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
 import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
@@ -242,9 +242,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private ResidentTransactionEntity insertDataForGetMyUin(String individualId, String transactionId) throws ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setEventId(utility.createEventId());
-        residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setAuthTypeCode(OTP);
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
         residentTransactionEntity.setIndividualId(individualId);
@@ -314,17 +313,16 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
 			DownloadPersonalizedCardDto downloadPersonalizedCardDto)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-    	ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+    	ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         String eventId = utility.createEventId();
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-        residentTransactionEntity.setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
         residentTransactionEntity.setIndividualId(individualId);
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
 			residentTransactionEntity.setAttributeList(
-					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER)));
+					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
 		}
         return residentTransactionEntity;
 	}
@@ -435,6 +433,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			throw new ApisResourceAccessException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.toString(), e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (IOException exception) {
+        	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
         	if (residentTransactionEntity != null) {
         		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -484,10 +483,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setEventId(utility.createEventId());
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-        residentTransactionEntity.setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(uin));
         residentTransactionEntity.setIndividualId(uin);
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));

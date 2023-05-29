@@ -79,9 +79,8 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 			Object dataObject = eventMap.get("data");
 			if (dataObject instanceof Map) {
 				Map<String, Object> dataMap = (Map<String, Object>) dataObject;
-				ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+				ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.AUTHENTICATION_REQUEST.name());
 				residentTransactionEntity.setEventId(utility.createEventId());
-				residentTransactionEntity.setRequestTypeCode(RequestType.AUTHENTICATION_REQUEST.name());
 				residentTransactionEntity.setRefId((String) dataMap.get(INDIVIDUAL_ID));
 				residentTransactionEntity.setIndividualId((String) dataMap.get(INDIVIDUAL_ID));
 				residentTransactionEntity.setRequestSummary(RequestType.AUTHENTICATION_REQUEST.name());
@@ -94,8 +93,14 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 				residentTransactionEntity.setRequestSignature((String) dataMap.get(REQUEST_SIGNATURE));
 				residentTransactionEntity.setResponseSignature((String) dataMap.get(RESPONSE_SIGNATURE));
 				if (status == null) {
-					residentTransactionEntity.setStatusCode((String) dataMap.get(STATUS_CODE));
+					Object object = dataMap.get(STATUS_CODE);
+					if (object instanceof String) {
+						status = (String) object;
+					} else {
+						status = EventStatusFailure.N.name();
+					}
 				}
+				residentTransactionEntity.setStatusCode(status);
 				residentTransactionEntity.setAuthTypeCode((String) dataMap.get(AUTHTYPE_CODE));
 				residentTransactionEntity.setStatusComment((String) dataMap.get(STATUS_COMMENT));
 				Object reqdatetimeObj = dataMap.get(REQUESTDATETIME);

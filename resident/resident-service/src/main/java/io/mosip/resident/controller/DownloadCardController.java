@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
@@ -80,24 +82,41 @@ public class DownloadCardController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-    public ResponseEntity<Object> downloadCard(@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO) throws ResidentServiceCheckedException{
-        logger.debug("DownloadCardController::downloadCard()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
-        requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
-		Tuple2<byte[], String> tupleResponse = downloadCardService
-				.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
-        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
-        if(tupleResponse.getT1().length==0){
-            throw new CardNotReadyException();
-        }
-        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
-        logger.debug("AcknowledgementController::acknowledgement()::exit");
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-                .header("Content-Disposition", "attachment; filename=\"" +
-                        downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId() + ".pdf\"")
-                .header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
-                .body(resource);
-    }
+	public ResponseEntity<Object> downloadCard(
+			@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO,
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			throws ResidentServiceCheckedException {
+		logger.debug("DownloadCardController::downloadCard()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
+		InputStreamResource resource = null;
+		Tuple2<byte[], String> tupleResponse = null;
+		try {
+			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
+			requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
+			tupleResponse = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
+			resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
+			if (tupleResponse.getT1().length == 0) {
+				throw new CardNotReadyException();
+			}
+		} catch (ResidentServiceException | InvalidInputException | CardNotReadyException e) {
+			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					this.environment.getProperty(ResidentConstants.DOWNLOAD_UIN_CARD_ID)));
+			throw e;
+		}
+		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		logger.debug("AcknowledgementController::acknowledgement()::exit");
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition",
+						"attachment; filename=\"" + utility.getFileNameforId(
+								downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId(),
+								Objects.requireNonNull(this.environment
+										.getProperty(ResidentConstants.DOWNLOAD_CARD_NAMING_CONVENTION_PROPERTY)),
+								timeZoneOffset) + ".pdf\"")
+				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(resource);
+	}
     
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
@@ -110,9 +129,10 @@ public class DownloadCardController {
 		try {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
-			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.BAD_REQUEST, ResidentConstants.REQ_RES_ID,
-							environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
+			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
+			throw e;
 		}
         Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, timeZoneOffset);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
@@ -133,17 +153,34 @@ public class DownloadCardController {
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
     		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws BaseCheckedException {
     	auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
-        requestValidator.validateDownloadCardVid(vid);
-        Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
-        return ResponseEntity.ok()
-				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+		Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = null;
+		try {
+			requestValidator.validateDownloadCardVid(vid);
+			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
+		} catch (ResidentServiceException | InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID)));
+			throw e;
+		}
+		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
-    }
+	}
 
     @GetMapping("/aid-stage/{aid}")
     public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
-        ResponseWrapper<CheckStatusResponseDTO> responseWrapper = downloadCardService.getIndividualIdStatus(aid);
+		ResponseWrapper<CheckStatusResponseDTO> responseWrapper = null;
+		auditUtil.setAuditRequestDto(EventEnum.AID_STAGE);
+		try {
+			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
+		} catch (ResidentServiceException | InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
+					environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID)));
+			throw e;
+		}
+    	auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_SUCCESS);
         return ResponseEntity.ok()
                 .body(responseWrapper);
     }

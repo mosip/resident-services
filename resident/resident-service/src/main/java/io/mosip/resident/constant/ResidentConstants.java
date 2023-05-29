@@ -91,6 +91,8 @@ public class ResidentConstants {
     public static final String CREATE_PASSWORD_METHOD_NAME = "resident.create.password.method.name";
 
     public static final String DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.personalized.card.naming.convention";
+    
+    public static final String DOWNLOAD_CARD_NAMING_CONVENTION_PROPERTY = "mosip.resident.download.card.naming.convention";
 
     public static final String IS_PASSWORD_FLAG_ENABLED = "mosip.digitalcard.pdf.password.enable.flag";
 
@@ -132,6 +134,9 @@ public class ResidentConstants {
     public static final String DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY = "mosip.resident.download.service.history.file.name.convention";
     public static final String GRIEVANCE_REQUEST_ID = "mosip.resident.grievance.ticket.request.id";
     public static final String GRIEVANCE_REQUEST_VERSION = "mosip.resident.grievance.ticket.request.version";
+    public static final String DOWNLOAD_REG_CENTER_ID = "resident.download.reg.centers.list.id";
+    public static final String DOWNLOAD_NEAREST_REG_CENTER_ID = "resident.download.nearest.reg.centers.id";
+    public static final String DOWNLOAD_SUPPORTING_DOCS_ID = "resident.download.supporting.documents.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
 
@@ -153,6 +158,9 @@ public class ResidentConstants {
     public static final String ADDITIONAL_ATTRIBUTE_TO_FETCH = "resident.additional.identity.attribute.to.fetch";
     public static final String COMMA = ",";
     public static final String COLON = ":";
+    public static final String SEMI_COLON = ";";
+    public static final String OPEN_PARENTHESIS = "(";
+    public static final String CLOSE_PARENTHESIS = ")";
 
     public static final String FILE_TEXT = "fileText";
     public static final String DOLLAR = "$";
@@ -160,10 +168,8 @@ public class ResidentConstants {
 
     public static final String CHANNEL = "channel";
     public static final String ATTRIBUTE_LIST_DELIMITER = ",";
-
-    public static final String MASK_REQUIRED = "maskRequired";
-    public static final String MASK_PREFIX = "masked_";
-    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
+    public static final String UI_ATTRIBUTE_DATA_DELIMITER = ", ";
+    public static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
     public static final String REQ_RES_ID = "reqResId";
@@ -252,5 +258,15 @@ public class ResidentConstants {
     public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
     public static final String PREFERRED_LANGUAGE = "preferredLanguage";
     public static final String RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED = "resident.attribute.names.without.documents.required";
+    
+//    UI Schema keys
+    public static final String FORMAT_REQUIRED = "formatRequired";
+    public static final String ATTRIBUTE_NAME = "attributeName";
+    public static final String FORMAT_OPTION = "formatOption";
+	public static final String LABEL = "label";
+	public static final String MASK_REQUIRED = "maskRequired";
+	public static final String MASK_ATTRIBUTE_NAME = "maskAttributeName";
+    public static final String MASK_PREFIX = "masked_";
+    public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
 
 }

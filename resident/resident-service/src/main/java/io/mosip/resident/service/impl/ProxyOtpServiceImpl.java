@@ -137,13 +137,14 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         MainResponseDTO<AuthNResponse> response = null;
         response = (MainResponseDTO<AuthNResponse>) getMainResponseDto(userIdOtpRequest);
         String userid = null;
+        String transactionId = null;
         boolean isSuccess = false;
         String eventId = ResidentConstants.NOT_AVAILABLE;
 
         try {
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            String transactionId = user.getTransactionId();
+            transactionId = user.getTransactionId();
 			boolean validated = otpManager.validateOtp(user.getOtp(), userid, transactionId);
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
@@ -176,7 +177,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 
             if (isSuccess) {
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-                        userid, "Validate OTP Success"));
+                		transactionId, "Validate OTP Success"));
             } else {
                 ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
                         ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
@@ -185,35 +186,14 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                 response.setErrors(lst);
                 response.setResponse(null);
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
-                        userid, "Validate OTP Failed"));
+                		transactionId, "Validate OTP Failed"));
             }
 
         }
         return Tuples.of(response, eventId);
     }
 
-	private ResidentTransactionEntity createResidentTransactionEntity(String userId)
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
-		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.UPDATE_MY_UIN.name());
-        residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
-		residentTransactionEntity.setStatusCode(EventStatusSuccess.DATA_UPDATED.name());
-        residentTransactionEntity.setAttributeList(userId);
-        String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
-		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
-		residentTransactionEntity.setRequestSummary(EventStatusSuccess.DATA_UPDATED.name());
-		if (requestValidator.phoneValidator(userId)) {
-			residentTransactionEntity.setStatusComment("Update phone as " + userId);
-		} else if (requestValidator.emailValidator(userId)) {
-			residentTransactionEntity.setStatusComment("Update email as " + userId);
-		}
-		return residentTransactionEntity;
-	}
-
-	/**
+    /**
      * This method will return the MainResponseDTO with id and version
      *
      * @param mainRequestDto

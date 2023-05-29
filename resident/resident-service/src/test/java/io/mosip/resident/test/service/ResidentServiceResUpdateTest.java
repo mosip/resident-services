@@ -183,7 +183,7 @@ public class ResidentServiceResUpdateTest {
 
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		when(utility.createEntity()).thenReturn(residentTransactionEntity);
+		when(utility.createEntity(Mockito.anyString())).thenReturn(residentTransactionEntity);
 		when(utility.createEventId()).thenReturn("1232312321432432");
 		byte[] str = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 		when(objectMapper.readValue(str, Map.class)).thenReturn(identityResponse);
@@ -233,6 +233,7 @@ public class ResidentServiceResUpdateTest {
 		updateDto = new PacketGeneratorResDto();
 		updateDto.setRegistrationId("10008100670001720191120095702");
 		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
+		Mockito.when(residentUpdateService.createPacket(any(), any())).thenReturn(updateDto);
 
 		Mockito.when(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name())).thenReturn("PACKETSIGNPUBLICKEY");
 		Mockito.when(env.getProperty(ApiName.MACHINESEARCH.name())).thenReturn("MACHINESEARCH");
@@ -416,21 +417,21 @@ public class ResidentServiceResUpdateTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testIOException() throws BaseCheckedException, IOException {
 		HttpClientErrorException exp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
-		Mockito.when(residentUpdateService.createPacket(any())).thenThrow(new IOException("badgateway", exp));
+		Mockito.when(residentUpdateService.createPacket(any(), any())).thenThrow(new IOException("badgateway", exp));
 		residentServiceImpl.reqUinUpdate(dto);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testApiResourceAccessExceptionServer() throws BaseCheckedException, IOException {
 		HttpServerErrorException exp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-		Mockito.when(residentUpdateService.createPacket(any()))
+		Mockito.when(residentUpdateService.createPacket(any(), any()))
 				.thenThrow(new ApisResourceAccessException("badgateway", exp));
 		residentServiceImpl.reqUinUpdate(dto);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testBaseCheckedException() throws BaseCheckedException, IOException {
-		Mockito.when(residentUpdateService.createPacket(any()))
+		Mockito.when(residentUpdateService.createPacket(any(), any()))
 				.thenThrow(new BaseCheckedException("erorcode", "badgateway", new RuntimeException()));
 		residentServiceImpl.reqUinUpdate(dto);
 	}

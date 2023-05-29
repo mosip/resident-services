@@ -80,7 +80,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
 			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
-	AUTH_TYPE_LOCK_UNLOCK("Lock or/and Unlock Authentication Types",
+	AUTH_TYPE_LOCK_UNLOCK("Secure My ID",
 			TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
 			"lock-unlock-auth",
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock,
@@ -102,7 +102,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 
 	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp, "send-otp",
 			TemplateUtil::getNotificationSendOtpVariables, null),
-	VALIDATE_OTP("Validate OTP", TemplateUtil::getAckTemplateVariablesForValidateOtp,
+	VALIDATE_OTP("Verify My Phone/Email", TemplateUtil::getAckTemplateVariablesForValidateOtp,
 			"verify-my-phone-email",
 			TemplateUtil::getNotificationCommonTemplateVariables,
 			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),
@@ -132,7 +132,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private String featureName;
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
-	private QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables;
+	private QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
 	private String namingProperty;
 
 	private String name;
@@ -141,7 +141,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-			QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables) {
+			QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
 		this(name, ackTemplateVariablesFunction,
 				featureName, notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
 	}
@@ -150,7 +150,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-			QuadFunction<TemplateUtil, String, String, String, String> getDescriptionTemplateVariables,
+			QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
@@ -248,6 +248,22 @@ public enum RequestType implements PreUpdateInBatchJob {
 		.distinct()	
 		.collect(Collectors.toUnmodifiableList());
 	}
+
+	public static List<String> getAllFailedStatusList(Environment env) {
+		return Stream.of(values()).flatMap(requestType -> {
+					return requestType.getFailedStatusList(env);
+				}).filter(str -> !str.isEmpty())
+				.distinct()
+				.collect(Collectors.toUnmodifiableList());
+	}
+
+	public static List<String> getAllSuccessStatusList(Environment env) {
+		return Stream.of(values()).flatMap(requestType -> {
+					return requestType.getSuccessStatusList(env);
+				}).filter(str -> !str.isEmpty())
+				.distinct()
+				.collect(Collectors.toUnmodifiableList());
+	}
 	
 	public String getFeatureName() {
 		return featureName;
@@ -287,8 +303,8 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return notificationTemplateVariablesFunction.apply(templateUtil, dto);
 	}
 
-	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, String eventId, String fileText, String languageCode){
-		return getDescriptionTemplateVariables.apply(templateUtil, eventId, fileText, languageCode);
+	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){
+		return getDescriptionTemplateVariables.apply(templateUtil, residentTransactionEntity, fileText, languageCode);
 	}
 	
 	public String getNamingProperty() {
