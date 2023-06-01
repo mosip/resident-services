@@ -1,7 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
 import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
@@ -322,7 +322,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
 			residentTransactionEntity.setAttributeList(
-					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
+					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER)));
 		}
         return residentTransactionEntity;
 	}

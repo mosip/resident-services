@@ -137,14 +137,13 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         MainResponseDTO<AuthNResponse> response = null;
         response = (MainResponseDTO<AuthNResponse>) getMainResponseDto(userIdOtpRequest);
         String userid = null;
-        String transactionId = null;
         boolean isSuccess = false;
         String eventId = ResidentConstants.NOT_AVAILABLE;
 
         try {
             OtpRequestDTOV3 user = userIdOtpRequest.getRequest();
             userid = user.getUserId();
-            transactionId = user.getTransactionId();
+            String transactionId = user.getTransactionId();
 			boolean validated = otpManager.validateOtp(user.getOtp(), userid, transactionId);
             AuthNResponse authresponse = new AuthNResponse();
             if (validated) {
@@ -177,7 +176,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 
             if (isSuccess) {
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-                		transactionId, "Validate OTP Success"));
+                        userid, "Validate OTP Success"));
             } else {
                 ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
                         ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
@@ -186,7 +185,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                 response.setErrors(lst);
                 response.setResponse(null);
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
-                		transactionId, "Validate OTP Failed"));
+                        userid, "Validate OTP Failed"));
             }
 
         }

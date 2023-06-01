@@ -348,7 +348,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	}
 
 	private Tuple2<byte[], String> encryptRSA(final byte[] sessionKey, String refId) throws ApisResourceAccessException,
-			InvalidKeySpecException, NoSuchAlgorithmException, IOException, JsonProcessingException, CertificateEncodingException {
+			InvalidKeySpecException, java.security.NoSuchAlgorithmException, IOException, JsonProcessingException, CertificateEncodingException {
 
 		// encrypt AES Session Key using RSA public key
 		ResponseWrapper<?> responseWrapper = null;
@@ -545,7 +545,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	}
 
 	private byte[] getCertificateThumbprint(java.security.cert.Certificate cert)
-			throws CertificateEncodingException {
+			throws java.security.cert.CertificateEncodingException {
 
         return DigestUtils.sha256(cert.getEncoded());
 	}
