@@ -360,7 +360,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<Object> updateUin(
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update Uin API"));
 		validator.validateUpdateRequest(requestDTO, false);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
@@ -390,7 +390,7 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {

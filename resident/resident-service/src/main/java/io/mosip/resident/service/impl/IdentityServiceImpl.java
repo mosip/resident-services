@@ -290,7 +290,7 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 
 			return response;
-		} catch (ApisResourceAccessException e) {
+		} catch (ApisResourceAccessException | IOException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

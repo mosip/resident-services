@@ -9,7 +9,6 @@ import static io.mosip.resident.constant.RegistrationConstants.VID_LABEL;
 import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
-import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
 import static io.mosip.resident.constant.ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER;
 import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
 import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
@@ -916,10 +915,10 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
-			String idSchemaVersionStr = null;
+
 			if(validateIdObject) {
 				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-				idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+				String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
 				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
 				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 				Object idSchema = idSchemaResponse.getResponse();
@@ -973,7 +972,7 @@ public class ResidentServiceImpl implements ResidentService {
 			JSONObject proofOfBirthJson = JsonUtil.getJSONObject(demographicIdentity, pobMapping);
 			regProcReqUpdateDto.setProofOfDateOfBirth(getDocumentValue(proofOfBirthJson, documents));
 
-			PacketGeneratorResDto response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr);
+			PacketGeneratorResDto response = residentUpdateService.createPacket(regProcReqUpdateDto);
 			Map<String, Object> additionalAttributes = new HashMap<>();
 			additionalAttributes.put("RID", response.getRegistrationId());
 			audit.setAuditRequestDto(
@@ -1176,7 +1175,7 @@ public class ResidentServiceImpl implements ResidentService {
 		
 		String attributeList = identityMap.keySet().stream()
 				.filter(key -> !key.equals(IDSCHEMA_VERSION) && !key.equals(UIN_LABEL) && !key.equals(VID_LABEL))
-				.collect(Collectors.joining(SEMI_COLON));
+				.collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setConsent(dto.getConsent());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());

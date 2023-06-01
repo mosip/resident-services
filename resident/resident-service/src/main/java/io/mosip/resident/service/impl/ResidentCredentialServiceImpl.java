@@ -55,7 +55,6 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.ResponseWrapper;
-import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
@@ -225,7 +224,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 
 	@Override
 	public Tuple2<ResidentCredentialResponseDtoV2, String> shareCredential(ResidentCredentialRequestDto dto,
-			String purpose, List<SharableAttributesDTO> sharableAttributes) throws ResidentServiceCheckedException, ApisResourceAccessException {
+			String purpose) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		ResidentCredentialResponseDtoV2 residentCredentialResponseDtoV2=new ResidentCredentialResponseDtoV2();
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
@@ -240,7 +239,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
 			
-			residentTransactionEntity = createResidentTransactionEntity(dto, individualId, purpose, sharableAttributes);
+			residentTransactionEntity = createResidentTransactionEntity(dto, individualId, purpose);
 			if (residentTransactionEntity != null) {
     			eventId = residentTransactionEntity.getEventId();
     		}
@@ -309,7 +308,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto dto,
-			String individualId, String purpose, List<SharableAttributesDTO> sharableAttributes) throws ApisResourceAccessException, ResidentServiceCheckedException {
+			String individualId, String purpose) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
@@ -319,15 +318,10 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		if (purpose != null) {
 			residentTransactionEntity.setPurpose(purpose);
 		}
-		if (sharableAttributes != null && !sharableAttributes.isEmpty()) {
-			String data = sharableAttributes.stream().map(map -> {
-				if (map.getFormat() != null && !map.getFormat().isEmpty()) {
-					return String.format("%s%s%s", map.getAttributeName(), ResidentConstants.COLON, map.getFormat());
-				} else {
-					return map.getAttributeName();
-				}
-			}).collect(Collectors.joining(ResidentConstants.SEMI_COLON));
-			residentTransactionEntity.setAttributeList(data);
+		List<String> sharableAttributes = dto.getSharableAttributes();
+		if(sharableAttributes != null){
+			residentTransactionEntity.setAttributeList(sharableAttributes.stream()
+					.collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)));
 		}
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(dto.getIssuer());
