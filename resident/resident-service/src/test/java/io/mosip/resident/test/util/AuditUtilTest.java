@@ -149,7 +149,7 @@ public class AuditUtilTest {
 
         assertEquals("user1", httpEntity.getBody().getRequest().getSessionUserId());
         assertEquals("user1", httpEntity.getBody().getRequest().getSessionUserName());
-        assertEquals("RESIDENT", httpEntity.getBody().getRequest().getCreatedBy());
+        assertEquals("user1", httpEntity.getBody().getRequest().getCreatedBy());
 
         assertEquals(localDateTime, httpEntity.getBody().getRequest().getActionTimeStamp());
 
