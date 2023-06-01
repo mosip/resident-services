@@ -254,6 +254,7 @@ public class ResidentVidServiceTest {
 
     @Test(expected = VidCreationException.class)
     public void apiResourceAccessExceptionTest() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
+    	
         String ERROR_CODE = "err";
 
         ServiceError serviceError = new ServiceError();
