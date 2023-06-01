@@ -15,6 +15,7 @@ import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentOtpService;
@@ -77,9 +78,11 @@ public class ResidentOtpController {
 			requestValidator.validateReqOtp(individualIdRequestDto);
 			individualIdResponseDto = residentOtpService.generateOtpForIndividualId(individualIdRequestDto);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.OTP_AID_GEN_EXCEPTION);
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
-		} catch (ResidentServiceException e) {
+		} catch (ResidentServiceException | InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.OTP_AID_GEN_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, otpRequestId));
 			throw e;
 		}
