@@ -1,7 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
 import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
@@ -238,6 +238,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID));
         checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECKSTATUS_INDIVIDUALID_VERSION));
         checkStatusResponseDTOResponseWrapper.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.AID_STATUS_RESPONSE, aidStatus));
         return checkStatusResponseDTOResponseWrapper;
     }
 
@@ -322,7 +323,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
 			residentTransactionEntity.setAttributeList(
-					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER)));
+					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
 		}
         return residentTransactionEntity;
 	}
@@ -433,6 +434,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			throw new ApisResourceAccessException(ResidentErrorCode.VID_REQUEST_CARD_FAILED.toString(), e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
         } catch (IOException exception) {
+        	audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
         	if (residentTransactionEntity != null) {
         		residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
             	residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());

@@ -195,7 +195,6 @@ public class ResidentControllerTest {
 		authTypeStatusRequest.setRequesttime(LocalDateTime.now().toString());
 		authTypeStatusRequest.setVersion("v1");
 		authTypeStatusRequest.setId("io.mosip.resident.authHistory");
-
 		gson = new GsonBuilder().serializeNulls().create();
 		authLockRequestToJson = gson.toJson(authLockRequest);
 		euinRequestToJson = gson.toJson(euinRequest);
@@ -204,6 +203,7 @@ public class ResidentControllerTest {
 		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
+		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn("UIN");
 	}
 
 	@Test
