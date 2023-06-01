@@ -36,11 +36,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditResponseDto;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * @author Abubacker Siddik
@@ -108,10 +113,17 @@ public class AuditUtilTest {
         ResponseEntity<String> response = ResponseEntity.ok(responseString);
 
         AuditRequestDTO auditRequestDto = new AuditRequestDTO();
+		auditRequestDto.setId("9054257143");
+		auditRequestDto.setIdType("UIN");
         RequestWrapper<AuditRequestDTO> auditRequestWrapper = new RequestWrapper<>();
         auditRequestWrapper.setRequest(auditRequestDto);
         when(restTemplate.exchange(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class), Mockito.any(Object.class))).thenReturn(response);
         when(objectMapper.readValue(Mockito.anyString(), Mockito.any(TypeReference.class))).thenReturn(responseWrapper);
+		String individualId = "9054257143";
+		String refIdType = "UIN";
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
+		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(refIdType);
+		
         auditUtil.setAuditRequestDto(eventEnum);
 
         verify(restTemplate, times(1)).exchange(stringCaptor.capture(), Mockito.any(), httpEntityCaptor.capture(), Mockito.any(Class.class), Mockito.any(Object.class));
@@ -126,10 +138,11 @@ public class AuditUtilTest {
         assertEquals(eventEnum.getType(), httpEntity.getBody().getRequest().getEventType());
         assertEquals(eventEnum.getName(), httpEntity.getBody().getRequest().getEventName());
         assertEquals(eventEnum.getEventId(), httpEntity.getBody().getRequest().getEventId());
-        assertEquals(eventEnum.getId(), httpEntity.getBody().getRequest().getId());
-        assertEquals(eventEnum.getIdType(), httpEntity.getBody().getRequest().getIdType());
         assertEquals(eventEnum.getModuleId(), httpEntity.getBody().getRequest().getModuleId());
         assertEquals(eventEnum.getModuleName(), httpEntity.getBody().getRequest().getModuleName());
+		assertEquals("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308",
+				httpEntity.getBody().getRequest().getId());
+		assertEquals("UIN", httpEntity.getBody().getRequest().getIdType());
 
         assertEquals(host.getHostName(), httpEntity.getBody().getRequest().getHostName());
         assertEquals(host.getHostAddress(), httpEntity.getBody().getRequest().getHostIp());
@@ -143,5 +156,22 @@ public class AuditUtilTest {
         assertEquals(auditUrlInput, auditUrl);
 
     }
+    
+	@Test
+	public void testGetRefIdandTypeNoID() {
+		Tuple2<String, String> response = auditUtil.getRefIdandType();
+		assertEquals(Tuples.of(ResidentConstants.NO_ID, ResidentConstants.NO_ID_TYPE), response);
+	}
+
+	@Test
+	public void testGetRefIdandType() throws ApisResourceAccessException {
+		String individualId = "9054257143";
+		String refIdType = "UIN";
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
+		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(refIdType);
+		Tuple2<String, String> refIdandType = auditUtil.getRefIdandType();
+		assertEquals(Tuples.of("07DDDD711B7311BAE05A09F36479BAF78EA4FF1B91603A9704A2D59206766308", "UIN"),
+				refIdandType);
+	}
 
 }
