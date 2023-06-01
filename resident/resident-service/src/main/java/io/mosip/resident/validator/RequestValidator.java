@@ -71,6 +71,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1076,7 +1077,9 @@ public class RequestValidator {
 	}
 
 	public void validateFromDateTimeToDateTime(LocalDate fromDateTime, LocalDate toDateTime, String request_service_history_api) {
-		if(fromDateTime == null && toDateTime != null) {
+
+		if(fromDateTime == null && toDateTime != null ||
+				fromDateTime!=null && toDateTime!=null && fromDateTime.isAfter(toDateTime)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, ResidentConstants.FROM_DATE_TIME,
 					request_service_history_api));
 			throw new InvalidInputException(ResidentConstants.FROM_DATE_TIME);
@@ -1273,9 +1276,22 @@ public class RequestValidator {
 		String requestIdStoredInProperty = this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID);
 		validateRequestType(inputRequestId, requestIdStoredInProperty, ID);
 		validateVersion(userIdOtpRequest.getVersion());
-		validateDate(userIdOtpRequest.getRequesttime());
+		validateRequestTime(userIdOtpRequest.getRequesttime());
 		validateUserIdAndTransactionId(userIdOtpRequest.getRequest().getUserId(), userIdOtpRequest.getRequest().getTransactionId());
 		validateOTP(userIdOtpRequest.getRequest().getOtp());
+	}
+
+	public void validateRequestTime(Date requestTime) {
+		String localDateTime =DateUtils.getUTCCurrentDateTimeString();
+		Date afterDate = Date.from(Instant.parse(localDateTime).plusSeconds(Long.parseLong(
+				Objects.requireNonNull(this.environment.getProperty(ResidentConstants.RESIDENT_FUTURE_TIME_LIMIT)))));
+		Date beforeDate = Date.from(Instant.parse(localDateTime).minusSeconds(Long.parseLong(
+				Objects.requireNonNull(this.environment.getProperty(ResidentConstants.RESIDENT_PAST_TIME_LIMIT)))));
+		if(requestTime==null || requestTime.after(afterDate) || requestTime.before(beforeDate)) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, REQUESTTIME, "Request time invalid"));
+			throw new InvalidInputException(REQUESTTIME);
+		}
 	}
 
 	public void validateOTP(String otp) {

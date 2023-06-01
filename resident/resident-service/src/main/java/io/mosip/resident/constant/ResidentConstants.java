@@ -268,5 +268,7 @@ public class ResidentConstants {
 	public static final String MASK_ATTRIBUTE_NAME = "maskAttributeName";
     public static final String MASK_PREFIX = "masked_";
     public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
+    public static final String RESIDENT_FUTURE_TIME_LIMIT = "resident.future.time.limit";
+    public static final String RESIDENT_PAST_TIME_LIMIT = "resident.past.time.limit";
 
 }

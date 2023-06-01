@@ -83,6 +83,9 @@ public enum EventEnum {
 	VALIDATE_OTP_SUCCESS("RES-SER-209", RegistrationConstants.SYSTEM, "Validate otp: Success",
 			"Validating OTP for transaction id %s is success", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	VALIDATE_OTP_FAILURE("RES-SER-301", RegistrationConstants.SYSTEM, "Validate otp: Failed",
+			"OTP vaildation for transaction id %s is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	GETTING_RID_STATUS("RES-SER-116", RegistrationConstants.SYSTEM, "Checking RID status",
 			"Getting RID status based on individual id", "RES-SER", "Residence service", "RS-RID", "RID section",
