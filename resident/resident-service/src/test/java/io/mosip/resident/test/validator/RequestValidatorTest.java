@@ -64,6 +64,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -1896,15 +1897,16 @@ public class RequestValidatorTest {
 	public void testValidateUpdateDataRequestCorrectPhoneUserId() throws Exception{
 		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
 		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
 		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
 		otpRequestDTOV3.setTransactionId("1232323232");
-		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setId("60");
 		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("8878787878");
-		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequesttime(Date.from(Instant.now()));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
 		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
 	}
@@ -1913,15 +1915,16 @@ public class RequestValidatorTest {
 	public void testValidateUpdateDataRequestCorrectEmailId() throws Exception{
 		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
 		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
 		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest =
 				new io.mosip.resident.dto.MainRequestDTO<>();
 		OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
 		otpRequestDTOV3.setOtp("111111");
 		otpRequestDTOV3.setTransactionId("1232323232");
-		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setId("60");
 		userIdOtpRequest.setVersion("1.0");
 		otpRequestDTOV3.setUserId("test@g.com");
-		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequesttime(Date.from(Instant.now()));
 		userIdOtpRequest.setRequest(otpRequestDTOV3);
 		requestValidator.validateUpdateDataRequest(userIdOtpRequest);
 	}
@@ -2580,6 +2583,18 @@ public class RequestValidatorTest {
 		individualIdOtpRequestDTO.setIndividualId("1234567890");
 		individualIdOtpRequestDTO.setTransactionId("1234567890");
 		requestValidator.validateReqOtp(individualIdOtpRequestDTO);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateRequestTimeFailure(){
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
+		requestValidator.validateRequestTime(Date.from(Instant.now().minusSeconds(100)));
+	}
+
+	@Test
+	public void testValidateRequestTime(){
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
+		requestValidator.validateRequestTime(Date.from(Instant.now().minusSeconds(10)));
 	}
 
 }
