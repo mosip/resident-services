@@ -128,7 +128,6 @@ public class AuditUtil {
 		auditRequestDto.setEventId(eventEnum.getEventId());
 		auditRequestDto.setId(getRefIdandType().getT1());
 		auditRequestDto.setIdType(getRefIdandType().getT2());
-		auditRequestDto.setCreatedBy(ResidentConstants.RESIDENT);
 		callAuditManager(auditRequestDto);
 	}
 	
