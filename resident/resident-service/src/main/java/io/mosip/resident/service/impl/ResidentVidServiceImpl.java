@@ -89,6 +89,8 @@ import reactor.util.function.Tuples;
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
 
+	private static final String AUTH_TYPE_CODE_SUFFIX = "-AUTH";
+
 	private static final String GENRATED_ON_TIMESTAMP = "genratedOnTimestamp";
 	
 	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
@@ -831,6 +833,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset);
 					return lhm;
 				})
+				.filter(map1 -> map1.get(TRANSACTIONS_LEFT_COUNT) == null || (int) map1.get(TRANSACTIONS_LEFT_COUNT) > 0)
 				.collect(Collectors.toList());
 		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
 		res.setId(residentVidGetId);
@@ -863,17 +866,18 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
 		try {
-			String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
-			int countdb = residentTransactionRepository.findByrefIdandauthtype(hashrefid);
 			if(map.get(TRANSACTION_LIMIT) != null) {
+				String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
+				int countdb = residentTransactionRepository.findByRefIdAndAuthTypeCodeLike(hashrefid, AUTH_TYPE_CODE_SUFFIX);
 				int limitCount =  (int) map.get(TRANSACTION_LIMIT);
 				int leftcount = limitCount - countdb;
-			    map.put(TRANSACTIONS_LEFT_COUNT, leftcount);
 			    if(leftcount < 0) {
 			    	map.put(TRANSACTIONS_LEFT_COUNT, 0);
+			    } else {
+			    	map.put(TRANSACTIONS_LEFT_COUNT, leftcount);
 			    }
-			}else  {
-				map.put(TRANSACTIONS_LEFT_COUNT, map.get(TRANSACTION_LIMIT));	
+			} else  {
+				map.put(TRANSACTIONS_LEFT_COUNT, map.get(TRANSACTION_LIMIT));
 			}
 			map.remove(HASH_ATTRIBUTES);
 		} catch (NoSuchAlgorithmException e) {
