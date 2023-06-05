@@ -83,6 +83,9 @@ public enum EventEnum {
 	VALIDATE_OTP_SUCCESS("RES-SER-209", RegistrationConstants.SYSTEM, "Validate otp: Success",
 			"Validating OTP for transaction id %s is success", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	VALIDATE_OTP_FAILURE("RES-SER-301", RegistrationConstants.SYSTEM, "Validate otp: Failed",
+			"OTP vaildation for transaction id %s is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
+			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	GETTING_RID_STATUS("RES-SER-116", RegistrationConstants.SYSTEM, "Checking RID status",
 			"Getting RID status based on individual id", "RES-SER", "Residence service", "RS-RID", "RID section",
@@ -855,31 +858,30 @@ public enum EventEnum {
 
 	private String description;
 
+	private String refId;
+
+	private String refIdType;
+
 	private String moduleId;
 
 	private String moduleName;
-
-	private String id;
-
-	private String idType;
 
 	private String applicationId;
 
 	private String applicationName;
 
-	private EventEnum(String eventId, String type, String name, String description, String moduleId, String moduleName,
-			String id, String idType, String applicationId, String applicationName) {
+	private EventEnum(String eventId, String type, String name, String description, String refId, String refIdType,
+			String moduleId, String moduleName, String applicationId, String applicationName) {
 		this.eventId = eventId;
 		this.type = type;
 		this.name = name;
 		this.description = description;
+		this.refId = refId;
+		this.refIdType = refIdType;
 		this.moduleId = moduleId;
 		this.moduleName = moduleName;
-		this.id = id;
-		this.idType = idType;
 		this.applicationId = applicationId;
 		this.applicationName = applicationName;
-
 	}
 
 	public String getEventId() {
@@ -906,12 +908,12 @@ public enum EventEnum {
 		return moduleName;
 	}
 
-	public String getId() {
-		return id;
+	public String getRefId() {
+		return refId;
 	}
 
-	public String getIdType() {
-		return idType;
+	public String getRefIdType() {
+		return refIdType;
 	}
 
 	public void setDescription(String des) {
@@ -923,7 +925,7 @@ public enum EventEnum {
 	}
 
 	public void setId(String id) {
-		this.id = id;
+		this.refId = id;
 	}
 
 	public void setName(String name) {
@@ -940,7 +942,7 @@ public enum EventEnum {
 
 	public static EventEnum getEventEnumWithValue(EventEnum e, String s) {
 		e.setDescription(String.format(e.getDescription(), s));
-		String id = e.getId();
+		String id = e.getRefId();
 		if (id!=null && id.equalsIgnoreCase("%s")){
 			e.setId(s);
 		}
@@ -953,7 +955,7 @@ public enum EventEnum {
 	 */
 	public static EventEnum getEventEnumWithValue(EventEnum e, String edescription, String ename) {
 		e.setDescription(String.format(e.getDescription(), edescription));
-		String id = e.getId();
+		String id = e.getRefId();
 		if (id!=null && id.equalsIgnoreCase("%s"))
 			e.setId(edescription);
 		e.setName(String.format(e.getName(), ename));
