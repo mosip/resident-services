@@ -21,7 +21,6 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.EidNotBelongToSessionException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -108,6 +107,8 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.any(), Mockito.any())).thenReturn("success");
+        Mockito.when(templateUtil.getEventStatusTemplateTypeCode(Mockito.any())).thenReturn("template-type-code");
         ResponseWrapper primaryLangResp = new ResponseWrapper<>();
 		primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
 		Mockito.when(proxyMasterdataService

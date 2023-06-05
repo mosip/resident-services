@@ -198,7 +198,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
-	private static final int EVENT_STATUS_LIST_LENGTH = 3;
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -249,9 +248,6 @@ public class ResidentServiceImpl implements ResidentService {
 	/** The json validator. */
 	@Autowired
 	private IdObjectValidator idObjectValidator;
-
-	@Autowired
-	private ResidentConfigServiceImpl residentConfigService;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -1887,7 +1883,8 @@ public class ResidentServiceImpl implements ResidentService {
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setRequestType(requestType.name());
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-			serviceHistoryResponseDto.setEventStatus(statusCode);
+			serviceHistoryResponseDto.setEventStatus(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(
+					langCode, templateUtil.getEventStatusTemplateTypeCode(statusCode)));
 			if (residentTransactionEntity.getUpdDtimes() != null
 					&& residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
 				serviceHistoryResponseDto.setTimeStamp(utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getUpdDtimes()));
