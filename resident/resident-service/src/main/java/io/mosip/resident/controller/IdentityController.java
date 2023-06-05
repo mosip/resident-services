@@ -75,6 +75,7 @@ public class IdentityController {
 		try {
 			validator.validateSchemaType(schemaType);
 		} catch (InvalidInputException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_EXCEPTION);
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, residentIdentityInfoId));
 		}

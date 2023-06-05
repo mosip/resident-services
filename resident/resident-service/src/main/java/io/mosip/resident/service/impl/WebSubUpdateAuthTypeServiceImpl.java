@@ -31,6 +31,7 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
+import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
@@ -50,6 +51,9 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
+    
+	@Autowired
+	private Utility utility;
 
     @Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
@@ -121,7 +125,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 							residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
 								residentTransactionEntity.setStatusCode(status);
 								residentTransactionEntity.setReadStatus(false);
-								residentTransactionEntity.setUpdBy(RESIDENT);
+								residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 								residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 							});
 							residentTransactionRepository.saveAll(residentTransactionEntities);

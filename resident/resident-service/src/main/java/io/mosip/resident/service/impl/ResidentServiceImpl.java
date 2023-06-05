@@ -1685,7 +1685,7 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
 				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
-				residentTransactionEntity.setUpdBy(RESIDENT);
+				residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 				residentTransactionRepository.save(residentTransactionEntity);
 				return pdfBytes;

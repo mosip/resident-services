@@ -137,9 +137,13 @@ public class ResidentConstants {
     public static final String DOWNLOAD_REG_CENTER_ID = "resident.download.reg.centers.list.id";
     public static final String DOWNLOAD_NEAREST_REG_CENTER_ID = "resident.download.nearest.reg.centers.id";
     public static final String DOWNLOAD_SUPPORTING_DOCS_ID = "resident.download.supporting.documents.id";
+    public static final String SEND_CARD_ID = "resident.send.card.id";
+    public static final String PINNED_EVENTID_ID = "resident.pinned.eventid.id";
+    public static final String UNPINNED_EVENTID_ID = "resident.unpinned.eventid.id";
+    public static final String AUTH_PROXY_PARTNERS_ID = "resident.auth.proxy.partners.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
-
+    public static final String UNKNOWN = "Unknown";
     public static final String EMAIL_FROM_PROFILE = "mosip.resident.email.token.claim-email";
     public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
 

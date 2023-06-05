@@ -469,7 +469,7 @@ public class Utility {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
+		residentTransactionEntity.setCrBy(getSessionUserName());
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
 		if(ServiceType.ASYNC.getRequestTypes().contains(RequestType.valueOf(requestType)) ){
@@ -685,6 +685,19 @@ public class Utility {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
 		}
 		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
+	}
+	
+	public String getSessionUserName() {
+		String name = null;
+		try {
+			name = identityService.getAvailableclaimValue(this.env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			if (name == null || name.trim().isEmpty()) {
+				name = ResidentConstants.UNKNOWN;
+			}
+		} catch (ApisResourceAccessException e) {
+			throw new RuntimeException(e);
+		}
+		return name;
 	}
 	
 }

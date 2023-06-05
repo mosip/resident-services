@@ -485,7 +485,7 @@ public class UtilityTest {
 
 	@Test
 	public void testCreateEntity(){
-		assertEquals("resident-services",utility.createEntity("SHARE_CRED_WITH_PARTNER").getCrBy());
+		assertEquals("Unknown",utility.createEntity("SHARE_CRED_WITH_PARTNER").getCrBy());
 	}
 
 	@Test
