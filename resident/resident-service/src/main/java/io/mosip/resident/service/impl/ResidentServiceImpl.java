@@ -1987,29 +1987,6 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public String checkAidStatus(String aid) throws ResidentServiceCheckedException {
-
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::checkAidStatus()::Start");
-		try {
-			String uin = identityServiceImpl.getUinForIndividualId(aid);
-			if (uin == null) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
-			}
-			AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-			aidStatusRequestDTO.setIndividualId(aid);
-			AidStatusResponseDTO aidStatusResponseDTO = getAidStatus(aidStatusRequestDTO, false);
-			return aidStatusResponseDTO.getAidStatus();
-		} catch (ApisResourceAccessException | OtpValidationFailedException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::checkAidStatus():: ApisResourceAccessException");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-	}
-
-	@Override
 	public ResponseWrapper<EventStatusResponseDTO> getEventStatus(String eventId, String languageCode, int timeZoneOffset)
 			throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

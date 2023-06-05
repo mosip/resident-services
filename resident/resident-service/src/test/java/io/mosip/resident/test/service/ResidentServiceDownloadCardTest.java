@@ -364,10 +364,4 @@ public class ResidentServiceDownloadCardTest {
         assertEquals(Optional. of(0L), Optional.ofNullable(residentServiceImpl.
                 getnotificationCount("123").getResponse().getUnreadCount()));
     }
-
-    @Test(expected = ResidentServiceCheckedException.class)
-    public void testGetCheckAidStatusFailed() throws ResidentServiceCheckedException {
-        Mockito.when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn(null);
-        residentServiceImpl.checkAidStatus("123");
-    }
 }
