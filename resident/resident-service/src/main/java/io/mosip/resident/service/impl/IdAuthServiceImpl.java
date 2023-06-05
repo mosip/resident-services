@@ -76,6 +76,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
@@ -127,6 +129,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 
     @Autowired
     RequestValidator requestValidator;
+    
+	@Autowired
+	private AuditUtil auditUtil;
 	
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
@@ -155,6 +160,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 			}
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
+			auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_FAILURE, transactionId,
+					"OTP Validation Failed"));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
 			eventId = updateResidentTransactionAndSendNotification(transactionId, individualId, eventId, authStatus);

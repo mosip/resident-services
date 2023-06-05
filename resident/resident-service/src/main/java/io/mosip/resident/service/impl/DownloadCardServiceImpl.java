@@ -238,6 +238,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         checkStatusResponseDTOResponseWrapper.setId(this.environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID));
         checkStatusResponseDTOResponseWrapper.setVersion(this.environment.getProperty(ResidentConstants.CHECKSTATUS_INDIVIDUALID_VERSION));
         checkStatusResponseDTOResponseWrapper.setResponsetime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.AID_STATUS_RESPONSE, aidStatus));
         return checkStatusResponseDTOResponseWrapper;
     }
 
