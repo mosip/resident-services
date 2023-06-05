@@ -21,6 +21,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthenticationModeEnum;
+import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -111,7 +112,7 @@ public class TemplateUtil {
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
 		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, getTemplateValueFromTemplateTypeCodeAndLangCode(
-				languageCode, getEventStatusTemplateTypeCode(statusCode)));
+				languageCode, getEventStatusTemplateTypeCode(EventStatus.getEventStatusForText(statusCode).get().name())));
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
 				templateVariables.put(TemplateVariablesConstants.SUMMARY,

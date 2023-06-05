@@ -127,6 +127,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForAuthenticationRequest() {
+    	templateResponse.put(ResidentConstants.FILE_TEXT, EventStatus.SUCCESS.getStatus());
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(eventId, "eng", 0).getT1();
         assertEquals(EventStatus.SUCCESS.getStatus(),ackTemplateVariables.get(TemplateVariablesConstants.EVENT_STATUS));
     }
@@ -207,6 +208,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getCommonTemplateVariablesTestFailedEventStatus() {
+    	templateResponse.put(ResidentConstants.FILE_TEXT, EventStatus.FAILED.getStatus());
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.FAILED.getStatus());
         assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0).getT1().get(
@@ -216,6 +218,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
+    	templateResponse.put(ResidentConstants.FILE_TEXT, EventStatus.IN_PROGRESS.getStatus());
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
         assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0).getT1().get(
@@ -378,11 +381,8 @@ public class TemplateUtilTest {
     }
 
     @Test
-    public void getCommonTemplateVariablesTestForRequestTypeNotPresentInServiceType() throws ResidentServiceCheckedException {
-        templateResponse.put(ResidentConstants.FILE_TEXT, "Unknown");
-        responseWrapper.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
-                responseWrapper);
+    public void getCommonTemplateVariablesTestForRequestTypeNotPresentInServiceType() {
+    	templateResponse.put(ResidentConstants.FILE_TEXT, EventStatus.IN_PROGRESS.getStatus());
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode("requestType");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
@@ -392,11 +392,8 @@ public class TemplateUtilTest {
     }
 
     @Test
-    public void getCommonTemplateVariablesTestApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        templateResponse.put(ResidentConstants.FILE_TEXT, "Unknown");
-        responseWrapper.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
-                responseWrapper);
+    public void getCommonTemplateVariablesTestApiResourceException() throws ApisResourceAccessException {
+    	templateResponse.put(ResidentConstants.FILE_TEXT, EventStatus.IN_PROGRESS.getStatus());
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode("requestType");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
