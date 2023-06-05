@@ -300,22 +300,23 @@ public class ResidentController {
 	}
 
 	@GetMapping(path = "/events/{event-id}")
-	@Operation(summary = "getGetCheckEventIdStatus", description = "checkEventIdStatus", tags = {
+	@Operation(summary = "getEventIdStatus", description = "getEventIdStatus", tags = {
 			"resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<EventStatusResponseDTO> checkAidStatus(@PathVariable(name = "event-id") String eventId,
+	public ResponseWrapper<EventStatusResponseDTO> getEventIdStatus(@PathVariable(name = "event-id") String eventId,
 			@RequestParam(name = "langCode") String languageCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
-		logger.debug("checkAidStatus controller entry");
+		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getEventIdStatus"));
+		logger.debug("ResidentController::getEventIdStatus()::entry");
 		validator.validateEventIdLanguageCode(eventId, languageCode);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST, eventId));
 		ResponseWrapper<EventStatusResponseDTO> responseWrapper = residentService.getEventStatus(eventId, languageCode, timeZoneOffset);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS, eventId));
+		logger.debug("ResidentController::getEventIdStatus()::exit");
 		return responseWrapper;
 	}
 
