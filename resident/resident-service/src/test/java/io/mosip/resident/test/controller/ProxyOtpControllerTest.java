@@ -8,6 +8,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.exception.ApisResourceAccessException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -158,6 +159,12 @@ public class ProxyOtpControllerTest {
     @Test(expected = ResidentServiceException.class)
     public void testSendOtpException() throws Exception {
     	doThrow(new InvalidInputException("error message")).when(validator).validateProxySendOtpRequest(Mockito.any());
+        proxyOtpController.sendOTP(userOtpRequest);
+    }
+
+    @Test(expected = ApisResourceAccessException.class)
+    public void testSendOtpExceptionApiResourceException() throws Exception {
+        doThrow(new ApisResourceAccessException()).when(validator).validateProxySendOtpRequest(Mockito.any());
         proxyOtpController.sendOTP(userOtpRequest);
     }
 

@@ -1,13 +1,21 @@
 package io.mosip.resident.test.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.ByteArrayInputStream;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
-import javax.crypto.SecretKey;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.resident.controller.DownLoadMasterDataController;
+import io.mosip.resident.dto.DownloadCardRequestDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DownLoadMasterDataService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,22 +36,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.DownLoadMasterDataController;
-import io.mosip.resident.dto.DownloadCardRequestDTO;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DownLoadMasterDataService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -130,8 +130,29 @@ public class DownloadMasterdataControllerTest {
                andExpect(status().isOk());
     }
 
+    @Test(expected = Exception.class)
+    public void testDownloadRegistrationCentersByHierarchyLevelInvalidInputException() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateOnlyLanguageCode(any());
+        Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
+                Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
+                andExpect(status().isOk());
+    }
+
     @Test
-    public void testDownloadNearestRegistrationcenters() throws Exception {
+    public void testDownloadNearestRegistrationCenters() throws Exception {
+        Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
+                Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get
+                        ("/download/nearestRegistrationcenters?langcode=eng&longitude=1&latitude=1&proximitydistance=1")).
+                andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testDownloadNearestRegistrationCentersFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateOnlyLanguageCode(any());
         Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
                 Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
@@ -141,6 +162,17 @@ public class DownloadMasterdataControllerTest {
 
     @Test
     public void testDownloadSupportingDocsByLanguage() throws Exception {
+        Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
+                thenReturn( new ByteArrayInputStream(pdfbytes));
+        mockMvc.perform(MockMvcRequestBuilders.get
+                        ("/download/supporting-documents?langcode=eng")).
+                andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testDownloadSupportingDocsByLanguageFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateOnlyLanguageCode(any());
         Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
                 thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get

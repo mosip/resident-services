@@ -264,7 +264,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setResponse(vidResponseDto);
 
 			if(Utility.isSecureSession()) {
-				residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
+				residentTransactionEntity.setRefId(utility.convertToMaskData(vidResponseDto.getVid()));
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.GENERATE_VID.getName(), ResidentConstants.SUCCESS));
@@ -715,7 +715,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private ResidentTransactionEntity createResidentTransEntity(String vid, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(vid));
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		try {
 			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, individualId));
@@ -859,7 +859,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private Map<String, Object> getMaskedVid(Map<String, Object> map) {
-		String maskedvid = utility.convertToMaskDataFormat(map.get(VID).toString());
+		String maskedvid = utility.convertToMaskData(map.get(VID).toString());
 		map.put(MASKED_VID, maskedvid);
 		return map;
 	}
