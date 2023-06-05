@@ -1,10 +1,30 @@
 package io.mosip.resident.test.controller;
 
-import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.resident.controller.ResidentOtpController;
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
+import io.mosip.resident.dto.OtpRequestDTO;
+import io.mosip.resident.dto.OtpResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,29 +46,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import io.mosip.resident.controller.ResidentOtpController;
-import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
-import io.mosip.resident.dto.IndividualIdResponseDto;
-import io.mosip.resident.dto.OtpRequestDTO;
-import io.mosip.resident.dto.OtpResponseDTO;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.ResidentOtpService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
@@ -146,18 +147,47 @@ public class ResidentOtpControllerTest {
 				.perform(MockMvcRequestBuilders.post("/req/otp").contentType(MediaType.APPLICATION_JSON).content(json))
 				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
 	}
-	
-	@Ignore
+
 	@Test
 	public void reqOtpForAidTest() throws Exception {
 		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = new IndividualIdOtpRequestDTO();
 		individualIdOtpRequestDTO.setIndividualId("123456789");
-		Mockito.when(residentOtpService.generateOtp(otpRequestDTO)).thenReturn(otpResponseDTO);
+		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
+		individualIdResponseDto.setTransactionId("12345678");
+		Mockito.when(residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO)).thenReturn(individualIdResponseDto);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(individualIdOtpRequestDTO);
 		this.mockMvc.perform(
 				MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
+				.andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void reqOtpForAidTestResidentServiceCheckedException() throws Exception {
+		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = new IndividualIdOtpRequestDTO();
+		individualIdOtpRequestDTO.setIndividualId("123456789");
+		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
+		individualIdResponseDto.setTransactionId("12345678");
+		Mockito.when(residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO)).thenThrow(new ResidentServiceCheckedException());
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(individualIdOtpRequestDTO);
+		this.mockMvc.perform(
+						MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());
+	}
+	@Test(expected = Exception.class)
+	public void reqOtpForAidTestInvalidInputException() throws Exception {
+		doThrow(new InvalidInputException()).when(validator).validateReqOtp(any());
+		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = new IndividualIdOtpRequestDTO();
+		individualIdOtpRequestDTO.setIndividualId("123456789");
+		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
+		individualIdResponseDto.setTransactionId("12345678");
+		Mockito.when(residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO)).thenReturn(individualIdResponseDto);
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		String json = gson.toJson(individualIdOtpRequestDTO);
+		this.mockMvc.perform(
+						MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
+				.andExpect(status().isOk());
 	}
 
 	@WithUserDetails("resident")
