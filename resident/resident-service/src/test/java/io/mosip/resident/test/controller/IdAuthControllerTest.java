@@ -2,6 +2,7 @@ package io.mosip.resident.test.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import io.mosip.resident.exception.OtpValidationFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,6 +101,14 @@ public class IdAuthControllerTest {
 	public void testValidateOtp() throws Exception {
 		Mockito.when(idAuthService.validateOtpV1(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(Tuples.of(true, "12345"));
+		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(reqJson.getBytes())).andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void testValidateOtpFailed() throws Exception {
+		Mockito.when(idAuthService.validateOtpV1(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenThrow(new OtpValidationFailedException());
 		mockMvc.perform(MockMvcRequestBuilders.post("/validate-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
 				.content(reqJson.getBytes())).andExpect(status().isOk());
 	}

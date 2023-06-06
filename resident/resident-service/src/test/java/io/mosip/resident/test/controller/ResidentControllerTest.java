@@ -3,7 +3,9 @@ package io.mosip.resident.test.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,6 +23,9 @@ import java.util.List;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.exception.CardNotReadyException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceException;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -492,6 +498,74 @@ public class ResidentControllerTest {
 		resultResponseWrapper.setResponse(list);
 		resultResponseWrapper.setResponsetime(null);
 		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
+		ResponseEntity<?> resultRequestWrapper = residentController
+				.downloadCard("9876543210", 0);
+		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
+	}
+
+	@Test(expected = CardNotReadyException.class)
+	@WithUserDetails("reg-admin")
+	public void testDownloadCardIndividualIdCardNotReadyException() throws Exception {
+		ResponseEntity<Object> responseEntity;
+		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" +
+						"abc" + ".pdf\"")
+				.body(resource);
+		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponsetime(null);
+		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(objectResponseWrapper);
+		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
+
+		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
+		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
+		dto.setId("12345");
+		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
+		dto.setRequestId("12345");
+		dto.setStatusCode("200");
+		list.add(dto);
+		resultResponseWrapper.setResponse(list);
+		resultResponseWrapper.setResponsetime(null);
+		byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
+		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
+		ResponseEntity<?> resultRequestWrapper = residentController
+				.downloadCard("9876543210", 0);
+		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	@WithUserDetails("reg-admin")
+	public void testDownloadCardIndividualIdInvalidInputException() throws Exception {
+		doThrow(new InvalidInputException()).
+				when(validator).validateEventId(any());
+		ResponseEntity<Object> responseEntity;
+		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
+		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
+				.header("Content-Disposition", "attachment; filename=\"" +
+						"abc" + ".pdf\"")
+				.body(resource);
+		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponsetime(null);
+		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(objectResponseWrapper);
+		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
+
+		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
+		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
+		dto.setId("12345");
+		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
+		dto.setRequestId("12345");
+		dto.setStatusCode("200");
+		list.add(dto);
+		resultResponseWrapper.setResponse(list);
+		resultResponseWrapper.setResponsetime(null);
+		byte[] bytes = "a".getBytes(StandardCharsets.UTF_8);
+		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
 		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
 				.downloadCard("9876543210", 0);
