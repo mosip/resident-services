@@ -21,7 +21,6 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthenticationModeEnum;
-import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -55,7 +54,6 @@ import reactor.util.function.Tuples;
 @Component
 public class TemplateUtil {
 
-	private static final String RESIDENT_EVENT_STATUS_TEMPLATE_PROPERTY = "resident.event.status.%s.template.property";
 	private static final String DEFAULT = "default";
 	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 	private static final String LOGO_URL = "logoUrl";
@@ -111,8 +109,7 @@ public class TemplateUtil {
 		RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
-		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, getTemplateValueFromTemplateTypeCodeAndLangCode(
-				languageCode, getEventStatusTemplateTypeCode(EventStatus.getEventStatusForText(statusCode).get().name())));
+		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCode);
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
 				templateVariables.put(TemplateVariablesConstants.SUMMARY,
@@ -700,16 +697,6 @@ public class TemplateUtil {
 	public String getAttributeListTemplateTypeCode(String attributeName) {
 		String templateTypeCode = getTemplateTypeCode(
 				String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
-		if (templateTypeCode != null && !templateTypeCode.isEmpty()) {
-			return templateTypeCode;
-		} else {
-			return getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, DEFAULT));
-		}
-	}
-
-	public String getEventStatusTemplateTypeCode(String eventStatus) {
-		String templateTypeCode = getTemplateTypeCode(
-				String.format(RESIDENT_EVENT_STATUS_TEMPLATE_PROPERTY, eventStatus));
 		if (templateTypeCode != null && !templateTypeCode.isEmpty()) {
 			return templateTypeCode;
 		} else {

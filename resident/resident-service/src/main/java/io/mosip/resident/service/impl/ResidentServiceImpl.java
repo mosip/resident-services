@@ -1883,8 +1883,7 @@ public class ResidentServiceImpl implements ResidentService {
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setRequestType(requestType.name());
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-			serviceHistoryResponseDto.setEventStatus(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(
-					langCode, templateUtil.getEventStatusTemplateTypeCode(EventStatus.getEventStatusForText(statusCode).get().name())));
+			serviceHistoryResponseDto.setEventStatus(statusCode);
 			if (residentTransactionEntity.getUpdDtimes() != null
 					&& residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
 				serviceHistoryResponseDto.setTimeStamp(utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getUpdDtimes()));
