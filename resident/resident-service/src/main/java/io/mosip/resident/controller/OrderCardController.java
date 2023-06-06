@@ -1,8 +1,10 @@
 package io.mosip.resident.controller;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +18,7 @@ import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
@@ -49,6 +52,9 @@ public class OrderCardController {
 	
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
+	
+	@Autowired
+	private Environment env;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(OrderCardController.class);
 
@@ -73,9 +79,14 @@ public class OrderCardController {
 			@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestWrapper)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("OrderCardController::sendPhysicalCard()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD);
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(orderCardService.sendPhysicalCard(requestWrapper.getRequest()));
+		try {
+			auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD);
+			responseWrapper.setResponse(orderCardService.sendPhysicalCard(requestWrapper.getRequest()));
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_EXCEPTION);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.SEND_CARD_ID)));
+		}
 		auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_SUCCESS);
 		logger.debug("OrderCardController::sendPhysicalCard()::exit");
 		return responseWrapper;

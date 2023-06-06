@@ -162,7 +162,7 @@ public enum EventEnum {
 			"JSON parsing exception for transaction id %s", "RES-SER", "Residence service", "RS-EXCE", "Exception",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	OTP_VALIDATION_FAILED("RES-SER-422", RegistrationConstants.SYSTEM, "OTP validation: Failed",
-			"OTP validation failed for transaction id %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
+			"OTP validation failed for user Id: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	BASE_EXCEPTION("RES-SER-401", RegistrationConstants.SYSTEM, "Base Exception", "Base exception for transaction id %s", "RES-SER",
 			"Residence service", "RS-EXCE", "Exception", RegistrationConstants.RESIDENT_APPLICATION_ID,
@@ -654,11 +654,11 @@ public enum EventEnum {
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	SEND_OTP_SUCCESS("RES-SER-259", RegistrationConstants.SYSTEM, "send otp: Success",
-			"send otp is success", "RES-SER", "Residence service", "RS-OTP", "Otp section",
+			"send otp is success for userId: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	SEND_OTP_FAILURE("RES-SER-290", RegistrationConstants.SYSTEM, "send otp: Failed",
-			"send otp is failed", "RES-SER", "Residence service", "RS-OTP", "Otp section",
+			"send otp is failed for userId: %s", "RES-SER", "Residence service", "RS-OTP", "Otp section",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	DOWNLOAD_SERVICE_HISTORY("RES-SER-260", RegistrationConstants.SYSTEM, "download service history",

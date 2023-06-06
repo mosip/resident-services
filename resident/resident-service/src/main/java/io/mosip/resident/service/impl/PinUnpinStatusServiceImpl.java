@@ -54,7 +54,8 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
     private String unPinnedStatusVersion;
 
     @Override
-    public ResponseWrapper<ResponseDTO> pinStatus(String eventId, boolean status) {
+	public ResponseWrapper<ResponseDTO> pinStatus(String eventId, boolean status)
+			throws ResidentServiceCheckedException {
         try {
             Optional<ResidentTransactionEntity> optionalResidentTransactionEntity = residentTransactionRepository.findById(eventId);
             if (optionalResidentTransactionEntity.isPresent()) {
