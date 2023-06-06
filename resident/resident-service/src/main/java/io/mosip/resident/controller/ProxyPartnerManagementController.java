@@ -1,8 +1,10 @@
 package io.mosip.resident.controller;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +14,7 @@ import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.util.AuditUtil;
@@ -38,6 +41,9 @@ public class ProxyPartnerManagementController {
 
 	@Autowired
 	private AuditUtil auditUtil;
+	
+	@Autowired
+	private Environment env;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementController.class);
 
@@ -61,7 +67,15 @@ public class ProxyPartnerManagementController {
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType():: entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE);
-		ResponseWrapper<?> responseWrapper = proxyPartnerManagementService.getPartnersByPartnerType(partnerType);
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		try {
+			responseWrapper = proxyPartnerManagementService.getPartnersByPartnerType(partnerType);
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION);
+			e.setMetadata(
+					Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.AUTH_PROXY_PARTNERS_ID)));
+			throw e;
+		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_SUCCESS);
 		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType():: exit");
 		return responseWrapper;
