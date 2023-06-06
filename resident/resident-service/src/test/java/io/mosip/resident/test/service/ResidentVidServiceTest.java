@@ -192,8 +192,6 @@ public class ResidentVidServiceTest {
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setResponse(vidGeneratorResponseDto);
 
-//        doReturn(objectMapper.writeValueAsString(vidGeneratorResponseDto)).when(mapper).writeValueAsString(any());
-//        doReturn(vidGeneratorResponseDto).when(mapper).readValue(anyString(), any(Class.class));
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenThrow(new ApisResourceAccessException());
         when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(response);
 
@@ -282,8 +280,7 @@ public class ResidentVidServiceTest {
 		responseWrapper.setResponse(dto);
 		responseWrapper.setVersion("v1");
 		responseWrapper.setResponsetime(DateUtils.getCurrentDateTimeString());
-		
-//		doReturn(dto).when(mapper).convertValue(any(), any(Class.class));
+
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenThrow(new ApisResourceAccessException());
 		when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
         when(identityServiceImpl.getUinForIndividualId(vid)).thenReturn("1234567890");
