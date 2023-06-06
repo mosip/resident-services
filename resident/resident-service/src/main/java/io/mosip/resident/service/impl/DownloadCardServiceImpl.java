@@ -246,7 +246,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setEventId(utility.createEventId());
         residentTransactionEntity.setAuthTypeCode(OTP);
-        residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+        residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
         residentTransactionEntity.setIndividualId(individualId);
         residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(getIndividualIdForAid(individualId)));
         residentTransactionEntity.setRequestTrnId(transactionId);
@@ -318,7 +318,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String eventId = utility.createEventId();
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-        residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+        residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
         residentTransactionEntity.setIndividualId(individualId);
         residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
 		if (downloadPersonalizedCardDto.getAttributes() != null) {
@@ -487,7 +487,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD.name());
         residentTransactionEntity.setEventId(utility.createEventId());
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-        residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(uin));
+        residentTransactionEntity.setRefId(utility.convertToMaskData(uin));
         residentTransactionEntity.setIndividualId(uin);
         residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
         residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
