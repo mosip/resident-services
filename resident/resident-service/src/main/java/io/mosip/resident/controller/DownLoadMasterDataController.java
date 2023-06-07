@@ -1,23 +1,5 @@
 package io.mosip.resident.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -31,6 +13,22 @@ import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 
@@ -93,12 +91,7 @@ public class DownLoadMasterDataController {
 			audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
 			logger.debug("AcknowledgementController::acknowledgement()::exit");
-		} catch (ResidentServiceException | InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
-			throw e;
-		} catch (ResidentServiceCheckedException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.DOWNLOAD_REG_CENTER_ID)));
@@ -132,12 +125,7 @@ public class DownLoadMasterDataController {
 			audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
 			logger.debug("AcknowledgementController::acknowledgement()::exit");
-		} catch (ResidentServiceException | InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
-			throw e;
-		} catch (ResidentServiceCheckedException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.DOWNLOAD_NEAREST_REG_CENTER_ID)));
@@ -167,12 +155,7 @@ public class DownLoadMasterDataController {
 			audit.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
 			logger.debug("AcknowledgementController::acknowledgement()::exit");
-		} catch (ResidentServiceException | InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));
-			throw e;
-		} catch (ResidentServiceCheckedException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.DOWNLOAD_SUPPORTING_DOCS_ID)));

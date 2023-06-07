@@ -1,14 +1,23 @@
 package io.mosip.resident.test.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.UUID;
-
-import javax.crypto.SecretKey;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.controller.GrievanceController;
+import io.mosip.resident.dto.GrievanceRequestDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.GrievanceService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,24 +36,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import javax.crypto.SecretKey;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.UUID;
 
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.controller.GrievanceController;
-import io.mosip.resident.dto.GrievanceRequestDTO;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.GrievanceService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -122,6 +121,22 @@ public class GrievanceControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
+        io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+        HashMap<String, String> response = new HashMap<>();
+        String ticketId = UUID.randomUUID().toString();
+        response.put("ticketId", ticketId);
+        responseWrapper.setResponse(response);
+        responseWrapper.setId("mosip.resident.grievance.ticket.request");
+        responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
+        Mockito.when(grievanceService.getGrievanceTicket(any())).thenReturn(responseWrapper);
+        ResponseWrapper<Object> responseWrapper1 = grievanceController.grievanceTicket(grievanceRequestDTOMainRequestDTO);
+        Assert.assertEquals("mosip.resident.grievance.ticket.request", responseWrapper1.getId());
+    }
+
+    @Test(expected = Exception.class)
+    public void testGetCardFailed() throws Exception {
+        doThrow(new InvalidInputException()).
+                when(validator).validateGrievanceRequestDto(any());
         io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
         HashMap<String, String> response = new HashMap<>();
         String ticketId = UUID.randomUUID().toString();
