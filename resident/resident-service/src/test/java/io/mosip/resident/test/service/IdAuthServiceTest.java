@@ -64,6 +64,7 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.impl.IdAuthServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -104,6 +105,9 @@ public class IdAuthServiceTest {
 
     @Mock
     private NotificationService notificationService;
+    
+    @Mock
+    private Utility utility;
 
     @Before
     public void setup() {

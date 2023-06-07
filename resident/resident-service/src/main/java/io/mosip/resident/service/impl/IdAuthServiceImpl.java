@@ -79,6 +79,7 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -132,6 +133,9 @@ public class IdAuthServiceImpl implements IdAuthService {
     
 	@Autowired
 	private AuditUtil auditUtil;
+	
+	@Autowired
+	private Utility utility;
 	
 	@Override
 	public boolean validateOtp(String transactionId, String individualId, String otp)
@@ -279,7 +283,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
-			residentTransactionEntity.setUpdBy(RESIDENT_SERVICES);
+			residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 			residentTransactionRepository.save(residentTransactionEntity);
 		}
