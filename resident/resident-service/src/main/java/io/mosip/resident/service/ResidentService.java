@@ -69,8 +69,6 @@ public interface ResidentService {
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
-	String checkAidStatus(String aid) throws ResidentServiceCheckedException;
-
 	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId, int timeZoneOffset)
 			throws ResidentServiceCheckedException;
 

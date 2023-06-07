@@ -7,7 +7,6 @@ import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
 import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
 import static io.mosip.resident.constant.RegistrationConstants.VID_LABEL;
 import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
 import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
 import static io.mosip.resident.constant.ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER;
@@ -198,7 +197,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
-	private static final int EVENT_STATUS_LIST_LENGTH = 3;
 	private static String cardType = "UIN";
 
 	@Autowired
@@ -249,9 +247,6 @@ public class ResidentServiceImpl implements ResidentService {
 	/** The json validator. */
 	@Autowired
 	private IdObjectValidator idObjectValidator;
-
-	@Autowired
-	private ResidentConfigServiceImpl residentConfigService;
 
 	@Value("${resident.center.id}")
 	private String centerId;
@@ -1986,29 +1981,6 @@ public class ResidentServiceImpl implements ResidentService {
 			AidStatusResponseDTO aidStatusResponseDTO = new AidStatusResponseDTO();
 			aidStatusResponseDTO.setAidStatus(ridStatus.getRidStatus());
 			return aidStatusResponseDTO;
-		}
-	}
-
-	@Override
-	public String checkAidStatus(String aid) throws ResidentServiceCheckedException {
-
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::checkAidStatus()::Start");
-		try {
-			String uin = identityServiceImpl.getUinForIndividualId(aid);
-			if (uin == null) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.AID_NOT_FOUND);
-			}
-			AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
-			aidStatusRequestDTO.setIndividualId(aid);
-			AidStatusResponseDTO aidStatusResponseDTO = getAidStatus(aidStatusRequestDTO, false);
-			return aidStatusResponseDTO.getAidStatus();
-		} catch (ApisResourceAccessException | OtpValidationFailedException e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"ResidentServiceImpl::checkAidStatus():: ApisResourceAccessException");
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}
 	}
 
