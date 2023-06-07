@@ -89,6 +89,8 @@ import reactor.util.function.Tuples;
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
 
+	private static final String AUTH_TYPE_CODE_SUFFIX = "-AUTH";
+
 	private static final String GENRATED_ON_TIMESTAMP = "genratedOnTimestamp";
 	
 	private static final String EXPIRY_TIMESTAMP = "expiryTimestamp";
@@ -262,7 +264,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			responseDto.setResponse(vidResponseDto);
 
 			if(Utility.isSecureSession()) {
-				residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vidResponseDto.getVid()));
+				residentTransactionEntity.setRefId(utility.convertToMaskData(vidResponseDto.getVid()));
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.GENERATE_VID.getName(), ResidentConstants.SUCCESS));
@@ -713,7 +715,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private ResidentTransactionEntity createResidentTransEntity(String vid, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.REVOKE_VID.name());
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(vid));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(vid));
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		try {
 			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, individualId));
@@ -831,6 +833,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset);
 					return lhm;
 				})
+				.filter(map1 -> map1.get(TRANSACTIONS_LEFT_COUNT) == null || (int) map1.get(TRANSACTIONS_LEFT_COUNT) > 0)
 				.collect(Collectors.toList());
 		ResponseWrapper<List<Map<String, ?>>> res = new ResponseWrapper<List<Map<String, ?>>>();
 		res.setId(residentVidGetId);
@@ -856,24 +859,25 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private Map<String, Object> getMaskedVid(Map<String, Object> map) {
-		String maskedvid = utility.convertToMaskDataFormat(map.get(VID).toString());
+		String maskedvid = utility.convertToMaskData(map.get(VID).toString());
 		map.put(MASKED_VID, maskedvid);
 		return map;
 	}
 
 	private Map<String, Object> getRefIdHash(Map<String, Object> map) {
 		try {
-			String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
-			int countdb = residentTransactionRepository.findByrefIdandauthtype(hashrefid);
 			if(map.get(TRANSACTION_LIMIT) != null) {
+				String hashrefid = HMACUtils2.digestAsPlainText(map.get(VID).toString().getBytes());
+				int countdb = residentTransactionRepository.findByRefIdAndAuthTypeCodeLike(hashrefid, AUTH_TYPE_CODE_SUFFIX);
 				int limitCount =  (int) map.get(TRANSACTION_LIMIT);
 				int leftcount = limitCount - countdb;
-			    map.put(TRANSACTIONS_LEFT_COUNT, leftcount);
 			    if(leftcount < 0) {
 			    	map.put(TRANSACTIONS_LEFT_COUNT, 0);
+			    } else {
+			    	map.put(TRANSACTIONS_LEFT_COUNT, leftcount);
 			    }
-			}else  {
-				map.put(TRANSACTIONS_LEFT_COUNT, map.get(TRANSACTION_LIMIT));	
+			} else  {
+				map.put(TRANSACTIONS_LEFT_COUNT, map.get(TRANSACTION_LIMIT));
 			}
 			map.remove(HASH_ATTRIBUTES);
 		} catch (NoSuchAlgorithmException e) {

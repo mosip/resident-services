@@ -92,11 +92,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			+ "from ResidentTransactionEntity where tokenId=:tokenId AND read_status='false' and requestTypeCode in (:requestTypes)")
 	List<ResidentTransactionEntity> findByIdAndUnreadStatusForRequestTypes(@Param("tokenId") String tokenId, @Param("requestTypes") List<String> requestTypes);
 
-	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashrefid AND auth_type_code !='OTP_REQUESTED'")
 	/**
 	 * AuthTransaction entries only will be expected here. This wouldn't fetch the otp Requested performed in resident service.
 	 */
-	Integer findByrefIdandauthtype(@Param("hashrefid") String hashrefid);
+	@Query(value = "SELECT COUNT(*) from ResidentTransactionEntity where ref_id=:hashRefId AND auth_type_code like %:authType")
+	Integer findByRefIdAndAuthTypeCodeLike(@Param("hashRefId") String hashRefId, @Param("authType") String authType);
 	
 	@Modifying
     @Transactional

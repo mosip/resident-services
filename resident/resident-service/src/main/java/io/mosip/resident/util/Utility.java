@@ -451,7 +451,7 @@ public class Utility {
 		return maskData(phone, phoneMaskFunction);
 	}
 
-	public String convertToMaskDataFormat(String maskData) {
+	public String convertToMaskData(String maskData) {
 		return maskData(maskData, maskingFunction);
 	}
 

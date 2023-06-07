@@ -281,7 +281,7 @@ public class IdentityServiceImpl implements IdentityService {
 						if(attr.contains(ResidentConstants.MASK_PREFIX)) {
 							String attributeName = attr.replace(ResidentConstants.MASK_PREFIX, "");
 							if(identity.containsKey(attributeName)) {
-								identity.put(attr, utility.convertToMaskDataFormat((String) identity.get(attributeName)));
+								identity.put(attr, utility.convertToMaskData((String) identity.get(attributeName)));
 							}
 						}
 					})
