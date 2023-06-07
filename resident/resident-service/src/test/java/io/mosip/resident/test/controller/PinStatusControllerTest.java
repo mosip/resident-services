@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.PinStatusController;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.PinUnpinStatusService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -40,7 +41,7 @@ public class PinStatusControllerTest {
     private PinUnpinStatusService pinUnpinStatusService;
 
     @Test
-    public void pinStatusControllerTest(){
+    public void pinStatusControllerTest() throws ResidentServiceCheckedException{
         ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setStatus(HttpStatus.OK.toString());
@@ -51,7 +52,7 @@ public class PinStatusControllerTest {
     }
 
     @Test
-    public void unPinStatusControllerTest(){
+    public void unPinStatusControllerTest() throws ResidentServiceCheckedException{
         ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setStatus(HttpStatus.OK.toString());
