@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
@@ -231,8 +232,8 @@ public class IdAuthServiceTest {
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
         when(identityService.getIDATokenForIndividualId(anyString())).thenReturn("346697314566835424394775924659202696");
-		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(anyString(),
-				anyString(), anyString())).thenReturn(residentTransactionEntity);
+		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(anyString(),
+				anyString(), anyList())).thenReturn(residentTransactionEntity);
 
         boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 
