@@ -1,16 +1,5 @@
 package io.mosip.resident.controller;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -26,6 +15,15 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -60,12 +58,7 @@ public class GrievanceController {
 		try {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
-		} catch (ResidentServiceException | InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
-			throw e;
-		} catch (ResidentServiceCheckedException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
