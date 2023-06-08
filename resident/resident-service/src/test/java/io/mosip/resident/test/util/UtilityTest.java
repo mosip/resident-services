@@ -48,6 +48,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
@@ -485,7 +486,7 @@ public class UtilityTest {
 
 	@Test
 	public void testCreateEntity(){
-		assertEquals("Unknown",utility.createEntity("SHARE_CRED_WITH_PARTNER").getCrBy());
+		assertEquals("Unknown",utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER).getCrBy());
 	}
 
 	@Test
