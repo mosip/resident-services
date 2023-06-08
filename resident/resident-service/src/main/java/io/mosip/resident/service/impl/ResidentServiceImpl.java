@@ -1155,7 +1155,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN.name());
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRefId(utility.convertToMaskData(dto.getIndividualId()));
 		residentTransactionEntity.setIndividualId(dto.getIndividualId());
@@ -1319,7 +1319,7 @@ public class ResidentServiceImpl implements ResidentService {
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
-		residentTransactionEntity = utility.createEntity(RequestType.AUTH_TYPE_LOCK_UNLOCK.name());
+		residentTransactionEntity = utility.createEntity(RequestType.AUTH_TYPE_LOCK_UNLOCK);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
@@ -1943,12 +1943,6 @@ public class ResidentServiceImpl implements ResidentService {
 		} else {
 			return EventStatus.IN_PROGRESS.getStatus();
 		}
-	}
-
-	@Override
-	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
-		return getAidStatus(reqDto, true);
 	}
 
 	@Override
