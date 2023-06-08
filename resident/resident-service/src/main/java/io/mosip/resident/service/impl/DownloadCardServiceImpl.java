@@ -214,6 +214,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					residentTransactionEntity
 							.setRequestSummary(RequestType.GET_MY_ID.name() + " - " + ResidentConstants.FAILED);
 				}
+				residentTransactionEntity.setUpdBy(utility.getSessionUserName());
+				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 				residentTransactionRepository.save(residentTransactionEntity);
 
 				TemplateType templateType = (residentTransactionEntity.getStatusCode()
@@ -249,8 +251,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(id));
 		residentTransactionEntity.setRequestTrnId(transactionId);
-		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
-		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 		return residentTransactionEntity;
 	}
 
