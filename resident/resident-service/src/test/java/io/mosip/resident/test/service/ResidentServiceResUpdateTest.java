@@ -183,7 +183,7 @@ public class ResidentServiceResUpdateTest {
 
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		when(utility.createEntity(Mockito.anyString())).thenReturn(residentTransactionEntity);
+		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
 		when(utility.createEventId()).thenReturn("1232312321432432");
 		byte[] str = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
 		when(objectMapper.readValue(str, Map.class)).thenReturn(identityResponse);
