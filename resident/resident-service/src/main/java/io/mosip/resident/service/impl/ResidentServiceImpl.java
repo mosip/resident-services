@@ -912,9 +912,9 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
 			String idSchemaVersionStr = null;
+			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
+			idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
 			if(validateIdObject) {
-				JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-				idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
 				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
 				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
 				Object idSchema = idSchemaResponse.getResponse();
