@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
+import io.mosip.resident.util.Utilities;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -87,6 +88,8 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     @Autowired
     private RequestValidator requestValidator;
+    @Autowired
+    private Utilities utilities;
 
 
     @Override
@@ -205,7 +208,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         return true;
     }
 
-    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
         String individualId= identityService.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
@@ -216,9 +219,11 @@ public class OtpManagerServiceImpl implements OtpManager {
         return residentService.reqUinUpdate(residentUpdateRequestDto);
     }
 
-    public String getIdentityJson(String individualId, String transactionId, String userId, String individualIdType) {
+    public String getIdentityJson(String individualId, String transactionId, String userId, String individualIdType) throws ApisResourceAccessException, IOException {
         Map identityMap = new LinkedHashMap();
-        identityMap.put("IDSchemaVersion", "0.1");
+        JSONObject obj = utilities.retrieveIdrepoJson(individualId);
+        String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+        identityMap.put("IDSchemaVersion", idSchemaVersionStr);
         identityMap.put(individualIdType, individualId);
         String channel = getChannel(userId, transactionId);
         identityMap.put(channel, userId);
