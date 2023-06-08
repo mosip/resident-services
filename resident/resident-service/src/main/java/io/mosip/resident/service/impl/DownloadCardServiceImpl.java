@@ -137,11 +137,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		byte[] pdfBytes = new byte[0];
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
-			residentTransactionEntity = insertDataForGetMyUin(individualId, transactionId);
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, getIndividualIdForAid(individualId),
+					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
+			residentTransactionEntity = updateResidentTransaction(individualId, tupleResponse.getT2());
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
-				if (idAuthService.validateOtpv2(transactionId, getIndividualIdForAid(individualId),
-						downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+				if (tupleResponse.getT1()) {
 					String idType = identityService.getIndividualIdType(individualId);
 					if (idType.equalsIgnoreCase(AID)) {
 						rid = individualId;
@@ -176,9 +177,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 							LoggerFileConstant.APPLICATIONID.toString(),
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 					audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity
-							.setStatusComment(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 				}
@@ -191,8 +189,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		} catch (OtpValidationFailedException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
 			if (residentTransactionEntity != null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setStatusComment(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+				residentTransactionEntity.setStatusCode(EventStatusFailure.OTP_VERIFICATION_FAILED.name());
+				residentTransactionEntity.setStatusComment(EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			}
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
 					e, Map.of(ResidentConstants.EVENT_ID, eventId));
@@ -242,14 +240,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return checkStatusResponseDTOResponseWrapper;
     }
 
-    private ResidentTransactionEntity insertDataForGetMyUin(String individualId, String transactionId) throws ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.GET_MY_ID.name());
-        residentTransactionEntity.setEventId(utility.createEventId());
+    private ResidentTransactionEntity updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
+        residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setAuthTypeCode(OTP);
         residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
-        residentTransactionEntity.setIndividualId(individualId);
-        residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(getIndividualIdForAid(individualId)));
-        residentTransactionEntity.setRequestTrnId(transactionId);
+        residentTransactionEntity.setUpdBy(utility.getSessionUserName());
+		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
         return residentTransactionEntity;
     }
 

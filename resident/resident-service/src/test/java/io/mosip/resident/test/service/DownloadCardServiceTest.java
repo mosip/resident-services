@@ -56,6 +56,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to create service class test  for getting acknowledgement API.
@@ -114,6 +115,8 @@ public class DownloadCardServiceTest {
 
     private Map identityMap;
 
+    private ResidentTransactionEntity residentTransactionEntity;
+
     @Before
     public void setup() throws Exception {
         downloadCardRequestDTOMainRequestDTO = new MainRequestDTO<>();
@@ -125,7 +128,6 @@ public class DownloadCardServiceTest {
         result = "result";
         pdfbytes = result.getBytes();
         Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn(pdfbytes);
-        Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenReturn("1234567890");
         Mockito.when(residentCredentialService.getCard(Mockito.anyString(), isNull(), isNull())).thenReturn(pdfbytes);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("UIN");
@@ -133,7 +135,7 @@ public class DownloadCardServiceTest {
         Mockito.when(utility.createEntity(Mockito.anyString())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("12345");
 
-        ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
+        residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");
         downloadPersonalizedCardMainRequestDTO=
                 new MainRequestDTO<>();
@@ -149,6 +151,8 @@ public class DownloadCardServiceTest {
         Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
         Mockito.when(identityService.getUinForIndividualId(Mockito.anyString())).thenReturn("3425636374");
         Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
+		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(true, residentTransactionEntity));
         identityMap = new LinkedHashMap();
         identityMap.put("UIN", "8251649601");
         identityMap.put("email", "manojvsp12@gmail.com");
@@ -201,14 +205,16 @@ public class DownloadCardServiceTest {
 
     @Test(expected = ResidentServiceException.class)
     public void testGetDownloadCardPdfOtpValidationFailedTest() throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
-        Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(false, residentTransactionEntity));
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testGetDownloadCardPdfApiResourceException() throws OtpValidationFailedException, ApisResourceAccessException, ResidentServiceCheckedException {
-        Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
+		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(Tuples.of(true, residentTransactionEntity));
         Mockito.when(utilities.getRidByIndividualId(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult.getT1());
@@ -216,7 +222,7 @@ public class DownloadCardServiceTest {
 
     @Test(expected = ResidentServiceException.class)
     public void testGetDownloadCardPdfOtpValidationException() throws OtpValidationFailedException, ApisResourceAccessException, ResidentServiceCheckedException {
-        Mockito.when(idAuthService.validateOtpv2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
                 .thenThrow(new OtpValidationFailedException());
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertEquals(pdfbytes, actualResult.getT1());
