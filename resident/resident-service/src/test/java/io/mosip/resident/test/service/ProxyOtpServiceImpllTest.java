@@ -205,7 +205,7 @@ public class ProxyOtpServiceImpllTest {
     }
 
     @Test
-    public void testValidateOtpSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
+    public void testValidateOtpSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         MainRequestDTO<OtpRequestDTOV3> requestDTO1 = new MainRequestDTO<>();
         OtpRequestDTOV3 otpRequestDTOV3 = new OtpRequestDTOV3();
         otpRequestDTOV3.setOtp("11111");
