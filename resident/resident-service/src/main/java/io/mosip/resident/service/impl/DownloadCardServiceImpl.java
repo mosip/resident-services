@@ -139,7 +139,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
 			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, getIndividualIdForAid(individualId),
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
-			residentTransactionEntity = updateResidentTransaction(individualId, tupleResponse.getT2());
+			residentTransactionEntity = updateResidentTransaction(individualId, transactionId, tupleResponse.getT2());
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
@@ -240,10 +240,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return checkStatusResponseDTOResponseWrapper;
     }
 
-    private ResidentTransactionEntity updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
+    private ResidentTransactionEntity updateResidentTransaction(String individualId, String transactionId, ResidentTransactionEntity residentTransactionEntity) throws ResidentServiceCheckedException {
         residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
         residentTransactionEntity.setAuthTypeCode(OTP);
         residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+        residentTransactionEntity.setIndividualId(individualId);
+        residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(getIndividualIdForAid(individualId)));
+        residentTransactionEntity.setRequestTrnId(transactionId);
         residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
         return residentTransactionEntity;
