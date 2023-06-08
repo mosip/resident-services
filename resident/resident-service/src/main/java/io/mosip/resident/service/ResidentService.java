@@ -57,9 +57,6 @@ public interface ResidentService {
 
 	RegStatusCheckResponseDTO getRidStatus(String rid);
 
-	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
-
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																		  String searchColumn, String searchText, String langCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;

@@ -1946,12 +1946,6 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto)
-			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
-		return getAidStatus(reqDto, true);
-	}
-
-	@Override
 	public AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException {
 		try {
