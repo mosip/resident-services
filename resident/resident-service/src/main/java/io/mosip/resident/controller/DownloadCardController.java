@@ -84,7 +84,8 @@ public class DownloadCardController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> downloadCard(
 			@Validated @RequestBody MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException {
 		logger.debug("DownloadCardController::downloadCard()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
@@ -114,7 +115,7 @@ public class DownloadCardController {
 								downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId(),
 								Objects.requireNonNull(this.environment
 										.getProperty(ResidentConstants.DOWNLOAD_CARD_NAMING_CONVENTION_PROPERTY)),
-								timeZoneOffset) + ".pdf\"")
+								timeZoneOffset, locale) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(resource);
 	}
     
@@ -122,7 +123,8 @@ public class DownloadCardController {
     @PostMapping("/download/personalized-card")
 	public ResponseEntity<Object> downloadPersonalizedCard(
 			@Validated @RequestBody MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException {
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
         auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
@@ -134,7 +136,7 @@ public class DownloadCardController {
 					environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
 			throw e;
 		}
-        Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, timeZoneOffset);
+        Tuple2<byte[], String> tupleResponse = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, timeZoneOffset, locale);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
         if(tupleResponse.getT1().length==0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -143,7 +145,7 @@ public class DownloadCardController {
 				.header("Content-Disposition", "attachment; filename=\""
 						+ utility.getFileName(tupleResponse.getT2(),
 								Objects.requireNonNull(this.environment.getProperty(
-										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset)
+										ResidentConstants.DOWNLOAD_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset, locale)
 						+ ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
                 .body(resource);
@@ -151,12 +153,13 @@ public class DownloadCardController {
 
     @GetMapping("/request-card/vid/{VID}")
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
-    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws BaseCheckedException {
+    		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale) throws BaseCheckedException {
     	auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
 		Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = null;
 		try {
 			requestValidator.validateDownloadCardVid(vid);
-			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset);
+			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset, locale);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
