@@ -139,7 +139,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
 			String id = getIndividualIdForAid(individualId);
 			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, id,
-					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
+					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
 			residentTransactionEntity = updateResidentTransaction(individualId, transactionId, tupleResponse.getT2(), id);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
@@ -245,7 +245,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
 	private ResidentTransactionEntity updateResidentTransaction(String individualId, String transactionId,
 			ResidentTransactionEntity residentTransactionEntity, String id) throws ResidentServiceCheckedException {
-		residentTransactionEntity.setRequestTypeCode(RequestType.GET_MY_ID.name());
 		residentTransactionEntity.setAuthTypeCode(OTP);
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
