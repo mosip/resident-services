@@ -667,11 +667,11 @@ public class Utility {
 	}
 
 	public String formatWithOffsetForUI(int timeZoneOffset, String locale, LocalDateTime localDateTime) {
-		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN)), timeZoneOffset);
+		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN_DEFAULT)), timeZoneOffset);
 	}
 
 	public String formatWithOffsetForFileName(int timeZoneOffset, String locale, LocalDateTime localDateTime) {
-		return replaceSpecialChars(formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)), timeZoneOffset));
+		return replaceSpecialChars(formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN_DEFAULT)), timeZoneOffset));
 	}
 	
 	public LocalDateTime applyTimeZoneOffsetOnDateTime(int timeZoneOffset, LocalDateTime localDateTime) {
