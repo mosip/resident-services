@@ -280,6 +280,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
 	private boolean isPreferedLangFlagEnabled;
+	
+	@Value("${resident.authLockStatusUpdateV2.id}")
+	private String authLockStatusUpdateV2Id;
 
 	@Autowired
 	private AuditUtil audit;
@@ -1273,7 +1276,7 @@ public class ResidentServiceImpl implements ResidentService {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED,
-						Map.of(ResidentConstants.EVENT_ID, eventId));
+						Map.of(ResidentConstants.EVENT_ID, authLockStatusUpdateV2Id));
 			}
 
 		} catch (ApisResourceAccessException e) {
@@ -1290,7 +1293,7 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
 					"Request for auth" + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE, e,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
+					Map.of(ResidentConstants.EVENT_ID, authLockStatusUpdateV2Id));
 		} finally {
 			residentTransactionRepository.saveAll(residentTransactionEntities);
 
