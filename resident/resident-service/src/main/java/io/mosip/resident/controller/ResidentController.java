@@ -507,7 +507,7 @@ public class ResidentController {
 		try {
 		validator.validateAidStatusRequestDto(reqDto);
 		audit.setAuditRequestDto(EventEnum.AID_STATUS);
-		resp = residentService.getAidStatus(reqDto.getRequest());
+		resp = residentService.getAidStatus(reqDto.getRequest(), true);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e ) {
 			throw new ResidentServiceException( e.getErrorCode(),  e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));

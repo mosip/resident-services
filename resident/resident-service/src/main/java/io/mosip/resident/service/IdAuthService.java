@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.resident.constant.AuthTypeStatus;
 import io.mosip.resident.dto.AuthTxnDetailsDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -21,10 +22,7 @@ public interface IdAuthService {
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException, ResidentServiceCheckedException;
 	
-	public boolean validateOtpv2(String transactionId, String individualId, String otp) 
-			throws OtpValidationFailedException, ResidentServiceCheckedException;
-	
-	public Tuple2<Boolean, String> validateOtpV2(String transactionId, String individualId, String otp)
+	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException, ResidentServiceCheckedException;
 
 	public boolean authTypeStatusUpdate(String individualId, List<String> authType,

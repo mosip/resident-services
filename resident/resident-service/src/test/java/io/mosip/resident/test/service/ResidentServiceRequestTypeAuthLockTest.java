@@ -124,7 +124,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
         residentTransactionEntity.setEventId("12345");
-		when(utility.createEntity(Mockito.anyString())).thenReturn(residentTransactionEntity);
+		when(utility.createEntity(Mockito.any())).thenReturn(residentTransactionEntity);
 		residentTransactionEntities.add(residentTransactionEntity);
 		Mockito.when(utility.createEventId()).thenReturn("12345");
 		ArrayList<String> partnerIds = new ArrayList<>();

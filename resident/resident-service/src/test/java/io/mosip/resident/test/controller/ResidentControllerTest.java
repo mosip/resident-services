@@ -583,7 +583,7 @@ public class ResidentControllerTest {
 		requestWrapper.setRequest(aidStatusRequestDTO);
 		requestWrapper.setId("mosip.resident.uin");
 		requestWrapper.setVersion("1.0");
-		Mockito.when(residentService.getAidStatus(Mockito.any())).thenReturn(new AidStatusResponseDTO());
+		Mockito.when(residentService.getAidStatus(Mockito.any(), Mockito.anyBoolean())).thenReturn(new AidStatusResponseDTO());
 		String requestAsString = gson.toJson(requestWrapper);
 		this.mockMvc
 				.perform(
