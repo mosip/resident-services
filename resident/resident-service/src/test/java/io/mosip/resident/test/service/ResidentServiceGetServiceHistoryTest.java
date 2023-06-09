@@ -1,5 +1,30 @@
 package io.mosip.resident.test.service;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -14,7 +39,6 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
@@ -28,29 +52,6 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * This class is used to test the get service history service
@@ -327,7 +328,7 @@ public class ResidentServiceGetServiceHistoryTest {
         aidStatusRequestDTO.setTransactionId("1234567890");
         Mockito.when(idAuthServiceImpl.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(true);
         Mockito.when(identityServiceImpl.getIndividualIdForAid(Mockito.anyString())).thenReturn("2476302389");
-        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO).getAidStatus());
+        assertEquals("PROCESSED", residentServiceImpl.getAidStatus(aidStatusRequestDTO, true).getAidStatus());
     }
 
     @Test

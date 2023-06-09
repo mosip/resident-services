@@ -465,19 +465,19 @@ public class Utility {
 		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
 	}
 
-	public ResidentTransactionEntity createEntity(String requestType){
+	public ResidentTransactionEntity createEntity(RequestType requestType){
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setCrBy(getSessionUserName());
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
-		if(ServiceType.ASYNC.getRequestTypes().contains(RequestType.valueOf(requestType)) ){
+		if(ServiceType.ASYNC.getRequestTypes().contains(requestType)){
 			residentTransactionEntity.setReadStatus(false);
 		}else {
 			residentTransactionEntity.setReadStatus(true);
 		}
-		residentTransactionEntity.setRequestTypeCode(requestType);
+		residentTransactionEntity.setRequestTypeCode(requestType.name());
 		return residentTransactionEntity;
 	}
 

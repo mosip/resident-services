@@ -137,11 +137,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		byte[] pdfBytes = new byte[0];
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
-			residentTransactionEntity = insertDataForGetMyUin(individualId, transactionId);
+			String id = getIndividualIdForAid(individualId);
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, id,
+					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
+			residentTransactionEntity = updateResidentTransaction(individualId, transactionId, tupleResponse.getT2(), id);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
-				if (idAuthService.validateOtpv2(transactionId, getIndividualIdForAid(individualId),
-						downloadCardRequestDTOMainRequestDTO.getRequest().getOtp())) {
+				if (tupleResponse.getT1()) {
 					String idType = identityService.getIndividualIdType(individualId);
 					if (idType.equalsIgnoreCase(AID)) {
 						rid = individualId;
@@ -176,9 +178,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 							LoggerFileConstant.APPLICATIONID.toString(),
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 					audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
-					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity
-							.setStatusComment(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 					throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 				}
@@ -191,8 +190,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		} catch (OtpValidationFailedException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
 			if (residentTransactionEntity != null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setStatusComment(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
+				residentTransactionEntity.setStatusCode(EventStatusFailure.OTP_VERIFICATION_FAILED.name());
+				residentTransactionEntity.setStatusComment(EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			}
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
 					e, Map.of(ResidentConstants.EVENT_ID, eventId));
@@ -215,6 +214,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					residentTransactionEntity
 							.setRequestSummary(RequestType.GET_MY_ID.name() + " - " + ResidentConstants.FAILED);
 				}
+				residentTransactionEntity.setUpdBy(utility.getSessionUserName());
+				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 				residentTransactionRepository.save(residentTransactionEntity);
 
 				TemplateType templateType = (residentTransactionEntity.getStatusCode()
@@ -242,16 +243,15 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         return checkStatusResponseDTOResponseWrapper;
     }
 
-    private ResidentTransactionEntity insertDataForGetMyUin(String individualId, String transactionId) throws ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.GET_MY_ID.name());
-        residentTransactionEntity.setEventId(utility.createEventId());
-        residentTransactionEntity.setAuthTypeCode(OTP);
-        residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
-        residentTransactionEntity.setIndividualId(individualId);
-        residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(getIndividualIdForAid(individualId)));
-        residentTransactionEntity.setRequestTrnId(transactionId);
-        return residentTransactionEntity;
-    }
+	private ResidentTransactionEntity updateResidentTransaction(String individualId, String transactionId,
+			ResidentTransactionEntity residentTransactionEntity, String id) throws ResidentServiceCheckedException {
+		residentTransactionEntity.setAuthTypeCode(OTP);
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
+		residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(id));
+		residentTransactionEntity.setRequestTrnId(transactionId);
+		return residentTransactionEntity;
+	}
 
     @Override
 	public Tuple2<byte[], String> downloadPersonalizedCard(
@@ -314,7 +314,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
 			DownloadPersonalizedCardDto downloadPersonalizedCardDto)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-    	ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD.name());
+    	ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD);
         String eventId = utility.createEventId();
         residentTransactionEntity.setEventId(eventId);
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
@@ -484,7 +484,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
     }
 
     private ResidentTransactionEntity insertDataForVidCard(String vid, String uin) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD.name());
+        ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.VID_CARD_DOWNLOAD);
         residentTransactionEntity.setEventId(utility.createEventId());
         residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
         residentTransactionEntity.setRefId(utility.convertToMaskData(uin));

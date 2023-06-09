@@ -97,7 +97,7 @@ public class AuthTransactionCallbackServiceTest {
         eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
         eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        Mockito.lenient().when(utility.createEntity(Mockito.anyString())).thenReturn(new ResidentTransactionEntity());
+        Mockito.lenient().when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
     }
 
     @Test
