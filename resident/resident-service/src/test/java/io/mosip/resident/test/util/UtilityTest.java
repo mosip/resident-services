@@ -126,8 +126,8 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "amrAcrJsonFile", "amr-acr-mapping.json");
 		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.MEDIUM.name());
 		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", mapper.readValue(replaceSplChars, Map.class));
-        when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
-        when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd hh:mm:ss a");
+        when(env.getProperty("resident.ui.datetime.pattern.default")).thenReturn("yyyy-MM-dd");
+        when(env.getProperty("resident.filename.datetime.pattern.default")).thenReturn("yyyy-MM-dd hh:mm:ss a");
 		request = Mockito.mock(HttpServletRequest.class);
 	}
 
@@ -563,22 +563,22 @@ public class UtilityTest {
 	@Test
 	public void test_formatWithOffsetForUI_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
-		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, "en-US", localDateTime);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
 		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
 	}
 	
 	@Test
 	public void test_formatWithOffsetForUI_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
-		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(-330, "en-IN", localDateTime);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(-330, "en-IN", localDateTime);
 		assertEquals("14-Aug-1993, 10:24:00 PM", formatWithOffsetForFileName);
 	}
 	
 	@Test
 	public void test_formatWithOffsetForUI_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
-		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, null, localDateTime);
-		assertEquals("1993-08-14 04:54:00 PM", formatWithOffsetForFileName);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, null, localDateTime);
+		assertEquals("1993-08-14", formatWithOffsetForFileName);
 	}
 	
 }
