@@ -83,7 +83,7 @@ public class AcknowledgementController {
 	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
 	        logger.debug("AcknowledgementController::acknowledgement()::exit");
-	        featureName = templateUtil.getFeatureName(eventId);
+	        featureName = templateUtil.getFeatureName(eventId, locale);
         } catch(ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

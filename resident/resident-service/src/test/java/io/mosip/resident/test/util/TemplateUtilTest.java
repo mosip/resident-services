@@ -388,7 +388,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode("requestType");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
-        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0).getT1().get(
+        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -403,7 +403,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setRequestTypeCode("requestType");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
-        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0).getT1().get(
+        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -502,12 +502,12 @@ public class TemplateUtilTest {
 
     @Test
     public void getDefaultTemplateVariablesTest(){
-        templateUtil.getDefaultTemplateVariables(eventId, "eng", 0);
+        templateUtil.getDefaultTemplateVariables(eventId, "eng", 0, LOCALE_EN_US);
     }
 
     @Test
     public void getFeatureNameTest(){
-        templateUtil.getFeatureName(eventId);
+        templateUtil.getFeatureName(eventId, LOCALE_EN_US);
     }
 
     @Test

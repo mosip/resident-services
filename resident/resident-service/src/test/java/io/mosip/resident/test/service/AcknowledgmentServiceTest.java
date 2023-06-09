@@ -106,7 +106,7 @@ public class AcknowledgmentServiceTest {
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, eventId, languageCode, 0)).
+        Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         ReflectionTestUtils.setField(acknowledgementService, "templateManagerBuilder", templateManagerBuilder);
         templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();

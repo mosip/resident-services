@@ -535,7 +535,7 @@ public class ResidentControllerTest {
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
 		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0);
+				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -570,7 +570,7 @@ public class ResidentControllerTest {
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
 		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0);
+				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -596,7 +596,7 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
-		residentController.checkEventIdStatus("17", "eng", 0);
+		residentController.checkEventIdStatus("17", "eng", 0, LOCALE_EN_US);
 		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng"))
 				.andExpect(status().isOk());
 	}

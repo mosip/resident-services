@@ -3,7 +3,6 @@ package io.mosip.resident.util;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,13 +32,6 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
-import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
-import io.mosip.resident.service.ProxyMasterdataService;
-import org.springframework.cache.annotation.Cacheable;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.assertj.core.util.Lists;
@@ -87,6 +79,7 @@ import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
 import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
@@ -98,7 +91,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 
@@ -579,12 +571,12 @@ public class Utility {
 		return propertyName;
 	}
 	
-	public String getFileNameforId(String id, String propertyName, int timeZoneOffset){
+	public String getFileNameforId(String id, String propertyName, int timeZoneOffset, String locale){
 		if(id!=null && propertyName.contains("{" + TemplateVariablesConstants.ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.ID+ "}", id);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
-			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}

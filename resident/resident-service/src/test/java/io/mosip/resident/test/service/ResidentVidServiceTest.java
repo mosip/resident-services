@@ -394,7 +394,7 @@ public class ResidentVidServiceTest {
                 LocalDateTime.of(10000, 12, 1, 12, 12, 12));
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(0,
-                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test
