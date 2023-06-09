@@ -73,7 +73,8 @@ import io.mosip.resident.util.Utility;
 @RunWith(SpringRunner.class)
 public class ResidentServiceDownloadCardTest {
 
-    @InjectMocks
+    private static final String LOCALE_EN_US = "en-US";
+	@InjectMocks
     private ResidentServiceImpl residentServiceImpl;
     @Mock
     private ResidentTransactionRepository residentTransactionRepository;
@@ -212,7 +213,7 @@ public class ResidentServiceDownloadCardTest {
         residentUserEntity.setSessionId("123");;
         Optional<ResidentSessionEntity> response = Optional.of(residentUserEntity);
         Mockito.when(residentSessionRepository.findFirst2ByIdaTokenOrderByLoginDtimesDesc(Mockito.anyString())).thenReturn(List.of(residentUserEntity));
-        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0);
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0, LOCALE_EN_US);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 
@@ -221,7 +222,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(identityServiceImpl.getClaimFromIdToken(Mockito.anyString())).thenReturn("claim");
         Optional<ResidentUserEntity> response = Optional.empty();
         Mockito.when(residentUserRepository.findById(Mockito.anyString())).thenReturn(response);
-        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0);
+        ResponseWrapper<UserInfoDto> responseWrapper = residentServiceImpl.getUserinfo("123", 0, LOCALE_EN_US);
         assertEquals(responseWrapper.getResponse().getFullName(), responseWrapper.getResponse().getFullName());
     }
 
@@ -237,7 +238,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",	
                 LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
-                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0);
+                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0, LOCALE_EN_US);
         assertNotNull(pdfDocument);
     }
 
@@ -254,7 +255,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
                 null, null, null,
-                null, null, 0);
+                null, null, 0, LOCALE_EN_US);
         assertNotNull(pdfDocument);
     }
 
@@ -270,7 +271,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
                 LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
-                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0);
+                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0, LOCALE_EN_US);
         assertNotNull(pdfDocument);
     }
 
@@ -293,7 +294,7 @@ public class ResidentServiceDownloadCardTest {
          Map<String, Object> templateResponse = new LinkedHashMap<>();
          templateResponse.put(ResidentConstants.FILE_TEXT, "test");
          responseWrapper1.setResponse(templateResponse);
-         residentServiceImpl.getNotificationList(0,10,"123","eng",0);
+         residentServiceImpl.getNotificationList(0,10,"123","eng",0, LOCALE_EN_US);
     }
 
     @Test

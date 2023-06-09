@@ -16,7 +16,7 @@ public class UserInfoDto {
 	
 	private String fullName;
 	
-	private LocalDateTime lastLogin;
+	private String lastLogin;
 	
 	private Map<String, Object> photo;
 	

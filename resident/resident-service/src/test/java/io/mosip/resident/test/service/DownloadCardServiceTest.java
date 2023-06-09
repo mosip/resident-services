@@ -67,7 +67,9 @@ import reactor.util.function.Tuples;
 @ContextConfiguration
 public class DownloadCardServiceTest {
 
-    @InjectMocks
+    private static final String LOCALE_EN_US = "en-US";
+
+	@InjectMocks
     private DownloadCardService downloadCardService = new DownloadCardServiceImpl();
 
     @Mock
@@ -230,7 +232,7 @@ public class DownloadCardServiceTest {
 
     @Test
     public void testDownloadPersonalizedCardSuccess() throws ResidentServiceCheckedException {
-    	Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
+    	Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
@@ -241,14 +243,14 @@ public class DownloadCardServiceTest {
         name.put("language", "eng");
         name.put("value", "kamesh");
         identityMap.put("firstName", List.of(name));
-        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
+        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test
     public void testDownloadPersonalizedCardPassword() throws ResidentServiceCheckedException{
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
-        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
+        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
@@ -257,7 +259,7 @@ public class DownloadCardServiceTest {
         Mockito.when(environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED)).thenReturn(String.valueOf(true));
         Mockito.when(utility.getPassword(Mockito.anyList())).thenThrow(
                 new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD));
-        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
+        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
@@ -265,7 +267,7 @@ public class DownloadCardServiceTest {
     public void testDownloadPersonalizedCardResidentServiceCheckedException() throws ResidentServiceCheckedException, IOException {
         Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), Mockito.isNull())).thenThrow(
                 new ResidentServiceCheckedException());
-        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
+        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
@@ -273,7 +275,7 @@ public class DownloadCardServiceTest {
     public void testDownloadPersonalizedCardIOException() throws ResidentServiceCheckedException, IOException {
         Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), Mockito.isNull())).thenThrow(
                 new IOException());
-        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0);
+        Tuple2<byte[], String> actualResult = downloadCardService.downloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO, 0, LOCALE_EN_US);
         assertEquals(pdfbytes, actualResult.getT1());
     }
 
@@ -289,13 +291,13 @@ public class DownloadCardServiceTest {
         residentCredentialResponseDto.setRequestId("123");
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-		assertEquals("12345", downloadCardService.getVidCardEventId("123", 0).getT2());
+		assertEquals("12345", downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US).getT2());
     }
     
     @Test(expected = ResidentServiceCheckedException.class)
     public void testGetVidCardEventIdNestedIf() throws BaseCheckedException, IOException {
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123456789");
-		downloadCardService.getVidCardEventId("123", 0);
+		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
@@ -311,7 +313,7 @@ public class DownloadCardServiceTest {
                 ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage())));
         responseWrapper.setResponse(residentCredentialResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-		downloadCardService.getVidCardEventId("123", 0);
+		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
     }
 
     @Test(expected = ApisResourceAccessException.class)
@@ -320,7 +322,7 @@ public class DownloadCardServiceTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
         Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenThrow(new ApisResourceAccessException());
-		downloadCardService.getVidCardEventId("123", 0);
+		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
     }
 
     @Test(expected = BaseCheckedException.class)
@@ -329,7 +331,7 @@ public class DownloadCardServiceTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
 		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenThrow(new IOException());
-		downloadCardService.getVidCardEventId("123", 0);
+		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
     }
 
     @Test
@@ -361,8 +363,8 @@ public class DownloadCardServiceTest {
         vidDetails.put("transactionCount", "1234343434");
         vidList.add(vidDetails);
         vidResponse.setResponse(vidList);
-        Mockito.when(vidService.retrieveVids(Mockito.anyString(), Mockito.anyInt())).thenReturn(vidResponse);
-        assertEquals("12345", downloadCardService.getVidCardEventId("123", 0).getT2());
+        Mockito.when(vidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(vidResponse);
+        assertEquals("12345", downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US).getT2());
     }
 
     @Test
