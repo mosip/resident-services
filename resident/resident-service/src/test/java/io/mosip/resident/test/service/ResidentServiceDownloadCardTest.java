@@ -282,8 +282,6 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity1.setEventId("123");
         Page<ResidentTransactionEntity> residentTransactionEntityPage =
                 new PageImpl<>(List.of(residentTransactionEntity1));
-        Mockito.when(residentTransactionRepository.findByTokenIdAndRequestTypeCodeInAndOlvPartnerIdIsNullOrOlvPartnerId
-                (Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any())).thenReturn(residentTransactionEntityPage);
     	 ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
          ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
          serviceHistoryResponseDto.setEventId("123");
