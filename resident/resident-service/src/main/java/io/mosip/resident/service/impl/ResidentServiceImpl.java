@@ -1713,7 +1713,7 @@ public class ResidentServiceImpl implements ResidentService {
 				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset, statusCodeList);
 
 		return new PageDto<>(pageStart, pageFetch, serviceHistoryData.getT2(), ( serviceHistoryData.getT2()/ pageFetch) + 1,
-				convertResidentEntityListToServiceHistoryDto(serviceHistoryData.getT1(), langCode, timeZoneOffset));
+				convertResidentEntityListToServiceHistoryDto(serviceHistoryData.getT1(), langCode, timeZoneOffset, locale));
 	}
 
 	public Tuple2<List<ResidentTransactionEntity>, Integer> getServiceHistoryData(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
