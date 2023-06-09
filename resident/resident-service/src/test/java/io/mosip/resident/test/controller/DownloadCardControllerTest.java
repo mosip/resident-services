@@ -120,7 +120,7 @@ public class DownloadCardControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("file");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("file");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -141,7 +141,7 @@ public class DownloadCardControllerTest {
 
     @Test
     public void testDownloadPersonalizedCard() throws Exception {
-    	Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt())).thenReturn(Tuples.of(pdfbytes, "12345"));
+    	Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt(), Mockito.nullable(String.class))).thenReturn(Tuples.of(pdfbytes, "12345"));
         MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
                 new MainRequestDTO<>();
         DownloadPersonalizedCardDto downloadPersonalizedCardDto =
@@ -156,7 +156,7 @@ public class DownloadCardControllerTest {
     @Test
     public void testDownloadPersonalizedCardFailed() throws Exception {
         pdfbytes = "".getBytes();
-        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt())).thenReturn(Tuples.of(pdfbytes, ""));
+        Mockito.when(downloadCardService.downloadPersonalizedCard(Mockito.any(), Mockito.anyInt(), Mockito.nullable(String.class))).thenReturn(Tuples.of(pdfbytes, ""));
         MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO =
                 new MainRequestDTO<>();
         DownloadPersonalizedCardDto downloadPersonalizedCardDto =
@@ -189,7 +189,7 @@ public class DownloadCardControllerTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt()))
+		Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt(), Mockito.nullable(String.class)))
 				.thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
     }
@@ -202,7 +202,7 @@ public class DownloadCardControllerTest {
         VidDownloadCardResponseDto vidDownloadCardResponseDto = new VidDownloadCardResponseDto();
         vidDownloadCardResponseDto.setStatus("success");
         vidDownloadCardResponseDtoResponseWrapper.setResponse(vidDownloadCardResponseDto);
-        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt()))
+        Mockito.when(downloadCardService.getVidCardEventId(Mockito.any(), Mockito.anyInt(), Mockito.anyString()))
                 .thenReturn(Tuples.of(vidDownloadCardResponseDtoResponseWrapper, "12345"));
         mockMvc.perform(MockMvcRequestBuilders.get("/request-card/vid/9086273859467431")).andExpect(status().isOk());
     }

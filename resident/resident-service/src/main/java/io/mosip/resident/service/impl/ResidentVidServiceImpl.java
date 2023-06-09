@@ -386,7 +386,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , ResidentConstants.UTC_TIMEZONE_OFFSET);
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(individualId , ResidentConstants.UTC_TIMEZONE_OFFSET, null);
 		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
 		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
 				.collect(Collectors.toList());
@@ -728,7 +728,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 
 	private String getVidTypeFromVid(String vid, String indivudalId) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId, ResidentConstants.UTC_TIMEZONE_OFFSET);
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId, ResidentConstants.UTC_TIMEZONE_OFFSET, null);
 		return vids.getResponse().stream()
 				.filter(map -> ((String)map.get(TemplateVariablesConstants.VID)).equals(vid))
 				.map(map -> (String)map.get(TemplateVariablesConstants.VID_TYPE))
@@ -805,14 +805,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}
 	
 	@Override
-	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(residentIndividualId);
 		String uin = identityDTO.getUIN();
-		return retrieveVidsfromUin(uin, timeZoneOffset);
+		return retrieveVidsfromUin(uin, timeZoneOffset, locale);
 		}
 
 	@Override
-	public ResponseWrapper<List<Map<String,?>>> retrieveVidsfromUin(String uin, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	public ResponseWrapper<List<Map<String,?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper response;
 		try {
 			response = (ResponseWrapper) residentServiceRestClient.getApi(
@@ -829,8 +829,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					LinkedHashMap<String, Object> lhm = new LinkedHashMap<String, Object>(map);
 					getMaskedVid(lhm);
 					getRefIdHash(lhm);
-					normalizeTime(EXPIRY_TIMESTAMP, lhm, timeZoneOffset);
-					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset);
+					normalizeTime(EXPIRY_TIMESTAMP, lhm, timeZoneOffset, locale);
+					normalizeTime(GENRATED_ON_TIMESTAMP, lhm, timeZoneOffset, locale);
 					return lhm;
 				})
 				.filter(map1 -> map1.get(TRANSACTIONS_LEFT_COUNT) == null || (int) map1.get(TRANSACTIONS_LEFT_COUNT) > 0)
@@ -844,7 +844,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		
 	}
 	
-	private void normalizeTime(String attributeName, LinkedHashMap<String, Object> lhm, int timeZoneOffset) {
+	private void normalizeTime(String attributeName, LinkedHashMap<String, Object> lhm, int timeZoneOffset, String locale) {
 		Object timeObject = lhm.get(attributeName);
 		if(timeObject instanceof String) {
 			String timeStr = String.valueOf(timeObject);
@@ -853,7 +853,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(localDateTime.getYear() >= 9999) {
 				lhm.put(attributeName, null);
 			} else {
-				lhm.put(attributeName, utility.formatWithOffsetForUI(timeZoneOffset, localDateTime)) ;
+				lhm.put(attributeName, utility.formatWithOffsetForUI(timeZoneOffset, locale, localDateTime)) ;
 			}
 		}
 	}
@@ -888,7 +888,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	}	
 	
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin, ResidentConstants.UTC_TIMEZONE_OFFSET);
+		ResponseWrapper<List<Map<String, ?>>> vidResp = retrieveVidsfromUin(uin, ResidentConstants.UTC_TIMEZONE_OFFSET, null);
 		List<Map<String, ?>> vids = vidResp.getResponse();
 		if(vids != null && !vids.isEmpty()) {
 			return vids.stream()

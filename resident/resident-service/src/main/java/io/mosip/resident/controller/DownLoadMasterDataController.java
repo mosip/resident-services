@@ -75,7 +75,8 @@ public class DownLoadMasterDataController {
 	@GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
 			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") String name,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
@@ -102,7 +103,7 @@ public class DownLoadMasterDataController {
 						"attachment; filename=\"" + utility.getFileName(null,
 								Objects.requireNonNull(this.environment.getProperty(
 										ResidentConstants.DOWNLOAD_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)),
-								timeZoneOffset) + ".pdf\"")
+								timeZoneOffset, locale) + ".pdf\"")
 				.body(resource);
 	}
 	
@@ -110,7 +111,8 @@ public class DownLoadMasterDataController {
 	public ResponseEntity<Object> downloadNearestRegistrationcenters(@RequestParam(name="langcode") String langCode,
 			@RequestParam(name="longitude") double longitude, @RequestParam(name="latitude") double latitude,
 			@RequestParam(name="proximitydistance") int proximityDistance,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
@@ -135,13 +137,14 @@ public class DownLoadMasterDataController {
 				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
 						Objects.requireNonNull(this.environment.getProperty(
 								ResidentConstants.DOWNLOAD_NEAREST_REGISTRATION_CENTRE_FILE_NAME_CONVENTION_PROPERTY)),
-						timeZoneOffset) + ".pdf\"")
+						timeZoneOffset, locale) + ".pdf\"")
 				.body(resource);
 	}
 	
 	@GetMapping(path = "/download/supporting-documents", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@RequestParam(name = "langcode") String langCode,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
 		logger.debug("DownLoadMasterDataController::getSupportingDocsByLanguageCode()::entry");
 		DOWNLOADABLE_SUPPORTING_FILENAME = "supportingDocs-";
@@ -166,7 +169,7 @@ public class DownLoadMasterDataController {
 						"attachment; filename=\"" + utility.getFileName(null,
 								Objects.requireNonNull(this.environment.getProperty(
 										ResidentConstants.DOWNLOAD_SUPPORTING_DOCUMENT_FILE_NAME_CONVENTION_PROPERTY)),
-								timeZoneOffset) + ".pdf\"")
+								timeZoneOffset, locale) + ".pdf\"")
 				.body(resource);
 	}
 	/**
