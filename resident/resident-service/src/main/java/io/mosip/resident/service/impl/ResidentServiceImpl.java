@@ -2214,7 +2214,7 @@ public class ResidentServiceImpl implements ResidentService {
 				lastLoginDateTime = lastTwoLoginEntities.get(0).getLoginDtimes();
 			}
 			
-			user.setLastLogin(utility.applyTimeZoneOffsetOnDateTime(timeZoneOffset, lastLoginDateTime));
+			user.setLastLogin(utility.formatWithOffsetForUI(timeZoneOffset, locale, lastLoginDateTime));
 			user.setPhoto(data);
 			responseWrapper.setResponse(user);
 			return responseWrapper;
