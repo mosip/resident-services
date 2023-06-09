@@ -44,6 +44,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.exception.ServiceError;
@@ -102,6 +103,10 @@ public class UtilityTest {
 	
 	@Mock
 	private ObjectMapper objectMapper;
+	
+	private ObjectMapper mapper = new ObjectMapper();
+
+	private String replaceSplChars = "{\" \": \"_\", \",\" : \"\", \":\" : \".\"}";
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -120,6 +125,7 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
 		ReflectionTestUtils.setField(utility, "amrAcrJsonFile", "amr-acr-mapping.json");
 		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.MEDIUM.name());
+		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", mapper.readValue(replaceSplChars, Map.class));
         when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
         when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd hh:mm:ss a");
 		request = Mockito.mock(HttpServletRequest.class);
@@ -535,21 +541,21 @@ public class UtilityTest {
 	public void test_formatWithOffsetForFileName_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, "en-US", localDateTime);
-		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
+		assertEquals("Aug_14_1993_4.54.00_PM", formatWithOffsetForFileName);
 	}
 	
 	@Test
 	public void test_formatWithOffsetForFileName_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(-330, "en-IN", localDateTime);
-		assertEquals("14-Aug-1993, 10:24:00 PM", formatWithOffsetForFileName);
+		assertEquals("14-Aug-1993_10.24.00_PM", formatWithOffsetForFileName);
 	}
 	
 	@Test
 	public void test_formatWithOffsetForFileName_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, null, localDateTime);
-		assertEquals("1993-08-14 04:54:00 PM", formatWithOffsetForFileName);
+		assertEquals("1993-08-14_04.54.00_PM", formatWithOffsetForFileName);
 	}
 	
 

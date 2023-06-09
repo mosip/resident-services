@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -104,8 +105,6 @@ public class Utility {
 
 	private static final String MEDIUM = "MEDIUM";
 
-	private static final int SECONDS_PER_MINUTE = 60;
-
 	private static final String EVENT_ID_PLACEHOLDER = "{eventId}";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
@@ -163,6 +162,9 @@ public class Utility {
 
 	@Value("${mosip.resident.download-card.url}")
 	private String downloadCardUrl;
+	
+	@Value("${resident.date.time.replace.special.chars:{}}")
+	private String specialCharsReplacement;
 
 	@Autowired
 	private IdentityServiceImpl identityService;
@@ -180,11 +182,22 @@ public class Utility {
 	@Value("${resident.date.time.formmatting.style:" + MEDIUM + "}")
 	private String formattingStyle;
 
+	private Map<String, String> specialCharsReplacementMap;
+
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
+        try {
+			specialCharsReplacementMap = ((Map<String, Object>)mapper.readValue(specialCharsReplacement, Map.class))
+								.entrySet()
+								.stream()
+								.collect(Collectors.toUnmodifiableMap(Entry::getKey, entry -> String.valueOf(entry.getValue())));
+		} catch (JsonProcessingException e) {
+			logger.error("Error parsing special chars map used for replacement in timestamp in filename.");
+			specialCharsReplacementMap = Map.of();
+		}
 	}
 
 	@Cacheable(value = "amr-acr-mapping")
@@ -565,7 +578,7 @@ public class Utility {
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
-			String dateTimeFormat = replaceSpecialChars(formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime()));
+			String dateTimeFormat = formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime());
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", dateTimeFormat.repeat(timeZoneOffset));
 		}
 		return propertyName;
@@ -581,9 +594,20 @@ public class Utility {
 		return propertyName;
 	}
 
-	private String replaceSpecialChars(String formatWithOffsetForFileName) {
-		// TODO Auto-generated method stub
-		return null;
+	private String replaceSpecialChars(String fileName) {
+		if(!specialCharsReplacementMap.isEmpty()) {
+			StringBuilder stringBuilder = new StringBuilder(fileName);
+			specialCharsReplacementMap.entrySet().forEach(entry -> {
+				String key = entry.getKey();
+			String value = entry.getValue();
+				int index;
+				while((index = stringBuilder.indexOf(key)) != -1) {
+					stringBuilder.replace(index, index + key.length(), value);
+				}
+			});
+			return stringBuilder.toString();
+		}
+		return fileName;
 	}
 
 	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
@@ -647,7 +671,7 @@ public class Utility {
 	}
 
 	public String formatWithOffsetForFileName(int timeZoneOffset, String locale, LocalDateTime localDateTime) {
-		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)), timeZoneOffset);
+		return replaceSpecialChars(formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)), timeZoneOffset));
 	}
 	
 	public LocalDateTime applyTimeZoneOffsetOnDateTime(int timeZoneOffset, LocalDateTime localDateTime) {
