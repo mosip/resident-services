@@ -69,7 +69,9 @@ import static org.mockito.Mockito.when;
 @ContextConfiguration
 public class ResidentVidServiceTest {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private static final String LOCALE_EN_US = "en-US";
+
+	private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private Environment env;
@@ -355,13 +357,13 @@ public class ResidentVidServiceTest {
     public void testRetrieveVids() throws ResidentServiceCheckedException, ApisResourceAccessException {
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test(expected = ApisResourceAccessException.class)
     public void testRetrieveVidsFailure() throws ResidentServiceCheckedException, ApisResourceAccessException {
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(new ApisResourceAccessException());
-        residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET);
+        residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US);
     }
 
     @Test
@@ -370,7 +372,7 @@ public class ResidentVidServiceTest {
                 LocalDateTime.of(10000, 12, 1, 12, 12, 12));
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test
@@ -380,7 +382,7 @@ public class ResidentVidServiceTest {
         vidResponse.setResponse(vidList);
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
 
     @Test
@@ -404,7 +406,7 @@ public class ResidentVidServiceTest {
                 LocalDateTime.of(10000, 12, 1, 12, 12, 12));
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         assertEquals(vidResponse.getResponse().size(),
-                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET).getResponse().size());
+                residentVidService.retrieveVids(vid, ResidentConstants.UTC_TIMEZONE_OFFSET, LOCALE_EN_US).getResponse().size());
     }
     
 	@Test

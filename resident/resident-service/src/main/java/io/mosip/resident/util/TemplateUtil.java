@@ -100,8 +100,7 @@ public class TemplateUtil {
 	 * @return the ack template variables for authentication request
 	 */
 
-	public Tuple2<Map<String, String>, ResidentTransactionEntity> getCommonTemplateVariables(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+	    public Tuple2<Map<String, String>, ResidentTransactionEntity> getCommonTemplateVariables(String eventId, String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = new HashMap<>();
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
 		ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
@@ -120,7 +119,7 @@ public class TemplateUtil {
 			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
 		}
 		templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
-				utility.formatWithOffsetForUI(timeZoneOffset, residentTransactionEntity.getCrDtimes()));
+				utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getCrDtimes()));
 		templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK,
 				utility.createTrackServiceRequestLink(eventId));
 		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
@@ -309,15 +308,14 @@ public class TemplateUtil {
 		return fileText;
 	}
 
-	public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId, String languageCode,
-			Integer timeZoneOffset) {
-		return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset).getT1(), "");
-	}
+    public Tuple2<Map<String, String>, String> getDefaultTemplateVariables(String eventId, String languageCode, Integer timeZoneOffset, String locale){
+        return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset, locale).getT1(), "");
+    }
 
-	public String replaceNullWithEmptyString(String input) {
-		return input == null ? "" : input;
-	}
-
+    public String replaceNullWithEmptyString(String input) {
+        return input == null ? "" : input;
+    }
+    
 	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
 		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
 		if (residentTransactionEntity.isPresent()) {
@@ -369,9 +367,9 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForDownloadPersonalizedCard(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(TemplateVariablesConstants.PURPOSE,
@@ -399,9 +397,9 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(TemplateVariablesConstants.PURPOSE,
@@ -422,9 +420,9 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForGetMyId(String eventId, String languageCode,
-			Integer timeZoneOffset) {
+			Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(TemplateVariablesConstants.PURPOSE,
@@ -435,14 +433,14 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForBookAnAppointment(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		return Tuples.of(Collections.emptyMap(), "");
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(TemplateVariablesConstants.PURPOSE,
@@ -495,9 +493,9 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForRevokeVid(String eventId, String languageCode,
-			Integer timeZoneOffset) {
+			Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(TemplateVariablesConstants.PURPOSE,
@@ -513,9 +511,9 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForAuthTypeLockUnlock(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
 		templateVariables.put(ResidentConstants.AUTH_TYPE, templateVariables.get(TemplateVariablesConstants.PURPOSE));
@@ -524,9 +522,9 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForVidCardDownload(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(TemplateVariablesConstants.PURPOSE,
@@ -542,14 +540,14 @@ public class TemplateUtil {
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForSendOtp(String eventId, String languageCode,
-			Integer timeZoneOffset) {
-		return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset).getT1(), "");
+			Integer timeZoneOffset, String locale) {
+		return Tuples.of(getCommonTemplateVariables(eventId, languageCode, timeZoneOffset, locale).getT1(), "");
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForValidateOtp(String eventId,
-			String languageCode, Integer timeZoneOffset) {
+			String languageCode, Integer timeZoneOffset, String locale) {
 		Tuple2<Map<String, String>, ResidentTransactionEntity> tupleResponse = getCommonTemplateVariables(eventId,
-				languageCode, timeZoneOffset);
+				languageCode, timeZoneOffset, locale);
 		Map<String, String> templateVariables = tupleResponse.getT1();
 		ResidentTransactionEntity residentTransactionEntity = tupleResponse.getT2();
 		templateVariables.put(ResidentConstants.CHANNEL,
