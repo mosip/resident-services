@@ -118,7 +118,7 @@ public class DownloadMasterdataControllerTest {
         downloadCardRequestDTOMainRequestDTO.setId("mosip.resident.download.uin.card");
         reqJson = gson.toJson(downloadCardRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("fileName");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("fileName");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
