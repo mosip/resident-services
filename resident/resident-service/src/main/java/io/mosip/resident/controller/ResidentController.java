@@ -668,11 +668,7 @@ public class ResidentController {
 			id = identityServiceImpl.getResidentIdaToken();
 			notificationDtoList = residentService.getNotificationList(pageStart, pageFetch, id, langCode,
 					timeZoneOffset);
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.NOTIFICATION_ID));
-			throw e;
-		} catch (InvalidInputException e) {
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.NOTIFICATION_ID));
 			throw e;
@@ -707,11 +703,7 @@ public class ResidentController {
 			byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
 					fromDate, toDate, serviceType, statusFilter, timeZoneOffset);
 			resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_FAILURE);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.SERVICE_HISTORY_ID));
-			throw e;
-		} catch (InvalidInputException e) {
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.SERVICE_HISTORY_ID));
 			throw e;
