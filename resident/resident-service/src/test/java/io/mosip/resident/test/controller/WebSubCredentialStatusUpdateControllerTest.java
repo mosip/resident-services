@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
 import io.mosip.resident.controller.VerificationController;
+import io.mosip.resident.controller.WebSubCredentialStatusUpdateController;
 import io.mosip.resident.controller.WebSubUpdateAuthTypeController;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -39,6 +40,7 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
+import io.mosip.resident.service.WebSubCredentialStatusUpdateService;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
@@ -46,16 +48,16 @@ import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
 /**
- * Web-Sub Update Controller Test
- * Note: This class is used to test the Web-Sub Update Controller
- * @author Kamesh Shekhar Prasad
+ * Web-Sub Credential Status Update Controller Test
+ * Note: This class is used to test the Web-Sub Credential Status Update Controller
+ * @author Ritik Jain
  */
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
-public class WebSubUpdateAuthTypeControllerTest {
+public class WebSubCredentialStatusUpdateControllerTest {
 	
     @MockBean
     private ProxyIdRepoService proxyIdRepoService;
@@ -68,10 +70,10 @@ public class WebSubUpdateAuthTypeControllerTest {
     private AuditUtil audit;
 
     @InjectMocks
-    WebSubUpdateAuthTypeController webSubUpdateAuthTypeController;
+    WebSubCredentialStatusUpdateController webSubCredentialStatusUpdateController;
 
     @MockBean
-    WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
+    WebSubCredentialStatusUpdateService webSubCredentialStatusUpdateService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -107,11 +109,11 @@ public class WebSubUpdateAuthTypeControllerTest {
     public void setup() throws Exception {
 
         MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(webSubCredentialStatusUpdateController).build();
     }
 
     @Test
-    public void testCreateRequestGenerationSuccess() throws Exception {
+    public void testCredentialStatusUpdateCallback() throws Exception {
 
         EventModel eventModel=new EventModel();
         Event event=new Event();
@@ -122,21 +124,21 @@ public class WebSubUpdateAuthTypeControllerTest {
         event.setData(partnerIdMap);
 
         eventModel.setEvent(event);
-        eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
+        eventModel.setTopic("CREDENTIAL_STATUS_UPDATE_CALL_BACK");
         eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
-        eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
+        eventModel.setPublisher("CREDENTIAL_STATUS_UPDATE_CALL_BACK");
+        webSubCredentialStatusUpdateController.credentialStatusUpdateCallback(objectMapper.convertValue(eventModel, Map.class));
 
-        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback"))
+        mockMvc.perform((MockMvcRequestBuilders.post("/callback/credentialStatusUpdate"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(eventModel.toString()))
                 .andReturn();
     }
 
     @Test(expected = ResidentServiceException.class)
-    public void testAuthTypeCallbackWithException() throws Exception {
+    public void testCredentialStatusUpdateCallbackWithException() throws Exception {
     	EventModel eventModel=new EventModel();
-        doThrow(new ResidentServiceCheckedException()).when(webSubUpdateAuthTypeService).updateAuthTypeStatus(anyMap());
-        webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
+        doThrow(new ResidentServiceCheckedException()).when(webSubCredentialStatusUpdateService).updateCredentialStatus(anyMap());
+        webSubCredentialStatusUpdateController.credentialStatusUpdateCallback(objectMapper.convertValue(eventModel, Map.class));
     }
 }
