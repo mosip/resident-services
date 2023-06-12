@@ -492,5 +492,84 @@ public class ResidentServiceResUpdateTest {
 		}
 	}
 
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetMachineIdMachineServiceException() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
+
+		List<MachineDto> machineDtos = new ArrayList<>();
+		MachineDto machineDto = new MachineDto();
+		machineDto.setMachineSpecId("1001");
+		machineDto.setIsActive(false);
+		machineDto.setId("10147");
+		machineDto.setName("resident_machine_1640777004542");
+		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		machineDto.setSignPublicKey("");
+		machineDtos.add(machineDto);
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder()
+				.fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
+		machineSearchResponseDTO.setId("null");
+		machineSearchResponseDTO.setVersion("1.0");
+		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
+		machineSearchResponseDTO.setResponse(response);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+
+		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
+		MachineDto newMachineDTO = new MachineDto();
+		newMachineDTO.setMachineSpecId("1001");
+		newMachineDTO.setIsActive(false);
+		newMachineDTO.setId("10147");
+		newMachineDTO.setName("resident_machine_1640777004542");
+		newMachineDTO.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		newMachineDTO.setPublicKey(publicKey);
+		newMachineDTO.setSignPublicKey(publicKey);
+		machineCreateResponseDTO.setResponse(newMachineDTO);
+		MachineErrorDTO machineErrorDTO = new MachineErrorDTO();
+		machineErrorDTO.setErrorCode(ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION.getErrorCode());
+		machineErrorDTO.setMessage(ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION.getErrorMessage());
+		machineCreateResponseDTO.setErrors(List.of(machineErrorDTO));
+		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
+		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetMachineIdEmptyResponseException() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
+
+		List<MachineDto> machineDtos = new ArrayList<>();
+		MachineDto machineDto = new MachineDto();
+		machineDto.setMachineSpecId("1001");
+		machineDto.setIsActive(false);
+		machineDto.setId("10147");
+		machineDto.setName("resident_machine_1640777004542");
+		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		machineDto.setSignPublicKey("");
+		machineDtos.add(machineDto);
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder()
+				.fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
+		machineSearchResponseDTO.setId("null");
+		machineSearchResponseDTO.setVersion("1.0");
+		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
+		machineSearchResponseDTO.setResponse(response);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+
+		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
+		machineCreateResponseDTO.setResponse(null);
+		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
+		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
+	}
 
 }

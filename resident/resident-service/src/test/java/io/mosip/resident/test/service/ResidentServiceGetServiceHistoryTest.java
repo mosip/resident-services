@@ -1,6 +1,7 @@
 package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.RegistrationStatusDTO;
 import io.mosip.resident.dto.RegistrationStatusResponseDTO;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -457,5 +459,15 @@ public class ResidentServiceGetServiceHistoryTest {
     @Test(expected = Exception.class)
     public void reqUinUpdateValidateAuthIndividualIdWithUINFailure() throws Exception {
         ReflectionTestUtils.invokeMethod(residentServiceImpl, "validateAuthIndividualIdWithUIN", "1234", "RID", null, null);
+    }
+
+    @Test
+    public void testGetIdType(){
+        assertEquals(IdType.RID,ReflectionTestUtils.invokeMethod(residentServiceImpl, "getIdType", "RID"));
+    }
+
+    @Test
+    public void testGetIdTypeNull(){
+        assertNull(ReflectionTestUtils.invokeMethod(residentServiceImpl, "getIdType", "aid"));
     }
 }
