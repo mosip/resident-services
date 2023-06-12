@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.FileNotFoundException;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectIOException;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
+import io.mosip.kernel.core.idobjectvalidator.exception.InvalidIdSchemaException;
 import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.MachineCreateResponseDTO;
 import io.mosip.resident.dto.MachineDto;
@@ -570,6 +574,36 @@ public class ResidentServiceResUpdateTest {
 		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
+	}
+
+	@Test
+	public void testReqUinUpdate() throws ResidentServiceCheckedException {
+		Map identityMap = new LinkedHashMap();
+		identityMap.put("IDSchemaVersion", "0.1");
+		identityMap.put("UIN", "3527812406");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("identity", identityMap);
+		jsonObject.put("UIN", "3527812406");
+		residentServiceImpl.reqUinUpdate(dto, jsonObject, true);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testReqUinUpdateFailed() throws ResidentServiceCheckedException, IdObjectIOException, InvalidIdSchemaException, IdObjectValidationFailedException {
+		Map identityMap = new LinkedHashMap();
+		identityMap.put("IDSchemaVersion", "0.1");
+		identityMap.put("UIN", "3527812406");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("identity", identityMap);
+		jsonObject.put("UIN", "3527812406");
+		Mockito.when(idObjectValidator.validateIdObject(any(), any())).thenThrow(new IdObjectValidationFailedException(
+				ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentConstants.INVALID_INPUT_PARAMETER));
+		residentServiceImpl.reqUinUpdate(dto, jsonObject, true);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testReqUinUpdateBadIdentityJson() throws ResidentServiceCheckedException {
+		dto.setIdentityJson("abc");
+		residentServiceImpl.reqUinUpdate(dto);
 	}
 
 }
