@@ -1,58 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
-import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
-import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
-import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
-import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
-import static io.mosip.resident.constant.RegistrationConstants.VID_LABEL;
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
-import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
-import static io.mosip.resident.constant.ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER;
-import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
-import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.commons.khazana.exception.ObjectStoreAdapterException;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -159,8 +108,55 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
+import static io.mosip.resident.constant.EventStatusSuccess.LOCKED;
+import static io.mosip.resident.constant.EventStatusSuccess.UNLOCKED;
+import static io.mosip.resident.constant.MappingJsonConstants.IDSCHEMA_VERSION;
+import static io.mosip.resident.constant.RegistrationConstants.UIN_LABEL;
+import static io.mosip.resident.constant.RegistrationConstants.VID_LABEL;
+import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE;
+import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
+import static io.mosip.resident.constant.ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER;
+import static io.mosip.resident.constant.ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION;
+import static io.mosip.resident.constant.ResidentErrorCode.PACKET_SIGNKEY_EXCEPTION;
 
 @Service
 public class ResidentServiceImpl implements ResidentService {
@@ -235,9 +231,6 @@ public class ResidentServiceImpl implements ResidentService {
 	@Autowired
 	private Utilities utilities;
 
-	@Autowired
-	private EntityManager entityManager;
-
 	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
 
@@ -277,6 +270,9 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
 	private boolean isPreferedLangFlagEnabled;
+	
+	@Value("${resident.authLockStatusUpdateV2.id}")
+	private String authLockStatusUpdateV2Id;
 
 	@Autowired
 	private AuditUtil audit;
@@ -1270,7 +1266,7 @@ public class ResidentServiceImpl implements ResidentService {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
 						"Request for auth " + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 				throw new ResidentServiceException(ResidentErrorCode.REQUEST_FAILED,
-						Map.of(ResidentConstants.EVENT_ID, eventId));
+						Map.of(ResidentConstants.EVENT_ID, authLockStatusUpdateV2Id));
 			}
 
 		} catch (ApisResourceAccessException e) {
@@ -1287,7 +1283,7 @@ public class ResidentServiceImpl implements ResidentService {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.API_NOT_AVAILABLE,
 					"Request for auth" + authLockOrUnLockRequestDtoV2.getAuthTypes() + " lock failed"));
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE, e,
-					Map.of(ResidentConstants.EVENT_ID, eventId));
+					Map.of(ResidentConstants.EVENT_ID, authLockStatusUpdateV2Id));
 		} finally {
 			residentTransactionRepository.saveAll(residentTransactionEntities);
 
