@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
@@ -100,8 +101,8 @@ public class OtpManagerServiceImpl implements OtpManager {
         notificationRequestDto.setId(identityService.getResidentIndvidualIdFromSession());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
-                .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
-        this.environment.getProperty("otp.request.flooding.max-count", Integer.class)) {
+                .minusMinutes(Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.duration", Long.class)))) >
+        Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.max-count", Integer.class))) {
             this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
             throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorMessage());
         } else {
