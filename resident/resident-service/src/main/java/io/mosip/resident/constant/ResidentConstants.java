@@ -200,8 +200,8 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
-    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
-    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
+    public static final String UI_DATE_TIME_PATTERN_DEFAULT = "resident.ui.datetime.pattern.default";
+    public static final String FILENAME_DATETIME_PATTERN_DEFAULT = "resident.filename.datetime.pattern.default";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";

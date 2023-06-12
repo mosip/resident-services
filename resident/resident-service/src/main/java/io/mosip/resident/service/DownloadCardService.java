@@ -23,10 +23,10 @@ public interface DownloadCardService {
 			throws ResidentServiceCheckedException;
 
 	Tuple2<byte[], String> downloadPersonalizedCard(
-			MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset)
+			MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException;
 
-    Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset) throws BaseCheckedException;
+    Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> getVidCardEventId(String vid, int timeZoneOffset, String locale) throws BaseCheckedException;
 
     ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String vid) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException;
 }

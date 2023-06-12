@@ -59,14 +59,14 @@ public interface ResidentService {
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
-																		  String searchColumn, String searchText, String langCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
+																		  String searchColumn, String searchText, String langCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	byte[] downloadCard(String eventId) throws ResidentServiceCheckedException;
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
 
-	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId, int timeZoneOffset)
+	ResponseWrapper<EventStatusResponseDTO> getEventStatus(String id, String eventId, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException;
 
 	ResponseWrapper<UnreadNotificationDto> getnotificationCount(String Id) throws ApisResourceAccessException, ResidentServiceCheckedException;
@@ -75,19 +75,19 @@ public interface ResidentService {
 
 	int updatebellClickdttimes(String idaToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
 
-	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart, Integer pageFetch, String Id, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getNotificationList(Integer pageStart, Integer pageFetch, String Id, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 	
 	byte[] downLoadServiceHistory(ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper,
 								  String languageCode, LocalDateTime eventReqDateTime, LocalDate fromDateTime, LocalDate toDateTime,
-								  String serviceType, String statusFilter, int timeZoneOffset) throws ResidentServiceCheckedException, IOException;
+								  String serviceType, String statusFilter, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException;
 
-	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset) throws ApisResourceAccessException;
+	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset, String locale) throws ApisResourceAccessException;
 
-	public String getFileName(String eventId, int timeZoneOffset);
+	public String getFileName(String eventId, int timeZoneOffset, String locale);
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
                                                                           LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType, String statusFilter,
-                                                                          String searchText, String langCode, int timeZoneOffset, String defaultPageSizeProperty, List<String> statusCodeList)
+                                                                          String searchText, String langCode, int timeZoneOffset, String locale, String defaultPageSizeProperty, List<String> statusCodeList)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

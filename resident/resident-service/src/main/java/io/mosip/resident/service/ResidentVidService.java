@@ -25,7 +25,7 @@ public interface ResidentVidService {
 
 	public String getVidPolicy() throws ResidentServiceCheckedException;
 
-	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(String residentIndividualId, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
@@ -36,7 +36,7 @@ public interface ResidentVidService {
 			String vid, String indivudalId)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException;
 	
-	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset)
+	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +62,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
+import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
@@ -71,6 +74,7 @@ import io.mosip.resident.dto.AuthHistoryResponseDTO;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
 import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
@@ -86,6 +90,7 @@ import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
+import io.mosip.resident.dto.UnreadNotificationDto;
 import io.mosip.resident.dto.UserInfoDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -99,6 +104,7 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
@@ -112,6 +118,8 @@ import reactor.util.function.Tuples;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentControllerTest {
+
+	private static final String LOCALE_EN_US = "en-US";
 
 	@MockBean
 	private ProxyIdRepoService proxyIdRepoService;
@@ -145,6 +153,12 @@ public class ResidentControllerTest {
 
 	@Mock
 	private AuditUtil audit;
+
+	@Mock
+	private Utility utility;
+
+	@Mock
+	private Environment environment;
 
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
@@ -210,6 +224,7 @@ public class ResidentControllerTest {
 
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
 		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn("UIN");
+		when(environment.getProperty(anyString())).thenReturn("property");
 	}
 
 	@Test
@@ -359,10 +374,10 @@ public class ResidentControllerTest {
 	public void testGetServiceHistorySuccess() throws Exception {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
 		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
-				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt())).thenReturn(response);
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(), Mockito.any())).thenReturn(response);
 		residentController.getServiceHistory("eng", 1, 12, LocalDate.parse("2022-06-10"),
 				LocalDate.parse("2022-06-10"), SortType.ASC.toString(),
-				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, 0);
+				ServiceType.AUTHENTICATION_REQUEST.name(), null, null, 0, LOCALE_EN_US);
 		mockMvc.perform(MockMvcRequestBuilders.get("/service-history/eng").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
 	}
@@ -500,7 +515,7 @@ public class ResidentControllerTest {
 		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
 		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0);
+				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -533,7 +548,7 @@ public class ResidentControllerTest {
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
 		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0);
+				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -568,7 +583,7 @@ public class ResidentControllerTest {
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
 		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
 		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0);
+				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
 	}
 
@@ -594,7 +609,7 @@ public class ResidentControllerTest {
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetCredentialRequestStatusSuccess() throws Exception {
-		residentController.checkEventIdStatus("17", "eng", 0);
+		residentController.checkEventIdStatus("17", "eng", 0, LOCALE_EN_US);
 		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng"))
 				.andExpect(status().isOk());
 	}
@@ -606,9 +621,93 @@ public class ResidentControllerTest {
 		user.setFullName("name");
 		ResponseWrapper<UserInfoDto> response = new ResponseWrapper<>();
 		response.setResponse(user);
-		residentController.userinfo(0);
-		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt())).thenReturn(response);
+		residentController.userinfo(0, LOCALE_EN_US);
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt(), Mockito.anyString())).thenReturn(response);
 		this.mockMvc.perform(get("/profile"))
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testBellClickdttimes() throws Exception {
+		BellNotificationDto dto = new BellNotificationDto();
+		dto.setLastbellnotifclicktime(LocalDateTime.now());
+		ResponseWrapper<BellNotificationDto> response = new ResponseWrapper<>();
+		response.setResponse(dto);
+		Mockito.when(residentService.getbellClickdttimes(Mockito.anyString())).thenReturn(response);
+		residentController.bellClickdttimes();
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testNotificationCount() throws Exception {
+		UnreadNotificationDto dto = new UnreadNotificationDto();
+		dto.setUnreadCount(10L);
+		ResponseWrapper<UnreadNotificationDto> response = new ResponseWrapper<>();
+		response.setResponse(dto);
+		Mockito.when(residentService.getnotificationCount(Mockito.anyString())).thenReturn(response);
+		residentController.notificationCount();
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testBellupdateClickdttimes() throws Exception {
+		int response = 10;
+		Mockito.when(residentService.updatebellClickdttimes(Mockito.anyString())).thenReturn(response);
+		residentController.bellupdateClickdttimes();
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testGetNotificationsList() throws Exception {
+		PageDto<ServiceHistoryResponseDto> dto = new PageDto<ServiceHistoryResponseDto>();
+		dto.setData(List.of());
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
+		response.setResponse(dto);
+		Mockito.when(residentService.getNotificationList(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString(),
+				Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(response);
+		residentController.getNotificationsList("eng", 0, 10, 0, LOCALE_EN_US);
+	}
+
+	@Test
+	@WithUserDetails("reg-admin")
+	public void testDownLoadServiceHistory() throws Exception {
+		ReflectionTestUtils.setField(residentController, "maxEventsServiceHistoryPageSize", 10);
+		ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
+		serviceHistoryResponseDto.setEventId("1234567890");
+		serviceHistoryResponseDto.setEventStatus("Success");
+		PageDto<ServiceHistoryResponseDto> dto = new PageDto<>();
+		dto.setData(List.of(serviceHistoryResponseDto));
+		dto.setPageNo(0);
+		dto.setPageSize(10);
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> response = new ResponseWrapper<>();
+		response.setResponse(dto);
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(),
+				Mockito.any())).thenReturn(response);
+		Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("filename");
+		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
+		Mockito.when(
+				residentService.downLoadServiceHistory(Mockito.any(), Mockito.anyString(), Mockito.any(), Mockito.any(),
+						Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
+				.thenReturn(bytes);
+		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
+				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	@WithUserDetails("reg-admin")
+	public void testCheckAidStatusWithException() throws Exception {
+		ReflectionTestUtils.setField(residentController, "checkStatusId", "id");
+		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+		aidStatusRequestDTO.setIndividualId("5734728510");
+		aidStatusRequestDTO.setOtp("111111");
+		aidStatusRequestDTO.setTransactionId("1234567890");
+		RequestWrapper<AidStatusRequestDTO> reqDto = new RequestWrapper<>();
+		reqDto.setRequest(aidStatusRequestDTO);
+		AidStatusResponseDTO response = new AidStatusResponseDTO();
+		response.setAidStatus("uin generator");
+		Mockito.when(residentService.getAidStatus(Mockito.any(), Mockito.anyBoolean())).thenThrow(new ResidentServiceCheckedException("res-ser", "error"));
+		residentController.checkAidStatus(reqDto);
 	}
 }
