@@ -579,7 +579,7 @@ public class Utility {
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
 			String dateTimeFormat = formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime());
-			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", dateTimeFormat.repeat(timeZoneOffset));
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", dateTimeFormat);
 		}
 		return propertyName;
 	}
