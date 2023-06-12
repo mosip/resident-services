@@ -454,5 +454,8 @@ public class ResidentServiceGetServiceHistoryTest {
                 null, null, null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
         assertEquals(3, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(), "ALL", "DESC", statusFilter, searchText, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
     }
-
+    @Test(expected = Exception.class)
+    public void reqUinUpdateValidateAuthIndividualIdWithUINFailure() throws Exception {
+        ReflectionTestUtils.invokeMethod(residentServiceImpl, "validateAuthIndividualIdWithUIN", "1234", "RID", null, null);
+    }
 }
