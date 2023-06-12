@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -28,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.controller.ProxyPartnerManagementController;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -78,6 +80,9 @@ public class ProxyPartnerManagementControllerTest {
 	@MockBean
     private ResidentServiceImpl residentService;
 
+	@Mock
+	private Environment env;
+
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -99,4 +104,11 @@ public class ProxyPartnerManagementControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/partners?partnerType=")).andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetPartnersByPartnerTypeWithException() throws Exception {
+		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("property");
+		Mockito.when(proxyPartnerManagementService.getPartnersByPartnerType(Mockito.any()))
+				.thenThrow(new ResidentServiceCheckedException());
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/partners?partnerType=")).andExpect(status().isOk());
+	}
 }

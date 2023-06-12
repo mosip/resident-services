@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -40,6 +41,9 @@ public class PinStatusControllerTest {
     @Mock
     private PinUnpinStatusService pinUnpinStatusService;
 
+    @Mock
+    private Environment env;
+
     @Test
     public void pinStatusControllerTest() throws ResidentServiceCheckedException{
         ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
@@ -51,6 +55,14 @@ public class PinStatusControllerTest {
         assertEquals(resultResponseDTO.getResponse().getStatus(), HttpStatus.OK.toString());
     }
 
+	@Test(expected = Exception.class)
+	public void pinStatusControllerWithExceptionTest() throws ResidentServiceCheckedException {
+		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("property");
+		Mockito.when(pinUnpinStatusService.pinStatus(Mockito.anyString(), Mockito.anyBoolean()))
+				.thenThrow(new ResidentServiceCheckedException());
+		pinStatusController.pinStatus("eventId");
+	}
+
     @Test
     public void unPinStatusControllerTest() throws ResidentServiceCheckedException{
         ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
@@ -61,4 +73,12 @@ public class PinStatusControllerTest {
         ResponseWrapper<ResponseDTO> responseEntity = pinStatusController.unPinStatus("eventId");
         assertEquals(responseEntity.getResponse().getStatus(), HttpStatus.OK.toString());
     }
+
+	@Test(expected = Exception.class)
+	public void unPinStatusControllerWithExceptionTest() throws ResidentServiceCheckedException {
+		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("property");
+		Mockito.when(pinUnpinStatusService.pinStatus(Mockito.anyString(), Mockito.anyBoolean()))
+				.thenThrow(new ResidentServiceCheckedException());
+		pinStatusController.unPinStatus("eventId");
+	}
 }
