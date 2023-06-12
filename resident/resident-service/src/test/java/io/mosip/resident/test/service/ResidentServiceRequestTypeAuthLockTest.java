@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
@@ -111,6 +112,9 @@ public class ResidentServiceRequestTypeAuthLockTest {
 	AuthTypeStatusDto authTypeStatusDto;
 
 	private String individualId;
+	
+	@Value("${resident.authLockStatusUpdateV2.id}")
+	private String authLockStatusUpdateV2Id;
 
 	@Before
 	public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -132,6 +136,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		Mockito.lenient().when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
 		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "2157245364", "partnerId");
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
+		ReflectionTestUtils.setField(residentService, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.status.update");
 	}
 
 	@Test
