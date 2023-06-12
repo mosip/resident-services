@@ -115,7 +115,7 @@ public class GrievanceControllerTest {
         grievanceRequestDTOMainRequestDTO.setId("mosip.resident.grievance.ticket.request");
         reqJson = gson.toJson(grievanceRequestDTOMainRequestDTO);
         pdfbytes = "uin".getBytes();
-        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn("file");
+        Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("file");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
