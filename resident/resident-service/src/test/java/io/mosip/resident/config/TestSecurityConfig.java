@@ -1,4 +1,4 @@
-package io.mosip.resident.test.config;
+package io.mosip.resident.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;

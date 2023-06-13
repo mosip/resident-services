@@ -1,4 +1,4 @@
-package io.mosip.resident.test.config;
+package io.mosip.resident.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
