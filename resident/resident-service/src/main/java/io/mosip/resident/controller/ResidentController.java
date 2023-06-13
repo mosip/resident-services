@@ -131,6 +131,12 @@ public class ResidentController {
 	@Value("${resident.checkstatus.id}")
 	private String checkStatusId;
 	
+	@Value("${resident.service.history.id}")
+	private String serviceHistoryId;
+	
+	@Value("${resident.service.event.id}")
+	private String serviceEventId;
+	
 	@Value("${" + RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT + "}")
 	private Integer maxEventsServiceHistoryPageSize;
 	
@@ -146,11 +152,17 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<RegStatusCheckResponseDTO> getRidStatus(
 			@Valid @RequestBody RequestWrapper<RequestDTO> requestDTO) throws ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API"));
-		validator.validateRidCheckStatusRequestDTO(requestDTO);
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(EventEnum.RID_STATUS);
-		response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
+		try {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API"));
+			validator.validateRidCheckStatusRequestDTO(requestDTO);
+			audit.setAuditRequestDto(EventEnum.RID_STATUS);
+			response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
+		} catch (InvalidInputException | ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.RID_STATUS_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.RID_STATUS_SUCCESS);
 		return response;
 	}
@@ -263,18 +275,28 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update auth Type status API"));
-		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-		validator.validateAuthLockOrUnlockRequestV2(requestDTO);
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
+		String individualId = null;
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
-		Tuple2<ResponseDTO, String> tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
-		response.setResponse(tupleResponse.getT1());
-		response.setId(authLockStatusUpdateV2Id);
-		response.setVersion(authLockStatusUpdateV2Version);
+		Tuple2<ResponseDTO, String> tupleResponse = null;
+		try {
+			individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+			validator.validateAuthLockOrUnlockRequestV2(requestDTO);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
+			tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
+			response.setResponse(tupleResponse.getT1());
+			response.setId(authLockStatusUpdateV2Id);
+			response.setVersion(authLockStatusUpdateV2Version);
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED, "Request for auth lock failed"));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, authLockStatusUpdateV2Id));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS, individualId));
 		return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(response);
+		
 	}
 
 	@ResponseFilter
@@ -289,33 +311,51 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<AuthHistoryRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth history"));
-		validator.validateAuthHistoryRequest(requestDTO);
 		ResponseWrapper<AuthHistoryResponseDTO> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY,
-				requestDTO.getRequest().getTransactionID()));
-		response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
+		try {
+			validator.validateAuthHistoryRequest(requestDTO);
+			response = new ResponseWrapper<>();
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY,
+					requestDTO.getRequest().getTransactionID()));
+			response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
+					requestDTO.getRequest().getTransactionID(), "Request for auth history"));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.AUTH_HISTORY_ID));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
 		return response;
 	}
 
 	@GetMapping(path = "/events/{event-id}")
-	@Operation(summary = "getGetCheckEventIdStatus", description = "checkEventIdStatus", tags = {
+	@Operation(summary = "checkEventIdStatus", description = "checkEventIdStatus", tags = {
 			"resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<EventStatusResponseDTO> checkAidStatus(@PathVariable(name = "event-id") String eventId,
+	public ResponseWrapper<EventStatusResponseDTO> checkEventIdStatus(@PathVariable(name = "event-id") String eventId,
 			@RequestParam(name = "langCode") String languageCode,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException {
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
 		logger.debug("checkAidStatus controller entry");
-		validator.validateEventIdLanguageCode(eventId, languageCode);
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST, eventId));
-		ResponseWrapper<EventStatusResponseDTO> responseWrapper = residentService.getEventStatus(eventId, languageCode, timeZoneOffset);
+		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
+		try {
+			validator.validateEventIdLanguageCode(eventId, languageCode);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST, eventId));
+			responseWrapper = residentService.getEventStatus(eventId, languageCode, timeZoneOffset, locale);
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_FAILED, eventId));
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.EVENTS_EVENTID_ID));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST_SUCCESS, eventId));
+		logger.debug("ResidentController::checkEventIdStatus()::exit");
 		return responseWrapper;
 	}
 
@@ -336,16 +376,27 @@ public class ResidentController {
 			@RequestParam(name = "serviceType", required = false) String serviceType,
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
 			@RequestParam(name = "searchText", required = false) String searchText,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.info("TimeZone-offset: " + timeZoneOffset);
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
-		validator.validateOnlyLanguageCode(langCode);
-		validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
-		validator.validateSearchText(searchText);
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
-		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				pageStart, pageFetch, fromDate, toDate, serviceType, sortType, statusFilter, searchText, langCode, timeZoneOffset, RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
+		try {
+			validator.validateOnlyLanguageCode(langCode);
+			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
+			validator.validateSearchText(searchText);
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
+			responseWrapper = residentService.getServiceHistory(pageStart, pageFetch, fromDate, toDate, serviceType,
+					sortType, statusFilter, searchText, langCode, timeZoneOffset, locale,
+					RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.GET_SERVICE_HISTORY_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, serviceHistoryId));
+			throw e;
+		}
+		audit.setAuditRequestDto(EventEnum.GET_SERVICE_HISTORY_SUCCESS);
 		return responseWrapper;
 	}	
 
@@ -396,25 +447,31 @@ public class ResidentController {
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		ResponseWrapper<Object> response = new ResponseWrapper<>();
+		Tuple2<Object, String> tupleResponse = null;
 		ResidentUpdateRequestDto request = requestWrapper.getRequest();
 		if (request != null) {
 			request.setIndividualId(individualId);
 			request.setIndividualIdType(getIdType(individualId));
 		}
-		validator.validateUpdateRequest(requestWrapper, true);
-		ResponseWrapper<Object> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
-		requestDTO.getRequest().getIdentity().put(IdType.UIN.name(), identityServiceImpl.getUinForIndividualId(individualId));
-		Tuple2<Object, String> tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true);
-		response.setId(requestDTO.getId());
-		response.setVersion(requestDTO.getVersion());
-		response.setResponse(tupleResponse.getT1());
+		try {
+			validator.validateUpdateRequest(requestWrapper, true);
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
+			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
+					identityServiceImpl.getUinForIndividualId(individualId));
+			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true);
+			response.setId(requestDTO.getId());
+			response.setVersion(requestDTO.getVersion());
+			response.setResponse(tupleResponse.getT1());
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.UPDATE_UIN_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.UPDATE_UIN_ID));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
-		return ResponseEntity.ok()
-				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
-				.body(response);
+		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(response);
 	}
 
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
@@ -449,7 +506,8 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> downloadCard(
 			@PathVariable("eventId") String eventId,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException {
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
 		InputStreamResource resource = null;
@@ -472,7 +530,7 @@ public class ResidentController {
 							downloadCardEventidId));
 			}
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, timeZoneOffset) + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, timeZoneOffset, locale) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
 	}
@@ -504,11 +562,12 @@ public class ResidentController {
 		logger.debug("ResidentController::getAidStatus()::entry");
 		AidStatusResponseDTO resp = new AidStatusResponseDTO();
 		try {
-		validator.validateAidStatusRequestDto(reqDto);
-		audit.setAuditRequestDto(EventEnum.AID_STATUS);
-		resp = residentService.getAidStatus(reqDto.getRequest());
-		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e ) {
-			throw new ResidentServiceException( e.getErrorCode(),  e.getErrorText(), e,
+			validator.validateAidStatusRequestDto(reqDto);
+			audit.setAuditRequestDto(EventEnum.AID_STATUS);
+			resp = residentService.getAidStatus(reqDto.getRequest(), true);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e) {
+			audit.setAuditRequestDto(EventEnum.AID_STATUS_FAILURE);
+			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
 		}
 		audit.setAuditRequestDto(EventEnum.AID_STATUS_SUCCESS);
@@ -532,12 +591,18 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<UnreadNotificationDto> notificationCount()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<UnreadNotificationDto> count = new ResponseWrapper<>();
 		logger.debug("ResidentController::getunreadnotificationCount()::entry");
 		String individualId = identityServiceImpl.getResidentIdaToken();
-
-		ResponseWrapper<UnreadNotificationDto> count = residentService.getnotificationCount(individualId);
+		try {
+			count = residentService.getnotificationCount(individualId);
+		} catch (ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.UNREAD_NOTIF_COUNT_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, serviceEventId));
+			throw e;
+		}
+		audit.setAuditRequestDto(EventEnum.UNREAD_NOTIF_COUNT_SUCCESS);
 		logger.debug("ResidentController::getunreadnotificationCount()::exit");
-
 		return count;
 	}
 
@@ -554,8 +619,17 @@ public class ResidentController {
 	public ResponseWrapper<BellNotificationDto> bellClickdttimes()
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getnotificationclickdttimes()::entry");
-		String idaToken = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<BellNotificationDto> response = residentService.getbellClickdttimes(idaToken);
+		String idaToken = null;
+		ResponseWrapper<BellNotificationDto> response = new ResponseWrapper<>();
+		try {
+			idaToken = identityServiceImpl.getResidentIdaToken();
+			response = residentService.getbellClickdttimes(idaToken);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.GET_NOTIF_CLICK_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.NOTIFICATION_CLICK_ID));
+			throw e;
+		}
+		audit.setAuditRequestDto(EventEnum.GET_NOTIF_CLICK_SUCCESS);
 		logger.debug("ResidentController::getnotificationclickdttimes::exit");
 		return response;
 	}
@@ -587,13 +661,23 @@ public class ResidentController {
 	public ResponseWrapper<?> getNotificationsList(@PathVariable("langCode") String langCode,
 			@RequestParam(name = "pageStart", required = false) Integer pageStart,
 			@RequestParam(name = "pageFetch", required = false) Integer pageFetch,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getunreadServiceList()::entry");
-		validator.validateOnlyLanguageCode(langCode);
-		String id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = residentService
-				.getNotificationList(pageStart, pageFetch, id, langCode, timeZoneOffset);
+		String id = null;
+		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = new ResponseWrapper<>();
+		try {
+			validator.validateOnlyLanguageCode(langCode);
+			id = identityServiceImpl.getResidentIdaToken();
+			notificationDtoList = residentService.getNotificationList(pageStart, pageFetch, id, langCode,
+					timeZoneOffset, locale);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.NOTIFICATION_ID));
+			throw e;
+		}
+		audit.setAuditRequestDto(EventEnum.GET_NOTIFICATION_SUCCESS);
 		logger.debug("ResidentController::getunreadServiceList()::exit");
 		return notificationDtoList;
 	}
@@ -608,24 +692,35 @@ public class ResidentController {
 			@RequestParam(name = "statusFilter", required = false) String statusFilter,
 			@RequestParam(name = "searchText", required = false) String searchText,
 			@RequestParam(name = "languageCode", required = true) String languageCode,
-			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::serviceHistory::pdf");
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
-		validator.validateOnlyLanguageCode(languageCode);
-		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
-				null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter, searchText, languageCode, timeZoneOffset);
-		logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
-		byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
-				fromDate, toDate, serviceType, statusFilter, timeZoneOffset);
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		InputStreamResource resource = null;
+		try {
+			validator.validateOnlyLanguageCode(languageCode);
+			ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
+					null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter,
+					searchText, languageCode, timeZoneOffset, locale);
+			logger.debug("after response wrapper size of   " + responseWrapper.getResponse().getData().size());
+			byte[] pdfBytes = residentService.downLoadServiceHistory(responseWrapper, languageCode, eventReqDateTime,
+					fromDate, toDate, serviceType, statusFilter, timeZoneOffset, locale);
+			resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException | InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.SERVICE_HISTORY_ID));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.DOWNLOAD_SERVICE_HISTORY_SUCCESS);
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" + utility.getFileName(null,
-						Objects.requireNonNull(this.environment.getProperty(
-								ResidentConstants.DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY)), timeZoneOffset) + ".pdf\"")
+				.header("Content-Disposition",
+						"attachment; filename=\"" + utility.getFileName(null,
+								Objects.requireNonNull(this.environment.getProperty(
+										ResidentConstants.DOWNLOAD_SERVICE_HISTORY_FILE_NAME_CONVENTION_PROPERTY)),
+								timeZoneOffset, locale) + ".pdf\"")
 				.body(resource);
 	}
 	
@@ -638,11 +733,21 @@ public class ResidentController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 
-	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset)
+	public ResponseWrapper<UserInfoDto> userinfo(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::getuserinfo()::entry");
-		String Id = identityServiceImpl.getResidentIdaToken();
-		ResponseWrapper<UserInfoDto> userInfoDto = residentService.getUserinfo(Id, timeZoneOffset);
+		String Id = null;
+		ResponseWrapper<UserInfoDto> userInfoDto = new ResponseWrapper<>();
+		try {
+			Id = identityServiceImpl.getResidentIdaToken();
+			userInfoDto = residentService.getUserinfo(Id, timeZoneOffset, locale);
+		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.GET_PROFILE_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.PROFILE_ID));
+			throw e;
+		}
+		audit.setAuditRequestDto(EventEnum.GET_PROFILE_SUCCESS);
 		logger.debug("ResidentController::getuserinfo()::exit");
 		return userInfoDto;
 	}

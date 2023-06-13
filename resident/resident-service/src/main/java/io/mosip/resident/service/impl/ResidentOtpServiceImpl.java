@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
@@ -90,17 +90,17 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SEND_OTP.name());
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SEND_OTP);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setAuthTypeCode(attributeList);
 		residentTransactionEntity.setRequestSummary("OTP Generated");
-		residentTransactionEntity.setStatusCode("OTP_REQUESTED");
+		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
 		residentTransactionEntity.setLangCode("eng");
-		residentTransactionEntity.setRefIdType("UIN");
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(otpRequestDTO.getIndividualId()));
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
 			residentTransactionEntity.setRefId(utility.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
 		} else{
@@ -108,7 +108,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		}
 		residentTransactionEntity.setIndividualId(otpRequestDTO.getIndividualId());
 		residentTransactionEntity.setTokenId(identityServiceImpl.getIDATokenForIndividualId(otpRequestDTO.getIndividualId()));
-		residentTransactionEntity.setPurpose(String.join(ResidentConstants.COMMA, otpRequestDTO.getOtpChannel()));
+		residentTransactionEntity.setPurpose(attributeList);
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 

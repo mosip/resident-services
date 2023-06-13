@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,12 +44,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
@@ -66,6 +70,8 @@ import io.mosip.resident.util.Utility;
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({ JsonUtil.class })
 public class UtilityTest {
+	private static final String LOCALE = "en-US";
+
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
@@ -97,6 +103,10 @@ public class UtilityTest {
 	
 	@Mock
 	private ObjectMapper objectMapper;
+	
+	private ObjectMapper mapper = new ObjectMapper();
+
+	private String replaceSplChars = "{\" \": \"_\", \",\" : \"\", \":\" : \".\"}";
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -114,8 +124,10 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
 		ReflectionTestUtils.setField(utility, "amrAcrJsonFile", "amr-acr-mapping.json");
-        when(env.getProperty("resident.ui.datetime.pattern")).thenReturn("yyyy-MM-dd");
-        when(env.getProperty("resident.filename.datetime.pattern")).thenReturn("yyyy-MM-dd");
+		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.MEDIUM.name());
+		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", mapper.readValue(replaceSplChars, Map.class));
+        when(env.getProperty("resident.ui.datetime.pattern.default")).thenReturn("yyyy-MM-dd");
+        when(env.getProperty("resident.filename.datetime.pattern.default")).thenReturn("yyyy-MM-dd hh:mm:ss a");
 		request = Mockito.mock(HttpServletRequest.class);
 	}
 
@@ -372,14 +384,14 @@ public class UtilityTest {
 
 	@Test
 	public void testGetFileNameAsPerFeatureNameShareCredWithPartner(){
-		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER", 0));
-		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID", 0));
-		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID", 0));
-		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD", 0));
-		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD", 0));
-		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN", 0));
-		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
-		assertEquals("Generic", utility.getFileName("123", "Generic", 0));
+		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER", 0, LOCALE));
+		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID", 0, LOCALE));
+		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID", 0, LOCALE));
+		assertEquals("ORDER_PHYSICAL_CARD", utility.getFileName("123", "ORDER_PHYSICAL_CARD", 0, LOCALE));
+		assertEquals("DOWNLOAD_PERSONALIZED_CARD", utility.getFileName("123", "DOWNLOAD_PERSONALIZED_CARD", 0, LOCALE));
+		assertEquals("UPDATE_MY_UIN", utility.getFileName("123", "UPDATE_MY_UIN", 0, LOCALE));
+		assertEquals("AUTH_TYPE_LOCK_UNLOCK", utility.getFileName("123", "AUTH_TYPE_LOCK_UNLOCK", 0, LOCALE));
+		assertEquals("Generic", utility.getFileName("123", "Generic", 0, LOCALE));
 	}
 
 	@Test
@@ -388,7 +400,7 @@ public class UtilityTest {
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0));
+		assertNotNull(utility.getFileName("123", "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0, LOCALE));
 	}
 
 	@Test
@@ -397,7 +409,7 @@ public class UtilityTest {
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
 				.thenReturn("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0));
+		assertNotNull(utility.getFileName(null, "Ack_Manage_my_VID_{eventId}_{timestamp}.pdf", 0, LOCALE));
 	}
 
 	@Test
@@ -485,21 +497,21 @@ public class UtilityTest {
 
 	@Test
 	public void testCreateEntity(){
-		assertEquals("Unknown",utility.createEntity("SHARE_CRED_WITH_PARTNER").getCrBy());
+		assertEquals("Unknown",utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER).getCrBy());
 	}
 
 	@Test
 	public void testGetFileNameAsPerFeatureName(){
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0, LOCALE));
 	}
 
 	@Test
@@ -524,4 +536,49 @@ public class UtilityTest {
 		String ipAddress = utility.getClientIp(request);
 		assertEquals("1.5.5", ipAddress);
 	}
+	
+	@Test
+	public void test_formatWithOffsetForFileName_en_US() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, "en-US", localDateTime);
+		assertEquals("Aug_14_1993_4.54.00_PM", formatWithOffsetForFileName);
+	}
+	
+	@Test
+	public void test_formatWithOffsetForFileName_en_IN() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(-330, "en-IN", localDateTime);
+		assertEquals("14-Aug-1993_10.24.00_PM", formatWithOffsetForFileName);
+	}
+	
+	@Test
+	public void test_formatWithOffsetForFileName_null_locale() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, null, localDateTime);
+		assertEquals("1993-08-14_04.54.00_PM", formatWithOffsetForFileName);
+	}
+	
+
+	
+	@Test
+	public void test_formatWithOffsetForUI_en_US() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
+		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
+	}
+	
+	@Test
+	public void test_formatWithOffsetForUI_en_IN() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(-330, "en-IN", localDateTime);
+		assertEquals("14-Aug-1993, 10:24:00 PM", formatWithOffsetForFileName);
+	}
+	
+	@Test
+	public void test_formatWithOffsetForUI_null_locale() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, null, localDateTime);
+		assertEquals("1993-08-14", formatWithOffsetForFileName);
+	}
+	
 }

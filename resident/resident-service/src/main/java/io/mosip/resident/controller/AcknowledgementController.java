@@ -65,7 +65,8 @@ public class AcknowledgementController {
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
                                                   @PathVariable("languageCode") String languageCode,
-                                                  @RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
+                                                  @RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+                                                  @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementController::acknowledgement()::entry");
         InputStreamResource resource = null;
         String featureName = null;
@@ -78,11 +79,11 @@ public class AcknowledgementController {
 		}
         try {
             auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
-	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset);
+	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
 	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
 	        logger.debug("AcknowledgementController::acknowledgement()::exit");
-	        featureName = templateUtil.getFeatureName(eventId);
+	        featureName = templateUtil.getFeatureName(eventId, locale);
         } catch(ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -93,7 +94,7 @@ public class AcknowledgementController {
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        utility.getFileNameAsPerFeatureName(eventId, featureName, timeZoneOffset) + ".pdf\"")
+                        utility.getFileNameAsPerFeatureName(eventId, featureName, timeZoneOffset, locale) + ".pdf\"")
                 .body(resource);
     }
 }

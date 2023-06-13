@@ -141,6 +141,13 @@ public class ResidentConstants {
     public static final String PINNED_EVENTID_ID = "resident.pinned.eventid.id";
     public static final String UNPINNED_EVENTID_ID = "resident.unpinned.eventid.id";
     public static final String AUTH_PROXY_PARTNERS_ID = "resident.auth.proxy.partners.id";
+    public static final String AUTH_HISTORY_ID = "resident.authhistory.id";
+    public static final String EVENTS_EVENTID_ID = "resident.events.eventid.id";
+    public static final String UPDATE_UIN_ID = "resident.updateuin.id";
+	public static final String NOTIFICATION_CLICK_ID = "resident.notification.click.id";
+	public static final String NOTIFICATION_ID = "resident.notification.id";
+	public static final String SERVICE_HISTORY_ID = "resident.service.history.id";
+	public static final String PROFILE_ID = "resident.profile.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
     public static final String UNKNOWN = "Unknown";
@@ -193,8 +200,8 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
-    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
-    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
+    public static final String UI_DATE_TIME_PATTERN_DEFAULT = "resident.ui.datetime.pattern.default";
+    public static final String FILENAME_DATETIME_PATTERN_DEFAULT = "resident.filename.datetime.pattern.default";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
