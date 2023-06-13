@@ -365,7 +365,11 @@ public class Utility {
 			}
 		}
 		if(preferredLang!=null){
-			return Set.of(getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, preferredLang));
+			String preferredLanguage=getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, preferredLang);
+			if(preferredLanguage==null || preferredLanguage.isEmpty()){
+				return Set.of();
+			}
+			return Set.of(preferredLanguage);
 		}
 		return Set.of();
 	}
