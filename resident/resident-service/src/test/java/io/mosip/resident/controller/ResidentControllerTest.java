@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -612,7 +613,14 @@ public class ResidentControllerTest {
 		this.mockMvc.perform(get("/events/86c2ad43-e2a4-4952-bafc-d97ad1e5e453/?langCode=eng"))
 				.andExpect(status().isOk());
 	}
-	
+
+	@Test(expected = Exception.class)
+	@WithUserDetails("reg-admin")
+	public void testCheckEventIdStatusWithException() throws Exception {
+		when(residentService.getEventStatus(anyString(), anyString(), anyInt(), anyString())).thenThrow(new ResidentServiceCheckedException());
+		residentController.checkEventIdStatus("17", "eng", 0, LOCALE_EN_US);
+	}
+
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testGetUserInfo() throws Exception {
@@ -626,6 +634,13 @@ public class ResidentControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	@WithUserDetails("reg-admin")
+	public void testGetUserInfoWithException() throws Exception {
+		Mockito.when(residentService.getUserinfo(Mockito.any(), Mockito.anyInt(), Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		residentController.userinfo(0, LOCALE_EN_US);
+	}
+
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testBellClickdttimes() throws Exception {
@@ -634,6 +649,13 @@ public class ResidentControllerTest {
 		ResponseWrapper<BellNotificationDto> response = new ResponseWrapper<>();
 		response.setResponse(dto);
 		Mockito.when(residentService.getbellClickdttimes(Mockito.anyString())).thenReturn(response);
+		residentController.bellClickdttimes();
+	}
+
+	@Test(expected = Exception.class)
+	@WithUserDetails("reg-admin")
+	public void testBellClickdttimesWithException() throws Exception {
+		when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
 		residentController.bellClickdttimes();
 	}
 
@@ -668,6 +690,13 @@ public class ResidentControllerTest {
 		residentController.getNotificationsList("eng", 0, 10, 0, LOCALE_EN_US);
 	}
 
+	@Test(expected = Exception.class)
+	@WithUserDetails("reg-admin")
+	public void testGetNotificationsListWithException() throws Exception {
+		when(identityServiceImpl.getResidentIdaToken()).thenThrow(new ApisResourceAccessException());
+		residentController.getNotificationsList("eng", 0, 10, 0, LOCALE_EN_US);
+	}
+
 	@Test
 	@WithUserDetails("reg-admin")
 	public void testDownLoadServiceHistory() throws Exception {
@@ -690,6 +719,17 @@ public class ResidentControllerTest {
 				residentService.downLoadServiceHistory(Mockito.any(), Mockito.anyString(), Mockito.any(), Mockito.any(),
 						Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(bytes);
+		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
+				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
+	}
+
+	@Test(expected = Exception.class)
+	@WithUserDetails("reg-admin")
+	public void testDownLoadServiceHistoryWithException() throws Exception {
+		ReflectionTestUtils.setField(residentController, "maxEventsServiceHistoryPageSize", 10);
+		Mockito.when(residentService.getServiceHistory(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(),
+				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(),
+				Mockito.any())).thenThrow(new ApisResourceAccessException());
 		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
 				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
 	}
