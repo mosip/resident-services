@@ -168,21 +168,19 @@ public class ResidentOtpControllerTest {
 		individualIdOtpRequestDTO.setIndividualId("123456789");
 		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
 		individualIdResponseDto.setTransactionId("12345678");
-		Mockito.when(residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO)).thenThrow(new ResidentServiceCheckedException());
+		Mockito.when(residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO)).thenThrow(new ResidentServiceCheckedException("res-ser", "error thrown"));
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(individualIdOtpRequestDTO);
 		this.mockMvc.perform(
 						MockMvcRequestBuilders.post("/individualId/otp").contentType(MediaType.APPLICATION_JSON).content(json))
 				.andExpect(status().isOk());
 	}
+
 	@Test(expected = Exception.class)
 	public void reqOtpForAidTestInvalidInputException() throws Exception {
 		doThrow(new InvalidInputException()).when(validator).validateReqOtp(any());
 		IndividualIdOtpRequestDTO individualIdOtpRequestDTO = new IndividualIdOtpRequestDTO();
 		individualIdOtpRequestDTO.setIndividualId("123456789");
-		IndividualIdResponseDto individualIdResponseDto = new IndividualIdResponseDto();
-		individualIdResponseDto.setTransactionId("12345678");
-		Mockito.when(residentOtpService.generateOtpForIndividualId(individualIdOtpRequestDTO)).thenReturn(individualIdResponseDto);
 		Gson gson = new GsonBuilder().serializeNulls().create();
 		String json = gson.toJson(individualIdOtpRequestDTO);
 		this.mockMvc.perform(

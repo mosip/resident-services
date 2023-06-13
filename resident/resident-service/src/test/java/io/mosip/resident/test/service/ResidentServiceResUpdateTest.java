@@ -1,53 +1,18 @@
 package io.mosip.resident.test.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
-import org.apache.commons.io.IOUtils;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.FileNotFoundException;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectIOException;
+import io.mosip.kernel.core.idobjectvalidator.exception.IdObjectValidationFailedException;
+import io.mosip.kernel.core.idobjectvalidator.exception.InvalidIdSchemaException;
 import io.mosip.kernel.core.idobjectvalidator.spi.IdObjectValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
 import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.MachineCreateResponseDTO;
 import io.mosip.resident.dto.MachineDto;
@@ -74,12 +39,49 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import reactor.util.function.Tuple2;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class ResidentServiceResUpdateTest {
@@ -493,4 +495,115 @@ public class ResidentServiceResUpdateTest {
 					((ValidationFailedException) e.getCause()).getErrorCode());
 		}
 	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetMachineIdMachineServiceException() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
+
+		List<MachineDto> machineDtos = new ArrayList<>();
+		MachineDto machineDto = new MachineDto();
+		machineDto.setMachineSpecId("1001");
+		machineDto.setIsActive(false);
+		machineDto.setId("10147");
+		machineDto.setName("resident_machine_1640777004542");
+		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		machineDto.setSignPublicKey("");
+		machineDtos.add(machineDto);
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder()
+				.fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
+		machineSearchResponseDTO.setId("null");
+		machineSearchResponseDTO.setVersion("1.0");
+		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
+		machineSearchResponseDTO.setResponse(response);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+
+		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
+		MachineDto newMachineDTO = new MachineDto();
+		newMachineDTO.setMachineSpecId("1001");
+		newMachineDTO.setIsActive(false);
+		newMachineDTO.setId("10147");
+		newMachineDTO.setName("resident_machine_1640777004542");
+		newMachineDTO.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		newMachineDTO.setPublicKey(publicKey);
+		newMachineDTO.setSignPublicKey(publicKey);
+		machineCreateResponseDTO.setResponse(newMachineDTO);
+		MachineErrorDTO machineErrorDTO = new MachineErrorDTO();
+		machineErrorDTO.setErrorCode(ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION.getErrorCode());
+		machineErrorDTO.setMessage(ResidentErrorCode.MACHINE_MASTER_CREATE_EXCEPTION.getErrorMessage());
+		machineCreateResponseDTO.setErrors(List.of(machineErrorDTO));
+		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
+		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void reqUinUpdateGetMachineIdEmptyResponseException() throws BaseCheckedException, IOException {
+		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
+
+		List<MachineDto> machineDtos = new ArrayList<>();
+		MachineDto machineDto = new MachineDto();
+		machineDto.setMachineSpecId("1001");
+		machineDto.setIsActive(false);
+		machineDto.setId("10147");
+		machineDto.setName("resident_machine_1640777004542");
+		machineDto.setValidityDateTime("2024-12-29T11:23:24.541Z");
+		machineDto.setSignPublicKey("");
+		machineDtos.add(machineDto);
+		MachineSearchResponseDTO.MachineSearchDto response = MachineSearchResponseDTO.MachineSearchDto.builder()
+				.fromRecord(0).toRecord(0).toRecord(0).data(machineDtos).build();
+		MachineSearchResponseDTO machineSearchResponseDTO = new MachineSearchResponseDTO();
+		machineSearchResponseDTO.setId("null");
+		machineSearchResponseDTO.setVersion("1.0");
+		machineSearchResponseDTO.setResponsetime("2022-01-28T06:25:23.958Z");
+		machineSearchResponseDTO.setResponse(response);
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINESEARCH"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
+
+		MachineCreateResponseDTO machineCreateResponseDTO = new MachineCreateResponseDTO();
+		machineCreateResponseDTO.setResponse(null);
+		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
+		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
+				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
+		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
+	}
+
+	@Test
+	public void testReqUinUpdate() throws ResidentServiceCheckedException {
+		Map identityMap = new LinkedHashMap();
+		identityMap.put("IDSchemaVersion", "0.1");
+		identityMap.put("UIN", "3527812406");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("identity", identityMap);
+		jsonObject.put("UIN", "3527812406");
+		residentServiceImpl.reqUinUpdate(dto, jsonObject, true);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testReqUinUpdateFailed() throws ResidentServiceCheckedException, IdObjectIOException, InvalidIdSchemaException, IdObjectValidationFailedException {
+		Map identityMap = new LinkedHashMap();
+		identityMap.put("IDSchemaVersion", "0.1");
+		identityMap.put("UIN", "3527812406");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("identity", identityMap);
+		jsonObject.put("UIN", "3527812406");
+		Mockito.when(idObjectValidator.validateIdObject(any(), any())).thenThrow(new IdObjectValidationFailedException(
+				ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentConstants.INVALID_INPUT_PARAMETER));
+		residentServiceImpl.reqUinUpdate(dto, jsonObject, true);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testReqUinUpdateBadIdentityJson() throws ResidentServiceCheckedException {
+		dto.setIdentityJson("abc");
+		residentServiceImpl.reqUinUpdate(dto);
+	}
+
 }
