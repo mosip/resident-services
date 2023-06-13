@@ -97,9 +97,11 @@ public class ResidentVidController {
 			response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 			response.setResponse(residentVidService.getVidPolicy());
 		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_SUCCESS);
 			response.setErrors(List.of(new ServiceError(ResidentErrorCode.POLICY_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.POLICY_EXCEPTION.getErrorMessage())));
 		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_FAILURE);
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -269,8 +271,15 @@ public class ResidentVidController {
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
 		logger.debug("ResidentVidController::retrieveVids()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS);
+		ResponseWrapper<List<Map<String, ?>>> retrieveVids = new ResponseWrapper<>();
 		String residentIndividualId = getResidentIndividualId();
-		ResponseWrapper<List<Map<String, ?>>> retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset, locale);
+		try {
+			retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset, locale);
+		} catch (ResidentServiceException | ApisResourceAccessException | ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_VIDS_EXCEPTION);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.GET_VIDS_ID));
+			throw e;
+		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS_SUCCESS);
 		logger.debug("ResidentVidController::retrieveVids()::exit");
 		return retrieveVids;
