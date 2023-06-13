@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,10 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.AuthTransactionCallbackController;
-import io.mosip.resident.controller.DocumentController;
-import io.mosip.resident.controller.IdAuthController;
-import io.mosip.resident.controller.ProxyAuditController;
 import io.mosip.resident.dto.AuthenticatedAuditRequestDto;
 import io.mosip.resident.dto.UnauthenticatedAuditRequestDto;
 import io.mosip.resident.helper.ObjectStoreHelper;

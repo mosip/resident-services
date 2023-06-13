@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +38,6 @@ import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
-import io.mosip.resident.controller.ProxyOtpController;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;

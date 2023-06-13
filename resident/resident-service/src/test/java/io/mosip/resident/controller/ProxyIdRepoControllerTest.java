@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static io.mosip.resident.constant.ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION;
 import static org.junit.Assert.assertEquals;
@@ -24,7 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 import io.mosip.idrepository.core.util.EnvUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.ProxyIdRepoController;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;

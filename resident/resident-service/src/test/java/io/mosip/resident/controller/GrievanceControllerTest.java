@@ -1,11 +1,10 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.controller.GrievanceController;
 import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.InvalidInputException;

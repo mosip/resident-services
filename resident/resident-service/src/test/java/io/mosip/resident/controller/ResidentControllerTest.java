@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -66,7 +66,6 @@ import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.controller.ResidentController;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;

@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,8 +27,6 @@ import org.springframework.web.client.RestTemplate;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.AcknowledgementController;
-import io.mosip.resident.controller.ProxyMasterdataController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;

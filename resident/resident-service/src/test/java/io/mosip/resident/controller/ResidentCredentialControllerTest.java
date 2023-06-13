@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +33,6 @@ import com.google.gson.GsonBuilder;
 
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.ResidentCredentialController;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;

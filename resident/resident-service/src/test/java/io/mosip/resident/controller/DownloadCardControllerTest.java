@@ -1,9 +1,8 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.resident.controller.DownloadCardController;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;

@@ -1,8 +1,7 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.controller.AcknowledgementController;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;

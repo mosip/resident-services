@@ -1,8 +1,7 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.mosip.resident.controller.ResidentOtpController;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
 import io.mosip.resident.dto.OtpRequestDTO;

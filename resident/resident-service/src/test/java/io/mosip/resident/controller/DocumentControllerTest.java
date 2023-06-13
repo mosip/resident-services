@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 import static org.junit.Assert.assertEquals;
@@ -21,7 +21,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
