@@ -74,6 +74,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -130,6 +131,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegments, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -157,6 +159,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ApiName.IMMEDIATE_CHILDREN_BY_LOCATIONCODE_AND_LANGCODE_URL, pathsegments, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -184,6 +187,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegments, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -213,6 +217,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegements, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -281,6 +286,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -325,6 +331,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -352,6 +359,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -388,6 +396,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.LATEST_ID_SCHEMA_URL,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -415,6 +424,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			response = residentServiceRestClient.getApi(ApiName.TEMPLATES_BY_LANGCODE_AND_TEMPLATETYPECODE_URL,
 					pathsegments, ResponseWrapper.class);
 			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
 				logger.debug(response.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.TEMPLATE_EXCEPTION);
 			}
@@ -434,6 +444,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (IOException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -455,6 +466,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
 					queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
@@ -479,6 +491,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		try {
 			responseWrapper=residentServiceRestClient.getApi(ApiName.DOCUMENT_TYPE_BY_DOCUMENT_CATEGORY_AND_LANG_CODE, pathsegments, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
