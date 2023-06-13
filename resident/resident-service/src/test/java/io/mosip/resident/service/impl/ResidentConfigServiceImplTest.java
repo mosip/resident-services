@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.util.AuditUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -52,6 +53,9 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
+	
+	@Mock
+	private AuditUtil auditUtil;
 	
 	Resource resource;
 

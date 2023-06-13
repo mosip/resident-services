@@ -148,6 +148,10 @@ public class ResidentConstants {
 	public static final String NOTIFICATION_ID = "resident.notification.id";
 	public static final String SERVICE_HISTORY_ID = "resident.service.history.id";
 	public static final String PROFILE_ID = "resident.profile.id";
+	public static final String CREDENTIAL_STORE_ID = "mosip.credential.store.id";
+	public static final String GET_VIDS_ID = "resident.vids.id";
+	public static final String TRANSLITERATE_ID = "mosip.resident.transliteration.transliterate.id";
+	public static final String VERIFICATION_STATUS_ID = "resident.channel.verification.status.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
     public static final String UNKNOWN = "Unknown";

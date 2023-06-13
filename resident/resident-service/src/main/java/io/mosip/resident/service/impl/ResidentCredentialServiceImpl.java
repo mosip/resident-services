@@ -525,6 +525,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		try {
 			credentialTypeResponse = residentServiceRestClient.getApi(credentailTypesUri, CredentialTypeResponse.class);
 		} catch (ApisResourceAccessException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_EXCEPTION);
 			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}

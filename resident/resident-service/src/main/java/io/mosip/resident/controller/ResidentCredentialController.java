@@ -41,6 +41,7 @@ import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
@@ -89,9 +90,15 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
-		validator.validateReqCredentialRequest(requestDTO);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
+		try {
+			validator.validateReqCredentialRequest(requestDTO);
+			response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.CREDENTIAL_STORE_ID));
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
@@ -109,26 +116,32 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ShareCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
-		validator.validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
-		validator.validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
-		validator.validatePurpose(requestDTO.getRequest().getPurpose());
-		String purpose = requestDTO.getRequest().getPurpose();
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
-		RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();
-		ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
-		credentialRequestDto.setIssuer(requestDTO.getRequest().getPartnerId());
-		credentialRequestDto.setConsent(requestDTO.getRequest().getConsent());
-		request.setRequest(credentialRequestDto);
-		buildAdditionalMetadata(requestDTO, request);
 		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		Tuple2<ResidentCredentialResponseDtoV2, String> tupleResponse;
-		tupleResponse = residentCredentialService.shareCredential(request.getRequest(), purpose, requestDTO.getRequest().getSharableAttributes());
+		try {
+			validator.validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
+			validator.validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
+			validator.validatePurpose(requestDTO.getRequest().getPurpose());
+			String purpose = requestDTO.getRequest().getPurpose();
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
+			RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();
+			ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
+			credentialRequestDto.setIssuer(requestDTO.getRequest().getPartnerId());
+			credentialRequestDto.setConsent(requestDTO.getRequest().getConsent());
+			request.setRequest(credentialRequestDto);
+			buildAdditionalMetadata(requestDTO, request);
+			tupleResponse = residentCredentialService.shareCredential(request.getRequest(), purpose,
+					requestDTO.getRequest().getSharableAttributes());
+		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, shareCredentialId));
+			throw e;
+		}
 		response.setId(shareCredentialId);
 		response.setVersion(shareCredentialVersion);
 		response.setResponse(tupleResponse.getT1());
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
-		return ResponseEntity.status(HttpStatus.OK)
-				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
+		return ResponseEntity.status(HttpStatus.OK).header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(response);
 	}
 	

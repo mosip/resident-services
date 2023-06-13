@@ -1,5 +1,7 @@
 package io.mosip.resident.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +17,10 @@ import io.mosip.preregistration.application.dto.TransliterationResponseDTO;
 import io.mosip.preregistration.application.service.TransliterationService;
 import io.mosip.preregistration.core.common.dto.MainRequestDTO;
 import io.mosip.preregistration.core.common.dto.MainResponseDTO;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -41,6 +47,9 @@ public class TransliterationController {
 
 	@Autowired
 	private RequestValidator requestValidator;
+	
+	@Autowired
+	private AuditUtil audit;
 
 	/** The Constant for GET UPDATED DATE TIME application. */
 	private static final String TRANS = "resident.transliteration.transliterate";
@@ -60,7 +69,13 @@ public class TransliterationController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<MainResponseDTO<TransliterationResponseDTO>> translitrator(
 			@Validated @RequestBody() MainRequestDTO<TransliterationRequestDTO> requestDTO) {
-		requestValidator.validateId(requestDTO);
+		try {
+			requestValidator.validateId(requestDTO);
+		} catch (InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.TRANSLITERATION_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.TRANSLITERATE_ID));
+			throw e;
+		}
 		return ResponseEntity.status(HttpStatus.OK).body(transliterationService.translitratorService(requestDTO));
 	}
 }
