@@ -41,6 +41,7 @@ import io.mosip.resident.exception.RequestHandlerValidationException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
+import io.mosip.resident.validator.RequestHandlerRequestValidator;
 
 @RunWith(SpringRunner.class)
 public class RequestHandlerRequestValidatorTest {
