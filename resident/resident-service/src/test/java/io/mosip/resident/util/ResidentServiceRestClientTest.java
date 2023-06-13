@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,7 +38,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.dto.AutnTxnResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ResidentServiceRestClientTest {

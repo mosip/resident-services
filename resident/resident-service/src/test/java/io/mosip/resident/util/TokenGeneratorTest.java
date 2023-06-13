@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -25,7 +25,6 @@ import org.springframework.core.env.Environment;
 
 import io.mosip.kernel.core.util.TokenHandlerUtil;
 import io.mosip.resident.exception.TokenGenerationFailedException;
-import io.mosip.resident.util.TokenGenerator;
 
 
 @RunWith(PowerMockRunner.class)

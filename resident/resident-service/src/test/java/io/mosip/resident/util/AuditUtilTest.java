@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,10 +40,6 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.util.AuditResponseDto;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 

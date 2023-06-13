@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,8 +32,6 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.dto.CryptomanagerRequestDto;
-import io.mosip.resident.util.EncryptorUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
  * @author Abubacker Siddik

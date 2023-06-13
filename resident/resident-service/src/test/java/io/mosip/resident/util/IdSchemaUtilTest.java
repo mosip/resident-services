@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static io.mosip.resident.util.IdSchemaUtil.RESPONSE;
 import static io.mosip.resident.util.IdSchemaUtil.SCHEMA_JSON;
@@ -31,8 +31,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.util.IdSchemaUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
  * @author Abubacker Siddik

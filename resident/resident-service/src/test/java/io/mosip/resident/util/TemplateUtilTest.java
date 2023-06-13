@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -38,8 +38,6 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.IdentityServiceTest;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 
 /**

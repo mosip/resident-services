@@ -1,4 +1,4 @@
-package io.mosip.resident.test.util;
+package io.mosip.resident.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -18,7 +18,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.mosip.resident.dto.JsonValue;
-import io.mosip.resident.util.JsonUtil;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
