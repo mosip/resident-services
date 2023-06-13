@@ -1,6 +1,7 @@
 package io.mosip.resident.controller;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,11 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,9 +54,17 @@ public class VerificationController {
 			@RequestParam("individualId") String individualId)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		logger.info("getChannelVerificationStatus method started");
-        validator.validateChannelVerificationStatus(channel, individualId);
-        VerificationResponseDTO verificationResponseDTO = verificationServiceImpl.checkChannelVerificationStatus(channel, individualId);
-        return verificationResponseDTO;
-    }
+		VerificationResponseDTO verificationResponseDTO;
+		try {
+			validator.validateChannelVerificationStatus(channel, individualId);
+			verificationResponseDTO = verificationServiceImpl.checkChannelVerificationStatus(channel, individualId);
+		} catch (ResidentServiceCheckedException | ResidentServiceException | InvalidInputException e) {
+			audit.setAuditRequestDto(EventEnum.VERIFICATION_STATUS_FAILURE);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.VERIFICATION_STATUS_ID));
+			throw e;
+		}
+		audit.setAuditRequestDto(EventEnum.VERIFICATION_STATUS_SUCCESS);
+		return verificationResponseDTO;
+	}
 
 }
