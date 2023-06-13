@@ -34,6 +34,8 @@ import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
 
 /**
@@ -74,6 +76,9 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
 	@Value("${resident.ui.properties.version}")
 	private String residentUiPropertiesVersion;
+	
+	@Autowired
+	private AuditUtil auditUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentConfigServiceImpl.class);
 
@@ -116,6 +121,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		if (residentUiSchemaJsonFileRes.exists()) {
 			uiSchema = Utility.readResourceContent(residentUiSchemaJsonFileRes);
 		} else {
+			auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
 		}
 		return uiSchema;
