@@ -1,4 +1,4 @@
-package io.mosip.resident.test.handler;
+package io.mosip.resident.handler.service;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,8 +40,6 @@ import io.mosip.resident.dto.ResidentIndividialIDType;
 import io.mosip.resident.dto.ResidentUpdateDto;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.SyncAndUploadService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.IdSchemaUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;

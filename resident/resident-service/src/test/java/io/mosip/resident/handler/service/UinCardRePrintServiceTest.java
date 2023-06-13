@@ -1,4 +1,4 @@
-package io.mosip.resident.test.handler;
+package io.mosip.resident.handler.service;
 
 
 import static org.junit.Assert.assertTrue;
@@ -47,8 +47,6 @@ import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidResDTO;
 import io.mosip.resident.dto.VidResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.handler.service.SyncAndUploadService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.IdSchemaUtil;
