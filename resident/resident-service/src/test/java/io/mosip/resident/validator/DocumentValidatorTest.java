@@ -1,4 +1,4 @@
-package io.mosip.resident.test.validator;
+package io.mosip.resident.validator;
 
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
 import static org.junit.Assert.assertEquals;

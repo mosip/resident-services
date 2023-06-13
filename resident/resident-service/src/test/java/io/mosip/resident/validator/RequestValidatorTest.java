@@ -1,4 +1,4 @@
-package io.mosip.resident.test.validator;
+package io.mosip.resident.validator;
 
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
