@@ -1,4 +1,4 @@
-package io.mosip.resident.service.impl;
+package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -40,7 +41,7 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private Environment env;
-	
+
 	@Mock
 	private ResourceLoader resourceLoader;
 
@@ -52,7 +53,7 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
-	
+
 	Resource resource;
 
 	@Before
@@ -137,7 +138,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetUiSchemaFilteredInputAttributes() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributes() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		List<String> result;
 		Map<String, Object> uiSchema = new HashMap<>();
@@ -156,7 +157,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		List<String> result;
 		Map<String, Object> uiSchema = new HashMap<>();

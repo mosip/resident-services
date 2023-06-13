@@ -1,10 +1,8 @@
-package io.mosip.resident.service.impl;
+package io.mosip.resident.constant;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import io.mosip.resident.constant.RequestType;
 
 public enum UISchemaTypes {
 	UPDATE_DEMOGRAPHICS("update-demographics", RequestType.UPDATE_MY_UIN),

@@ -1,4 +1,4 @@
-package io.mosip.resident.service.impl;
+package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +31,9 @@ import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentOtpServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
@@ -69,7 +72,7 @@ public class ResidentOtpServiceImplTest {
 
 	@InjectMocks
 	private ResidentOtpServiceImpl residentOtpServiceImpl;
-	
+
 	@Mock
 	private ObjectMapper objectMapper;
 
@@ -103,7 +106,6 @@ public class ResidentOtpServiceImplTest {
 		otpRequestDTO.setOtpChannel(List.of("EMAIL"));
 		assertNotNull(residentOtpServiceImpl.generateOtp(otpRequestDTO));
 	}
-
 
 	@Test
 	public void generateOtpForIndividualId() throws Exception {

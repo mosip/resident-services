@@ -1,4 +1,4 @@
-package io.mosip.resident.validator;
+package io.mosip.resident.test.validator;
 
 import static io.mosip.resident.constant.ResidentErrorCode.INVALID_INPUT;
 import static org.junit.Assert.assertEquals;
@@ -33,6 +33,8 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.validator.DocumentValidator;
+import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
 
 /**
@@ -42,7 +44,7 @@ import reactor.util.function.Tuples;
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration
 public class DocumentValidatorTest {
-	
+
 	@InjectMocks
 	private DocumentValidator validator;
 
@@ -59,7 +61,7 @@ public class DocumentValidatorTest {
 
 	@Mock
 	private Environment environment;
-	
+
 	@Before
 	public void init() throws Exception {
 		ReflectionTestUtils.setField(validator, "env", env);
@@ -68,14 +70,15 @@ public class DocumentValidatorTest {
 		when(proxyMasterdataService.getValidDocCatAndTypeList(any()))
 				.thenReturn(Tuples.of(List.of("poi", "poa"), Map.of("poi", List.of("cob"), "poa", List.of("coa"))));
 	}
-	
+
 	@Test
 	public void testValidateRequestSuccess() throws ResidentServiceCheckedException {
 		DocumentRequestDTO request = new DocumentRequestDTO();
 		request.setDocCatCode("poi");
 		request.setDocTypCode("cob");
 		request.setLangCode("c");
-		validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+		validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+				request.getLangCode());
 	}
 
 	@Test
@@ -85,20 +88,29 @@ public class DocumentValidatorTest {
 			request.setDocCatCode(null);
 			request.setDocTypCode("poi12");
 			request.setLangCode("eng");
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"), e.getMessage());
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"),
+					e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testBlankDocCatCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("");
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"), e.getMessage());		}
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"),
+					e.getMessage());
+		}
 	}
 
 	@Test
@@ -107,9 +119,13 @@ public class DocumentValidatorTest {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("pop");
 			request.setDocTypCode("cor");
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"), e.getMessage());
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docCatCode"),
+					e.getMessage());
 		}
 	}
 
@@ -119,21 +135,29 @@ public class DocumentValidatorTest {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("a");
 			request.setDocTypCode(null);
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"), e.getMessage());		
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"),
+					e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testBlankDocTypCode() throws ResidentServiceCheckedException {
 		try {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("a");
 			request.setDocTypCode("");
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"), e.getMessage());
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"),
+					e.getMessage());
 		}
 	}
 
@@ -143,9 +167,13 @@ public class DocumentValidatorTest {
 			DocumentRequestDTO request = new DocumentRequestDTO();
 			request.setDocCatCode("poa");
 			request.setDocTypCode("cor");
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"), e.getMessage());
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "docTypCode"),
+					e.getMessage());
 		}
 	}
 
@@ -156,12 +184,16 @@ public class DocumentValidatorTest {
 			request.setDocCatCode("poa");
 			request.setDocTypCode("coa");
 			request.setLangCode(null);
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (InvalidInputException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "langCode"), e.getMessage());
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "langCode"),
+					e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testBlankLangCode() throws ResidentServiceCheckedException {
 		try {
@@ -169,37 +201,41 @@ public class DocumentValidatorTest {
 			request.setDocCatCode("poi");
 			request.setDocTypCode("cob");
 			request.setLangCode(" ");
-			validator.validateRequest("1234567890", request.getDocCatCode(),request.getDocTypCode(),request.getLangCode());
+			validator.validateRequest("1234567890", request.getDocCatCode(), request.getDocTypCode(),
+					request.getLangCode());
 		} catch (ResidentServiceException e) {
-			assertEquals(String.format(INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "langCode"), e.getMessage());
+			assertEquals(
+					String.format(
+							INVALID_INPUT.getErrorCode() + " --> " + INVALID_INPUT.getErrorMessage() + "langCode"),
+					e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void testScanForVirusesSuccess() {
 		env.setProperty(ResidentConstants.VIRUS_SCANNER_ENABLED, "true");
 		when(virusScanner.scanFile(any(InputStream.class))).thenReturn(true);
 		validator.scanForViruses(new MockMultipartFile("name", "a".getBytes()));
 	}
-	
+
 	@Test
 	public void testScanForVirusesDisabledSuccess() {
 		env.setProperty(ResidentConstants.VIRUS_SCANNER_ENABLED, "false");
 		validator.scanForViruses(new MockMultipartFile("name", "a".getBytes()));
 	}
-	
+
 	@Test(expected = ResidentServiceException.class)
 	public void testScanForVirusesFailed() {
 		env.setProperty(ResidentConstants.VIRUS_SCANNER_ENABLED, "true");
 		when(virusScanner.scanFile(any(InputStream.class))).thenThrow(new VirusScannerException());
 		validator.scanForViruses(new MockMultipartFile("name", "a".getBytes()));
 	}
-	
+
 	@Test
 	public void testSupportsSuccess() {
 		assertTrue(validator.supports(RequestWrapper.class));
 	}
-	
+
 	@Test
 	public void testSupportsFailed() {
 		assertFalse(validator.supports(MockMultipartFile.class));
@@ -234,7 +270,7 @@ public class DocumentValidatorTest {
 	}
 
 	@Test
-	public void testValidateDocumentIdAndTransactionIDSuccess(){
+	public void testValidateDocumentIdAndTransactionIDSuccess() {
 		validator.validateDocumentIdAndTransactionId(UUID.randomUUID().toString(), "1232323232");
 	}
 

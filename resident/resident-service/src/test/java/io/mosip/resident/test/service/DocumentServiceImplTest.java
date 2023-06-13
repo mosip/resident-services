@@ -1,4 +1,4 @@
-package io.mosip.resident.service.impl;
+package io.mosip.resident.test.service;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -23,6 +23,7 @@ import io.mosip.commons.khazana.dto.ObjectDto;
 import io.mosip.resident.dto.DocumentRequestDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.impl.DocumentServiceImpl;
 
 /**
  * 
@@ -69,7 +70,7 @@ public class DocumentServiceImplTest {
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testFetchAllDocumentsMetadataFailure() throws Exception{
+	public void testFetchAllDocumentsMetadataFailure() throws Exception {
 		Map<String, Object> metaData = getMetaData();
 		Mockito.when(objectStoreHelper.getAllObjects("transactionId")).thenReturn(null);
 		assertNotNull(documentServiceImpl.fetchAllDocumentsMetadata("transactionId"));

@@ -1,4 +1,4 @@
-package io.mosip.resident.controller;
+package io.mosip.resident.test.controller;
 
 import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
 import static org.junit.Assert.assertEquals;
@@ -10,8 +10,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,10 +21,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.controller.DocumentController;
 import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.DocumentValidator;
@@ -38,7 +39,7 @@ import io.mosip.resident.validator.DocumentValidator;
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration
 public class DocumentControllerTest {
-	
+
 	private static final String REQUEST_JSON = "eyJpZCI6InN0cmluZyIsInZlcnNpb24iOiJzdHJpbmciLCJyZXF1ZXN0dGltZSI6IjIwMjItMDUtMDhUMDk6NTI6MTguMTUxWiIsInJlcXVlc3QiOnsiZG9jQ2F0Q29kZSI6InBvaSIsImRvY1R5cENvZGUiOiJkb2MwMDYiLCJsYW5nQ29kZSI6ImVuZyJ9fQ";
 
 	@InjectMocks
@@ -49,69 +50,83 @@ public class DocumentControllerTest {
 
 	@Mock
 	private DocumentService service;
-	
+
 	@Mock
 	private AuditUtil audit;
-	
+
 	@Test
 	public void testUploadDocumentsSuccess() throws ResidentServiceCheckedException, IOException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
-		when(service.uploadDocument(any(), any(), any())).thenReturn(response );
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
+		when(service.uploadDocument(any(), any(), any())).thenReturn(response);
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("",
+				new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
 		assertEquals(response, uploadDocuments.getResponse());
 	}
-	
+
 	@Test
-	public void testUploadDocumentsFailedResidentServiceCheckedException() throws ResidentServiceCheckedException, IOException {
+	public void testUploadDocumentsFailedResidentServiceCheckedException()
+			throws ResidentServiceCheckedException, IOException {
 		when(service.uploadDocument(any(), any(), any())).thenThrow(new ResidentServiceCheckedException("", ""));
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("",
+				new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
 		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), "");
 		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), "");
 	}
 
 	@Test
 	public void testUploadDocumentsFailedResidentServiceException() throws IOException {
-		doThrow(new ResidentServiceException(VIRUS_SCAN_FAILED.getErrorCode(),
-				VIRUS_SCAN_FAILED.getErrorMessage())).when(validator).scanForViruses(any());
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
-		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), uploadDocuments.getErrors().get(0).getErrorCode());
+		doThrow(new ResidentServiceException(VIRUS_SCAN_FAILED.getErrorCode(), VIRUS_SCAN_FAILED.getErrorMessage()))
+				.when(validator).scanForViruses(any());
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("",
+				new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
+		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(),
+				uploadDocuments.getErrors().get(0).getErrorCode());
 		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), uploadDocuments.getErrors().get(0).getMessage());
 	}
 
 	@Test
 	public void testUploadDocumentsFailedInvalidInputException() throws IOException, ResidentServiceCheckedException {
-		doThrow(new InvalidInputException()).when(validator).validateRequest(anyString(), anyString(), anyString(), anyString());
-		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("", new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
-		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(), uploadDocuments.getErrors().get(0).getErrorCode());
+		doThrow(new InvalidInputException()).when(validator).validateRequest(anyString(), anyString(), anyString(),
+				anyString());
+		ResponseWrapper<DocumentResponseDTO> uploadDocuments = controller.uploadDocuments("",
+				new MockMultipartFile("name", "abc".getBytes()), "poi", "proof", "eng", "abc123");
+		assertEquals(uploadDocuments.getErrors().get(0).getErrorCode(),
+				uploadDocuments.getErrors().get(0).getErrorCode());
 		assertEquals(uploadDocuments.getErrors().get(0).getMessage(), uploadDocuments.getErrors().get(0).getMessage());
 	}
-		
+
 	@Test
 	public void testGetDocumentsByTransactionIdSuccess() throws ResidentServiceCheckedException {
 		DocumentResponseDTO response = new DocumentResponseDTO();
 		ReflectionTestUtils.setField(controller, "residentDocumentListId", "mosip.resident.document.list");
 		ReflectionTestUtils.setField(controller, "residentDocumentListVersion", "v1");
 		when(service.fetchAllDocumentsMetadata(any())).thenReturn(List.of(response));
-		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
+		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller
+				.getDocumentsByTransactionId("");
 		assertEquals(List.of(response), documentsByTransactionId.getResponse());
 		assertEquals("mosip.resident.document.list", documentsByTransactionId.getId());
 		assertEquals("v1", documentsByTransactionId.getVersion());
 	}
-	
+
 	@Test
 	public void testGetDocumentsByTransactionIdFailed() throws ResidentServiceCheckedException {
 		when(service.fetchAllDocumentsMetadata(any())).thenThrow(new ResidentServiceCheckedException("", ""));
-		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
+		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller
+				.getDocumentsByTransactionId("");
 		assertEquals(documentsByTransactionId.getErrors().get(0).getErrorCode(), "");
 		assertEquals(documentsByTransactionId.getErrors().get(0).getMessage(), "");
 	}
 
 	@Test
-	public void testGetDocumentsByTransactionIdFailedInvalidInputException() throws IOException, ResidentServiceCheckedException {
+	public void testGetDocumentsByTransactionIdFailedInvalidInputException()
+			throws IOException, ResidentServiceCheckedException {
 		doThrow(new InvalidInputException()).when(validator).validateTransactionIdForDocument(anyString());
-		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller.getDocumentsByTransactionId("");
-		assertEquals(documentsByTransactionId.getErrors().get(0).getErrorCode(), documentsByTransactionId.getErrors().get(0).getErrorCode());
-		assertEquals(documentsByTransactionId.getErrors().get(0).getMessage(), documentsByTransactionId.getErrors().get(0).getMessage());
+		ResponseWrapper<List<DocumentResponseDTO>> documentsByTransactionId = controller
+				.getDocumentsByTransactionId("");
+		assertEquals(documentsByTransactionId.getErrors().get(0).getErrorCode(),
+				documentsByTransactionId.getErrors().get(0).getErrorCode());
+		assertEquals(documentsByTransactionId.getErrors().get(0).getMessage(),
+				documentsByTransactionId.getErrors().get(0).getMessage());
 	}
 
 	@Test
@@ -137,10 +152,13 @@ public class DocumentControllerTest {
 
 	@Test
 	public void testGetDocumentByDocumentIdFailedInvalidInputException() {
-		doThrow(new InvalidInputException()).when(validator).validateDocumentIdAndTransactionId(anyString(), anyString());
+		doThrow(new InvalidInputException()).when(validator).validateDocumentIdAndTransactionId(anyString(),
+				anyString());
 		ResponseWrapper<DocumentDTO> documentByDocumentId = controller.getDocumentByDocumentId("", "");
-		assertEquals(documentByDocumentId.getErrors().get(0).getErrorCode(), documentByDocumentId.getErrors().get(0).getErrorCode());
-		assertEquals(documentByDocumentId.getErrors().get(0).getMessage(), documentByDocumentId.getErrors().get(0).getMessage());
+		assertEquals(documentByDocumentId.getErrors().get(0).getErrorCode(),
+				documentByDocumentId.getErrors().get(0).getErrorCode());
+		assertEquals(documentByDocumentId.getErrors().get(0).getMessage(),
+				documentByDocumentId.getErrors().get(0).getMessage());
 	}
 
 	@Test
@@ -153,7 +171,8 @@ public class DocumentControllerTest {
 
 	@Test
 	public void testDeleteDocumentsByDocumentIdFailed() throws ResidentServiceCheckedException {
-		when(service.deleteDocument(Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException("", ""));
+		when(service.deleteDocument(Mockito.anyString(), Mockito.anyString()))
+				.thenThrow(new ResidentServiceCheckedException("", ""));
 		ResponseWrapper<ResponseDTO> deleteDocumentsByDocumentId = controller.deleteDocument("", "");
 		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode(), "");
 		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getMessage(), "");
@@ -161,9 +180,12 @@ public class DocumentControllerTest {
 
 	@Test
 	public void testDeleteDocumentsByDocumentIdFailedInvalidInputException() {
-		doThrow(new InvalidInputException()).when(validator).validateDocumentIdAndTransactionId(anyString(), anyString());
+		doThrow(new InvalidInputException()).when(validator).validateDocumentIdAndTransactionId(anyString(),
+				anyString());
 		ResponseWrapper<ResponseDTO> deleteDocumentsByDocumentId = controller.deleteDocument("", "");
-		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode(), deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode());
-		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getMessage(), deleteDocumentsByDocumentId.getErrors().get(0).getMessage());
+		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode(),
+				deleteDocumentsByDocumentId.getErrors().get(0).getErrorCode());
+		assertEquals(deleteDocumentsByDocumentId.getErrors().get(0).getMessage(),
+				deleteDocumentsByDocumentId.getErrors().get(0).getMessage());
 	}
 }
