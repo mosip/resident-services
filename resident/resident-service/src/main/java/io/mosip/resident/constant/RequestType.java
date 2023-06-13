@@ -15,7 +15,8 @@ import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.function.QuadFunction;
+import io.mosip.resident.function.FiveArgsFunction;
+import io.mosip.resident.function.FourArgsFunction;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
@@ -129,28 +130,28 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private static final String PREFIX_RESIDENT_REQUEST_IN_PROGRESS_STATUS_LIST = "resident.request.in-progress.status.list.";
 	private static final String PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST = "resident.request.new.status.list.";
 	private static final String SEPARATOR = ",";
-	private QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
+	private FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private String featureName;
 	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
-	private QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
+	private FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
 	private String namingProperty;
 
 	private String name;
 
 	private RequestType(String name,
-			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+			FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-			QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
+			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
 		this(name, ackTemplateVariablesFunction,
 				featureName, notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
 	}
 
 	private RequestType(String name,
-			QuadFunction<TemplateUtil, String, String, Integer, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+			FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
-			QuadFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
+			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
@@ -295,8 +296,8 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return String.format(PREFIX_RESIDENT_TEMPLATE_SUMMARY, templateType.getType(), getFeatureName());
 	}
 
-	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode, Integer timeZoneOffset) {
-		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode, timeZoneOffset);
+	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode, Integer timeZoneOffset, String locale) {
+		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode, timeZoneOffset, locale);
 	}
 	
 	public Map<String, Object> getNotificationTemplateVariables(TemplateUtil templateUtil, NotificationTemplateVariableDTO dto) {

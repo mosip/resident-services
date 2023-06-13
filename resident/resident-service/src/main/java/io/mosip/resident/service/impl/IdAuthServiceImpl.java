@@ -1,8 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -51,7 +48,9 @@ import io.mosip.kernel.keygenerator.bouncycastle.KeyGenerator;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
+import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
@@ -177,7 +176,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	private String updateResidentTransactionAndSendNotification(String transactionId, String individualId,
 			String eventId, boolean authStatus) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = null;
-		residentTransactionEntity = updateResidentTransaction(authStatus, transactionId, individualId);
+		residentTransactionEntity = updateResidentTransaction(authStatus, transactionId, individualId, RequestType.VALIDATE_OTP);
 		if (residentTransactionEntity != null) {
 			eventId = residentTransactionEntity.getEventId();
 			TemplateType templateType = authStatus == true ? TemplateType.SUCCESS : TemplateType.FAILURE;
@@ -194,18 +193,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationService.sendNotification(notificationRequestDtoV2,
-				channels != null ? List.of(channels.split(ATTRIBUTE_LIST_DELIMITER)) : null, null, null);
+				channels != null ? List.of(channels.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)) : null, null, null);
 	}
 
-	@Override
-	public boolean validateOtpv2(String transactionId, String individualId, String otp)
-			throws OtpValidationFailedException, ResidentServiceCheckedException {
-		return validateOtpV2(transactionId, individualId, otp).getT1();
-	}
-	
 	@SuppressWarnings("null")
 	@Override
-	public Tuple2<Boolean, String> validateOtpV2(String transactionId, String individualId, String otp)
+	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		requestValidator.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
@@ -214,14 +207,15 @@ public class IdAuthServiceImpl implements IdAuthService {
 		String authType = null;
 		try {
 			residentTransactionEntity = residentTransactionRepository
-					.findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId,
-							identityService.getIDATokenForIndividualId(individualId), EventStatusInProgress.OTP_REQUESTED.toString());
+					.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId,
+							identityService.getIDATokenForIndividualId(individualId),
+							List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
 			if (residentTransactionEntity != null) {
 				authType = residentTransactionEntity.getAuthTypeCode();
 			}
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
-					individualId);
+					individualId, requestType);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 			}
@@ -271,17 +265,17 @@ public class IdAuthServiceImpl implements IdAuthService {
 				throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
-		return Tuples.of(response.getResponse().isAuthStatus(), eventId);
+		return Tuples.of(response.getResponse().isAuthStatus(), residentTransactionEntity);
 	}
-		
-	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId) throws ResidentServiceCheckedException {
+
+	private ResidentTransactionEntity updateResidentTransaction(boolean verified,String transactionId, String individualId, RequestType requestType) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
-				findTopByRequestTrnIdAndTokenIdAndStatusCodeOrderByCrDtimesDesc(transactionId, identityService.getIDATokenForIndividualId(individualId)
-				, EventStatusInProgress.OTP_REQUESTED.toString());
+				findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, identityService.getIDATokenForIndividualId(individualId)
+				, List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
 		if (residentTransactionEntity != null ) {
-			residentTransactionEntity.setRequestTypeCode(RequestType.VALIDATE_OTP.name());
+			residentTransactionEntity.setRequestTypeCode(requestType.name());
 			residentTransactionEntity.setRequestSummary(verified? "OTP verified successfully": "OTP verification failed");
-			residentTransactionEntity.setStatusCode(verified? "OTP_VERIFIED": "OTP_VERIFICATION_FAILED");
+			residentTransactionEntity.setStatusCode(verified? EventStatusSuccess.OTP_VERIFIED.name(): EventStatusFailure.OTP_VERIFICATION_FAILED.name());
 			residentTransactionEntity.setStatusComment(verified? "OTP verified successfully": "OTP verification failed");
 			residentTransactionEntity.setUpdBy(utility.getSessionUserName());
 			residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
