@@ -30,6 +30,7 @@ import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
+import io.mosip.resident.constant.UISchemaTypes;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -41,7 +42,6 @@ import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.impl.UISchemaTypes;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
