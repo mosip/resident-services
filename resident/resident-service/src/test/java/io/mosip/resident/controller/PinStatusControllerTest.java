@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.PinStatusController;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.PinUnpinStatusService;

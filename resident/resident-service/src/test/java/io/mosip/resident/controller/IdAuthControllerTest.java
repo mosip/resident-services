@@ -1,8 +1,7 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import io.mosip.resident.exception.OtpValidationFailedException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,9 +24,9 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.mosip.resident.controller.IdAuthController;
 import io.mosip.resident.dto.IdAuthRequestDto;
 import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;

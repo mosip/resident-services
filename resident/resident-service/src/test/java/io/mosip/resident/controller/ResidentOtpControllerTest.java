@@ -1,29 +1,10 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.resident.controller.ResidentOtpController;
-import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
-import io.mosip.resident.dto.IndividualIdResponseDto;
-import io.mosip.resident.dto.OtpRequestDTO;
-import io.mosip.resident.dto.OtpResponseDTO;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.handler.service.ResidentUpdateService;
-import io.mosip.resident.handler.service.UinCardRePrintService;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.ResidentOtpService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,10 +27,30 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
+import io.mosip.resident.dto.IndividualIdResponseDto;
+import io.mosip.resident.dto.OtpRequestDTO;
+import io.mosip.resident.dto.OtpResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.handler.service.ResidentUpdateService;
+import io.mosip.resident.handler.service.UinCardRePrintService;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentOtpService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)

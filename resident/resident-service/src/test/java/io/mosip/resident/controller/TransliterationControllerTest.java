@@ -1,4 +1,4 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,7 +20,6 @@ import io.mosip.preregistration.application.dto.TransliterationResponseDTO;
 import io.mosip.preregistration.application.service.TransliterationService;
 import io.mosip.preregistration.core.common.dto.MainRequestDTO;
 import io.mosip.preregistration.core.common.dto.MainResponseDTO;
-import io.mosip.resident.controller.TransliterationController;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;

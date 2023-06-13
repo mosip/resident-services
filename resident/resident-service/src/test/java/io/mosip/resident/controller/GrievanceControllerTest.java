@@ -1,23 +1,15 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.controller.GrievanceController;
-import io.mosip.resident.dto.GrievanceRequestDTO;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.GrievanceService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.HashMap;
+import java.util.UUID;
+
+import javax.crypto.SecretKey;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,14 +28,24 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.UUID;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.dto.GrievanceRequestDTO;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.GrievanceService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * @author Kamesh Shekhar Prasad

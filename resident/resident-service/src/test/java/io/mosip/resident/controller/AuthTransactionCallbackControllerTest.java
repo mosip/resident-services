@@ -1,23 +1,12 @@
-package io.mosip.resident.test.controller;
+package io.mosip.resident.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.kernel.core.websub.model.Event;
-import io.mosip.kernel.core.websub.model.EventModel;
-import io.mosip.resident.controller.AuthTransactionCallbackController;
-import io.mosip.resident.controller.VerificationController;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.AuthTransactionCallBackService;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.IdAuthService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.VerificationService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.impl.VerificationServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +26,23 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import io.mosip.kernel.core.websub.model.Event;
+import io.mosip.kernel.core.websub.model.EventModel;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.AuthTransactionCallBackService;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.IdAuthService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.VerificationService;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.service.impl.VerificationServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
 
 /**
  * Web-Sub Update Controller Test
