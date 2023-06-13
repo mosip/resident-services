@@ -15,5 +15,5 @@ import reactor.util.function.Tuple2;
 public interface OtpManager {
     public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException;
     public boolean validateOtp(String otp, String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException;
-    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException;
+    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException;
 }

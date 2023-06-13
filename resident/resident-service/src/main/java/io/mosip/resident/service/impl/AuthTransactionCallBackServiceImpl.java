@@ -79,7 +79,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 			Object dataObject = eventMap.get("data");
 			if (dataObject instanceof Map) {
 				Map<String, Object> dataMap = (Map<String, Object>) dataObject;
-				ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.AUTHENTICATION_REQUEST.name());
+				ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.AUTHENTICATION_REQUEST);
 				residentTransactionEntity.setEventId(utility.createEventId());
 				residentTransactionEntity.setRefId((String) dataMap.get(INDIVIDUAL_ID));
 				residentTransactionEntity.setIndividualId((String) dataMap.get(INDIVIDUAL_ID));
