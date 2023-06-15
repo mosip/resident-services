@@ -1,31 +1,5 @@
 package io.mosip.resident.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -57,6 +31,7 @@ import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentVidRequestDto;
@@ -78,6 +53,32 @@ import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -2595,6 +2596,154 @@ public class RequestValidatorTest {
 	public void testValidateRequestTime(){
 		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("60");
 		requestValidator.validateRequestTime(Date.from(Instant.now().minusSeconds(10)));
+	}
+
+	@Test
+	public void testValidateNameWithValidName() throws ResidentServiceCheckedException {
+		String name = "Kamesh Shekhar Prasad";
+		RequestValidator requestValidator1 = Mockito.spy(new RequestValidator());
+		requestValidator1.validateName(name);
+		verify(requestValidator1).validateName(name);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testValidateNameWithBlankName() throws ResidentServiceCheckedException {
+		requestValidator.validateName("");
+	}
+
+	@Test
+	public void testValidateGrievanceRequestDtoSuccessWithAlternateEmailID() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
+		grievanceRequestDTO.setMessage("message");
+		grievanceRequestDTO.setEventId("1212121212121211");
+		grievanceRequestDTO.setAlternateEmailId("Ka@g.com");
+		grievanceRequestDTO.setAlternatePhoneNo("8898787878");
+		grievanceRequestDTOMainRequestDTO.setRequest(grievanceRequestDTO);
+		grievanceRequestDTOMainRequestDTO.setId("id");
+		grievanceRequestDTOMainRequestDTO.setVersion("version");
+		grievanceRequestDTOMainRequestDTO.setRequesttime(DateTime.now().toDate());
+		requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
+	}
+
+	@Test
+	public void testValidateReqCredentialRequestSuccess(){
+		RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
+		residentCredentialRequestDto.setIndividualId("1232323232");
+		residentCredentialRequestDto.setCredentialType("Vercred");
+		residentCredentialRequestDto.setIssuer("resident");
+		residentCredentialRequestDto.setOtp("111111");
+		residentCredentialRequestDto.setTransactionID("1232323232");
+		requestWrapper.setRequest(residentCredentialRequestDto);
+		requestValidator.validateReqCredentialRequest(requestWrapper);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateReqCredentialRequestFailure(){
+		RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
+		residentCredentialRequestDto.setIndividualId("");
+		requestWrapper.setRequest(residentCredentialRequestDto);
+		requestValidator.validateReqCredentialRequest(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCardInvalidAttributeList() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
+		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		downloadPersonalizedCardDto.setHtml("html");
+		downloadPersonalizedCardDto.setAttributes(List.of());
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateProxySendOtpRequestInCorrectPhoneUserId() throws Exception{
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setFullName("kamesh");
+		identityDTO.setEmail("kam@g.com");
+		identityDTO.setPhone("8878787878");
+		when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("8878787878");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateProxySendOtpRequestInCorrectEmailUserId() throws Exception{
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setFullName("kamesh");
+		identityDTO.setEmail("kam@g.com");
+		identityDTO.setPhone("887878");
+		when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("kam@g.com");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateProxySendOtpRequestFailed() throws Exception{
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setFullName("kamesh");
+		identityDTO.setEmail("kam@g.com");
+		identityDTO.setPhone("887878");
+		when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+		when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("kam@g.com");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateTransliterationIdLangFailed() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "transliterateId", "mosip.resident.transliteration.transliterate");
+		MainRequestDTO<TransliterationRequestDTO> requestDTO = new MainRequestDTO<>();
+		TransliterationRequestDTO transliterationRequestDTO = new TransliterationRequestDTO();
+		transliterationRequestDTO.setFromFieldLang("eng");
+		transliterationRequestDTO.setToFieldLang("eng");
+		transliterationRequestDTO.setFromFieldValue("demo");
+		requestDTO.setRequest(transliterationRequestDTO);
+		requestDTO.setId("mosip.resident.transliteration.transliterate");
+		requestValidator.validateId(requestDTO);
 	}
 
 }
