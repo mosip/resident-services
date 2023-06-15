@@ -47,7 +47,7 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private Environment env;
-	
+
 	@Mock
 	private ResourceLoader resourceLoader;
 
@@ -59,10 +59,10 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
-	
+
 	@Mock
 	private AuditUtil auditUtil;
-	
+
 	Resource resource;
 	private String identityMapping;
 	private String uiSchema;
@@ -78,8 +78,8 @@ public class ResidentConfigServiceImplTest {
 		resource = Mockito.mock(Resource.class);
 		Mockito.when(resourceLoader.getResource(Mockito.anyString())).thenReturn(resource);
 		when(resource.exists()).thenReturn(true);
-		
-		//getUISchemaData()
+
+		// getUISchemaData()
 		uiSchema = "{\"name\":\"ui-schema\"}";
 		when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(uiSchema.getBytes()));
 		uiSchemaMap = new HashMap<>();
@@ -181,7 +181,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetUiSchemaFilteredInputAttributes() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributes() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		List<String> result;
 		testSubject = createTestSubject();
@@ -190,7 +190,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		uiSchemaMap.put(MappingJsonConstants.IDENTITY, null);
 		Mockito.when(objectMapper.readValue(uiSchema.getBytes(), Map.class)).thenReturn(uiSchemaMap);
@@ -199,7 +199,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testGetUiSchemaFilteredInputAttributesWithException() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributesWithException() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		Mockito.when(objectMapper.readValue(uiSchema.getBytes(), Map.class)).thenThrow(new IOException());
 		testSubject = createTestSubject();
@@ -207,7 +207,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetSharableAttributesList() throws Exception{
+	public void testGetSharableAttributesList() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		testSubject = createTestSubject();
 		getIdentityMappingMap(testSubject);
@@ -228,7 +228,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetUISchemaCacheableData() throws Exception{
+	public void testGetUISchemaCacheableData() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		testSubject = createTestSubject();
 		testSubject.getUISchemaCacheableData("update-demographics");
