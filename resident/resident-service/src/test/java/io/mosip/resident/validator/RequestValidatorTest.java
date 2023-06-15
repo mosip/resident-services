@@ -41,6 +41,7 @@ import io.mosip.resident.dto.ResidentVidRequestDtoV2;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -78,8 +79,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
@@ -3053,5 +3056,55 @@ public class RequestValidatorTest {
 	@Test(expected = ResidentServiceException.class)
 	public void testEmailsCharValidatorFailed(){
 		requestValidator.emailCharsValidator("45454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testPhoneCharsValidator(){
+		UUID uuid = UUID.randomUUID();
+		requestValidator.phoneCharsValidator("45454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545");
+	}
+
+	@Test
+	public void testValidateRid(){
+		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
+		assertTrue(requestValidator.validateRid("11345678"));
+	}
+
+	@Test
+	public void testValidateRidFailed(){
+		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_RID.getErrorCode(),
+				ResidentErrorCode.INVALID_RID.getErrorMessage()));
+		assertFalse(requestValidator.validateRid("11345678"));
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidRevokeV2RequestEmptyRequestIdEmptyVidStatusFailure() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "revokeVidIdNew", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "revokeVidVersion", "1.0");
+		RequestWrapper<VidRevokeRequestDTO> requestDto = new RequestWrapper<>();
+		requestDto.setId("1.0");
+		requestDto.setVersion("1.0");
+		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
+		vidRevokeRequestDTO.setVidStatus("REVOKED");
+		vidRevokeRequestDTO.setTransactionID("1212121212");
+		requestDto.setRequest(vidRevokeRequestDTO);
+		requestDto.setRequesttime(LocalDateTime.now().toString());
+		requestValidator.validateVidRevokeV2Request(requestDto, false, "3956038419");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidRevokeV2RequestEmptyRequestIdEmptyOtpFailure() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "revokeVidIdNew", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "revokeVidVersion", "1.0");
+		RequestWrapper<VidRevokeRequestDTO> requestDto = new RequestWrapper<>();
+		requestDto.setId("1.0");
+		requestDto.setVersion("1.0");
+		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
+		vidRevokeRequestDTO.setVidStatus("REVOKED");
+		vidRevokeRequestDTO.setTransactionID("1212121212");
+		vidRevokeRequestDTO.setIndividualId("123");
+		requestDto.setRequest(vidRevokeRequestDTO);
+		requestDto.setRequesttime(LocalDateTime.now().toString());
+		requestValidator.validateVidRevokeV2Request(requestDto, true, "3956038419");
 	}
 }
