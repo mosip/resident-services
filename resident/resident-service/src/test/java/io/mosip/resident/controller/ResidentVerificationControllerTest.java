@@ -1,5 +1,6 @@
 package io.mosip.resident.controller;
 
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
 import io.mosip.resident.dto.VerificationResponseDTO;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
@@ -29,14 +31,14 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.RequestValidator;
 
 /**
- * Resident Verification Controller Test
- * Note: This class is used to test the Resident Verification Controller
+ * Resident Verification Controller Test Note: This class is used to test the
+ * Resident Verification Controller
+ * 
  * @author Kamesh Shekhar Prasad
  */
 
@@ -45,61 +47,68 @@ import io.mosip.resident.validator.RequestValidator;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class ResidentVerificationControllerTest {
-	
-    @MockBean
-    private ProxyIdRepoService proxyIdRepoService;
 
-    @MockBean
-    private VerificationService verificationService;
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
-    @MockBean
-    private IdAuthService idAuthService;
-	
+	@MockBean
+	private VerificationService verificationService;
+
+	@MockBean
+	private IdAuthService idAuthService;
+
 	@MockBean
 	private ResidentVidService vidService;
-	
+
 	@MockBean
 	private DocumentService docService;
-	
+
 	@MockBean
 	private ObjectStoreHelper objectStore;
 
-    @MockBean
-    private VerificationServiceImpl verificationServiceImpl;
+	@MockBean
+	private RequestValidator requestValidator;
 
-    @MockBean
-    private RequestValidator requestValidator;
+	@MockBean
+	@Qualifier("selfTokenRestTemplate")
+	private RestTemplate residentRestTemplate;
 
-    @MockBean
-    @Qualifier("selfTokenRestTemplate")
-    private RestTemplate residentRestTemplate;
-    
-    @MockBean
-    private ResidentServiceImpl residentService;
+	@MockBean
+	private ResidentServiceImpl residentService;
 
-    @Mock
-    private AuditUtil audit;
+	@Mock
+	private AuditUtil audit;
 
-    @InjectMocks
-    VerificationController verificationController;
+	@InjectMocks
+	VerificationController verificationController;
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    VerificationResponseDTO verificationResponseDTO;
+	VerificationResponseDTO verificationResponseDTO;
 
-    @Before
-    public void setup() throws Exception {
-        verificationResponseDTO = new VerificationResponseDTO();
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(verificationController).build();
+	@Before
+	public void setup() throws Exception {
+		verificationResponseDTO = new VerificationResponseDTO();
+		MockitoAnnotations.initMocks(this);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(verificationController).build();
+	}
 
-    }
+	@Test
+	public void testCreateRequestGenerationSuccess() throws Exception {
+		Mockito.when(verificationService.checkChannelVerificationStatus(Mockito.any(), Mockito.any()))
+				.thenReturn(verificationResponseDTO);
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/channel/verification-status/?channel=EMAIL&individualId=8251649601"))
+				.andExpect(status().isOk());
+	}
 
-    @Test
-    public void testCreateRequestGenerationSuccess() throws Exception {
-        Mockito.when(verificationService.checkChannelVerificationStatus(Mockito.any(),Mockito.any())).thenReturn(verificationResponseDTO);
-        mockMvc.perform(MockMvcRequestBuilders.get("/channel/verification-status/?channel=EMAIL&individualId=8251649601")).andExpect(status().isOk());
-    }
-
+	@Test(expected = Exception.class)
+	public void testGetChannelVerificationStatusWithException() throws Exception {
+		doThrow(new ResidentServiceCheckedException()).when(verificationService)
+				.checkChannelVerificationStatus(Mockito.anyString(), Mockito.anyString());
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/channel/verification-status/?channel=EMAIL&individualId=8251649601"))
+				.andExpect(status().isOk());
+	}
 }
