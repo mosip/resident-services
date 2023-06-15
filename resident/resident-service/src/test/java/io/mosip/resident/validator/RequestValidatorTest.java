@@ -3044,4 +3044,14 @@ public class RequestValidatorTest {
 		requestWrapper.setRequest(requestDTO);
 		requestValidator.validateUpdateRequest(requestWrapper, true);
 	}
+
+	@Test
+	public void testEmailsCharValidator(){
+		requestValidator.emailCharsValidator("ka@g.com");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testEmailsCharValidatorFailed(){
+		requestValidator.emailCharsValidator("45454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545");
+	}
 }
