@@ -587,29 +587,5 @@ public class UtilityTest {
 		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		utility.getSessionUserName();
 	}
-
-	@Test
-	public void testGetCardOrderTrackingId() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> map = new HashMap<>();
-		map.put(TemplateVariablesConstants.TRACKING_ID, "http://localhost");
-		responseWrapper.setResponse(map);
-		Mockito.when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(),
-				(List<String>) any(), Mockito.any(), Mockito.any())).thenReturn(responseWrapper);
-		assertEquals("http://localhost",utility.getCardOrderTrackingId("12", "12"));
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetCardOrderTrackingIdFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> map = new HashMap<>();
-		map.put(TemplateVariablesConstants.TRACKING_ID, "http://localhost");
-		responseWrapper.setResponse(map);
-		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorCode(),
-				ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage())));
-		Mockito.when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(),
-				(List<String>) any(), Mockito.any(), Mockito.any())).thenReturn(responseWrapper);
-		assertEquals("http://localhost",utility.getCardOrderTrackingId("12", "12"));
-	}
 	
 }
