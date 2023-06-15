@@ -16,7 +16,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.impl.VerificationServiceImpl;
+import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.RequestValidator;
@@ -27,29 +27,28 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-
 @RestController
 @Tag(name = "verification-controller", description = "controller for channel verification status")
 public class VerificationController {
 
-    @Autowired
-    private AuditUtil audit;
+	@Autowired
+	private AuditUtil audit;
 
-    @Autowired
-    private VerificationServiceImpl verificationServiceImpl;
+	@Autowired
+	private VerificationService verificationService;
 
-    @Autowired
-    private RequestValidator validator;
+	@Autowired
+	private RequestValidator validator;
 
-    private static final Logger logger = LoggerConfiguration.logConfig(VerificationController.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(VerificationController.class);
 
-    @GetMapping(value = "/channel/verification-status/")
-    @Operation(summary = "get channel verification status", description = "get channel verification status")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
-            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	@GetMapping(value = "/channel/verification-status/")
+	@Operation(summary = "get channel verification status", description = "get channel verification status")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public VerificationResponseDTO getChannelVerificationStatus(@RequestParam("channel") String channel,
 			@RequestParam("individualId") String individualId)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
@@ -57,7 +56,7 @@ public class VerificationController {
 		VerificationResponseDTO verificationResponseDTO;
 		try {
 			validator.validateChannelVerificationStatus(channel, individualId);
-			verificationResponseDTO = verificationServiceImpl.checkChannelVerificationStatus(channel, individualId);
+			verificationResponseDTO = verificationService.checkChannelVerificationStatus(channel, individualId);
 		} catch (ResidentServiceCheckedException | ResidentServiceException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.VERIFICATION_STATUS_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.VERIFICATION_STATUS_ID));
