@@ -369,7 +369,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
 			credentialRequestStatusResponseDto = JsonUtil.readValue(
 					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
-			if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() != null
+			if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() == null
 			|| credentialRequestStatusResponseDto.getUrl().isEmpty()){
 				audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
 				logger.error("Data share URL is not available.");
