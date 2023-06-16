@@ -1,31 +1,7 @@
 package io.mosip.resident.validator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -57,6 +33,7 @@ import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.dto.RequestDTO;
 import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentVidRequestDto;
@@ -64,6 +41,7 @@ import io.mosip.resident.dto.ResidentVidRequestDtoV2;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
+import io.mosip.resident.dto.VidRevokeRequestDTO;
 import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -72,12 +50,43 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.Utilities;
+import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 public class RequestValidatorTest {
@@ -110,15 +119,24 @@ public class RequestValidatorTest {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Mock
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Mock
 	private IdentityServiceImpl identityService;
+
+	@Mock
+	private ObjectMapper objectMapper;
 
 	String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	@InjectMocks
 	private ResidentService residentService = new ResidentServiceImpl();
 
+	private Object schema;
+
 	@Before
 	public void setup() {
+		schema = "{\\\"$schema\\\":\\\"http:\\/\\/json-schema.org\\/draft-07\\/schema#\\\",\\\"description\\\":\\\"MOSIP Sample identity\\\",\\\"additionalProperties\\\":false,\\\"title\\\":\\\"MOSIP identity\\\",\\\"type\\\":\\\"object\\\",\\\"definitions\\\":{\\\"simpleType\\\":{\\\"uniqueItems\\\":true,\\\"additionalItems\\\":false,\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"language\\\",\\\"value\\\"],\\\"properties\\\":{\\\"language\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"documentType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"type\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"},\\\"refNumber\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"]}}},\\\"biometricsType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"version\\\":{\\\"type\\\":\\\"number\\\",\\\"minimum\\\":0},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"properties\\\":{\\\"identity\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"IDSchemaVersion\\\",\\\"fullName\\\",\\\"dateOfBirth\\\",\\\"gender\\\",\\\"addressLine1\\\",\\\"addressLine2\\\",\\\"addressLine3\\\",\\\"region\\\",\\\"province\\\",\\\"city\\\",\\\"zone\\\",\\\"postalCode\\\",\\\"phone\\\",\\\"email\\\",\\\"proofOfIdentity\\\",\\\"individualBiometrics\\\"],\\\"properties\\\":{\\\"proofOfAddress\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"gender\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"city\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"postalCode\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[(?i)A-Z0-9]{5}$|^NA$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfException-1\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"referenceIdentityNumber\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^([0-9]{10,30})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"kyc\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"province\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"zone\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfDateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"addressLine1\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine2\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"residenceStatus\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"kyc\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine3\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"email\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[A-Za-z0-9_\\\\\\\\-]+(\\\\\\\\.[A-Za-z0-9_]+)*@[A-Za-z0-9_-]+(\\\\\\\\.[A-Za-z0-9_]+)*(\\\\\\\\.[a-zA-Z]{2,})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerRID\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"fullName\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"dateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(1869|18[7-9][0-9]|19[0-9][0-9]|20[0-9][0-9])\\/([0][1-9]|1[0-2])\\/([0][1-9]|[1-2][0-9]|3[01])$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualAuthBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"introducerUIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfIdentity\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"IDSchemaVersion\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"number\\\",\\\"fieldType\\\":\\\"default\\\",\\\"minimum\\\":0},\\\"proofOfException\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"phone\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[+]*([0-9]{1})([0-9]{9})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerName\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfRelationship\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"UIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"region\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"}}}}}";
 		Map<RequestIdType, String> map = new HashMap<RequestIdType, String>();
 		map.put(RequestIdType.RE_PRINT_ID, "mosip.resident.print");
 		map.put(RequestIdType.AUTH_LOCK_ID, "mosip.resident.authlock");
@@ -2597,4 +2615,534 @@ public class RequestValidatorTest {
 		requestValidator.validateRequestTime(Date.from(Instant.now().minusSeconds(10)));
 	}
 
+	@Test
+	public void testValidateNameWithValidName() throws ResidentServiceCheckedException {
+		String name = "Kamesh Shekhar Prasad";
+		RequestValidator requestValidator1 = Mockito.spy(new RequestValidator());
+		requestValidator1.validateName(name);
+		verify(requestValidator1).validateName(name);
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testValidateNameWithBlankName() throws ResidentServiceCheckedException {
+		requestValidator.validateName("");
+	}
+
+	@Test
+	public void testValidateGrievanceRequestDtoSuccessWithAlternateEmailID() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
+		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		GrievanceRequestDTO grievanceRequestDTO = new GrievanceRequestDTO();
+		grievanceRequestDTO.setMessage("message");
+		grievanceRequestDTO.setEventId("1212121212121211");
+		grievanceRequestDTO.setAlternateEmailId("Ka@g.com");
+		grievanceRequestDTO.setAlternatePhoneNo("8898787878");
+		grievanceRequestDTOMainRequestDTO.setRequest(grievanceRequestDTO);
+		grievanceRequestDTOMainRequestDTO.setId("id");
+		grievanceRequestDTOMainRequestDTO.setVersion("version");
+		grievanceRequestDTOMainRequestDTO.setRequesttime(DateTime.now().toDate());
+		requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
+	}
+
+	@Test
+	public void testValidateReqCredentialRequestSuccess(){
+		RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
+		residentCredentialRequestDto.setIndividualId("1232323232");
+		residentCredentialRequestDto.setCredentialType("Vercred");
+		residentCredentialRequestDto.setIssuer("resident");
+		residentCredentialRequestDto.setOtp("111111");
+		residentCredentialRequestDto.setTransactionID("1232323232");
+		requestWrapper.setRequest(residentCredentialRequestDto);
+		requestValidator.validateReqCredentialRequest(requestWrapper);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateReqCredentialRequestFailure(){
+		RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
+		residentCredentialRequestDto.setIndividualId("");
+		requestWrapper.setRequest(residentCredentialRequestDto);
+		requestValidator.validateReqCredentialRequest(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateDownloadPersonalizedCardInvalidAttributeList() throws Exception{
+		io.mosip.resident.dto.MainRequestDTO<DownloadPersonalizedCardDto> mainRequestDTO = new io.mosip.resident.dto.MainRequestDTO<>();
+		mainRequestDTO.setId("property");
+		mainRequestDTO.setVersion("1.0");
+		mainRequestDTO.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		DownloadPersonalizedCardDto downloadPersonalizedCardDto = new DownloadPersonalizedCardDto();
+		downloadPersonalizedCardDto.setHtml("html");
+		downloadPersonalizedCardDto.setAttributes(List.of());
+		mainRequestDTO.setRequest(downloadPersonalizedCardDto);
+		requestValidator.validateDownloadPersonalizedCard(mainRequestDTO);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateProxySendOtpRequestInCorrectPhoneUserId() throws Exception{
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setFullName("kamesh");
+		identityDTO.setEmail("kam@g.com");
+		identityDTO.setPhone("8878787878");
+		when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("8878787878");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateProxySendOtpRequestInCorrectEmailUserId() throws Exception{
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setFullName("kamesh");
+		identityDTO.setEmail("kam@g.com");
+		identityDTO.setPhone("887878");
+		when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("kam@g.com");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateProxySendOtpRequestFailed() throws Exception{
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setFullName("kamesh");
+		identityDTO.setEmail("kam@g.com");
+		identityDTO.setPhone("887878");
+		when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567788");
+		when(identityService.getIdentity(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
+		ReflectionTestUtils.setField(requestValidator, "phoneRegex", "^([6-9]{1})([0-9]{9})$");
+		io.mosip.resident.dto.MainRequestDTO<OtpRequestDTOV2> userIdOtpRequest =
+				new io.mosip.resident.dto.MainRequestDTO<>();
+		OtpRequestDTOV2 otpRequestDTOV2 = new OtpRequestDTOV2();
+		otpRequestDTOV2.setTransactionId("1232323232");
+		userIdOtpRequest.setId("property");
+		userIdOtpRequest.setVersion("1.0");
+		otpRequestDTOV2.setUserId("kam@g.com");
+		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
+		userIdOtpRequest.setRequest(otpRequestDTOV2);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateTransliterationIdLangFailed() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "transliterateId", "mosip.resident.transliteration.transliterate");
+		MainRequestDTO<TransliterationRequestDTO> requestDTO = new MainRequestDTO<>();
+		TransliterationRequestDTO transliterationRequestDTO = new TransliterationRequestDTO();
+		transliterationRequestDTO.setFromFieldLang("eng");
+		transliterationRequestDTO.setToFieldLang("eng");
+		transliterationRequestDTO.setFromFieldValue("demo");
+		requestDTO.setRequest(transliterationRequestDTO);
+		requestDTO.setId("mosip.resident.transliteration.transliterate");
+		requestValidator.validateId(requestDTO);
+	}
+
+	@Test
+	public void testValidateOtpCharLimit(){
+		requestValidator.validateOtpCharLimit("111111");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateOtpCharLimitFailed(){
+		requestValidator.validateOtpCharLimit("11111111");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateSchemaType(){
+		requestValidator.validateSchemaType("ui");
+	}
+
+	@Test
+	public void testValidateSchemaTypeSuccess(){
+		requestValidator.validateSchemaType("update-demographics");
+	}
+
+	@Test
+	public void testValidateSearchText(){
+		requestValidator.validateSearchText(null);
+	}
+
+	@Test
+	public void testValidateSearchTextNotNull(){
+		requestValidator.validateSearchText("11");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateSearchTextNotNullFailure(){
+		requestValidator.validateSearchText("154654545454124545451");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateChannelVerificationStatusInvalidAllowedChar() throws Exception{
+		String channel ="PHONE";
+		requestValidator.validateChannelVerificationStatus(channel, "$");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testValidateChannelVerificationStatusInvalidVidLength() throws Exception{
+		String channel ="PHONE";
+		requestValidator.validateChannelVerificationStatus(channel, "454645787845124578");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAidStatusRequestDtoFailure() throws Exception{
+		AidStatusRequestDTO aidStatusRequestDTO = new AidStatusRequestDTO();
+		aidStatusRequestDTO.setIndividualId(null);
+		aidStatusRequestDTO.setTransactionId("1234567890");
+		RequestWrapper<AidStatusRequestDTO> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.checkstatus");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(aidStatusRequestDTO);
+		requestValidator.validateAidStatusRequestDto(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateUpdateRequestV2Failed() throws Exception{
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.2");
+		ResponseWrapper idSchemaResponse = new ResponseWrapper();
+		JSONObject object = new JSONObject();
+		object.put("schemaJson", schema);
+		idSchemaResponse.setResponse(object);
+		Map<String, ?> map = new HashMap<>();
+		when(objectMapper.convertValue(object, Map.class)).thenReturn(object);
+
+		when(proxyMasterdataService.getLatestIdSchema(0.2, null, null)).thenReturn(idSchemaResponse);
+		Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+		
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test
+	public void testValidateUpdateRequestV2Passed() throws Exception{
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.2");
+		ResponseWrapper idSchemaResponse = new ResponseWrapper();
+		JSONObject object = new JSONObject();
+		object.put("schemaJson", schema);
+		idSchemaResponse.setResponse(object);
+		Map<String, ?> map = new HashMap<>();
+		when(objectMapper.convertValue(object, Map.class)).thenReturn(object);
+
+		when(proxyMasterdataService.getLatestIdSchema(0.2, null, null)).thenReturn(idSchemaResponse);
+		Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("identity","abc");
+		requestDTO.setIdentity(jsonObject1);
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test
+	public void testValidateUpdateRequestV2PassedWithLanguageCode() throws Exception{
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.2");
+		ResponseWrapper idSchemaResponse = new ResponseWrapper();
+		JSONObject object = new JSONObject();
+		object.put("schemaJson", schema);
+		idSchemaResponse.setResponse(object);
+		Map<String, ?> map = new HashMap<>();
+		when(objectMapper.convertValue(object, Map.class)).thenReturn(object);
+
+		when(proxyMasterdataService.getLatestIdSchema(0.2, null, null)).thenReturn(idSchemaResponse);
+		Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("identity","abc");
+		ArrayList<Map<String, String>> languageMap = new ArrayList<>();
+		Map<String, String> language = new HashMap<>();
+		language.put("language", "eng");
+		language.put("value", "eng");
+		languageMap.add(language);
+		jsonObject1.put("value", languageMap);
+		requestDTO.setIdentity(jsonObject1);
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateUpdateRequestV2InvalidTransactionId() throws Exception{
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.2");
+		ResponseWrapper idSchemaResponse = new ResponseWrapper();
+		JSONObject object = new JSONObject();
+		object.put("schemaJson", schema);
+		idSchemaResponse.setResponse(object);
+		Map<String, ?> map = new HashMap<>();
+		when(objectMapper.convertValue(object, Map.class)).thenReturn(object);
+
+		when(proxyMasterdataService.getLatestIdSchema(0.2, null, null)).thenReturn(idSchemaResponse);
+		Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("");
+		requestDTO.setIdentityJson("abcdef");
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("identity","abc");
+		ArrayList<Map<String, String>> languageMap = new ArrayList<>();
+		Map<String, String> language = new HashMap<>();
+		language.put("language", "eng");
+		language.put("value", "eng");
+		languageMap.add(language);
+		jsonObject1.put("value", languageMap);
+		requestDTO.setIdentity(jsonObject1);
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test
+	public void testValidateUpdateRequestV2FailedWithLanguageCode() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+		Map<String, Object> identityMappingMap = new HashMap<>();
+		Map<String, String> identityValue = new HashMap<>();
+		identityValue.put("value", "email");
+		identityMappingMap.put("email", identityValue);
+		Mockito.when(residentConfigService.getIdentityMappingMap()).thenReturn(identityMappingMap);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.2");
+		ResponseWrapper idSchemaResponse = new ResponseWrapper();
+		JSONObject object = new JSONObject();
+		object.put("schemaJson", schema);
+		idSchemaResponse.setResponse(object);
+		Map<String, ?> map = new HashMap<>();
+		when(objectMapper.convertValue(object, Map.class)).thenReturn(object);
+
+		when(proxyMasterdataService.getLatestIdSchema(0.2, null, null)).thenReturn(idSchemaResponse);
+		Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("identity","abc");
+		ArrayList<Map<String, String>> languageMap = new ArrayList<>();
+		Map<String, String> language = new HashMap<>();
+		language.put("language", "eng");
+		language.put("value", "eng");
+		languageMap.add(language);
+		jsonObject1.put("value", languageMap);
+		requestDTO.setIdentity(jsonObject1);
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testValidateUpdateRequestV2FailedWithRunTimeException() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "attributeNamesWithoutDocumentsRequired", "email");
+		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1212121212");
+		Map<String, Object> identityMappingMap = new HashMap<>();
+		Map<String, String> identityValue = new HashMap<>();
+		identityValue.put("value", "email");
+		identityMappingMap.put("email", identityValue);
+		Mockito.when(residentConfigService.getIdentityMappingMap()).thenThrow(new IOException());
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.2");
+		ResponseWrapper idSchemaResponse = new ResponseWrapper();
+		JSONObject object = new JSONObject();
+		object.put("schemaJson", schema);
+		idSchemaResponse.setResponse(object);
+		Map<String, ?> map = new HashMap<>();
+		when(objectMapper.convertValue(object, Map.class)).thenReturn(object);
+
+		when(proxyMasterdataService.getLatestIdSchema(0.2, null, null)).thenReturn(idSchemaResponse);
+		Mockito.when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+
+		ResidentUpdateRequestDto requestDTO = new ResidentUpdateRequestDto();
+		requestDTO.setIndividualIdType("UIN");
+		requestDTO.setIndividualId("1234567");
+		requestDTO.setOtp("1234567");
+		requestDTO.setTransactionID("1234567");
+		requestDTO.setIdentityJson("abcdef");
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("identity","abc");
+		ArrayList<Map<String, String>> languageMap = new ArrayList<>();
+		Map<String, String> language = new HashMap<>();
+		language.put("language", "eng");
+		language.put("value", "eng");
+		languageMap.add(language);
+		jsonObject1.put("value", languageMap);
+		requestDTO.setIdentity(jsonObject1);
+		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.updateuin");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(requestDTO);
+		requestValidator.validateUpdateRequest(requestWrapper, true);
+	}
+
+	@Test
+	public void testEmailsCharValidator(){
+		requestValidator.emailCharsValidator("ka@g.com");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testEmailsCharValidatorFailed(){
+		requestValidator.emailCharsValidator("45454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545");
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testPhoneCharsValidator(){
+		UUID uuid = UUID.randomUUID();
+		requestValidator.phoneCharsValidator("45454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545454545");
+	}
+
+	@Test
+	public void testValidateRid(){
+		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenReturn(true);
+		assertTrue(requestValidator.validateRid("11345678"));
+	}
+
+	@Test
+	public void testValidateRidFailed(){
+		Mockito.when(ridValidator.validateId(Mockito.anyString())).thenThrow(new InvalidIDException(ResidentErrorCode.INVALID_RID.getErrorCode(),
+				ResidentErrorCode.INVALID_RID.getErrorMessage()));
+		assertFalse(requestValidator.validateRid("11345678"));
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidRevokeV2RequestEmptyRequestIdEmptyVidStatusFailure() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "revokeVidIdNew", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "revokeVidVersion", "1.0");
+		RequestWrapper<VidRevokeRequestDTO> requestDto = new RequestWrapper<>();
+		requestDto.setId("1.0");
+		requestDto.setVersion("1.0");
+		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
+		vidRevokeRequestDTO.setVidStatus("REVOKED");
+		vidRevokeRequestDTO.setTransactionID("1212121212");
+		requestDto.setRequest(vidRevokeRequestDTO);
+		requestDto.setRequesttime(LocalDateTime.now().toString());
+		requestValidator.validateVidRevokeV2Request(requestDto, false, "3956038419");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateVidRevokeV2RequestEmptyRequestIdEmptyOtpFailure() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "revokeVidIdNew", "1.0");
+		ReflectionTestUtils.setField(requestValidator, "revokeVidVersion", "1.0");
+		RequestWrapper<VidRevokeRequestDTO> requestDto = new RequestWrapper<>();
+		requestDto.setId("1.0");
+		requestDto.setVersion("1.0");
+		VidRevokeRequestDTO vidRevokeRequestDTO = new VidRevokeRequestDTO();
+		vidRevokeRequestDTO.setVidStatus("REVOKED");
+		vidRevokeRequestDTO.setTransactionID("1212121212");
+		vidRevokeRequestDTO.setIndividualId("123");
+		requestDto.setRequest(vidRevokeRequestDTO);
+		requestDto.setRequesttime(LocalDateTime.now().toString());
+		requestValidator.validateVidRevokeV2Request(requestDto, true, "3956038419");
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2Failed() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
+		authTypeStatusDto.setAuthType("bio-IR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(10L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.auth.lock.unlock");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testValidateAuthLockOrUnlockRequestV2FailedUnlockSeconds() throws Exception{
+		ReflectionTestUtils.setField(requestValidator, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.unlock");
+		AuthLockOrUnLockRequestDtoV2 authLockOrUnLockRequestDtoV2 = new AuthLockOrUnLockRequestDtoV2();
+		List<AuthTypeStatusDtoV2> authTypes = new ArrayList<>();
+		AuthTypeStatusDtoV2 authTypeStatusDto = new AuthTypeStatusDtoV2();
+		authTypeStatusDto.setAuthType("bio-FIR");
+		authTypeStatusDto.setLocked(true);
+		authTypeStatusDto.setUnlockForSeconds(-10L);
+		authTypes.add(authTypeStatusDto);
+		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypes);
+		RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
+		requestWrapper.setId("mosip.resident.auth.lock.unlock");
+		requestWrapper.setVersion("1.0");
+		requestWrapper.setRequest(authLockOrUnLockRequestDtoV2);
+		requestValidator.validateAuthLockOrUnlockRequestV2(requestWrapper);
+	}
 }
