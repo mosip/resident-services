@@ -47,7 +47,7 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private Environment env;
-	
+
 	@Mock
 	private ResourceLoader resourceLoader;
 
@@ -59,10 +59,10 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
-	
+
 	@Mock
 	private AuditUtil auditUtil;
-	
+
 	Resource resource;
 	private String identityMapping;
 	private String uiSchema;
@@ -78,28 +78,33 @@ public class ResidentConfigServiceImplTest {
 		resource = Mockito.mock(Resource.class);
 		Mockito.when(resourceLoader.getResource(Mockito.anyString())).thenReturn(resource);
 		when(resource.exists()).thenReturn(true);
-		
-		//getUISchemaData()
+
+		// getUISchemaData()
 		uiSchema = "{\"name\":\"ui-schema\"}";
 		when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(uiSchema.getBytes()));
 		uiSchemaMap = new HashMap<>();
 		List<Map<String, Object>> uiSchemaInputAttributes = new ArrayList<>();
 		Map<String, String> map1 = new HashMap<>();
-		map1.put("value", "abc");
+		map1.put(ResidentConstants.LABEL, "Full Name");
+		map1.put(ResidentConstants.VALUE, "fullName");
 		List<Map<String, String>> list = new ArrayList<>();
 		list.add(map1);
 		Map<String, Object> mapFormat = new HashMap<>();
 		mapFormat.put("eng", list);
-		Map<String, Object> uiSchemaInputAttribute = new HashMap<>();
-		uiSchemaInputAttribute.put("attributeName", "fullName");
-		uiSchemaInputAttribute.put("inputRequired", "firstName");
-		uiSchemaInputAttribute.put("controlType", "text");
-		uiSchemaInputAttribute.put("id", "1234");
-		uiSchemaInputAttribute.put(ResidentConstants.MASK_REQUIRED, true);
-		uiSchemaInputAttribute.put(ResidentConstants.MASK_ATTRIBUTE_NAME, "masked");
-		uiSchemaInputAttribute.put(ResidentConstants.FORMAT_REQUIRED, true);
-		uiSchemaInputAttribute.put(ResidentConstants.FORMAT_OPTION, mapFormat);
-		uiSchemaInputAttributes.add(uiSchemaInputAttribute);
+		Map<String, Object> uiSchemaInputAttribute1 = new HashMap<>();
+		uiSchemaInputAttribute1.put(ResidentConstants.ATTRIBUTE_NAME, "fullName");
+		uiSchemaInputAttribute1.put(ResidentConstants.MASK_REQUIRED, false);
+		uiSchemaInputAttribute1.put(ResidentConstants.LABEL, Map.of("eng", "Name"));
+		uiSchemaInputAttribute1.put(ResidentConstants.FORMAT_REQUIRED, true);
+		uiSchemaInputAttribute1.put(ResidentConstants.FORMAT_OPTION, mapFormat);
+		uiSchemaInputAttributes.add(uiSchemaInputAttribute1);
+		Map<String, Object> uiSchemaInputAttribute2 = new HashMap<>();
+		uiSchemaInputAttribute2.put(ResidentConstants.ATTRIBUTE_NAME, "UIN");
+		uiSchemaInputAttribute2.put(ResidentConstants.MASK_REQUIRED, true);
+		uiSchemaInputAttribute2.put(ResidentConstants.MASK_ATTRIBUTE_NAME, "masked_UIN");
+		uiSchemaInputAttribute2.put(ResidentConstants.LABEL, Map.of("eng", "UIN"));
+		uiSchemaInputAttribute2.put(ResidentConstants.FORMAT_REQUIRED, false);
+		uiSchemaInputAttributes.add(uiSchemaInputAttribute2);
 		uiSchemaMap.put(MappingJsonConstants.IDENTITY, uiSchemaInputAttributes);
 		Mockito.when(objectMapper.readValue(uiSchema.getBytes(), Map.class)).thenReturn(uiSchemaMap);
 	}
@@ -152,10 +157,13 @@ public class ResidentConfigServiceImplTest {
 	private void getIdentityMappingMap(ResidentConfigServiceImpl testSubject)
 			throws IOException, JsonParseException, JsonMappingException {
 		ReflectionTestUtils.setField(testSubject, "identityMapping", identityMapping);
-		Map<String, Object> identityAttributeMap = new HashMap<>();
-		identityAttributeMap.put(MappingJsonConstants.VALUE, "fullName");
 		Map<String, Object> identityDataMap = new HashMap<>();
-		identityDataMap.put("name", identityAttributeMap);
+		Map<String, Object> identityAttributeMap1 = new HashMap<>();
+		identityAttributeMap1.put(MappingJsonConstants.VALUE, "fullName");
+		identityDataMap.put("name", identityAttributeMap1);
+		Map<String, Object> identityAttributeMap2 = new HashMap<>();
+		identityAttributeMap2.put(MappingJsonConstants.VALUE, "UIN");
+		identityDataMap.put("uin", identityAttributeMap2);
 		Map<String, Object> identityMappingMap = new HashMap<>();
 		identityMappingMap.put(MappingJsonConstants.IDENTITY, identityDataMap);
 		Mockito.when(objectMapper.readValue(identityMapping.getBytes(), Map.class)).thenReturn(identityMappingMap);
@@ -173,7 +181,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetUiSchemaFilteredInputAttributes() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributes() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		List<String> result;
 		testSubject = createTestSubject();
@@ -182,7 +190,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributesNotNull() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		uiSchemaMap.put(MappingJsonConstants.IDENTITY, null);
 		Mockito.when(objectMapper.readValue(uiSchema.getBytes(), Map.class)).thenReturn(uiSchemaMap);
@@ -191,7 +199,7 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testGetUiSchemaFilteredInputAttributesWithException() throws Exception{
+	public void testGetUiSchemaFilteredInputAttributesWithException() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		Mockito.when(objectMapper.readValue(uiSchema.getBytes(), Map.class)).thenThrow(new IOException());
 		testSubject = createTestSubject();
@@ -199,29 +207,30 @@ public class ResidentConfigServiceImplTest {
 	}
 
 	@Test
-	public void testGetSharableAttributesList() throws Exception{
+	public void testGetSharableAttributesList() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		testSubject = createTestSubject();
 		getIdentityMappingMap(testSubject);
-		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("attributeName");
-		SharableAttributesDTO sharableAttributesDTO = new SharableAttributesDTO();
-		sharableAttributesDTO.setAttributeName("name");
+		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn(ResidentConstants.ATTRIBUTE_NAME);
+		SharableAttributesDTO sharableAttributesDTO1 = new SharableAttributesDTO();
+		sharableAttributesDTO1.setAttributeName("name");
+		sharableAttributesDTO1.setFormat("fullName");
+		SharableAttributesDTO sharableAttributesDTO2 = new SharableAttributesDTO();
+		sharableAttributesDTO2.setAttributeName("uin");
+		SharableAttributesDTO sharableAttributesDTO3 = new SharableAttributesDTO();
+		sharableAttributesDTO3.setAttributeName("dob");
+		sharableAttributesDTO3.setFormat("");
 		List<SharableAttributesDTO> sharableAttrList = new ArrayList<>();
-		sharableAttrList.add(sharableAttributesDTO);
+		sharableAttrList.add(sharableAttributesDTO1);
+		sharableAttrList.add(sharableAttributesDTO2);
+		sharableAttrList.add(sharableAttributesDTO3);
 		testSubject.getSharableAttributesList(sharableAttrList, "update-demographics");
 	}
 
 	@Test
-	public void testGetSharableAttributesListFormatAttr() throws Exception{
+	public void testGetUISchemaCacheableData() throws Exception {
 		ResidentConfigServiceImpl testSubject;
 		testSubject = createTestSubject();
-		getIdentityMappingMap(testSubject);
-		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("attributeName");
-		SharableAttributesDTO sharableAttributesDTO = new SharableAttributesDTO();
-		sharableAttributesDTO.setAttributeName("name");
-		sharableAttributesDTO.setFormat("fullName");
-		List<SharableAttributesDTO> sharableAttrList = new ArrayList<>();
-		sharableAttrList.add(sharableAttributesDTO);
-		testSubject.getSharableAttributesList(sharableAttrList, "update-demographics");
+		testSubject.getUISchemaCacheableData("update-demographics");
 	}
 }
