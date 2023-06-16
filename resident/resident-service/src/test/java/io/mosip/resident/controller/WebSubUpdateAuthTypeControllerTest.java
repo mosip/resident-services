@@ -39,13 +39,13 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
 /**
- * Web-Sub Update Controller Test
- * Note: This class is used to test the Web-Sub Update Controller
+ * Web-Sub Update Controller Test Note: This class is used to test the Web-Sub
+ * Update Controller
+ * 
  * @author Kamesh Shekhar Prasad
  */
 
@@ -54,87 +54,82 @@ import io.mosip.resident.util.AuditUtil;
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application.properties")
 public class WebSubUpdateAuthTypeControllerTest {
-	
-    @MockBean
-    private ProxyIdRepoService proxyIdRepoService;
 
-    @MockBean
-    @Qualifier("selfTokenRestTemplate")
-    private RestTemplate residentRestTemplate;
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
-    @Mock
-    private AuditUtil audit;
+	@MockBean
+	@Qualifier("selfTokenRestTemplate")
+	private RestTemplate residentRestTemplate;
 
-    @InjectMocks
-    WebSubUpdateAuthTypeController webSubUpdateAuthTypeController;
+	@Mock
+	private AuditUtil audit;
 
-    @MockBean
-    WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
+	@InjectMocks
+	WebSubUpdateAuthTypeController webSubUpdateAuthTypeController;
 
-    @Autowired
-    private MockMvc mockMvc;
+	@MockBean
+	WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
 
-    @MockBean
-    private VerificationService verificationService;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @MockBean
-    private IdAuthService idAuthService;
+	@MockBean
+	private VerificationService verificationService;
 
-    @MockBean
-    private ResidentVidService vidService;
+	@MockBean
+	private IdAuthService idAuthService;
 
-    @MockBean
-    private DocumentService docService;
+	@MockBean
+	private ResidentVidService vidService;
 
-    @MockBean
-    private ObjectStoreHelper objectStore;
+	@MockBean
+	private DocumentService docService;
 
-    @MockBean
-    private VerificationServiceImpl verificationServiceImpl;
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
-    @InjectMocks
-    VerificationController verificationController;
-    
-    @MockBean
-    private ResidentServiceImpl residentService;
-    
-    @Autowired
-    private ObjectMapper objectMapper;
+	@MockBean
+	VerificationController verificationController;
 
-    @Before
-    public void setup() throws Exception {
+	@MockBean
+	private ResidentServiceImpl residentService;
 
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeController).build();
-    }
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @Test
-    public void testCreateRequestGenerationSuccess() throws Exception {
+	@Before
+	public void setup() throws Exception {
 
-        EventModel eventModel=new EventModel();
-        Event event=new Event();
-        event.setTransactionId("1234");
-        event.setId("8251649601");
-        Map<String, Object> partnerIdMap = new java.util.HashMap<>();
-        partnerIdMap.put("olv_partner_id", "mpartner-default-auth");
-        event.setData(partnerIdMap);
+		MockitoAnnotations.initMocks(this);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeController).build();
+	}
 
-        eventModel.setEvent(event);
-        eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
-        eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
-        eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-        webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
+	@Test
+	public void testCreateRequestGenerationSuccess() throws Exception {
 
-        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(eventModel.toString()))
-                .andReturn();
-    }
+		EventModel eventModel = new EventModel();
+		Event event = new Event();
+		event.setTransactionId("1234");
+		event.setId("8251649601");
+		Map<String, Object> partnerIdMap = new java.util.HashMap<>();
+		partnerIdMap.put("olv_partner_id", "mpartner-default-auth");
+		event.setData(partnerIdMap);
 
-    @Test(expected = ResidentServiceException.class)
-    public void testAuthTypeCallbackWithException() throws Exception {
-    	EventModel eventModel=new EventModel();
-        doThrow(new ResidentServiceCheckedException()).when(webSubUpdateAuthTypeService).updateAuthTypeStatus(anyMap());
-        webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
-    }
+		eventModel.setEvent(event);
+		eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
+		eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
+		eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
+		webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
+
+		mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTypeCallback"))
+				.contentType(MediaType.APPLICATION_JSON).content(eventModel.toString())).andReturn();
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testAuthTypeCallbackWithException() throws Exception {
+		EventModel eventModel = new EventModel();
+		doThrow(new ResidentServiceCheckedException()).when(webSubUpdateAuthTypeService).updateAuthTypeStatus(anyMap());
+		webSubUpdateAuthTypeController.authTypeCallback(objectMapper.convertValue(eventModel, Map.class));
+	}
 }

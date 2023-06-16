@@ -40,13 +40,13 @@ import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.service.VerificationService;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.service.impl.VerificationServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 
 /**
- * Web-Sub Update Controller Test
- * Note: This class is used to test the Auth transaction callback controller
+ * Web-Sub Update Controller Test Note: This class is used to test the Auth
+ * transaction callback controller
+ * 
  * @author Kamesh Shekhar Prasad
  */
 
@@ -56,92 +56,85 @@ import io.mosip.resident.util.AuditUtil;
 @TestPropertySource(locations = "classpath:application.properties")
 public class AuthTransactionCallbackControllerTest {
 
-    @MockBean
-    @Qualifier("selfTokenRestTemplate")
-    private RestTemplate residentRestTemplate;
+	@MockBean
+	@Qualifier("selfTokenRestTemplate")
+	private RestTemplate residentRestTemplate;
 
-    @Mock
-    private AuditUtil audit;
+	@Mock
+	private AuditUtil audit;
 
-    @InjectMocks
-    AuthTransactionCallbackController authTransactionCallbackController;
+	@InjectMocks
+	AuthTransactionCallbackController authTransactionCallbackController;
 
-    @MockBean
-    private AuthTransactionCallBackService authTransactionCallBackService;
+	@MockBean
+	private AuthTransactionCallBackService authTransactionCallBackService;
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @MockBean
-    private VerificationService verificationService;
+	@MockBean
+	private VerificationService verificationService;
 
-    @MockBean
-    private IdAuthService idAuthService;
+	@MockBean
+	private IdAuthService idAuthService;
 
-    @MockBean
-    private ResidentVidService vidService;
+	@MockBean
+	private ResidentVidService vidService;
 
-    @MockBean
-    private DocumentService docService;
+	@MockBean
+	private DocumentService docService;
 
-    @MockBean
-    private ObjectStoreHelper objectStore;
-    
-    @MockBean
-    private ResidentServiceImpl residentService;
+	@MockBean
+	private ObjectStoreHelper objectStore;
 
-    @MockBean
-    private VerificationServiceImpl verificationServiceImpl;
-    
-    @MockBean
-    private ProxyIdRepoService proxyIdRepoService;
+	@MockBean
+	private ResidentServiceImpl residentService;
 
-    @InjectMocks
-    VerificationController verificationController;
-    
-    @Autowired
-    private ObjectMapper objectMapper;
+	@MockBean
+	private ProxyIdRepoService proxyIdRepoService;
 
-    private EventModel eventModel;
+	@InjectMocks
+	VerificationController verificationController;
 
-    @Before
-    public void setup() throws Exception {
+	@Autowired
+	private ObjectMapper objectMapper;
 
-        MockitoAnnotations.initMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(authTransactionCallbackController).build();
-        eventModel=new EventModel();
-        Event event=new Event();
-        event.setTransactionId("1234");
-        Map<String, Object> partnerIdMap = new java.util.HashMap<>();
-        partnerIdMap.put("olv_partner_id", "mpartner-default-auth");
-        event.setData(partnerIdMap);
+	private EventModel eventModel;
 
-        eventModel.setEvent(event);
-        eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
-        eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
-        eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
-    }
+	@Before
+	public void setup() throws Exception {
 
-    @Test
-    public void testCreateRequestGenerationSuccess() throws Exception {
-        authTransactionCallbackController.authTransactionCallback(objectMapper.convertValue(eventModel, Map.class));
-        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction"))
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(eventModel.toString()))
-                .andReturn();
-        verify(authTransactionCallBackService).updateAuthTransactionCallBackService(any());
-    }
+		MockitoAnnotations.initMocks(this);
+		this.mockMvc = MockMvcBuilders.standaloneSetup(authTransactionCallbackController).build();
+		eventModel = new EventModel();
+		Event event = new Event();
+		event.setTransactionId("1234");
+		Map<String, Object> partnerIdMap = new java.util.HashMap<>();
+		partnerIdMap.put("olv_partner_id", "mpartner-default-auth");
+		event.setData(partnerIdMap);
 
-    @Test(expected = ResidentServiceException.class)
-    public void testCreateRequestGenerationFailure() throws Exception {
-        doThrow(new ResidentServiceCheckedException("error", "Error message")).
-                when(authTransactionCallBackService).updateAuthTransactionCallBackService(any());
-        authTransactionCallbackController.authTransactionCallback(objectMapper.convertValue(eventModel, Map.class));
-        mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(eventModel.toString()))
-                .andReturn();
-        verify(authTransactionCallBackService).updateAuthTransactionCallBackService(any());
-    }
+		eventModel.setEvent(event);
+		eventModel.setTopic("AUTH_TYPE_STATUS_UPDATE_ACK");
+		eventModel.setPublishedOn(String.valueOf(LocalDateTime.now()));
+		eventModel.setPublisher("AUTH_TYPE_STATUS_UPDATE_ACK");
+	}
+
+	@Test
+	public void testCreateRequestGenerationSuccess() throws Exception {
+		authTransactionCallbackController.authTransactionCallback(objectMapper.convertValue(eventModel, Map.class));
+		mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction"))
+				.contentType(MediaType.APPLICATION_JSON).content(eventModel.toString())).andReturn();
+		verify(authTransactionCallBackService).updateAuthTransactionCallBackService(any());
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testCreateRequestGenerationFailure() throws Exception {
+		doThrow(new ResidentServiceCheckedException("error", "Error message")).when(authTransactionCallBackService)
+				.updateAuthTransactionCallBackService(any());
+		authTransactionCallbackController.authTransactionCallback(objectMapper.convertValue(eventModel, Map.class));
+		mockMvc.perform((MockMvcRequestBuilders.post("/callback/authTransaction"))
+				.contentType(MediaType.APPLICATION_JSON).content(eventModel.toString())).andReturn();
+		verify(authTransactionCallBackService).updateAuthTransactionCallBackService(any());
+	}
 
 }
