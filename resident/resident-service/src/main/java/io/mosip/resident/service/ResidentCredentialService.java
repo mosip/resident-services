@@ -1,5 +1,7 @@
 package io.mosip.resident.service;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
@@ -35,5 +37,7 @@ public interface ResidentCredentialService {
 			String credentialType);
 
 	public byte[] getCard(String requestId, String applicationId, String partnerReferenceId) throws Exception;
+
+	public URI getDataShareUri(String requestId) throws ApisResourceAccessException, IOException;
 
 }

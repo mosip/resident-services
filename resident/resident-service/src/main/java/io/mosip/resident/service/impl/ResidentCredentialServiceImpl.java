@@ -354,29 +354,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 	@Override
 	public byte[] getCard(String requestId, String appId, String partnerRefId) throws Exception {
-		// TODO Auto-generated method stub
-		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
-		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		try {
-			String credentialUrl = "";
-			if(requestId.contains(ridSuffix)) {
-				credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
-			} else {
-				UUID requestUUID = UUID.fromString(requestId);
-				credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
-			}
-			URI credentailStatusUri = URI.create(credentialUrl);
-			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
-			credentialRequestStatusResponseDto = JsonUtil.readValue(
-					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
-			if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() == null
-			|| credentialRequestStatusResponseDto.getUrl().isEmpty()){
-				audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
-				logger.error("Data share URL is not available.");
-				throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-			}
-			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
+			URI dataShareUri = getDataShareUri(requestId);
 			if(appId!=null){
 				return getDataShareData(appId, partnerRefId, dataShareUri);
 			}else {
@@ -396,6 +375,32 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
 
+	}
+
+	@Override
+	public URI getDataShareUri(String requestId) throws ApisResourceAccessException, IOException {
+		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
+		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
+		String credentialUrl = "";
+		if(requestId.contains(ridSuffix)) {
+			credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+		} else {
+			UUID requestUUID = UUID.fromString(requestId);
+			credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
+		}
+		URI credentailStatusUri = URI.create(credentialUrl);
+		responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
+		credentialRequestStatusResponseDto = JsonUtil.readValue(
+				JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
+		if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() == null
+		|| credentialRequestStatusResponseDto.getUrl().isEmpty()){
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
+			logger.error("Data share URL is not available.");
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+		}
+		URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
+		return dataShareUri;
 	}
 
 	public byte[] getDataShareData(String appId, String partnerRefId, URI dataShareUri)
