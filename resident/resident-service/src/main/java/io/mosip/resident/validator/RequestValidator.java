@@ -1011,19 +1011,11 @@ public class RequestValidator {
 	}
 
 	private boolean validateIndividualIdvIdWithoutIdType(String individualId) {
-		try {
-			return this.validateUin(individualId) || this.validateVid(individualId) || this.validateRid(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
+		return this.validateUin(individualId) || this.validateVid(individualId) || this.validateRid(individualId);
 	}
 
 	private boolean validateUinOrVid(String individualId) {
-		try {
-			return this.validateUin(individualId) || this.validateVid(individualId);
-		} catch (InvalidIDException e) {
-			return false;
-		}
+		return this.validateUin(individualId) || this.validateVid(individualId);
 	}
 
 	public void validateAidStatusRequestDto(RequestWrapper<AidStatusRequestDTO> reqDto) throws ResidentServiceCheckedException {

@@ -18,12 +18,16 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -575,6 +579,13 @@ public class UtilityTest {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, null, localDateTime);
 		assertEquals("1993-08-14", formatWithOffsetForFileName);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testGetSessionUserName() throws ApisResourceAccessException {
+		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
+		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
+		utility.getSessionUserName();
 	}
 	
 }
