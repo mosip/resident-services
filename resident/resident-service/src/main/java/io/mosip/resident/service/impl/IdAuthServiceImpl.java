@@ -97,7 +97,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Value("${auth.type.status.id}")
 	private String authTypeStatusId;
 
-	@Value("${mosipbox.public.url:null}")
+	@Value("${mosip.ida.domain-url:null}")
 	private String domainUrl;
 
 	@Value("${mosip.ida.env:Staging}")

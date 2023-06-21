@@ -105,7 +105,7 @@ public class RepeatableStreamHttpServletRequest extends HttpServletRequestWrappe
 
 	/**
 	 * The Class RepeatableServletInputStream - used in
-	 * ResettableStreamHttpServletRequest
+	 * RepeatableServletInputStream
 	 */
 	private class RepeatableServletInputStream extends ServletInputStream {
 
