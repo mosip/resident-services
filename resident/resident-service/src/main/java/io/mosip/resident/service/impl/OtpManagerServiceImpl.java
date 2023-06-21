@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
-import io.mosip.resident.util.Utilities;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -49,6 +48,7 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 
