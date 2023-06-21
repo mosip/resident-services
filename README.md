@@ -3,7 +3,6 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mosip_resident-services&id=mosip_resident-services&branch=release-1.2.0.1&metric=alert_status)](https://sonarcloud.io/dashboard?id=mosip_resident-services&branch=release-1.2.0.1)
 
 # Resident Services
-
 ## Overview
 Refer [here](https://docs.mosip.io/1.2.0/modules/resident-services).
 
