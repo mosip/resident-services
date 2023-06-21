@@ -1,11 +1,11 @@
 package io.mosip.resident.dto;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * @author Kamesh Shekhar Prasad
