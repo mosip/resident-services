@@ -1,7 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
