@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
+import io.mosip.resident.constant.IdType;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -211,7 +212,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
-        String individualId= identityService.getUinForIndividualId(identityService.getResidentIndvidualIdFromSession());
+        String individualId= identityService.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
@@ -224,8 +225,9 @@ public class OtpManagerServiceImpl implements OtpManager {
         Map identityMap = new LinkedHashMap();
         JSONObject obj = utilities.retrieveIdrepoJson(individualId);
         String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+        String uin = String.valueOf(obj.get(IdType.UIN.name()));
         identityMap.put("IDSchemaVersion", idSchemaVersionStr);
-        identityMap.put(individualIdType, individualId);
+        identityMap.put(IdType.UIN.name(), uin);
         String channel = getChannel(userId, transactionId);
         identityMap.put(channel, userId);
         JSONObject jsonObject = new JSONObject();
