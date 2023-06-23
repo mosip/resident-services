@@ -18,11 +18,13 @@ import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRequestDtoV2;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
+import io.mosip.resident.dto.VidRevokeRequestDTOV2;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
@@ -472,6 +474,54 @@ public class ResidentVidServiceTest {
         vidRequestDtoV2.setTransactionID("3434232323");
         assertEquals("1236547899874563",residentVidService.
                 generateVidV2(vidRequestDtoV2, "123232323").getT2());
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testRevokeVidV2Failed() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+        Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
+        vidRevokeRequestDTOV2.setTransactionID("1234567896");
+        vidRevokeRequestDTOV2.setVidStatus("Active");
+        residentVidService.revokeVid(vidRevokeRequestDTOV2, "2076439409167031", "2037293183 ");
+    }
+
+    @Test(expected = VidRevocationException.class)
+    public void testRevokeVidV2VidRevocationException() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+        Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDATokenForIndividualId(Mockito.any())).thenReturn("123456789");
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
+        vidRevokeRequestDTOV2.setTransactionID("1234567896");
+        vidRevokeRequestDTOV2.setVidStatus("Active");
+        residentVidService.revokeVid(vidRevokeRequestDTOV2, "2076439409167031", "2037293183 ");
+    }
+
+    @Test
+    public void testRevokeVidV2Success() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+        IdentityServiceTest.getAuthUserDetailsFromAuthentication();
+        ResponseWrapper<VidGeneratorResponseDto> responseWrapper = new ResponseWrapper<>();
+        VidGeneratorResponseDto dto = new VidGeneratorResponseDto();
+        dto.setVidStatus("Deactive");
+        responseWrapper.setResponse(dto);
+        responseWrapper.setVersion("v1");
+        responseWrapper.setResponsetime(DateUtils.getCurrentDateTimeString());
+        when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
+        Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
+        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDATokenForIndividualId(Mockito.any())).thenReturn("123456789");
+        when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+        VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
+        vidRevokeRequestDTOV2.setTransactionID("1234567896");
+        vidRevokeRequestDTOV2.setVidStatus("Active");
+        assertEquals("Vid successfully generated",
+                residentVidService.revokeVid(vidRevokeRequestDTOV2, "2076439409167031", "2037293183 ").getResponse().getMessage());
     }
 
 }
