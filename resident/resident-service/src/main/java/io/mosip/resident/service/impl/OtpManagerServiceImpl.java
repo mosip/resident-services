@@ -211,7 +211,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
-        String individualId= identityService.getResidentIndvidualIdFromSession();
+        String individualId= identityService.getUinForIndividualId(identityService.getResidentIndvidualIdFromSession());
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
