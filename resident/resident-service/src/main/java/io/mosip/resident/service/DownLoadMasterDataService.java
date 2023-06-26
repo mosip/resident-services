@@ -2,7 +2,6 @@ package io.mosip.resident.service;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import org.springframework.stereotype.Service;
 

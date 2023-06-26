@@ -10,8 +10,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,7 +24,9 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.dto.DocumentDTO;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.validator.DocumentValidator;

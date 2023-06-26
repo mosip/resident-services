@@ -1,5 +1,7 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +37,6 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
-
-import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
 
 /**
  * Resident proxy masterdata service implementation class.
