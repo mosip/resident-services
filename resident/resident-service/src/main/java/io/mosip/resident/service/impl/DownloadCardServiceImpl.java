@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.exception.ResidentCredentialServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -182,7 +183,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 							ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
 				}
 			}
-		} catch (ApisResourceAccessException e) {
+		} catch (ApisResourceAccessException | ResidentCredentialServiceException e) {
 			audit.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e,

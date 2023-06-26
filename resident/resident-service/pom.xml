@@ -401,6 +401,32 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.11.0</version>
 		</dependency>
+		<dependency>
+		    <groupId>com.nimbusds</groupId>
+		    <artifactId>nimbus-jose-jwt</artifactId>
+		    <version>9.31</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>itextpdf</artifactId>
+		    <version>5.5.13.3</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.mosip.kernel</groupId>
+		    <artifactId>kernel-pdfgenerator-itext</artifactId>
+		    <version>1.2.0.1-B1</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-test</artifactId>
+		    <version>5.3.3.RELEASE</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.bitbucket.b_c</groupId>
+		    <artifactId>jose4j</artifactId>
+		    <version>0.9.3</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
