@@ -1,6 +1,5 @@
 package io.mosip.resident.exception;
 
-import io.mosip.kernel.core.exception.BaseUncheckedException;
 import io.mosip.resident.constant.ResidentErrorCode;
 
 public class InvalidInputException extends BaseResidentUncheckedExceptionWithMetadata {

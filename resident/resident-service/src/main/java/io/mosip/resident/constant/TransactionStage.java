@@ -1,7 +1,6 @@
 package io.mosip.resident.constant;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.core.env.Environment;
