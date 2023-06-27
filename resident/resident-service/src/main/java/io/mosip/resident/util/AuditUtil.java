@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -28,13 +29,18 @@ import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.AuditRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.ValidationException;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 @Component
 public class AuditUtil {
@@ -120,9 +126,8 @@ public class AuditUtil {
 		auditRequestDto.setModuleId(eventEnum.getModuleId());
 		auditRequestDto.setModuleName(eventEnum.getModuleName());
 		auditRequestDto.setEventId(eventEnum.getEventId());
-		auditRequestDto.setId(eventEnum.getId());
-		auditRequestDto.setIdType(eventEnum.getIdType());
-		auditRequestDto.setCreatedBy(ResidentConstants.RESIDENT);
+		auditRequestDto.setId(getRefIdandType().getT1());
+		auditRequestDto.setIdType(getRefIdandType().getT2());
 		callAuditManager(auditRequestDto);
 	}
 	
@@ -166,6 +171,23 @@ public class AuditUtil {
 		}
 
 		return auditResponseDto;
+	}
+	
+	public Tuple2<String, String> getRefIdandType() {
+		String refId = null;
+		String refIdType = null;
+		try {
+			String individualId = identityService.getResidentIndvidualIdFromSession();
+			if (individualId == null || individualId.isEmpty()) {
+				return Tuples.of(ResidentConstants.NO_ID, ResidentConstants.NO_ID_TYPE);
+			}
+			refId = HMACUtils2.digestAsPlainText(individualId.getBytes());
+			refIdType = identityService.getIndividualIdType(individualId);
+		} catch (ApisResourceAccessException | NoSuchAlgorithmException e) {
+			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		return Tuples.of(refId, refIdType);
 	}
 
 }

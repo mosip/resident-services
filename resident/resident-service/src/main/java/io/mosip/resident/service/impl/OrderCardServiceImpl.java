@@ -128,12 +128,11 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto, String individualId)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		String attributeList = requestDto.getSharableAttributes().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
-		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(requestDto.getIssuer());
@@ -307,10 +306,9 @@ public class OrderCardServiceImpl implements OrderCardService {
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity();
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.name());
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRequestedEntityId(partnerId);
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
