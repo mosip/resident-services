@@ -14,10 +14,10 @@
 	<version>1.2.0.1-SNAPSHOT</version>
 	<properties>
 		<commons.packet.manager.version>1.2.0.1-SNAPSHOT</commons.packet.manager.version>
-		<kernel.core.version>1.2.0.1-B1</kernel.core.version>
+		<kernel.core.version>1.2.0.1-SNAPSHOT</kernel.core.version>
 		<kernel.virusscanner.clamav.version>1.2.0.1-SNAPSHOT</kernel.virusscanner.clamav.version>
 		<id-repository-core.version>1.2.0.1-SNAPSHOT</id-repository-core.version>
-		<kernel-keymanager-service.version>1.2.0.1-B1</kernel-keymanager-service.version>
+		<kernel-keymanager-service.version>1.2.0.1-SNAPSHOT</kernel-keymanager-service.version>
 		<kernel.authcodeflowproxy.api.version>1.2.0.1-SNAPSHOT</kernel.authcodeflowproxy.api.version>
 		<kernel.parent.version>1.2.0</kernel.parent.version>
 		<kernel-cbeffutil-api.version>${kernel.parent.version}</kernel-cbeffutil-api.version>
@@ -414,7 +414,7 @@
 		<dependency>
 		    <groupId>io.mosip.kernel</groupId>
 		    <artifactId>kernel-pdfgenerator-itext</artifactId>
-		    <version>1.2.0.1-B1</version>
+		    <version>1.2.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.springframework.security</groupId>
