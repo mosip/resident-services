@@ -463,9 +463,14 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String rid = getRidForIndividualId(individualId);
         Map<String, String> packetStatusMap = utilities.getPacketStatus(rid);
         try {
-        	residentCredentialService.getDataShareUrl(rid + ridSuffix);
+        	String transactionTypeCode = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+			String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
+        	if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
+					&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
+        		residentCredentialService.getDataShareUrl(rid + ridSuffix);
+        	}
         } catch(Exception e) {
-        	packetStatusMap.put(ResidentConstants.AID_STATUS, PacketStatus.FAILURE.getName());
+        	packetStatusMap.put(ResidentConstants.AID_STATUS, PacketStatus.IN_PROGRESS.getName());
         }
         return getCheckStatusResponse(packetStatusMap);
     }
