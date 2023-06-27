@@ -37,6 +37,6 @@ public interface ResidentCredentialService {
 
 	public byte[] getCard(String requestId, String applicationId, String partnerReferenceId) throws Exception;
 
-	public String getDataShareUri(String requestId) throws ApisResourceAccessException, IOException;
+	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException;
 
 }

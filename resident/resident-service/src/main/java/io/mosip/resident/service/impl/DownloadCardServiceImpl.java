@@ -463,7 +463,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
         String rid = getRidForIndividualId(individualId);
         Map<String, String> packetStatusMap = utilities.getPacketStatus(rid);
         try {
-        	residentCredentialService.getDataShareUri(rid + ridSuffix);
+        	residentCredentialService.getDataShareUrl(rid + ridSuffix);
         } catch(Exception e) {
         	packetStatusMap.put(ResidentConstants.AID_STATUS, PacketStatus.FAILURE.getName());
         }

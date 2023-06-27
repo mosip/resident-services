@@ -355,7 +355,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	@Override
 	public byte[] getCard(String requestId, String appId, String partnerRefId) throws Exception {
 		try {
-			String dataShareUrl = getDataShareUri(requestId);
+			String dataShareUrl = getDataShareUrl(requestId);
 			URI dataShareUri = URI.create(dataShareUrl);
 			if(appId!=null){
 				return getDataShareData(appId, partnerRefId, dataShareUri);
@@ -379,7 +379,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 
 	@Override
-	public String getDataShareUri(String requestId) throws ApisResourceAccessException, IOException {
+	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException {
 		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
 		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		String credentialUrl = "";
