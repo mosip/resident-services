@@ -107,8 +107,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             log.error("In callsendOtp method of login service- ", e);
             audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
                     userid, "Send OTP"));
-            throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(),
-                    ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorMessage());
+            throw e;
         }
         catch (Exception ex) {
             log.error("In callsendOtp method of login service- ", ex);
