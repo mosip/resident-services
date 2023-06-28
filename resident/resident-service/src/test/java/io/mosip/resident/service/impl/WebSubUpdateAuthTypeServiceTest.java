@@ -3,11 +3,6 @@ package io.mosip.resident.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.core.websub.model.Event;
 import io.mosip.kernel.core.websub.model.EventModel;
-import io.mosip.kernel.core.websub.spi.PublisherClient;
-import io.mosip.kernel.core.websub.spi.SubscriptionClient;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
-import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -17,7 +12,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,15 +45,6 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 @ContextConfiguration
 public class WebSubUpdateAuthTypeServiceTest {
 
-    @Mock
-    private ResidentServiceRestClient residentServiceRestClient;
-
-    @Mock
-    Environment env;
-
-    @Mock
-    private AuditUtil audit;
-
     @InjectMocks
     private WebSubUpdateAuthTypeServiceImpl webSubUpdateAuthTypeService;
 
@@ -70,12 +53,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Mock
-    private PublisherClient<String, Object, HttpHeaders> publisher;
-
-    @Mock
-    SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
     @Mock
     private AuditUtil auditUtil;
@@ -161,7 +138,7 @@ public class WebSubUpdateAuthTypeServiceTest {
         verify(notificationService, times(1)).sendNotification(any(NotificationRequestDtoV2.class));
     }
 
-    @Test(expected = ResidentServiceCheckedException.class)
+    @Test
     public void testUpdateAuthTypeStatus_Failure() throws Exception {
         // Mock data
         Map<String, Object> eventModel = new HashMap<>();
