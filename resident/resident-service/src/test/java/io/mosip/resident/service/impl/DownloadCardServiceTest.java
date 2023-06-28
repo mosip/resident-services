@@ -161,23 +161,22 @@ public class DownloadCardServiceTest {
     }
 
     @Test
-    public void testDownloadCardServiceTest() throws ResidentServiceCheckedException  {
-        Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
-        assertEquals(pdfbytes, actualResult.getT1());
-    }
-
-    @Test
-    public void testGetDownloadCardPdfVID() throws ResidentServiceCheckedException{
+    public void testGetDownloadCardPdfVID() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException{
+    	Map<String, String> hashMap = new HashMap<>();
+        hashMap.put(ResidentConstants.AID_STATUS, PacketStatus.SUCCESS.getName());
+        hashMap.put(ResidentConstants.TRANSACTION_TYPE_CODE, TransactionStage.CARD_READY_TO_DOWNLOAD.name());
+        Mockito.when(utilities.getPacketStatus(Mockito.anyString())).thenReturn(hashMap);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
         Tuple2<byte[], String> actualResult = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
         assertNotNull(actualResult);
+        assertEquals(pdfbytes, actualResult.getT1());
     }
 
     @Test
     public void testGetDownloadCardPdfAID() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
     	String rid = "7841261580";
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.put(ResidentConstants.AID_STATUS, "SUCCESS");
+        hashMap.put(ResidentConstants.AID_STATUS, PacketStatus.SUCCESS.getName());
         hashMap.put(ResidentConstants.TRANSACTION_TYPE_CODE, TransactionStage.CARD_READY_TO_DOWNLOAD.name());
         Mockito.when(utilities.getPacketStatus(rid)).thenReturn(hashMap);
         Mockito.when(identityService.getIndividualIdType(Mockito.anyString())).thenReturn("AID");
