@@ -145,22 +145,16 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
-					String idType = identityService.getIndividualIdType(individualId);
-					if (idType.equalsIgnoreCase(AID)) {
-						rid = individualId;
-						Map<String, String> ridStatus = utilities.getPacketStatus(rid);
-						String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
-						String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
-						if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
-								&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
-							pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
-						} else {
-							throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
-									ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
-						}
-					} else {
-						rid = utilities.getRidByIndividualId(individualId);
+					rid = getRidForIndividualId(individualId);
+					Map<String, String> ridStatus = utilities.getPacketStatus(rid);
+					String transactionTypeCode = ridStatus.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+					String aidStatus = ridStatus.get(ResidentConstants.AID_STATUS);
+					if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
+							&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
 						pdfBytes = residentCredentialService.getCard(rid + ridSuffix, null, null);
+					} else {
+						throw new ResidentServiceException(ResidentErrorCode.CARD_NOT_READY.getErrorCode(),
+								ResidentErrorCode.CARD_NOT_READY.getErrorMessage());
 					}
 					if (pdfBytes.length == 0) {
 						residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -466,8 +460,19 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 
     @Override
     public ResponseWrapper<CheckStatusResponseDTO> getIndividualIdStatus(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-        individualId = getRidForIndividualId(individualId);
-        Map<String, String> packetStatusMap = utilities.getPacketStatus(individualId);
+        String rid = getRidForIndividualId(individualId);
+        Map<String, String> packetStatusMap = utilities.getPacketStatus(rid);
+        try {
+        	String transactionTypeCode = packetStatusMap.get(ResidentConstants.TRANSACTION_TYPE_CODE);
+			String aidStatus = packetStatusMap.get(ResidentConstants.AID_STATUS);
+        	if (transactionTypeCode.equalsIgnoreCase(TransactionStage.CARD_READY_TO_DOWNLOAD.name())
+					&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
+        		residentCredentialService.getDataShareUrl(rid + ridSuffix);
+        	}
+        } catch(ResidentCredentialServiceException e) {
+        	logger.info("Since datashare URL is not available, marking the aid status as in-progress.");
+        	packetStatusMap.put(ResidentConstants.AID_STATUS, PacketStatus.IN_PROGRESS.getName());
+        }
         return getCheckStatusResponse(packetStatusMap);
     }
 
