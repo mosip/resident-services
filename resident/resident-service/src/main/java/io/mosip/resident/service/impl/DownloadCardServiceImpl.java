@@ -469,7 +469,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					&& aidStatus.equalsIgnoreCase(PacketStatus.SUCCESS.getName())) {
         		residentCredentialService.getDataShareUrl(rid + ridSuffix);
         	}
-        } catch(Exception e) {
+        } catch(ResidentCredentialServiceException e) {
+        	logger.error("Since datashare URL is not available, marking the aid status as in-progress.");
         	packetStatusMap.put(ResidentConstants.AID_STATUS, PacketStatus.IN_PROGRESS.getName());
         }
         return getCheckStatusResponse(packetStatusMap);
