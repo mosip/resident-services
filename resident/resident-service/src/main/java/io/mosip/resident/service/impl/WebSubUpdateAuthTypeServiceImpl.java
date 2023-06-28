@@ -76,13 +76,11 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 					"WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::exception");
 			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
 			sendNotificationV2(TemplateType.FAILURE, tupleResponse.getT1(), tupleResponse.getT2());
-			throw new ResidentServiceCheckedException(
-					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
-					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
+			throw e;
         }
     }
 
-    private Tuple2<String, String> updateInResidentTransactionTable(Map<String, Object> eventModel,  String status) {
+    private Tuple2<String, String> updateInResidentTransactionTable(Map<String, Object> eventModel,  String status) throws ResidentServiceCheckedException {
 
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
@@ -137,6 +135,9 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                     LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::exception");
+			throw new ResidentServiceCheckedException(
+					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
+					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
         }
         return Tuples.of(eventId, individualId);
     }

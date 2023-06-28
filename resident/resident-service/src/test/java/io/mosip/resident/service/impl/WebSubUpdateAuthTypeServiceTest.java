@@ -161,6 +161,19 @@ public class WebSubUpdateAuthTypeServiceTest {
         verify(notificationService, times(1)).sendNotification(any(NotificationRequestDtoV2.class));
     }
 
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testUpdateAuthTypeStatus_Failure() throws Exception {
+        // Mock data
+        Map<String, Object> eventModel = new HashMap<>();
+        eventModel.put("event", getMockEventMap());
+
+        // Mock repository response
+        when(residentTransactionRepository.findByRequestTrnId("12345")).thenThrow(new RuntimeException());
+
+        // Invoke the method
+        webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
+    }
+
     private Map<String, Object> getMockEventMap() {
         Map<String, Object> eventMap = new HashMap<>();
         Map<String, Object> dataMap = new HashMap<>();
