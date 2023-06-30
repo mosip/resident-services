@@ -172,7 +172,6 @@ public class OtpManagerServiceImpl implements OtpManager {
                         this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorCode(), "USER_BLOCKED");
                         throw new ResidentServiceException(ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorCode(), ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorMessage());
                     }
-
                     otp = res.get("otp");
                 }
             }
@@ -180,7 +179,7 @@ public class OtpManagerServiceImpl implements OtpManager {
             return otp;
         } catch (ResidentServiceException var9) {
             this.logger.error("sessionId", this.getClass().getSimpleName(), "generateOTP", var9.getMessage());
-            throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(), ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage());
+            throw new ResidentServiceException(ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorCode(), ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorMessage());
         } catch (Exception var10) {
             this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.SERVER_ERROR.getErrorCode(), ResidentErrorCode.SERVER_ERROR.getErrorMessage());
             throw new ResidentServiceException(ResidentErrorCode.SERVER_ERROR.getErrorCode(), ResidentErrorCode.SERVER_ERROR.getErrorMessage());

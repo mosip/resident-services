@@ -1,13 +1,24 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.when;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.resident.dto.MainRequestDTO;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.entity.OtpTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.OtpTransactionRepository;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ResidentService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.validator.RequestValidator;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,25 +38,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import reactor.util.function.Tuples;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.resident.dto.MainRequestDTO;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.OtpRequestDTOV2;
-import io.mosip.resident.entity.OtpTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.OtpTransactionRepository;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.validator.RequestValidator;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * This class is used to test Otp Manger service impl class.
@@ -110,6 +116,9 @@ public class OTPManagerServiceImplTest {
     @Mock
     private ResidentService residentService;
 
+    @Mock
+    private Utilities utilities;
+
     @Before
     public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
         MockitoAnnotations.initMocks(this);
@@ -143,24 +152,24 @@ public class OTPManagerServiceImplTest {
 
     @Test
     public void testSendOtpSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testSendOtpAlreadyOtpSendError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(9);
-        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
 
     @Test
     public void testSendOtpOtpSendWithinLessTime() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
-        assertEquals(true, otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
     }
 
     @Test
     public void testSendOtpPhoneSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        assertEquals(true, otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
     }
 
     @Test
@@ -169,7 +178,7 @@ public class OTPManagerServiceImplTest {
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
         otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime().plusSeconds(120));
         when(otpTransactionRepository.findTopByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
-        assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
+        assertTrue(otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -178,7 +187,59 @@ public class OTPManagerServiceImplTest {
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
         otpTransactionEntity.setExpiryDtimes(DateUtils.getUTCCurrentDateTime());
         when(otpTransactionRepository.findTopByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(otpTransactionEntity);
-        assertEquals(true, otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
+        assertTrue(otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
     }
 
+    @Test(expected = ResidentServiceException.class)
+    public void testSendOtpPhoneBlockedOtp() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        Map<String, String> responseMap = new HashMap<>();
+        responseMap.put("otp", "111111");
+        responseMap.put("status", "USER_BLOCKED");
+        response.setResponse(responseMap);
+        ResponseWrapper<Map<String, String>> responseMap1=new ResponseWrapper<>();
+        responseMap1.setResponse(responseMap);
+        response1 = new ResponseEntity<>(responseMap1, HttpStatus.ACCEPTED);
+        Mockito.when(restTemplate.exchange(ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any(HttpMethod.class),
+                        ArgumentMatchers.any(),
+                        Mockito.eq(ResponseWrapper.class)))
+                .thenReturn(response1);
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+    }
+
+    @Test(expected = ResidentServiceException.class)
+    public void testSendOtpPhoneServerError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
+        Mockito.when(restTemplate.exchange(ArgumentMatchers.anyString(),
+                        ArgumentMatchers.any(HttpMethod.class),
+                        ArgumentMatchers.any(),
+                        Mockito.eq(ResponseWrapper.class)))
+                .thenThrow(new RestClientException("error"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+    }
+
+    @Test
+    public void testValidateOtpOtpHashExists() throws ResidentServiceCheckedException, ApisResourceAccessException {
+        when(otpTransactionRepository.existsByOtpHashAndStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+        assertFalse(otpManagerService.validateOtp("111111", "kamesh@gmail.com", "1234565656"));
+    }
+
+    @Test
+    public void testUpdateUserIdWithEmail() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("IDSchemaVersion", "0.1");
+        when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+        when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("EMAIL"));
+        when(residentService.reqUinUpdate(Mockito.any())).thenReturn(Tuples.of(jsonObject, "passed"));
+        assertEquals("passed",otpManagerService.updateUserId("kam@g.com", "1232323232").getT2());
+    }
+
+    @Test
+    public void testUpdateUserIdWithPhone() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("IDSchemaVersion", "0.1");
+        when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+        when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("PHONE"));
+        when(residentService.reqUinUpdate(Mockito.any())).thenReturn(Tuples.of(jsonObject, "passed"));
+        assertEquals("passed",otpManagerService.updateUserId("kam@g.com", "1232323232").getT2());
+    }
 }

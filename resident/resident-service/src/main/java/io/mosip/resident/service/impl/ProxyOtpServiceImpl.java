@@ -68,7 +68,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     private String mandatoryLanguage;
 
     @Override
-    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ResidentServiceCheckedException {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         String userid = null;
         boolean isSuccess = false;
@@ -103,6 +103,11 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                 throw new ResidentServiceException(ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorCode(),
                         ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorMessage());
             }
+        } catch (ResidentServiceCheckedException e){
+            log.error("In callsendOtp method of login service- ", e);
+            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
+                    userid, "Send OTP"));
+            throw e;
         }
         catch (Exception ex) {
             log.error("In callsendOtp method of login service- ", ex);
