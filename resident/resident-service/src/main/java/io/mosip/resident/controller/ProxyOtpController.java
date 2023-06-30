@@ -2,6 +2,7 @@ package io.mosip.resident.controller;
 
 import java.util.Map;
 
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -79,7 +80,7 @@ public class ProxyOtpController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
-			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException {
+			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		String userid = null;
 		try {
 			requestValidator.validateProxySendOtpRequest(userOtpRequest);
