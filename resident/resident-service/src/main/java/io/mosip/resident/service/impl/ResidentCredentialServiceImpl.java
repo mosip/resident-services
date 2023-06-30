@@ -80,6 +80,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String NULL = "null";
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
+	private static final String DATA = "data";
 
 	@Autowired
 	IdAuthService idAuthService;
