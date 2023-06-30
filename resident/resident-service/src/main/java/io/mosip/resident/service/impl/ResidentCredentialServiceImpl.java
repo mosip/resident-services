@@ -80,7 +80,6 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	private static final String NULL = "null";
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
-	private static final String DATA = "data";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -610,62 +609,4 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
 		return notificationService.sendNotification(notificationRequestDtoV2);
 	}
-
-	/**
-	 * prepare the request summary message
-	 * 
-	 * @param sharableAttributes
-	 * @return
-	 */
-	public String prepareReqSummaryMsg(List<String> sharableAttributes) {
-		String prepareReqSummaryMsg = "";
-		StringBuilder sharableAttrData = new StringBuilder("");
-		for (int i = 0; i < sharableAttributes.size(); i++) {
-			sharableAttrData.append(sharableAttributes.get(i));
-			sharableAttrData.append(",");
-			sharableAttrData.append(" ");
-			// add 'and' at the end of sharable attributes list
-			if (i == sharableAttributes.size() - 2) {
-				sharableAttrData.append("and ");
-				sharableAttrData.append(sharableAttributes.get(++i));
-				sharableAttrData.append(" ");
-				break;
-			}
-		}
-		if(sharableAttributes.size() == 0){
-			sharableAttrData.append(DATA);
-		}
-		sharableAttrData = removeLastComma(sharableAttrData);
-		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
-		return prepareReqSummaryMsg;
-	}
-
-	public StringBuilder removeLastComma(StringBuilder sb) {
-		// Check if the second last character of the StringBuilder is a comma
-		if (sb.charAt(sb.length() - 2) == ',') {
-			// If it is, remove it using the deleteCharAt method
-			sb = sb.deleteCharAt(sb.length() - 2);
-		}
-		return sb;
-	}
-
-	/*
-	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
-	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
-	 * PartnerCredentialTypePolicyResponseDto policy = new
-	 * PartnerCredentialTypePolicyResponseDto();
-	 * policy.setCr_by(partnerCredentialTypePolicyDto.getCr_by());
-	 * policy.setCr_dtimes(partnerCredentialTypePolicyDto.getCr_dtimes());
-	 * policy.setCredentialType(partnerCredentialTypePolicyDto.getCredentialType());
-	 * policy.setIs_Active(partnerCredentialTypePolicyDto.getIs_Active());
-	 * policy.setPartnerId(partnerCredentialTypePolicyDto.getPartnerId());
-	 * policy.setPolicyDesc(partnerCredentialTypePolicyDto.getPolicyDesc());
-	 * policy.setPolicyId(policyId); policy.setPolicyName(policyName);
-	 * policy.setPolicyType(policyType); policy.setPublishDate(publishDate);
-	 * policy.setSchema(schema); policy.setStatus(status); policy.setUp_by(up_by);
-	 * policy.setUpd_dtimes(upd_dtimes); policy.setVersion(version);
-	 * policy.setValidTill(validTill);
-	 *
-	 * }
-	 */
 }
