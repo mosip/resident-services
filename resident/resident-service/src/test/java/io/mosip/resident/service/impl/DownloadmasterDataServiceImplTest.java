@@ -53,91 +53,94 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 
 /**
- * This class is used to create service class test  for download master data service impl.
+ * This class is used to create service class test for download master data
+ * service impl.
+ * 
  * @Author Kamesh Shekhar Prasad
+ * @Author Ritik Jain
  */
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
 public class DownloadmasterDataServiceImplTest {
 
-    @InjectMocks
-    private DownLoadMasterDataServiceImpl downLoadMasterDataService = new DownLoadMasterDataServiceImpl();
+	@InjectMocks
+	private DownLoadMasterDataServiceImpl downLoadMasterDataService = new DownLoadMasterDataServiceImpl();
 
-    @Mock
-    private ResidentTransactionRepository residentTransactionRepository;
+	@Mock
+	private ResidentTransactionRepository residentTransactionRepository;
 
-    @Mock
-    private TemplateUtil templateUtil;
+	@Mock
+	private TemplateUtil templateUtil;
 
-    @Mock
-    private ProxyMasterdataService proxyMasterdataService;
+	@Mock
+	private ProxyMasterdataService proxyMasterdataService;
 
-    @InjectMocks
-    private TemplateManagerBuilderImpl templateManagerBuilder;
+	@InjectMocks
+	private TemplateManagerBuilderImpl templateManagerBuilder;
 
-    @Mock
-    private PDFGenerator pdfGenerator;
+	@Mock
+	private PDFGenerator pdfGenerator;
 
-    @Mock
-    private Environment environment;
+	@Mock
+	private Environment environment;
 
-    @Mock
-    private ObjectMapper objectMapper;
+	@Mock
+	private ObjectMapper objectMapper;
 
-    @Mock
-    private ResidentServiceRestClient residentServiceRestClient;
+	@Mock
+	private ResidentServiceRestClient residentServiceRestClient;
 
-    @Mock
-    private Utility utility;
+	@Mock
+	private Utility utility;
 
-    private byte[] result;
-    private String eventId;
-    private String languageCode;
-    private Optional<ResidentTransactionEntity> residentTransactionEntity;
-    private Map<String, String> templateVariables;
+	private byte[] result;
+	private String eventId;
+	private String languageCode;
+	private Optional<ResidentTransactionEntity> residentTransactionEntity;
+	private Map<String, String> templateVariables;
 
-    @Mock
-    private TemplateManager templateManager;
-    private static final String CLASSPATH = "classpath";
-    private static final String ENCODE_TYPE = "UTF-8";
-    private Map<String, Object> values;
+	@Mock
+	private TemplateManager templateManager;
+	private static final String CLASSPATH = "classpath";
+	private static final String ENCODE_TYPE = "UTF-8";
+	private Map<String, Object> values;
 
-    private String langCode;
-    private Short hierarchyLevel;
-    private String name;
+	private String langCode;
+	private Short hierarchyLevel;
+	private String name;
 
-    @Before
-    public void setup() throws Exception {
-        templateVariables = new LinkedHashMap<>();
-        values = new LinkedHashMap<>();
-        values.put("test", String.class);
-        templateVariables.put("eventId", eventId);
-        result = "test".getBytes(StandardCharsets.UTF_8);
-        eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
-        languageCode = "eng";
+	@Before
+	public void setup() throws Exception {
+		templateVariables = new LinkedHashMap<>();
+		values = new LinkedHashMap<>();
+		values.put("test", String.class);
+		templateVariables.put("eventId", eventId);
+		result = "test".getBytes(StandardCharsets.UTF_8);
+		eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
+		languageCode = "eng";
 
 		Mockito.when(
 				templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn("file text template");
-        ReflectionTestUtils.setField(downLoadMasterDataService, "templateManagerBuilder", templateManagerBuilder);
-        templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
-        InputStream stream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
-        Mockito.when(templateManager.merge(any(), Mockito.anyMap())).thenReturn(stream);
-        OutputStream outputStream = new ByteArrayOutputStream(1024);
-        outputStream.write("test".getBytes(StandardCharsets.UTF_8));
-        SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
-        signatureResponseDto.setData("data");
-        ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
-        responseWrapper.setResponse(signatureResponseDto);
-        Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
-        langCode="eng";
-        hierarchyLevel=4;
-        name = "name1";
-    }
+		ReflectionTestUtils.setField(downLoadMasterDataService, "templateManagerBuilder", templateManagerBuilder);
+		templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
+		InputStream stream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
+		Mockito.when(templateManager.merge(any(), Mockito.anyMap())).thenReturn(stream);
+		OutputStream outputStream = new ByteArrayOutputStream(1024);
+		outputStream.write("test".getBytes(StandardCharsets.UTF_8));
+		SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
+		signatureResponseDto.setData("data");
+		ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(signatureResponseDto);
+		Mockito.when(utility.signPdf(Mockito.any(), Mockito.any())).thenReturn("data".getBytes());
+		Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("supporting-docs-list");
+		langCode = "eng";
+		hierarchyLevel = 4;
+		name = "name1";
+	}
 
-    @Test
+	@Test
 	public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
 		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
 		ResponseWrapper regCentResponseWrapper = new ResponseWrapper();
@@ -153,16 +156,17 @@ public class DownloadmasterDataServiceImplTest {
 		RegistrationCenterDto registrationCenterDto = getRegCenterData();
 		registrationCentersDtls.setData(List.of(registrationCenterDto));
 		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
-		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
-		
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class)))
+				.thenReturn(registrationCentersDtls);
+
 		getRegCenterWorkingDaysData();
-		
-		InputStream actualResult = downLoadMasterDataService
-				.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
+
+		InputStream actualResult = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
+				hierarchyLevel, name);
 		assertNotNull(actualResult);
 	}
 
-    @Test(expected = ResidentServiceException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testDownloadRegistrationCentersByHierarchyLevelWithException() throws Exception {
 		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
 		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
@@ -172,12 +176,13 @@ public class DownloadmasterDataServiceImplTest {
 		RegistrationCenterInfoResponseDto registrationCentersDtls = new RegistrationCenterInfoResponseDto();
 		registrationCentersDtls.setData(List.of(new RegistrationCenterDto()));
 		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
-		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
-		
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class)))
+				.thenReturn(registrationCentersDtls);
+
 		downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
 	}
 
-    @Test
+	@Test
 	public void testDownloadRegistrationCentersByHierarchyLevelEmptyRegCenterList() throws Exception {
 		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
 		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
@@ -188,12 +193,13 @@ public class DownloadmasterDataServiceImplTest {
 		registrationCentersDtls.setData(List.of());
 		registrationCentersDtls.setRegistrationCenters(List.of());
 		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
-		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
-		
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class)))
+				.thenReturn(registrationCentersDtls);
+
 		downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
 	}
 
-    @Test
+	@Test
 	public void testDownloadRegistrationCentersByHierarchyLevelWithRegCenter() throws Exception {
 		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
 		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
@@ -204,12 +210,13 @@ public class DownloadmasterDataServiceImplTest {
 		RegistrationCenterDto registrationCenterDto = getRegCenterData();
 		registrationCentersDtls.setRegistrationCenters(List.of(registrationCenterDto));
 		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
-		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
-		
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class)))
+				.thenReturn(registrationCentersDtls);
+
 		getRegCenterWorkingDaysData();
-		
-		InputStream actualResult = downLoadMasterDataService
-				.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
+
+		InputStream actualResult = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
+				hierarchyLevel, name);
 		assertNotNull(actualResult);
 	}
 
@@ -227,8 +234,10 @@ public class DownloadmasterDataServiceImplTest {
 		return registrationCenterDto;
 	}
 
-	private void getRegCenterWorkingDaysData() throws ResidentServiceCheckedException, JsonProcessingException, JsonMappingException {
-		Mockito.when(proxyMasterdataService.getRegistrationCenterWorkingDays(Mockito.anyString(), Mockito.anyString())).thenReturn(new ResponseWrapper());
+	private void getRegCenterWorkingDaysData()
+			throws ResidentServiceCheckedException, JsonProcessingException, JsonMappingException {
+		Mockito.when(proxyMasterdataService.getRegistrationCenterWorkingDays(Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(new ResponseWrapper());
 		WorkingDaysResponseDto workingDaysResponeDtls = new WorkingDaysResponseDto();
 		WorkingDaysDto workingDaysDto1 = new WorkingDaysDto();
 		workingDaysDto1.setCode("102");
@@ -245,44 +254,44 @@ public class DownloadmasterDataServiceImplTest {
 		when(objectMapper.readValue(anyString(), eq(WorkingDaysResponseDto.class))).thenReturn(workingDaysResponeDtls);
 	}
 
-    @Test
-    public void testGetNearestRegistrationcenters() throws Exception {
-        byte[] actualResult = downLoadMasterDataService.getNearestRegistrationcenters(langCode, 4L, 4L,3).readAllBytes();
-        assertNotNull(actualResult);
-    }
+	@Test
+	public void testGetNearestRegistrationcenters() throws Exception {
+		byte[] actualResult = downLoadMasterDataService.getNearestRegistrationcenters(langCode, 4L, 4L, 3)
+				.readAllBytes();
+		assertNotNull(actualResult);
+	}
 
-    @Test
-    public void testDownloadSupportingDocsByLanguage() throws Exception {
-        byte[] actualResult = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode).readAllBytes();
-        assertNotNull(actualResult);
-    }
+	@Test
+	public void testDownloadSupportingDocsByLanguage() throws Exception {
+		byte[] actualResult = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode).readAllBytes();
+		assertNotNull(actualResult);
+	}
 
-    @Test
-    public void testgetTime() throws Exception {
-        RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
-        registrationCenterDto.setCenterTypeCode("Ind");
-        WorkingDaysResponseDto workingDaysResponseDto = new WorkingDaysResponseDto();
-        WorkingDaysDto workingDaysDto = new WorkingDaysDto();
-        workingDaysDto.setCode("123");
-        workingDaysResponseDto.setWorkingdays(List.of(workingDaysDto));
-        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
-        responseWrapper1.setResponse(workingDaysResponseDto);
-        ReflectionTestUtils.invokeMethod(downLoadMasterDataService, "getTime",
-                String.valueOf(LocalTime.of(12,2,2)));
+	@Test
+	public void testgetTime() throws Exception {
+		RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
+		registrationCenterDto.setCenterTypeCode("Ind");
+		WorkingDaysResponseDto workingDaysResponseDto = new WorkingDaysResponseDto();
+		WorkingDaysDto workingDaysDto = new WorkingDaysDto();
+		workingDaysDto.setCode("123");
+		workingDaysResponseDto.setWorkingdays(List.of(workingDaysDto));
+		ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
+		responseWrapper1.setResponse(workingDaysResponseDto);
+		ReflectionTestUtils.invokeMethod(downLoadMasterDataService, "getTime", String.valueOf(LocalTime.of(12, 2, 2)));
 
-    }
+	}
 
-    @Test
-    public void testgetTimeFailed() throws Exception {
-        RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
-        registrationCenterDto.setCenterTypeCode("Ind");
-        WorkingDaysResponseDto workingDaysResponseDto = new WorkingDaysResponseDto();
-        WorkingDaysDto workingDaysDto = new WorkingDaysDto();
-        workingDaysDto.setCode("123");
-        workingDaysResponseDto.setWorkingdays(List.of(workingDaysDto));
-        ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
-        responseWrapper1.setResponse(workingDaysResponseDto);
-        ReflectionTestUtils.invokeMethod(downLoadMasterDataService, "getTime", "123");
+	@Test
+	public void testgetTimeFailed() throws Exception {
+		RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
+		registrationCenterDto.setCenterTypeCode("Ind");
+		WorkingDaysResponseDto workingDaysResponseDto = new WorkingDaysResponseDto();
+		WorkingDaysDto workingDaysDto = new WorkingDaysDto();
+		workingDaysDto.setCode("123");
+		workingDaysResponseDto.setWorkingdays(List.of(workingDaysDto));
+		ResponseWrapper responseWrapper1 = new ResponseWrapper<>();
+		responseWrapper1.setResponse(workingDaysResponseDto);
+		ReflectionTestUtils.invokeMethod(downLoadMasterDataService, "getTime", "123");
 
-    }
+	}
 }
