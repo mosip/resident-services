@@ -2,6 +2,9 @@ package io.mosip.resident.service.impl;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +30,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -34,9 +40,12 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
 import io.mosip.resident.dto.RegistrationCenterDto;
+import io.mosip.resident.dto.RegistrationCenterInfoResponseDto;
 import io.mosip.resident.dto.WorkingDaysDto;
 import io.mosip.resident.dto.WorkingDaysResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -129,11 +138,112 @@ public class DownloadmasterDataServiceImplTest {
     }
 
     @Test
-    public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
-    	ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
-          byte[] actualResult = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name).readAllBytes();
-          assertNotNull(actualResult);
-    }
+	public void testDownloadRegistrationCentersByHierarchyLevel() throws Exception {
+		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
+		ResponseWrapper regCentResponseWrapper = new ResponseWrapper();
+		Map<String, Object> regCenterMap = new HashMap();
+		regCenterMap.put("id", 21006);
+		regCenterMap.put("name", "Banglore Center Mehdia");
+		regCentResponseWrapper.setResponse(Map.of("data", List.of(regCenterMap)));
+		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(),
+				Mockito.nullable(String.class))).thenReturn(regCentResponseWrapper);
+
+		RegistrationCenterInfoResponseDto registrationCentersDtls = new RegistrationCenterInfoResponseDto();
+		RegistrationCenterDto registrationCenterDto = getRegCenterData();
+		registrationCentersDtls.setData(List.of(registrationCenterDto));
+		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
+		
+		getRegCenterWorkingDaysData();
+		
+		InputStream actualResult = downLoadMasterDataService
+				.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
+		assertNotNull(actualResult);
+	}
+
+    @Test(expected = ResidentServiceException.class)
+	public void testDownloadRegistrationCentersByHierarchyLevelWithException() throws Exception {
+		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
+		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(),
+				Mockito.nullable(String.class))).thenReturn(new ResponseWrapper());
+
+		RegistrationCenterInfoResponseDto registrationCentersDtls = new RegistrationCenterInfoResponseDto();
+		registrationCentersDtls.setData(List.of(new RegistrationCenterDto()));
+		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
+		
+		downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
+	}
+
+    @Test
+	public void testDownloadRegistrationCentersByHierarchyLevelEmptyRegCenterList() throws Exception {
+		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
+		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(),
+				Mockito.nullable(String.class))).thenReturn(new ResponseWrapper());
+
+		RegistrationCenterInfoResponseDto registrationCentersDtls = new RegistrationCenterInfoResponseDto();
+		registrationCentersDtls.setData(List.of());
+		registrationCentersDtls.setRegistrationCenters(List.of());
+		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
+		
+		downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
+	}
+
+    @Test
+	public void testDownloadRegistrationCentersByHierarchyLevelWithRegCenter() throws Exception {
+		ReflectionTestUtils.setField(downLoadMasterDataService, "maxRegistrationCenterPageSize", 10);
+		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(),
+				Mockito.nullable(String.class))).thenReturn(new ResponseWrapper());
+
+		RegistrationCenterInfoResponseDto registrationCentersDtls = new RegistrationCenterInfoResponseDto();
+		RegistrationCenterDto registrationCenterDto = getRegCenterData();
+		registrationCentersDtls.setRegistrationCenters(List.of(registrationCenterDto));
+		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("registration centers data");
+		when(objectMapper.readValue(anyString(), eq(RegistrationCenterInfoResponseDto.class))).thenReturn(registrationCentersDtls);
+		
+		getRegCenterWorkingDaysData();
+		
+		InputStream actualResult = downLoadMasterDataService
+				.downloadRegistrationCentersByHierarchyLevel(langCode, hierarchyLevel, name);
+		assertNotNull(actualResult);
+	}
+
+	private RegistrationCenterDto getRegCenterData() {
+		RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
+		registrationCenterDto.setId("21006");
+		registrationCenterDto.setName("Banglore Center Mehdia");
+		registrationCenterDto.setCenterTypeCode("REG");
+		registrationCenterDto.setLangCode("eng");
+		registrationCenterDto.setAddressLine1("Mehdia Road Amria mehdia");
+		registrationCenterDto.setAddressLine2("Kenitra");
+		registrationCenterDto.setAddressLine3("Maroc");
+		registrationCenterDto.setCenterStartTime("09:00:00");
+		registrationCenterDto.setCenterEndTime("17:00:00");
+		return registrationCenterDto;
+	}
+
+	private void getRegCenterWorkingDaysData() throws ResidentServiceCheckedException, JsonProcessingException, JsonMappingException {
+		Mockito.when(proxyMasterdataService.getRegistrationCenterWorkingDays(Mockito.anyString(), Mockito.anyString())).thenReturn(new ResponseWrapper());
+		WorkingDaysResponseDto workingDaysResponeDtls = new WorkingDaysResponseDto();
+		WorkingDaysDto workingDaysDto1 = new WorkingDaysDto();
+		workingDaysDto1.setCode("102");
+		workingDaysDto1.setOrder(2);
+		workingDaysDto1.setLanguage("eng");
+		workingDaysDto1.setName("MON");
+		WorkingDaysDto workingDaysDto2 = new WorkingDaysDto();
+		workingDaysDto2.setCode("103");
+		workingDaysDto2.setOrder(3);
+		workingDaysDto2.setLanguage("eng");
+		workingDaysDto2.setName("TUE");
+		workingDaysResponeDtls.setWorkingdays(List.of(workingDaysDto1, workingDaysDto2));
+		when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("working days data");
+		when(objectMapper.readValue(anyString(), eq(WorkingDaysResponseDto.class))).thenReturn(workingDaysResponeDtls);
+	}
 
     @Test
     public void testGetNearestRegistrationcenters() throws Exception {
