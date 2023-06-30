@@ -64,6 +64,12 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 
+/**
+ * This class is used to create service class test for
+ * ResidentCredentialServiceImpl.
+ * 
+ * @Author Ritik Jain
+ */
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
