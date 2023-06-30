@@ -97,9 +97,11 @@ public class ResidentVidController {
 			response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 			response.setResponse(residentVidService.getVidPolicy());
 		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_SUCCESS);
 			response.setErrors(List.of(new ServiceError(ResidentErrorCode.POLICY_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.POLICY_EXCEPTION.getErrorMessage())));
 		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_FAILURE);
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -265,11 +267,19 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
-	public ResponseWrapper<?> retrieveVids(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset) throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
+	public ResponseWrapper<?> retrieveVids(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
+            @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
 		logger.debug("ResidentVidController::retrieveVids()::entry");
 		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS);
+		ResponseWrapper<List<Map<String, ?>>> retrieveVids = new ResponseWrapper<>();
 		String residentIndividualId = getResidentIndividualId();
-		ResponseWrapper<List<Map<String, ?>>> retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset);
+		try {
+			retrieveVids = residentVidService.retrieveVids(residentIndividualId, timeZoneOffset, locale);
+		} catch (ResidentServiceException | ApisResourceAccessException | ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_VIDS_EXCEPTION);
+			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.GET_VIDS_ID));
+			throw e;
+		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS_SUCCESS);
 		logger.debug("ResidentVidController::retrieveVids()::exit");
 		return retrieveVids;
