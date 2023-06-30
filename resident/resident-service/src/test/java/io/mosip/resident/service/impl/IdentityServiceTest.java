@@ -620,5 +620,38 @@ public class IdentityServiceTest {
 		assertEquals("123456789", result);
 	}
 
+	@Test
+	public void testGetMappingValueFetchFaceTrue() throws Exception {
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("picture", "3956038419");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		getAuthUserDetailsFromAuthentication();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		fileLoadMethod();
+		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		assertNotNull(result);
+		assertEquals("8251649601", result.getUIN());
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetMappingValueFetchFaceTrueFailed() throws Exception {
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("picture", "3956038419");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		getAuthUserDetailsFromAuthentication();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenThrow(new ApisResourceAccessException());
+		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
+		fileLoadMethod();
+		IdentityDTO result = identityService.getIdentity("6", true, "eng");
+		assertNotNull(result);
+		assertEquals("8251649601", result.getUIN());
+	}
 
 }
