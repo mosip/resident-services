@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.exception.InvalidInputException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -691,6 +692,13 @@ public class IdentityServiceTest {
 		Mockito.when(utility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
 		assertEquals("8251649601",
 				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
+	}
+
+	@Test(expected = InvalidInputException.class)
+	public void testGetIndividualIdType(){
+		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
+		Mockito.when(requestValidator.validateRid(Mockito.anyString())).thenReturn(false);
+		identityService.getIndividualIdType("3434343343");
 	}
 
 }
