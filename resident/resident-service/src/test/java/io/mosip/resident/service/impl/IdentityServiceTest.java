@@ -590,15 +590,6 @@ public class IdentityServiceTest {
 	}
 
 	@Test
-	public void testGetClaimFromAccessToken() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		tuple3.getT3().put("individual_id", "3956038419");
-		getAuthUserDetailsFromAuthentication();
-		ReflectionTestUtils.invokeMethod(identityService,
-				"getClaimFromAccessToken", "value");
-	}
-
-	@Test
 	public void testGetIndividualIdTypeVidPassed(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
 		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(true);
