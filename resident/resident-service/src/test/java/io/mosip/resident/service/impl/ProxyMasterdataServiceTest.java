@@ -59,7 +59,7 @@ public class ProxyMasterdataServiceTest {
 	private ProxyMasterdataService proxyMasterdataService = new ProxyMasterdataServiceImpl();
 
 	private ResponseWrapper responseWrapper;
-	
+
 	private ResponseWrapper<TemplateResponseDto> templateWrapper;
 
 	private String fieldName;
@@ -517,7 +517,7 @@ public class ProxyMasterdataServiceTest {
 				any())).thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getLatestIdSchema(0, "domain", "type");
 	}
-	
+
 	@Test
 	public void testGetAllTemplateBylangCodeAndTemplateTypeCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -559,19 +559,29 @@ public class ProxyMasterdataServiceTest {
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng", "otp-template");
 	}
-	
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCodeWithIOException()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResponseWrapper<Object> templateWrapper = new ResponseWrapper<>();
+		templateWrapper.setResponse("throw io exception");
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
+		proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng", "otp-template");
+	}
+
 	@Test
 	public void testGetGenderTypesByLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
-				any())).thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
+				.thenReturn(responseWrapper);
+		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
+				withValue);
 		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetGenderTypesByLangCodeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
-				any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
+				.thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
@@ -585,31 +595,33 @@ public class ProxyMasterdataServiceTest {
 
 	@Test
 	public void testGetGenderTypesByLangCodeElse() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
-				any())).thenReturn(responseWrapper);
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
+				.thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
+		ResponseWrapper<?> result = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng",
+				withValue);
 		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetGenderTypesByLangCodeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
-				any()))
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, "eng", withValue);
 	}
-	
+
 	@Test
-	public void testGetDocumentTypesByDocumentCategoryAndLangCode() throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public void testGetDocumentTypesByDocumentCategoryAndLangCode()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
+		ResponseWrapper<?> result = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC", "eng");
 		assertNotNull(result);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetDocumentTypesByDocumentCategoryAndLangCodeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public void testGetDocumentTypesByDocumentCategoryAndLangCodeIf()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -619,14 +631,15 @@ public class ProxyMasterdataServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","xyz");
+		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC", "xyz");
 	}
 
 	@Test
-	public void testGetDocumentTypesByDocumentCategoryAndLangCodeElse() throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public void testGetDocumentTypesByDocumentCategoryAndLangCodeElse()
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
 		responseWrapper.setErrors(null);
-		ResponseWrapper<?> result = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
+		ResponseWrapper<?> result = proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC", "eng");
 		assertNotNull(result);
 	}
 
@@ -635,33 +648,35 @@ public class ProxyMasterdataServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC","eng");
+		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC", "eng");
 	}
-	
+
 	@Test
 	public void testGetGenderCodeByGenderTypeAndLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
 		GenderTypeListDTO response = new GenderTypeListDTO();
-		GenderTypeDTO genderTypeDTO = new GenderTypeDTO("MLE","Male","eng","true");
+		GenderTypeDTO genderTypeDTO = new GenderTypeDTO("MLE", "Male", "eng", "true");
 		response.setGenderType(List.of(genderTypeDTO));
-		ResponseWrapper res = new ResponseWrapper(); 
+		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
-				any())).thenReturn(res);
-		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
-		assertEquals(genderTypeDTO.getCode(),responseWrapper.getResponse().getGenderCode());
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
+				.thenReturn(res);
+		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService
+				.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
+		assertEquals(genderTypeDTO.getCode(), responseWrapper.getResponse().getGenderCode());
 	}
-	
+
 	@Test
 	public void testGetGenderCodeByGenderTypeAndLangCodeNoValue()
 			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
 		GenderTypeListDTO response = new GenderTypeListDTO();
 		response.setGenderType(List.of());
-		ResponseWrapper res = new ResponseWrapper(); 
+		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(),
-				any())).thenReturn(res);
-		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
+		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
+				.thenReturn(res);
+		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService
+				.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
 	}
 
 }
