@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -652,6 +653,44 @@ public class IdentityServiceTest {
 		IdentityDTO result = identityService.getIdentity("6", true, "eng");
 		assertNotNull(result);
 		assertEquals("8251649601", result.getUIN());
+	}
+
+	@Test
+	public void testGetIdentityAttributes() throws Exception {
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		assertEquals("8251649601",
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetIdentityAttributesWithSecureSessionFailed() throws Exception {
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName", "perpetualVID", "photo", ResidentConstants.MASK_PREFIX+"UIN"));
+		getAuthUserDetailsFromAuthentication();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		assertEquals("8251649601",
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
+	}
+
+	@Test
+	public void testGetIdentityAttributesWithSecureSession() throws Exception {
+		when(residentConfigService.getUiSchemaFilteredInputAttributes(anyString()))
+				.thenReturn(List.of("UIN", "email", "phone", "dateOfBirth", "firstName", "middleName", "lastName", "perpetualVID", "photo", ResidentConstants.MASK_PREFIX+"UIN"));
+		getAuthUserDetailsFromAuthentication();
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("picture", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
+		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		Mockito.when(utility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
+		assertEquals("8251649601",
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
 	}
 
 }
