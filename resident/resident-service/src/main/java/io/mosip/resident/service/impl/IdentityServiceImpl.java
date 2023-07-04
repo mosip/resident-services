@@ -527,7 +527,7 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 	
-	public String getResidentAuthenticationMode() throws ApisResourceAccessException, ResidentServiceCheckedException {
+	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {
 		String authenticationMode = getClaimFromIdToken(
 				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);

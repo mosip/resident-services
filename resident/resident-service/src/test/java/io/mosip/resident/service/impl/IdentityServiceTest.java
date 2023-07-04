@@ -692,4 +692,34 @@ public class IdentityServiceTest {
 		identityService.getIndividualIdType("3434343343");
 	}
 
+	@Test
+	public void testCreateSessionId(){
+		Mockito.when(utility.createEventId()).thenReturn("123");
+		assertEquals("123", identityService.createSessionId());
+	}
+
+	@Test
+	public void testGetResidentIdaTokenFromAccessToken() throws Exception {
+		when(env.getProperty(Mockito.anyString())).thenReturn("individual_id");
+		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("individual_id", "4343434343");
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
+		assertEquals(token, identityService.getResidentIdaTokenFromAccessToken(token));
+	}
+
+	@Test(expected = ResidentServiceException.class)
+	public void testGetResidentIdaTokenFromAccessTokenNullIndividualId() throws Exception {
+		when(env.getProperty(Mockito.anyString())).thenReturn("individual_id");
+		ReflectionTestUtils.setField(identityService, "onlineVerificationPartnerId", "m-partner-default-auth");
+		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
+		tuple3.getT3().put("individual_id", null);
+		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
+				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
+		assertEquals(token, identityService.getResidentIdaTokenFromAccessToken(token));
+	}
+
 }
