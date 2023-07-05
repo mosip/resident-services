@@ -58,8 +58,7 @@ import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 /**
- * This class is used to create service class test for getting acknowledgement
- * API.
+ * This class is used to create service class test for getting cards.
  * 
  * @Author Kamesh Shekhar Prasad
  */
