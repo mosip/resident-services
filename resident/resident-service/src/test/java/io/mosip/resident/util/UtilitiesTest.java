@@ -333,4 +333,73 @@ public class UtilitiesTest {
     public void testGetJson(){
         utilities.getJson("http://localhost", "http://localhost");
     }
+
+    @Test(expected = IdRepoAppException.class)
+    public void testRetrieveIdrepoJsonFailure() throws ApisResourceAccessException, IOException {
+        Map<String, String> uin = (Map<String, String>) JsonUtil.getJSONObject(identity, "response").get("identity");
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        ResponseDTO1 responseDTO1 = new ResponseDTO1();
+        responseDTO1.setStatus("Activated");
+        responseDTO1.setIdentity(JsonUtil.getJSONObject(identity, "response").get("identity"));
+        idResponseDTO1.setResponse(responseDTO1);
+
+        Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(idResponseDTO1);
+        Mockito.when(objMapper.writeValueAsString(any())).thenReturn("identityString");
+
+        // UIN
+        JSONObject identityJsonObj = utilities.retrieveIdrepoJson("3527812406");
+        assertEquals(identityJsonObj.get("UIN"), uin.get("UIN"));
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetRidStatusFailed() throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+        ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
+        ArrayList arrayList = new ArrayList<>();
+        arrayList.add("123");
+        response.setResponse(arrayList);
+        response.setErrors(List.of(new ServiceError(ResidentErrorCode.RID_NOT_FOUND.getErrorCode(),
+                ResidentErrorCode.RID_NOT_FOUND.getErrorMessage())));
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        utilities.getRidStatus("123");
+    }
+
+    @Test(expected = ResidentServiceCheckedException.class)
+    public void testGetPacketStatusFailed() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+        ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
+        ArrayList arrayList = new ArrayList<>();
+        arrayList.add("123");
+        response.setResponse(arrayList);
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        ArrayList<Object> objectArrayList = new ArrayList<>();
+        objectArrayList.add("t");
+        Mockito.when(objMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(objectArrayList);
+        Mockito.when(objMapper.writeValueAsString(Mockito.any())).thenReturn(String.valueOf(objectArrayList));
+        utilities.getPacketStatus("10241102241004720230627060344");
+    }
+
+    @Test
+    public void testGetPacketStatus() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
+        ResponseWrapper<ArrayList> response = new ResponseWrapper<>();
+        ArrayList arrayList = new ArrayList<>();
+        arrayList.add("123");
+        response.setResponse(arrayList);
+        Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
+        ArrayList<Object> objectArrayList = new ArrayList<>();
+        Map<String, Object> packetData = new HashMap<>();
+        packetData.put("statusCode", "SUCCESS");
+        packetData.put("transactionTypeCode", "SUCCESS");
+        objectArrayList.add(packetData);
+        Mockito.when(objMapper.readValue(Mockito.anyString(), (Class<Object>) any())).thenReturn(objectArrayList);
+        Mockito.when(objMapper.writeValueAsString(Mockito.any())).thenReturn(String.valueOf(objectArrayList));
+        Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("SUCCESS");
+        Map<String, String> result = utilities.getPacketStatus("10241102241004720230627060344");
+        assertEquals("SUCCESS",result.get("aidStatus"));
+    }
+
+    @Test
+    public void testGetDefaultSource(){
+        ReflectionTestUtils.setField(utilities, "provider",
+                "source:RESIDENT,process:ACTIVATED|DEACTIVATED|RES_UPDATE|LOST|RES_REPRINT,classname:io.mosip.commons.packet.impl.PacketWriterImpl\n");
+        assertEquals("RESIDENT", utilities.getDefaultSource());
+    }
 }
