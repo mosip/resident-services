@@ -185,7 +185,6 @@ public class ResidentVidServiceTest {
         vid = "2038096257310540";
         when(mapper.convertValue("1516239022", LocalDateTime.class)).thenReturn(LocalDateTime.now());
         when(mapper.convertValue("1234343434", LocalDateTime.class)).thenReturn(LocalDateTime.now());
-        when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
     }
 
     @Test(expected = Exception.class)
@@ -228,9 +227,6 @@ public class ResidentVidServiceTest {
         response.setErrors(Lists.newArrayList(serviceError));
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-
-
         residentVidService.generateVid(requestDto, "12345");
     }
 
@@ -247,8 +243,6 @@ public class ResidentVidServiceTest {
         response.setErrors(Lists.newArrayList(serviceError));
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-
         residentVidService.generateVid(requestDto, "12345");
     }
 
@@ -265,9 +259,6 @@ public class ResidentVidServiceTest {
         response.setErrors(Lists.newArrayList(serviceError));
 
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-
-
         residentVidService.generateVid(requestDto, "12345");
     }
     
@@ -315,7 +306,6 @@ public class ResidentVidServiceTest {
         response.setErrors(Lists.newArrayList(serviceError));
     	
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
-		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
         residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
     }
@@ -332,7 +322,6 @@ public class ResidentVidServiceTest {
         response.setResponsetime(DateUtils.getCurrentDateTimeString());
         response.setErrors(Lists.newArrayList(serviceError));
     	
-		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.TRUE);
 
         residentVidService.revokeVid(vidRevokeRequest,vid, "12345");
@@ -420,6 +409,14 @@ public class ResidentVidServiceTest {
 		Optional<String> response = residentVidService.getPerpatualVid("9054257141");
 		Optional<String> perpetualVid = Optional.of("123");
 		assertEquals(perpetualVid, response);
+	}
+
+	@Test
+	public void getPerpatualVidEmptyTest() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		vidResponse.setResponse(List.of());
+		when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
+		Optional<String> response = residentVidService.getPerpatualVid("9054257141");
+		assertEquals(Optional.empty(), response);
 	}
 
     @Test

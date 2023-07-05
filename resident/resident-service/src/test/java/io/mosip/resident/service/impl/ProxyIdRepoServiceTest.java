@@ -18,7 +18,9 @@ import org.springframework.test.context.TestContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.context.WebApplicationContext;
 
+import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -34,7 +36,7 @@ public class ProxyIdRepoServiceTest {
 
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
-	
+
 	@Mock
 	private IdentityServiceImpl identityServiceImpl;
 
@@ -48,7 +50,7 @@ public class ProxyIdRepoServiceTest {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenReturn(responseWrapper);
-		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId(List.of());
+		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId(List.of("name", "gender"));
 		assertNotNull(response);
 	}
 
@@ -60,5 +62,35 @@ public class ProxyIdRepoServiceTest {
 		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		service.getRemainingUpdateCountByIndividualId(List.of());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetRemainingUpdateCountByIndividualIdIf()
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		ServiceError error = new ServiceError();
+		error.setErrorCode(ResidentErrorCode.NO_RECORDS_FOUND.getErrorCode());
+		error.setMessage(ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage());
+		responseWrapper.setErrors(List.of(error));
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		service.getRemainingUpdateCountByIndividualId(null);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGetRemainingUpdateCountByIndividualIdErrorNull()
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setVersion("v1");
+		responseWrapper.setId("1");
+		responseWrapper.setErrors(null);
+		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
+		when(residentServiceRestClient.getApi(any(), (Map<String, String>) any(), (List<String>) any(), any(), any()))
+				.thenReturn(responseWrapper);
+		ResponseWrapper<?> response = service.getRemainingUpdateCountByIndividualId(List.of());
+		assertNotNull(response);
 	}
 }
