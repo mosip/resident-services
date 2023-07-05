@@ -36,56 +36,60 @@ import reactor.util.function.Tuples;
 @Component
 public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeService {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(WebSubUpdateAuthTypeServiceImpl.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(WebSubUpdateAuthTypeServiceImpl.class);
 
-    @Autowired
-    private AuditUtil auditUtil;
+	@Autowired
+	private AuditUtil auditUtil;
 
-    @Autowired
+	@Autowired
 	private NotificationService notificationService;
 
-    @Autowired
-    private ResidentTransactionRepository residentTransactionRepository;
-    
+	@Autowired
+	private ResidentTransactionRepository residentTransactionRepository;
+
 	@Autowired
 	private Utility utility;
 
-    @Value("${ida.online-verification-partner-id}")
+	@Value("${ida.online-verification-partner-id}")
 	private String onlineVerificationPartnerId;
 
-    @Override
-    public void updateAuthTypeStatus(Map<String, Object> eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException {
-        logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
-        try{
+	@Override
+	public void updateAuthTypeStatus(Map<String, Object> eventModel)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(),
+				"WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::entry");
+		auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
+		try {
 			logger.info("WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
-			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
+			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel,
+					EventStatusSuccess.COMPLETED.name());
 			// only if the event belongs to the current online verification partner, the
 			// individualId will not be blank, and hence the notification will be sent
-			if(!StringUtils.isBlank(tupleResponse.getT1()) && !StringUtils.isBlank(tupleResponse.getT2())) {
+			if (!StringUtils.isBlank(tupleResponse.getT1()) && !StringUtils.isBlank(tupleResponse.getT2())) {
 				sendNotificationV2(TemplateType.SUCCESS, tupleResponse.getT1(), tupleResponse.getT2());
 			}
-        }
-        catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::exception");
-			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel, EventStatusSuccess.COMPLETED.name());
+			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel,
+					EventStatusSuccess.COMPLETED.name());
 			sendNotificationV2(TemplateType.FAILURE, tupleResponse.getT1(), tupleResponse.getT2());
 			throw new ResidentServiceCheckedException(
 					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorCode(),
 					ResidentErrorCode.RESIDENT_WEBSUB_UPDATE_AUTH_TYPE_FAILED.getErrorMessage(), e);
-        }
-    }
+		}
+	}
 
-    private Tuple2<String, String> updateInResidentTransactionTable(Map<String, Object> eventModel,  String status) {
+	private Tuple2<String, String> updateInResidentTransactionTable(Map<String, Object> eventModel, String status) {
 
-        logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+				LoggerFileConstant.APPLICATIONID.toString(),
+				"WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::entry");
 		String eventId = "";
 		String individualId = "";
-        List<ResidentTransactionEntity> residentTransactionEntities = List.of();
+		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
 		try {
 			Object eventObj = eventModel.get(ResidentConstants.EVENT);
 			if (eventObj instanceof Map) {
@@ -98,8 +102,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 						List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) authStatusListObj;
 						residentTransactionEntities = authTypeStatusList.stream()
 								.map(authTypeStatus -> (String) authTypeStatus.get(ResidentConstants.REQUEST_ID))
-								.filter(Objects::nonNull)
-								.distinct()
+								.filter(Objects::nonNull).distinct()
 								.flatMap(authTypeStatusStr -> residentTransactionRepository
 										.findByRequestTrnId(authTypeStatusStr).stream())
 								.collect(Collectors.toList());
@@ -115,7 +118,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 									.filter(entity -> entity.getOlvPartnerId().equals(onlineVerificationPartnerId))
 									.map(entity -> entity.getIndividualId()).findAny()
 									.orElse(ResidentConstants.NOT_AVAILABLE);
-							
+
 							// Update status
 							residentTransactionEntities.stream().forEach(residentTransactionEntity -> {
 								residentTransactionEntity.setStatusCode(status);
@@ -130,15 +133,16 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 					}
 				}
 			}
-        }
-        catch (Exception e) {
-            logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-                    LoggerFileConstant.APPLICATIONID.toString(), "WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::exception");
-        }
-        return Tuples.of(eventId, individualId);
-    }
-    
-    private NotificationResponseDTO sendNotificationV2(TemplateType templateType, String eventId, String individualId) throws ResidentServiceCheckedException {
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"WebSubUpdateAuthTypeServiceImpl::insertInResidentTransactionTable()::exception");
+		}
+		return Tuples.of(eventId, individualId);
+	}
+
+	private NotificationResponseDTO sendNotificationV2(TemplateType templateType, String eventId, String individualId)
+			throws ResidentServiceCheckedException {
 
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(individualId);
