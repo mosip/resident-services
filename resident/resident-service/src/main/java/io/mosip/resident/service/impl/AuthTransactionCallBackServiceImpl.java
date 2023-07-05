@@ -13,6 +13,7 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -73,10 +74,10 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     private void insertInResidentTransactionTable(Map<String, Object> eventModel, String status) throws ApisResourceAccessException, NoSuchAlgorithmException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
-        Object eventObj = eventModel.get("event");
+        Object eventObj = eventModel.get(ResidentConstants.EVENT);
 		if (eventObj instanceof Map) {
 			Map<String, Object> eventMap = (Map<String, Object>) eventObj;
-			Object dataObject = eventMap.get("data");
+			Object dataObject = eventMap.get(ResidentConstants.DATA);
 			if (dataObject instanceof Map) {
 				Map<String, Object> dataMap = (Map<String, Object>) dataObject;
 				ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.AUTHENTICATION_REQUEST);

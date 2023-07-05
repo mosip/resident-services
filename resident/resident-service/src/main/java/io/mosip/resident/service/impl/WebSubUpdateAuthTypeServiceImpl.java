@@ -38,9 +38,6 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 
     private static final Logger logger = LoggerConfiguration.logConfig(WebSubUpdateAuthTypeServiceImpl.class);
 
-    private static final String AUTH_TYPES = "authTypes";
-    private static final String REQUEST_ID = "requestId";
-
     @Autowired
     private AuditUtil auditUtil;
 
@@ -90,17 +87,17 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 		String individualId = "";
         List<ResidentTransactionEntity> residentTransactionEntities = List.of();
 		try {
-			Object eventObj = eventModel.get("event");
+			Object eventObj = eventModel.get(ResidentConstants.EVENT);
 			if (eventObj instanceof Map) {
 				Map<String, Object> eventMap = (Map<String, Object>) eventObj;
-				Object dataObject = eventMap.get("data");
+				Object dataObject = eventMap.get(ResidentConstants.DATA);
 				if (dataObject instanceof Map) {
 					Map<String, Object> dataMap = (Map<String, Object>) dataObject;
-					Object authStatusListObj = (List<Map<String, Object>>) dataMap.get(AUTH_TYPES);
+					Object authStatusListObj = (List<Map<String, Object>>) dataMap.get(ResidentConstants.AUTH_TYPES);
 					if (authStatusListObj instanceof List) {
 						List<Map<String, Object>> authTypeStatusList = (List<Map<String, Object>>) authStatusListObj;
 						residentTransactionEntities = authTypeStatusList.stream()
-								.map(authTypeStatus -> (String) authTypeStatus.get(REQUEST_ID))
+								.map(authTypeStatus -> (String) authTypeStatus.get(ResidentConstants.REQUEST_ID))
 								.filter(Objects::nonNull)
 								.distinct()
 								.flatMap(authTypeStatusStr -> residentTransactionRepository
@@ -141,7 +138,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
         return Tuples.of(eventId, individualId);
     }
     
-    private NotificationResponseDTO sendNotificationV2(TemplateType templateType, String eventId, String individualId) throws ResidentServiceCheckedException, ApisResourceAccessException {
+    private NotificationResponseDTO sendNotificationV2(TemplateType templateType, String eventId, String individualId) throws ResidentServiceCheckedException {
 
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(individualId);
