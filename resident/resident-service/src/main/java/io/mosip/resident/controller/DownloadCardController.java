@@ -111,7 +111,7 @@ public class DownloadCardController {
 		logger.debug("AcknowledgementController::acknowledgement()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
-						"attachment; filename=\"" + utility.getFileNameforId(
+						"attachment; filename=\"" + utility.getFileNameForId(
 								downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId(),
 								Objects.requireNonNull(this.environment
 										.getProperty(ResidentConstants.DOWNLOAD_CARD_NAMING_CONVENTION_PROPERTY)),
