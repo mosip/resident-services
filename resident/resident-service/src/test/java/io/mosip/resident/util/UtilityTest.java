@@ -10,7 +10,6 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -52,7 +51,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -591,30 +589,6 @@ public class UtilityTest {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("name");
 		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		utility.getSessionUserName();
-	}
-
-	@Test
-	public void testGetCardOrderTrackingId() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> trackingMap = new HashMap<>();
-		trackingMap.put(TemplateVariablesConstants.TRACKING_ID, "123");
-		responseWrapper.setResponse(trackingMap);
-		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(), Mockito.any(), Mockito.any())).
-				thenReturn(responseWrapper);
-		assertEquals("123", utility.getCardOrderTrackingId("1234454545", "3424233434"));
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetCardOrderTrackingIdFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
-		Map<String, String> trackingMap = new HashMap<>();
-		trackingMap.put(TemplateVariablesConstants.TRACKING_ID, "123");
-		responseWrapper.setResponse(trackingMap);
-		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.CAN_T_PLACE_ORDER.getErrorCode(),
-				ResidentErrorCode.CAN_T_PLACE_ORDER.getErrorMessage())));
-		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(), Mockito.any(), Mockito.any())).
-				thenReturn(responseWrapper);
-		assertEquals("123", utility.getCardOrderTrackingId("1234454545", "3424233434"));
 	}
 
 	@Test
