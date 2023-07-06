@@ -1,33 +1,25 @@
 package io.mosip.resident.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
+import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateVariablesConstants;
+import io.mosip.resident.dto.IdRepoResponseDto;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.entity.ResidentTransactionEntity;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -48,23 +40,32 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
-import io.mosip.kernel.core.util.HMACUtils2;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.dto.IdRepoResponseDto;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
@@ -103,10 +104,14 @@ public class UtilityTest {
 	
 	@Mock
 	private ObjectMapper objectMapper;
+
+	@Mock
+	private Utilities utilities;
 	
 	private ObjectMapper mapper = new ObjectMapper();
 
 	private String replaceSplChars = "{\" \": \"_\", \",\" : \"\", \":\" : \".\"}";
+
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -587,5 +592,172 @@ public class UtilityTest {
 		Mockito.when(identityService.getAvailableclaimValue(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		utility.getSessionUserName();
 	}
-	
+
+	@Test
+	public void testGetCardOrderTrackingId() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> trackingMap = new HashMap<>();
+		trackingMap.put(TemplateVariablesConstants.TRACKING_ID, "123");
+		responseWrapper.setResponse(trackingMap);
+		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(), Mockito.any(), Mockito.any())).
+				thenReturn(responseWrapper);
+		assertEquals("123", utility.getCardOrderTrackingId("1234454545", "3424233434"));
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetCardOrderTrackingIdFailed() throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<Map<String, String>> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> trackingMap = new HashMap<>();
+		trackingMap.put(TemplateVariablesConstants.TRACKING_ID, "123");
+		responseWrapper.setResponse(trackingMap);
+		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.CAN_T_PLACE_ORDER.getErrorCode(),
+				ResidentErrorCode.CAN_T_PLACE_ORDER.getErrorMessage())));
+		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(), Mockito.any(), Mockito.any())).
+				thenReturn(responseWrapper);
+		assertEquals("123", utility.getCardOrderTrackingId("1234454545", "3424233434"));
+	}
+
+	@Test
+	public void test_formatWithOffsetForUI_locale_length_1() {
+		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
+		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en", localDateTime);
+		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
+	}
+
+	@Test
+	public void test_formatWithOffsetForUI_local_null(){
+		ReflectionTestUtils.invokeMethod(utility, "formatToLocaleDateTime", null, null, LocalDateTime.now());
+	}
+
+	@Test
+	public void testGetRefIdHash() throws NoSuchAlgorithmException {
+		assertEquals("B9CCBC594A8572018BC9DC97AB7A4BB175ABFC2F9FE3197D891D542C02C7ECE7",
+				utility.getRefIdHash("4936295739034704"));
+	}
+
+	@Test
+	public void testGetFileNameAck(){
+		utility.getFileNameAck(RequestType.GET_MY_ID.getName(), "4936295739034704",
+				"Ack_{featureName}_{eventId}_{timestamp}", 0, "en-IN");
+	}
+
+	@Test
+	public void testReplaceSpecialChars(){
+		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", Map.of());
+		assertEquals("Get_My_Id",
+				ReflectionTestUtils.invokeMethod(utility, "replaceSpecialChars", "Get_My_Id"));
+	}
+
+	@Test
+	public void testGetFileNameForId(){
+		utility.getFileNameForId("Get_My_Id", "UIN_{id}_{timestamp}", 0, "en-IN");
+	}
+
+	@Test
+	public void testSignPdfSuccess() throws Exception {
+		// Mocking environment properties
+		when(env.getProperty(ResidentConstants.LOWER_LEFT_X)).thenReturn("10");
+		when(env.getProperty(ResidentConstants.LOWER_LEFT_Y)).thenReturn("20");
+		when(env.getProperty(ResidentConstants.UPPER_RIGHT_X)).thenReturn("100");
+		when(env.getProperty(ResidentConstants.UPPER_RIGHT_Y)).thenReturn("200");
+		when(env.getProperty(ResidentConstants.REASON)).thenReturn("Test Reason");
+		when(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID)).thenReturn("AppId");
+		when(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID)).thenReturn("RefId");
+		when(env.getProperty(DATETIME_PATTERN)).thenReturn("yyyy-MM-dd HH:mm:ss");
+		when(env.getProperty(ApiName.PDFSIGN.name())).thenReturn("http://dev.mosip.net");
+
+		// Mocking PDF generator
+		byte[] pdfContent = "Sample PDF Content".getBytes();
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		// Write the byte array to the output stream
+		outputStream.write(pdfContent);
+
+		try (FileOutputStream fileOutputStream = new FileOutputStream("output.txt")) {
+			outputStream.writeTo(fileOutputStream);
+		}
+
+		when(pdfGenerator.generate(any(InputStream.class))).thenReturn(outputStream);
+		when(utilities.getTotalNumberOfPageInPdf(Mockito.any())).thenReturn(1);
+
+		// Mocking response from the REST client
+		ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(new SignatureResponseDto());
+		when(residentServiceRestClient.postApi(
+				any(),
+				any(),
+				any(),
+				any()
+		)).thenReturn(responseWrapper);
+
+		when(objectMapper.writeValueAsString(any())).thenReturn("mock");
+		SignatureResponseDto signatureResponseDto= new SignatureResponseDto();
+		signatureResponseDto.setData("ZGF0YQ==");
+		when(objectMapper.readValue(anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
+
+		// Call the method to be tested
+		InputStream pdfInputStream = new ByteArrayInputStream(pdfContent);
+		byte[] signaturedPdf = utility.signPdf(pdfInputStream, "password");
+
+		// Assertions
+		assertNotNull(signaturedPdf);
+
+		outputStream.close();
+	}
+
+	@Test
+	public void testSignPdfFailed() throws Exception {
+		// Mocking environment properties
+		when(env.getProperty(ResidentConstants.LOWER_LEFT_X)).thenReturn("10");
+		when(env.getProperty(ResidentConstants.LOWER_LEFT_Y)).thenReturn("20");
+		when(env.getProperty(ResidentConstants.UPPER_RIGHT_X)).thenReturn("100");
+		when(env.getProperty(ResidentConstants.UPPER_RIGHT_Y)).thenReturn("200");
+		when(env.getProperty(ResidentConstants.REASON)).thenReturn("Test Reason");
+		when(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID)).thenReturn("AppId");
+		when(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID)).thenReturn("RefId");
+		when(env.getProperty(DATETIME_PATTERN)).thenReturn("yyyy-MM-dd HH:mm:ss");
+		when(env.getProperty(ApiName.PDFSIGN.name())).thenReturn("http://dev.mosip.net");
+
+		// Mocking PDF generator
+		byte[] pdfContent = "Sample PDF Content".getBytes();
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		// Write the byte array to the output stream
+		outputStream.write(pdfContent);
+
+		try (FileOutputStream fileOutputStream = new FileOutputStream("output.txt")) {
+			outputStream.writeTo(fileOutputStream);
+		}
+
+		when(pdfGenerator.generate(any(InputStream.class))).thenReturn(outputStream);
+		when(utilities.getTotalNumberOfPageInPdf(Mockito.any())).thenReturn(1);
+
+		// Mocking response from the REST client
+		ResponseWrapper<SignatureResponseDto> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(new SignatureResponseDto());
+		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorCode(),
+				ResidentErrorCode.UNKNOWN_EXCEPTION.getErrorMessage())));
+		when(residentServiceRestClient.postApi(
+				any(),
+				any(),
+				any(),
+				any()
+		)).thenReturn(responseWrapper);
+
+		when(objectMapper.writeValueAsString(any())).thenReturn("mock");
+		SignatureResponseDto signatureResponseDto= new SignatureResponseDto();
+		signatureResponseDto.setData("ZGF0YQ==");
+		when(objectMapper.readValue(anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
+
+		// Call the method to be tested
+		InputStream pdfInputStream = new ByteArrayInputStream(pdfContent);
+		byte[] signaturedPdf = utility.signPdf(pdfInputStream, "password");
+
+		// Assertions
+		assertNull(signaturedPdf);
+
+		outputStream.close();
+	}
 }
