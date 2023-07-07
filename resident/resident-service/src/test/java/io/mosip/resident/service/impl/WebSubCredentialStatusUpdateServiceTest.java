@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.helper.CredentialStatusUpdateHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -46,7 +47,7 @@ public class WebSubCredentialStatusUpdateServiceTest {
     public void testUpdateCredentialStatus() throws Exception {
         // Mock data
         Map<String, Object> eventModel = new HashMap<>();
-        eventModel.put("event", getMockEventMap());
+        eventModel.put(ResidentConstants.EVENT, getMockEventMap());
 
         // Mock repository response
         ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
@@ -64,7 +65,7 @@ public class WebSubCredentialStatusUpdateServiceTest {
     public void testUpdateCredentialStatusWithNullData() throws Exception {
         // Mock data
         Map<String, Object> eventModel = new HashMap<>();
-        eventModel.put("event", getMockEventMap());
+        eventModel.put(ResidentConstants.EVENT, getMockEventMap());
 
         // Mock repository response
         when(repo.findOneByCredentialRequestId("12345")).thenReturn(Optional.empty());
@@ -78,7 +79,7 @@ public class WebSubCredentialStatusUpdateServiceTest {
 
     private Map<String, Object> getMockEventMap() {
         Map<String, Object> eventMap = new HashMap<>();
-        eventMap.put("requestId", "12345");
+        eventMap.put(ResidentConstants.REQUEST_ID, "12345");
         // Add other necessary data
         return eventMap;
     }

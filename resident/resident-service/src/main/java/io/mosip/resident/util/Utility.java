@@ -588,7 +588,7 @@ public class Utility {
 		return propertyName;
 	}
 	
-	public String getFileNameforId(String id, String propertyName, int timeZoneOffset, String locale){
+	public String getFileNameForId(String id, String propertyName, int timeZoneOffset, String locale){
 		if(id!=null && propertyName.contains("{" + TemplateVariablesConstants.ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.ID+ "}", id);
 		}
