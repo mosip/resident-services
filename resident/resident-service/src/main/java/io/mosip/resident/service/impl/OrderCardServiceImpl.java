@@ -92,8 +92,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto, individualId);
-		if (requestDto.getConsent() == null || requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-				|| requestDto.getConsent().trim().isEmpty() || requestDto.getConsent().equals("null") || !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
+		if (requestDto.getConsent() == null || requestDto.getConsent().trim().isEmpty()
+				|| !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 			checkConsent(requestDto.getConsent(), residentTransactionEntity);
 		} else {
 

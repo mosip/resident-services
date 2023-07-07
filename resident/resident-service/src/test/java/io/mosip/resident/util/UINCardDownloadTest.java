@@ -12,8 +12,6 @@ import org.springframework.core.env.Environment;
 
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.UINCardDownloadService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UINCardDownloadTest {

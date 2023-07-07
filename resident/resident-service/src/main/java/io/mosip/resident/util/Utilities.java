@@ -346,7 +346,6 @@ public class Utilities {
 			hostIP = InetAddress.getLocalHost().getHostAddress();
 			hostName = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException unknownHostException) {
-
 			hostIP = ServerUtil.getServerUtilInstance().getServerIp();
 			hostName = ServerUtil.getServerUtilInstance().getServerName();
 		}
