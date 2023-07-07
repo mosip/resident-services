@@ -286,4 +286,10 @@ public class ResidentConstants {
     public static final String RESIDENT_FUTURE_TIME_LIMIT = "resident.future.time.limit";
     public static final String RESIDENT_PAST_TIME_LIMIT = "resident.past.time.limit";
 
+//    websub attributes
+    public static final String EVENT = "event";
+    public static final String DATA = "data";
+    public static final String REQUEST_ID = "requestId";
+    public static final String AUTH_TYPES = "authTypes";
+
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -26,8 +27,6 @@ import io.mosip.resident.service.WebSubCredentialStatusUpdateService;
  */
 @Service
 public class WebSubCredentialStatusUpdateServiceImpl implements WebSubCredentialStatusUpdateService {
-	
-    private static final String REQUEST_ID = "requestId";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(WebSubCredentialStatusUpdateServiceImpl.class);
     
@@ -42,7 +41,7 @@ public class WebSubCredentialStatusUpdateServiceImpl implements WebSubCredential
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("Inside WebSubCredentialStatusUpdateServiceImpl.updateCredentialStatus");
 		logger.debug("event: " + eventModel);
-		Map<String, String> credentialTransactionDetails = Optional.ofNullable(eventModel.get("event"))
+		Map<String, String> credentialTransactionDetails = Optional.ofNullable(eventModel.get(ResidentConstants.EVENT))
 				.filter(obj -> obj instanceof Map)
 				.map(obj -> (Map<String, Object>) obj)
 				.map(map -> map.entrySet()
@@ -50,7 +49,7 @@ public class WebSubCredentialStatusUpdateServiceImpl implements WebSubCredential
 						.filter(entry -> entry.getValue() != null)
 						.collect(Collectors.toMap(Entry::getKey, entry -> String.valueOf(entry.getValue()))))
 				.orElseGet(() -> Map.of());
-		Object requestIdObj = credentialTransactionDetails.get(REQUEST_ID);
+		Object requestIdObj = credentialTransactionDetails.get(ResidentConstants.REQUEST_ID);
 		if(requestIdObj instanceof String) {
 			String requestId = (String) requestIdObj;
 			logger.info(String.format("Updating the status of credential request ID: %s", requestId));

@@ -77,10 +77,8 @@ import reactor.util.function.Tuples;
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
 
-	private static final String NULL = "null";
 	private static final String PARTNER_TYPE = "partnerType";
 	private static final String ORGANIZATION_NAME = "organizationName";
-	private static final String DATA = "data";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -244,8 +242,8 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			if (residentTransactionEntity != null) {
     			eventId = residentTransactionEntity.getEventId();
     		}
-			if (dto.getConsent() == null || dto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name()) || dto.getConsent().trim().isEmpty()
-					|| dto.getConsent().equals(NULL) || !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
+			if (dto.getConsent() == null || dto.getConsent().trim().isEmpty()
+					|| !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.getName(), EventStatusFailure.FAILED.name()));
 				throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
@@ -354,29 +352,9 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	}
 	@Override
 	public byte[] getCard(String requestId, String appId, String partnerRefId) throws Exception {
-		// TODO Auto-generated method stub
-		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
-		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
 		try {
-			String credentialUrl = "";
-			if(requestId.contains(ridSuffix)) {
-				credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
-			} else {
-				UUID requestUUID = UUID.fromString(requestId);
-				credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
-			}
-			URI credentailStatusUri = URI.create(credentialUrl);
-			responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
-			credentialRequestStatusResponseDto = JsonUtil.readValue(
-					JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
-			if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() == null
-			|| credentialRequestStatusResponseDto.getUrl().isEmpty()){
-				audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
-				logger.error("Data share URL is not available.");
-				throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-			}
-			URI dataShareUri = URI.create(credentialRequestStatusResponseDto.getUrl());
+			String dataShareUrl = getDataShareUrl(requestId);
+			URI dataShareUri = URI.create(dataShareUrl);
 			if(appId!=null){
 				return getDataShareData(appId, partnerRefId, dataShareUri);
 			}else {
@@ -396,6 +374,31 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
 
+	}
+
+	@Override
+	public String getDataShareUrl(String requestId) throws ApisResourceAccessException, IOException {
+		ResponseWrapper<CredentialRequestStatusDto> responseDto = null;
+		CredentialRequestStatusDto credentialRequestStatusResponseDto = new CredentialRequestStatusDto();
+		String credentialUrl = "";
+		if(requestId.contains(ridSuffix)) {
+			credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestId;
+		} else {
+			UUID requestUUID = UUID.fromString(requestId);
+			credentialUrl = env.getProperty(ApiName.CREDENTIAL_STATUS_URL.name()) + requestUUID;
+		}
+		URI credentailStatusUri = URI.create(credentialUrl);
+		responseDto = residentServiceRestClient.getApi(credentailStatusUri, ResponseWrapper.class);
+		credentialRequestStatusResponseDto = JsonUtil.readValue(
+				JsonUtil.writeValueAsString(responseDto.getResponse()), CredentialRequestStatusDto.class);
+		if(credentialRequestStatusResponseDto == null || credentialRequestStatusResponseDto.getUrl() == null
+		|| credentialRequestStatusResponseDto.getUrl().isEmpty()){
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
+			logger.error("Data share URL is not available.");
+			throw new ResidentCredentialServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
+		}
+		return credentialRequestStatusResponseDto.getUrl();
 	}
 
 	public byte[] getDataShareData(String appId, String partnerRefId, URI dataShareUri)
@@ -605,62 +608,4 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
 		return notificationService.sendNotification(notificationRequestDtoV2);
 	}
-
-	/**
-	 * prepare the request summary message
-	 * 
-	 * @param sharableAttributes
-	 * @return
-	 */
-	public String prepareReqSummaryMsg(List<String> sharableAttributes) {
-		String prepareReqSummaryMsg = "";
-		StringBuilder sharableAttrData = new StringBuilder("");
-		for (int i = 0; i < sharableAttributes.size(); i++) {
-			sharableAttrData.append(sharableAttributes.get(i));
-			sharableAttrData.append(",");
-			sharableAttrData.append(" ");
-			// add 'and' at the end of sharable attributes list
-			if (i == sharableAttributes.size() - 2) {
-				sharableAttrData.append("and ");
-				sharableAttrData.append(sharableAttributes.get(++i));
-				sharableAttrData.append(" ");
-				break;
-			}
-		}
-		if(sharableAttributes.size() == 0){
-			sharableAttrData.append(DATA);
-		}
-		sharableAttrData = removeLastComma(sharableAttrData);
-		prepareReqSummaryMsg = "Your " + sharableAttrData + "has been stored successfully";
-		return prepareReqSummaryMsg;
-	}
-
-	public StringBuilder removeLastComma(StringBuilder sb) {
-		// Check if the second last character of the StringBuilder is a comma
-		if (sb.charAt(sb.length() - 2) == ',') {
-			// If it is, remove it using the deleteCharAt method
-			sb = sb.deleteCharAt(sb.length() - 2);
-		}
-		return sb;
-	}
-
-	/*
-	 * private PartnerCredentialTypePolicyResponseDto policyMapper(
-	 * PartnerCredentialTypePolicyDto partnerCredentialTypePolicyDto) {
-	 * PartnerCredentialTypePolicyResponseDto policy = new
-	 * PartnerCredentialTypePolicyResponseDto();
-	 * policy.setCr_by(partnerCredentialTypePolicyDto.getCr_by());
-	 * policy.setCr_dtimes(partnerCredentialTypePolicyDto.getCr_dtimes());
-	 * policy.setCredentialType(partnerCredentialTypePolicyDto.getCredentialType());
-	 * policy.setIs_Active(partnerCredentialTypePolicyDto.getIs_Active());
-	 * policy.setPartnerId(partnerCredentialTypePolicyDto.getPartnerId());
-	 * policy.setPolicyDesc(partnerCredentialTypePolicyDto.getPolicyDesc());
-	 * policy.setPolicyId(policyId); policy.setPolicyName(policyName);
-	 * policy.setPolicyType(policyType); policy.setPublishDate(publishDate);
-	 * policy.setSchema(schema); policy.setStatus(status); policy.setUp_by(up_by);
-	 * policy.setUpd_dtimes(upd_dtimes); policy.setVersion(version);
-	 * policy.setValidTill(validTill);
-	 *
-	 * }
-	 */
 }
