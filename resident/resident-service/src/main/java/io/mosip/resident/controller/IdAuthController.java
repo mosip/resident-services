@@ -80,8 +80,12 @@ public class IdAuthController {
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS, requestWrapper.getRequest().getTransactionId(),
 				"OTP Validate Request Success"));
 		} catch (OtpValidationFailedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_FAILURE,
+					requestWrapper.getRequest().getTransactionId(), "OTP Validation Failed"));
 			throw new OtpValidationFailedException(e.getErrorCode(), e.getErrorText(), e,
-					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,validateOtpId));
+					Map.of(ResidentConstants.HTTP_STATUS_CODE, HttpStatus.OK, ResidentConstants.REQ_RES_ID,
+							validateOtpId, ResidentConstants.EVENT_ID,
+							e.getMetadata().get(ResidentConstants.EVENT_ID)));
 		}
 		ResponseWrapper<IdAuthResponseDto> responseWrapper = new ResponseWrapper<IdAuthResponseDto>();
 		ValidateOtpResponseDto validateOtpResponseDto = new ValidateOtpResponseDto();

@@ -53,7 +53,6 @@ import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.entity.ResidentSessionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -61,7 +60,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.JsonUtil;
@@ -155,10 +153,7 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Autowired
     private Utilities  utilities;
-	
-	@Autowired
-	private ResidentSessionRepository  residentSessionRepo;
-	
+
 	private static final Logger logger = LoggerConfiguration.logConfig(IdentityServiceImpl.class);
 	
 	@Override
@@ -180,6 +175,7 @@ public class IdentityServiceImpl implements IdentityService {
 			identityDTO.setPhone(getMappingValue(identity, PHONE));
 			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
 			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
+				identityDTO.setDateOfBirth(dateOfBirth);
 				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
 				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
@@ -280,7 +276,7 @@ public class IdentityServiceImpl implements IdentityService {
 						if(attr.contains(ResidentConstants.MASK_PREFIX)) {
 							String attributeName = attr.replace(ResidentConstants.MASK_PREFIX, "");
 							if(identity.containsKey(attributeName)) {
-								identity.put(attr, utility.convertToMaskDataFormat((String) identity.get(attributeName)));
+								identity.put(attr, utility.convertToMaskData((String) identity.get(attributeName)));
 							}
 						}
 					})
@@ -289,7 +285,7 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 
 			return response;
-		} catch (ApisResourceAccessException | IOException e) {
+		} catch (ApisResourceAccessException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -508,16 +504,9 @@ public class IdentityServiceImpl implements IdentityService {
 	public String createSessionId(){
 		return utility.createEventId();
 	}
-	
-	public String getSessionId() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		String residentIdaToken = getResidentIdaToken();
-		return residentSessionRepo.findFirstByIdaTokenOrderByLoginDtimesDesc(residentIdaToken)
-				.map(ResidentSessionEntity::getSessionId)
-				.orElseGet(this::createSessionId);
-	}
 
 	/**
-     * @param individualId - it can be UIN, VID or AID.
+     * @param aid - it can be UIN, VID or AID.
      * @return UIN or VID based on the flag "useVidOnly"
      */
 	public String getIndividualIdForAid(String aid)
@@ -538,14 +527,11 @@ public class IdentityServiceImpl implements IdentityService {
 			return individualId;
 	}
 	
-	public String getResidentAuthenticationMode() throws ApisResourceAccessException {
-		return getClaimFromIdToken(this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
-	}
-	
-	public String getClaimFromAccessToken(String claim) {
-		AuthUserDetails authUserDetails = getAuthUserDetails();
-		String accessToken = authUserDetails.getToken();
-		return getClaimValueFromJwtToken(accessToken, claim);
+	public String getResidentAuthenticationMode() throws ResidentServiceCheckedException {
+		String authenticationMode = getClaimFromIdToken(
+				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
+		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
+		return authTypeCode;
 	}
 
 	public String getClaimFromIdToken(String claim) {

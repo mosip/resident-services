@@ -22,10 +22,14 @@ public class VidAlreadyPresentException extends BaseResidentUncheckedExceptionWi
      * @param errorMessage the error message
      */
     public VidAlreadyPresentException(String errorCode, String errorMessage) {
-        super(errorCode, errorMessage);
+        super(errorCode, ResidentErrorCode.VID_ALREADY_PRESENT.getErrorMessage());
+    }
+
+    public VidAlreadyPresentException(String errorMessage, Throwable cause) {
+        super(ResidentErrorCode.VID_ALREADY_PRESENT.getErrorCode(), ResidentErrorCode.VID_ALREADY_PRESENT.getErrorMessage(), cause);
     }
 
 	public VidAlreadyPresentException(String errorMessage, Throwable rootCause, Map<String, Object> metadata) {
-		super(ResidentErrorCode.VID_ALREADY_PRESENT.getErrorCode(), errorMessage, rootCause, metadata);
+		super(ResidentErrorCode.VID_ALREADY_PRESENT.getErrorCode(), ResidentErrorCode.VID_ALREADY_PRESENT.getErrorMessage(), rootCause, metadata);
 	}
 }

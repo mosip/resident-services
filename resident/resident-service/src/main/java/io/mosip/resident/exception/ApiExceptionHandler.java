@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -225,6 +226,30 @@ public class ApiExceptionHandler {
 		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.BAD_REQUEST);
 	}
 
+	@ExceptionHandler(VidAlreadyPresentException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final VidAlreadyPresentException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+
+	@ExceptionHandler(VidCreationException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final VidCreationException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+
+	@ExceptionHandler(VidRevocationException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> controlRequestException(HttpServletRequest httpServletRequest,
+																				 final VidRevocationException e) throws IOException{
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return getErrorResponseEntity(httpServletRequest, e, HttpStatus.OK);
+	}
+
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public ResponseEntity<ResponseWrapper<ServiceError>> onHttpMessageNotReadable(
 			final HttpServletRequest httpServletRequest, final HttpMessageNotReadableException e) throws IOException {
@@ -315,6 +340,17 @@ public class ApiExceptionHandler {
 		ExceptionUtils.logRootCause(e);
 		logStackTrace(e);
 		return createResponseEntity(errorResponse, e, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<ResponseWrapper<ServiceError>> handleAccessDeniedException(
+			final HttpServletRequest httpServletRequest, final AccessDeniedException e) throws IOException {
+		ResponseWrapper<ServiceError> errorResponse = setErrors(httpServletRequest);
+		ServiceError error = new ServiceError(ResidentErrorCode.FORBIDDEN.getErrorCode(), e.getMessage());
+		errorResponse.getErrors().add(error);
+		ExceptionUtils.logRootCause(e);
+		logStackTrace(e);
+		return createResponseEntity(errorResponse, e, HttpStatus.FORBIDDEN);
 	}
 
 	private static void logStackTrace(Exception e) {

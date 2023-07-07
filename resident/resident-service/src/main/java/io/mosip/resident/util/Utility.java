@@ -3,7 +3,6 @@ package io.mosip.resident.util;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICES;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,17 +12,23 @@ import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +44,7 @@ import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -51,6 +57,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
 
@@ -71,7 +80,10 @@ import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.constant.TemplateVariablesConstants;
+import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
+import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.JsonValue;
@@ -80,7 +92,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 /**
@@ -90,6 +102,8 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 
 @Component
 public class Utility {
+
+	private static final String MEDIUM = "MEDIUM";
 
 	private static final String EVENT_ID_PLACEHOLDER = "{eventId}";
 
@@ -103,6 +117,9 @@ public class Utility {
 
     @Value("${registration.processor.identityjson}")
 	private String residentIdentityJson;
+
+	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
+	private boolean isPreferedLangFlagEnabled;
 
 	@Autowired
 	@Qualifier("selfTokenRestTemplate")
@@ -122,6 +139,7 @@ public class Utility {
 
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
+	private static final String ACR_AMR = "acr_amr";
 	private static String regProcessorIdentityJson = "";
 
 	private static String ANONYMOUS_USER = "anonymousUser";
@@ -144,19 +162,69 @@ public class Utility {
 
 	@Value("${mosip.resident.download-card.url}")
 	private String downloadCardUrl;
-
-	@Autowired
-	private ResidentTransactionRepository residentTransactionRepository;
+	
+	@Value("${resident.date.time.replace.special.chars:{}}")
+	private String specialCharsReplacement;
 
 	@Autowired
 	private IdentityServiceImpl identityService;
+
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Autowired
+	private ObjectMapper mapper;
+	
+	/** The acr-amr mapping json file. */
+	@Value("${amr-acr.json.filename}")
+	private String amrAcrJsonFile;
+
+	@Value("${resident.date.time.formmatting.style:" + MEDIUM + "}")
+	private String formattingStyle;
+
+	private Map<String, String> specialCharsReplacementMap;
 
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "loadRegProcessorIdentityJson completed successfully");
-    }
+        try {
+			specialCharsReplacementMap = ((Map<String, Object>)mapper.readValue(specialCharsReplacement, Map.class))
+								.entrySet()
+								.stream()
+								.collect(Collectors.toUnmodifiableMap(Entry::getKey, entry -> String.valueOf(entry.getValue())));
+		} catch (JsonProcessingException e) {
+			logger.error("Error parsing special chars map used for replacement in timestamp in filename.");
+			specialCharsReplacementMap = Map.of();
+		}
+	}
+
+	@Cacheable(value = "amr-acr-mapping")
+	public Map<String, String> getAmrAcrMapping() throws ResidentServiceCheckedException {
+		String amrAcrJson = residentRestTemplate.getForObject(configServerFileStorageURL + amrAcrJsonFile,
+				String.class);
+		Map<String, Object> amrAcrMap = Map.of();
+		try {
+			if (amrAcrJson != null) {
+				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+			}
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		Object obj = amrAcrMap.get(ACR_AMR);
+		Map<String, Object> map = (Map<String, Object>) obj;
+		Map<String, String> acrAmrMap = map.entrySet().stream().collect(
+				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
+		return acrAmrMap;
+	}
+
+	public String getAuthTypeCodefromkey(String reqTypeCode) throws ResidentServiceCheckedException {
+		Map<String, String> map = getAmrAcrMapping();
+		String authTypeCode = map.get(reqTypeCode);
+		return authTypeCode;
+	}
 
 	@SuppressWarnings("unchecked")
 	public JSONObject retrieveIdrepoJson(String id) throws ResidentServiceCheckedException {
@@ -290,14 +358,47 @@ public class Utility {
 				preferredLang = String.valueOf(object);
 				if(preferredLang.contains(ResidentConstants.COMMA)){
 					String[] preferredLangArray = preferredLang.split(ResidentConstants.COMMA);
-					return Set.of(preferredLangArray);
+					return Stream.of(preferredLangArray)
+							.map(lang -> getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, lang))
+							.collect(Collectors.toSet());
 				}
 			}
 		}
 		if(preferredLang!=null){
-			return Set.of(preferredLang);
+			String preferredLanguage=getPreferredLanguageCodeForLanguageNameBasedOnFlag(preferredLangAttribute, preferredLang);
+			if(preferredLanguage==null || preferredLanguage.isEmpty()){
+				return Set.of();
+			}
+			return Set.of(preferredLanguage);
 		}
 		return Set.of();
+	}
+
+	public String getPreferredLanguageCodeForLanguageNameBasedOnFlag(String fieldName, String preferredLang) {
+		if(isPreferedLangFlagEnabled){
+		try {
+			ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
+					proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
+							env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
+			DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
+					mapper.writeValueAsString(responseWrapper.getResponse()),
+					DynamicFieldConsolidateResponseDto.class);
+			return dynamicFieldConsolidateResponseDto.getValues()
+					.stream()
+					.filter(dynamicFieldCodeValueDTO -> preferredLang.equalsIgnoreCase(dynamicFieldCodeValueDTO.getValue()))
+					.findAny()
+					.map(DynamicFieldCodeValueDTO::getCode)
+					.orElse(null);
+		} catch (ResidentServiceCheckedException e) {
+			throw new RuntimeException(e);
+		} catch (JsonMappingException e) {
+			throw new RuntimeException(e);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		}
+		return preferredLang;
+
 	}
 
 	private Set<String> getDataCapturedLanguages(JSONObject mapperIdentity, JSONObject demographicIdentity)
@@ -372,7 +473,7 @@ public class Utility {
 		return maskData(phone, phoneMaskFunction);
 	}
 
-	public String convertToMaskDataFormat(String maskData) {
+	public String convertToMaskData(String maskData) {
 		return maskData(maskData, maskingFunction);
 	}
 
@@ -386,15 +487,19 @@ public class Utility {
 		return MVEL.executeExpression(serializable, context, myVarFactory, String.class);
 	}
 
-
-	public ResidentTransactionEntity createEntity() {
+	public ResidentTransactionEntity createEntity(RequestType requestType){
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setRequestDtimes(DateUtils.getUTCCurrentDateTime());
 		residentTransactionEntity.setResponseDtime(DateUtils.getUTCCurrentDateTime());
-		residentTransactionEntity.setCrBy(RESIDENT_SERVICES);
+		residentTransactionEntity.setCrBy(getSessionUserName());
 		residentTransactionEntity.setCrDtimes(DateUtils.getUTCCurrentDateTime());
 		// Initialize with true, so that it is updated as false in later when needed for notification
-		residentTransactionEntity.setReadStatus(true);
+		if(ServiceType.ASYNC.getRequestTypes().contains(requestType)){
+			residentTransactionEntity.setReadStatus(false);
+		}else {
+			residentTransactionEntity.setReadStatus(true);
+		}
+		residentTransactionEntity.setRequestTypeCode(requestType.name());
 		return residentTransactionEntity;
 	}
 
@@ -437,7 +542,7 @@ public class Utility {
 					env.getProperty(ResidentConstants.REASON), utilities.getTotalNumberOfPageInPdf(pdfValue), password);
 			request.setApplicationId(env.getProperty(ResidentConstants.SIGN_PDF_APPLICATION_ID));
 			request.setReferenceId(env.getProperty(ResidentConstants.SIGN_PDF_REFERENCE_ID));
-			request.setData(org.apache.commons.codec.binary.Base64.encodeBase64String(pdfValue.toByteArray()));
+			request.setData(Base64.encodeBase64String(pdfValue.toByteArray()));
 			DateTimeFormatter format = DateTimeFormatter.ofPattern(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN)));
 			LocalDateTime localdatetime = LocalDateTime
 					.parse(DateUtils.getUTCCurrentDateTimeString(Objects.requireNonNull(env.getProperty(DATETIME_PATTERN))), format);
@@ -472,14 +577,41 @@ public class Utility {
 		return pdfSignatured;
 	}
 
-	public String getFileName(String eventId, String propertyName, int timeZoneOffset){
+	public String getFileName(String eventId, String propertyName, int timeZoneOffset, String locale){
 		if(eventId!=null && propertyName.contains("{" + TemplateVariablesConstants.EVENT_ID + "}")){
 			propertyName = propertyName.replace("{" +TemplateVariablesConstants.EVENT_ID+ "}", eventId);
 		}
 		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
-			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+			String dateTimeFormat = formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime());
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", dateTimeFormat);
 		}
 		return propertyName;
+	}
+	
+	public String getFileNameForId(String id, String propertyName, int timeZoneOffset, String locale){
+		if(id!=null && propertyName.contains("{" + TemplateVariablesConstants.ID + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.ID+ "}", id);
+		}
+		if(propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")){
+			propertyName = propertyName.replace("{" +TemplateVariablesConstants.TIMESTAMP+ "}", formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime()));
+		}
+		return propertyName;
+	}
+
+	private String replaceSpecialChars(String fileName) {
+		if(!specialCharsReplacementMap.isEmpty()) {
+			StringBuilder stringBuilder = new StringBuilder(fileName);
+			specialCharsReplacementMap.entrySet().forEach(entry -> {
+				String key = entry.getKey();
+			String value = entry.getValue();
+				int index;
+				while((index = stringBuilder.indexOf(key)) != -1) {
+					stringBuilder.replace(index, index + key.length(), value);
+				}
+			});
+			return stringBuilder.toString();
+		}
+		return fileName;
 	}
 
 	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
@@ -507,7 +639,7 @@ public class Utility {
 		return HMACUtils2.digestAsPlainText(id.getBytes());
 	}
 	
-	public String getFileNameAck(String featureName, String eventId, String propertyName, int timeZoneOffset) {
+	public String getFileNameAck(String featureName, String eventId, String propertyName, int timeZoneOffset, String locale) {
 		if (eventId != null && propertyName.contains("{" + TemplateVariablesConstants.FEATURE_NAME + "}")) {
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.FEATURE_NAME + "}", featureName);
 		}
@@ -516,38 +648,66 @@ public class Utility {
 		}
 		if (propertyName.contains("{" + TemplateVariablesConstants.TIMESTAMP + "}")) {
 			propertyName = propertyName.replace("{" + TemplateVariablesConstants.TIMESTAMP + "}",
-					formatWithOffsetForFileName(timeZoneOffset, DateUtils.getUTCCurrentDateTime()));
+					formatWithOffsetForFileName(timeZoneOffset, locale, DateUtils.getUTCCurrentDateTime()));
 		}
 		return propertyName;
 	}
 
-	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset) {
+	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset, String locale) {
 		String namingProperty = RequestType.getRequestTypeByName(featureName).getNamingProperty();
 		if (namingProperty == null) {
 			namingProperty = ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY;
 		}
 		return getFileNameAck(featureName, eventId, Objects.requireNonNull(this.env.getProperty(namingProperty)),
-				timeZoneOffset);
+				timeZoneOffset, locale);
 	}
 	
 	public String getRefIdHash(String individualId) throws NoSuchAlgorithmException {
 		return HMACUtils2.digestAsPlainText(individualId.getBytes());
 	}
 
-	private String formatDateTimeForPattern(LocalDateTime localDateTime, String dateTimePattern) {
-		return localDateTime == null ? null : localDateTime.format(DateTimeFormatter.ofPattern(dateTimePattern));
+	private String formatDateTimeForPattern(LocalDateTime localDateTime, String locale, String defaultDateTimePattern, int timeZoneOffset) {
+		return localDateTime == null ? null : formatToLocaleDateTime(locale, defaultDateTimePattern, localDateTime);
 	}
 
-	public String formatWithOffsetForUI(int timeZoneOffset, LocalDateTime localDateTime) {
-		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN)));
+	public String formatWithOffsetForUI(int timeZoneOffset, String locale, LocalDateTime localDateTime) {
+		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.UI_DATE_TIME_PATTERN_DEFAULT)), timeZoneOffset);
 	}
 
+	public String formatWithOffsetForFileName(int timeZoneOffset, String locale, LocalDateTime localDateTime) {
+		return replaceSpecialChars(formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), locale, Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN_DEFAULT)), timeZoneOffset));
+	}
+	
 	public LocalDateTime applyTimeZoneOffsetOnDateTime(int timeZoneOffset, LocalDateTime localDateTime) {
 		return localDateTime == null ? null : localDateTime.minusMinutes(timeZoneOffset); //Converting UTC to local time zone
 	}
 	
-	public String formatWithOffsetForFileName(int timeZoneOffset, LocalDateTime localDateTime) {
-		return formatDateTimeForPattern(applyTimeZoneOffsetOnDateTime(timeZoneOffset, localDateTime), Objects.requireNonNull(env.getProperty(ResidentConstants.FILENAME_DATETIME_PATTERN)));
+	private String formatToLocaleDateTime(String localeStr, String defaultDateTimePattern, LocalDateTime localDateTime) {
+		Locale locale = null;
+		if (localeStr != null && !localeStr.isEmpty()) {
+			String[] localeElements = localeStr.replace('-', '_').split("_");
+			if (localeElements.length == 1) {
+				locale = new Locale.Builder().setLanguage(localeElements[0].toLowerCase()).build();
+			} else if (localeElements.length >= 2) {
+				locale = new Locale.Builder().setLanguage(localeElements[0]).setRegion(localeElements[1].toUpperCase())
+						.build();
+			}
+		}
+		
+		if(locale == null && defaultDateTimePattern == null) {
+			locale = Locale.getDefault();
+		}
+		
+		if(locale != null) {
+			Chronology chronology = Chronology.ofLocale(locale);
+			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.valueOf(formattingStyle)).withLocale( locale ).withChronology( chronology ) ;
+			String dateTime = localDateTime.format(formatter);
+			return dateTime;
+		} else {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(defaultDateTimePattern);
+			String dateTime = localDateTime.format(formatter);
+			return dateTime;
+		}
 	}
 	
 	public String getClientIp(HttpServletRequest req) {
@@ -577,6 +737,34 @@ public class Utility {
 		}
 		logger.debug("Utilitiy::getClientIp()::exit - excecuted till end");
 		return req.getRemoteAddr();
+	}
+	
+	public String getCardOrderTrackingId(String transactionId, String individualId)
+			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		Object object = residentServiceRestClient.getApi(ApiName.GET_ORDER_STATUS_URL, RequestType.getAllNewOrInprogressStatusList(env),
+				List.of(TemplateVariablesConstants.TRANSACTION_ID, TemplateVariablesConstants.INDIVIDUAL_ID),
+				List.of(transactionId, individualId), ResponseWrapper.class);
+		ResponseWrapper<Map<String, String>> responseWrapper = JsonUtil.convertValue(object,
+				new TypeReference<ResponseWrapper<Map<String, String>>>() {
+				});
+		if (Objects.nonNull(responseWrapper.getErrors()) && !responseWrapper.getErrors().isEmpty()) {
+			logger.error("ORDER_STATUS_URL returned error " + responseWrapper.getErrors());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.UNKNOWN_EXCEPTION);
+		}
+		return responseWrapper.getResponse().get(TemplateVariablesConstants.TRACKING_ID);
+	}
+	
+	public String getSessionUserName() {
+		String name = null;
+		try {
+			name = identityService.getAvailableclaimValue(this.env.getProperty(ResidentConstants.NAME_FROM_PROFILE));
+			if (name == null || name.trim().isEmpty()) {
+				name = ResidentConstants.UNKNOWN;
+			}
+		} catch (ApisResourceAccessException e) {
+			throw new RuntimeException(e);
+		}
+		return name;
 	}
 	
 }
