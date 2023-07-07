@@ -123,7 +123,7 @@ public class GrievanceControllerTest {
 
     @Test
     public void testGetCardSuccess() throws Exception {
-        io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         HashMap<String, String> response = new HashMap<>();
         String ticketId = UUID.randomUUID().toString();
         response.put("ticketId", ticketId);
@@ -139,7 +139,7 @@ public class GrievanceControllerTest {
     public void testGetCardFailed() throws Exception {
         doThrow(new InvalidInputException()).
                 when(validator).validateGrievanceRequestDto(any());
-        io.mosip.kernel.core.http.ResponseWrapper<Object> responseWrapper = new io.mosip.kernel.core.http.ResponseWrapper<>();
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         HashMap<String, String> response = new HashMap<>();
         String ticketId = UUID.randomUUID().toString();
         response.put("ticketId", ticketId);

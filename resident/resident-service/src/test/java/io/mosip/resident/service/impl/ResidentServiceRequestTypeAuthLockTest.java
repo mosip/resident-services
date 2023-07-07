@@ -144,7 +144,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		for (AuthTypeStatusDto authTypeStatusDto1 : authLockOrUnLockRequestDtoV2.getAuthTypes()) {
@@ -163,7 +163,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
@@ -179,7 +179,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		Mockito.when(notificationService.sendNotification(Mockito.any()))
@@ -197,7 +197,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(true);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);
@@ -211,7 +211,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		authTypeStatusDto.setAuthType("OTP");
 		authTypeStatusDto.setLocked(false);
 		authTypeStatusDto.setUnlockForSeconds(10L);
-		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new java.util.ArrayList<>();
+		List<AuthTypeStatusDtoV2> authTypeStatusDtoList = new ArrayList<>();
 		authTypeStatusDtoList.add(authTypeStatusDto);
 		authLockOrUnLockRequestDtoV2.setAuthTypes(authTypeStatusDtoList);
 		residentService.reqAauthTypeStatusUpdateV2(authLockOrUnLockRequestDtoV2);

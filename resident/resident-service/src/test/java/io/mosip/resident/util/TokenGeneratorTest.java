@@ -25,7 +25,6 @@ import org.springframework.core.env.Environment;
 
 import io.mosip.kernel.core.util.TokenHandlerUtil;
 import io.mosip.resident.exception.TokenGenerationFailedException;
-import io.mosip.resident.util.TokenGenerator;
 
 
 @RunWith(PowerMockRunner.class)
