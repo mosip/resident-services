@@ -92,7 +92,6 @@ public class DocumentController {
 			@RequestParam("docTypCode") String docTypCode,
 			@RequestParam("langCode") String langCode,
 			@RequestParam("referenceId") String referenceId) throws IOException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentUploadDocumentId);
@@ -137,7 +136,6 @@ public class DocumentController {
 	@GetMapping(path = "/documents/{transaction-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<List<DocumentResponseDTO>> getDocumentsByTransactionId(
 			@PathVariable("transaction-id") String transactionId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get documents API"));
 		ResponseWrapper<List<DocumentResponseDTO>> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentDocumentListId);
@@ -177,7 +175,6 @@ public class DocumentController {
 	public ResponseWrapper<DocumentDTO> getDocumentByDocumentId(
 			@RequestParam("transactionId") String transactionId,
 			@PathVariable("document-id") String documentId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get document API"));
 		ResponseWrapper<DocumentDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentGetDocumentId);
@@ -217,7 +214,6 @@ public class DocumentController {
 	public ResponseWrapper<ResponseDTO> deleteDocument(
 			@RequestParam("transactionId") String transactionId,
 			@PathVariable("document-id") String documentId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Delete document API"));
 		ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentDeleteId);

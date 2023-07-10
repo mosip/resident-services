@@ -47,7 +47,6 @@ public class PinStatusController {
     @PostMapping(path = "pinned/{eventId}")
 	public ResponseWrapper<ResponseDTO> pinStatus(@PathVariable("eventId") String eventId)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Pin Status API"));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		try {
 			requestValidator.validateEventId(eventId);
@@ -67,7 +66,6 @@ public class PinStatusController {
 	@PostMapping(path = "unpinned/{eventId}")
 	public ResponseWrapper<ResponseDTO> unPinStatus(@PathVariable("eventId") String eventId)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Pin Status API"));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		try {
 			requestValidator.validateEventId(eventId);

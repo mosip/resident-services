@@ -154,7 +154,6 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<RequestDTO> requestDTO) throws ApisResourceAccessException {
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "get Rid status API"));
 			validator.validateRidCheckStatusRequestDTO(requestDTO);
 			audit.setAuditRequestDto(EventEnum.RID_STATUS);
 			response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
@@ -177,7 +176,6 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> reqEuin(@Valid @RequestBody RequestWrapper<EuinRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request Euin API"));
 		validator.validateEuinRequest(requestDTO);
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REQ_EUIN, requestDTO.getRequest().getTransactionID()));
@@ -203,7 +201,6 @@ public class ResidentController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> reqPrintUin(@Valid @RequestBody RequestWrapper<ResidentReprintRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request print Uin API"));
 		validator.validateReprintRequest(requestDTO);
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REQ_PRINTUIN, requestDTO.getRequest().getTransactionID()));
@@ -226,7 +223,6 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAauthLock(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock API"));
 		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.LOCK);
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, requestDTO.getRequest().getTransactionID()));
@@ -249,8 +245,6 @@ public class ResidentController {
 	public ResponseWrapper<ResponseDTO> reqAuthUnlock(
 			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth unlock  API"));
 		validator.validateAuthUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
 		audit.setAuditRequestDto(
 				EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK, requestDTO.getRequest().getTransactionID()));
@@ -273,8 +267,6 @@ public class ResidentController {
 	public ResponseEntity<Object> reqAauthTypeStatusUpdateV2(
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update auth Type status API"));
 		String individualId = null;
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		Tuple2<ResponseDTO, String> tupleResponse = null;
@@ -310,7 +302,6 @@ public class ResidentController {
 	public ResponseWrapper<AuthHistoryResponseDTO> reqAuthHistory(
 			@Valid @RequestBody RequestWrapper<AuthHistoryRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth history"));
 		ResponseWrapper<AuthHistoryResponseDTO> response = new ResponseWrapper<>();
 		try {
 			validator.validateAuthHistoryRequest(requestDTO);
@@ -341,7 +332,6 @@ public class ResidentController {
 			@RequestParam(name = "langCode") String languageCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "checkAidStatus"));
 		logger.debug("checkAidStatus controller entry");
 		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
@@ -380,7 +370,6 @@ public class ResidentController {
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.info("TimeZone-offset: " + timeZoneOffset);
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "getServiceHistory"));
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		try {
 			validator.validateOnlyLanguageCode(langCode);
@@ -412,7 +401,6 @@ public class ResidentController {
 	public ResponseWrapper<Object> updateUin(
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update Uin API"));
 		validator.validateUpdateRequest(requestDTO, false);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		audit.setAuditRequestDto(
@@ -442,7 +430,6 @@ public class ResidentController {
 	public ResponseEntity<Object> updateUinDemographics(
 			@Valid @RequestBody RequestWrapper<ResidentDemographicUpdateRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "update UIN API"));
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = JsonUtil.convertValue(requestDTO,
 				new TypeReference<RequestWrapper<ResidentUpdateRequestDto>>() {
 				});
@@ -477,8 +464,6 @@ public class ResidentController {
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
 	@GetMapping(path = "/auth-lock-status")
 	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request auth lock status  API"));
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		try {
@@ -508,8 +493,6 @@ public class ResidentController {
 			@PathVariable("eventId") String eventId,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "request download card API"));
 		InputStreamResource resource = null;
 		try {
 		validator.validateEventId(eventId);
