@@ -73,7 +73,6 @@ public class WebSubCredentialStatusUpdateController {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"WebSubCredentialStatusUpdateController :: credentialStatusUpdateCallback() :: Start");
-			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK);
 			webSubCredentialStatusUpdateService.updateCredentialStatus(eventModel);
 			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {

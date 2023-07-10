@@ -452,8 +452,6 @@ public class ResidentServiceImpl implements ResidentService {
 		byte[] response = null;
 		IdType idtype = getIdType(dto.getIndividualIdType());
 		try {
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(), "Request EUIN"));
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request EUIN"));
@@ -520,8 +518,6 @@ public class ResidentServiceImpl implements ResidentService {
 		ResidentReprintResponseDto reprintResponse = new ResidentReprintResponseDto();
 
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
-					"Request for print UIN"));
 			if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 						dto.getTransactionID(), "Request for print UIN"));
@@ -624,8 +620,6 @@ public class ResidentServiceImpl implements ResidentService {
 		ResponseDTO response = new ResponseDTO();
 		boolean isTransactionSuccessful = false;
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
-					"Request for auth " + authTypeStatus.toString().toLowerCase()));
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request for auth " + authTypeStatus.toString().toLowerCase()));
@@ -712,8 +706,6 @@ public class ResidentServiceImpl implements ResidentService {
 		AuthHistoryResponseDTO response = new AuthHistoryResponseDTO();
 
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, dto.getTransactionID(),
-					"Request for auth history"));
 			if (idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
 						dto.getTransactionID(), "Request for auth history"));
@@ -873,8 +865,6 @@ public class ResidentServiceImpl implements ResidentService {
 			}
 			if (Objects.nonNull(dto.getOtp())) {
 				if (!idAuthService.validateOtp(dto.getTransactionID(), dto.getIndividualId(), dto.getOtp())) {
-					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,
-							dto.getTransactionID(), "Request for UIN update"));
 					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
 							dto.getTransactionID(), "Request for UIN update"));
 					sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);

@@ -66,7 +66,6 @@ public class ProxyPartnerManagementController {
 	public ResponseWrapper<?> getPartnersByPartnerType(@RequestParam("partnerType") Optional<String> partnerType)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType():: entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE);
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper = proxyPartnerManagementService.getPartnersByPartnerType(partnerType);

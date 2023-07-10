@@ -1,6 +1,5 @@
 package io.mosip.resident.controller;
 
-import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
 
@@ -57,7 +56,6 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<ResponseWrapper<?>> getRemainingUpdateCountByIndividualId(
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
-		auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT);
 		try {
 			ResponseWrapper<?> responseWrapper = proxySerivce
 					.getRemainingUpdateCountByIndividualId(filterAttributeList);

@@ -68,7 +68,6 @@ public class AuthTransactionCallbackController {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
 					"AuthTransactionCallbackController :: authTransactionCallback() :: Start");
-			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
 			authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
 			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
 		} catch (ResidentServiceCheckedException e) {

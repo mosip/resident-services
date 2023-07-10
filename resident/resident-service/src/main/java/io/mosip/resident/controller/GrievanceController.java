@@ -54,7 +54,6 @@ public class GrievanceController {
 			@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("DownloadCardController::grievanceTicket()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
 		ResponseWrapper<Object> response = null;
 		try {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);

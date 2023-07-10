@@ -57,7 +57,6 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public OtpResponseDTO reqOtp(@RequestBody OtpRequestDTO otpRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
-		audit.setAuditRequestDto(EventEnum.OTP_GEN);
 		OtpResponseDTO otpResponseDTO = residentOtpService.generateOtp(otpRequestDto);
 		audit.setAuditRequestDto(EventEnum.OTP_GEN_SUCCESS);
 		return otpResponseDTO;
@@ -72,7 +71,6 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public IndividualIdResponseDto reqOtpForIndividualId(@RequestBody IndividualIdOtpRequestDTO individualIdRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN);
 		IndividualIdResponseDto individualIdResponseDto;
 		try {
 			requestValidator.validateReqOtp(individualIdRequestDto);

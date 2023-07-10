@@ -78,7 +78,6 @@ public class AcknowledgementController {
 							ackDownloadId));
 		}
         try {
-            auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL, "acknowledgement"));
 	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
 	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);

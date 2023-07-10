@@ -89,7 +89,6 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
 		try {
 			validator.validateReqCredentialRequest(requestDTO);
@@ -123,7 +122,6 @@ public class ResidentCredentialController {
 			validator.validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
 			validator.validatePurpose(requestDTO.getRequest().getPurpose());
 			String purpose = requestDTO.getRequest().getPurpose();
-			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ);
 			RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();
 			ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();
 			credentialRequestDto.setIssuer(requestDTO.getRequest().getPartnerId());
@@ -154,7 +152,6 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getCredentialStatus(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS);
 		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getStatus(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_SUCCESS);
@@ -170,7 +167,6 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getCard(@PathVariable("requestId") String requestId)
 			throws Exception {
-		audit.setAuditRequestDto(EventEnum.REQ_CARD);
 		byte[] pdfBytes = residentCredentialService.getCard(requestId);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.REQ_CARD_SUCCESS);
@@ -188,7 +184,6 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getCredentialTypes()
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES);
 		ResponseWrapper<CredentialTypeResponse> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getCredentialTypes());
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_SUCCESS);
@@ -205,7 +200,6 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> cancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ);
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
@@ -221,7 +215,6 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getPolicyByCredentialType(@PathVariable @Valid String partnerId,
 			@PathVariable @Valid String credentialType) throws ResidentServiceCheckedException {
-		audit.setAuditRequestDto(EventEnum.REQ_POLICY);
 		io.mosip.resident.dto.ResponseWrapper<PartnerCredentialTypePolicyDto> response = residentCredentialService
 				.getPolicyByCredentialType(partnerId, credentialType);
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);

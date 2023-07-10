@@ -105,8 +105,6 @@ public class DocumentController {
 			docRequest.setLangCode(langCode);
 			docRequest.setReferenceId(referenceId);
 
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
 			responseWrapper.setResponse(uploadDocumentResponse);
 			audit.setAuditRequestDto(
@@ -142,8 +140,6 @@ public class DocumentController {
 			responseWrapper.setVersion(residentDocumentListVersion);
 			validator.validateTransactionIdForDocument(transactionId);
 
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
 			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
@@ -181,8 +177,6 @@ public class DocumentController {
 			responseWrapper.setVersion(residentGetDocumentVersion);
 			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
 
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
 			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
@@ -220,8 +214,6 @@ public class DocumentController {
 			responseWrapper.setVersion(residentDeleteVersion);
 			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
 
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
 			ResponseDTO documentResponse = service.deleteDocument(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(

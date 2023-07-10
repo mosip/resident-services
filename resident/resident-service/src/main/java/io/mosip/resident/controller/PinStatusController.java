@@ -50,8 +50,8 @@ public class PinStatusController {
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		try {
 			requestValidator.validateEventId(eventId);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS, eventId));
 			response = pinUnpinStatusService.pinStatus(eventId, true);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS_SUCCESS, eventId));
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS_FAILURE, eventId));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.PINNED_EVENTID_ID)));
@@ -69,8 +69,8 @@ public class PinStatusController {
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		try {
 			requestValidator.validateEventId(eventId);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS, eventId));
 			response = pinUnpinStatusService.pinStatus(eventId, false);
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS_SUCCESS, eventId));
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS_FAILURE, eventId));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.UNPINNED_EVENTID_ID)));

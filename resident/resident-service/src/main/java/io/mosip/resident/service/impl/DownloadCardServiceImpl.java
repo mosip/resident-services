@@ -286,7 +286,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				residentTransactionEntity
 						.setStatusComment(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorMessage());
 			}
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 			logger.error("Unable to convert html to pdf RootCause- " + e);
 			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
@@ -339,11 +338,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		try {
 			identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(individualId, null);
 		} catch (ResidentServiceCheckedException e) {
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 			logger.error("Unable to get attributes- " + e);
 			throw new ResidentServiceException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD, e);
 		} catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 			logger.error("Unable to get attributes- " + e);
 			throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
 		}

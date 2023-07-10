@@ -88,11 +88,9 @@ public class DownloadCardController {
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException {
 		logger.debug("DownloadCardController::downloadCard()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.REQ_CARD);
 		InputStreamResource resource = null;
 		Tuple2<byte[], String> tupleResponse = null;
 		try {
-			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
 			requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
 			tupleResponse = downloadCardService.getDownloadCardPDF(downloadCardRequestDTOMainRequestDTO);
 			resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
@@ -127,7 +125,6 @@ public class DownloadCardController {
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException {
         logger.debug("DownloadCardController::downloadPersonalizedCard()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD);
 		try {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
@@ -141,6 +138,7 @@ public class DownloadCardController {
         if(tupleResponse.getT1().length==0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+       // TODO add audit for success
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\""
 						+ utility.getFileName(tupleResponse.getT2(),
@@ -155,7 +153,6 @@ public class DownloadCardController {
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
     		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale) throws BaseCheckedException {
-    	auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
 		Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = null;
 		try {
 			requestValidator.validateDownloadCardVid(vid);
@@ -174,7 +171,6 @@ public class DownloadCardController {
     @GetMapping("/aid-stage/{aid}")
     public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
 		ResponseWrapper<CheckStatusResponseDTO> responseWrapper = null;
-		auditUtil.setAuditRequestDto(EventEnum.AID_STAGE);
 		try {
 			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
 		} catch (ResidentServiceException | InvalidInputException e) {

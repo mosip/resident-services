@@ -155,7 +155,6 @@ public class ResidentController {
 		ResponseWrapper<RegStatusCheckResponseDTO> response = new ResponseWrapper<>();
 		try {
 			validator.validateRidCheckStatusRequestDTO(requestDTO);
-			audit.setAuditRequestDto(EventEnum.RID_STATUS);
 			response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
 		} catch (InvalidInputException | ApisResourceAccessException e) {
 			audit.setAuditRequestDto(EventEnum.RID_STATUS_FAILURE);
@@ -177,8 +176,6 @@ public class ResidentController {
 	public ResponseEntity<Object> reqEuin(@Valid @RequestBody RequestWrapper<EuinRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
 		validator.validateEuinRequest(requestDTO);
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REQ_EUIN, requestDTO.getRequest().getTransactionID()));
 		byte[] pdfbytes = residentService.reqEuin(requestDTO.getRequest());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_EUIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
@@ -202,8 +199,6 @@ public class ResidentController {
 	public ResponseEntity<Object> reqPrintUin(@Valid @RequestBody RequestWrapper<ResidentReprintRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		validator.validateReprintRequest(requestDTO);
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REQ_PRINTUIN, requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResidentReprintResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqPrintUin(requestDTO.getRequest()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_PRINTUIN_SUCCESS,
@@ -224,8 +219,6 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
 		validator.validateAuthLockOrUnlockRequest(requestDTO, AuthTypeStatus.LOCK);
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.LOCK));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_SUCCESS,
@@ -246,8 +239,6 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<AuthUnLockRequestDTO> requestDTO)
 			throws ResidentServiceCheckedException {
 		validator.validateAuthUnlockRequest(requestDTO, AuthTypeStatus.UNLOCK);
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK, requestDTO.getRequest().getTransactionID()));
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		response.setResponse(residentService.reqAauthTypeStatusUpdate(requestDTO.getRequest(), AuthTypeStatus.UNLOCK));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_UNLOCK_SUCCESS,
@@ -273,7 +264,6 @@ public class ResidentController {
 		try {
 			individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 			validator.validateAuthLockOrUnlockRequestV2(requestDTO);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK, individualId));
 			tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
 			response.setResponse(tupleResponse.getT1());
 			response.setId(authLockStatusUpdateV2Id);
@@ -306,8 +296,6 @@ public class ResidentController {
 		try {
 			validator.validateAuthHistoryRequest(requestDTO);
 			response = new ResponseWrapper<>();
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_HISTORY,
-					requestDTO.getRequest().getTransactionID()));
 			response.setResponse(residentService.reqAuthHistory(requestDTO.getRequest()));
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED,
@@ -336,7 +324,6 @@ public class ResidentController {
 		ResponseWrapper<EventStatusResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			validator.validateEventIdLanguageCode(eventId, languageCode);
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.CHECK_AID_STATUS_REQUEST, eventId));
 			responseWrapper = residentService.getEventStatus(eventId, languageCode, timeZoneOffset, locale);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
@@ -375,8 +362,6 @@ public class ResidentController {
 			validator.validateOnlyLanguageCode(langCode);
 			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
 			validator.validateSearchText(searchText);
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_SERVICE_HISTORY, "getServiceHistory"));
 			responseWrapper = residentService.getServiceHistory(pageStart, pageFetch, fromDate, toDate, serviceType,
 					sortType, statusFilter, searchText, langCode, timeZoneOffset, locale,
 					RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
@@ -403,8 +388,6 @@ public class ResidentController {
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		validator.validateUpdateRequest(requestDTO, false);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()).getT1());
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN_SUCCESS,
 				requestDTO.getRequest().getTransactionID()));
@@ -443,8 +426,6 @@ public class ResidentController {
 		}
 		try {
 			validator.validateUpdateRequest(requestWrapper, true);
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.UPDATE_UIN, requestDTO.getRequest().getTransactionID()));
 			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
 					identityServiceImpl.getUinForIndividualId(individualId));
 			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true);
@@ -467,7 +448,6 @@ public class ResidentController {
 		ResponseWrapper<AuthLockOrUnLockRequestDtoV2> responseWrapper = new ResponseWrapper<>();
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		try {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS, individualId));
 			responseWrapper = residentService.getAuthLockStatus(individualId);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQ_AUTH_LOCK_STATUS_SUCCESS, individualId));
@@ -497,7 +477,6 @@ public class ResidentController {
 		try {
 		validator.validateEventId(eventId);
 		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> response = new ResponseWrapper<>();
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ, eventId));
 		byte[] pdfBytes = residentService.downloadCard(eventId);
 		if (pdfBytes.length == 0) {
 			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
@@ -546,7 +525,6 @@ public class ResidentController {
 		AidStatusResponseDTO resp = new AidStatusResponseDTO();
 		try {
 			validator.validateAidStatusRequestDto(reqDto);
-			audit.setAuditRequestDto(EventEnum.AID_STATUS);
 			resp = residentService.getAidStatus(reqDto.getRequest(), true);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException | OtpValidationFailedException e) {
 			audit.setAuditRequestDto(EventEnum.AID_STATUS_FAILURE);
@@ -679,8 +657,6 @@ public class ResidentController {
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::serviceHistory::pdf");
-		audit.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.DOWNLOAD_SERVICE_HISTORY, "acknowledgement"));
 		InputStreamResource resource = null;
 		try {
 			validator.validateOnlyLanguageCode(languageCode);

@@ -39,8 +39,6 @@ public class WebSubUpdateAuthTypeController {
     @Autowired
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-
-
     @Autowired
     private WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
 
@@ -63,12 +61,7 @@ public class WebSubUpdateAuthTypeController {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(),
 				"WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
-
 		try {
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-					LoggerFileConstant.APPLICATIONID.toString(),
-					"WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
-			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
 			webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
 			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {

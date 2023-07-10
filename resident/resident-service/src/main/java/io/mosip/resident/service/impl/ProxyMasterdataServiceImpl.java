@@ -466,14 +466,14 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
 					queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_EXCEPTION);
+				auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
 				logger.debug(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_TYPES_EXCEPTION);
-			logger.error("Error occured in accessing gender types %s", e.getMessage());
+			auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
+			logger.error("Error occured in accessing dynamic data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		}

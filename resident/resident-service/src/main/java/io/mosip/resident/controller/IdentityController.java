@@ -71,7 +71,6 @@ public class IdentityController {
 	public ResponseWrapper<Object> getInputAttributeValues(@PathVariable("schemaType") String schemaType)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("IdentityController::getInputAttributeValues()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES);
 		try {
 			validator.validateSchemaType(schemaType);
 		} catch (InvalidInputException e) {

@@ -474,8 +474,6 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			VidRevokeRequestDTO vidRevokeRequestDTO = (VidRevokeRequestDTO) requestDto;
 			if (Objects.nonNull(vidRevokeRequestDTO.getOtp())) {
 				try {
-					audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP,
-							requestDto.getTransactionID(), "Request to revoke VID"));
 					boolean isAuthenticated = idAuthService.validateOtp(requestDto.getTransactionID(),
 							vidRevokeRequestDTO.getIndividualId(), vidRevokeRequestDTO.getOtp());
 	

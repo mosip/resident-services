@@ -97,11 +97,11 @@ public class ResidentVidController {
 			response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
 			response.setResponse(residentVidService.getVidPolicy());
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_SUCCESS);
+			auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_FAILURE);
 			response.setErrors(List.of(new ServiceError(ResidentErrorCode.POLICY_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.POLICY_EXCEPTION.getErrorMessage())));
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_FAILURE);
+		auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_SUCCESS);
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -143,8 +143,6 @@ public class ResidentVidController {
 			residentIndividualId = getResidentIndividualId();
 		}
 		validator.validateVidCreateRequest(requestDto, isOtpValidationRequired, residentIndividualId);
-		auditUtil.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, residentIndividualId));
 		ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest(), residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
 				residentIndividualId));
@@ -158,8 +156,6 @@ public class ResidentVidController {
 			residentIndividualId = getResidentIndividualId();
 		}
 		validator.validateVidCreateV2Request(requestDto, isOtpValidationRequired, residentIndividualId);
-		auditUtil.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID, residentIndividualId));
 		Tuple2<ResponseWrapper<VidResponseDto>, String> tupleResponse = residentVidService.generateVidV2(requestDto.getRequest(), residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
 				residentIndividualId));
@@ -212,8 +208,6 @@ public class ResidentVidController {
 		}
 		validator.validateVidRevokeRequest(requestDto, isOtpValidationRequired, residentIndividualId);
 		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
-		auditUtil.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
 		ResponseWrapper<VidRevokeResponseDTO> vidResponseDto = residentVidService.revokeVid(requestDto.getRequest(),
 				vid, residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
@@ -234,8 +228,6 @@ public class ResidentVidController {
 		}
 		validator.validateVidRevokeV2Request(requestDto, isOtpValidationRequired, residentIndividualId);
 		requestDto.getRequest().setVidStatus(requestDto.getRequest().getVidStatus().toUpperCase());
-		auditUtil.setAuditRequestDto(
-				EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID, residentIndividualId));
 		Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> tupleResponse = residentVidService.revokeVidV2(requestDto.getRequest(),
 				vid, residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
@@ -262,7 +254,6 @@ public class ResidentVidController {
 	public ResponseWrapper<?> retrieveVids(@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceException, ApisResourceAccessException, ResidentServiceCheckedException  {
 		logger.debug("ResidentVidController::retrieveVids()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_VIDS);
 		ResponseWrapper<List<Map<String, ?>>> retrieveVids = new ResponseWrapper<>();
 		String residentIndividualId = getResidentIndividualId();
 		try {

@@ -85,7 +85,6 @@ public class MockApiController {
     @GetMapping(path= "/rid-digital-card/{rid}")
     public ResponseEntity<Object> getRIDDigitalCard(
             @PathVariable("rid") String rid) throws Exception {
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
         byte[] pdfBytes = mockService.getRIDDigitalCardV2(rid);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
