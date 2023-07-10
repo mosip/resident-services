@@ -554,6 +554,10 @@ public enum EventEnum {
 			"Download personalized card: Failed", "Download card Html to pdf failed", "RES-SER", "Resident service",
 			"RS-DOWN_CARD", "Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
 			RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	DOWNLOAD_PERSONALIZED_CARD_SUCCESS("RES-SER-292", RegistrationConstants.SYSTEM,
+			"Download personalized card: Success", "Download card Html to pdf success", "RES-SER", "Resident service",
+			"RS-DOWN_CARD", "Download card", RegistrationConstants.RESIDENT_APPLICATION_ID,
+			RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	DOWNLOAD_REGISTRATION_CENTER_SUCCESS("RES-SER-270", RegistrationConstants.SYSTEM,
 			"download registration center: Success",

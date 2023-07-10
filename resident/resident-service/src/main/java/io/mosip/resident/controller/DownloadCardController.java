@@ -106,7 +106,7 @@ public class DownloadCardController {
 			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
-		logger.debug("AcknowledgementController::acknowledgement()::exit");
+		logger.debug("DownloadCardController::downloadCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition",
 						"attachment; filename=\"" + utility.getFileNameForId(
@@ -138,7 +138,8 @@ public class DownloadCardController {
         if(tupleResponse.getT1().length==0){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-       // TODO add audit for success
+        auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_SUCCESS);
+        logger.debug("DownloadCardController::downloadPersonalizedCard()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\""
 						+ utility.getFileName(tupleResponse.getT2(),
@@ -153,6 +154,7 @@ public class DownloadCardController {
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
     		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale) throws BaseCheckedException {
+    	logger.debug("DownloadCardController::requestVidCard()::entry");
 		Tuple2<ResponseWrapper<VidDownloadCardResponseDto>, String> tupleResponse = null;
 		try {
 			requestValidator.validateDownloadCardVid(vid);
@@ -164,12 +166,14 @@ public class DownloadCardController {
 			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+		logger.debug("DownloadCardController::requestVidCard()::exit");
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
 	}
 
     @GetMapping("/aid-stage/{aid}")
     public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
+    	logger.debug("DownloadCardController::getStatus()::entry");
 		ResponseWrapper<CheckStatusResponseDTO> responseWrapper = null;
 		try {
 			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
@@ -180,6 +184,7 @@ public class DownloadCardController {
 			throw e;
 		}
     	auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_SUCCESS);
+    	logger.debug("DownloadCardController::getStatus()::exit");
         return ResponseEntity.ok()
                 .body(responseWrapper);
     }
