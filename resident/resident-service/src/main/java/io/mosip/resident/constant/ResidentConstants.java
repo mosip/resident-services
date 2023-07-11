@@ -291,5 +291,6 @@ public class ResidentConstants {
     public static final String DATA = "data";
     public static final String REQUEST_ID = "requestId";
     public static final String AUTH_TYPES = "authTypes";
+    public static final String RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.logging.interceptor.filter.enabled";
 
 }
