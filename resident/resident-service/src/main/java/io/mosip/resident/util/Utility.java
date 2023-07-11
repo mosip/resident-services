@@ -1,68 +1,14 @@
 package io.mosip.resident.util;
 
-import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
-import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.time.chrono.Chronology;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.mvel2.MVEL;
-import org.mvel2.integration.VariableResolverFactory;
-import org.mvel2.integration.impl.MapVariableResolverFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
-
+import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -71,6 +17,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -92,8 +39,70 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.mvel2.MVEL;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.chrono.Chronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Girish Yarru
@@ -121,9 +130,19 @@ public class Utility {
 	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
 	private boolean isPreferedLangFlagEnabled;
 
+	@Value("${mosip.iam.userinfo_endpoint}")
+	private String usefInfoEndpointUrl;
+
 	@Autowired
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+
+	@Autowired
+	@Qualifier("restClientWithPlainRestTemplate")
+	private ResidentServiceRestClient restClientWithPlainRestTemplate;
+
+	@Autowired
+	private ValidateTokenUtil tokenValidationHelper;
 
 	@Autowired
 	private Environment env;
@@ -137,12 +156,18 @@ public class Utility {
 	@Autowired
 	private Utilities utilities;
 
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
+
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
 	private static final String ACR_AMR = "acr_amr";
 	private static String regProcessorIdentityJson = "";
 
 	private static String ANONYMOUS_USER = "anonymousUser";
+
+	private static final String AUTHORIZATION = "Authorization";
+	private static final String BEARER_PREFIX = "Bearer ";
 	
 	@Autowired(required = true)
 	@Qualifier("varres")
@@ -207,7 +232,7 @@ public class Utility {
 		Map<String, Object> amrAcrMap = Map.of();
 		try {
 			if (amrAcrJson != null) {
-				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(UTF_8), Map.class);
 			}
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
@@ -447,7 +472,7 @@ public class Utility {
 	 */
 	public static String readResourceContent(Resource resFile) {
 		try {
-			return IOUtils.readInputStreamToString(resFile.getInputStream(), StandardCharsets.UTF_8);
+			return IOUtils.readInputStreamToString(resFile.getInputStream(), UTF_8);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
@@ -765,6 +790,71 @@ public class Utility {
 			throw new RuntimeException(e);
 		}
 		return name;
+	}
+
+	@Cacheable(value = "userInfoCache", key = "#token")
+	public Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
+		UriComponents uriComponent = builder.build(false).encode();
+
+		Map<String, Object> responseMap;
+		try {
+			MultiValueMap<String, String> headers =
+					new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
+			String responseStr = restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), String.class, headers);
+			responseMap = (Map<String, Object>) decodeAndDecryptUserInfo(responseStr);
+		} catch (ApisResourceAccessException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
+					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
+		}
+		return responseMap;
+	}
+
+	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
+		String userInfoStr;
+		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
+			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
+			if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
+				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
+						.verifyJWTSignagure(decodedJWT);
+				if (verifySignagure.left) {
+					userInfoStr = decodeString(getPayload(decodedJWT));
+				} else {
+					throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE,
+							String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(),
+									String.format("User info signature validation failed. Error: %s: %s",
+											verifySignagure.getRight().getErrorCode(),
+											verifySignagure.getRight().getErrorMessage())));
+				}
+			} else {
+				userInfoStr = decodeString(getPayload(decodedJWT));
+			}
+		} else {
+			userInfoStr = userInfoResponseStr;
+		}
+		if(Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
+		}
+		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
+	}
+
+	public String decodeString(String payload)
+	{
+		byte[] bytes = java.util.Base64.getUrlDecoder().decode(payload);
+		return new String(bytes, UTF_8);
+	}
+
+	private String getPayload(DecodedJWT decodedJWT) {
+		return decodedJWT.getPayload();
+	}
+
+	public String decryptPayload(String payload) {
+		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID),
+				this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
 	}
 	
 }
