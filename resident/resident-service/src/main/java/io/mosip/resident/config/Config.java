@@ -54,7 +54,7 @@ public class Config {
 	@Value("${resident-data-format-mvel-file-source}")
 	private Resource mvelFile;
 
-	@Value("${resident.logging.interceptor.filter.enabled:false}")
+	@Value("${resident.rest.template.logging.interceptor.filter.enabled:false}")
 	private boolean isResidentLoggingInterceptorFilterEnabled;
 
 	@Autowired(required = false)
