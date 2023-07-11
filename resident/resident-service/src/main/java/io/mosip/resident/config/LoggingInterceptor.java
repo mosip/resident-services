@@ -28,7 +28,7 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
         Thread currentThread = Thread.currentThread();
         StackTraceElement[] stackTrace = currentThread.getStackTrace();
         String stackTraceString = Stream.of(stackTrace).map(String::valueOf).collect(Collectors.joining("\n"));
-        logger.debug("#request-log#"+ ","+ req.getMethod() + ","+ req.getURI() + ","+stackTraceString);
+        logger.debug("#rest-template-log#"+ ","+ req.getMethod() + ","+ req.getURI() + ","+stackTraceString);
         ClientHttpResponse response = ex.execute(req, reqBody);
         return response;
     }
