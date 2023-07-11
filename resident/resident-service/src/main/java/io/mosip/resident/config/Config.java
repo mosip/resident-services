@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import javax.servlet.Filter;
 
+import io.mosip.resident.constant.ResidentConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -54,7 +55,7 @@ public class Config {
 	@Value("${resident-data-format-mvel-file-source}")
 	private Resource mvelFile;
 
-	@Value("${resident.rest.template.logging.interceptor.filter.enabled:false}")
+	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED + ":false}")
 	private boolean isResidentLoggingInterceptorFilterEnabled;
 
 	@Autowired(required = false)
