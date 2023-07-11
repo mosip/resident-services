@@ -15,8 +15,10 @@ import java.util.stream.Stream;
 
 import io.mosip.resident.exception.ResidentServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -463,6 +465,12 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		} catch (ResidentServiceCheckedException e) {
 			throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION, e);
 		}
+	}
+
+	@CacheEvict(value = "templateCache", allEntries = true)
+	@Scheduled(fixedRateString = "${template.cache.expiry.time.millisec}")
+	public void emptyTemplateCache() {
+		logger.info("Emptying Template cache");
 	}
 
 	@Override
