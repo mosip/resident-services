@@ -1,6 +1,7 @@
 package io.mosip.resident.config;
 
 import com.google.common.cache.CacheBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -19,13 +20,16 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CacheConfig {
 
+    @Value("${cache.expiration.time}")
+    private String cacheExpirationTime;
+
     @Bean
     public CacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
 
         Cache templateCache = new ConcurrentMapCache("templateCache",
                 CacheBuilder.newBuilder()
-                        .expireAfterWrite(2, TimeUnit.MINUTES)
+                        .expireAfterWrite(Long.parseLong(cacheExpirationTime), TimeUnit.MINUTES)
                         .build().asMap(),
                 false);
 
