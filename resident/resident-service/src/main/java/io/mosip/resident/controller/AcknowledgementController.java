@@ -39,7 +39,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name="AcknowledgementController", description="AcknowledgementController")
 public class AcknowledgementController {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(ResidentController.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(AcknowledgementController.class);
     
     @Value("${resident.event.ack.download.id}")
     private String ackDownloadId;
@@ -67,7 +67,7 @@ public class AcknowledgementController {
                                                   @PathVariable("languageCode") String languageCode,
                                                   @RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
                                                   @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException, IOException {
-        logger.debug("AcknowledgementController::acknowledgement()::entry");
+        logger.debug("AcknowledgementController::getAcknowledgement()::entry");
         InputStreamResource resource = null;
         String featureName = null;
         try {
@@ -78,11 +78,12 @@ public class AcknowledgementController {
 							ackDownloadId));
 		}
         try {
+        	logger.debug("AcknowledgementController::get acknowledgement download url");
 	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
 	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
-	        logger.debug("AcknowledgementController::acknowledgement()::exit");
 	        featureName = templateUtil.getFeatureName(eventId, locale);
+	        logger.debug("AcknowledgementController::getAcknowledgement()::exit");
         } catch(ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),

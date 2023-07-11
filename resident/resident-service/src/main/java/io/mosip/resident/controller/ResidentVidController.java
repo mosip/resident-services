@@ -62,7 +62,7 @@ import reactor.util.function.Tuple2;
 @Tag(name = "resident-vid-controller", description = "Resident Vid Controller")
 public class ResidentVidController {
 
-	Logger logger = LoggerConfiguration.logConfig(ResidentVidController.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(ResidentVidController.class);
 
 	@Autowired
 	private ResidentVidService residentVidService;
@@ -90,6 +90,7 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<ResponseWrapper<String>> getVidPolicy() {
+		logger.debug("ResidentVidController::getVidPolicy()::entry");
 		ResponseWrapper<String> response = new ResponseWrapper<>();
 		try {
 			response.setId(vidPolicyId);
@@ -102,6 +103,7 @@ public class ResidentVidController {
 					ResidentErrorCode.POLICY_EXCEPTION.getErrorMessage())));
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_SUCCESS);
+		logger.debug("ResidentVidController::getVidPolicy()::exit");
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -138,6 +140,7 @@ public class ResidentVidController {
 
 	private ResponseEntity<Object> generateVid(IVidRequestDto<?> requestDto, boolean isOtpValidationRequired)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentVidController::generateVid()::entry");
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRequestDto)? null : ((VidRequestDto)requestDto.getRequest()).getIndividualId();
 		if(residentIndividualId == null && requestDto.getRequest() != null) {
 			residentIndividualId = getResidentIndividualId();
@@ -146,11 +149,13 @@ public class ResidentVidController {
 		ResponseWrapper<VidResponseDto> vidResponseDto = residentVidService.generateVid(requestDto.getRequest(), residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
 				residentIndividualId));
+		logger.debug("ResidentVidController::generateVid()::exit");
 		return ResponseEntity.ok().body(vidResponseDto);
 	}
 	
 	private ResponseEntity<Object> generateVidV2Version(IVidRequestDto<?> requestDto, boolean isOtpValidationRequired)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentVidController::generateVidV2Version()::entry");
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRequestDto)? null : ((VidRequestDto)requestDto.getRequest()).getIndividualId();
 		if(residentIndividualId == null && requestDto.getRequest() != null) {
 			residentIndividualId = getResidentIndividualId();
@@ -159,6 +164,7 @@ public class ResidentVidController {
 		Tuple2<ResponseWrapper<VidResponseDto>, String> tupleResponse = residentVidService.generateVidV2(requestDto.getRequest(), residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.GENERATE_VID_SUCCESS,
 				residentIndividualId));
+		logger.debug("ResidentVidController::generateVidV2Version()::exit");
 		return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());
@@ -198,6 +204,7 @@ public class ResidentVidController {
 	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVid(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
 			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentVidController::revokeVid()::entry");
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
 				
 		if(residentIndividualId == null && requestDto.getRequest() != null) {
@@ -212,12 +219,14 @@ public class ResidentVidController {
 				vid, residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
 				residentIndividualId));
+		logger.debug("ResidentVidController::revokeVid()::exit");
 		return ResponseEntity.ok().body(vidResponseDto);
 	}
 	
 	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVidV2Version(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
 			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentVidController::revokeVidV2Version()::entry");
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
 				
 		if(residentIndividualId == null && requestDto.getRequest() != null) {
@@ -232,6 +241,7 @@ public class ResidentVidController {
 				vid, residentIndividualId);
 		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.REVOKE_VID_SUCCESS,
 				residentIndividualId));
+		logger.debug("ResidentVidController::revokeVidV2Version()::exit");
 		return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());

@@ -320,10 +320,10 @@ public enum EventEnum {
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	REQ_AUTH_LOCK_STATUS_SUCCESS("RES-SER-183", RegistrationConstants.SYSTEM, "Request auth lock status: Success",
-			"Requesting auth lock status api for transaction id %s is success", "RES-SER", "Residence service", "RS-AUTH_LOCK",
+			"Requesting auth lock status api is success", "RES-SER", "Residence service", "RS-AUTH_LOCK",
 			"Auth lock", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	REQ_AUTH_LOCK_STATUS_FAILED("RES-SER-184", RegistrationConstants.SYSTEM, "Request auth lock status: Failed",
-			"Requesting auth lock status api for transaction id %s failed", "RES-SER", "Residence service", "RS-AUTH_LOCK",
+			"Requesting auth lock status api is failed", "RES-SER", "Residence service", "RS-AUTH_LOCK",
 			"Auth lock", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 
 	AUTH_TYPE_CALL_BACK_SUCCESS("RES-SER-323", RegistrationConstants.SYSTEM, "Auth type call back: Success",
@@ -462,11 +462,11 @@ public enum EventEnum {
 			"Download digital card request is failed", "RES-SER", "Residence service", "RS-RID_CARD", "RID digital card",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
-	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-234", RegistrationConstants.SYSTEM, "Request credential request status: Success",
-			"Requesting credential request status is success", "RES-SER", "Residence service", "RS-AID", "AID status",
+	CHECK_AID_STATUS_REQUEST_SUCCESS("RES-SER-234", RegistrationConstants.SYSTEM, "Request AID status: Success",
+			"Requesting AID status for eventId %s is succeeded", "RES-SER", "Residence service", "RS-AID", "AID status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
-	CHECK_AID_STATUS_REQUEST_FAILED("RES-SER-279", RegistrationConstants.SYSTEM, "Request credential request status: Failed",
-			"Requesting credential request status failed", "RES-SER", "Residence service", "RS-AID", "AID status",
+	CHECK_AID_STATUS_REQUEST_FAILED("RES-SER-279", RegistrationConstants.SYSTEM, "Request AID status: Failed",
+			"Requesting AID status  for eventId %s is failed", "RES-SER", "Residence service", "RS-AID", "AID status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	CHECK_ORDER_STATUS_EXCEPTION("RES-SER-235", RegistrationConstants.SYSTEM, "check order status",

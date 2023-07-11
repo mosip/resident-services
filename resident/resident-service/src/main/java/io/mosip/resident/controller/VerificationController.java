@@ -52,7 +52,7 @@ public class VerificationController {
 	public VerificationResponseDTO getChannelVerificationStatus(@RequestParam("channel") String channel,
 			@RequestParam("individualId") String individualId)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
-		logger.info("getChannelVerificationStatus method started");
+		logger.debug("VerificationController::getChannelVerificationStatus()::entry");
 		VerificationResponseDTO verificationResponseDTO;
 		try {
 			validator.validateChannelVerificationStatus(channel, individualId);
@@ -63,6 +63,7 @@ public class VerificationController {
 			throw e;
 		}
 		audit.setAuditRequestDto(EventEnum.VERIFICATION_STATUS_SUCCESS);
+		logger.debug("VerificationController::getChannelVerificationStatus()::exit");
 		return verificationResponseDTO;
 	}
 

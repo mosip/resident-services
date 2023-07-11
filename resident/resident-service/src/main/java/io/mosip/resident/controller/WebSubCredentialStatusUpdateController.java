@@ -64,17 +64,13 @@ public class WebSubCredentialStatusUpdateController {
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.credential-status.secret}", callback = "${resident.websub.callback.credential-status.relative.url}", topic = "${resident.websub.credential-status.topic}")
 	public void credentialStatusUpdateCallback(@RequestBody Map<String, Object> eventModel) {
-
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(),
-				"WebSubCredentialStatusUpdateController :: credentialStatusUpdateCallback() :: Start");
-
 		try {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
-					"WebSubCredentialStatusUpdateController :: credentialStatusUpdateCallback() :: Start");
+					"WebSubCredentialStatusUpdateController :: credentialStatusUpdateCallback() :: entry");
 			webSubCredentialStatusUpdateService.updateCredentialStatus(eventModel);
 			auditUtil.setAuditRequestDto(EventEnum.CREDENTIAL_STATUS_UPDATE_CALL_BACK_SUCCESS);
+			logger.debug("WebSubCredentialStatusUpdateController::credentialStatusUpdateCallback()::exit");
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),

@@ -19,6 +19,8 @@ import io.mosip.idrepository.core.exception.IdRepoAppException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -45,6 +47,8 @@ public class ProxyIdRepoController {
 	@Autowired
 	private AuditUtil auditUtil;
 
+	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
+
 	@GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get Remaining update count by Individual Id Request", description = "Get Remaining update count by Individual Id Request", tags = {
 			"proxy-id-repo-identity-update-controller" })
@@ -56,10 +60,12 @@ public class ProxyIdRepoController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<ResponseWrapper<?>> getRemainingUpdateCountByIndividualId(
 			@RequestParam(name = "filter_attribute_list", required = false) @Nullable List<String> filterAttributeList) {
+		logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::entry");
 		try {
 			ResponseWrapper<?> responseWrapper = proxySerivce
 					.getRemainingUpdateCountByIndividualId(filterAttributeList);
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_SUCCESS);
+			logger.debug("ProxyIdRepoController::getRemainingUpdateCountByIndividualId()::exit");
 			return ResponseEntity.ok(responseWrapper);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(GET_IDENTITY_UPDATE_COUNT_EXCEPTION);

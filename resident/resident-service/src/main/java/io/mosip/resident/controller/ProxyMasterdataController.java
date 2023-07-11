@@ -61,10 +61,10 @@ public class ProxyMasterdataController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getValidDocumentByLangCode(@PathVariable("langCode") String langCode)
 			throws ResidentServiceCheckedException {
-		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode():: entry");
+		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::entry");
 		ResponseWrapper<?> responseWrapper = proxyMasterdataService.getValidDocumentByLangCode(langCode);
 		auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_SUCCESS);
-		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode():: exit");
+		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::exit");
 		return responseWrapper;
 	}
 

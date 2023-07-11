@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.UISchemaTypes;
@@ -78,6 +80,8 @@ public class ResidentCredentialController {
 	@Value("${resident.share.credential.version}")
 	private String shareCredentialVersion;
 
+	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialController.class);
+
 	@ResponseFilter
 	@PostMapping(value = "/req/credential")
 	@Operation(summary = "reqCredential", description = "reqCredential", tags = { "resident-credential-controller" })
@@ -89,6 +93,7 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> reqCredential(@RequestBody RequestWrapper<ResidentCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException {
+		logger.debug("ResidentCredentialController::reqCredential()::entry");
 		ResponseWrapper<ResidentCredentialResponseDto> response = new ResponseWrapper<>();
 		try {
 			validator.validateReqCredentialRequest(requestDTO);
@@ -99,6 +104,7 @@ public class ResidentCredentialController {
 			throw e;
 		}
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
+		logger.debug("ResidentCredentialController::reqCredential()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 	
@@ -115,6 +121,7 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> requestShareCredWithPartner(
 			@RequestBody RequestWrapper<ShareCredentialRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, JsonParseException, JsonMappingException, IOException {
+		logger.debug("ResidentCredentialController::requestShareCredWithPartner()::entry");
 		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		Tuple2<ResidentCredentialResponseDtoV2, String> tupleResponse;
 		try {
@@ -139,6 +146,7 @@ public class ResidentCredentialController {
 		response.setVersion(shareCredentialVersion);
 		response.setResponse(tupleResponse.getT1());
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_SUCCESS);
+		logger.debug("ResidentCredentialController::requestShareCredWithPartner()::exit");
 		return ResponseEntity.status(HttpStatus.OK).header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(response);
 	}
@@ -152,9 +160,11 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getCredentialStatus(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
+		logger.debug("ResidentCredentialController::getCredentialStatus()::entry");
 		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getStatus(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_SUCCESS);
+		logger.debug("ResidentCredentialController::getCredentialStatus()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
@@ -167,9 +177,11 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getCard(@PathVariable("requestId") String requestId)
 			throws Exception {
+		logger.debug("ResidentCredentialController::getCard()::entry");
 		byte[] pdfBytes = residentCredentialService.getCard(requestId);
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.REQ_CARD_SUCCESS);
+		logger.debug("ResidentCredentialController::getCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
 				.header("Content-Disposition", "attachment; filename=\"" + requestId + ".pdf\"")
 				.body((Object) resource);
@@ -184,9 +196,11 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getCredentialTypes()
 			throws ResidentServiceCheckedException {
+		logger.debug("ResidentCredentialController::getCredentialTypes()::entry");
 		ResponseWrapper<CredentialTypeResponse> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.getCredentialTypes());
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_SUCCESS);
+		logger.debug("ResidentCredentialController::getCredentialTypes()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
@@ -200,9 +214,11 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> cancelCredentialRequest(@PathVariable("requestId") String requestId)
 			throws ResidentServiceCheckedException {
+		logger.debug("ResidentCredentialController::cancelCredentialRequest()::entry");
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
 		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
+		logger.debug("ResidentCredentialController::cancelCredentialRequest()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
@@ -215,9 +231,11 @@ public class ResidentCredentialController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<Object> getPolicyByCredentialType(@PathVariable @Valid String partnerId,
 			@PathVariable @Valid String credentialType) throws ResidentServiceCheckedException {
+		logger.debug("ResidentCredentialController::getPolicyByCredentialType()::entry");
 		io.mosip.resident.dto.ResponseWrapper<PartnerCredentialTypePolicyDto> response = residentCredentialService
 				.getPolicyByCredentialType(partnerId, credentialType);
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
+		logger.debug("ResidentCredentialController::getPolicyByCredentialType()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 

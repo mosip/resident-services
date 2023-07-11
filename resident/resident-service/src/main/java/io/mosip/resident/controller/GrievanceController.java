@@ -53,7 +53,7 @@ public class GrievanceController {
 	public ResponseWrapper<Object> grievanceTicket(
 			@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		logger.debug("DownloadCardController::grievanceTicket()::entry");
+		logger.debug("GrievanceController::grievanceTicket()::entry");
 		ResponseWrapper<Object> response = null;
 		try {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
@@ -65,6 +65,7 @@ public class GrievanceController {
 			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
+		logger.debug("GrievanceController::grievanceTicket()::exit");
 		return response;
 	}
 }

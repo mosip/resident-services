@@ -81,6 +81,7 @@ public class ProxyOtpController {
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		log.debug("ProxyOtpController::sendOTP()::entry");
 		String userid = null;
 		try {
 			requestValidator.validateProxySendOtpRequest(userOtpRequest);
@@ -96,6 +97,7 @@ public class ProxyOtpController {
 			throw new ApisResourceAccessException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
 		}
+		log.debug("ProxyOtpController::sendOTP()::exit");
 		return proxyOtpService.sendOtp(userOtpRequest);
 	}
 
@@ -117,8 +119,7 @@ public class ProxyOtpController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> validateWithUserIdOtp(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
-
-		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
+		log.debug("ProxyOtpController::validateWithUserIdOtp()::entry");
 		String userId = null;
 		try {
 			requestValidator.validateUpdateDataRequest(userIdOtpRequest);
@@ -131,6 +132,7 @@ public class ProxyOtpController {
 							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID)));
 		}
 		Tuple2<MainResponseDTO<AuthNResponse>, String> tupleResponse = proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+		log.debug("ProxyOtpController::validateWithUserIdOtp()::exit");
 		return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());

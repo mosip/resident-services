@@ -47,6 +47,7 @@ public class PinStatusController {
     @PostMapping(path = "pinned/{eventId}")
 	public ResponseWrapper<ResponseDTO> pinStatus(@PathVariable("eventId") String eventId)
 			throws ResidentServiceCheckedException {
+    	logger.debug("PinStatusController::pinStatus()::entry");
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		try {
 			requestValidator.validateEventId(eventId);
@@ -57,6 +58,7 @@ public class PinStatusController {
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.PINNED_EVENTID_ID)));
 			throw e;
 		}
+		logger.debug("PinStatusController::pinStatus()::exit");
 		return response;
 	}
 
@@ -66,6 +68,7 @@ public class PinStatusController {
 	@PostMapping(path = "unpinned/{eventId}")
 	public ResponseWrapper<ResponseDTO> unPinStatus(@PathVariable("eventId") String eventId)
 			throws ResidentServiceCheckedException {
+    	logger.debug("PinStatusController::unPinStatus()::entry");
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		try {
 			requestValidator.validateEventId(eventId);
@@ -76,6 +79,7 @@ public class PinStatusController {
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, env.getProperty(ResidentConstants.UNPINNED_EVENTID_ID)));
 			throw e;
 		}
+		logger.debug("PinStatusController::unPinStatus()::exit");
 		return response;
 	}
 }

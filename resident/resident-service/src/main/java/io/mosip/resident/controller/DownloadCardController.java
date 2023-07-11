@@ -129,6 +129,8 @@ public class DownloadCardController {
 			requestValidator.validateDownloadPersonalizedCard(downloadPersonalizedCardMainRequestDTO);
 		} catch (InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_PERSONALIZED_CARD_FAILURE);
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID)));
 			throw e;
@@ -161,6 +163,8 @@ public class DownloadCardController {
 			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset, locale);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID)));
 			throw e;
@@ -179,6 +183,8 @@ public class DownloadCardController {
 			responseWrapper = downloadCardService.getIndividualIdStatus(aid);
 		} catch (ResidentServiceException | InvalidInputException e) {
 			auditUtil.setAuditRequestDto(EventEnum.AID_STAGE_FAILURE);
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.CHECK_STATUS_INDIVIDUAL_ID)));
 			throw e;

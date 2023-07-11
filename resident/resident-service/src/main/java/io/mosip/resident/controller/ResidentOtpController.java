@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.IndividualIdOtpRequestDTO;
 import io.mosip.resident.dto.IndividualIdResponseDto;
@@ -48,6 +50,8 @@ public class ResidentOtpController {
 	@Value("${resident.version.new}")
 	private String otpRequestVersion;
 
+	private static final Logger logger = LoggerConfiguration.logConfig(ResidentOtpController.class);
+
 	@PostMapping(value = "/req/otp")
 	@Operation(summary = "reqOtp", description = "reqOtp", tags = { "resident-otp-controller" })
 	@ApiResponses(value = {
@@ -57,8 +61,10 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public OtpResponseDTO reqOtp(@RequestBody OtpRequestDTO otpRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
+		logger.debug("ResidentOtpController::reqOtp()::entry");
 		OtpResponseDTO otpResponseDTO = residentOtpService.generateOtp(otpRequestDto);
 		audit.setAuditRequestDto(EventEnum.OTP_GEN_SUCCESS);
+		logger.debug("ResidentOtpController::reqOtp()::exit");
 		return otpResponseDTO;
 	}
 	
@@ -71,6 +77,7 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "403", description = "Forbidden" ,content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public IndividualIdResponseDto reqOtpForIndividualId(@RequestBody IndividualIdOtpRequestDTO individualIdRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
+		logger.debug("ResidentOtpController::reqOtpForIndividualId()::entry");
 		IndividualIdResponseDto individualIdResponseDto;
 		try {
 			requestValidator.validateReqOtp(individualIdRequestDto);
@@ -87,6 +94,7 @@ public class ResidentOtpController {
 		audit.setAuditRequestDto(EventEnum.OTP_INDIVIDUALID_GEN_SUCCESS);
 		individualIdResponseDto.setId(otpRequestId);
 		individualIdResponseDto.setVersion(otpRequestVersion);
+		logger.debug("ResidentOtpController::reqOtpForIndividualId()::exit");
 		return individualIdResponseDto;
 	}
 

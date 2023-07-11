@@ -58,7 +58,7 @@ public class DownLoadMasterDataController {
 	@Autowired
 	private Environment environment;
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(DownLoadMasterDataController.class);
 
 	/**
 	 * download registration centers based on language code and selected names  of
