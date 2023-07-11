@@ -76,7 +76,7 @@ public class DownLoadMasterDataController {
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataController::downloadRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
@@ -110,7 +110,7 @@ public class DownLoadMasterDataController {
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataController::downloadNearestRegistrationcenters()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
@@ -140,7 +140,7 @@ public class DownLoadMasterDataController {
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::getSupportingDocsByLanguageCode()::entry");
+		logger.debug("DownLoadMasterDataController::downloadSupportingDocsByLanguage()::entry");
 		DOWNLOADABLE_SUPPORTING_FILENAME = "supportingDocs-";
 		DOWNLOADABLE_SUPPORTING_FILENAME = DOWNLOADABLE_SUPPORTING_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;

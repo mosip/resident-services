@@ -59,13 +59,13 @@ public class AuthTransactionCallbackController {
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authTransaction-status.secret}", callback = "${resident.websub.callback.authTransaction-status.relative.url}", topic = "${resident.websub.authTransaction-status.topic}")
 	public void authTransactionCallback(@RequestBody Map<String, Object> eventModel)
 			throws ApisResourceAccessException, NoSuchAlgorithmException {
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(),
-				"AuthTransactionCallbackController :: authTransactionCallback() :: Start");
 		try {
-			logger.debug("AuthTransactionCallbackController::Requesting auth type call back url");
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
+					LoggerFileConstant.APPLICATIONID.toString(),
+					"AuthTransactionCallbackController :: authTransactionCallback() :: entry");
 			authTransactionCallBackService.updateAuthTransactionCallBackService(eventModel);
 			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
+			logger.debug("AuthTransactionCallbackController::authTransactionCallback()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
