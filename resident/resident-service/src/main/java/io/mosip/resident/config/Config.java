@@ -54,6 +54,9 @@ public class Config {
 	@Value("${resident-data-format-mvel-file-source}")
 	private Resource mvelFile;
 
+	@Value("${resident.logging.interceptor.filter.enabled:false}")
+	private boolean isResidentLoggingInterceptorFilterEnabled;
+
 	@Autowired(required = false)
 	private LoggingInterceptor loggingInterceptor;
 
@@ -114,13 +117,15 @@ public class Config {
 	}
 
 	private void addLoggingInterceptor(RestTemplate restTemplate) {
-		List<ClientHttpRequestInterceptor> interceptors
-				= restTemplate.getInterceptors();
-		if (CollectionUtils.isEmpty(interceptors)) {
-			interceptors = new ArrayList<>();
+		if(isResidentLoggingInterceptorFilterEnabled) {
+			List<ClientHttpRequestInterceptor> interceptors
+					= restTemplate.getInterceptors();
+			if (CollectionUtils.isEmpty(interceptors)) {
+				interceptors = new ArrayList<>();
+			}
+			interceptors.add(loggingInterceptor);
+			restTemplate.setInterceptors(interceptors);
 		}
-		interceptors.add(loggingInterceptor);
-		restTemplate.setInterceptors(interceptors);
 	}
 
 	@Bean("restClientWithPlainRestTemplate")
