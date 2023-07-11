@@ -23,10 +23,9 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
 
-        // Create a cache with a TTL of 60 seconds
         Cache templateCache = new ConcurrentMapCache("templateCache",
                 CacheBuilder.newBuilder()
-                        .expireAfterWrite(60, TimeUnit.SECONDS)
+                        .expireAfterWrite(2, TimeUnit.MINUTES)
                         .build().asMap(),
                 false);
 
