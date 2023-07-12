@@ -196,7 +196,6 @@ public class IdAuthServiceImpl implements IdAuthService {
 				channels != null ? List.of(channels.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)) : null, null, null);
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {

@@ -94,6 +94,8 @@ public class TemplateUtilTest {
     private Map<String, String> templateVariables;
     private Map<String, Object> values;
 
+	private Map<String, Object> mailingAttributes = Map.of();
+
     @Before
     public void setUp() throws ApisResourceAccessException, ResidentServiceCheckedException {
         eventId = "12345";
@@ -241,69 +243,69 @@ public class TemplateUtilTest {
 
     @Test
     public void getNotificationCommonTemplateVariablesTest() {
-        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationCommonTemplateVariablesTestFailed() {
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
-        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationSendOtpVariablesTest() {
-        assertEquals(eventId,templateUtil.getNotificationSendOtpVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationSendOtpVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     public void getNotificationCommonTemplateVariablesTestFailedApiResourceException() throws ApisResourceAccessException {
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
         dto = new NotificationTemplateVariableDTO(eventId, RequestType.AUTHENTICATION_REQUEST, TemplateType.FAILURE, "eng", "111111");
-        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForGenerateOrRevokeVidTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForGenerateOrRevokeVid(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForGenerateOrRevokeVid(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForAuthTypeLockUnlockTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForAuthTypeLockUnlock(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForAuthTypeLockUnlock(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForUpdateMyUinTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForUpdateMyUin(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForUpdateMyUin(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForVerifyPhoneEmailTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForVerifyPhoneEmail(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForVerifyPhoneEmail(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForGetMyIdTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForGetMyId(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForGetMyId(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForDownloadPersonalizedCardTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForDownloadPersonalizedCard(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForDownloadPersonalizedCard(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForOrderPhysicalCardTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForOrderPhysicalCard(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForOrderPhysicalCard(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForShareCredentialWithPartnerTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForShareCredentialWithPartner(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForShareCredentialWithPartner(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getNotificationTemplateVariablesForVidCardDownloadTest() {
-        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForVidCardDownload(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationTemplateVariablesForVidCardDownload(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
@@ -528,6 +530,6 @@ public class TemplateUtilTest {
     @Test
     public void getNotificationCommonTemplateVariablesSecureSessionTest() {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
-        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto).get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getNotificationCommonTemplateVariables(dto, mailingAttributes).get(TemplateVariablesConstants.EVENT_ID));
     }
 }

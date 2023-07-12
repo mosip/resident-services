@@ -284,16 +284,22 @@ public class Utility {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges)
 			throws ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utility::getMailingAttributes()::entry");
+		logger.debug("Utility::getMailingAttributes()::entry");
 		if(id == null || id.isEmpty()) {
 			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(),
 					ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage() + ": individual_id is not available." );
 		}
 		
+		JSONObject demographicIdentity = retrieveIdrepoJson(id);
+		
+		return getMailingAttributesFromIdentity(templateLangauges, demographicIdentity);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getMailingAttributesFromIdentity(Set<String> templateLangauges, JSONObject demographicIdentity)
+			throws ResidentServiceCheckedException {
 		Map<String, Object> attributes = new HashMap<>();
 		String mappingJsonString = getMappingJson();
 		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
@@ -302,7 +308,6 @@ public class Utility {
 		}
 		JSONObject mappingJsonObject;
 		try {
-			JSONObject demographicIdentity = retrieveIdrepoJson(id);
 			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
 			JSONObject mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 			List<String> mapperJsonKeys = new ArrayList<>(mapperIdentity.keySet());
@@ -344,8 +349,7 @@ public class Utility {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
 		}
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utility::getMailingAttributes()::exit");
+		logger.debug("Utility::getMailingAttributes()::exit");
 		return attributes;
 	}
 

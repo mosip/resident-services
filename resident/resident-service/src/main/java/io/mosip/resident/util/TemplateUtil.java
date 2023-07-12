@@ -1,6 +1,5 @@
 package io.mosip.resident.util;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -152,6 +151,7 @@ public class TemplateUtil {
 	 * @param languageCode     logged in language code.
 	 * @return attribute value stored in the template.
 	 */
+	@SuppressWarnings("unchecked")
 	private String getAttributesDisplayText(String attributesFromDB, String languageCode, RequestType requestType) {
 		List<String> attributeListTemplateValue = new ArrayList<>();
 		if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
@@ -207,6 +207,7 @@ public class TemplateUtil {
 				AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env));
 	}
 
+	@SuppressWarnings("unchecked")
 	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
 		try {
 			ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
@@ -556,10 +557,10 @@ public class TemplateUtil {
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
 	}
 
-	public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto) {
+	public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
 		Map<String, Object> templateVariables = new HashMap<>();
+		templateVariables.putAll(notificationAttributes);
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
-		templateVariables.put(TemplateVariablesConstants.NAME, getName(dto.getLangCode(), dto.getEventId()));
 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
 		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
@@ -569,8 +570,8 @@ public class TemplateUtil {
 		return templateVariables;
 	}
 
-	public Map<String, Object> getNotificationSendOtpVariables(NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+	public Map<String, Object> getNotificationSendOtpVariables(NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		templateVariables.put(TemplateVariablesConstants.OTP, dto.getOtp());
 		return templateVariables;
 	}
@@ -583,73 +584,49 @@ public class TemplateUtil {
 		return DateUtils.getUTCCurrentDateTimeString(templateDatePattern);
 	}
 
-	private String getName(String language, String eventId) {
-		String name = "";
-		String individualId = "";
-		try {
-			if (Utility.isSecureSession()) {
-				individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
-			} else {
-				individualId = getEntityFromEventId(eventId).getIndividualId();
-			}
-
-			if (individualId != null && !individualId.isEmpty()) {
-				Map<String, ?> idMap = identityServiceImpl.getIdentityAttributes(individualId,
-						UISchemaTypes.UPDATE_DEMOGRAPHICS.getFileIdentifier());
-				name = identityServiceImpl.getNameForNotification(idMap, language);
-			}
-		} catch (ApisResourceAccessException | ResidentServiceCheckedException | IOException
-				| ResidentServiceException e) {
-			logger.error(String.format("Error occured while getting individualId: %s : %s : %s",
-					e.getClass().getSimpleName(), e.getMessage(),
-					(e.getCause() != null ? "rootcause: " + e.getCause().getMessage() : "")));
-		}
-		return name;
-	}
-
 	public Map<String, Object> getNotificationTemplateVariablesForGenerateOrRevokeVid(
-			NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
 	public Map<String, Object> getNotificationTemplateVariablesForAuthTypeLockUnlock(
-			NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
-	public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+	public Map<String, Object> getNotificationTemplateVariablesForUpdateMyUin(NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
 	public Map<String, Object> getNotificationTemplateVariablesForVerifyPhoneEmail(
-			NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
-	public Map<String, Object> getNotificationTemplateVariablesForGetMyId(NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+	public Map<String, Object> getNotificationTemplateVariablesForGetMyId(NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
 	public Map<String, Object> getNotificationTemplateVariablesForDownloadPersonalizedCard(
-			NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
 	public Map<String, Object> getNotificationTemplateVariablesForOrderPhysicalCard(
-			NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
 	public Map<String, Object> getNotificationTemplateVariablesForShareCredentialWithPartner(
-			NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		if (TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
 			templateVariables.put(TemplateVariablesConstants.PARTNER_ID,
 					getEntityFromEventId(dto.getEventId()).getRequestedEntityId());
@@ -657,8 +634,8 @@ public class TemplateUtil {
 		return templateVariables;
 	}
 
-	public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto) {
-		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto);
+	public Map<String, Object> getNotificationTemplateVariablesForVidCardDownload(NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
 		return templateVariables;
 	}
 
