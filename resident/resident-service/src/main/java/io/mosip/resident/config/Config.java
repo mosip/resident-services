@@ -1,10 +1,14 @@
 package io.mosip.resident.config;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.Filter;
 
+import io.mosip.resident.constant.ResidentConstants;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.NullLogChute;
@@ -13,6 +17,7 @@ import org.apache.velocity.runtime.resource.loader.FileResourceLoader;
 import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
 import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -20,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
@@ -48,7 +54,13 @@ public class Config {
 
 	@Value("${resident-data-format-mvel-file-source}")
 	private Resource mvelFile;
-	
+
+	@Value("${" + ResidentConstants.RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED + ":false}")
+	private boolean isResidentLoggingInterceptorFilterEnabled;
+
+	@Autowired(required = false)
+	private LoggingInterceptor loggingInterceptor;
+
 
 	@Bean("varres")
 	public VariableResolverFactory getVariableResolverFactory() {
@@ -92,20 +104,34 @@ public class Config {
 		engine.init();
 		return new TemplateManagerImpl(engine);
 	}
-	
+
 	@Bean
 	public AfterburnerModule afterburnerModule() {
-	  return new AfterburnerModule();
+		return new AfterburnerModule();
 	}
-	
+
 	@Bean("restClientWithSelfTOkenRestTemplate")
 	@Primary
 	public ResidentServiceRestClient selfTokenRestClient(@Qualifier("selfTokenRestTemplate")RestTemplate residentRestTemplate) {
+		addLoggingInterceptor(residentRestTemplate);
 		return new ResidentServiceRestClient(residentRestTemplate);
 	}
-	
+
+	private void addLoggingInterceptor(RestTemplate restTemplate) {
+		if(isResidentLoggingInterceptorFilterEnabled) {
+			List<ClientHttpRequestInterceptor> interceptors
+					= restTemplate.getInterceptors();
+			if (CollectionUtils.isEmpty(interceptors)) {
+				interceptors = new ArrayList<>();
+			}
+			interceptors.add(loggingInterceptor);
+			restTemplate.setInterceptors(interceptors);
+		}
+	}
+
 	@Bean("restClientWithPlainRestTemplate")
 	public ResidentServiceRestClient plainRestClient(@Qualifier("restTemplate")RestTemplate restTemplate) {
+		addLoggingInterceptor(restTemplate);
 		return new ResidentServiceRestClient(restTemplate);
 	}
 
@@ -116,7 +142,8 @@ public class Config {
 		threadPoolTaskScheduler.setThreadNamePrefix("ThreadPoolTaskScheduler");
 		return threadPoolTaskScheduler;
 	}
-	
-	
+
+
 
 }
+

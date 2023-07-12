@@ -1,24 +1,7 @@
 package io.mosip.resident.aspect;
 
-import java.net.HttpCookie;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Component;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -30,6 +13,26 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.HttpCookie;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Aspect class for login redirect API
@@ -63,9 +66,15 @@ public class LoginCheck {
 	
 	@Autowired
 	private AuditUtil audit;
+
+	@Autowired
+	private ThreadPoolTaskScheduler taskScheduler;
 	
 	@Value("${auth.token.header:Authorization}")
 	private String authTokenHeader;
+
+	@Value("${mosip.resident.oidc.auth_token.expiry.claim-name:exp}")
+	private String expiryClaimName;
 	
 	private static final Logger logger = LoggerConfiguration.logConfig(LoginCheck.class);
 
@@ -80,7 +89,14 @@ public class LoginCheck {
 			if (cookie.contains(AUTHORIZATION_TOKEN)) {
 				Optional<String> authorizationCookie = getCookieValueFromHeader(cookie);
 				if (authorizationCookie.isPresent()) {
-					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(authorizationCookie.get());
+					String accessToken = authorizationCookie.get();
+					Claim decodedToken = JWT.decode(accessToken).getClaim(expiryClaimName);
+					Date expDate = decodedToken.asDate();
+					logger.info("Scheduling clearing auth token cache after : " + expDate);
+					taskScheduler.schedule(() -> {
+						utility.clearUserInfoCache(accessToken);
+					}, expDate);
+					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
 					sessionId = identityServiceImpl.createSessionId();
 				}
 				break;
@@ -136,6 +152,7 @@ public class LoginCheck {
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
+		utility.clearUserInfoCache(token);
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}
 

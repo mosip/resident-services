@@ -123,8 +123,8 @@ public class TemplateUtilTest {
         responseWrapper = new ResponseWrapper<>();
         templateResponse.put(ResidentConstants.FILE_TEXT, "otp");
         responseWrapper.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
-                responseWrapper);
+        Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
+                "otp");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.SUCCESS.getStatus());
     }
 
@@ -369,15 +369,6 @@ public class TemplateUtilTest {
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
         templateUtil.
                 getDescriptionTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, ResidentConstants.ATTRIBUTES.toString(), "eng");
-    }
-
-    @Test(expected = ResidentServiceException.class)
-    public void testGetTemplateValueFromTemplateTypeCodeAndLangCode() throws ResidentServiceCheckedException {
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString()))
-                        .thenThrow(new ResidentServiceCheckedException());
-        assertEquals(PROPERTY,
-                templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode("eng", "ack"));
-
     }
 
     @Test
