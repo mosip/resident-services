@@ -535,9 +535,10 @@ public class Utility {
 		long biggest =  9999_9999_9999_9999L;
 
 		// return a long between smallest and biggest (+1 to include biggest as well with the upper bound)
-		long random = new SecureRandom().longs(smallest, biggest + 1).findFirst().getAsLong();
+		long random = utilities.getSecureRandomInstance().longs(smallest, biggest + 1).findFirst().getAsLong();
 		return String.valueOf(random);
 	}
+
 
 	public static boolean isSecureSession(){
 		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .filter(obj -> !obj.equals(ANONYMOUS_USER)) .isPresent();

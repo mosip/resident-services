@@ -6,6 +6,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,9 @@ public class EncryptorUtilTest {
     @Mock
     private ResidentServiceRestClient restClientService;
 
+    @Mock
+    private Utilities utilities;
+
     @Captor
     ArgumentCaptor<RequestWrapper<CryptomanagerRequestDto>> requestCaptor;
 
@@ -70,6 +74,7 @@ public class EncryptorUtilTest {
 
         localDateTime = DateUtils.getUTCCurrentDateTime();
         when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
+        when(utilities.getSecureRandomInstance()).thenReturn(new SecureRandom());
     }
 
     @Test

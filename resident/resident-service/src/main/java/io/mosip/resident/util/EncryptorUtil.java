@@ -51,6 +51,9 @@ public class EncryptorUtil {
     @Autowired
     private ResidentServiceRestClient restClientService;
 
+    @Autowired
+    private Utilities utilities;
+
     private static final String IO_EXCEPTION = "Exception while reading packet inputStream";
     private static final String DATE_TIME_EXCEPTION = "Error while parsing packet timestamp";
     public static final String APPLICATION_ID = "REGISTRATION";
@@ -64,7 +67,7 @@ public class EncryptorUtil {
             cryptomanagerRequestDto.setApplicationId(APPLICATION_ID);
             cryptomanagerRequestDto.setData(packetString);
             cryptomanagerRequestDto.setReferenceId(refId);
-            SecureRandom sRandom = new SecureRandom();
+            SecureRandom sRandom = utilities.getSecureRandomInstance();
             byte[] nonce = new byte[CryptomanagerConstant.GCM_NONCE_LENGTH];
             byte[] aad = new byte[CryptomanagerConstant.GCM_AAD_LENGTH];
             sRandom.nextBytes(nonce);

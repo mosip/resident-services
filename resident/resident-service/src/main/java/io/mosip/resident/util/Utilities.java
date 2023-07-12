@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -419,5 +420,10 @@ public class Utilities {
 	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
 		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
 		return pdfReader.getNumberOfPages();
+	}
+
+	@PostConstruct
+	public SecureRandom getSecureRandomInstance(){
+		return new SecureRandom();
 	}
 }
