@@ -424,6 +424,7 @@ public class Utilities {
 
 	@PostConstruct
 	public SecureRandom getSecureRandomInstance(){
-		return new SecureRandom();
+		SecureRandom secureRandom = new SecureRandom();
+		return secureRandom;
 	}
 }
