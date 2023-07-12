@@ -131,8 +131,10 @@ public class Utilities {
 	private String mappingJsonString = null;
 
     private static String regProcessorIdentityJson = "";
+	private SecureRandom secureRandom;
 
-    @PostConstruct
+
+	@PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -424,7 +426,7 @@ public class Utilities {
 
 	@PostConstruct
 	public SecureRandom getSecureRandomInstance(){
-		SecureRandom secureRandom = new SecureRandom();
+		secureRandom = new SecureRandom();
 		return secureRandom;
 	}
 }
