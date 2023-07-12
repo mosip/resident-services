@@ -62,7 +62,13 @@ public class ResidentOtpController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public OtpResponseDTO reqOtp(@RequestBody OtpRequestDTO otpRequestDto) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		logger.debug("ResidentOtpController::reqOtp()::entry");
-		OtpResponseDTO otpResponseDTO = residentOtpService.generateOtp(otpRequestDto);
+		OtpResponseDTO otpResponseDTO;
+		try {
+			otpResponseDTO = residentOtpService.generateOtp(otpRequestDto);
+		} catch (ResidentServiceException e) {
+			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.OTP_GEN_SUCCESS);
 		logger.debug("ResidentOtpController::reqOtp()::exit");
 		return otpResponseDTO;

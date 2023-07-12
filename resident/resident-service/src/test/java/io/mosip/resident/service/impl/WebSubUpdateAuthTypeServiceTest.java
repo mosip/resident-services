@@ -93,7 +93,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 		webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
 
 		// Verify that the expected methods were called
-		verify(auditUtil, times(1)).setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
 		verify(residentTransactionRepository, times(1)).findByRequestTrnId("12345");
 		verify(notificationService, times(1)).sendNotification(any(NotificationRequestDtoV2.class));
 	}

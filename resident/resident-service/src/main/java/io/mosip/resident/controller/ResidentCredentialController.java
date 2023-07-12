@@ -44,7 +44,9 @@ import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -98,7 +100,7 @@ public class ResidentCredentialController {
 		try {
 			validator.validateReqCredentialRequest(requestDTO);
 			response.setResponse(residentCredentialService.reqCredential(requestDTO.getRequest()));
-		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+		} catch (InvalidInputException | ResidentServiceException | ResidentCredentialServiceException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, ResidentConstants.CREDENTIAL_STORE_ID));
 			throw e;
@@ -137,7 +139,7 @@ public class ResidentCredentialController {
 			buildAdditionalMetadata(requestDTO, request);
 			tupleResponse = residentCredentialService.shareCredential(request.getRequest(), purpose,
 					requestDTO.getRequest().getSharableAttributes());
-		} catch (InvalidInputException | ResidentServiceCheckedException e) {
+		} catch (InvalidInputException | ResidentServiceCheckedException | ResidentCredentialServiceException e) {
 			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_EXCEPTION);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, shareCredentialId));
 			throw e;
@@ -162,7 +164,12 @@ public class ResidentCredentialController {
 			throws ResidentServiceCheckedException {
 		logger.debug("ResidentCredentialController::getCredentialStatus()::entry");
 		ResponseWrapper<CredentialRequestStatusResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.getStatus(requestId));
+		try {
+			response.setResponse(residentCredentialService.getStatus(requestId));
+		} catch (ResidentCredentialServiceException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_EXCEPTION);
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_REQ_STATUS_SUCCESS);
 		logger.debug("ResidentCredentialController::getCredentialStatus()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -178,7 +185,13 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> getCard(@PathVariable("requestId") String requestId)
 			throws Exception {
 		logger.debug("ResidentCredentialController::getCard()::entry");
-		byte[] pdfBytes = residentCredentialService.getCard(requestId);
+		byte[] pdfBytes;
+		try {
+			pdfBytes = residentCredentialService.getCard(requestId);
+		} catch (ResidentCredentialServiceException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_CARD_EXCEPTION);
+			throw e;
+		}
 		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
 		audit.setAuditRequestDto(EventEnum.REQ_CARD_SUCCESS);
 		logger.debug("ResidentCredentialController::getCard()::exit");
@@ -198,7 +211,12 @@ public class ResidentCredentialController {
 			throws ResidentServiceCheckedException {
 		logger.debug("ResidentCredentialController::getCredentialTypes()::entry");
 		ResponseWrapper<CredentialTypeResponse> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.getCredentialTypes());
+		try {
+			response.setResponse(residentCredentialService.getCredentialTypes());
+		} catch (ResidentCredentialServiceException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_EXCEPTION);
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_TYPES_SUCCESS);
 		logger.debug("ResidentCredentialController::getCredentialTypes()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -216,7 +234,12 @@ public class ResidentCredentialController {
 			throws ResidentServiceCheckedException {
 		logger.debug("ResidentCredentialController::cancelCredentialRequest()::entry");
 		ResponseWrapper<CredentialCancelRequestResponseDto> response = new ResponseWrapper<>();
-		response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
+		try {
+			response.setResponse(residentCredentialService.cancelCredentialRequest(requestId));
+		} catch (ResidentCredentialServiceException e) {
+			audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_EXCEPTION);
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.CREDENTIAL_CANCEL_REQ_SUCCESS);
 		logger.debug("ResidentCredentialController::cancelCredentialRequest()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -232,8 +255,13 @@ public class ResidentCredentialController {
 	public ResponseEntity<Object> getPolicyByCredentialType(@PathVariable @Valid String partnerId,
 			@PathVariable @Valid String credentialType) throws ResidentServiceCheckedException {
 		logger.debug("ResidentCredentialController::getPolicyByCredentialType()::entry");
-		io.mosip.resident.dto.ResponseWrapper<PartnerCredentialTypePolicyDto> response = residentCredentialService
-				.getPolicyByCredentialType(partnerId, credentialType);
+		io.mosip.resident.dto.ResponseWrapper<PartnerCredentialTypePolicyDto> response;
+		try {
+			response = residentCredentialService.getPolicyByCredentialType(partnerId, credentialType);
+		} catch (ResidentCredentialServiceException e) {
+			audit.setAuditRequestDto(EventEnum.REQ_POLICY_EXCEPTION);
+			throw e;
+		}
 		audit.setAuditRequestDto(EventEnum.REQ_POLICY_SUCCESS);
 		logger.debug("ResidentCredentialController::getPolicyByCredentialType()::exit");
 		return ResponseEntity.status(HttpStatus.OK).body(response);

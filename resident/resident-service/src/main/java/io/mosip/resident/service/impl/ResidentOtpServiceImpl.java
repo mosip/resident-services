@@ -28,8 +28,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -48,9 +46,6 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	Environment env;
 
 	@Autowired
-	private AuditUtil audit;
-
-	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Autowired
@@ -64,6 +59,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	
 	@Override
 	public OtpResponseDTO generateOtp(OtpRequestDTO otpRequestDTO) throws NoSuchAlgorithmException, ResidentServiceCheckedException {
+		logger.debug("ResidentOtpServiceImpl::generateOtp()::entry");
 		OtpResponseDTO responseDto = null;
 		try {
 			responseDto = residentServiceRestClient.postApi(
@@ -75,16 +71,15 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 				}
 			}
 		} catch (ApisResourceAccessException e) {
-			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		} catch (ResidentServiceCheckedException | NoSuchAlgorithmException e) {
 			logger.error(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
-			audit.setAuditRequestDto(EventEnum.OTP_GEN_EXCEPTION);
 			throw new ResidentServiceException(ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.OTP_GENERATION_EXCEPTION.getErrorMessage(), e);
 		}
+		logger.debug("ResidentOtpServiceImpl::generateOtp()::exit");
 		return responseDto;
 	}
 
@@ -115,6 +110,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Override
 	public IndividualIdResponseDto generateOtpForIndividualId(IndividualIdOtpRequestDTO individualIdRequestDto)
 			throws NoSuchAlgorithmException, ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("ResidentOtpServiceImpl::generateOtpForIndividualId()::entry");
 		String individualId;
 		try {
 			individualId = identityServiceImpl.getIndividualIdForAid(individualIdRequestDto.getIndividualId());
@@ -126,6 +122,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 			if(individualIdResponseDto!=null){
 				individualIdResponseDto.setTransactionId(otpResponseDTO.getTransactionID());
 			}
+			logger.debug("ResidentOtpServiceImpl::generateOtpForIndividualId()::exit");
 			return individualIdResponseDto;
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.AID_STATUS_IS_NOT_READY);

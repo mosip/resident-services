@@ -32,6 +32,7 @@ import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidDownloadCardResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.CardNotReadyException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -161,7 +162,7 @@ public class DownloadCardController {
 		try {
 			requestValidator.validateDownloadCardVid(vid);
 			tupleResponse = downloadCardService.getVidCardEventId(vid, timeZoneOffset, locale);
-		} catch (ResidentServiceException | InvalidInputException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException | ApisResourceAccessException e) {
 			auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE);
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(), ExceptionUtils.getStackTrace(e));

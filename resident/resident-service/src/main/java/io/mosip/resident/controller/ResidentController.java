@@ -62,7 +62,6 @@ import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResponseDTO;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
@@ -158,7 +157,7 @@ public class ResidentController {
 			validator.validateRidCheckStatusRequestDTO(requestDTO);
 			logger.debug("ResidentController::Request for checking RID status");
 			response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
-		} catch (InvalidInputException | ApisResourceAccessException e) {
+		} catch (InvalidInputException | ApisResourceAccessException | ResidentServiceException e) {
 			audit.setAuditRequestDto(EventEnum.RID_STATUS_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
 			throw e;

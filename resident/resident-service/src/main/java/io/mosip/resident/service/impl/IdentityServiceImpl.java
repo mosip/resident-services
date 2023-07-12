@@ -417,6 +417,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	private Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
+		logger.debug("IdentityServiceImpl::getUserInfo()::entry");
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
 		UriComponents uriComponent = builder.build(false).encode();
 
@@ -433,10 +434,12 @@ public class IdentityServiceImpl implements IdentityService {
 							+ ExceptionUtils.getStackTrace(e));
 			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
 		}
+		logger.debug("IdentityServiceImpl::getUserInfo()::exit");
 		return responseMap;
 	}
 
 	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
+		logger.debug("IdentityServiceImpl::decodeAndDecryptUserInfo()::entry");
 		String userInfoStr;
 		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
 			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
@@ -461,6 +464,7 @@ public class IdentityServiceImpl implements IdentityService {
 		if(Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
 			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
 		}
+		logger.debug("IdentityServiceImpl::decodeAndDecryptUserInfo()::exit");
 		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
 	}
 
@@ -477,6 +481,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaims(claim).get(claim);
 	}
 	public String getAvailableclaimValue(String claim) throws ApisResourceAccessException {
+		logger.debug("IdentityServiceImpl::getAvailableclaimValue()::entry");
 		String claimValue;
 		try {
 			claimValue = getClaims(claim).get(claim);
@@ -484,6 +489,7 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.error(e.getMessage());
 			claimValue = null;
 		}
+		logger.debug("IdentityServiceImpl::getAvailableclaimValue()::exit");
 		return claimValue;
 	}
 

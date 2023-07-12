@@ -58,7 +58,7 @@ public class GrievanceController {
 		try {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
-		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException | ApisResourceAccessException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));

@@ -34,12 +34,12 @@ public class VerificationServiceImpl implements VerificationService {
     @Value("${resident.channel.verification.status.version}")
     private String residentChannelVerificationStatusVersion;
 
-    private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
+    private static final Logger logger = LoggerConfiguration.logConfig(VerificationServiceImpl.class);
 
     @Override
 	public VerificationResponseDTO checkChannelVerificationStatus(String channel, String individualId)
 			throws ResidentServiceCheckedException, NoSuchAlgorithmException {
-		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::Start");
+		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::entry");
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
         ResidentTransactionEntity residentTransactionEntity =
@@ -55,6 +55,7 @@ public class VerificationServiceImpl implements VerificationService {
         verificationResponseDTO.setId(residentChannelVerificationStatusId);
         verificationResponseDTO.setVersion(residentChannelVerificationStatusVersion);
         verificationResponseDTO.setResponseTime(DateTime.now().toString());
+        logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::exit");
         return verificationResponseDTO;
     }
 }

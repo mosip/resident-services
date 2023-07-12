@@ -82,10 +82,12 @@ public class ProxyOtpController {
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		log.debug("ProxyOtpController::sendOTP()::entry");
+		ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
 		String userid = null;
 		try {
 			requestValidator.validateProxySendOtpRequest(userOtpRequest);
 			userid = userOtpRequest.getRequest().getUserId();
+			responseEntity = proxyOtpService.sendOtp(userOtpRequest);
 		}
 		catch (InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
@@ -96,9 +98,12 @@ public class ProxyOtpController {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw new ApisResourceAccessException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
+		} catch (ResidentServiceException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
+			throw e;
 		}
 		log.debug("ProxyOtpController::sendOTP()::exit");
-		return proxyOtpService.sendOtp(userOtpRequest);
+		return responseEntity;
 	}
 
 

@@ -31,8 +31,6 @@ import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import reactor.util.function.Tuple2;
@@ -56,9 +54,6 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@Autowired
-	private AuditUtil auditUtil;
-
-	@Autowired
 	Environment env;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
@@ -74,13 +69,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_EXCEPTION);
 			logger.error("Error occured in accessing valid documents %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -93,6 +86,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	@Cacheable(value = "valid-doc-cat-and-type-list", key = "#langCode")
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::entry");
 		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
@@ -107,7 +101,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 							getDocTypCodeList((List<Map<String, Object>>) map.get(DOCUMENTTYPES)));
 				})
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
+		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::exit");
 		return Tuples.of(docCatCodes, docTypeCodes);
 	}
 
@@ -131,13 +125,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegments, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
 			logger.error("Error occured in accessing location hierarchy levels %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -159,13 +151,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ApiName.IMMEDIATE_CHILDREN_BY_LOCATIONCODE_AND_LANGCODE_URL, pathsegments, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_IMMEDIATE_CHILDREN_EXCEPTION);
 			logger.error("Error occured in accessing immediate children %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -187,13 +177,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegments, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_DETAILS_EXCEPTION);
 			logger.error("Error occured in accessing location details %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -217,13 +205,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegements, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_COORDINATE_SPECIFIC_REG_CENTERS_EXCEPTION);
 			logger.error("Error occured in accessing coordinate specific registration centers %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -252,12 +238,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_APPLICANT_VALID_DOCUMENT_EXCEPTION);
 			logger.error("Error occured in accessing applicant valid document %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -286,13 +271,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_FOR_LOCATION_CODE_EXCEPTION);
 			logger.error("Error occured in accessing registration centers %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -331,13 +314,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTERS_PAGINATED_EXCEPTION);
 			logger.error("Error occured in accessing registration centers paginated %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -359,13 +340,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 					ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_REG_CENTER_WORKING_DAYS_EXCEPTION);
 			logger.error("Error occured in accessing registration center working days %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -396,13 +375,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.LATEST_ID_SCHEMA_URL,
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LATEST_ID_SCHEMA_EXCEPTION);
 			logger.error("Error occured in accessing latest id schema %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -424,8 +401,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			response = residentServiceRestClient.getApi(ApiName.TEMPLATES_BY_LANGCODE_AND_TEMPLATETYPECODE_URL,
 					pathsegments, ResponseWrapper.class);
 			if (response.getErrors() != null && !response.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
-				logger.debug(response.getErrors().get(0).toString());
+				logger.error(response.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.TEMPLATE_EXCEPTION);
 			}
 			TemplateResponseDto templateResponse = JsonUtil
@@ -439,12 +415,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			return responseWrapper;
 
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
 			logger.error("Error occured in accessing templates %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
 		} catch (IOException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_TEMPLATES_EXCEPTION);
+			logger.error("Error occured in accessing templates %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
@@ -466,13 +441,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME, pathsegments, queryParamName,
 					queryParamValue, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
 			logger.error("Error occured in accessing dynamic data %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
@@ -491,13 +464,11 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		try {
 			responseWrapper=residentServiceRestClient.getApi(ApiName.DOCUMENT_TYPE_BY_DOCUMENT_CATEGORY_AND_LANG_CODE, pathsegments, ResponseWrapper.class);
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_EXCEPTION);
-				logger.debug(responseWrapper.getErrors().get(0).toString());
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_EXCEPTION);
 			logger.error("Error occured in accessing document types %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
