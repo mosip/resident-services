@@ -166,5 +166,7 @@ public interface ProxyMasterdataService {
 
 	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String gendertype, String langCode) throws ResidentServiceCheckedException, IOException;
 
+	String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode);
+
 	
 }
