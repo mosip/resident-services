@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -60,13 +61,16 @@ public class LoginCheckTest {
 	@Mock
 	private AuditUtil audit;
 
+	@Mock
+	private ThreadPoolTaskScheduler taskScheduler;
+
 	@Before
 	public void setup() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		request = Mockito.mock(HttpServletRequest.class);
 		response = Mockito.mock(HttpServletResponse.class);
 		Collection<String> cookies = new ArrayList<>();
 		cookies.add(
-				"Authorization=eyJhbGciOiJSUzI1NiIsInR5cCIgO; Max-Age=1800000; Expires=Thu, 10-Nov-2022 05:05:02 GMT; Path=/; HttpOnly");
+				"Authorization=eyJraWQiOiJxeS1YaFJCTFlRcy03eW9hQm1KaFRoQWpIck9GLUpFYUFtRjVDY0FKZ29rIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiIyOTk2NjM5MDE0NzYzMjg2ODQ1MDU1OTI4ODcxNzAwNTc0MzgiLCJhdWQiOiJtb3NpcC1yZXNpZGVudC1vaWRjLWNsaWVudCIsInNjb3BlIjoiTWFuYWdlLUlkZW50aXR5LURhdGEgTWFuYWdlLVZJRCBNYW5hZ2UtQXV0aGVudGljYXRpb24gTWFuYWdlLVNlcnZpY2UtUmVxdWVzdHMgTWFuYWdlLUNyZWRlbnRpYWxzIiwiaXNzIjoiaHR0cHM6XC9cL2VzaWduZXQuZGV2Lm1vc2lwLm5ldFwvdjFcL2VzaWduZXQiLCJleHAiOjE2ODkwNjkzODMsImlhdCI6MTY4OTA2NTc4M30.tKwdc-7nR832u2X7KNI64zI4Wjr7ZMg3C0GYeZp7UxjHEj-Pj41ARYNxaSLvVM2W9sIuBCahymdA1d64J7pLse_IkJMZy-nvSEVscr1pLPF_m8KDywfC6iGCU-4sF9_ZCI98ZzkKCHRpAe02Ym2c91NFtgKjF5hTkJFwOEbNwXFCcQS6QHPNEzL87QFuW-Qu48SWS3Y2kvihfRQHQbkHxEeKfiAYUnUIznYn1BnEXZIpxbuuEuBhbJrtXX66ULtwmzCmvxOU90JLFmHOPlZuQVjFs2KwEpIIvzEd12436SA2mUecaNrNYZiFqXaFnXAmRqI-f9MJgFhwTubvMJ3N4Q; Max-Age=1800000; Expires=Thu, 10-Nov-2022 05:05:02 GMT; Path=/; HttpOnly");
 		cookies.add("id_token=eyJhbGciOiJSUzI1NiIsInR5cCIg; Path=/; Secure; HttpOnly");
 		Mockito.when(response.getHeaders(Mockito.anyString())).thenReturn(cookies);
 		Cookie[] requestCookies = new Cookie[1];
@@ -77,8 +81,6 @@ public class LoginCheckTest {
 		Mockito.when(identityServiceImpl.getResidentIdaTokenFromAccessToken(Mockito.anyString())).thenReturn("282452929935769234295");
 		ReflectionTestUtils.setField(loginCheck, "authTokenHeader", "Authorization");
 		Mockito.when(identityServiceImpl.createSessionId()).thenReturn("123");
-//		Mockito.when(residentUserRepository.findById(Mockito.anyString()))
-//				.thenReturn(Optional.of(new ResidentUserEntity()));
 	}
 
 	@Test
