@@ -54,6 +54,7 @@ import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -855,6 +856,11 @@ public class Utility {
 	public String decryptPayload(String payload) {
 		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID),
 				this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+	}
+
+	@CacheEvict(value = "userInfoCache", key = "#token")
+	public void clearUserInfoCache(String token) {
+		logger.info("Clearing User Info cache");
 	}
 	
 }

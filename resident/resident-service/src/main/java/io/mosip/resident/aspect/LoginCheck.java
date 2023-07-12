@@ -94,7 +94,7 @@ public class LoginCheck {
 					Date expDate = decodedToken.asDate();
 					logger.info("Scheduling clearing auth token cache after : " + expDate);
 					taskScheduler.schedule(() -> {
-						clearUserInfoCache(accessToken);
+						utility.clearUserInfoCache(accessToken);
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
 					sessionId = identityServiceImpl.createSessionId();
@@ -152,13 +152,8 @@ public class LoginCheck {
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
-		clearUserInfoCache(token);
+		utility.clearUserInfoCache(token);
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
-	}
-
-	@CacheEvict(value = "userInfoCache", key = "#token")
-	public void clearUserInfoCache(String token) {
-		logger.info("Clearing User Info cache");
 	}
 
 	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..))")
