@@ -55,8 +55,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -297,22 +295,12 @@ public class IdentityServiceTest {
 	}
 	
 	private Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> loadUserInfoMethod() throws Exception {
-		ReflectionTestUtils.setField(identityService, "usefInfoEndpointUrl", "http://localhost:8080/userinfo");
 		Map<String, Object> userInfo = new HashMap<>();
 		userInfo.put("claim", "value");
 		URI uri = URI.create("http://localhost:8080/userinfo");
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", "Bearer " + token);
 		return Tuples.of(uri, headers, userInfo);
-	}
-
-	@Test
-	public void testGetUserInfoSuccess() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		Map<String, Object> result = ReflectionTestUtils.invokeMethod(identityService, "getUserInfo", token);
-		assertEquals("value", result.get("claim"));
 	}
 
 	@Test
@@ -350,13 +338,6 @@ public class IdentityServiceTest {
 	@Test
 	public void testGetIndividualIdTypeVid(){
 		assertEquals(IdType.UIN.toString(), identityService.getIndividualIdType("2476302389"));
-	}
-
-	@Test
-	public void testDecryptPayload(){
-		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
-		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("payload");
-		assertEquals("payload", ReflectionTestUtils.invokeMethod(identityService, "decryptPayload", "payload"));
 	}
 
 	@Test
@@ -567,8 +548,7 @@ public class IdentityServiceTest {
 	public void testGetResidentIndividualIdValidTokenSucess() throws Exception {
 		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
 		tuple3.getT3().put("individual_id", "3956038419");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		getAuthUserDetailsFromAuthentication();
 		assertEquals("3956038419",identityService.getResidentIndvidualIdFromSession());
 	}
@@ -623,23 +603,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
-		fileLoadMethod();
-		IdentityDTO result = identityService.getIdentity("6", true, "eng");
-		assertNotNull(result);
-		assertEquals("8251649601", result.getUIN());
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetMappingValueFetchFaceTrueFailed() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		tuple3.getT3().put("picture", "3956038419");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		getAuthUserDetailsFromAuthentication();
-		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenThrow(new ApisResourceAccessException());
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
 		fileLoadMethod();
 		IdentityDTO result = identityService.getIdentity("6", true, "eng");
@@ -706,6 +670,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("individual_id", "4343434343");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
+		Mockito.when(utility.getUserInfo(Mockito.anyString())).thenReturn(tuple3.getT3());
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
 		assertEquals(token, identityService.getResidentIdaTokenFromAccessToken(token));
 	}
@@ -720,53 +685,6 @@ public class IdentityServiceTest {
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		when(tokenIDGenerator.generateTokenID(anyString(), anyString())).thenReturn(token);
 		assertEquals(token, identityService.getResidentIdaTokenFromAccessToken(token));
-	}
-
-	@Test
-	public void testDecodeAndDecryptUserInfo(){
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(true));
-		AuthErrorCode authErrorCode = null;
-		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(true, authErrorCode);
-		Mockito.when(tokenValidationHelper
-				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(identityService, "decodeAndDecryptUserInfo", token);
-	}
-
-	@Test
-	public void testDecodeAndDecryptUserInfoOidcJwtDisabled(){
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(false));
-		AuthErrorCode authErrorCode = null;
-		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(true, authErrorCode);
-		Mockito.when(tokenValidationHelper
-				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(identityService, "decodeAndDecryptUserInfo", token);
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testDecodeAndDecryptUserInfoOidcJwtDisabledFailure(){
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(true));
-		AuthErrorCode authErrorCode = AuthErrorCode.FORBIDDEN;
-		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(false, authErrorCode);
-		Mockito.when(tokenValidationHelper
-				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(identityService, "decodeAndDecryptUserInfo", token);
-	}
-
-	@Test(expected = Exception.class)
-	public void testDecodeAndDecryptUserInfoOidcEncryptionEnabled(){
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(false));
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(false));
-		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED)).thenReturn(String.valueOf(true));
-		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(Arrays.toString(Base64.getEncoder().encode("payload".getBytes())));
-		AuthErrorCode authErrorCode = null;
-		ImmutablePair<Boolean, AuthErrorCode> verifySignature = new ImmutablePair<>(true, authErrorCode);
-		Mockito.when(tokenValidationHelper
-				.verifyJWTSignagure(Mockito.any())).thenReturn(verifySignature);
-		ReflectionTestUtils.invokeMethod(identityService, "decodeAndDecryptUserInfo", token);
 	}
 
 }
