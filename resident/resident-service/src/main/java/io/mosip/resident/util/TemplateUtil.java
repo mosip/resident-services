@@ -208,16 +208,8 @@ public class TemplateUtil {
 	}
 
 	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
-		try {
-			ResponseWrapper<?> proxyResponseWrapper = proxyMasterdataService
-					.getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, templateTypeCode);
-			logger.debug(String.format("Template data from DB:- %s", proxyResponseWrapper.getResponse()));
-			Map<String, String> templateResponse = new LinkedHashMap<>(
-					(Map<String, String>) proxyResponseWrapper.getResponse());
-			return templateResponse.get(ResidentConstants.FILE_TEXT);
-		} catch (ResidentServiceCheckedException e) {
-			throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION, e);
-		}
+		return proxyMasterdataService
+					.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	public String getDescriptionTemplateVariablesForAuthenticationRequest(
