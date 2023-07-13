@@ -67,7 +67,7 @@ public class EncryptorUtil {
             cryptomanagerRequestDto.setApplicationId(APPLICATION_ID);
             cryptomanagerRequestDto.setData(packetString);
             cryptomanagerRequestDto.setReferenceId(refId);
-            SecureRandom sRandom = utilities.getSecureRandomInstance();
+            SecureRandom sRandom = utilities.getSecureRandom();
             byte[] nonce = new byte[CryptomanagerConstant.GCM_NONCE_LENGTH];
             byte[] aad = new byte[CryptomanagerConstant.GCM_AAD_LENGTH];
             sRandom.nextBytes(nonce);

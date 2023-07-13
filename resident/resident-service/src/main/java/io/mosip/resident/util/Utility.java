@@ -80,7 +80,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatter;
@@ -535,7 +534,7 @@ public class Utility {
 		long biggest =  9999_9999_9999_9999L;
 
 		// return a long between smallest and biggest (+1 to include biggest as well with the upper bound)
-		long random = utilities.getSecureRandomInstance().longs(smallest, biggest + 1).findFirst().getAsLong();
+		long random = utilities.getSecureRandom().longs(smallest, biggest + 1).findFirst().getAsLong();
 		return String.valueOf(random);
 	}
 

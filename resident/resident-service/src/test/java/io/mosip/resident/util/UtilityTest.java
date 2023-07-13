@@ -533,7 +533,7 @@ public class UtilityTest {
 	@Test
 	public void testCreateEventId(){
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
-		Mockito.when(utilities.getSecureRandomInstance()).thenReturn(new SecureRandom());
+		Mockito.when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
 		assertEquals(16,utility.createEventId().length());
 	}
 

@@ -425,8 +425,11 @@ public class Utilities {
 	}
 
 	@PostConstruct
-	public SecureRandom getSecureRandomInstance(){
+	public void initializeSecureRandomInstance(){
 		secureRandom = new SecureRandom();
+	}
+
+	public SecureRandom getSecureRandom(){
 		return secureRandom;
 	}
 }

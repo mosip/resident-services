@@ -74,7 +74,7 @@ public class EncryptorUtilTest {
 
         localDateTime = DateUtils.getUTCCurrentDateTime();
         when(DateUtils.getUTCCurrentDateTime()).thenReturn(localDateTime);
-        when(utilities.getSecureRandomInstance()).thenReturn(new SecureRandom());
+        when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
     }
 
     @Test
