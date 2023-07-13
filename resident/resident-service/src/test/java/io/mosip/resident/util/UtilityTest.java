@@ -79,6 +79,37 @@ import io.mosip.resident.service.impl.IdentityServiceImpl;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({ JsonUtil.class })
@@ -518,6 +549,7 @@ public class UtilityTest {
 	@Test
 	public void testCreateEventId(){
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		Mockito.when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
 		assertEquals(16,utility.createEventId().length());
 	}
 

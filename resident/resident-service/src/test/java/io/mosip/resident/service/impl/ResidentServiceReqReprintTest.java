@@ -39,7 +39,6 @@ import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(SpringRunner.class)
@@ -69,9 +68,6 @@ public class ResidentServiceReqReprintTest {
 	@Mock
     NotificationService notificationService;
 	
-	@Mock
-	private AuditUtil audit;
-
 	private ResidentReprintRequestDto residentReqDto;
 
 	@Before
@@ -87,7 +83,6 @@ public class ResidentServiceReqReprintTest {
 		PacketGeneratorResDto resDto = new PacketGeneratorResDto();
 		resDto.setRegistrationId("10008200070004620191203115734");
 		Mockito.when(rePrintService.createPacket(any())).thenReturn(resDto);
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 
 	}
 

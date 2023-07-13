@@ -24,7 +24,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
 @RunWith(SpringRunner.class)
 public class ResidentServiceReqAuthHistoryTest {
 	@InjectMocks
@@ -33,9 +32,6 @@ public class ResidentServiceReqAuthHistoryTest {
 	@Mock
 	private IdAuthService idAuthService;
 
-	@Mock
-	private AuditUtil audit;
-	
 	@Mock
 	NotificationService notificationService;
 	List<AuthTxnDetailsDTO> details=null;
@@ -50,7 +46,6 @@ public class ResidentServiceReqAuthHistoryTest {
 		Mockito.when(idAuthService.getAuthHistoryDetails(Mockito.anyString(), Mockito.any(), Mockito.any()))
 				.thenReturn(details);
 		Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(mock(NotificationResponseDTO.class));
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 	@Test
 	public void testReqAuthHistorySuccess() throws  ResidentServiceCheckedException {

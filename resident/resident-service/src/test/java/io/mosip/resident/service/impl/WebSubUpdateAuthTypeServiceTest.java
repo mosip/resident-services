@@ -30,8 +30,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,9 +42,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private NotificationService notificationService;
@@ -87,7 +82,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 		webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
 
 		// Verify that the expected methods were called
-		verify(auditUtil, times(1)).setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
 		verify(residentTransactionRepository, times(1)).findByRequestTrnId("12345");
 		verify(notificationService, times(1)).sendNotification(any(NotificationRequestDtoV2.class), Mockito.nullable(Map.class));
 	}

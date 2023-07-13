@@ -18,8 +18,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
@@ -32,9 +30,6 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
-
-	@Autowired
-	private AuditUtil auditUtil;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
 
@@ -65,13 +60,11 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
 
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
-				logger.debug(responseWrapper.getErrors().get(0).toString());
-				auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION);
+				logger.error(responseWrapper.getErrors().get(0).toString());
 				throw new ResidentServiceCheckedException(responseWrapper.getErrors().get(0).getErrorCode(),
 						responseWrapper.getErrors().get(0).getMessage());
 			}
 		} catch (ApisResourceAccessException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_EXCEPTION);
 			logger.error("Error occured in accessing partners list %s", e.getMessage());
 			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
