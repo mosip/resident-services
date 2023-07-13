@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -532,6 +533,7 @@ public class UtilityTest {
 	@Test
 	public void testCreateEventId(){
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		Mockito.when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
 		assertEquals(16,utility.createEventId().length());
 	}
 
