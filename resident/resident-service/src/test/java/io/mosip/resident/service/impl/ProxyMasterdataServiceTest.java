@@ -32,7 +32,6 @@ import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import reactor.util.function.Tuple2;
 
@@ -48,9 +47,6 @@ public class ProxyMasterdataServiceTest {
 
 	@Mock
 	private Environment env;
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;

@@ -45,7 +45,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
@@ -73,9 +72,6 @@ public class ResidentServiceRequestTypeAuthLockTest {
 
 	@Mock
 	NotificationService notificationService;
-
-	@Mock
-	private AuditUtil audit;
 
 	@Mock
 	PartnerServiceImpl partnerServiceImpl;
@@ -119,7 +115,6 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("success");
 		notificationResponseDTO.setMessage("Notification success");
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		
 		List<ResidentTransactionEntity> residentTransactionEntities=new ArrayList<>();
