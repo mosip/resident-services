@@ -734,7 +734,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 		NotificationRequestDto notificationRequest = new NotificationRequestDto(id, templateTypeCode,
 				additionalAttributes);
-		return notificationService.sendNotification(notificationRequest);
+		return notificationService.sendNotification(notificationRequest, null);
 	}
 
 	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
@@ -746,7 +746,7 @@ public class ResidentServiceImpl implements ResidentService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
-		return notificationService.sendNotification(notificationRequestDtoV2);
+		return notificationService.sendNotification(notificationRequestDtoV2, null);
 	}
 
 	private NotificationResponseDTO trySendNotification(String id, NotificationTemplateCode templateTypeCode,

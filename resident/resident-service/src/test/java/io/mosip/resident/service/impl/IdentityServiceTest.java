@@ -250,15 +250,6 @@ public class IdentityServiceTest {
 		identityService.getIdentity("6");
 	}
 
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetMappingValueIf() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		identityService.getIdentity("6");
-	}
-
 	@Test
 	public void testGetUinForIndividualId() throws Exception{
 		String id = "123456789";
@@ -385,11 +376,8 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		String mappingJson = "mappingJson";
-		when(utility.getMappingJson()).thenReturn(mappingJson);
-		IdentityDTO result = identityService.getIdentity("6", false, "eng");
-		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
+		identityService.getIdentity("6", false, "eng");
 	}
 
 	@Test

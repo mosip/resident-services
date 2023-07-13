@@ -175,12 +175,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 		if (residentTransactionEntity != null) {
 			eventId = residentTransactionEntity.getEventId();
 			TemplateType templateType = authStatus == true ? TemplateType.SUCCESS : TemplateType.FAILURE;
-			sendNotificationV2(individualId, templateType, eventId, residentTransactionEntity.getAttributeList());
+			sendNotificationV2(individualId, templateType, eventId, residentTransactionEntity.getAttributeList(), null);
 		}
 		return eventId;
 	}
 
-	private void sendNotificationV2(String id, TemplateType templateType, String eventId, String channels)
+	private void sendNotificationV2(String id, TemplateType templateType, String eventId, String channels, Map identity)
 			throws ResidentServiceCheckedException {
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(id);
@@ -188,10 +188,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationService.sendNotification(notificationRequestDtoV2,
-				channels != null ? List.of(channels.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)) : null, null, null);
+				(channels != null ? List.of(channels.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)) : null), null, null, identity);
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {

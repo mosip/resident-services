@@ -14,11 +14,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -65,6 +67,7 @@ public class NotificationService {
 	private static final String LINE_BREAK = "<br>";
 	private static final String EMAIL_CHANNEL = "email";
 	private static final String PHONE_CHANNEL = "phone";
+	private static final String IDENTITY = "identity";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
 	@Autowired
 	private TemplateManager templateManager;
@@ -110,17 +113,29 @@ public class NotificationService {
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
 	
-	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
-		return sendNotification(dto, null, null, null);
+	@SuppressWarnings("rawtypes")
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
+		return sendNotification(dto, null, null, null, identity);
 	}
-
-	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone) throws ResidentServiceCheckedException {
+	
+	@SuppressWarnings("rawtypes")
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone, Map identity) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Set<String> templateLangauges = new HashSet<String>();
-		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges);
+		Map demographicIdentity = (identity == null || identity.isEmpty()) ? utility.retrieveIdrepoJson(dto.getId()) : identity;
+		Map mapperIdentity = getMapperIdentity();
+
+		Set<String> templateLangauges;
+		try {
+			templateLangauges = getTemplateLanguages(demographicIdentity, mapperIdentity);
+		} catch (ReflectiveOperationException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		
+		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges, demographicIdentity, mapperIdentity);
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
@@ -195,6 +210,31 @@ public class NotificationService {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::exit");
 		return notificationResponse;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Map getMapperIdentity() throws ResidentServiceCheckedException {
+		JSONObject mappingJsonObject = utility.getMappingJsonObject();
+		Map mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
+		return mapperIdentity;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Set<String> getTemplateLanguages(Map demographicIdentity, Map mapperIdentity) throws ReflectiveOperationException {
+		Set<String> preferredLanguage = utility.getPreferredLanguage(demographicIdentity);
+		Set<String> templateLangauges = new HashSet<>();
+		if (preferredLanguage.isEmpty()) {
+			List<String> defaultTemplateLanguages = utility.getDefaultTemplateLanguages();
+			if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
+				Set<String> dataCapturedLanguages = utility.getDataCapturedLanguages(mapperIdentity, demographicIdentity);
+				templateLangauges.addAll(dataCapturedLanguages);
+			} else {
+				templateLangauges.addAll(defaultTemplateLanguages);
+			}
+		} else {
+			templateLangauges.addAll(preferredLanguage);
+		}
+		return templateLangauges;
 	}
 
 	private String getOtp(NotificationRequestDto notificationRequestDto) {
@@ -306,10 +346,10 @@ public class NotificationService {
 			if(notificationTemplate==null) {
 				if(mailingAttributes.get(TemplateVariablesConstants.PHONE)== null){
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				} else{
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getSmsTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP))));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, (String) mailingAttributes.get(TemplateVariablesConstants.OTP)), mailingAttributes));
 				}
 
 			} else {
@@ -414,17 +454,17 @@ public class NotificationService {
 			if(notificationTemplate==null) {
 				if(newEmail==null) {
 					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language), mailingAttributes));
 				}
 				else {
 					emailSubject = templateMerge(getTemplate(language, templateUtil.getEmailSubjectTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp), mailingAttributes));
 
 					languageTemplate = templateMerge(getTemplate(language, templateUtil.getEmailContentTemplateTypeCode(requestType, templateType)),
-							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp)));
+							requestType.getNotificationTemplateVariables(templateUtil, new NotificationTemplateVariableDTO(eventId, requestType, templateType, language, otp), mailingAttributes));
 				}
 			} else {
 				emailSubject = getTemplate(language, notificationTemplate + EMAIL + SUBJECT);
