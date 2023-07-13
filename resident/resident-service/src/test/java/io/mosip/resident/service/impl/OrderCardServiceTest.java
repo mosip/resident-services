@@ -103,7 +103,7 @@ public class OrderCardServiceTest {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
-		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
+		when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
 
 		residentCredentialRequestDto = new ResidentCredentialRequestDto();
 		residentCredentialRequestDto.setTransactionID("1234327890");

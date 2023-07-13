@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -112,7 +113,7 @@ public class ResidentServiceRequestAuthLockTest {
 		ResponseDTO response = new ResponseDTO();
 		response.setMessage("Notification success");
 
-		Mockito.when(notificationService.sendNotification(any())).thenReturn(notificationResponseDTO);
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
 		ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdate(authLockRequestDto,
 				AuthTypeStatus.LOCK);
 		assertEquals(authLockResponse.getMessage(), authLockResponse.getMessage());
@@ -147,7 +148,7 @@ public class ResidentServiceRequestAuthLockTest {
 
 		Mockito.when(idAuthService.validateOtp(any(), any(), any())).thenReturn(true);
 
-		Mockito.when(notificationService.sendNotification(any()))
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class)))
 				.thenThrow(new ResidentServiceCheckedException());
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
 

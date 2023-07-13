@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +101,7 @@ public class ResidentServiceReqReprintTest {
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent to registered contact details");
 		notificationResponse.setStatus("success");
-		Mockito.when(notificationService.sendNotification(any())).thenReturn(notificationResponse);
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenReturn(notificationResponse);
 		ResidentReprintResponseDto residentResponse = residentServiceImpl.reqPrintUin(residentReqDto);
 		assertEquals("10008200070004620191203115734", residentResponse.getRegistrationId());
 
@@ -180,7 +181,7 @@ public class ResidentServiceReqReprintTest {
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent to registered contact details");
 		notificationResponse.setStatus("success");
-		Mockito.when(notificationService.sendNotification(any()))
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class)))
 				.thenThrow(new ResidentServiceCheckedException());
 		residentServiceImpl.reqPrintUin(residentReqDto);
 

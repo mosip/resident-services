@@ -1,9 +1,9 @@
 package io.mosip.resident.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -53,6 +52,7 @@ import reactor.util.function.Tuples;
 @Component
 public class TemplateUtil {
 
+	private static final String RESIDENT = "Resident";
 	private static final String DEFAULT = "default";
 	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 	private static final String LOGO_URL = "logoUrl";
@@ -207,7 +207,6 @@ public class TemplateUtil {
 				AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env));
 	}
 
-	@SuppressWarnings("unchecked")
 	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
 		return proxyMasterdataService
 					.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
@@ -551,11 +550,20 @@ public class TemplateUtil {
 
 	public Map<String, Object> getNotificationCommonTemplateVariables(NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
 		Map<String, Object> templateVariables = new HashMap<>();
+		String langCode = dto.getLangCode();
+		try {
+			String name = utility.getMappingValue(notificationAttributes, TemplateVariablesConstants.NAME, langCode);
+			templateVariables.put(TemplateVariablesConstants.NAME, name);
+		} catch (ResidentServiceCheckedException | IOException e) {
+			logger.error("Error in getting name.. " + e.getMessage());
+			templateVariables.put(TemplateVariablesConstants.NAME, RESIDENT);
+		}
 		templateVariables.putAll(notificationAttributes);
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
 		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
+		
 		templateVariables.put(TemplateVariablesConstants.STATUS, dto.getTemplateType().getType());
 		templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK,
 				utility.createTrackServiceRequestLink(dto.getEventId()));

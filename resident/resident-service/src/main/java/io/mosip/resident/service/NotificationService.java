@@ -14,11 +14,13 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -65,6 +67,7 @@ public class NotificationService {
 	private static final String LINE_BREAK = "<br>";
 	private static final String EMAIL_CHANNEL = "email";
 	private static final String PHONE_CHANNEL = "phone";
+	private static final String IDENTITY = "identity";
 	private static final Logger logger = LoggerConfiguration.logConfig(NotificationService.class);
 	@Autowired
 	private TemplateManager templateManager;
@@ -110,17 +113,29 @@ public class NotificationService {
 	private static final String SUCCESS = "success";
 	private static final String SEPARATOR = "/";
 	
-	public NotificationResponseDTO sendNotification(NotificationRequestDto dto) throws ResidentServiceCheckedException {
-		return sendNotification(dto, null, null, null);
+	@SuppressWarnings("rawtypes")
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, Map identity) throws ResidentServiceCheckedException {
+		return sendNotification(dto, null, null, null, identity);
 	}
-
-	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone) throws ResidentServiceCheckedException {
+	
+	@SuppressWarnings("rawtypes")
+	public NotificationResponseDTO sendNotification(NotificationRequestDto dto, List<String> channels, String email, String phone, Map identity) throws ResidentServiceCheckedException {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Set<String> templateLangauges = new HashSet<String>();
-		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges);
+		Map demographicIdentity = (identity == null || identity.isEmpty()) ? utility.retrieveIdrepoJson(dto.getId()) : identity;
+		Map mapperIdentity = getMapperIdentity();
+
+		Set<String> templateLangauges;
+		try {
+			templateLangauges = getTemplateLanguages(demographicIdentity, mapperIdentity);
+		} catch (ReflectiveOperationException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		
+		Map<String, Object> notificationAttributes = utility.getMailingAttributes(dto.getId(), templateLangauges, demographicIdentity, mapperIdentity);
 		if (dto.getAdditionalAttributes() != null && dto.getAdditionalAttributes().size() > 0) {
 			notificationAttributes.putAll(dto.getAdditionalAttributes());
 		}
@@ -195,6 +210,42 @@ public class NotificationService {
 		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), dto.getId(),
 				"NotificationService::sendNotification()::exit");
 		return notificationResponse;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Map getMapperIdentity() throws ResidentServiceCheckedException {
+		String mappingJsonString = utility.getMappingJson();
+		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
+		}
+		JSONObject mappingJsonObject;
+		try {
+			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		Map mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
+		return mapperIdentity;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Set<String> getTemplateLanguages(Map demographicIdentity, Map mapperIdentity) throws ReflectiveOperationException {
+		Set<String> preferredLanguage = utility.getPreferredLanguage(demographicIdentity);
+		Set<String> templateLangauges = new HashSet<>();
+		if (preferredLanguage.isEmpty()) {
+			List<String> defaultTemplateLanguages = utility.getDefaultTemplateLanguages();
+			if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
+				Set<String> dataCapturedLanguages = utility.getDataCapturedLanguages(mapperIdentity, demographicIdentity);
+				templateLangauges.addAll(dataCapturedLanguages);
+			} else {
+				templateLangauges.addAll(defaultTemplateLanguages);
+			}
+		} else {
+			templateLangauges.addAll(preferredLanguage);
+		}
+		return templateLangauges;
 	}
 
 	private String getOtp(NotificationRequestDto notificationRequestDto) {

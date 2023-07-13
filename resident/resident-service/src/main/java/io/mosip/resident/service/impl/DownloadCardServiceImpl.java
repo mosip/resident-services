@@ -218,7 +218,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						? TemplateType.SUCCESS
 						: TemplateType.FAILURE;
 
-				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null);
+				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, null);
 			}
 		}
 		return Tuples.of(pdfBytes, eventId);
@@ -305,7 +305,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						? TemplateType.SUCCESS
 						: TemplateType.FAILURE;
 
-				sendNotificationV2(individualId, RequestType.DOWNLOAD_PERSONALIZED_CARD, templateType, eventId, null);
+				sendNotificationV2(individualId, RequestType.DOWNLOAD_PERSONALIZED_CARD, templateType, eventId, null, null);
 			}
 		}
 		return Tuples.of(utility.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
@@ -460,7 +460,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						.equals(EventStatusInProgress.NEW.name())) ? TemplateType.REQUEST_RECEIVED
 								: TemplateType.FAILURE;
 
-				sendNotificationV2(uinForVid, RequestType.VID_CARD_DOWNLOAD, templateType, eventId, null);
+				sendNotificationV2(uinForVid, RequestType.VID_CARD_DOWNLOAD, templateType, eventId, null, null);
 			}
 		}
 		responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
@@ -598,14 +598,14 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private void sendNotificationV2(String id, RequestType requestType, TemplateType templateType, String eventId,
-			Map<String, Object> additionalAttributes) throws ResidentServiceCheckedException {
+			Map<String, Object> additionalAttributes, Map identity) throws ResidentServiceCheckedException {
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(id);
 		notificationRequestDtoV2.setRequestType(requestType);
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
-		notificationService.sendNotification(notificationRequestDtoV2);
+		notificationService.sendNotification(notificationRequestDtoV2, identity);
 	}
 
 }

@@ -1,36 +1,6 @@
 package io.mosip.resident.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import static io.mosip.resident.util.Utility.IDENTITY;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -49,7 +19,38 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 
 /**
  * Resident identity service implementation class.
@@ -62,15 +63,10 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
 	private static final String INDIVIDUAL_ID = "individual_id";
-	private static final String IDENTITY = "identity";
-	private static final String VALUE = "value";
 	private static final String EMAIL = "email";
 	private static final String PHONE = "phone";
 	private static final String DATE_OF_BIRTH = "dob";
 	private static final String NAME = "name";
-	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
-    private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
-    private static final String LANGUAGE = "language";
 	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final String PHOTO_ATTRIB_PROP = "mosip.resident.photo.attribute.name";
 
@@ -131,17 +127,19 @@ public class IdentityServiceImpl implements IdentityService {
 			/**
 			 * It is assumed that in the UI schema the UIN is added.
 			 */
-			identityDTO.setUIN(getMappingValue(identity, UIN));
-			identityDTO.setEmail(getMappingValue(identity, EMAIL));
-			identityDTO.setPhone(getMappingValue(identity, PHONE));
-			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
+			identityDTO.setUIN(utility.getMappingValue(identity, UIN));
+			identityDTO.setEmail(utility.getMappingValue(identity, EMAIL));
+			identityDTO.setPhone(utility.getMappingValue(identity, PHONE));
+			String dateOfBirth = utility.getMappingValue(identity, DATE_OF_BIRTH);
 			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
 				identityDTO.setDateOfBirth(dateOfBirth);
 				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
 				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
 				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
 			}
-			identityDTO.setFullName(getMappingValue(identity, NAME, langCode));
+			String name = utility.getMappingValue(identity, NAME, langCode);
+			identityDTO.setFullName(name);
+			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
 
 			if(fetchFace) {
 				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimValue(env.getProperty(IMAGE)));
@@ -244,7 +242,7 @@ public class IdentityServiceImpl implements IdentityService {
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
 			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
-
+			response.put(IDENTITY, identity);
 			return response;
 		} catch (ApisResourceAccessException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
@@ -254,59 +252,9 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 
 	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
-		return getMappingValue(identity, NAME, langCode);
+		return utility.getMappingValue(identity, NAME, langCode);
 	}
 
-	private String getMappingValue(Map<?, ?> identity, String mappingName)
-            throws ResidentServiceCheckedException, IOException {
-        return getMappingValue(identity, mappingName, null);
-    }
-
-	private String getMappingValue(Map<?, ?> identity, String mappingName, String langCode)
-			throws ResidentServiceCheckedException, IOException {
-		String mappingJson = utility.getMappingJson();
-		if (mappingJson == null || mappingJson.trim().isEmpty()) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage());
-		}
-		JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
-		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
-		String mappingAttributes = getMappingAttribute(identityMappingJsonObject, mappingName);
-		return Stream.of(mappingAttributes.split(MAPPING_ATTRIBUTE_SEPARATOR))
-                .map(mappingAttribute -> identity.get(mappingAttribute))
-                .map(attributeValue -> {
-                    if(attributeValue instanceof String) {
-                        return (String) attributeValue;
-                    } else if(attributeValue instanceof List){
-                        if(langCode == null) {
-                            return null;
-                        } else {
-                            return getValueForLang((List<Map<String,Object>>)attributeValue, langCode);
-                        }
-                    } else if(attributeValue instanceof Map) {
-                    	return ((String)((Map) attributeValue).get(VALUE));
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));
-	}
-	
-	private String getValueForLang(List<Map<String, Object>> attributeValue, String langCode) {
-        return attributeValue.stream()
-                    .filter(map -> map.get(LANGUAGE) instanceof String && ((String)map.get(LANGUAGE)).equalsIgnoreCase(langCode))
-                    .map(map -> (String)map.get(VALUE))
-                    .findAny()
-                    .orElse(null);
-    }
-
-	private String getMappingAttribute(JSONObject identityJson, String name) {
-		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
-		if(docJson != null) {
-			return JsonUtil.getJSONValue(docJson, VALUE);
-		}
-		return name;
-	}
 	
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {

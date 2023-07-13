@@ -279,21 +279,21 @@ public class UtilityTest {
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("user@mail.com", attributes.get("email"));
-		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("user@mail.com", attributes1.get("email"));
 
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMailingAttributesIdNull() throws Exception {
-		utility.getMailingAttributes(null, new HashSet<String>());
+		utility.getMailingAttributes(null, new HashSet<String>(), Map.of(), Map.of());
 	}
 	
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMailingAttributesIdEmpty() throws Exception {
-		utility.getMailingAttributes("", new HashSet<String>());
+		utility.getMailingAttributes("", new HashSet<String>(), Map.of(), Map.of());
 	}
 
 	@Test
@@ -320,7 +320,7 @@ public class UtilityTest {
 				any(), any(Class.class))).thenReturn(response);
 
 		Mockito.doReturn("preferredLang").when(env).getProperty("mosip.default.user-preferred-language-attribute");
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("eng", attributes.get("preferredLang"));
 	}
 
@@ -342,7 +342,7 @@ public class UtilityTest {
 				any(), any(Class.class))).thenReturn(response);
 
 		Mockito.doReturn("preferredLang").when(env).getProperty("mosip.default.template-languages");
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("eng", attributes.get("preferredLang"));
 	}
 
@@ -364,7 +364,7 @@ public class UtilityTest {
 				any(), any(Class.class))).thenReturn(response);
 
 		Mockito.doReturn(null).when(env).getProperty("mosip.default.template-languages");
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("eng", attributes.get("preferredLang"));
 	}
 
@@ -384,7 +384,7 @@ public class UtilityTest {
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
-		Map<String, Object> attributes = utility.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utility.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("eng", attributes.get("preferredLang"));
 		verify(residentRestTemplate, never()).getForObject(anyString(), any(Class.class));
 	}
@@ -397,11 +397,11 @@ public class UtilityTest {
 		String mappingJson = "";
 		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("user@mail.com", attributes.get("email"));
 
 		ReflectionTestUtils.setField(utilitySpy, "languageType", "NA");
-		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 		assertEquals("user@mail.com", attributes1.get("email"));
 
 	}
@@ -418,7 +418,7 @@ public class UtilityTest {
 				.retrieveIdrepoJson(Mockito.anyString());
 		PowerMockito.mockStatic(JsonUtil.class);
 		PowerMockito.when(JsonUtil.readValue(mappingJson, JSONObject.class)).thenThrow(new IOException());
-		utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), Map.of(), Map.of());
 
 	}
 

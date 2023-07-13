@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
-import io.mosip.resident.constant.IdType;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,6 +31,7 @@ import io.mosip.preregistration.application.constant.PreRegLoginErrorConstants;
 import io.mosip.preregistration.application.dto.OTPGenerateRequestDTO;
 import io.mosip.preregistration.application.dto.RequestDTO;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
@@ -130,7 +130,7 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId);
+                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, null);
             }
 
             if (channelType.equalsIgnoreCase("email")) {
@@ -140,7 +140,7 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, null);
             }
 
             return true;
