@@ -214,18 +214,7 @@ public class NotificationService {
 
 	@SuppressWarnings("rawtypes")
 	private Map getMapperIdentity() throws ResidentServiceCheckedException {
-		String mappingJsonString = utility.getMappingJson();
-		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
-			throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
-		}
-		JSONObject mappingJsonObject;
-		try {
-			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
-		} catch (IOException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
-		}
+		JSONObject mappingJsonObject = utility.getMappingJsonObject();
 		Map mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
 		return mapperIdentity;
 	}

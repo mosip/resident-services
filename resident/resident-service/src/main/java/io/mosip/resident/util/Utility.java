@@ -215,6 +215,8 @@ public class Utility {
 
 	private Map<String, String> specialCharsReplacementMap;
 
+	private JSONObject mappingJsonObject;
+
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
@@ -337,22 +339,23 @@ public class Utility {
 		for (String key : mapperJsonKeys) {
 			Object mapperValueObj = mapperIdentity.get(key);
 			if (mapperValueObj instanceof Map) {
-				Map<String, String> jsonObject = (Map<String, String>) mapperValueObj;
-				String values = jsonObject.get(VALUE);
-				for (String value : values.split(",")) {
-					Object object = demographicIdentity.get(value);
-					if (object instanceof ArrayList) {
-						List node = (List) object;
-						for (Object jsonValueObj : node) {
-							JsonValue jsonValue = mapper.convertValue(jsonValueObj, JsonValue.class);
-							if (templateLangauges.contains(jsonValue.getLanguage()))
-								attributes.put(value + "_" + jsonValue.getLanguage(), jsonValue.getValue());
+				Map<String, String> mapperValueMap = (Map<String, String>) mapperValueObj;
+				String mappingValueStr = mapperValueMap.get(VALUE);
+				for (String mappingValue : mappingValueStr.split(",")) {
+					Object identityNodeObj = demographicIdentity.get(mappingValue);
+					if (identityNodeObj instanceof ArrayList) {
+						List identityValueList = (List) identityNodeObj;
+						for (Object identityValue : identityValueList) {
+							JsonValue jsonValue = mapper.convertValue(identityValue, JsonValue.class);
+							if (templateLangauges.contains(jsonValue.getLanguage())) {
+								attributes.put(mappingValue + "_" + jsonValue.getLanguage(), jsonValue.getValue());
+							}
 						}
-					} else if (object instanceof LinkedHashMap) {
-						Map json = (Map) object;
-						attributes.put(value, (String) json.get(VALUE));
+					} else if (identityNodeObj instanceof LinkedHashMap) {
+						Map json = (Map) identityNodeObj;
+						attributes.put(mappingValue, (String) json.get(VALUE));
 					} else {
-						attributes.put(value, object == null? null: String.valueOf(object));
+						attributes.put(mappingValue, identityNodeObj == null? null: String.valueOf(identityNodeObj));
 					}
 				}
 			}
@@ -850,6 +853,25 @@ public class Utility {
 	@CacheEvict(value = "userInfoCache", key = "#token")
 	public void clearUserInfoCache(String token) {
 		logger.info("Clearing User Info cache");
+	}
+	
+	public JSONObject getMappingJsonObject() throws ResidentServiceCheckedException {
+		if(mappingJsonObject != null) {
+			return mappingJsonObject;
+		}
+		
+		String mappingJsonString = getMappingJson();
+		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
+		}
+		try {
+			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		return mappingJsonObject;
 	}
 	
 	public String getMappingValue(Map<?, ?> identity, String mappingName)

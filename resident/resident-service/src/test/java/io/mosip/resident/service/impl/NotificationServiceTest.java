@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -114,6 +115,7 @@ public class NotificationServiceTest {
 		Mockito.when(env.getProperty(ApiName.EMAILNOTIFIER.name())).thenReturn("https://int.mosip.io/template/email");
 		Mockito.when(requestValidator.emailValidator(Mockito.anyString())).thenReturn(true);
 		Mockito.when(requestValidator.phoneValidator(Mockito.anyString())).thenReturn(true);
+		Mockito.lenient().when(utility.getMappingJsonObject()).thenReturn(Mockito.mock(JSONObject.class));
 		reqDto = new NotificationRequestDto();
 		reqDto.setId("3527812406");
 		reqDto.setTemplateTypeCode(NotificationTemplateCode.RS_UIN_RPR_SUCCESS);

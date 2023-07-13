@@ -241,8 +241,8 @@ public class IdentityServiceImpl implements IdentityService {
 					})
 					.filter(attrib -> identity.containsKey(attrib))
 					.collect(Collectors.toMap(Function.identity(), identity::get,(m1, m2) -> m1, () -> new LinkedHashMap<String, Object>()));
-			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			response.put(IDENTITY, identity);
+			logger.debug("IdentityServiceImpl::getIdentityAttributes()::exit");
 			return response;
 		} catch (ApisResourceAccessException e) {
 			logger.error("Error occured in accessing identity data %s", e.getMessage());
