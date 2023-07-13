@@ -1,7 +1,38 @@
 package io.mosip.resident.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,54 +51,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
-import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.LoggerFileConstant;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
-
 /**
  * Resident identity service implementation class.
  * 
@@ -76,11 +59,8 @@ import io.mosip.resident.validator.RequestValidator;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String UTF_8 = "utf-8";
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
-	private static final String BEARER_PREFIX = "Bearer ";
-	private static final String AUTHORIZATION = "Authorization";
 	private static final String INDIVIDUAL_ID = "individual_id";
 	private static final String IDENTITY = "identity";
 	private static final String VALUE = "value";
@@ -101,11 +81,7 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
-	
-	@Autowired
-	@Qualifier("restClientWithPlainRestTemplate")
-	private ResidentServiceRestClient restClientWithPlainRestTemplate;
-	
+
 	@Autowired
 	private Utility utility;
 	
@@ -127,15 +103,6 @@ public class IdentityServiceImpl implements IdentityService {
 	@Autowired
 	private RequestValidator requestValidator;
 	
-	@Value("${mosip.iam.userinfo_endpoint}")
-	private String usefInfoEndpointUrl;
-	
-	@Value("${mosip.resident.identity.claim.individual-id}")
-	private String individualIdClaim;
-	
-	@Value("${mosip.resident.identity.claim.ida-token}")
-	private String idaTokenClaim;
-	
 	@Value("${resident.dateofbirth.pattern}")
 	private String dateFormat;
 
@@ -144,12 +111,6 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Value("${resident.flag.use-vid-only:false}")
 	private boolean useVidOnly;
-	
-	@Autowired
-	private ObjectStoreHelper objectStoreHelper;
-	
-	@Autowired
-	private ValidateTokenUtil tokenValidationHelper;
 	
 	@Autowired
     private Utilities  utilities;
@@ -403,7 +364,7 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
-		Map<String, Object> userInfo = getUserInfo(token);
+		Map<String, Object> userInfo = utility.getUserInfo(token);
 		return claims.stream().map(claim -> new SimpleEntry<>(claim, getClaimFromUserInfo(userInfo, claim)))
 				.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
@@ -414,63 +375,6 @@ public class IdentityServiceImpl implements IdentityService {
 			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE, claim);
 		}
 		return String.valueOf(claimValue);
-	}
-
-	private Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
-		logger.debug("IdentityServiceImpl::getUserInfo()::entry");
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
-		UriComponents uriComponent = builder.build(false).encode();
-
-		Map<String, Object> responseMap;
-		try {
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
-			String responseStr = restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), String.class, headers);
-			responseMap = (Map<String, Object>) decodeAndDecryptUserInfo(responseStr);
-		} catch (ApisResourceAccessException e) {
-			throw e;
-		} catch (Exception e) {
-			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
-					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
-							+ ExceptionUtils.getStackTrace(e));
-			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
-		}
-		logger.debug("IdentityServiceImpl::getUserInfo()::exit");
-		return responseMap;
-	}
-
-	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
-		logger.debug("IdentityServiceImpl::decodeAndDecryptUserInfo()::entry");
-		String userInfoStr;
-		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
-			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
-			if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
-				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
-						.verifyJWTSignagure(decodedJWT);
-				if (verifySignagure.left) {
-					userInfoStr = decodeString(getPayload(decodedJWT));
-				} else {
-					throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE,
-							String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(),
-									String.format("User info signature validation failed. Error: %s: %s",
-											verifySignagure.getRight().getErrorCode(),
-											verifySignagure.getRight().getErrorMessage())));
-				}
-			} else {
-				userInfoStr = decodeString(getPayload(decodedJWT));
-			}
-		} else {
-			userInfoStr = userInfoResponseStr;
-		}
-		if(Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
-			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
-		}
-		logger.debug("IdentityServiceImpl::decodeAndDecryptUserInfo()::exit");
-		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
-	}
-
-
-	private String getPayload(DecodedJWT decodedJWT) {
-		return decodedJWT.getPayload();
 	}
 
 	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
@@ -573,10 +477,6 @@ public class IdentityServiceImpl implements IdentityService {
 	{
 		byte[] bytes = Base64.getUrlDecoder().decode(payload);
 		return new String(bytes, StandardCharsets.UTF_8);
-	}
-
-	public String decryptPayload(String payload) {
-		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID), this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
 	}
 
 	public String getIndividualIdType(String individualId){

@@ -13,9 +13,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.mosip.resident.exception.ResidentServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -423,6 +426,26 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
 		}
+	}
+
+	@Override
+	@Cacheable(value = "templateCache", key = "#languageCode + '_' + #templateTypeCode")
+	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
+		try {
+			ResponseWrapper<?> proxyResponseWrapper = getAllTemplateBylangCodeAndTemplateTypeCode(languageCode, templateTypeCode);
+			logger.debug(String.format("Template data from DB:- %s", proxyResponseWrapper.getResponse()));
+			Map<String, String> templateResponse = new LinkedHashMap<>(
+					(Map<String, String>) proxyResponseWrapper.getResponse());
+			return templateResponse.get(ResidentConstants.FILE_TEXT);
+		} catch (ResidentServiceCheckedException e) {
+			throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION, e);
+		}
+	}
+
+	@CacheEvict(value = "templateCache", allEntries = true)
+	@Scheduled(fixedRateString = "${template.cache.expiry.time.millisec}")
+	public void emptyTemplateCache() {
+		logger.info("Emptying Template cache");
 	}
 
 	@Override
