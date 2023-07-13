@@ -8,7 +8,7 @@ public enum EventEnum {
 			"Request for checking RID status is success", "RES-SER", "Residence service", "RS-RID", "RID Status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	RID_STATUS_FAILURE("RES-SER-302", RegistrationConstants.SYSTEM, "RID status: Failed",
-			"Request for checking RID status failed", "RES-SER", "Residence service", "RS-RID", "RID Status",
+			"Request for checking RID status failed- %s", "RES-SER", "Residence service", "RS-RID", "RID Status",
 			RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	REQ_EUIN_SUCCESS("RES-SER-319", RegistrationConstants.SYSTEM, "Request EUIN: Success",

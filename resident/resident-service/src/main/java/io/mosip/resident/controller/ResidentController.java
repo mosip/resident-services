@@ -75,6 +75,7 @@ import io.mosip.resident.exception.InvalidRequestTypeCodeException;
 import io.mosip.resident.exception.OtpValidationFailedException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.util.AuditUtil;
@@ -157,8 +158,8 @@ public class ResidentController {
 			validator.validateRidCheckStatusRequestDTO(requestDTO);
 			logger.debug("ResidentController::Request for checking RID status");
 			response.setResponse(residentService.getRidStatus(requestDTO.getRequest()));
-		} catch (InvalidInputException | ApisResourceAccessException | ResidentServiceException e) {
-			audit.setAuditRequestDto(EventEnum.RID_STATUS_FAILURE);
+		} catch (InvalidInputException | ApisResourceAccessException | ResidentServiceException | RIDInvalidException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_STATUS_FAILURE, e.getMessage()));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, checkStatusId));
 			throw e;
 		}
