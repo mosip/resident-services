@@ -3,7 +3,6 @@ package io.mosip.resident.constant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +16,7 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.function.FiveArgsFunction;
 import io.mosip.resident.function.FourArgsFunction;
+import io.mosip.resident.function.ThreeArgsFunction;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
@@ -132,7 +132,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private static final String SEPARATOR = ",";
 	private FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private String featureName;
-	private BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction;
+	private ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction;
 	private FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
 	private String namingProperty;
 
@@ -141,7 +141,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private RequestType(String name,
 			FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
-			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
+			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
 			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
 		this(name, ackTemplateVariablesFunction,
 				featureName, notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
@@ -150,7 +150,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private RequestType(String name,
 			FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
-			BiFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>> notificationTemplateVariablesFunction,
+			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
 			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
@@ -300,8 +300,8 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode, timeZoneOffset, locale);
 	}
 	
-	public Map<String, Object> getNotificationTemplateVariables(TemplateUtil templateUtil, NotificationTemplateVariableDTO dto) {
-		return notificationTemplateVariablesFunction.apply(templateUtil, dto);
+	public Map<String, Object> getNotificationTemplateVariables(TemplateUtil templateUtil, NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
+		return notificationTemplateVariablesFunction.apply(templateUtil, dto, notificationAttributes);
 	}
 
 	public String getDescriptionTemplateVariables(TemplateUtil templateUtil, ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode){

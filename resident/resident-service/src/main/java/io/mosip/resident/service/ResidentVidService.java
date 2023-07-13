@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
@@ -37,6 +38,9 @@ public interface ResidentVidService {
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException;
 	
 	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
+
+	ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, IdentityDTO identityDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

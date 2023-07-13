@@ -3,6 +3,8 @@ package io.mosip.resident.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +44,7 @@ public class ResidentServiceReqEUinTest {
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(true);
 		Mockito.when(uinCardDownloadService.getUINCard(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(card);
-		Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(mock(NotificationResponseDTO.class));
+		Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(mock(NotificationResponseDTO.class));
 	}
 	
 	@Test
@@ -79,7 +81,7 @@ public class ResidentServiceReqEUinTest {
 	}
 	@Test(expected=ResidentServiceException.class)
 	public void testReqEuinSendNotificationFailed() throws ResidentServiceCheckedException, ApisResourceAccessException, ResidentServiceCheckedException {
-		Mockito.when(notificationService.sendNotification(Mockito.any())).thenThrow(new ResidentServiceCheckedException());
+		Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 		EuinRequestDTO dto=new EuinRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");
