@@ -75,8 +75,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
@@ -131,9 +129,6 @@ public class IdAuthServiceImpl implements IdAuthService {
     RequestValidator requestValidator;
     
 	@Autowired
-	private AuditUtil auditUtil;
-	
-	@Autowired
 	private Utility utility;
 	
 	@Override
@@ -145,6 +140,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Override
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
+		logger.debug("IdAuthServiceImpl::validateOtpV1()::entry");
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		boolean authStatus = false;
@@ -163,13 +159,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 			}
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
-			auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_FAILURE, transactionId,
-					"OTP Validation Failed"));
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::validateOtp():: validate otp method call" + ExceptionUtils.getStackTrace(e));
 			eventId = updateResidentTransactionAndSendNotification(transactionId, individualId, eventId, authStatus);
 			throw new OtpValidationFailedException(e.getMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
+		logger.debug("IdAuthServiceImpl::validateOtpV1()::exit");
 		return Tuples.of(authStatus, eventId);
 	}
 
@@ -200,6 +195,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	@Override
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
+		logger.debug("IdAuthServiceImpl::validateOtpV2()::entry");
 		requestValidator.validateOtpCharLimit(otp);
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
@@ -265,6 +261,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 				throw new OtpValidationFailedException(response.getErrors().get(0).getErrorMessage(),
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 		}
+		logger.debug("IdAuthServiceImpl::validateOtpV2()::exit");
 		return Tuples.of(response.getResponse().isAuthStatus(), residentTransactionEntity);
 	}
 
@@ -287,7 +284,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 	public AuthResponseDTO internelOtpAuth(String transactionId, String individualId,
 			String otp) throws ApisResourceAccessException, InvalidKeySpecException, NoSuchAlgorithmException,
 			IOException, JsonProcessingException, CertificateEncodingException {
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 				"IdAuthServiceImpl::internelOtpAuth()::entry");
 		String dateTime = DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime());
 		AuthRequestDTO authRequestDTO = new AuthRequestDTO();
@@ -329,7 +326,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 		authRequestDTO.setRequestHMAC(CryptoUtil.encodeToURLSafeBase64(byteArray));
 		String thumbprint = encryptionResult.getT2();
 		authRequestDTO.setThumbprint(thumbprint);
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 				"internelOtpAuth()::INTERNALAUTH POST service call started with request data "
 						+ JsonUtils.javaObjectToJsonString(authRequestDTO));
 
@@ -338,7 +335,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			response = (AuthResponseDTO) restClient.postApi(environment.getProperty(ApiName.INTERNALAUTH.name()),
 					MediaType.APPLICATION_JSON, authRequestDTO, AuthResponseDTO.class);
 
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImpl::internelOtpAuth()::INTERNALAUTH POST service call ended with response data "
 							+ JsonUtils.javaObjectToJsonString(response));
 		} catch (Exception e) {
@@ -455,7 +452,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 			response = restClient.postApi(environment.getProperty(ApiName.AUTHTYPESTATUSUPDATE.name()),
 					MediaType.APPLICATION_JSON, authTypeStatusRequestDto, AuthTypeStatusResponseDto.class);
 
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), individualId,
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), null,
 					"IdAuthServiceImp::authLock():: AUTHLOCK POST service call ended with response data "
 							+ JsonUtils.javaObjectToJsonString(response));
 

@@ -34,7 +34,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -50,9 +49,6 @@ public class OrderCardServiceTest {
 
 	@InjectMocks
 	private OrderCardService orderCardService = new OrderCardServiceImpl();
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private Utility utility;

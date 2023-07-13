@@ -377,7 +377,6 @@ public class IdentityServiceImpl implements IdentityService {
 		return String.valueOf(claimValue);
 	}
 
-
 	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException {
 		return  getClaimValue(INDIVIDUAL_ID);
 	}
@@ -386,6 +385,7 @@ public class IdentityServiceImpl implements IdentityService {
 		return getClaims(claim).get(claim);
 	}
 	public String getAvailableclaimValue(String claim) throws ApisResourceAccessException {
+		logger.debug("IdentityServiceImpl::getAvailableclaimValue()::entry");
 		String claimValue;
 		try {
 			claimValue = getClaims(claim).get(claim);
@@ -393,6 +393,7 @@ public class IdentityServiceImpl implements IdentityService {
 			logger.error(e.getMessage());
 			claimValue = null;
 		}
+		logger.debug("IdentityServiceImpl::getAvailableclaimValue()::exit");
 		return claimValue;
 	}
 

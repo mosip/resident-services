@@ -24,7 +24,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -38,9 +37,6 @@ public class ResidentVerificationServiceTest {
 
 	@Mock
 	Environment env;
-
-	@Mock
-	private AuditUtil audit;
 
 	@InjectMocks
 	private VerificationService verificationService = new VerificationServiceImpl();

@@ -20,7 +20,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.UINCardDownloadService;
 
 @RunWith(SpringRunner.class)
@@ -35,9 +34,6 @@ public class ResidentServiceReqEUinTest {
 	private IdAuthService idAuthService;
 	
 	@Mock
-	private AuditUtil audit;
-
-	@Mock
 	NotificationService notificationService;
 	byte[] card=new byte[10];
 	
@@ -47,7 +43,6 @@ public class ResidentServiceReqEUinTest {
 				.thenReturn(true);
 		Mockito.when(uinCardDownloadService.getUINCard(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn(card);
 		Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(mock(NotificationResponseDTO.class));
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 	
 	@Test
