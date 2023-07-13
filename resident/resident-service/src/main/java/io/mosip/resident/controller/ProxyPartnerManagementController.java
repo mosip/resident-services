@@ -65,8 +65,7 @@ public class ProxyPartnerManagementController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getPartnersByPartnerType(@RequestParam("partnerType") Optional<String> partnerType)
 			throws ResidentServiceCheckedException {
-		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType():: entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE);
+		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper = proxyPartnerManagementService.getPartnersByPartnerType(partnerType);
@@ -77,7 +76,7 @@ public class ProxyPartnerManagementController {
 			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_PARTNERS_BY_PARTNER_TYPE_SUCCESS);
-		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType():: exit");
+		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType()::exit");
 		return responseWrapper;
 	}
 

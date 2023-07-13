@@ -50,7 +50,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
@@ -69,9 +68,6 @@ public class ResidentServiceGetServiceHistoryTest {
 
 	@MockBean
     private ProxyIdRepoService proxyIdRepoService;
-
-    @Mock
-    private AuditUtil audit;
 
     @InjectMocks
     private ResidentServiceImpl residentServiceImpl;
@@ -169,7 +165,6 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString(), Mockito.anyString())).thenReturn("346697314566835424394775924659202696");
         Mockito.when(partnerServiceImpl.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
-        Mockito.doNothing().when(audit).setAuditRequestDto(any());
 
         Mockito.when(identityServiceImpl.getAvailableclaimValue(Mockito.anyString())).thenReturn("Kamesh");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");

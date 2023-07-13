@@ -26,7 +26,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyPartnerManagementService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 /**
@@ -38,9 +37,6 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 @RefreshScope
 @ContextConfiguration
 public class ProxyPartnerManagementServiceTest {
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;

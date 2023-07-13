@@ -58,7 +58,6 @@ import io.mosip.resident.repository.ResidentSessionRepository;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.repository.ResidentUserRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
@@ -79,9 +78,6 @@ public class ResidentServiceDownloadCardTest {
 
     @Mock
     private ResidentCredentialServiceImpl residentCredentialServiceImpl;
-
-    @Mock
-    private AuditUtil audit;
 
     @Mock
     private Environment environment;
