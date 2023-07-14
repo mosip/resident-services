@@ -11,6 +11,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -202,7 +203,7 @@ public class ResidentCredentialServiceTest {
 		when(idAuthService.validateOtp(residentCredentialRequestDto.getTransactionID(),
 				residentCredentialRequestDto.getIndividualId(), residentCredentialRequestDto.getOtp()))
 						.thenThrow(new OtpValidationFailedException());
-		when(notificationService.sendNotification(any())).thenThrow(new ResidentServiceCheckedException());
+		when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 
 		residentCredentialService.reqCredential(residentCredentialRequestDto);
 	}
@@ -546,7 +547,7 @@ public class ResidentCredentialServiceTest {
 
 		when(env.getProperty(any())).thenReturn("https://credentialUrl");
 		when(residentServiceRestClient.getApi((URI) any(), any())).thenReturn(responseWrapper);
-		when(notificationService.sendNotification(any())).thenThrow(new ResidentServiceCheckedException());
+		when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 
 		residentCredentialService.getStatus("effc56cd-cf3b-4042-ad48-7277cf90f763");
 	}
@@ -767,7 +768,7 @@ public class ResidentCredentialServiceTest {
 		response.setErrors(null);
 		when(env.getProperty(any())).thenReturn("https://credentialCancelReqUrl");
 		when(residentServiceRestClient.getApi((URI) any(), any())).thenReturn(response);
-		when(notificationService.sendNotification(any())).thenThrow(new ResidentServiceCheckedException());
+		when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 
 		residentCredentialService.cancelCredentialRequest("effc56cd-cf3b-4042-ad48-7277cf90f763");
 	}

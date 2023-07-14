@@ -76,8 +76,6 @@ public class ResidentVidServiceTest {
 
     private static final String LOCALE_EN_US = "en-US";
 
-	private ObjectMapper objectMapper = new ObjectMapper();
-
     @Mock
     private Environment env;
 
@@ -140,7 +138,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMaskedEmail("demo@gmail.com");
         notificationResponseDTO.setMaskedPhone("9876543210");
 
-        when(notificationService.sendNotification(any(NotificationRequestDto.class))).thenReturn(notificationResponseDTO);
+        when(notificationService.sendNotification(any(NotificationRequestDto.class), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         identityValue = new IdentityDTO();
         identityValue.setEmail("aaa@bbb.com");
         identityValue.setPhone("987654321");
@@ -462,7 +460,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMaskedPhone("88**09");
         notificationResponseDTO.setStatus("SUCCESS");
         notificationResponseDTO.setMessage("SUCCESS");
-        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(notificationResponseDTO);
+        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
         vidRequestDtoV2.setVidType("PERPETUAL");
         vidRequestDtoV2.setChannels(List.of("EMAIL"));
@@ -565,7 +563,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMaskedPhone(null);
         notificationResponseDTO.setStatus("SUCCESS");
         notificationResponseDTO.setMessage("SUCCESS");
-        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(notificationResponseDTO);
+        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
         vidRequestDtoV2.setVidType("PERPETUAL");
         vidRequestDtoV2.setChannels(List.of("EMAIL"));

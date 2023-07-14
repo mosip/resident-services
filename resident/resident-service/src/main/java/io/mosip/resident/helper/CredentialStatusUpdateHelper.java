@@ -98,7 +98,7 @@ public class CredentialStatusUpdateHelper {
 		notificationRequestDtoV2.setRequestType(requestType);
 		notificationRequestDtoV2.setEventId(txn.getEventId());
 		notificationRequestDtoV2.setId(txn.getIndividualId());
-		notificationService.sendNotification(notificationRequestDtoV2);
+		notificationService.sendNotification(notificationRequestDtoV2, null);
 	}
 
 	public void updateEntity(ResidentTransactionEntity txn) {

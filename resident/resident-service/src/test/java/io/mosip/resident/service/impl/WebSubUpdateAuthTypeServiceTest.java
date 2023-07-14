@@ -15,14 +15,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
@@ -45,9 +43,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
 
-	@Autowired
-	private MockMvc mockMvc;
-
 	@Mock
 	private NotificationService notificationService;
 
@@ -61,7 +56,6 @@ public class WebSubUpdateAuthTypeServiceTest {
 	@Before
 	public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		MockitoAnnotations.initMocks(this);
-		this.mockMvc = MockMvcBuilders.standaloneSetup(webSubUpdateAuthTypeService).build();
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
 		partnerId = "mpartner-default-auth";
@@ -89,7 +83,7 @@ public class WebSubUpdateAuthTypeServiceTest {
 
 		// Verify that the expected methods were called
 		verify(residentTransactionRepository, times(1)).findByRequestTrnId("12345");
-		verify(notificationService, times(1)).sendNotification(any(NotificationRequestDtoV2.class));
+		verify(notificationService, times(1)).sendNotification(any(NotificationRequestDtoV2.class), Mockito.nullable(Map.class));
 	}
 
 	@Test
@@ -133,7 +127,7 @@ public class WebSubUpdateAuthTypeServiceTest {
 		// Mock utility response
 		when(utility.getSessionUserName()).thenReturn("testUser");
 
-		when(notificationService.sendNotification(any())).thenThrow(new ResidentServiceCheckedException());
+		when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 		// Invoke the method
 		webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
 	}
