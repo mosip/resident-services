@@ -18,7 +18,6 @@ import io.mosip.resident.dto.GrievanceRequestDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.repository.ResidentGrievanceRepository;
-import io.mosip.resident.util.AuditUtil;
 
 /**
  * This class is used to create service class test  for grievance API.
@@ -41,9 +40,6 @@ public class GrievanceServiceImplTest {
     @Mock
     private ResidentGrievanceRepository residentGrievanceRepository;
     
-    @Mock
-    private AuditUtil auditUtil;
-
     private MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO;
 
     @Before

@@ -20,8 +20,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AuthTransactionCallBackService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
 
 @Component
@@ -39,11 +37,9 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 	private static final String INDIVIDUAL_ID = "individualId";
 	private static final String ENTITY_ID = "entityId";
 	private static final String TOKEN_ID = "tokenId";
-	private static final Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallBackServiceImpl.class);
     private static final String OLV_PARTNER_ID = "olv_partner_id";
 
-    @Autowired
-    private AuditUtil auditUtil;
+    private static final Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallBackServiceImpl.class);
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
@@ -58,9 +54,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     public void updateAuthTransactionCallBackService(Map<String, Object> eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try {
-            logger.info("AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
             insertInResidentTransactionTable(eventModel, null);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
