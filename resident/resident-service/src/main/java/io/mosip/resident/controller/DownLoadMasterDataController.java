@@ -53,15 +53,12 @@ public class DownLoadMasterDataController {
 	private RequestValidator validator;
 
 	@Autowired
-	private AuditUtil audit;
-
-	@Autowired
 	private Utility utility;
 
 	@Autowired
 	private Environment environment;
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(DownLoadMasterDataController.class);
 
 	/**
 	 * download registration centers based on language code and selected names  of
@@ -79,10 +76,9 @@ public class DownLoadMasterDataController {
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataController::downloadRegistrationCentersByHierarchyLevel()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
-		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER);
 		InputStreamResource resource = null;
 		try {
 			validator.validateOnlyLanguageCode(langCode);
@@ -90,9 +86,8 @@ public class DownLoadMasterDataController {
 			InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
 					hierarchyLevel, name);
 			resource = new InputStreamResource(pdfInputStream);
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
+			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
-			logger.debug("AcknowledgementController::acknowledgement()::exit");
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
@@ -115,19 +110,17 @@ public class DownLoadMasterDataController {
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::getRegistrationCentersByHierarchyLevel()::entry");
+		logger.debug("DownLoadMasterDataController::downloadNearestRegistrationcenters()::entry");
 		DOWNLOADABLE_REGCEN_FILENAME = "regcenter-";
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
-		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST);
 		InputStreamResource resource = null;
 		try {
 			validator.validateOnlyLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.getNearestRegistrationcenters(langCode, longitude,
 					latitude, proximityDistance);
 			resource = new InputStreamResource(pdfInputStream);
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS);
+			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_REGCEN_FILENAME);
-			logger.debug("AcknowledgementController::acknowledgement()::exit");
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_REGISTRATION_CENTER_NEAREST_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
@@ -147,18 +140,16 @@ public class DownLoadMasterDataController {
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
 			throws ResidentServiceCheckedException, IOException, Exception {
-		logger.debug("DownLoadMasterDataController::getSupportingDocsByLanguageCode()::entry");
+		logger.debug("DownLoadMasterDataController::downloadSupportingDocsByLanguage()::entry");
 		DOWNLOADABLE_SUPPORTING_FILENAME = "supportingDocs-";
 		DOWNLOADABLE_SUPPORTING_FILENAME = DOWNLOADABLE_SUPPORTING_FILENAME + getCurrentDateAndTime();
-		auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS);
 		InputStreamResource resource = null;
 		try {
 			validator.validateOnlyLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
 			resource = new InputStreamResource(pdfInputStream);
-			audit.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
+			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
 			logger.debug("downLoad file name::" + DOWNLOADABLE_SUPPORTING_FILENAME);
-			logger.debug("AcknowledgementController::acknowledgement()::exit");
 		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_FAILURE);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,

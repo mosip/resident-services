@@ -29,7 +29,6 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.validator.DocumentValidator;
@@ -43,7 +42,7 @@ import io.mosip.resident.validator.DocumentValidator;
 @RestController
 public class DocumentController {
 
-	private static final Logger logger = LoggerConfiguration.logConfig(ResidentServiceImpl.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(DocumentController.class);
 
 	@Autowired
 	private DocumentValidator validator;
@@ -92,7 +91,7 @@ public class DocumentController {
 			@RequestParam("docTypCode") String docTypCode,
 			@RequestParam("langCode") String langCode,
 			@RequestParam("referenceId") String referenceId) throws IOException {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Document Upload API"));
+		logger.debug("DocumentController::uploadDocuments()::entry");
 		ResponseWrapper<DocumentResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentUploadDocumentId);
@@ -105,13 +104,12 @@ public class DocumentController {
 			docRequest.setDocTypCode(docTypCode);
 			docRequest.setLangCode(langCode);
 			docRequest.setReferenceId(referenceId);
-
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT, transactionId));
+			logger.debug(String.format("DocumentController::Requesting upload document api for transaction id: %s", transactionId));
 			DocumentResponseDTO uploadDocumentResponse = service.uploadDocument(transactionId, file, docRequest);
 			responseWrapper.setResponse(uploadDocumentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_SUCCESS, transactionId));
+			logger.debug("DocumentController::uploadDocuments()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.UPLOAD_DOCUMENT_FAILED, transactionId));
@@ -137,19 +135,18 @@ public class DocumentController {
 	@GetMapping(path = "/documents/{transaction-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<List<DocumentResponseDTO>> getDocumentsByTransactionId(
 			@PathVariable("transaction-id") String transactionId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get documents API"));
+		logger.debug("DocumentController::getDocumentsByTransactionId()::entry");
 		ResponseWrapper<List<DocumentResponseDTO>> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentDocumentListId);
 			responseWrapper.setVersion(residentDocumentListVersion);
 			validator.validateTransactionIdForDocument(transactionId);
-
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA, transactionId));
+			logger.debug(String.format("DocumentController::Requesting get documents api for transaction id: %s", transactionId));
 			List<DocumentResponseDTO> documentResponse = service.fetchAllDocumentsMetadata(transactionId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_SUCCESS, transactionId));
+			logger.debug("DocumentController::getDocumentsByTransactionId()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENTS_METADATA_FAILED, transactionId));
@@ -177,19 +174,18 @@ public class DocumentController {
 	public ResponseWrapper<DocumentDTO> getDocumentByDocumentId(
 			@RequestParam("transactionId") String transactionId,
 			@PathVariable("document-id") String documentId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Get document API"));
+		logger.debug("DocumentController::getDocumentByDocumentId()::entry");
 		ResponseWrapper<DocumentDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentGetDocumentId);
 			responseWrapper.setVersion(residentGetDocumentVersion);
 			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
-
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID, transactionId));
+			logger.debug("DocumentController::Requesting get document by doc id");
 			DocumentDTO documentResponse = service.fetchDocumentByDocId(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_SUCCESS, transactionId));
+			logger.debug("DocumentController::getDocumentByDocumentId()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.GET_DOCUMENT_BY_DOC_ID_FAILED, transactionId));
@@ -217,19 +213,18 @@ public class DocumentController {
 	public ResponseWrapper<ResponseDTO> deleteDocument(
 			@RequestParam("transactionId") String transactionId,
 			@PathVariable("document-id") String documentId) {
-		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_REQUEST, "Delete document API"));
+		logger.debug("DocumentController::deleteDocument()::entry");
 		ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
 		try {
 			responseWrapper.setId(residentDeleteId);
 			responseWrapper.setVersion(residentDeleteVersion);
 			validator.validateDocumentIdAndTransactionId(documentId, transactionId);
-
-			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT, transactionId));
+			logger.debug("DocumentController::Requesting delete document api by doc id");
 			ResponseDTO documentResponse = service.deleteDocument(transactionId, documentId);
 			responseWrapper.setResponse(documentResponse);
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_SUCCESS, transactionId));
+			logger.debug("DocumentController::deleteDocument()::exit");
 		} catch (ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.DELETE_DOCUMENT_FAILED, transactionId));

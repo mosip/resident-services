@@ -10,7 +10,6 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
-import io.mosip.resident.constant.IdType;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,6 +31,7 @@ import io.mosip.preregistration.application.constant.PreRegLoginErrorConstants;
 import io.mosip.preregistration.application.dto.OTPGenerateRequestDTO;
 import io.mosip.preregistration.application.dto.RequestDTO;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
@@ -96,7 +96,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     @Override
     public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
-        this.logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
+        logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
         notificationRequestDto.setId(identityService.getResidentIndvidualIdFromSession());
@@ -104,11 +104,11 @@ public class OtpManagerServiceImpl implements OtpManager {
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
                 .minusMinutes(Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.duration", Long.class)))) >
         Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.max-count", Integer.class))) {
-            this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
+            logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
             throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorMessage());
         } else {
             String otp = this.generateOTP(requestDTO);
-            this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
+            logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
             String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+
                     requestDTO.getRequest().getTransactionId()).getBytes());
             OtpTransactionEntity otpTxn;
@@ -130,17 +130,17 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId);
+                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, null);
             }
 
             if (channelType.equalsIgnoreCase("email")) {
-                this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking email notification");
+                logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking email notification");
                 NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
                 notificationRequestDtoV2.setTemplateType(TemplateType.SUCCESS);
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, null);
             }
 
             return true;

@@ -34,7 +34,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -50,9 +49,6 @@ public class OrderCardServiceTest {
 
 	@InjectMocks
 	private OrderCardService orderCardService = new OrderCardServiceImpl();
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private Utility utility;
@@ -103,7 +99,7 @@ public class OrderCardServiceTest {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("8251649601");
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
-		when(notificationService.sendNotification(Mockito.any())).thenReturn(notificationResponseDTO);
+		when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
 
 		residentCredentialRequestDto = new ResidentCredentialRequestDto();
 		residentCredentialRequestDto.setTransactionID("1234327890");

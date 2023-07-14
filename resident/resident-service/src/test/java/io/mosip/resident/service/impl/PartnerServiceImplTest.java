@@ -30,7 +30,6 @@ import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
 import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,9 +42,6 @@ public class PartnerServiceImplTest {
 
 	@Mock
 	Environment env;
-
-	@Mock
-	private AuditUtil audit;
 
 	@InjectMocks
 	private PartnerServiceImpl partnerService;
