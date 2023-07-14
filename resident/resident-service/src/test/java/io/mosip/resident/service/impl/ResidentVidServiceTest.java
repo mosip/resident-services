@@ -1,9 +1,45 @@
 package io.mosip.resident.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.apache.commons.io.IOUtils;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.util.DateUtils;
@@ -29,44 +65,9 @@ import io.mosip.resident.exception.VidRevocationException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
-import org.apache.commons.io.IOUtils;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -74,8 +75,6 @@ import static org.mockito.Mockito.when;
 public class ResidentVidServiceTest {
 
     private static final String LOCALE_EN_US = "en-US";
-
-	private ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private Environment env;
@@ -95,10 +94,7 @@ public class ResidentVidServiceTest {
     @Mock
 	private Utility utility;
     
-	@Mock
-	private AuditUtil audit;
-
-    private VidRequestDto requestDto;
+	private VidRequestDto requestDto;
     
     private VidRevokeRequestDTO vidRevokeRequest;
     
@@ -142,7 +138,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMaskedEmail("demo@gmail.com");
         notificationResponseDTO.setMaskedPhone("9876543210");
 
-        when(notificationService.sendNotification(any(NotificationRequestDto.class))).thenReturn(notificationResponseDTO);
+        when(notificationService.sendNotification(any(NotificationRequestDto.class), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         identityValue = new IdentityDTO();
         identityValue.setEmail("aaa@bbb.com");
         identityValue.setPhone("987654321");
@@ -164,7 +160,6 @@ public class ResidentVidServiceTest {
 		
 		NotificationRequestDto notificationRequestDto = new NotificationRequestDto();
 		notificationRequestDto.setId("1234567");
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 		
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
@@ -465,7 +460,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMaskedPhone("88**09");
         notificationResponseDTO.setStatus("SUCCESS");
         notificationResponseDTO.setMessage("SUCCESS");
-        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(notificationResponseDTO);
+        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
         vidRequestDtoV2.setVidType("PERPETUAL");
         vidRequestDtoV2.setChannels(List.of("EMAIL"));
@@ -568,7 +563,7 @@ public class ResidentVidServiceTest {
         notificationResponseDTO.setMaskedPhone(null);
         notificationResponseDTO.setStatus("SUCCESS");
         notificationResponseDTO.setMessage("SUCCESS");
-        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(notificationResponseDTO);
+        when(notificationService.sendNotification(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
         VidRequestDtoV2 vidRequestDtoV2 = new VidRequestDtoV2();
         vidRequestDtoV2.setVidType("PERPETUAL");
         vidRequestDtoV2.setChannels(List.of("EMAIL"));

@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -41,7 +42,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.UINCardDownloadService;
 
@@ -73,9 +73,6 @@ public class ResidentServiceRequestAuthLockTest {
 	NotificationService notificationService;
 
 	@Mock
-	private AuditUtil audit;
-
-	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
 	@InjectMocks
@@ -90,7 +87,6 @@ public class ResidentServiceRequestAuthLockTest {
 
 		notificationResponseDTO = new NotificationResponseDTO();
 		notificationResponseDTO.setStatus("Notification success");
-		Mockito.doNothing().when(audit).setAuditRequestDto(any());
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 		authLockRequestDto = new AuthLockOrUnLockRequestDto();
 		authLockRequestDto.setIndividualId("1234567889");
@@ -112,7 +108,7 @@ public class ResidentServiceRequestAuthLockTest {
 		ResponseDTO response = new ResponseDTO();
 		response.setMessage("Notification success");
 
-		Mockito.when(notificationService.sendNotification(any())).thenReturn(notificationResponseDTO);
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenReturn(notificationResponseDTO);
 		ResponseDTO authLockResponse = residentService.reqAauthTypeStatusUpdate(authLockRequestDto,
 				AuthTypeStatus.LOCK);
 		assertEquals(authLockResponse.getMessage(), authLockResponse.getMessage());
@@ -147,7 +143,7 @@ public class ResidentServiceRequestAuthLockTest {
 
 		Mockito.when(idAuthService.validateOtp(any(), any(), any())).thenReturn(true);
 
-		Mockito.when(notificationService.sendNotification(any()))
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class)))
 				.thenThrow(new ResidentServiceCheckedException());
 		residentService.reqAauthTypeStatusUpdate(authLockRequestDto, AuthTypeStatus.LOCK);
 

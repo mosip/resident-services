@@ -76,7 +76,6 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
@@ -121,9 +120,6 @@ public class ResidentServiceResUpdateTest {
 
 	@Mock
 	private Utilities utilities;
-
-	@Mock
-	private AuditUtil audit;
 
 	@Mock
 	private ObjectMapper objectMapper;
@@ -201,7 +197,7 @@ public class ResidentServiceResUpdateTest {
 		NotificationResponseDTO notificationResponse = new NotificationResponseDTO();
 		notificationResponse.setMessage("Notification sent");
 		notificationResponse.setStatus("success");
-		Mockito.when(notificationService.sendNotification(any())).thenReturn(notificationResponse);
+		Mockito.when(notificationService.sendNotification(any(), Mockito.nullable(Map.class))).thenReturn(notificationResponse);
 
 		String publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGXPqbFOIZhB_N_fbTXOMIsRgq_LMdL9DJ5kWYAneCj_LPw3OEm2ncLVIRyJsF2DcSQwvzt_Njdvg1Cr54nD1uHBu3Vt9G1sy3p6uwbeK1l5mJSMNe5oGe11fmehtsR2QcB_45_us_IiiiUzzHJrySexmDfdOiPdy-dID4DYRDAf-HXlMIEf4Di_8NV3wVrA3jq1tuNkXX3qKtM4NhZOihp0HmB9E7RHttSV9VJNh00BrC57qdMfa5xqsHok3qftU5SAan4BGuPklN2fzOVcsa-V-B8JbwxRfPdwMkq-jW7Eu1LcNhNVQYJGEWDLAQDGKY_fOB_YwBzn8xvYRjqSfQIDAQAB";
 		List<MachineDto> machineDtos = new ArrayList<>();

@@ -10,6 +10,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
@@ -57,7 +58,6 @@ public class ProxyConfigController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseWrapper<?> getResidentProperties() throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getResidentProperties()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
 		ResponseWrapper<?> propertiesResponse = residentConfigService.getUIProperties();
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getResidentProperties()::exit");
@@ -75,8 +75,13 @@ public class ProxyConfigController {
 	public String getResidentUISchema(
 			@PathVariable String schemaType) throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getResidentUISchema()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
-		String propertiesResponse = residentConfigService.getUISchema(schemaType);
+		String propertiesResponse;
+		try {
+			propertiesResponse = residentConfigService.getUISchema(schemaType);
+		} catch (ResidentServiceException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_EXCEPTION);
+			throw e;
+		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getResidentUISchema()::exit");
 		return propertiesResponse;
@@ -92,7 +97,6 @@ public class ProxyConfigController {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
 	public String getIdentityMapping() throws ResidentServiceCheckedException {
 		logger.debug("ProxyConfigController::getIdentityMapping()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES);
 		String propertiesResponse=residentConfigService.getIdentityMapping();
 		auditUtil.setAuditRequestDto(EventEnum.GET_CONFIGURATION_PROPERTIES_SUCCESS);
 		logger.debug("ProxyConfigController::getIdentityMapping()::exit");

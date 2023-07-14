@@ -42,6 +42,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 	public ResponseWrapper<?> getRemainingUpdateCountByIndividualId(List<String> attributeList)
 			throws ResidentServiceCheckedException {
 		try {
+			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::entry");
 			String individualId=identityServiceImpl.getResidentIndvidualIdFromSession();
 			Map<String, Object> pathsegements = new HashMap<String, Object>();
 			pathsegements.put("individualId", individualId);
@@ -58,6 +59,7 @@ public class ProxyIdRepoServiceImpl implements ProxyIdRepoService {
 			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.NO_RECORDS_FOUND);
 			}
+			logger.debug("ProxyIdRepoServiceImpl::getRemainingUpdateCountByIndividualId()::exit");
 			return responseWrapper;
 			
 		} catch (ApisResourceAccessException e) {

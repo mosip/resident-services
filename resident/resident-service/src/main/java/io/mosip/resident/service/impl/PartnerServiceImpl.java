@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.service.PartnerService;
@@ -30,8 +32,11 @@ public class PartnerServiceImpl implements PartnerService {
     @Qualifier("restClientWithSelfTOkenRestTemplate")
     private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
+    private static final Logger logger = LoggerConfiguration.logConfig(PartnerServiceImpl.class);
+
     @Override
     public ArrayList<String> getPartnerDetails(String partnerId) throws ResidentServiceCheckedException {
+    	logger.debug("PartnerServiceImpl::getPartnerDetails()::entry");
         ArrayList<String> partnerIds = new ArrayList<>();
         try {
             if (partnerId != null && partnerServiceUrl != null) {
@@ -47,9 +52,11 @@ public class PartnerServiceImpl implements PartnerService {
                 }
             }
         } catch (Exception e) {
+        	logger.error("Error occurred in getting partner details %s", e.getMessage());
             throw new ResidentServiceCheckedException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorCode(),
                     ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorMessage(), e);
         }
+        logger.debug("PartnerServiceImpl::getPartnerDetails()::exit");
         return partnerIds;
     }
 }

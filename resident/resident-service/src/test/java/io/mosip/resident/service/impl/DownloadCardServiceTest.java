@@ -50,7 +50,6 @@ import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
@@ -83,9 +82,6 @@ public class DownloadCardServiceTest {
 
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private ResidentCredentialService residentCredentialService;
