@@ -1,14 +1,4 @@
--- -------------------------------------------------------------------------------------------------
--- Database Name: mosip_resident
--- Release Version 	: 1.2.1
--- Purpose    		: Database scripts for Resident Service DB.
--- Create By   		: Manoj SP
--- Created Date		: April-2022
---
--- Modified Date        Modified By         Comments / Remarks
--- --------------------------------------------------------------------------------------------------
--- April-2022			Manoj SP	    Added otp_transaction table creation scripts with comments.
------------------------------------------------------------------------------------------------------
+\c mosip_resident
 
 -- This Table is used to save the OTP for the user whenever user requests for one using the email id / phone number to log into the application.
 CREATE TABLE resident.otp_transaction(
