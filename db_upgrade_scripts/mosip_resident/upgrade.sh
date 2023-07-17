@@ -30,7 +30,7 @@ if [ $ACTION == "upgrade" ]; then
   UPGRADE_SCRIPT_FILE="sql/${CURRENT_VERSION}_to_${UPGRADE_VERSION}_upgrade.sql"
   if [ -f "$UPGRADE_SCRIPT_FILE" ]; then
     echo "Executing upgrade script $UPGRADE_SCRIPT_FILE"
-    PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -a -b -f $UPGRADE_SCRIPT_FILE
+    PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 -v dbuserpwd="'${DB_USER_PWD}'" --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -a -b -f $UPGRADE_SCRIPT_FILE
   else
     echo "Upgrade script not found, exiting."
     exit 1
@@ -40,7 +40,7 @@ elif [ $ACTION == "rollback" ]; then
   REVOKE_SCRIPT_FILE="sql/${CURRENT_VERSION}_to_${UPGRADE_VERSION}_rollback.sql"
   if [ -f "$REVOKE_SCRIPT_FILE" ]; then
     echo "Executing rollback script $REVOKE_SCRIPT_FILE"
-    PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 -v dbuserpwd="'${SU_USER_PWD}'" --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -a -b -f $REVOKE_SCRIPT_FILE
+    PGPASSWORD=$SU_USER_PWD psql -v ON_ERROR_STOP=1 --username=$SU_USER --host=$DB_SERVERIP --port=$DB_PORT --dbname=$DEFAULT_DB_NAME -a -b -f $REVOKE_SCRIPT_FILE
   else
     echo "rollback script not found, exiting."
     exit 1
