@@ -98,7 +98,7 @@ COMMENT ON COLUMN resident.resident_grievance_ticket.eventId IS 'Unique event id
 COMMENT ON COLUMN resident.resident_grievance_ticket.emailId IS 'Unique email id.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.alternateEmailId IS 'Alternate email id.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.phoneNo IS 'Phone number.';
-COMMENT ON COLUMN resident.resident_grievance_ticket.altrenatePhoneNo IS 'Alternate Phone number.';
+COMMENT ON COLUMN resident.resident_grievance_ticket.alternatePhoneNo IS 'Alternate Phone number.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.message IS 'Message.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.status IS 'status.';
 COMMENT ON COLUMN resident.resident_grievance_ticket.cr_by IS 'created by.';
