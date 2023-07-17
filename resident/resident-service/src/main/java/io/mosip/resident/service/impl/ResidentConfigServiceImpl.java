@@ -74,7 +74,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
 	@Value("${resident.ui.properties.version}")
 	private String residentUiPropertiesVersion;
-
+	
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentConfigServiceImpl.class);
 
 	/**
@@ -84,6 +84,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	 */	
 	@Override
 	public ResponseWrapper<?> getUIProperties() {
+		logger.debug("ResidentConfigServiceImpl::getUIProperties()::entry");
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
 		Map<String, Object> properties = Arrays.stream(propKeys)
 			.filter(StringUtils::isNotBlank)
@@ -99,6 +100,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		responseWrapper.setResponse(properties);
 		responseWrapper.setId(residentUiPropertiesId);
 		responseWrapper.setVersion(residentUiPropertiesVersion);
+		logger.debug("ResidentConfigServiceImpl::getUIProperties()::exit");
 		return responseWrapper;
 	}
 
@@ -110,6 +112,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	@Override
 	@Cacheable(value="ui-schema", key="#schemaType")
 	public String getUISchema(String schemaType) {
+		logger.debug("ResidentConfigServiceImpl::getUISchema()::entry");
 		String uiSchema;
 		Resource residentUiSchemaJsonFileRes = resourceLoader
 				.getResource(String.format("%s-%s-schema.json", residentUiSchemaJsonFilePrefix, schemaType));
@@ -118,12 +121,14 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 		} else {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_UNAVAILABLE);
 		}
+		logger.debug("ResidentConfigServiceImpl::getUISchema()::exit");
 		return uiSchema;
 	}
 
 	@Override
 	@Cacheable(value = "ui-schema-filtered-attributes", key = "#schemaType")
 	public List<String> getUiSchemaFilteredInputAttributes(String schemaType) {
+		logger.debug("ResidentConfigServiceImpl::getUiSchemaFilteredInputAttributes()::entry");
 		List<Map<String, Object>> identityList = getUISchemaData(schemaType);
 		List<String> uiSchemaFilteredInputAttributesList = identityList.stream().flatMap(map -> {
 			List<String> attributeList = new ArrayList<>();
@@ -139,6 +144,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 			}
 			return attributeList.stream();
 		}).distinct().collect(Collectors.toList());
+		logger.debug("ResidentConfigServiceImpl::getUiSchemaFilteredInputAttributes()::exit");
 		return uiSchemaFilteredInputAttributesList;
 	}
 
@@ -152,7 +158,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 	
 	public List<String> getSharableAttributesList(List<SharableAttributesDTO> sharableAttrList, String schemaType)
 			throws ResidentServiceCheckedException, JsonParseException, JsonMappingException, IOException {
-		
+		logger.debug("ResidentConfigServiceImpl::getSharableAttributesList()::entry");
 		// identity mapping json
 		Map<String, Object> identityMap = getIdentityMappingMap();
 
@@ -184,7 +190,7 @@ public class ResidentConfigServiceImpl implements ResidentConfigService {
 				.filter(idsListFromUISchema::contains)
 				.distinct()
 				.collect(Collectors.toList());
-
+		logger.debug("ResidentConfigServiceImpl::getSharableAttributesList()::exit");
 		return shareableAttributes;
 	}
 

@@ -2,8 +2,7 @@ package io.mosip.resident.controller;
 
 import java.util.Map;
 
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -19,10 +18,12 @@ import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
+import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyOtpService;
@@ -79,11 +80,14 @@ public class ProxyOtpController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	@ResponseStatus(value = HttpStatus.OK)
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOTP(
-			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException {
+			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException, ResidentServiceCheckedException {
+		log.debug("ProxyOtpController::sendOTP()::entry");
+		ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
 		String userid = null;
-		try {	
+		try {
 			requestValidator.validateProxySendOtpRequest(userOtpRequest);
 			userid = userOtpRequest.getRequest().getUserId();
+			responseEntity = proxyOtpService.sendOtp(userOtpRequest);
 		}
 		catch (InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
@@ -94,8 +98,12 @@ public class ProxyOtpController {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
 			throw new ApisResourceAccessException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
 					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
+		} catch (ResidentServiceException | ResidentServiceCheckedException e) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));
+			throw e;
 		}
-		return proxyOtpService.sendOtp(userOtpRequest);
+		log.debug("ProxyOtpController::sendOTP()::exit");
+		return responseEntity;
 	}
 
 
@@ -116,16 +124,20 @@ public class ProxyOtpController {
 			@ApiResponse(responseCode = "404", description = "Not Found" ,content = @Content(schema = @Schema(hidden = true)))})
 	public ResponseEntity<MainResponseDTO<AuthNResponse>> validateWithUserIdOtp(
 			@Validated @RequestBody MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest) {
-
-		log.debug("User ID: {}", userIdOtpRequest.getRequest().getUserId());
+		log.debug("ProxyOtpController::validateWithUserIdOtp()::entry");
+		String userId = null;
 		try {
 			requestValidator.validateUpdateDataRequest(userIdOtpRequest);
+			userId = userIdOtpRequest.getRequest().getUserId();
 		} catch (InvalidInputException e) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED, userId, "Validate OTP Failed"));
 			throw new ResidentServiceException(e.getErrorCode(), e.getErrorText(), e,
 					Map.of(ResidentConstants.REQ_RES_ID,
 							environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_UPDATE_ID)));
 		}
 		Tuple2<MainResponseDTO<AuthNResponse>, String> tupleResponse = proxyOtpService.validateWithUserIdOtp(userIdOtpRequest);
+		log.debug("ProxyOtpController::validateWithUserIdOtp()::exit");
 		return ResponseEntity.ok()
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2())
 				.body(tupleResponse.getT1());

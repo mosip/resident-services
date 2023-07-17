@@ -13,14 +13,13 @@ import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.AuthTransactionCallBackService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
 
 @Component
@@ -38,11 +37,9 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
 	private static final String INDIVIDUAL_ID = "individualId";
 	private static final String ENTITY_ID = "entityId";
 	private static final String TOKEN_ID = "tokenId";
-	private static final Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallBackServiceImpl.class);
     private static final String OLV_PARTNER_ID = "olv_partner_id";
 
-    @Autowired
-    private AuditUtil auditUtil;
+    private static final Logger logger = LoggerConfiguration.logConfig(AuthTransactionCallBackServiceImpl.class);
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
@@ -57,9 +54,7 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     public void updateAuthTransactionCallBackService(Map<String, Object> eventModel) throws ResidentServiceCheckedException, ApisResourceAccessException, NoSuchAlgorithmException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::entry");
-        auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
         try {
-            logger.info("AuthTransactionCallbackServiceImpl::updateAuthTransactionCallBackService()::partnerId");
             insertInResidentTransactionTable(eventModel, null);
         } catch (Exception e) {
             logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -73,13 +68,13 @@ public class AuthTransactionCallBackServiceImpl implements AuthTransactionCallBa
     private void insertInResidentTransactionTable(Map<String, Object> eventModel, String status) throws ApisResourceAccessException, NoSuchAlgorithmException {
         logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
                 LoggerFileConstant.APPLICATIONID.toString(), "AuthTransactionCallbackServiceImpl::insertInResidentTransactionTable()::entry");
-        Object eventObj = eventModel.get("event");
+        Object eventObj = eventModel.get(ResidentConstants.EVENT);
 		if (eventObj instanceof Map) {
 			Map<String, Object> eventMap = (Map<String, Object>) eventObj;
-			Object dataObject = eventMap.get("data");
+			Object dataObject = eventMap.get(ResidentConstants.DATA);
 			if (dataObject instanceof Map) {
 				Map<String, Object> dataMap = (Map<String, Object>) dataObject;
-				ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.AUTHENTICATION_REQUEST.name());
+				ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.AUTHENTICATION_REQUEST);
 				residentTransactionEntity.setEventId(utility.createEventId());
 				residentTransactionEntity.setRefId((String) dataMap.get(INDIVIDUAL_ID));
 				residentTransactionEntity.setIndividualId((String) dataMap.get(INDIVIDUAL_ID));

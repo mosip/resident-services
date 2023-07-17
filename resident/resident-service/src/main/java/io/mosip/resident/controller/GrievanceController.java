@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,24 +53,19 @@ public class GrievanceController {
 	public ResponseWrapper<Object> grievanceTicket(
 			@Validated @RequestBody MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
-		logger.debug("DownloadCardController::grievanceTicket()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST);
+		logger.debug("GrievanceController::grievanceTicket()::entry");
 		ResponseWrapper<Object> response = null;
 		try {
 			requestValidator.validateGrievanceRequestDto(grievanceRequestDTOMainRequestDTO);
 			response = grievanceService.getGrievanceTicket(grievanceRequestDTOMainRequestDTO);
-		} catch (ResidentServiceException | InvalidInputException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
-			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
-					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
-			throw e;
-		} catch (ResidentServiceCheckedException e) {
+		} catch (ResidentServiceException | InvalidInputException | ResidentServiceCheckedException | ApisResourceAccessException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_FAILED);
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID,
 					environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)));
 			throw e;
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GRIEVANCE_TICKET_REQUEST_SUCCESS);
+		logger.debug("GrievanceController::grievanceTicket()::exit");
 		return response;
 	}
 }

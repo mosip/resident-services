@@ -9,5 +9,5 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
  * @Author Kamesh Shekhar Prasad
  */
 public interface AcknowledgementService {
-    byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, IOException;
+    byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException;
 }

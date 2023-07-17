@@ -1,5 +1,6 @@
 package io.mosip.resident.service.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,8 +19,6 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
 import io.mosip.preregistration.core.util.GenericUtil;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.EventStatusSuccess;
-import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.ExceptionJSONInfoDTO;
@@ -27,7 +26,6 @@ import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.MainResponseDTO;
 import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
-import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -70,7 +68,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     private String mandatoryLanguage;
 
     @Override
-    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) {
+    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ResidentServiceCheckedException {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         String userid = null;
         boolean isSuccess = false;
@@ -99,17 +97,16 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             log.error("In callsendOtp method of login service- ", ex.getResponseBodyAsString());
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             if(ex instanceof HttpServerErrorException || ex instanceof HttpClientErrorException){
                 throw new ResidentServiceException(ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorCode(),
                         ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorMessage());
             }
+        } catch (ResidentServiceCheckedException e){
+            log.error("In callsendOtp method of login service- ", e);
+            throw e;
         }
         catch (Exception ex) {
             log.error("In callsendOtp method of login service- ", ex);
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             throw new ResidentServiceException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
                     ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage(), ex);
         } finally {
@@ -172,12 +169,15 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         } catch (ApisResourceAccessException e) {
             throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
+        } catch (IOException e) {
+            throw new ResidentServiceException(ResidentErrorCode.IO_EXCEPTION, e,
+                    Map.of(ResidentConstants.EVENT_ID, eventId));
         } finally {
             response.setResponsetime(GenericUtil.getCurrentResponseTime());
 
             if (isSuccess) {
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-                		transactionId, "Validate OTP Success"));
+                		userid, "Validate OTP Success"));
             } else {
                 ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
                         ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
@@ -186,7 +186,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
                 response.setErrors(lst);
                 response.setResponse(null);
                 audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
-                		transactionId, "Validate OTP Failed"));
+                		userid, "Validate OTP Failed"));
             }
 
         }

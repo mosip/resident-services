@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import io.mosip.resident.dto.BaseVidRequestDto;
 import io.mosip.resident.dto.BaseVidRevokeRequestDTO;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.VidResponseDto;
 import io.mosip.resident.dto.VidRevokeResponseDTO;
@@ -25,7 +26,7 @@ public interface ResidentVidService {
 
 	public String getVidPolicy() throws ResidentServiceCheckedException;
 
-	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(String residentIndividualId, int timeZoneOffset) throws ResidentServiceCheckedException, ApisResourceAccessException;
+	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	public Optional<String> getPerpatualVid(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
@@ -36,7 +37,10 @@ public interface ResidentVidService {
 			String vid, String indivudalId)
 			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException;
 	
-	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset)
+	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale)
+			throws ResidentServiceCheckedException, ApisResourceAccessException;
+
+	ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, IdentityDTO identityDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

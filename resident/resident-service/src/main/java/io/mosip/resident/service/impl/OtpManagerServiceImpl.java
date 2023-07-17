@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
@@ -30,6 +31,7 @@ import io.mosip.preregistration.application.constant.PreRegLoginErrorConstants;
 import io.mosip.preregistration.application.dto.OTPGenerateRequestDTO;
 import io.mosip.preregistration.application.dto.RequestDTO;
 import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
@@ -47,6 +49,7 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OtpManager;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuple2;
 
@@ -87,23 +90,25 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     @Autowired
     private RequestValidator requestValidator;
+    @Autowired
+    private Utilities utilities;
 
 
     @Override
     public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
-        this.logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
+        logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
         notificationRequestDto.setId(identityService.getResidentIndvidualIdFromSession());
         String refId = this.hash(userId+requestDTO.getRequest().getTransactionId());
         if (this.otpRepo.checkotpsent(refId, "active", DateUtils.getUTCCurrentDateTime(), DateUtils.getUTCCurrentDateTime()
-                .minusMinutes(this.environment.getProperty("otp.request.flooding.duration", Long.class))) >
-        this.environment.getProperty("otp.request.flooding.max-count", Integer.class)) {
-            this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
+                .minusMinutes(Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.duration", Long.class)))) >
+        Objects.requireNonNull(this.environment.getProperty("otp.request.flooding.max-count", Integer.class))) {
+            logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), "OTP_REQUEST_FLOODED");
             throw new ResidentServiceCheckedException(ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorCode(), ResidentErrorCode.OTP_REQUEST_FLOODED.getErrorMessage());
         } else {
             String otp = this.generateOTP(requestDTO);
-            this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
+            logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service OTP generated");
             String otpHash = digestAsPlainText((userId + this.environment.getProperty("mosip.kernel.data-key-splitter") + otp+
                     requestDTO.getRequest().getTransactionId()).getBytes());
             OtpTransactionEntity otpTxn;
@@ -125,17 +130,17 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId);
+                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, null);
             }
 
             if (channelType.equalsIgnoreCase("email")) {
-                this.logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking email notification");
+                logger.info("sessionId", "idType", "id", "In generateOTP method of otpmanager service invoking email notification");
                 NotificationRequestDtoV2 notificationRequestDtoV2=(NotificationRequestDtoV2) notificationRequestDto;
                 notificationRequestDtoV2.setTemplateType(TemplateType.SUCCESS);
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, null);
             }
 
             return true;
@@ -167,7 +172,6 @@ public class OtpManagerServiceImpl implements OtpManager {
                         this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorCode(), "USER_BLOCKED");
                         throw new ResidentServiceException(ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorCode(), ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorMessage());
                     }
-
                     otp = res.get("otp");
                 }
             }
@@ -175,7 +179,7 @@ public class OtpManagerServiceImpl implements OtpManager {
             return otp;
         } catch (ResidentServiceException var9) {
             this.logger.error("sessionId", this.getClass().getSimpleName(), "generateOTP", var9.getMessage());
-            throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(), ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage());
+            throw new ResidentServiceException(ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorCode(), ResidentErrorCode.BLOCKED_OTP_VALIDATE.getErrorMessage());
         } catch (Exception var10) {
             this.logger.error("sessionId", this.getClass().getSimpleName(), ResidentErrorCode.SERVER_ERROR.getErrorCode(), ResidentErrorCode.SERVER_ERROR.getErrorMessage());
             throw new ResidentServiceException(ResidentErrorCode.SERVER_ERROR.getErrorCode(), ResidentErrorCode.SERVER_ERROR.getErrorMessage());
@@ -205,7 +209,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         return true;
     }
 
-    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
         String individualId= identityService.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
@@ -216,10 +220,13 @@ public class OtpManagerServiceImpl implements OtpManager {
         return residentService.reqUinUpdate(residentUpdateRequestDto);
     }
 
-    public String getIdentityJson(String individualId, String transactionId, String userId, String individualIdType) {
+    public String getIdentityJson(String individualId, String transactionId, String userId, String individualIdType) throws ApisResourceAccessException, IOException {
         Map identityMap = new LinkedHashMap();
-        identityMap.put("IDSchemaVersion", "0.1");
-        identityMap.put(individualIdType, individualId);
+        JSONObject obj = utilities.retrieveIdrepoJson(individualId);
+        String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
+        String uin = String.valueOf(obj.get(IdType.UIN.name()));
+        identityMap.put("IDSchemaVersion", idSchemaVersionStr);
+        identityMap.put(IdType.UIN.name(), uin);
         String channel = getChannel(userId, transactionId);
         identityMap.put(channel, userId);
         JSONObject jsonObject = new JSONObject();

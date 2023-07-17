@@ -37,8 +37,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
@@ -65,9 +63,6 @@ public class OrderCardServiceImpl implements OrderCardService {
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
 	@Autowired
-	private AuditUtil auditUtil;
-
-	@Autowired
 	private Utility utility;
 
 	@Autowired
@@ -92,8 +87,8 @@ public class OrderCardServiceImpl implements OrderCardService {
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntity(requestDto, individualId);
-		if (requestDto.getConsent() == null || requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.DENIED.name())
-				|| requestDto.getConsent().trim().isEmpty() || requestDto.getConsent().equals("null") || !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
+		if (requestDto.getConsent() == null || requestDto.getConsent().trim().isEmpty()
+				|| !requestDto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 			checkConsent(requestDto.getConsent(), residentTransactionEntity);
 		} else {
 
@@ -128,11 +123,11 @@ public class OrderCardServiceImpl implements OrderCardService {
 
 	private ResidentTransactionEntity createResidentTransactionEntity(ResidentCredentialRequestDto requestDto, String individualId)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD.name());
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		String attributeList = requestDto.getSharableAttributes().stream().collect(Collectors.joining(", "));
 		residentTransactionEntity.setAttributeList(attributeList);
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRequestedEntityId(requestDto.getIssuer());
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(requestDto.getIssuer());
@@ -238,7 +233,6 @@ public class OrderCardServiceImpl implements OrderCardService {
 		} catch (ApisResourceAccessException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
 			logger.error("Error occured in checking order status %s", e.getMessage());
-			auditUtil.setAuditRequestDto(EventEnum.CHECK_ORDER_STATUS_EXCEPTION);
 			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD, TemplateType.FAILURE,
 					residentTransactionEntity.getEventId(), null);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
@@ -262,12 +256,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
-		return notificationService.sendNotification(notificationRequestDtoV2);
+		return notificationService.sendNotification(notificationRequestDtoV2, null);
 	}
 
 	@Override
 	public String getRedirectUrl(String partnerId, String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("OrderCardServiceImpl::getRedirectUrl()::entry");
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
 		 
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntityOrderCard(partnerId,
@@ -301,14 +296,15 @@ public class OrderCardServiceImpl implements OrderCardService {
 				}
 				builder.append(keyValueParam);
 			}
+			logger.debug("OrderCardServiceImpl::getRedirectUrl()::exit");
 			return newUrl + builder.toString();
 		}
 	}
 
 	private ResidentTransactionEntity createResidentTransactionEntityOrderCard(String partnerId, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD.name());
+		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		residentTransactionEntity.setRefId(utility.convertToMaskDataFormat(individualId));
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setRequestedEntityId(partnerId);
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);

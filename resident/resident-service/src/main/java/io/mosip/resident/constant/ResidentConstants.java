@@ -137,9 +137,24 @@ public class ResidentConstants {
     public static final String DOWNLOAD_REG_CENTER_ID = "resident.download.reg.centers.list.id";
     public static final String DOWNLOAD_NEAREST_REG_CENTER_ID = "resident.download.nearest.reg.centers.id";
     public static final String DOWNLOAD_SUPPORTING_DOCS_ID = "resident.download.supporting.documents.id";
+    public static final String SEND_CARD_ID = "resident.send.card.id";
+    public static final String PINNED_EVENTID_ID = "resident.pinned.eventid.id";
+    public static final String UNPINNED_EVENTID_ID = "resident.unpinned.eventid.id";
+    public static final String AUTH_PROXY_PARTNERS_ID = "resident.auth.proxy.partners.id";
+    public static final String AUTH_HISTORY_ID = "resident.authhistory.id";
+    public static final String EVENTS_EVENTID_ID = "resident.events.eventid.id";
+    public static final String UPDATE_UIN_ID = "resident.updateuin.id";
+	public static final String NOTIFICATION_CLICK_ID = "resident.notification.click.id";
+	public static final String NOTIFICATION_ID = "resident.notification.id";
+	public static final String SERVICE_HISTORY_ID = "resident.service.history.id";
+	public static final String PROFILE_ID = "resident.profile.id";
+	public static final String CREDENTIAL_STORE_ID = "mosip.credential.store.id";
+	public static final String GET_VIDS_ID = "resident.vids.id";
+	public static final String TRANSLITERATE_ID = "mosip.resident.transliteration.transliterate.id";
+	public static final String VERIFICATION_STATUS_ID = "resident.channel.verification.status.id";
 
     public static final String NAME_FROM_PROFILE = "mosip.resident.name.token.claim-name";
-
+    public static final String UNKNOWN = "Unknown";
     public static final String EMAIL_FROM_PROFILE = "mosip.resident.email.token.claim-email";
     public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
 
@@ -189,8 +204,8 @@ public class ResidentConstants {
     public static final String ACTION_PERFORMED = "actionPerformed";
     public static final String VID_TYPE = "vidType";
     public static final String MASKED_VID = "*masked VID*";
-    public static final String UI_DATE_TIME_PATTERN = "resident.ui.datetime.pattern";
-    public static final String FILENAME_DATETIME_PATTERN = "resident.filename.datetime.pattern";
+    public static final String UI_DATE_TIME_PATTERN_DEFAULT = "resident.ui.datetime.pattern.default";
+    public static final String FILENAME_DATETIME_PATTERN_DEFAULT = "resident.filename.datetime.pattern.default";
     
     public static final String NO_ID = "NO_ID";
     public static final String NO_ID_TYPE = "NO_ID_TYPE";
@@ -270,5 +285,12 @@ public class ResidentConstants {
     public static final String MASK_PERPETUAL_VID = "masked_perpetualVID";
     public static final String RESIDENT_FUTURE_TIME_LIMIT = "resident.future.time.limit";
     public static final String RESIDENT_PAST_TIME_LIMIT = "resident.past.time.limit";
+
+//    websub attributes
+    public static final String EVENT = "event";
+    public static final String DATA = "data";
+    public static final String REQUEST_ID = "requestId";
+    public static final String AUTH_TYPES = "authTypes";
+    public static final String RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.logging.interceptor.filter.enabled";
 
 }

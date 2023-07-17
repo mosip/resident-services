@@ -60,7 +60,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private Utility utility;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset) throws ResidentServiceCheckedException, IOException {
+    public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
 
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
@@ -71,7 +71,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.getRequestTypeFromString(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset);
+            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.getRequestTypeFromString(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset, locale);
 			String requestProperty = ackTemplateVariables.getT2();
             String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, requestProperty);
             Map<String, String> templateVariables = ackTemplateVariables.getT1();
