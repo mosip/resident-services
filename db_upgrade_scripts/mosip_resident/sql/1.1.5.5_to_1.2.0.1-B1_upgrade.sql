@@ -1,4 +1,36 @@
+CREATE DATABASE mosip_resident
+	ENCODING = 'UTF8'
+	LC_COLLATE = 'en_US.UTF-8'
+	LC_CTYPE = 'en_US.UTF-8'
+	TABLESPACE = pg_default
+	OWNER = postgres
+	TEMPLATE  = template0;
+
+COMMENT ON DATABASE mosip_resident IS 'Resident service database stores all the data related to transactions done in resident services';
+
 \c mosip_resident
+
+DROP SCHEMA IF EXISTS resident CASCADE;
+CREATE SCHEMA resident;
+ALTER SCHEMA resident OWNER TO postgres;
+ALTER DATABASE mosip_resident SET search_path TO resident,pg_catalog,public;
+
+CREATE ROLE residentuser WITH 
+	INHERIT
+	LOGIN
+	PASSWORD :dbuserpwd;
+
+GRANT CONNECT
+   ON DATABASE mosip_resident
+   TO residentuser;
+
+GRANT USAGE
+   ON SCHEMA resident
+   TO residentuser;
+
+GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES
+   ON ALL TABLES IN SCHEMA resident
+   TO residentuser;
 
 -- This Table is used to save the OTP for the user whenever user requests for one using the email id / phone number to log into the application.
 CREATE TABLE resident.otp_transaction(
