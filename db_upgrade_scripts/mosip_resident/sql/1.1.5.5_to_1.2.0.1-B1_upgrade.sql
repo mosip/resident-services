@@ -1,14 +1,36 @@
--- -------------------------------------------------------------------------------------------------
--- Database Name: mosip_resident
--- Release Version 	: 1.2.1
--- Purpose    		: Database scripts for Resident Service DB.
--- Create By   		: Manoj SP
--- Created Date		: April-2022
---
--- Modified Date        Modified By         Comments / Remarks
--- --------------------------------------------------------------------------------------------------
--- April-2022			Manoj SP	    Added otp_transaction table creation scripts with comments.
------------------------------------------------------------------------------------------------------
+CREATE DATABASE mosip_resident
+	ENCODING = 'UTF8'
+	LC_COLLATE = 'en_US.UTF-8'
+	LC_CTYPE = 'en_US.UTF-8'
+	TABLESPACE = pg_default
+	OWNER = postgres
+	TEMPLATE  = template0;
+
+COMMENT ON DATABASE mosip_resident IS 'Resident service database stores all the data related to transactions done in resident services';
+
+\c mosip_resident
+
+DROP SCHEMA IF EXISTS resident CASCADE;
+CREATE SCHEMA resident;
+ALTER SCHEMA resident OWNER TO postgres;
+ALTER DATABASE mosip_resident SET search_path TO resident,pg_catalog,public;
+
+CREATE ROLE residentuser WITH 
+	INHERIT
+	LOGIN
+	PASSWORD :dbuserpwd;
+
+GRANT CONNECT
+   ON DATABASE mosip_resident
+   TO residentuser;
+
+GRANT USAGE
+   ON SCHEMA resident
+   TO residentuser;
+
+GRANT SELECT,INSERT,UPDATE,DELETE,REFERENCES
+   ON ALL TABLES IN SCHEMA resident
+   TO residentuser;
 
 -- This Table is used to save the OTP for the user whenever user requests for one using the email id / phone number to log into the application.
 CREATE TABLE resident.otp_transaction(
@@ -48,18 +70,6 @@ COMMENT ON COLUMN resident.otp_transaction.del_dtimes IS 'Date and Timestamp whe
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.otp_transaction
    TO residentuser;
-
--- -------------------------------------------------------------------------------------------------
--- Database Name: resident_grievance_ticket
--- Release Version 	: 1.2.1
--- Purpose    		: Database scripts for Resident Service DB.
--- Create By   		: Kamesh Shekhar Prasad
--- Created Date		: December-2022
---
--- Modified Date        Modified By         Comments / Remarks
--- --------------------------------------------------------------------------------------------------
---
------------------------------------------------------------------------------------------------------
 
 -- This Table is used to save the  resident_grievance_ticket table values.
 CREATE TABLE resident.resident_grievance_ticket(
@@ -103,18 +113,6 @@ GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_grievance_ticket
    TO residentuser;
 
--- -------------------------------------------------------------------------------------------------
--- Database Name:    mosip_resident
--- Release Version 	: 1.2.1
--- Purpose    		: Database scripts for Resident Service DB.
--- Create By   		: Loganathan Sekar
--- Created Date		: Jan-2023
---
--- Modified Date        Modified By         Comments / Remarks
--- --------------------------------------------------------------------------------------------------
---
------------------------------------------------------------------------------------------------------
-
 -- This Table is used to save the  user actions for the user actions table.
 
 CREATE TABLE resident.resident_session(
@@ -138,18 +136,6 @@ COMMENT ON COLUMN resident_session.machine_type IS 'The OS of device used for ac
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_session
    TO residentuser;
-
--- -------------------------------------------------------------------------------------------------
--- Database Name: mosip_resident
--- Release Version 	: 1.2.1
--- Purpose    		: Database scripts for Resident Service DB.
--- Create By   		: Kamesh Shekhar Prasad
--- Created Date		: April-2022
---
--- Modified Date        Modified By         Comments / Remarks
--- --------------------------------------------------------------------------------------------------
---
------------------------------------------------------------------------------------------------------
 
 -- This Table is used to save the  transaction related to residents.
 CREATE TABLE resident.resident_transaction(
@@ -230,18 +216,6 @@ COMMENT ON COLUMN resident.resident_transaction.credential_request_id IS 'The cr
 GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
    ON resident.resident_transaction
    TO residentuser;
-
--- -------------------------------------------------------------------------------------------------
--- Database Name:    mosip_resident
--- Release Version 	: 1.2.1
--- Purpose    		: Database scripts for Resident Service DB.
--- Create By   		: Kamesh Shekhar Prasad
--- Created Date		: Aug-2022
---
--- Modified Date        Modified By         Comments / Remarks
--- --------------------------------------------------------------------------------------------------
---
------------------------------------------------------------------------------------------------------
 
 -- This Table is used to save the  user actions for the user actions table.
 
