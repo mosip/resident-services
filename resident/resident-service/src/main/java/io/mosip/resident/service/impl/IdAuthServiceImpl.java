@@ -236,17 +236,17 @@ public class IdAuthServiceImpl implements IdAuthService {
 						response.getErrors().get(0).getErrorMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
 			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE)) {
-				if (authType.equals(ResidentConstants.PHONE)) {
-					throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(),
-							ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
-							Map.of(ResidentConstants.EVENT_ID, eventId));
-				}
-				if (authType.equals(ResidentConstants.EMAIL)) {
-					throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(),
-							ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
-							Map.of(ResidentConstants.EVENT_ID, eventId));
-				}
 				if (authType != null) {
+					if (authType.equals(ResidentConstants.PHONE)) {
+						throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(),
+								ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
+								Map.of(ResidentConstants.EVENT_ID, eventId));
+					}
+					if (authType.equals(ResidentConstants.EMAIL)) {
+						throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(),
+								ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
+								Map.of(ResidentConstants.EVENT_ID, eventId));
+					}
 					boolean containsPhone = authType.contains(ResidentConstants.PHONE);
 					boolean containsEmail = authType.contains(ResidentConstants.EMAIL);
 					if (containsPhone && containsEmail) {
