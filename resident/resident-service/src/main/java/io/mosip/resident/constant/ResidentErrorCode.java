@@ -1,5 +1,9 @@
 package io.mosip.resident.constant;
 
+import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
+
+import io.mosip.resident.exception.ResidentServiceException;
+
 public enum ResidentErrorCode {
 
 	NO_RID_FOUND_EXCEPTION("RES-SER-408", "RID not found"),
@@ -132,7 +136,8 @@ public enum ResidentErrorCode {
 	SAME_PHONE_ERROR("RES-SER-520", "Enter a new phone number"),
 	INVALID_LANGUAGE_NAME("RES-SER-521", "Invalid Language Name" ),
 	INVALID_UIN_VID_ENTERED("RES-SER-522", "Invalid UIN/VID entered"),
-	FORBIDDEN("RES-SER-403","Access is denied");
+	FORBIDDEN("RES-SER-403","Access is denied"),
+	VIRUS_SCAN("RES-SER-319","The file uploaded is corrupt");
 	
 
 
