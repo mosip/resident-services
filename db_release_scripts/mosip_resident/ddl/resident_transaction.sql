@@ -107,6 +107,6 @@ CREATE INDEX idx_resident_transaction_ref_id ON resident.resident_transaction (r
 --Adding index to read_status column
 CREATE INDEX idx_resident_transaction_read_status ON resident.resident_transaction (read_status);
 
-GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_transaction
    TO residentuser;

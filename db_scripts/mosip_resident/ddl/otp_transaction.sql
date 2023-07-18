@@ -45,6 +45,6 @@ COMMENT ON COLUMN resident.otp_transaction.upd_dtimes IS 'Date and Timestamp whe
 COMMENT ON COLUMN resident.otp_transaction.is_deleted IS 'Flag to mark whether the record is Soft deleted.';
 COMMENT ON COLUMN resident.otp_transaction.del_dtimes IS 'Date and Timestamp when the record is soft deleted with is_deleted=TRUE';
 -----------------------------------------------------------------------------------------------------
-GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.otp_transaction
    TO residentuser;

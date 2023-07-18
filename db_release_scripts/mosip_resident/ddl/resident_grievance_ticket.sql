@@ -48,6 +48,6 @@ COMMENT ON COLUMN resident.resident_grievance_ticket.is_deleted IS 'is deleted.'
 COMMENT ON COLUMN resident.resident_grievance_ticket.del_dtimes IS 'Deleted time-stamp.';
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_grievance_ticket
    TO residentuser;

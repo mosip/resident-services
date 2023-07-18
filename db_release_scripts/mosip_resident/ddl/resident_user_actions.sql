@@ -25,6 +25,6 @@ COMMENT ON COLUMN resident.resident_user_actions.last_bell_notif_click_dtimes IS
 -- Adding index to ida_token column
 CREATE INDEX idx_resident_user_actions_ida_token ON resident.resident_user_actions (ida_token);
 
-GRANT SELECT, INSERT, TRUNCATE, REFERENCES, UPDATE, DELETE
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    ON resident.resident_user_actions
    TO residentuser;
