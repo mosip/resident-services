@@ -51,8 +51,8 @@ CREATE TABLE resident.resident_transaction(
     CONSTRAINT pk_restrn_event_id PRIMARY KEY (event_id)
 );
 
-COMMENT ON TABLE resident_transaction IS 'This Table is used to save the  transaction related to residents.';
-COMMENT ON COLUMN resident_transaction.event_id IS 'Unique Id of the transaction.';
+COMMENT ON TABLE resident.resident_transaction IS 'This Table is used to save the  transaction related to residents.';
+COMMENT ON COLUMN resident.resident_transaction.event_id IS 'Unique Id of the transaction.';
 COMMENT ON COLUMN resident.resident_transaction.aid IS 'The Application ID';
 COMMENT ON COLUMN resident.resident_transaction.request_dtimes IS 'The time when the request is received by the service';
 COMMENT ON COLUMN resident.resident_transaction.response_dtime IS 'The time when the response is received by the service';
@@ -86,3 +86,23 @@ COMMENT ON COLUMN resident.resident_transaction.purpose IS 'The purpose of the r
 COMMENT ON COLUMN resident.resident_transaction.credential_request_id IS 'The credential request id';
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Adding index to event_id column
+CREATE INDEX idx_resident_transaction_event_id ON resident.resident_transaction (event_id);
+
+-- Adding index to token_id column
+CREATE INDEX idx_resident_transaction_token_id ON resident.resident_transaction (token_id);
+
+-- Adding index to credential_request_id column
+CREATE INDEX idx_resident_transaction_credential_request_id ON resident.resident_transaction (credential_request_id);
+
+-- Adding index to request_dtimes column
+CREATE INDEX idx_resident_transaction_request_dtimes ON resident.resident_transaction (request_dtimes);
+
+-- Adding index to request_trn_id column
+CREATE INDEX idx_resident_transaction_request_trn_id ON resident.resident_transaction (request_trn_id);
+
+-- Adding index to ref_id column
+CREATE INDEX idx_resident_transaction_ref_id ON resident.resident_transaction (ref_id);
+
+--Adding index to read_status column
+CREATE INDEX idx_resident_transaction_read_status ON resident.resident_transaction (read_status);
