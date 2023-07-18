@@ -26,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.service.ResidentVidService;
@@ -105,6 +106,12 @@ public class ProxyConfigControllerTest {
 	@Test
 	public void testGetResidentUISchema() throws Exception {
 		Mockito.when(residentConfigService.getUISchema("update-demographics")).thenReturn("ui-schema-json");
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/config/ui-schema/update-demographics")).andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetResidentUISchemaWithResidentServiceException() throws Exception {
+		Mockito.when(residentConfigService.getUISchema("update-demographics")).thenThrow(ResidentServiceException.class);
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/config/ui-schema/update-demographics")).andExpect(status().isOk());
 	}
 
