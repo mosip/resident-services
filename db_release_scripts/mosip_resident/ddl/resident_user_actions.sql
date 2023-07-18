@@ -18,6 +18,13 @@ CREATE TABLE resident.resident_user_actions(
     CONSTRAINT pk_ida_token PRIMARY KEY (ida_token)
 );
 
-COMMENT ON TABLE resident_user_actions IS 'This Table is used to save the  user actions';
-COMMENT ON COLUMN resident_user_actions.ida_token IS 'The unique identifier for each user';
-COMMENT ON COLUMN resident_user_actions.last_bell_notif_click_dtimes IS 'The time when the user last clicked on the bell notification';
+COMMENT ON TABLE resident.resident_user_actions IS 'This Table is used to save the  user actions';
+COMMENT ON COLUMN resident.resident_user_actions.ida_token IS 'The unique identifier for each user';
+COMMENT ON COLUMN resident.resident_user_actions.last_bell_notif_click_dtimes IS 'The time when the user last clicked on the bell notification';
+
+-- Adding index to ida_token column
+CREATE INDEX idx_resident_user_actions_ida_token ON resident.resident_user_actions (ida_token);
+
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
+   ON resident.resident_user_actions
+   TO residentuser;
