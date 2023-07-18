@@ -103,6 +103,3 @@ CREATE INDEX idx_resident_transaction_request_trn_id ON resident.resident_transa
 
 -- Adding index to ref_id column
 CREATE INDEX idx_resident_transaction_ref_id ON resident.resident_transaction (ref_id);
-
---Adding index to read_status column
-CREATE INDEX idx_resident_transaction_read_status ON resident.resident_transaction (read_status);
