@@ -25,7 +25,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.validator.RequestValidator;
@@ -41,10 +40,7 @@ public class ResidentServiceGetEventStatusTest {
 
     private static final String LOCALE_EN_US = "en-US";
 
-	@Mock
-    private AuditUtil audit;
-
-    @InjectMocks
+	@InjectMocks
     private ResidentService residentService = new ResidentServiceImpl();
 
     @Mock
@@ -104,7 +100,6 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
-        Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         ResponseWrapper primaryLangResp = new ResponseWrapper<>();

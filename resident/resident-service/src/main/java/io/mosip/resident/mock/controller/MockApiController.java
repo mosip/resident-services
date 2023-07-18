@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.mock.dto.PaymentSuccessResponseDto;
 import io.mosip.resident.mock.exception.CantPlaceOrderException;
@@ -46,6 +48,8 @@ public class MockApiController {
 
     @Autowired
     private MockService mockService;
+
+    private static final Logger logger = LoggerConfiguration.logConfig(MockApiController.class);
 
 	/**
 	 * Get order status.
@@ -85,10 +89,11 @@ public class MockApiController {
     @GetMapping(path= "/rid-digital-card/{rid}")
     public ResponseEntity<Object> getRIDDigitalCard(
             @PathVariable("rid") String rid) throws Exception {
-        auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ);
+    	logger.debug("MockApiController::getRIDDigitalCard()::entry");
         byte[] pdfBytes = mockService.getRIDDigitalCardV2(rid);
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
         auditUtil.setAuditRequestDto(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS);
+        logger.debug("MockApiController::getRIDDigitalCard()::exit");
         return ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
                 .header("Content-Disposition", "attachment; filename=\"" +
                         rid + ".pdf\"")

@@ -27,8 +27,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.WebSubUpdateAuthTypeService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -37,9 +35,6 @@ import reactor.util.function.Tuples;
 public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeService {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(WebSubUpdateAuthTypeServiceImpl.class);
-
-	@Autowired
-	private AuditUtil auditUtil;
 
 	@Autowired
 	private NotificationService notificationService;
@@ -59,9 +54,7 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 				LoggerFileConstant.APPLICATIONID.toString(),
 				"WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.UPDATE_AUTH_TYPE_STATUS);
 		try {
-			logger.info("WebSubUpdateAuthTypeServiceImpl::updateAuthTypeStatus()::partnerId");
 			Tuple2<String, String> tupleResponse = updateInResidentTransactionTable(eventModel,
 					EventStatusSuccess.COMPLETED.name());
 			// only if the event belongs to the current online verification partner, the
@@ -150,6 +143,6 @@ public class WebSubUpdateAuthTypeServiceImpl implements WebSubUpdateAuthTypeServ
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 
-		return notificationService.sendNotification(notificationRequestDtoV2);
+		return notificationService.sendNotification(notificationRequestDtoV2, null);
 	}
 }

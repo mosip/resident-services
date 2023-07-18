@@ -81,7 +81,6 @@ public class OrderCardController {
 		logger.debug("OrderCardController::sendPhysicalCard()::entry");
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
 		try {
-			auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD);
 			responseWrapper.setResponse(orderCardService.sendPhysicalCard(requestWrapper.getRequest()));
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.SEND_PHYSICAL_CARD_EXCEPTION);

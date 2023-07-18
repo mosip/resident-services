@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
 @RunWith(SpringRunner.class)
 public class ResidentServiceReqAuthHistoryTest {
 	@InjectMocks
@@ -32,9 +32,6 @@ public class ResidentServiceReqAuthHistoryTest {
 	@Mock
 	private IdAuthService idAuthService;
 
-	@Mock
-	private AuditUtil audit;
-	
 	@Mock
 	NotificationService notificationService;
 	List<AuthTxnDetailsDTO> details=null;
@@ -48,8 +45,7 @@ public class ResidentServiceReqAuthHistoryTest {
 				.thenReturn(true);
 		Mockito.when(idAuthService.getAuthHistoryDetails(Mockito.anyString(), Mockito.any(), Mockito.any()))
 				.thenReturn(details);
-		Mockito.when(notificationService.sendNotification(Mockito.any())).thenReturn(mock(NotificationResponseDTO.class));
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
+		Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenReturn(mock(NotificationResponseDTO.class));
 	}
 	@Test
 	public void testReqAuthHistorySuccess() throws  ResidentServiceCheckedException {
@@ -92,7 +88,7 @@ public class ResidentServiceReqAuthHistoryTest {
 	}
 	@Test(expected=ResidentServiceException.class)
 	public void testReqAuthHistorySendNotificationFailed() throws  ApisResourceAccessException, ResidentServiceCheckedException {
-		Mockito.when(notificationService.sendNotification(Mockito.any())).thenThrow(new ResidentServiceCheckedException());
+		Mockito.when(notificationService.sendNotification(Mockito.any(), Mockito.nullable(Map.class))).thenThrow(new ResidentServiceCheckedException());
 		AuthHistoryRequestDTO dto=new AuthHistoryRequestDTO();
 		dto.setOtp("1235");
 		dto.setTransactionID("1234567890");

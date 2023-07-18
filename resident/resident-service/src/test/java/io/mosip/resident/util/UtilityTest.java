@@ -1,6 +1,60 @@
 package io.mosip.resident.util;
 
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -22,28 +76,6 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
@@ -57,6 +89,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -107,7 +140,7 @@ public class UtilityTest {
 
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
-
+	
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
@@ -141,6 +174,7 @@ public class UtilityTest {
 		String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
 		amrAcrJson = JsonUtil.readValue(amrAcrJsonString, JSONObject.class);
 		
+		ReflectionTestUtils.setField(utility, "mapper", mapper);
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
 		ReflectionTestUtils.setField(utility, "amrAcrJsonFile", "amr-acr-mapping.json");
@@ -270,30 +304,33 @@ public class UtilityTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
-		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), identityJson, mapperIdentity);
 		assertEquals("user@mail.com", attributes.get("email"));
-		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), identityJson, mapperIdentity);
 		assertEquals("user@mail.com", attributes1.get("email"));
 
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMailingAttributesIdNull() throws Exception {
-		utility.getMailingAttributes(null, new HashSet<String>());
+		utility.getMailingAttributes(null, new HashSet<String>(), Map.of(), Map.of());
 	}
 	
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMailingAttributesIdEmpty() throws Exception {
-		utility.getMailingAttributes("", new HashSet<String>());
+		utility.getMailingAttributes("", new HashSet<String>(), Map.of(), Map.of());
 	}
 
 	@Test
@@ -310,17 +347,20 @@ public class UtilityTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
-		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
 		Mockito.doReturn("preferredLang").when(env).getProperty("mosip.default.user-preferred-language-attribute");
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), identityJson, mapperIdentity);
 		assertEquals("eng", attributes.get("preferredLang"));
 	}
 
@@ -332,17 +372,21 @@ public class UtilityTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
-		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);
+		response.setResponse(idRepoResponseDto);
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
 		Mockito.doReturn("preferredLang").when(env).getProperty("mosip.default.template-languages");
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), identityJson, mapperIdentity);
 		assertEquals("eng", attributes.get("preferredLang"));
 	}
 
@@ -354,17 +398,20 @@ public class UtilityTest {
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		Utility utilitySpy = Mockito.spy(utility);
 		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
-		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
 		Mockito.doReturn(null).when(env).getProperty("mosip.default.template-languages");
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>(), identityJson, mapperIdentity);
 		assertEquals("eng", attributes.get("preferredLang"));
 	}
 
@@ -375,51 +422,21 @@ public class UtilityTest {
 		InputStream is = new FileInputStream(idJson);
 		String mappingJson = IOUtils.toString(is, "UTF-8");
 		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", mappingJson);
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
 
 		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
-		idRepoResponseDto.setIdentity(JsonUtil.getJSONObject(identity, "identity"));
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);		
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
 
-		Map<String, Object> attributes = utility.getMailingAttributes("3527812406", new HashSet<String>());
+		Map<String, Object> attributes = utility.getMailingAttributes("3527812406", new HashSet<String>(), identityJson, mapperIdentity);
 		assertEquals("eng", attributes.get("preferredLang"));
 		verify(residentRestTemplate, never()).getForObject(anyString(), any(Class.class));
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testGetMailingAttributesJSONParsingException() throws Exception {
-		ClassLoader classLoader = getClass().getClassLoader();
-		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
-		InputStream is = new FileInputStream(idJson);
-		String mappingJson = "";
-		Utility utilitySpy = Mockito.spy(utility);
-		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
-		Map<String, Object> attributes = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-		assertEquals("user@mail.com", attributes.get("email"));
-
-		ReflectionTestUtils.setField(utilitySpy, "languageType", "NA");
-		Map<String, Object> attributes1 = utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-		assertEquals("user@mail.com", attributes1.get("email"));
-
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetMailingAttributesIOException() throws IOException, ResidentServiceCheckedException {
-		ClassLoader classLoader = getClass().getClassLoader();
-		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
-		InputStream is = new FileInputStream(idJson);
-		String mappingJson = IOUtils.toString(is, "UTF-8");
-		Utility utilitySpy = Mockito.spy(utility);
-		Mockito.doReturn(mappingJson).when(utilitySpy).getMappingJson();
-		Mockito.doReturn(JsonUtil.getJSONObject(identity, "identity")).when(utilitySpy)
-				.retrieveIdrepoJson(Mockito.anyString());
-		PowerMockito.mockStatic(JsonUtil.class);
-		PowerMockito.when(JsonUtil.readValue(mappingJson, JSONObject.class)).thenThrow(new IOException());
-		utilitySpy.getMailingAttributes("3527812406", new HashSet<String>());
-
 	}
 
 	@Test
@@ -532,6 +549,7 @@ public class UtilityTest {
 	@Test
 	public void testCreateEventId(){
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
+		Mockito.when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
 		assertEquals(16,utility.createEventId().length());
 	}
 
