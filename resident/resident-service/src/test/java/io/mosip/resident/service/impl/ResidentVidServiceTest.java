@@ -420,7 +420,6 @@ public class ResidentVidServiceTest {
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
         Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
-        Mockito.when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
@@ -523,7 +522,6 @@ public class ResidentVidServiceTest {
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
         Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
-        Mockito.when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
@@ -578,7 +576,6 @@ public class ResidentVidServiceTest {
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
         Mockito.when(identityServiceImpl.getIndividualIdType(Mockito.anyString())).thenReturn("VID");
-        Mockito.when(identityServiceImpl.getUinForIndividualId(Mockito.anyString())).thenReturn("123");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         String vidPolicyURL = "https://dev.mosip.net";
         ReflectionTestUtils.setField(residentVidService, "vidPolicyUrl", vidPolicyURL);
