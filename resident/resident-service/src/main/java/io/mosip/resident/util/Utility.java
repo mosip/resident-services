@@ -334,7 +334,7 @@ public class Utility {
 		logger.debug("Utility::getMailingAttributes()::exit");
 		return attributes;
 	}
-
+    @Cacheable(value = "getPreferredLanguage", key = "#demographicIdentity")
 	public Set<String> getPreferredLanguage(Map demographicIdentity) {
 		String preferredLang = null;
 		String preferredLangAttribute = env.getProperty("mosip.default.user-preferred-language-attribute");
