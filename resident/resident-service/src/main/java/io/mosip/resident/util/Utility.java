@@ -3,12 +3,13 @@ package io.mosip.resident.util;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -35,8 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.assertj.core.util.Lists;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.mvel2.MVEL;
 import org.mvel2.integration.VariableResolverFactory;
@@ -44,6 +45,7 @@ import org.mvel2.integration.impl.MapVariableResolverFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
@@ -52,17 +54,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.util.IOUtils;
 
+import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -71,6 +80,7 @@ import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.core.util.StringUtils;
+import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -92,8 +102,70 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.mvel2.MVEL;
+import org.mvel2.integration.VariableResolverFactory;
+import org.mvel2.integration.impl.MapVariableResolverFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.chrono.Chronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
+import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
+import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Girish Yarru
@@ -106,6 +178,12 @@ public class Utility {
 	private static final String MEDIUM = "MEDIUM";
 
 	private static final String EVENT_ID_PLACEHOLDER = "{eventId}";
+	
+	public static final String IDENTITY = "identity";
+	private static final String VALUE = "value";
+	private static final String MAPPING_ATTRIBUTE_SEPARATOR = ",";
+    private static final String ATTRIBUTE_VALUE_SEPARATOR = " ";
+    private static final String LANGUAGE = "language";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
 
@@ -121,9 +199,19 @@ public class Utility {
 	@Value("${"+ResidentConstants.PREFERRED_LANG_PROPERTY+":false}")
 	private boolean isPreferedLangFlagEnabled;
 
+	@Value("${mosip.iam.userinfo_endpoint}")
+	private String usefInfoEndpointUrl;
+
 	@Autowired
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+
+	@Autowired
+	@Qualifier("restClientWithPlainRestTemplate")
+	private ResidentServiceRestClient restClientWithPlainRestTemplate;
+
+	@Autowired
+	private ValidateTokenUtil tokenValidationHelper;
 
 	@Autowired
 	private Environment env;
@@ -137,12 +225,16 @@ public class Utility {
 	@Autowired
 	private Utilities utilities;
 
-	private static final String IDENTITY = "identity";
-	private static final String VALUE = "value";
+	@Autowired
+	private ObjectStoreHelper objectStoreHelper;
+
 	private static final String ACR_AMR = "acr_amr";
 	private static String regProcessorIdentityJson = "";
 
 	private static String ANONYMOUS_USER = "anonymousUser";
+
+	private static final String AUTHORIZATION = "Authorization";
+	private static final String BEARER_PREFIX = "Bearer ";
 	
 	@Autowired(required = true)
 	@Qualifier("varres")
@@ -184,6 +276,8 @@ public class Utility {
 
 	private Map<String, String> specialCharsReplacementMap;
 
+	private JSONObject mappingJsonObject;
+
     @PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
@@ -207,7 +301,7 @@ public class Utility {
 		Map<String, Object> amrAcrMap = Map.of();
 		try {
 			if (amrAcrJson != null) {
-				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(StandardCharsets.UTF_8), Map.class);
+				amrAcrMap = objectMapper.readValue(amrAcrJson.getBytes(UTF_8), Map.class);
 			}
 		} catch (IOException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
@@ -284,72 +378,54 @@ public class Utility {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges)
+	@SuppressWarnings("rawtypes")
+	public Map<String, Object> getMailingAttributes(String id, Set<String> templateLangauges, Map demographicIdentity, Map mapperIdentity)
 			throws ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utility::getMailingAttributes()::entry");
+		logger.debug("Utility::getMailingAttributes()::entry");
 		if(id == null || id.isEmpty()) {
 			throw new ResidentServiceException(ResidentErrorCode.UNABLE_TO_PROCESS.getErrorCode(),
 					ResidentErrorCode.UNABLE_TO_PROCESS.getErrorMessage() + ": individual_id is not available." );
 		}
 		
+		return getMailingAttributesFromIdentity(templateLangauges, demographicIdentity, mapperIdentity);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Map<String, Object> getMailingAttributesFromIdentity(Set<String> templateLangauges, Map demographicIdentity, Map mapperIdentity)
+			throws ResidentServiceCheckedException {
 		Map<String, Object> attributes = new HashMap<>();
-		String mappingJsonString = getMappingJson();
-		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
-			throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
-		}
-		JSONObject mappingJsonObject;
-		try {
-			JSONObject demographicIdentity = retrieveIdrepoJson(id);
-			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
-			JSONObject mapperIdentity = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
-			List<String> mapperJsonKeys = new ArrayList<>(mapperIdentity.keySet());
+		
+		Set<String> mapperJsonKeys = mapperIdentity.keySet();
 
-			Set<String> preferredLanguage = getPreferredLanguage(demographicIdentity);
-			if (preferredLanguage.isEmpty()) {
-				List<String> defaultTemplateLanguages = getDefaultTemplateLanguages();
-				if (CollectionUtils.isEmpty(defaultTemplateLanguages)) {
-					Set<String> dataCapturedLanguages = getDataCapturedLanguages(mapperIdentity, demographicIdentity);
-					templateLangauges.addAll(dataCapturedLanguages);
-				} else {
-					templateLangauges.addAll(defaultTemplateLanguages);
-				}
-			} else {
-				templateLangauges.addAll(preferredLanguage);
-			}
-
-			for (String key : mapperJsonKeys) {
-				LinkedHashMap<String, String> jsonObject = JsonUtil.getJSONValue(mapperIdentity, key);
-				String values = jsonObject.get(VALUE);
-				for (String value : values.split(",")) {
-					Object object = demographicIdentity.get(value);
-					if (object instanceof ArrayList) {
-						JSONArray node = JsonUtil.getJSONArray(demographicIdentity, value);
-						JsonValue[] jsonValues = JsonUtil.mapJsonNodeToJavaObject(JsonValue.class, node);
-						for (JsonValue jsonValue : jsonValues) {
-							if (templateLangauges.contains(jsonValue.getLanguage()))
-								attributes.put(value + "_" + jsonValue.getLanguage(), jsonValue.getValue());
+		for (String key : mapperJsonKeys) {
+			Object mapperValueObj = mapperIdentity.get(key);
+			if (mapperValueObj instanceof Map) {
+				Map<String, String> mapperValueMap = (Map<String, String>) mapperValueObj;
+				String mappingValueStr = mapperValueMap.get(VALUE);
+				for (String mappingValue : mappingValueStr.split(",")) {
+					Object identityNodeObj = demographicIdentity.get(mappingValue);
+					if (identityNodeObj instanceof ArrayList) {
+						List identityValueList = (List) identityNodeObj;
+						for (Object identityValue : identityValueList) {
+							JsonValue jsonValue = mapper.convertValue(identityValue, JsonValue.class);
+							if (templateLangauges.contains(jsonValue.getLanguage())) {
+								attributes.put(mappingValue + "_" + jsonValue.getLanguage(), jsonValue.getValue());
+							}
 						}
-					} else if (object instanceof LinkedHashMap) {
-						JSONObject json = JsonUtil.getJSONObject(demographicIdentity, value);
-						attributes.put(value, (String) json.get(VALUE));
+					} else if (identityNodeObj instanceof LinkedHashMap) {
+						Map json = (Map) identityNodeObj;
+						attributes.put(mappingValue, (String) json.get(VALUE));
 					} else {
-						attributes.put(value, String.valueOf(object));
+						attributes.put(mappingValue, identityNodeObj == null? null: String.valueOf(identityNodeObj));
 					}
 				}
 			}
-		} catch (IOException | ReflectiveOperationException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
 		}
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), LoggerFileConstant.UIN.name(), id,
-				"Utility::getMailingAttributes()::exit");
+		logger.debug("Utility::getMailingAttributes()::exit");
 		return attributes;
 	}
 
-	private Set<String> getPreferredLanguage(JSONObject demographicIdentity) {
+	public Set<String> getPreferredLanguage(Map demographicIdentity) {
 		String preferredLang = null;
 		String preferredLangAttribute = env.getProperty("mosip.default.user-preferred-language-attribute");
 		if (!StringUtils.isBlank(preferredLangAttribute)) {
@@ -401,25 +477,28 @@ public class Utility {
 
 	}
 
-	private Set<String> getDataCapturedLanguages(JSONObject mapperIdentity, JSONObject demographicIdentity)
+	public Set<String> getDataCapturedLanguages(Map mapperIdentity, Map demographicIdentity)
 			throws ReflectiveOperationException {
 		Set<String> dataCapturedLangauges = new HashSet<String>();
-		LinkedHashMap<String, String> jsonObject = JsonUtil.getJSONValue(mapperIdentity, MappingJsonConstants.NAME);
-		String values = jsonObject.get(VALUE);
-		for (String value : values.split(",")) {
-			Object object = demographicIdentity.get(value);
-			if (object instanceof ArrayList) {
-				JSONArray node = JsonUtil.getJSONArray(demographicIdentity, value);
-				JsonValue[] jsonValues = JsonUtil.mapJsonNodeToJavaObject(JsonValue.class, node);
-				for (JsonValue jsonValue : jsonValues) {
-					dataCapturedLangauges.add(jsonValue.getLanguage());
+		Object nameValue = mapperIdentity.get(MappingJsonConstants.NAME);
+		if (nameValue instanceof Map) {
+			Map<String, Object> jsonObject = (Map<String, Object>) nameValue;
+			String values = String.valueOf(jsonObject.get(VALUE));
+			for (String value : values.split(",")) {
+				Object object = demographicIdentity.get(value);
+				if (object instanceof List) {
+					List nodes = (List) object;
+					for (Object jsonValueObj : nodes) {
+						JsonValue jsonValue = mapper.convertValue(jsonValueObj, JsonValue.class);
+						dataCapturedLangauges.add(jsonValue.getLanguage());
+					}
 				}
 			}
 		}
 		return dataCapturedLangauges;
 	}
 	
-	private List<String> getDefaultTemplateLanguages() {
+	public List<String> getDefaultTemplateLanguages() {
 		String defaultLanguages = env.getProperty("mosip.default.template-languages");
 		List<String> strList = Collections.emptyList() ;
 		if (defaultLanguages !=null && !StringUtils.isBlank(defaultLanguages)) {
@@ -447,7 +526,7 @@ public class Utility {
 	 */
 	public static String readResourceContent(Resource resFile) {
 		try {
-			return IOUtils.readInputStreamToString(resFile.getInputStream(), StandardCharsets.UTF_8);
+			return IOUtils.readInputStreamToString(resFile.getInputStream(), UTF_8);
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION, e);
@@ -509,9 +588,10 @@ public class Utility {
 		long biggest =  9999_9999_9999_9999L;
 
 		// return a long between smallest and biggest (+1 to include biggest as well with the upper bound)
-		long random = new SecureRandom().longs(smallest, biggest + 1).findFirst().getAsLong();
+		long random = utilities.getSecureRandom().longs(smallest, biggest + 1).findFirst().getAsLong();
 		return String.valueOf(random);
 	}
+
 
 	public static boolean isSecureSession(){
 		return Optional.ofNullable(SecurityContextHolder.getContext()) .map(SecurityContext::getAuthentication) .map(Authentication::getPrincipal) .filter(obj -> !obj.equals(ANONYMOUS_USER)) .isPresent();
@@ -763,6 +843,153 @@ public class Utility {
 			}
 		} catch (ApisResourceAccessException e) {
 			throw new RuntimeException(e);
+		}
+		return name;
+	}
+
+	@Cacheable(value = "userInfoCache", key = "#token")
+	public Map<String, Object> getUserInfo(String token) throws ApisResourceAccessException {
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
+		UriComponents uriComponent = builder.build(false).encode();
+
+		Map<String, Object> responseMap;
+		try {
+			MultiValueMap<String, String> headers =
+					new LinkedMultiValueMap<String, String>(Map.of(AUTHORIZATION, List.of(BEARER_PREFIX + token)));
+			String responseStr = restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), String.class, headers);
+			responseMap = (Map<String, Object>) decodeAndDecryptUserInfo(responseStr);
+		} catch (ApisResourceAccessException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.USERID.toString(), "NA",
+					"IdAuthServiceImp::lencryptRSA():: ENCRYPTIONSERVICE GET service call"
+							+ ExceptionUtils.getStackTrace(e));
+			throw new ApisResourceAccessException("Could not fetch public key from kernel keymanager", e);
+		}
+		return responseMap;
+	}
+
+	private Map<String, Object> decodeAndDecryptUserInfo(String userInfoResponseStr) throws JsonParseException, JsonMappingException, UnsupportedEncodingException, IOException  {
+		String userInfoStr;
+		if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED))) {
+			DecodedJWT decodedJWT = JWT.decode(userInfoResponseStr);
+			if (Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED))) {
+				ImmutablePair<Boolean, AuthErrorCode> verifySignagure = tokenValidationHelper
+						.verifyJWTSignagure(decodedJWT);
+				if (verifySignagure.left) {
+					userInfoStr = decodeString(getPayload(decodedJWT));
+				} else {
+					throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE,
+							String.format(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(),
+									String.format("User info signature validation failed. Error: %s: %s",
+											verifySignagure.getRight().getErrorCode(),
+											verifySignagure.getRight().getErrorMessage())));
+				}
+			} else {
+				userInfoStr = decodeString(getPayload(decodedJWT));
+			}
+		} else {
+			userInfoStr = userInfoResponseStr;
+		}
+		if(Boolean.parseBoolean(this.env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED))){
+			userInfoStr = decodeString(decryptPayload((String) userInfoStr));
+		}
+		return objectMapper.readValue(userInfoStr.getBytes(UTF_8), Map.class);
+	}
+
+	public String decodeString(String payload)
+	{
+		byte[] bytes = java.util.Base64.getUrlDecoder().decode(payload);
+		return new String(bytes, UTF_8);
+	}
+
+	private String getPayload(DecodedJWT decodedJWT) {
+		return decodedJWT.getPayload();
+	}
+
+	public String decryptPayload(String payload) {
+		return objectStoreHelper.decryptData(payload, this.env.getProperty(ResidentConstants.RESIDENT_APP_ID),
+				this.env.getProperty(ResidentConstants.IDP_REFERENCE_ID));
+	}
+
+	@CacheEvict(value = "userInfoCache", key = "#token")
+	public void clearUserInfoCache(String token) {
+		logger.info("Clearing User Info cache");
+	}
+	
+	public JSONObject getMappingJsonObject() throws ResidentServiceCheckedException {
+		if(mappingJsonObject != null) {
+			return mappingJsonObject;
+		}
+		
+		String mappingJsonString = getMappingJson();
+		if(mappingJsonString==null || mappingJsonString.trim().isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage() );
+		}
+		try {
+			mappingJsonObject = JsonUtil.readValue(mappingJsonString, JSONObject.class);
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		return mappingJsonObject;
+	}
+	
+	public String getMappingValue(Map<?, ?> identity, String mappingName)
+            throws ResidentServiceCheckedException, IOException {
+        return getMappingValue(identity, mappingName, null);
+    }
+
+	public String getMappingValue(Map<?, ?> identity, String mappingName, String langCode)
+			throws ResidentServiceCheckedException, IOException {
+		String mappingJson = getMappingJson();
+		if (mappingJson == null || mappingJson.trim().isEmpty()) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.JSON_PROCESSING_EXCEPTION.getErrorMessage());
+		}
+		JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
+		JSONObject identityMappingJsonObject = JsonUtil.getJSONObject(mappingJsonObject, IDENTITY);
+		String mappingAttributes = getMappingAttribute(identityMappingJsonObject, mappingName);
+		
+		return Stream.of(mappingAttributes.split(MAPPING_ATTRIBUTE_SEPARATOR))
+                .map(mappingAttribute -> {
+					Object value = identity.get(mappingAttribute);
+					if(value == null && langCode != null) {
+						value = identity.get(mappingAttribute+ "_" + langCode);
+					}
+					return value;
+				})
+                .map(attributeValue -> {
+                    if(attributeValue instanceof String) {
+                        return (String) attributeValue;
+                    } else if(attributeValue instanceof List){
+                        if(langCode == null) {
+                            return null;
+                        } else {
+                            return getValueForLang((List<Map<String,Object>>)attributeValue, langCode);
+                        }
+                    } else if(attributeValue instanceof Map) {
+                    	return ((String)((Map) attributeValue).get(VALUE));
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining(ATTRIBUTE_VALUE_SEPARATOR));
+	}
+	
+	private String getValueForLang(List<Map<String, Object>> attributeValue, String langCode) {
+        return attributeValue.stream()
+                    .filter(map -> map.get(LANGUAGE) instanceof String && ((String)map.get(LANGUAGE)).equalsIgnoreCase(langCode))
+                    .map(map -> (String)map.get(VALUE))
+                    .findAny()
+                    .orElse(null);
+    }
+
+	private String getMappingAttribute(JSONObject identityJson, String name) {
+		JSONObject docJson = JsonUtil.getJSONObject(identityJson, name);
+		if(docJson != null) {
+			return JsonUtil.getJSONValue(docJson, VALUE);
 		}
 		return name;
 	}

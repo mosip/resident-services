@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -130,8 +131,10 @@ public class Utilities {
 	private String mappingJsonString = null;
 
     private static String regProcessorIdentityJson = "";
+	private SecureRandom secureRandom;
 
-    @PostConstruct
+
+	@PostConstruct
     private void loadRegProcessorIdentityJson() {
         regProcessorIdentityJson = residentRestTemplate.getForObject(configServerFileStorageURL + residentIdentityJson, String.class);
         logger.info(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
@@ -419,5 +422,14 @@ public class Utilities {
 	public int getTotalNumberOfPageInPdf(ByteArrayOutputStream outputStream) throws IOException {
 		PdfReader pdfReader = new PdfReader(outputStream.toByteArray());
 		return pdfReader.getNumberOfPages();
+	}
+
+	@PostConstruct
+	public void initializeSecureRandomInstance(){
+		secureRandom = new SecureRandom();
+	}
+
+	public SecureRandom getSecureRandom(){
+		return secureRandom;
 	}
 }

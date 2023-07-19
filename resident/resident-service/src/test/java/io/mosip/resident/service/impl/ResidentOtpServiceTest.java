@@ -35,7 +35,6 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ResidentOtpService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
 
@@ -54,9 +53,6 @@ public class ResidentOtpServiceTest {
 
 	@Mock
 	Environment env;
-
-	@Mock
-	private AuditUtil audit;
 
 	@InjectMocks
 	private ResidentOtpService residentOtpService = new ResidentOtpServiceImpl();
