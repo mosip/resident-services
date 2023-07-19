@@ -273,11 +273,9 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<AuthLockOrUnLockRequestDtoV2> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
 		logger.debug("ResidentController::reqAauthTypeStatusUpdateV2()::entry");
-		String individualId = null;
 		ResponseWrapper<ResponseDTO> response = new ResponseWrapper<>();
 		Tuple2<ResponseDTO, String> tupleResponse = null;
 		try {
-			individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 			validator.validateAuthLockOrUnlockRequestV2(requestDTO);
 			logger.debug("ResidentController::Requesting auth lock/unlock api");
 			tupleResponse = residentService.reqAauthTypeStatusUpdateV2(requestDTO.getRequest());
