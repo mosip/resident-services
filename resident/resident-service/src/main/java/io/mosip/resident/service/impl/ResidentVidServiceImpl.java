@@ -210,7 +210,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
 			if(Utility.isSecureSession()){
-				residentTransactionEntity = createResidentTransactionEntity(requestDto);
+				residentTransactionEntity = createResidentTransactionEntity(requestDto, identityDTO.getUIN());
 				validateVidFromSession(individualId, requestDto.getVidType(), identityDTO);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
@@ -306,9 +306,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private void validateVidFromSession(String individualId, String vidType, IdentityDTO identityDTO) {
 		try {
 			String idType = identityServiceImpl.getIndividualIdType(individualId);
-			String uin = identityServiceImpl.getUinForIndividualId(individualId);
-			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(uin
-					, identityDTO);
+			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(
+					identityDTO);
 			/**
 			 * Check If id type is VID.
 			 */
@@ -365,7 +364,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return vidPolicyDto;
 	}
 
-	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId, IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, identityDTO);
 		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
 		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
@@ -376,11 +375,11 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return Tuples.of(vidList.size(), vidList.get(0).get(TemplateVariablesConstants.VID).toString());
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
+	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto, String uin) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.GENERATE_VID);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
 		return residentTransactionEntity;
