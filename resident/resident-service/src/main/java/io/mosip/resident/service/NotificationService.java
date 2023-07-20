@@ -1,31 +1,5 @@
 package io.mosip.resident.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.multipart.MultipartFile;
-
 import io.mosip.kernel.core.http.RequestWrapper;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -43,8 +17,6 @@ import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.dto.SMSRequestDTO;
-import io.mosip.resident.dto.TemplateDto;
-import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
@@ -56,6 +28,30 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -254,52 +250,10 @@ public class NotificationService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getTemplate(String langCode, String templatetypecode) throws ResidentServiceCheckedException {
-		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
+	private String getTemplate(String langCode, String templateTypeCode) {
+		logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templateTypeCode,
 				"NotificationService::getTemplate()::entry");
-		List<String> pathSegments = new ArrayList<>();
-		pathSegments.add(langCode);
-		pathSegments.add(templatetypecode);
-		try {
-			ResponseWrapper<TemplateResponseDto> resp = (ResponseWrapper<TemplateResponseDto>) restClient.getApi(
-					ApiName.TEMPLATES, pathSegments, "", null, ResponseWrapper.class);
-			if (resp == null || resp.getErrors() != null && !resp.getErrors().isEmpty()) {
-				audit.setAuditRequestDto(EventEnum.TEMPLATE_EXCEPTION);
-				throw new ResidentServiceException(ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.TEMPLATE_EXCEPTION.getErrorMessage()
-								+ (resp != null ? resp.getErrors().get(0) : ""));
-			}
-			TemplateResponseDto templateResponse = JsonUtil.readValue(JsonUtil.writeValueAsString(resp.getResponse()),
-					TemplateResponseDto.class);
-			logger.info(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
-					"NotificationService::getTemplate()::getTemplateResponse::" + JsonUtil.writeValueAsString(resp));
-			List<TemplateDto> response = templateResponse.getTemplates();
-			logger.debug(LoggerFileConstant.APPLICATIONID.toString(), TEMPLATE_CODE, templatetypecode,
-					"NotificationService::getTemplate()::exit");
-			return response.get(0).getFileText().replaceAll("(^\")|(\"$)", "");
-		} catch (IOException e) {
-			audit.setAuditRequestDto(EventEnum.TOKEN_GENERATION_FAILED);
-			throw new ResidentServiceCheckedException(ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorCode(),
-					ResidentErrorCode.TOKEN_GENERATION_FAILED.getErrorMessage(), e);
-		} catch (ApisResourceAccessException e) {
-			if (e.getCause() instanceof HttpClientErrorException) {
-				HttpClientErrorException httpClientException = (HttpClientErrorException) e.getCause();
-				throw new ResidentServiceCheckedException(
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						httpClientException.getResponseBodyAsString());
-
-			} else if (e.getCause() instanceof HttpServerErrorException) {
-				HttpServerErrorException httpServerException = (HttpServerErrorException) e.getCause();
-				throw new ResidentServiceCheckedException(
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						httpServerException.getResponseBodyAsString());
-			} else {
-				throw new ResidentServiceCheckedException(
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage() + e.getMessage(), e);
-			}
-		}
-
+		return templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
 	}
 
 	private String templateMerge(String fileText, Map<String, Object> mailingAttributes)
