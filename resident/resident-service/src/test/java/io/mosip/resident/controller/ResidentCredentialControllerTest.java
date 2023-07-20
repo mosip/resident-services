@@ -23,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -35,13 +36,16 @@ import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialRequestStatusResponseDto;
+import io.mosip.resident.dto.CredentialTypeResponse;
 import io.mosip.resident.dto.PartnerCredentialTypePolicyDto;
 import io.mosip.resident.dto.RequestWrapper;
 import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDto;
 import io.mosip.resident.dto.ResidentCredentialResponseDtoV2;
+import io.mosip.resident.dto.ResponseWrapper;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.dto.ShareCredentialRequestDto;
+import io.mosip.resident.exception.ResidentCredentialServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -149,55 +153,15 @@ public class ResidentCredentialControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/req/credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
-
     }
 
-    @Test
-    public void testCancelRequestSuccess() throws Exception {
+    @Test(expected = Exception.class)
+    public void testCreateRequestGenerationWithResidentCredentialServiceException() throws Exception {
 
-        Mockito.when(residentCredentialService.cancelCredentialRequest(Mockito.any()))
-                .thenReturn(credentialCancelReqResponse);
+        Mockito.when(residentCredentialService.reqCredential(Mockito.any())).thenThrow(ResidentCredentialServiceException.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/req/credential/cancel/requestId")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void testgetCredentialRequestStatusSuccess() throws Exception {
-
-        Mockito.when(residentCredentialService.getStatus(Mockito.any())).thenReturn(credentialReqStatusResponse);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/req/credential/status/requestId")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void testgGetCardSuccess() throws Exception {
-
-        Mockito.when(residentCredentialService.getCard(Mockito.any())).thenReturn(pdfbytes);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/req/card/requestId")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void testGetCredentialTypesSuccess() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/credential/types").contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void testPartnerIdCredentialType() throws Exception {
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/req/policy/partnerId/1/credentialType/credentialType").contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+        mockMvc.perform(MockMvcRequestBuilders.post("/req/credential").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(reqJson.getBytes())).andExpect(status().isOk());
     }
 
     @Test
@@ -215,5 +179,117 @@ public class ResidentCredentialControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
     }
-    
+
+    @Test(expected = Exception.class)
+    public void testRequestShareCredWithPartnerWithResidentCredentialServiceException() throws Exception {
+    	ReflectionTestUtils.setField(residentCredentialController, "shareCredentialId", "resident.share.credential.id");
+		Mockito.when(residentCredentialService.shareCredential(Mockito.any(), Mockito.anyString(), Mockito.any()))
+				.thenThrow(ResidentCredentialServiceException.class);
+        ShareCredentialRequestDto request = new ShareCredentialRequestDto();
+        SharableAttributesDTO attr = new SharableAttributesDTO();
+        attr.setAttributeName("name");
+        attr.setMasked(false);
+		request.setSharableAttributes(List.of(attr));
+		request.setPurpose("banking");
+		RequestWrapper<ShareCredentialRequestDto> requestWrapper = new RequestWrapper<>();
+		requestWrapper.setRequest(request);
+        mockMvc.perform(MockMvcRequestBuilders.post("/share-credential").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(gson.toJson(requestWrapper).getBytes())).andExpect(status().isOk());
+    }
+
+    @Test
+    public void testgetCredentialRequestStatusSuccess() throws Exception {
+
+        Mockito.when(residentCredentialService.getStatus(Mockito.any())).thenReturn(credentialReqStatusResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/credential/status/requestId")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test(expected = Exception.class)
+    public void testgetCredentialRequestStatusWithResidentCredentialServiceException() throws Exception {
+
+        Mockito.when(residentCredentialService.getStatus(Mockito.any())).thenThrow(ResidentCredentialServiceException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/credential/status/requestId")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testgGetCardSuccess() throws Exception {
+
+        Mockito.when(residentCredentialService.getCard(Mockito.any())).thenReturn(pdfbytes);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/card/requestId")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+
+    }
+
+    @Test(expected = Exception.class)
+    public void testgGetCardWithResidentCredentialServiceException() throws Exception {
+
+        Mockito.when(residentCredentialService.getCard(Mockito.any())).thenThrow(ResidentCredentialServiceException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/card/requestId")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testGetCredentialTypesSuccess() throws Exception {
+    	Mockito.when(residentCredentialService.getCredentialTypes()).thenReturn(new CredentialTypeResponse());
+        mockMvc.perform(MockMvcRequestBuilders.get("/credential/types").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test(expected = Exception.class)
+    public void testGetCredentialTypesWithResidentCredentialServiceException() throws Exception {
+    	Mockito.when(residentCredentialService.getCredentialTypes()).thenThrow(ResidentCredentialServiceException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/credential/types").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testCancelRequestSuccess() throws Exception {
+
+        Mockito.when(residentCredentialService.cancelCredentialRequest(Mockito.any()))
+                .thenReturn(credentialCancelReqResponse);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/credential/cancel/requestId")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test(expected = Exception.class)
+    public void testCancelRequestWithResidentCredentialServiceException() throws Exception {
+
+        Mockito.when(residentCredentialService.cancelCredentialRequest(Mockito.any()))
+        		.thenThrow(ResidentCredentialServiceException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/credential/cancel/requestId")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testPartnerIdCredentialType() throws Exception {
+    	Mockito.when(residentCredentialService.getPolicyByCredentialType(Mockito.any(), Mockito.any())).thenReturn(new ResponseWrapper<>());
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/policy/partnerId/1/credentialType/credentialType").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testPartnerIdCredentialTypeWithResidentCredentialServiceException() throws Exception {
+    	Mockito.when(residentCredentialService.getPolicyByCredentialType(Mockito.any(), Mockito.any())).thenThrow(ResidentCredentialServiceException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/req/policy/partnerId/1/credentialType/credentialType").contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+    }
 }
