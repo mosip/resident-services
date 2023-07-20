@@ -19,7 +19,7 @@ Prerequisites:
 1. JDK 1.11  
 1. Build and install:
     ```
-    $ cd kernel
+    $ cd resident-services
     $ mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dgpg.skip=true
     ```
 1. Build Docker for a service:
