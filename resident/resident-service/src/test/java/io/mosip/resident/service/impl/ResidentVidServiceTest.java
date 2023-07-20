@@ -472,6 +472,7 @@ public class ResidentVidServiceTest {
     public void testRevokeVidV2Failed() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
@@ -485,8 +486,8 @@ public class ResidentVidServiceTest {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getIDATokenForIndividualId(Mockito.any())).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
         vidRevokeRequestDTOV2.setTransactionID("1234567896");
@@ -506,8 +507,8 @@ public class ResidentVidServiceTest {
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getIDATokenForIndividualId(Mockito.any())).thenReturn("123456789");
+        Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
         vidRevokeRequestDTOV2.setTransactionID("1234567896");
