@@ -1,28 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.resident.constant.PacketStatus;
@@ -53,8 +30,29 @@ import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 
 /**
  * This class is used to create service class test for getting cards.
@@ -147,8 +145,6 @@ public class DownloadCardServiceTest {
 		Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)).thenReturn("true");
 		Mockito.when(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY)).thenReturn("true");
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("1234567890");
-		Mockito.when(identityService.getUinForIndividualId(Mockito.anyString())).thenReturn("3425636374");
-		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("3425636374");
 		Mockito.when(idAuthService.validateOtpV2(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
 				Mockito.any())).thenReturn(Tuples.of(true, residentTransactionEntity));
 		identityMap = new LinkedHashMap();
@@ -156,6 +152,14 @@ public class DownloadCardServiceTest {
 		identityMap.put("email", "manojvsp12@gmail.com");
 		identityMap.put("phone", "9395910872");
 		identityMap.put("dateOfBirth", "1970");
+
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("123456789");
+		Mockito.when(identityService.getIdentity("1234567890")).thenReturn(identityDTO);
+		identityDTO.setUIN("123");
+		IdentityDTO identityDTO1 = new IdentityDTO();
+		identityDTO1.setUIN("234");
+		Mockito.when(identityService.getIdentity("123")).thenReturn(identityDTO1);
 	}
 
 	@Test
@@ -290,30 +294,12 @@ public class DownloadCardServiceTest {
 	}
 
 	@Test
-	public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException, IOException {
+	public void testGetVidCardEventIdWithVidDetails() throws BaseCheckedException {
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
-		ResponseWrapper<List<Map<String, ?>>> vidResponse = new ResponseWrapper<>();
-		List<Map<String, ?>> vidList = new ArrayList<>();
-		Map<String, Object> vidDetails = new HashMap<>();
-		vidDetails.put("vidType", "perpetual");
-		vidDetails.put("vid", "123");
-		vidDetails.put("maskedVid", "1******4");
-		vidDetails.put("expiryTimeStamp", "1234343434");
-		vidDetails.put("expiryTimeStamp", "1234343434");
-		vidDetails.put("genratedOnTimestamp", "1234343434");
-		vidDetails.put("transactionLimit", "1234343434");
-		vidDetails.put("transactionCount", "1234343434");
-		vidList.add(vidDetails);
-		vidResponse.setResponse(vidList);
-		Mockito.when(vidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
-				.thenReturn(vidResponse);
 		Map<String, Object> name = new HashMap<>();
 		name.put("language", "eng");
 		name.put("value", "kamesh");
 		identityMap.put("firstName", List.of(name));
-		Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), isNull())).thenReturn(identityMap);
-		Mockito.when(environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE)).thenReturn("firstName|dateOfBirth");
-		Mockito.when(utilities.getLanguageCode()).thenReturn("eng");
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setDateOfBirth("1892-08-09");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
@@ -330,23 +316,8 @@ public class DownloadCardServiceTest {
 	}
 
 	@Test
-	public void testGetVidCardEventIdWithNameNull() throws BaseCheckedException, IOException {
+	public void testGetVidCardEventIdWithNameNull() throws BaseCheckedException {
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn("3257091426984315");
-		ResponseWrapper<List<Map<String, ?>>> vidResponse = new ResponseWrapper<>();
-		List<Map<String, ?>> vidList = new ArrayList<>();
-		Map<String, Object> vidDetails = new HashMap<>();
-		vidDetails.put("vidType", "perpetual");
-		vidDetails.put("vid", "123");
-		vidDetails.put("maskedVid", "1******4");
-		vidDetails.put("expiryTimeStamp", "1234343434");
-		vidDetails.put("expiryTimeStamp", "1234343434");
-		vidDetails.put("genratedOnTimestamp", "1234343434");
-		vidDetails.put("transactionLimit", "1234343434");
-		vidDetails.put("transactionCount", "1234343434");
-		vidList.add(vidDetails);
-		vidResponse.setResponse(vidList);
-		Mockito.when(vidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
-				.thenReturn(vidResponse);
 		IdentityDTO identityDTO = new IdentityDTO();
 		identityDTO.setDateOfBirth("1892-08-09");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
@@ -363,8 +334,7 @@ public class DownloadCardServiceTest {
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetVidCardEventIdNestedIf() throws BaseCheckedException, IOException {
-		Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123456789");
+	public void testGetVidCardEventIdNestedIf() throws BaseCheckedException {
 		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
 	}
 
@@ -373,20 +343,25 @@ public class DownloadCardServiceTest {
 		ResponseWrapper<ResidentCredentialResponseDto> responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorCode(),
 				ResidentErrorCode.VID_REQUEST_CARD_FAILED.getErrorMessage())));
-		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
 		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = ApisResourceAccessException.class)
 	public void testGetVidCardEventIdWithApisResourceAccessException() throws BaseCheckedException {
-		Mockito.when(vidService.retrieveVids(Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("123456789");
+		Mockito.when(identityService.getIdentity("1234567890")).thenReturn(identityDTO);
+		identityDTO.setUIN("123");
+		IdentityDTO identityDTO1 = new IdentityDTO();
+		identityDTO1.setUIN("123");
+		Mockito.when(identityService.getIdentity("123")).thenReturn(identityDTO1);
+		Mockito.when(vidService.retrieveVids(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new ApisResourceAccessException());
 		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testGetVidCardEventIdWithIOException() throws BaseCheckedException, IOException {
-		Mockito.when(identityService.getIdentityAttributes(Mockito.anyString(), isNull())).thenThrow(new IOException());
 		downloadCardService.getVidCardEventId("123", 0, LOCALE_EN_US);
 	}
 
