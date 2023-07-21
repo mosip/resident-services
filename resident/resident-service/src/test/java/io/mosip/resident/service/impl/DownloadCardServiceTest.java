@@ -7,7 +7,6 @@ import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TransactionStage;
 import io.mosip.resident.dto.CheckStatusResponseDTO;
-import io.mosip.resident.dto.DigitalCardStatusResponseDto;
 import io.mosip.resident.dto.DownloadCardRequestDTO;
 import io.mosip.resident.dto.DownloadPersonalizedCardDto;
 import io.mosip.resident.dto.IdentityDTO;
@@ -104,8 +103,6 @@ public class DownloadCardServiceTest {
 	private String result;
 
 	byte[] pdfbytes;
-
-	DigitalCardStatusResponseDto digitalCardStatusResponseDto;
 
 	private MainRequestDTO<DownloadPersonalizedCardDto> downloadPersonalizedCardMainRequestDTO;
 
