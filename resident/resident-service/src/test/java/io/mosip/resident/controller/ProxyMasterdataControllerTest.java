@@ -27,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.ProxyIdRepoService;
@@ -107,6 +108,14 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetValidDocumentByLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getValidDocumentByLangCode(Mockito.anyString()))
+				.thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetLocationHierarchyLevelByLangCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getLocationHierarchyLevelByLangCode(Mockito.anyString()))
@@ -115,10 +124,27 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetLocationHierarchyLevelByLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getLocationHierarchyLevelByLangCode(Mockito.anyString()))
+				.thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/locationHierarchyLevels/langcode"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetImmediateChildrenByLocCodeAndLangCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getImmediateChildrenByLocCodeAndLangCode(Mockito.anyString(),
 				Mockito.anyString())).thenReturn(responseWrapper);
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/proxy/masterdata/locations/immediatechildren/locationcode/langcode"))
+				.andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetImmediateChildrenByLocCodeAndLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getImmediateChildrenByLocCodeAndLangCode(Mockito.anyString(),
+				Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(
 				MockMvcRequestBuilders.get("/proxy/masterdata/locations/immediatechildren/locationcode/langcode"))
 				.andExpect(status().isOk());
@@ -133,10 +159,28 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetLocationDetailsByLocCodeAndLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(
+				proxyMasterdataService.getLocationDetailsByLocCodeAndLangCode(Mockito.anyString(), Mockito.anyString()))
+				.thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/locations/info/locationcode/langcode"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetCoordinateSpecificRegistrationCenters() throws Exception {
 		Mockito.when(proxyMasterdataService.getCoordinateSpecificRegistrationCenters(Mockito.anyString(),
 				Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/proxy/masterdata/getcoordinatespecificregistrationcenters/langcode/33.4/43.5/200"))
+				.andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetCoordinateSpecificRegistrationCentersWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getCoordinateSpecificRegistrationCenters(Mockito.anyString(),
+				Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(MockMvcRequestBuilders
 				.get("/proxy/masterdata/getcoordinatespecificregistrationcenters/langcode/33.4/43.5/200"))
 				.andExpect(status().isOk());
@@ -151,10 +195,27 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetApplicantValidDocumentWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getApplicantValidDocument(Mockito.anyString(), Mockito.anyList()))
+				.thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(
+				MockMvcRequestBuilders.get("/proxy/masterdata/applicanttype/applicantId/languages?languages=eng"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetRegistrationCentersByHierarchyLevel() throws Exception {
 		Mockito.when(proxyMasterdataService.getRegistrationCentersByHierarchyLevel(Mockito.anyString(),
 				Mockito.anyShort(), Mockito.anyList())).thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/registrationcenters/langcode/5/names?name=14110"))
+				.andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetRegistrationCentersByHierarchyLevelWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getRegistrationCentersByHierarchyLevel(Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyList())).thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/registrationcenters/langcode/5/names?name=14110"))
 				.andExpect(status().isOk());
 	}
@@ -169,10 +230,28 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetRegistrationCenterByHierarchyLevelAndTextPaginatedWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getRegistrationCenterByHierarchyLevelAndTextPaginated(Mockito.anyString(),
+				Mockito.anyShort(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.any(),
+				Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get(
+				"/proxy/masterdata/registrationcenters/page/langcode/5/name?pageNumber=0&pageSize=10&orderBy=desc&sortBy=createdDateTime"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetRegistrationCenterWorkingDays() throws Exception {
 		Mockito.when(proxyMasterdataService.getRegistrationCenterWorkingDays(Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(responseWrapper);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/workingdays/registrationCenterID/langCode"))
+				.andExpect(status().isOk());
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetRegistrationCenterWorkingDaysWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getRegistrationCenterWorkingDays(Mockito.anyString(), Mockito.anyString()))
+				.thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/workingdays/registrationCenterID/langCode"))
 				.andExpect(status().isOk());
 	}
@@ -185,7 +264,16 @@ public class ProxyMasterdataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=&domain=&type="))
 				.andExpect(status().isOk());
 	}
-	
+
+	@Test(expected = Exception.class)
+	public void testGetLatestIdSchemaWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(
+				proxyMasterdataService.getLatestIdSchema(Mockito.anyDouble(), Mockito.anyString(), Mockito.anyString()))
+				.thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/idschema/latest?schemaVersion=&domain=&type="))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetAllTemplateBylangCodeAndTemplateTypeCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(),
@@ -193,21 +281,43 @@ public class ProxyMasterdataControllerTest {
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/templates/eng/OTP-sms-template"))
 				.andExpect(status().isOk());
 	}
-	
+
+	@Test(expected = Exception.class)
+	public void testGetAllTemplateBylangCodeAndTemplateTypeCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(),
+				Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/templates/eng/OTP-sms-template"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetGenderTypesByLangCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
 				.andExpect(status().isOk());
 	}
-	
+
+	@Test(expected = Exception.class)
+	public void testGetGenderTypesByLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetDocumentTypesByDocumentCategoryCodeAndLangCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/documenttypes/documentcategorycode/langcode"))
 				.andExpect(status().isOk());
 	}
-	
+
+	@Test(expected = Exception.class)
+	public void testGetDocumentTypesByDocumentCategoryCodeAndLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode(Mockito.anyString(),Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/documenttypes/documentcategorycode/langcode"))
+				.andExpect(status().isOk());
+	}
+
 	@Test
 	public void testGetGenderCodeByGenderTypeAndLangCode() throws Exception {
 		Mockito.when(proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(Mockito.anyString(),Mockito.anyString())).thenReturn(responseWrapper);
@@ -215,4 +325,10 @@ public class ProxyMasterdataControllerTest {
 				.andExpect(status().isOk());
 	}
 
+	@Test(expected = Exception.class)
+	public void testGetGenderCodeByGenderTypeAndLangCodeWithResidentServiceCheckedException() throws Exception {
+		Mockito.when(proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode(Mockito.anyString(),Mockito.anyString())).thenThrow(ResidentServiceCheckedException.class);
+		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/gendercode/gendertype/langcode"))
+				.andExpect(status().isOk());
+	}
 }

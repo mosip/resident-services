@@ -37,8 +37,6 @@ import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.OrderCardService;
 import io.mosip.resident.service.ResidentCredentialService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utility;
@@ -63,9 +61,6 @@ public class OrderCardServiceImpl implements OrderCardService {
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
-
-	@Autowired
-	private AuditUtil auditUtil;
 
 	@Autowired
 	private Utility utility;
@@ -238,7 +233,6 @@ public class OrderCardServiceImpl implements OrderCardService {
 		} catch (ApisResourceAccessException e) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
 			logger.error("Error occured in checking order status %s", e.getMessage());
-			auditUtil.setAuditRequestDto(EventEnum.CHECK_ORDER_STATUS_EXCEPTION);
 			sendNotificationV2(individualId, RequestType.ORDER_PHYSICAL_CARD, TemplateType.FAILURE,
 					residentTransactionEntity.getEventId(), null);
 			throw new ResidentServiceCheckedException(ResidentErrorCode.PAYMENT_REQUIRED.getErrorCode(),
@@ -262,12 +256,13 @@ public class OrderCardServiceImpl implements OrderCardService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
-		return notificationService.sendNotification(notificationRequestDtoV2);
+		return notificationService.sendNotification(notificationRequestDtoV2, null);
 	}
 
 	@Override
 	public String getRedirectUrl(String partnerId, String individualId)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
+		logger.debug("OrderCardServiceImpl::getRedirectUrl()::entry");
 		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
 		 
 		ResidentTransactionEntity residentTransactionEntity = createResidentTransactionEntityOrderCard(partnerId,
@@ -301,6 +296,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 				}
 				builder.append(keyValueParam);
 			}
+			logger.debug("OrderCardServiceImpl::getRedirectUrl()::exit");
 			return newUrl + builder.toString();
 		}
 	}

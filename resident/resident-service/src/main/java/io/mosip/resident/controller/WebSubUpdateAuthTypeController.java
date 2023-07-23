@@ -39,8 +39,6 @@ public class WebSubUpdateAuthTypeController {
     @Autowired
     SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-
-
     @Autowired
     private WebSubUpdateAuthTypeService webSubUpdateAuthTypeService;
 
@@ -59,18 +57,13 @@ public class WebSubUpdateAuthTypeController {
 
     @PreAuthenticateContentAndVerifyIntent(secret = "${resident.websub.authtype-status.secret}", callback = "${resident.websub.callback.authtype-status.relative.url}", topic = "${resident.websub.authtype-status.topic}")
 	public void authTypeCallback(@RequestBody Map<String, Object> eventModel) {
-
-		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
-				LoggerFileConstant.APPLICATIONID.toString(),
-				"WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
-
 		try {
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),
-					"WebSubUpdateAuthTypeController :: authTypeCallback() :: Start");
-			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK);
+					"WebSubUpdateAuthTypeController :: authTypeCallback() :: entry");
 			webSubUpdateAuthTypeService.updateAuthTypeStatus(eventModel);
 			auditUtil.setAuditRequestDto(EventEnum.AUTH_TYPE_CALL_BACK_SUCCESS);
+			logger.debug("WebSubUpdateAuthTypeController::authTypeCallback()::exit");
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),

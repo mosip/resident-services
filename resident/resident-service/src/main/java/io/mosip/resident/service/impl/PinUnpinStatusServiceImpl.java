@@ -20,8 +20,6 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.PinUnpinStatusService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.EventEnum;
 
 /**
  * This class is used to implement service class of pin or unpin status api based on event id.
@@ -34,9 +32,6 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
 
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
-
-    @Autowired
-    private AuditUtil audit;
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
@@ -57,12 +52,14 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
 	public ResponseWrapper<ResponseDTO> pinStatus(String eventId, boolean status)
 			throws ResidentServiceCheckedException {
         try {
+        	logger.debug("PinUnpinStatusServiceImpl::pinStatus()::entry");
             Optional<ResidentTransactionEntity> optionalResidentTransactionEntity = residentTransactionRepository.findById(eventId);
             if (optionalResidentTransactionEntity.isPresent()) {
                 ResidentTransactionEntity residentTransactionEntity = optionalResidentTransactionEntity.get();
                 residentTransactionEntity.setPinnedStatus(status);
                 residentTransactionRepository.save(residentTransactionEntity);
             } else {
+            	logger.error("PinUnpinStatusServiceImpl - %s", ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
             ResponseWrapper<ResponseDTO> responseWrapper = new ResponseWrapper<>();
@@ -73,12 +70,11 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
             if(status){
                 responseWrapper.setId(pinnedStatusId);
                 responseWrapper.setVersion(pinnedStatusVersion);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS_SUCCESS, eventId));
             } else{
                 responseWrapper.setId(unPinnedStatusId);
                 responseWrapper.setVersion(unPinnedStatusVersion);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS_SUCCESS, eventId));
             }
+            logger.debug("PinUnpinStatusServiceImpl::pinStatus()::exit");
             return responseWrapper;
         }
         catch (Exception e){
@@ -88,11 +84,9 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
             if(status){
                 responseWrapper.setId(pinnedStatusId);
                 responseWrapper.setVersion(pinnedStatusVersion);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PIN_STATUS_FAILURE, eventId));
             } else{
                 responseWrapper.setId(unPinnedStatusId);
                 responseWrapper.setVersion(unPinnedStatusVersion);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.UN_PIN_STATUS_FAILURE, eventId));
             }
             responseWrapper.setErrors(List.of(new ServiceError(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorCode(), ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage())));
             return responseWrapper;

@@ -71,8 +71,6 @@ public class IdAuthController {
 	public ResponseEntity<Object> validateOtp(@RequestBody RequestWrapper<IdAuthRequestDto> requestWrapper)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthController::validateOtp()::entry");
-		auditUtil.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP, requestWrapper.getRequest().getTransactionId(),
-				"OTP Validate Request"));
 		Tuple2<Boolean, String> tupleResponse = null;
 		try {
 		tupleResponse = idAuthService.validateOtpV1(requestWrapper.getRequest().getTransactionId(),

@@ -29,7 +29,6 @@ import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.RIDInvalidException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,9 +50,6 @@ public class RidStatusServiceTest {
 	@Mock
 	private RidValidator<String> ridValidator;
 	
-	@Mock
-	private AuditUtil audit;
-
 	@InjectMocks
 	ResidentServiceImpl residentService = new ResidentServiceImpl();
 
@@ -85,7 +81,6 @@ public class RidStatusServiceTest {
 		responseWrapper.setResponse(list);
 
 		Mockito.when(residentServiceRestClient.postApi(any(), any(), any(), any())).thenReturn(responseWrapper);
-		Mockito.doNothing().when(audit).setAuditRequestDto(Mockito.any());
 	}
 
 	@Test

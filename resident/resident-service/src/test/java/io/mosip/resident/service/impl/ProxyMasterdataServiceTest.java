@@ -31,8 +31,8 @@ import io.mosip.resident.dto.TemplateDto;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import reactor.util.function.Tuple2;
 
@@ -48,9 +48,6 @@ public class ProxyMasterdataServiceTest {
 
 	@Mock
 	private Environment env;
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -519,15 +516,16 @@ public class ProxyMasterdataServiceTest {
 	}
 
 	@Test
-	public void testGetAllTemplateBylangCodeAndTemplateTypeCode()
+	public void testGetTemplateValueFromTemplateTypeCodeAndLangCode()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
-		ResponseWrapper<?> result = proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng",
+		String result = proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode("eng",
 				"otp-template");
 		assertNotNull(result);
+		assertEquals("Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.", result);
 	}
 
-	@Test(expected = ResidentServiceCheckedException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testGetAllTemplateBylangCodeAndTemplateTypeCodeIf()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(residentServiceRestClient.getApi((ApiName) any(), (Map) any(), any())).thenReturn(templateWrapper);
@@ -539,7 +537,7 @@ public class ProxyMasterdataServiceTest {
 		errorList.add(error);
 
 		templateWrapper.setErrors(errorList);
-		proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode("eng", "otp-template");
+		proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode("eng", "otp-template");
 	}
 
 	@Test

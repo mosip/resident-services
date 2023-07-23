@@ -22,7 +22,6 @@ import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.PinUnpinStatusService;
-import io.mosip.resident.util.AuditUtil;
 
 /**
  * This class is used to test service class of pin or unpin status api based on event id.
@@ -36,9 +35,6 @@ public class PinUnpinStatusServiceTest {
 
     @InjectMocks
     PinUnpinStatusService pinUnpinStatusService = new PinUnpinStatusServiceImpl();
-
-    @Mock
-    AuditUtil auditUtil;
 
     @Mock
     ResidentTransactionRepository residentTransactionRepository;

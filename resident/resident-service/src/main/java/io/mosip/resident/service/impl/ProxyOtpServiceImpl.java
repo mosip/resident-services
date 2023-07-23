@@ -97,22 +97,16 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
             response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             log.error("In callsendOtp method of login service- ", ex.getResponseBodyAsString());
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             if(ex instanceof HttpServerErrorException || ex instanceof HttpClientErrorException){
                 throw new ResidentServiceException(ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorCode(),
                         ResidentErrorCode.CONFIG_FILE_NOT_FOUND_EXCEPTION.getErrorMessage());
             }
         } catch (ResidentServiceCheckedException e){
             log.error("In callsendOtp method of login service- ", e);
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             throw e;
         }
         catch (Exception ex) {
             log.error("In callsendOtp method of login service- ", ex);
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE,
-                    userid, "Send OTP"));
             throw new ResidentServiceException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
                     ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage(), ex);
         } finally {

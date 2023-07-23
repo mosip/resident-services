@@ -35,7 +35,6 @@ import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.SharableAttributesDTO;
 import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.util.AuditUtil;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -59,9 +58,6 @@ public class ResidentConfigServiceImplTest {
 
 	@Mock
 	private ObjectMapper objectMapper;
-
-	@Mock
-	private AuditUtil auditUtil;
 
 	Resource resource;
 	private String identityMapping;
