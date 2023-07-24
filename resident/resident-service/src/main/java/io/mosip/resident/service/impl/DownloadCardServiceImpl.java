@@ -360,7 +360,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		IdentityDTO identityDTOForDownloadableCardVid = null;
 		try {
 			identityDTOForDownloadableCardVid = identityService.getIdentity(vid);
-			uinForVid = identityDTOForDownloadableCardVid.getUIN();
+			if(identityDTOForDownloadableCardVid!=null) {
+				uinForVid = identityDTOForDownloadableCardVid.getUIN();
+			}
 			residentTransactionEntity = insertDataForVidCard(vid, uinForVid);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
@@ -524,10 +526,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		String name = null;
 		ResponseWrapper<List<Map<String, ?>>> vidResponse = null;
-		String uin = identityDTOForDownloadableCardVid.getUIN();
+		String uin=null;
+		if(identityDTOForDownloadableCardVid!=null){
+			uin = identityDTOForDownloadableCardVid.getUIN();
+			name = identityDTOForDownloadableCardVid.getFullName();
+		}
 		if (uin != null) {
 			vidResponse = vidService.retrieveVids(timeZoneOffset, locale, uin);
-			name = identityDTOForDownloadableCardVid.getFullName();
 		}
 		if (vidResponse != null) {
 			List<Map<String, ?>> vidList = vidResponse.getResponse();
@@ -546,7 +551,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						additionalAttributes.put(TRANSACTION_COUNT,
 								replaceNullValueWithNA(vidData.get(TRANSACTION_COUNT)));
 						additionalAttributes.put(CARD_FORMAT, VID_CARD);
-						additionalAttributes.put(DATE_OF_BIRTH, identityDTOForDownloadableCardVid.getDateOfBirth());
+						if(identityDTOForDownloadableCardVid!=null) {
+							additionalAttributes.put(DATE_OF_BIRTH, identityDTOForDownloadableCardVid.getDateOfBirth());
+						}
 						if (name != null) {
 							additionalAttributes.put(ResidentConstants.NAME, name);
 						}
