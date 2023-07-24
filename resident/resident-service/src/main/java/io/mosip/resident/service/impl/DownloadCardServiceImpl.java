@@ -358,16 +358,14 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		String uinForVid = "";
 		IdentityDTO identityDTOForDownloadableCardVid = new IdentityDTO();
-		IdentityDTO identityDTOForResidentIndividualIdFromSession = new IdentityDTO();
 		try {
 			identityDTOForDownloadableCardVid = identityService.getIdentity(vid);
 			uinForVid = identityDTOForDownloadableCardVid.getUIN();
 			residentTransactionEntity = insertDataForVidCard(vid, uinForVid);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
-				identityDTOForResidentIndividualIdFromSession = identityService.
-						getIdentity(identityService.getResidentIndvidualIdFromSession());
-				String uinForIndividualId = identityDTOForResidentIndividualIdFromSession.getUIN();
+				String uinForIndividualId = identityService.
+						getIdentity(identityService.getResidentIndvidualIdFromSession()).getUIN();
 				if (!uinForIndividualId.equals(uinForVid)) {
 					residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -388,7 +386,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
 			credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
 			Map<String, Object> additionalAttributes = getVidDetails(vid, identityDTOForDownloadableCardVid, timeZoneOffset, locale,
-					identityDTOForResidentIndividualIdFromSession.getDateOfBirth());
+					identityDTOForDownloadableCardVid.getDateOfBirth());
 			additionalAttributes.put(TEMPLATE_TYPE_CODE,
 					this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
 			additionalAttributes.put(APPLICANT_PHOTO,
