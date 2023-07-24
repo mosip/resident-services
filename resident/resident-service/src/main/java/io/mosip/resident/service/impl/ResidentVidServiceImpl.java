@@ -210,7 +210,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		ResidentTransactionEntity residentTransactionEntity=null;
 		try {
 			if(Utility.isSecureSession()){
-				residentTransactionEntity = createResidentTransactionEntity(requestDto);
+				residentTransactionEntity = createResidentTransactionEntity(requestDto, identityDTO.getUIN());
 				validateVidFromSession(individualId, requestDto.getVidType(), identityDTO);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
@@ -306,9 +306,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	private void validateVidFromSession(String individualId, String vidType, IdentityDTO identityDTO) {
 		try {
 			String idType = identityServiceImpl.getIndividualIdType(individualId);
-			String uin = identityServiceImpl.getUinForIndividualId(individualId);
-			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(uin
-					, identityDTO);
+			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(
+					identityDTO);
 			/**
 			 * Check If id type is VID.
 			 */
@@ -365,7 +364,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return vidPolicyDto;
 	}
 
-	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String individualId, IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
+	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, identityDTO);
 		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
 		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
@@ -376,11 +375,11 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return Tuples.of(vidList.size(), vidList.get(0).get(TemplateVariablesConstants.VID).toString());
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto) throws ApisResourceAccessException, ResidentServiceCheckedException {
+	private ResidentTransactionEntity createResidentTransactionEntity(BaseVidRequestDto requestDto, String uin) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.GENERATE_VID);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setRefIdType(requestDto.getVidType().toUpperCase());
 		return residentTransactionEntity;
@@ -472,14 +471,9 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		}
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
-		if(Utility.isSecureSession()) {
-			residentTransactionEntity = createResidentTransEntity(vid, indivudalId);
-			if (residentTransactionEntity != null) {
-				eventId = residentTransactionEntity.getEventId();
-			}
-		}
 		IdentityDTO identityDTO = new IdentityDTO();
 		String uin="";
+
 		if(isV2Request) {
 			try {
 				identityDTO = identityServiceImpl.getIdentity(indivudalId);
@@ -488,8 +482,14 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
 			uin = identityDTO.getUIN();
+			if(Utility.isSecureSession()) {
+				residentTransactionEntity = createResidentTransEntity(vid, identityDTO);
+				if (residentTransactionEntity != null) {
+					eventId = residentTransactionEntity.getEventId();
+				}
+			}
 			notificationRequestDto.setId(uin);
-			String idaTokenForIndividualId = identityServiceImpl.getResidentIdaToken();
+			String idaTokenForIndividualId = identityServiceImpl.getIDAToken(uin);
 			String idaTokenForVid = identityServiceImpl.getIDATokenForIndividualId(vid);
 			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
 				if(Utility.isSecureSession()) {
@@ -516,7 +516,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_INDIVITUAL);
 			}
 		}
-		
+
 		try {
 			// revoke vid
 			VidGeneratorResponseDto vidResponse = vidDeactivator(requestDto, uin, vid);
@@ -681,23 +681,23 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return eventId == null ? new VidAlreadyPresentException(rootCause.getMessage(), rootCause): new VidAlreadyPresentException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
 	}
 
-	private ResidentTransactionEntity createResidentTransEntity(String vid, String individualId) throws ApisResourceAccessException, ResidentServiceCheckedException {
+	private ResidentTransactionEntity createResidentTransEntity(String vid, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.REVOKE_VID);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRefId(utility.convertToMaskData(vid));
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		try {
-			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, individualId));
+			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, identityDTO));
 		} catch (Exception exception){
 			residentTransactionEntity.setRefIdType("");
 		}
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityDTO.getUIN()));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		return residentTransactionEntity;
 	}
 
-	private String getVidTypeFromVid(String vid, String indivudalId) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(indivudalId, ResidentConstants.UTC_TIMEZONE_OFFSET, null);
+	private String getVidTypeFromVid(String vid, IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, identityDTO);
 		return vids.getResponse().stream()
 				.filter(map -> ((String)map.get(TemplateVariablesConstants.VID)).equals(vid))
 				.map(map -> (String)map.get(TemplateVariablesConstants.VID_TYPE))

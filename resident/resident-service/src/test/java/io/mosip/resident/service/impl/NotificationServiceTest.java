@@ -1,17 +1,26 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.NotificationTemplateCode;
+import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.dto.NotificationRequestDto;
+import io.mosip.resident.dto.NotificationRequestDtoV2;
+import io.mosip.resident.dto.NotificationResponseDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.TemplateUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,29 +38,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.NotificationTemplateCode;
-import io.mosip.resident.constant.RequestType;
-import io.mosip.resident.constant.TemplateType;
-import io.mosip.resident.dto.NotificationRequestDto;
-import io.mosip.resident.dto.NotificationRequestDtoV2;
-import io.mosip.resident.dto.NotificationResponseDTO;
-import io.mosip.resident.dto.TemplateDto;
-import io.mosip.resident.dto.TemplateResponseDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.NotificationService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.TemplateUtil;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -132,18 +128,9 @@ public class NotificationServiceTest {
 				.thenReturn("email-subject-template-type-code");
 		Mockito.when(templateUtil.getEmailContentTemplateTypeCode(Mockito.any(), Mockito.any()))
 				.thenReturn("email-content-template-type-code");
-		ResponseWrapper<TemplateResponseDto> primaryLangResp = new ResponseWrapper<>();
-		TemplateResponseDto primaryTemplateResp = new TemplateResponseDto();
-		List<TemplateDto> primaryTemplateList = new ArrayList<>();
-		TemplateDto primaryTemplateDto = new TemplateDto();
-		primaryTemplateDto.setDescription("re print uin");
-		primaryTemplateDto.setFileText(
-				"Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.<br>");
-		primaryTemplateList.add(primaryTemplateDto);
-		primaryTemplateResp.setTemplates(primaryTemplateList);
-		primaryLangResp.setResponse(primaryTemplateResp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class))).thenReturn(primaryLangResp);
+
+		Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).
+				thenReturn("Hi $name_eng,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is $RID.<br>");
 
 		String primaryTemplatetext = "Hi Test,Your request for \"Reprint Of UIN\" has been successfully placed. Your RID (Req Number) is 10008200070004420191203104356.<br>";
 		InputStream primaryIs = new ByteArrayInputStream(primaryTemplatetext.getBytes(StandardCharsets.UTF_8));
@@ -210,52 +197,6 @@ public class NotificationServiceTest {
 		notificationResponseWrapper.setResponse(notificationResp);
 		Mockito.when(restClient.postApi(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(Class.class)))
 				.thenReturn(notificationResponseWrapper);
-		notificationService.sendNotification(reqDto, null);
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void getTemplateNullResponseTest() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class))).thenReturn(null);
-		notificationService.sendNotification(reqDto, null);
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetTemplateWithIOException() throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResponseWrapper<Object> resp = new ResponseWrapper();
-		resp.setResponse("throw io exception");
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class))).thenReturn(resp);
-		notificationService.sendNotification(reqDto, null);
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetTemplateWithClientErrorException()
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		HttpClientErrorException clientExp = new HttpClientErrorException(HttpStatus.BAD_GATEWAY);
-		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", clientExp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
-		notificationService.sendNotification(reqDto, null);
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetTemplateWithServerErrorException()
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		HttpServerErrorException serverExp = new HttpServerErrorException(HttpStatus.BAD_GATEWAY);
-		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("BadGateway", serverExp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
-		notificationService.sendNotification(reqDto, null);
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetTemplateWithUnknownException()
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		RuntimeException runTimeExp = new RuntimeException();
-		ApisResourceAccessException apiResourceAccessExp = new ApisResourceAccessException("runtime exp", runTimeExp);
-		Mockito.when(restClient.getApi(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.any(),
-				Mockito.any(Class.class))).thenThrow(apiResourceAccessExp);
 		notificationService.sendNotification(reqDto, null);
 	}
 
