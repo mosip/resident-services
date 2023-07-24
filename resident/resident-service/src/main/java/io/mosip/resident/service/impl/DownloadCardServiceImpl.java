@@ -357,7 +357,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		String uinForVid = "";
-		IdentityDTO identityDTOForDownloadableCardVid = new IdentityDTO();
+		IdentityDTO identityDTOForDownloadableCardVid = null;
 		try {
 			identityDTOForDownloadableCardVid = identityService.getIdentity(vid);
 			uinForVid = identityDTOForDownloadableCardVid.getUIN();
@@ -385,8 +385,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			credentialReqestDto.setEncrypt(
 					Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
 			credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
-			Map<String, Object> additionalAttributes = getVidDetails(vid, identityDTOForDownloadableCardVid, timeZoneOffset, locale,
-					identityDTOForDownloadableCardVid.getDateOfBirth());
+			Map<String, Object> additionalAttributes = getVidDetails(vid, identityDTOForDownloadableCardVid, timeZoneOffset, locale);
 			additionalAttributes.put(TEMPLATE_TYPE_CODE,
 					this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
 			additionalAttributes.put(APPLICANT_PHOTO,
@@ -520,8 +519,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return residentTransactionEntity;
 	}
 
-	private Map<String, Object> getVidDetails(String vid, IdentityDTO identityDTOForDownloadableCardVid, int timeZoneOffset, String locale
-	, String dateOfBirth)
+	private Map<String, Object> getVidDetails(String vid, IdentityDTO identityDTOForDownloadableCardVid, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		String name = null;
@@ -548,7 +546,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						additionalAttributes.put(TRANSACTION_COUNT,
 								replaceNullValueWithNA(vidData.get(TRANSACTION_COUNT)));
 						additionalAttributes.put(CARD_FORMAT, VID_CARD);
-						additionalAttributes.put(DATE_OF_BIRTH, dateOfBirth);
+						additionalAttributes.put(DATE_OF_BIRTH, identityDTOForDownloadableCardVid.getDateOfBirth());
 						if (name != null) {
 							additionalAttributes.put(ResidentConstants.NAME, name);
 						}
