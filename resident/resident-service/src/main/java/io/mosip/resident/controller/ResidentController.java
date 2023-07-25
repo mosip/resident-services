@@ -13,7 +13,9 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import io.mosip.resident.util.Utilities;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -113,6 +115,9 @@ public class ResidentController {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	private Utilities utilities;
+
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
 
@@ -121,9 +126,6 @@ public class ResidentController {
 	
 	@Value("${resident.download.card.eventid.id}")
 	private String downloadCardEventidId;
-	
-	@Value("${resident.download.card.eventid.version}")
-	private String downloadCardEventidVersion;
 	
 	@Value("${resident.vid.version.new}")
 	private String newVersion;
@@ -407,7 +409,7 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::updateUin()::exit");
-		validator.validateUpdateRequest(requestDTO, false);
+		validator.validateUpdateRequest(requestDTO, false, null);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()).getT1());
@@ -449,11 +451,13 @@ public class ResidentController {
 			request.setIndividualIdType(getIdType(individualId));
 		}
 		try {
-			validator.validateUpdateRequest(requestWrapper, true);
+			JSONObject idRepoJson = utilities.retrieveIdrepoJson(individualId);
+			String schemaJson = utility.getSchemaJsonFromIdRepoJson(idRepoJson);
+			validator.validateUpdateRequest(requestWrapper, true, schemaJson);
 			logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
-					identityServiceImpl.getUinForIndividualId(individualId));
-			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true);
+					idRepoJson.get(IdType.UIN.name()));
+			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true, idRepoJson, schemaJson);
 			response.setId(requestDTO.getId());
 			response.setVersion(requestDTO.getVersion());
 			response.setResponse(tupleResponse.getT1());

@@ -107,7 +107,12 @@ public class ResidentUpdateService {
 		return createPacket(request, defaultIdSchemaVersion);
 	}
 
-	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion) throws BaseCheckedException, IOException {
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion)
+			throws BaseCheckedException, IOException {
+		return createPacket(request, idSchemaVersion, null);
+	}
+
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion, String sessionUin) throws BaseCheckedException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
 		if(idSchemaVersion == null){
@@ -120,7 +125,7 @@ public class ResidentUpdateService {
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
 						? validator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.toString(),
 								request.getIdValue())
-						: validator.isValidVid(request.getIdValue())) {
+						: validator.isValidVid(request.getIdValue(), sessionUin)) {
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 					request.getIdValue(),

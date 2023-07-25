@@ -738,7 +738,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
-			String eventId, Map<String, Object> additionalAttributes) throws ResidentServiceCheckedException {
+													   String eventId, Map<String, Object> additionalAttributes, JSONObject idRepoJson) throws ResidentServiceCheckedException {
 
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(id);
@@ -746,7 +746,7 @@ public class ResidentServiceImpl implements ResidentService {
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
-		return notificationService.sendNotification(notificationRequestDtoV2, null);
+		return notificationService.sendNotification(notificationRequestDtoV2, idRepoJson);
 	}
 
 	private NotificationResponseDTO trySendNotification(String id, NotificationTemplateCode templateTypeCode,
@@ -770,7 +770,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
-			return reqUinUpdate(dto, demographicIdentity, false);
+			return reqUinUpdate(dto, demographicIdentity, false, null, null);
 		} catch (IOException e) {
 			logger.error(EventEnum.IO_EXCEPTION.getDescription(), dto.getTransactionID());
 
@@ -780,7 +780,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity, boolean validateIdObject)
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity, boolean validateIdObject,
+											   JSONObject idRepoJson, String schemaJson)
 			throws ResidentServiceCheckedException {
 		logger.debug("ResidentServiceImpl::reqUinUpdate()::entry");
 		Object responseDto = null;
@@ -837,15 +838,7 @@ public class ResidentServiceImpl implements ResidentService {
 			String encodedIdentityJson = CryptoUtil.encodeToURLSafeBase64(jsonObject.toJSONString().getBytes());
 			regProcReqUpdateDto.setIdentityJson(encodedIdentityJson);
 			String mappingJson = utility.getMappingJson();
-			String idSchemaVersionStr = null;
-			JSONObject obj = utilities.retrieveIdrepoJson(dto.getIndividualId());
-			idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
 			if(validateIdObject) {
-				Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
-				ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-				Object idSchema = idSchemaResponse.getResponse();
-				Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-				String schemaJson = (String) map.get("schemaJson");
 				try {
 					idObjectValidator.validateIdObject(schemaJson, jsonObject);
 				} catch (IdObjectValidationFailedException e) {
@@ -871,8 +864,12 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
+			String sessionUin = null;
+			if(Utility.isSecureSession()){
+				sessionUin = idRepoJson.get(IdType.UIN.name()).toString();
+			}
 			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), mappingJsonObject,
-					demographicIdentity);
+					demographicIdentity, sessionUin);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
 			List<ResidentDocuments> documents;
 			if (Utility.isSecureSession()) {
@@ -888,12 +885,18 @@ public class ResidentServiceImpl implements ResidentService {
 			regProcReqUpdateDto.setProofOfAddress(getDocumentValue(proofOfAddressJson, documents));
 			JSONObject proofOfIdentityJson = JsonUtil.getJSONObject(demographicIdentity, poiMapping);
 			regProcReqUpdateDto.setProofOfIdentity(getDocumentValue(proofOfIdentityJson, documents));
-			JSONObject proofOfrelationJson = JsonUtil.getJSONObject(demographicIdentity, porMapping);
-			regProcReqUpdateDto.setProofOfRelationship(getDocumentValue(proofOfrelationJson, documents));
+			JSONObject proofOfRelationJson = JsonUtil.getJSONObject(demographicIdentity, porMapping);
+			regProcReqUpdateDto.setProofOfRelationship(getDocumentValue(proofOfRelationJson, documents));
 			JSONObject proofOfBirthJson = JsonUtil.getJSONObject(demographicIdentity, pobMapping);
 			regProcReqUpdateDto.setProofOfDateOfBirth(getDocumentValue(proofOfBirthJson, documents));
-
-			PacketGeneratorResDto response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr);
+			String idSchemaVersionStr = null;
+			PacketGeneratorResDto response;
+			if(Utility.isSecureSession()) {
+				idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
+				response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr, sessionUin);
+			}else {
+				response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr);
+			}
 			Map<String, Object> additionalAttributes = new HashMap<>();
 			additionalAttributes.put("RID", response.getRegistrationId());
 			logger.debug(EventEnum.OBTAINED_RID_UIN_UPDATE.getDescription(), dto.getTransactionID());
@@ -902,7 +905,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (Utility.isSecureSession()) {
 				updateResidentTransaction(residentTransactionEntity, response);
 				notificationResponseDTO = sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN,
-						TemplateType.REQUEST_RECEIVED, eventId, additionalAttributes);
+						TemplateType.REQUEST_RECEIVED, eventId, additionalAttributes, idRepoJson);
 				residentUpdateResponseDTOV2.setStatus(ResidentConstants.SUCCESS);
 				residentUpdateResponseDTOV2.setMessage(notificationResponseDTO.getMessage());
 			} else {
@@ -927,7 +930,7 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
+						eventId, null, idRepoJson);
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
@@ -946,7 +949,7 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
+						eventId, null, idRepoJson);
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
@@ -988,7 +991,7 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
+						eventId, null, idRepoJson);
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
@@ -1007,7 +1010,7 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
+						eventId, null, idRepoJson);
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
@@ -1029,7 +1032,7 @@ public class ResidentServiceImpl implements ResidentService {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 				residentTransactionEntity.setRequestSummary("failed");
 				sendNotificationV2(dto.getIndividualId(), RequestType.UPDATE_MY_UIN, TemplateType.FAILURE,
-						eventId, null);
+						eventId, null, idRepoJson);
 			} else {
 				sendNotification(dto.getIndividualId(), NotificationTemplateCode.RS_UIN_UPDATE_FAILURE, null);
 			}
@@ -1204,7 +1207,7 @@ public class ResidentServiceImpl implements ResidentService {
 			TemplateType templateType = isTransactionSuccessful ? TemplateType.REQUEST_RECEIVED : TemplateType.FAILURE;
 
 			NotificationResponseDTO notificationResponseDTO = sendNotificationV2(individualId, requestType,
-					templateType, eventId, null);
+					templateType, eventId, null, null);
 
 			if (isTransactionSuccessful) {
 				response.setMessage("The chosen authentication types have been successfully locked/unlocked.");
@@ -1393,13 +1396,17 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private void validateAuthIndividualIdWithUIN(String individualId, String individualIdType,
-			JSONObject mappingJsonObject, JSONObject demographicIdentity)
+												 JSONObject mappingJsonObject, JSONObject demographicIdentity, String sessionUin)
 			throws ApisResourceAccessException, ValidationFailedException, IOException {
 		String uin = "";
 		if (ResidentIndividialIDType.UIN.toString().equals(individualIdType))
 			uin = individualId;
 		else if (ResidentIndividialIDType.VID.toString().equals(individualIdType)) {
-			uin = utilities.getUinByVid(individualId);
+			if(sessionUin!=null){
+				uin = sessionUin;
+			} else {
+				uin = utilities.getUinByVid(individualId);
+			}
 		} else {
 			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 					LoggerFileConstant.APPLICATIONID.toString(),

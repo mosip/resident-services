@@ -389,6 +389,9 @@ public class RequestHandlerRequestValidator {
 					"UIN is not valid", new Throwable());
 	}
 
+	public boolean isValidVid(String vid) throws BaseCheckedException, IOException {
+		return isValidVid(vid, null);
+	}
 	/**
 	 * Checks if is valid vid.
 	 *
@@ -398,11 +401,17 @@ public class RequestHandlerRequestValidator {
 	 * @throws BaseCheckedException
 	 *             the reg base checked exception
 	 */
-	public boolean isValidVid(String vid) throws BaseCheckedException, IOException {
+	public boolean isValidVid(String vid, String sessionUin) throws BaseCheckedException, IOException {
 		boolean isValidVID = false;
 		try {
 			isValidVID = vidValidatorImpl.validateId(vid);
-			String result = utilities.getUinByVid(vid);
+			String result;
+			if(sessionUin!=null){
+				result = sessionUin;
+			} else {
+				result = utilities.getUinByVid(vid);
+			}
+
 			if (isValidVID && result != null) {
 				isValidVID = true;
 			} else {
