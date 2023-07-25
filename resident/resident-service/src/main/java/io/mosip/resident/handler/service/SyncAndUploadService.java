@@ -156,7 +156,6 @@ public class SyncAndUploadService {
 					logger.info(LoggerFileConstant.SESSIONID.toString(),
 							LoggerFileConstant.REGISTRATIONID.toString(), registartionId,
 							packerGeneratorResDto.getMessage());
-					audit.setAuditRequestDto(EventEnum.PACKET_CREATED);
 					return packerGeneratorResDto;
 				}
 
