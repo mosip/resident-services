@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -770,7 +771,7 @@ public class ResidentServiceImpl implements ResidentService {
 		try {
 			demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
 			JSONObject demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, IDENTITY);
-			return reqUinUpdate(dto, demographicIdentity, false, null, null);
+			return reqUinUpdate(dto, demographicIdentity, false, null, null, null);
 		} catch (IOException e) {
 			logger.error(EventEnum.IO_EXCEPTION.getDescription(), dto.getTransactionID());
 
@@ -781,7 +782,7 @@ public class ResidentServiceImpl implements ResidentService {
 
 	@Override
 	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicIdentity, boolean validateIdObject,
-											   JSONObject idRepoJson, String schemaJson)
+											   JSONObject idRepoJson, String schemaJson, IdResponseDTO1 idResponseDto)
 			throws ResidentServiceCheckedException {
 		logger.debug("ResidentServiceImpl::reqUinUpdate()::entry");
 		Object responseDto = null;
@@ -893,7 +894,7 @@ public class ResidentServiceImpl implements ResidentService {
 			PacketGeneratorResDto response;
 			if(Utility.isSecureSession()) {
 				idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
-				response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr, sessionUin);
+				response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr, sessionUin, idResponseDto);
 			}else {
 				response = residentUpdateService.createPacket(regProcReqUpdateDto, idSchemaVersionStr);
 			}

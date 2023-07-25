@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.json.simple.JSONObject;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -48,7 +49,7 @@ public interface ResidentService {
 
 	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 	
-	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject, boolean validateIdObject, JSONObject idRepoJson, String schemaJson) throws ResidentServiceCheckedException;
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject, boolean validateIdObject, JSONObject idRepoJson, String schemaJson, IdResponseDTO1 idResponseDto) throws ResidentServiceCheckedException;
 	
 	public Tuple2<ResponseDTO, String> reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;

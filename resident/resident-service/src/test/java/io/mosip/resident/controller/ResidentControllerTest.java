@@ -21,6 +21,7 @@ import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RequestDTO;
@@ -33,6 +34,7 @@ import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ResponseDTO1;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
@@ -84,6 +86,7 @@ import reactor.util.function.Tuples;
 
 import javax.crypto.SecretKey;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -190,7 +193,7 @@ public class ResidentControllerTest {
 	private String schemaJson;
 
 	@Before
-	public void setUp() throws ApisResourceAccessException {
+	public void setUp() throws ApisResourceAccessException, IOException {
 		MockitoAnnotations.initMocks(this);
 		authLockRequest = new RequestWrapper<AuthLockOrUnLockRequestDto>();
 
@@ -228,6 +231,7 @@ public class ResidentControllerTest {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
 		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn("UIN");
 		when(environment.getProperty(anyString())).thenReturn("property");
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
 
 		idRepoJson = null;
 		schemaJson = null;
@@ -462,8 +466,14 @@ public class ResidentControllerTest {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("IDSchemaVersion", "0.1");
 		when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+		IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+		ResponseDTO1 responseDTO1 = new ResponseDTO1();
+		responseDTO1.setIdentity(jsonObject);
+		idResponseDTO1.setResponse(responseDTO1);
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.anyString())).thenReturn(idResponseDTO1);
+		when(utilities.convertIdResponseIdentityObjectToJsonObject(Mockito.any())).thenReturn(jsonObject);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
-		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
+		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), ((ResponseWrapper<Object>)responseEntity.getBody()).getResponse());

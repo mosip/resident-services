@@ -13,6 +13,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.util.Utilities;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -451,13 +452,15 @@ public class ResidentController {
 			request.setIndividualIdType(getIdType(individualId));
 		}
 		try {
-			JSONObject idRepoJson = utilities.retrieveIdrepoJson(individualId);
+			IdResponseDTO1 idResponseDto = utilities.retrieveIdRepoJsonIdResponseDto(individualId);
+			JSONObject idRepoJson = utilities.convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
 			String schemaJson = utility.getSchemaJsonFromIdRepoJson(idRepoJson);
 			validator.validateUpdateRequest(requestWrapper, true, schemaJson);
 			logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
 					idRepoJson.get(IdType.UIN.name()));
-			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true, idRepoJson, schemaJson);
+			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true,
+					idRepoJson, schemaJson, idResponseDto);
 			response.setId(requestDTO.getId());
 			response.setVersion(requestDTO.getVersion());
 			response.setResponse(tupleResponse.getT1());

@@ -108,7 +108,6 @@ public class SyncAndUploadService {
 					return registartionId + RegistrationConstants.EXTENSION_OF_FILE;
 				}
 			};
-            audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.PACKET_SYNC,registartionId));
 			RegSyncResponseDTO regSyncResponseDTO = packetSync(registartionId, regType, packetZipBytes, creationTime);
 
 			if (regSyncResponseDTO != null) {
