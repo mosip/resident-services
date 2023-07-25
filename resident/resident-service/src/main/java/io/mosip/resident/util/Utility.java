@@ -903,5 +903,14 @@ public class Utility {
 		}
 		return name;
 	}
+
+	public String getSchemaJsonFromIdRepoJson(JSONObject idRepoJson) throws ResidentServiceCheckedException {
+		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
+		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
+		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+		Object idSchema = idSchemaResponse.getResponse();
+		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
+		return ((String) map.get("schemaJson"));
+	}
 	
 }
