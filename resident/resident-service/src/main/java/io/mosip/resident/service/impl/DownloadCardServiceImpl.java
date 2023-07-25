@@ -521,15 +521,15 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return residentTransactionEntity;
 	}
 
-	private Map<String, Object> getVidDetails(String vid, IdentityDTO identityDTOForDownloadableCardVid, int timeZoneOffset, String locale)
+	private Map<String, Object> getVidDetails(String vid, IdentityDTO identityDTO, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		String name = null;
 		ResponseWrapper<List<Map<String, ?>>> vidResponse = null;
 		String uin=null;
-		if(identityDTOForDownloadableCardVid!=null){
-			uin = identityDTOForDownloadableCardVid.getUIN();
-			name = identityDTOForDownloadableCardVid.getFullName();
+		if(identityDTO!=null){
+			uin = identityDTO.getUIN();
+			name = identityDTO.getFullName();
 		}
 		if (uin != null) {
 			vidResponse = vidService.retrieveVids(timeZoneOffset, locale, uin);
@@ -551,8 +551,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						additionalAttributes.put(TRANSACTION_COUNT,
 								replaceNullValueWithNA(vidData.get(TRANSACTION_COUNT)));
 						additionalAttributes.put(CARD_FORMAT, VID_CARD);
-						if(identityDTOForDownloadableCardVid!=null) {
-							additionalAttributes.put(DATE_OF_BIRTH, identityDTOForDownloadableCardVid.getDateOfBirth());
+						if(identityDTO!=null) {
+							additionalAttributes.put(DATE_OF_BIRTH, identityDTO.getDateOfBirth());
 						}
 						if (name != null) {
 							additionalAttributes.put(ResidentConstants.NAME, name);
