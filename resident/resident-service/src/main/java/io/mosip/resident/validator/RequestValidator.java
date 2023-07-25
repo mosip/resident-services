@@ -814,7 +814,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch, String schemaJson) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		if (!isPatch) {
 			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
@@ -827,7 +827,7 @@ public class RequestValidator {
 		} else {
 			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
-			validateAttributeName(requestDTO.getRequest().getIdentity());
+			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
@@ -880,16 +880,9 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		JSONObject idRepoJson = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
-		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ID_SCHEMA_VERSION));
-		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
-		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-		Object idSchema = idSchemaResponse.getResponse();
-		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-		String schemaJson = ((String) map.get("schemaJson"));
+	private void validateAttributeName(JSONObject identity, String schemaJson) {
 		boolean status = false;
-		if (identity != null) {
+		if (identity != null && schemaJson!=null) {
 			status = identity.keySet().stream()
 					.filter(key -> !Objects.equals(key, ID_SCHEMA_VERSION))
 					.anyMatch(key -> schemaJson.contains(key.toString()));

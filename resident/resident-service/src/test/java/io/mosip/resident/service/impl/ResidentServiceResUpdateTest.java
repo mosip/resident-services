@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.util.JsonUtil;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -137,6 +139,11 @@ public class ResidentServiceResUpdateTest {
 
 	PacketGeneratorResDto updateDto;
 
+	private JSONObject idRepoJson;
+	private String schemaJson;
+	private JSONObject demographicIdentity;
+	private IdResponseDTO1 idResponseDto;
+
 	@Before
 	public void setUp() throws BaseCheckedException, IOException {
 
@@ -229,7 +236,7 @@ public class ResidentServiceResUpdateTest {
 
 		updateDto = new PacketGeneratorResDto();
 		updateDto.setRegistrationId("10008100670001720191120095702");
-		Mockito.when(residentUpdateService.createPacket(any())).thenReturn(updateDto);
+		Mockito.when(residentUpdateService.createPacket(any(), any(), any(), any())).thenReturn(updateDto);
 		Mockito.when(residentUpdateService.createPacket(any(), any())).thenReturn(updateDto);
 
 		Mockito.when(env.getProperty(ApiName.PACKETSIGNPUBLICKEY.name())).thenReturn("PACKETSIGNPUBLICKEY");
@@ -241,6 +248,15 @@ public class ResidentServiceResUpdateTest {
 				eq(MachineSearchResponseDTO.class))).thenReturn(machineSearchResponseDTO);
 
 		when(utilities.getLanguageCode()).thenReturn("eng");
+		idRepoJson = new JSONObject();
+		idRepoJson.put("UIN", "8251649601");
+		idRepoJson.put("email", "manojvsp12@gmail.com");
+		schemaJson = (String) schema;
+
+		byte[] decodedDemoJson = CryptoUtil.decodeURLSafeBase64(dto.getIdentityJson());
+		JSONObject demographicJsonObject;
+		demographicJsonObject = JsonUtil.readValue(new String(decodedDemoJson), JSONObject.class);
+		demographicIdentity = JsonUtil.getJSONObject(demographicJsonObject, "identity");
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -309,7 +325,7 @@ public class ResidentServiceResUpdateTest {
 	}
 
 	@Test
-	public void reqUinUpdateGetMachineIdTest() throws BaseCheckedException, IOException {
+	public void reqUinUpdateGetMachineIdTest() throws BaseCheckedException {
 		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 	}
@@ -333,7 +349,8 @@ public class ResidentServiceResUpdateTest {
 	@Test
 	public void reqUinUpdateGetMachineIdTestWithSecureSessionSuccess() throws BaseCheckedException, IOException {
 		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
-		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate
+				(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 		assertEquals("10008100670001720191120095702", updateDto.getRegistrationId());
 	}
 
@@ -454,12 +471,11 @@ public class ResidentServiceResUpdateTest {
 	}
 
 	@Test
-	public void testValidationOfAuthIndividualIdWithUINWithSecureSession() throws ResidentServiceCheckedException,
-			OtpValidationFailedException, ApisResourceAccessException, FileNotFoundException, IOException {
+	public void testValidationOfAuthIndividualIdWithUINWithSecureSession() throws ResidentServiceCheckedException {
 		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 		dto.setIndividualId("3527812407");
 		try {
-			residentServiceImpl.reqUinUpdate(dto);
+			residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 		} catch (ResidentServiceException e) {
 			assertEquals(ResidentErrorCode.INDIVIDUAL_ID_UIN_MISMATCH.getErrorCode(),
 					((ValidationFailedException) e.getCause()).getErrorCode());
@@ -579,7 +595,7 @@ public class ResidentServiceResUpdateTest {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("identity", identityMap);
 		jsonObject.put("UIN", "3527812406");
-		residentServiceImpl.reqUinUpdate(dto, jsonObject, true);
+		residentServiceImpl.reqUinUpdate(dto, jsonObject, true, idRepoJson, schemaJson, idResponseDto);
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -592,7 +608,7 @@ public class ResidentServiceResUpdateTest {
 		jsonObject.put("UIN", "3527812406");
 		Mockito.when(idObjectValidator.validateIdObject(any(), any())).thenThrow(new IdObjectValidationFailedException(
 				ResidentErrorCode.INVALID_INPUT.getErrorCode(), ResidentConstants.INVALID_INPUT_PARAMETER));
-		residentServiceImpl.reqUinUpdate(dto, jsonObject, true);
+		residentServiceImpl.reqUinUpdate(dto, jsonObject, true, idRepoJson, schemaJson, idResponseDto);
 	}
 
 	@Test(expected = ResidentServiceException.class)

@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -172,22 +173,24 @@ public class Utilities {
 						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
 				throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), error.get(0).getMessage());
 			}
-			String response = objMapper.writeValueAsString(idResponseDto.getResponse().getIdentity());
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
-			try {
-				return (JSONObject) new JSONParser().parse(response);
-			} catch (org.json.simple.parser.ParseException e) {
-				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-						ExceptionUtils.getStackTrace(e));
-				throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
-			}
-
-
+			return convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
 		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::retrieveIdrepoJson()::exit UIN is null");
 		return null;
+	}
+
+	public JSONObject convertIdResponseIdentityObjectToJsonObject(Object identityObject) throws JsonProcessingException {
+		String response = objMapper.writeValueAsString(identityObject);
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+				"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
+		try {
+			return (JSONObject) new JSONParser().parse(response);
+		} catch (org.json.simple.parser.ParseException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					ExceptionUtils.getStackTrace(e));
+			throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
+		}
 	}
 
 	public JSONObject getRegistrationProcessorMappingJson() throws IOException {
@@ -334,6 +337,38 @@ public class Utilities {
 			}
 
 			response = idResponseDto.getResponse().getStatus();
+
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
+		}
+
+		return response;
+	}
+
+	public IdResponseDTO1 retrieveIdRepoJsonIdResponseDto(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
+		IdResponseDTO1 response = null;
+		if (uin != null) {
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson()::entry");
+			List<String> pathSegments = new ArrayList<>();
+			pathSegments.add(uin);
+			IdResponseDTO1 idResponseDto;
+
+			idResponseDto = (IdResponseDTO1) residentServiceRestClient.getApi(ApiName.IDREPOGETIDBYUIN, pathSegments, "", "",
+					IdResponseDTO1.class);
+			if (idResponseDto == null) {
+				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
+				return null;
+			}
+			if (!idResponseDto.getErrors().isEmpty()) {
+				List<ServiceError> error = idResponseDto.getErrors();
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
+				throw new IdRepoAppException(error.get(0).getErrorCode(), error.get(0).getMessage());
+			}
+
+			response = idResponseDto;
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
