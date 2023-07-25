@@ -211,7 +211,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		try {
 			if(Utility.isSecureSession()){
 				residentTransactionEntity = createResidentTransactionEntity(requestDto, identityDTO.getUIN());
-				validateVidFromSession(individualId, requestDto.getVidType(), identityDTO);
+				validateVidFromSession(individualId, requestDto.getVidType(), identityDTO.getUIN());
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
 	    		}
@@ -303,11 +303,11 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return Tuples.of(responseDto, eventId);
 	}
 
-	private void validateVidFromSession(String individualId, String vidType, IdentityDTO identityDTO) {
+	private void validateVidFromSession(String individualId, String vidType, String uin) {
 		try {
 			String idType = identityServiceImpl.getIndividualIdType(individualId);
 			Tuple2<Integer, String> numberOfPerpetualVidTuple = getNumberOfPerpetualVidFromUin(
-					identityDTO);
+					uin);
 			/**
 			 * Check If id type is VID.
 			 */
@@ -364,8 +364,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return vidPolicyDto;
 	}
 
-	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, identityDTO);
+	private Tuple2<Integer, String> getNumberOfPerpetualVidFromUin(String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, uin);
 		List<Map<String, ?>> vidList = vids.getResponse().stream().filter(map -> map.containsKey(TemplateVariablesConstants.VID_TYPE)
 		&& String.valueOf(map.get(TemplateVariablesConstants.VID_TYPE)).equalsIgnoreCase((ResidentConstants.PERPETUAL)))
 				.collect(Collectors.toList());
@@ -483,7 +483,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			}
 			uin = identityDTO.getUIN();
 			if(Utility.isSecureSession()) {
-				residentTransactionEntity = createResidentTransEntity(vid, identityDTO);
+				residentTransactionEntity = createResidentTransEntity(vid, uin);
 				if (residentTransactionEntity != null) {
 					eventId = residentTransactionEntity.getEventId();
 				}
@@ -681,23 +681,23 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		return eventId == null ? new VidAlreadyPresentException(rootCause.getMessage(), rootCause): new VidAlreadyPresentException(rootCause.getMessage(), rootCause, Map.of(ResidentConstants.EVENT_ID, eventId));
 	}
 
-	private ResidentTransactionEntity createResidentTransEntity(String vid, IdentityDTO identityDTO) throws ApisResourceAccessException, ResidentServiceCheckedException {
+	private ResidentTransactionEntity createResidentTransEntity(String vid, String uin) throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity=utility.createEntity(RequestType.REVOKE_VID);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRefId(utility.convertToMaskData(vid));
 		residentTransactionEntity.setIndividualId(identityServiceImpl.getResidentIndvidualIdFromSession());
 		try {
-			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, identityDTO));
+			residentTransactionEntity.setRefIdType(getVidTypeFromVid(vid, uin));
 		} catch (Exception exception){
 			residentTransactionEntity.setRefIdType("");
 		}
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(identityDTO.getUIN()));
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		return residentTransactionEntity;
 	}
 
-	private String getVidTypeFromVid(String vid, IdentityDTO identityDTO) throws ResidentServiceCheckedException, ApisResourceAccessException {
-		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, identityDTO);
+	private String getVidTypeFromVid(String vid, String uin) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		ResponseWrapper<List<Map<String,?>>> vids = retrieveVids(ResidentConstants.UTC_TIMEZONE_OFFSET, null, uin);
 		return vids.getResponse().stream()
 				.filter(map -> ((String)map.get(TemplateVariablesConstants.VID)).equals(vid))
 				.map(map -> (String)map.get(TemplateVariablesConstants.VID_TYPE))
@@ -776,13 +776,12 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 	@Override
 	public ResponseWrapper<List<Map<String,?>>> retrieveVids(String residentIndividualId, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(residentIndividualId);
-		return retrieveVids(timeZoneOffset, locale, identityDTO);
+		return retrieveVids(timeZoneOffset, locale, identityDTO.getUIN());
 	}
 
 	@Override
-	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, IdentityDTO identityDTO)
+	public ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, String uin)
 			throws ResidentServiceCheckedException, ApisResourceAccessException {
-		String uin = identityDTO.getUIN();
 		return retrieveVidsfromUin(uin, timeZoneOffset, locale);
 	}
 
