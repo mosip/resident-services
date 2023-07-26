@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,6 +116,7 @@ public class OTPManagerServiceImplTest {
 
     @Mock
     private Utilities utilities;
+    private IdentityDTO identityDTO;
 
     @Before
     public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
@@ -149,24 +151,24 @@ public class OTPManagerServiceImplTest {
 
     @Test
     public void testSendOtpSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng", identityDTO));
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testSendOtpAlreadyOtpSendError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(9);
-        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng", identityDTO));
     }
 
     @Test
     public void testSendOtpOtpSendWithinLessTime() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
-        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng", identityDTO));
     }
 
     @Test
     public void testSendOtpPhoneSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng", identityDTO));
     }
 
     @Test
@@ -201,7 +203,7 @@ public class OTPManagerServiceImplTest {
                         ArgumentMatchers.any(),
                         Mockito.eq(ResponseWrapper.class)))
                 .thenReturn(response1);
-        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng", identityDTO));
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -211,7 +213,7 @@ public class OTPManagerServiceImplTest {
                         ArgumentMatchers.any(),
                         Mockito.eq(ResponseWrapper.class)))
                 .thenThrow(new RestClientException("error"));
-        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng", identityDTO));
     }
 
     @Test

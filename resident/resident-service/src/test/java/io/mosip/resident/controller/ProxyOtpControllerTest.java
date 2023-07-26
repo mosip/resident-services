@@ -151,26 +151,26 @@ public class ProxyOtpControllerTest {
 
     @Test
     public void testSendOtp() throws Exception {
-        Mockito.when(proxyOtpService.sendOtp(Mockito.any())).thenReturn(responseEntity);
+        Mockito.when(proxyOtpService.sendOtp(Mockito.any(), Mockito.any())).thenReturn(responseEntity);
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/send-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
     
     @Test(expected = ResidentServiceException.class)
     public void testSendOtpException() throws Exception {
-    	doThrow(new InvalidInputException("error message")).when(validator).validateProxySendOtpRequest(Mockito.any());
+    	doThrow(new InvalidInputException("error message")).when(validator).validateProxySendOtpRequest(Mockito.any(), Mockito.any());
         proxyOtpController.sendOTP(userOtpRequest);
     }
 
     @Test(expected = ApisResourceAccessException.class)
     public void testSendOtpExceptionApiResourceException() throws Exception {
-        doThrow(new ApisResourceAccessException()).when(validator).validateProxySendOtpRequest(Mockito.any());
+        doThrow(new ApisResourceAccessException()).when(validator).validateProxySendOtpRequest(Mockito.any(), Mockito.any());
         proxyOtpController.sendOTP(userOtpRequest);
     }
 
     @Test(expected = Exception.class)
     public void testSendOtpWithResidentServiceCheckedException() throws Exception {
-        Mockito.when(proxyOtpService.sendOtp(Mockito.any())).thenThrow(ResidentServiceCheckedException.class);
+        Mockito.when(proxyOtpService.sendOtp(Mockito.any(), Mockito.any())).thenThrow(ResidentServiceCheckedException.class);
         mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/send-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(reqJson.getBytes())).andExpect(status().isOk());
     }
