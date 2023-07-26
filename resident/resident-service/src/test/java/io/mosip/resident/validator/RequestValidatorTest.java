@@ -2455,7 +2455,6 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateGrievanceRequestDtoInvalidMessage() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(2));
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
 		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
@@ -2472,7 +2471,6 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateGrievanceRequestDtoSuccess() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
 		io.mosip.resident.dto.MainRequestDTO<GrievanceRequestDTO> grievanceRequestDTOMainRequestDTO =
@@ -2489,7 +2487,6 @@ public class RequestValidatorTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testValidateGrievanceRequestDtoInvalidMessageLength() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
 		ReflectionTestUtils.setField(requestValidator, "messageCharsLimit", 1);
@@ -2507,7 +2504,6 @@ public class RequestValidatorTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testValidateGrievanceRequestDtoInvalidAllowedChars() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
 		ReflectionTestUtils.setField(requestValidator, "messageAllowedSpecialCharRegex", "[A-Za-z .,-]+");
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
@@ -2630,7 +2626,6 @@ public class RequestValidatorTest {
 
 	@Test
 	public void testValidateGrievanceRequestDtoSuccessWithAlternateEmailID() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		Mockito.when(environment.getProperty(ResidentConstants.MESSAGE_CODE_MAXIMUM_LENGTH)).thenReturn(String.valueOf(1024));
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_ID)).thenReturn("id");
 		Mockito.when(environment.getProperty(ResidentConstants.GRIEVANCE_REQUEST_VERSION)).thenReturn("version");
 		ReflectionTestUtils.setField(requestValidator, "emailRegex", "^[a-zA-Z0-9_\\-\\.]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z]{2,4}$");
