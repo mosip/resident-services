@@ -211,7 +211,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						? TemplateType.SUCCESS
 						: TemplateType.FAILURE;
 
-				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, null);
+				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, null, null);
 			}
 		}
 		logger.debug("DownloadCardServiceImpl::getDownloadCardPDF()::exit");
@@ -239,6 +239,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String individualId = "";
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
+		Tuple2<List<String>, Map<String, Object>> identityAttribute = null;
 		try {
 			individualId = identityService.getResidentIndvidualIdFromSession();
 			residentTransactionEntity = createResidentTransactionEntity(individualId,
@@ -246,7 +247,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
-				List<String> attributeValues = getAttributeList();
+				identityAttribute = getAttributeList();
+				List<String> attributeValues = identityAttribute.getT1();
 				if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))) {
 					password = utility.getPassword(attributeValues);
 				}
@@ -280,8 +282,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				TemplateType templateType = (residentTransactionEntity.getStatusCode().equals(CARD_DOWNLOADED.name()))
 						? TemplateType.SUCCESS
 						: TemplateType.FAILURE;
-
-				sendNotificationV2(individualId, RequestType.DOWNLOAD_PERSONALIZED_CARD, templateType, eventId, null, null);
+				if(identityAttribute!=null) {
+					sendNotificationV2(individualId, RequestType.DOWNLOAD_PERSONALIZED_CARD, templateType, eventId,
+							null, null, identityAttribute.getT2());
+				} else {
+					sendNotificationV2(individualId, RequestType.DOWNLOAD_PERSONALIZED_CARD, templateType, eventId,
+							null, null, null);
+				}
 			}
 		}
 		logger.debug("DownloadCardServiceImpl::downloadPersonalizedCard()::exit");
@@ -306,11 +313,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return residentTransactionEntity;
 	}
 
-	private List<String> getAttributeList() throws ApisResourceAccessException, IOException {
+	private Tuple2<List<String>, Map<String, Object>>  getAttributeList() throws ApisResourceAccessException, IOException {
 		return getAttributeList(identityService.getResidentIndvidualIdFromSession());
 	}
 
-	private List<String> getAttributeList(String individualId) throws IOException, ApisResourceAccessException {
+	private Tuple2<List<String>, Map<String, Object>> getAttributeList(String individualId) throws IOException, ApisResourceAccessException {
 		Map<String, Object> identityAttributes = null;
 		List<String> attributeValues = new ArrayList<>();
 		try {
@@ -345,7 +352,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 				}
 			}
 		}
-		return attributeValues;
+		return Tuples.of(attributeValues, identityAttributes);
 	}
 
 	@Override
@@ -441,7 +448,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 								: TemplateType.FAILURE;
 
 				sendNotificationV2(uinForVid, RequestType.VID_CARD_DOWNLOAD, templateType,
-						eventId, null, identityDTOForDownloadableCardVid);
+						eventId, null, identityDTOForDownloadableCardVid, null);
 			}
 		}
 		responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
@@ -594,14 +601,18 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private void sendNotificationV2(String id, RequestType requestType, TemplateType templateType, String eventId,
-			Map<String, Object> additionalAttributes, IdentityDTO identity) throws ResidentServiceCheckedException {
+									Map<String, Object> additionalAttributes, IdentityDTO identity, Map<String, Object> identityAttribute) throws ResidentServiceCheckedException {
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(id);
 		notificationRequestDtoV2.setRequestType(requestType);
 		notificationRequestDtoV2.setTemplateType(templateType);
 		notificationRequestDtoV2.setEventId(eventId);
 		notificationRequestDtoV2.setAdditionalAttributes(additionalAttributes);
-		notificationService.sendNotification(notificationRequestDtoV2, identity);
+		if(identityAttribute!=null){
+			notificationService.sendNotification(notificationRequestDtoV2, identityAttribute);
+		}else {
+			notificationService.sendNotification(notificationRequestDtoV2, identity);
+		}
 	}
 
 }
