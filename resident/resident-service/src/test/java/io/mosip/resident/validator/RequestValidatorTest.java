@@ -1859,7 +1859,7 @@ public class RequestValidatorTest {
 		userIdOtpRequest.setId("property");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV2);
-		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest, null);
 	}
 	
 	@Test
@@ -1881,7 +1881,7 @@ public class RequestValidatorTest {
 		otpRequestDTOV2.setUserId("8878787878");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV2);
-		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -2705,7 +2705,7 @@ public class RequestValidatorTest {
 		otpRequestDTOV2.setUserId("8878787878");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV2);
-		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -2727,7 +2727,7 @@ public class RequestValidatorTest {
 		otpRequestDTOV2.setUserId("kam@g.com");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV2);
-		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
 	}
 
 	@Test(expected = ResidentServiceException.class)
@@ -2749,7 +2749,7 @@ public class RequestValidatorTest {
 		otpRequestDTOV2.setUserId("kam@g.com");
 		userIdOtpRequest.setRequesttime(new Date(2012, 2, 2, 2, 2,2));
 		userIdOtpRequest.setRequest(otpRequestDTOV2);
-		requestValidator.validateProxySendOtpRequest(userIdOtpRequest);
+		requestValidator.validateProxySendOtpRequest(userIdOtpRequest, identityDTO);
 	}
 
 	@Test(expected = InvalidInputException.class)
