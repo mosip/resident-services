@@ -3,6 +3,7 @@ package io.mosip.resident.util;
 import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
 import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
 import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,15 +16,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -133,6 +137,12 @@ public class Utilities {
     private static String regProcessorIdentityJson = "";
 	private SecureRandom secureRandom;
 
+	/** The acr-amr mapping json file. */
+	@Value("${amr-acr.json.filename}")
+	private String amrAcrJsonFile;
+
+	private static final String ACR_AMR = "acr_amr";
+
 
 	@PostConstruct
     private void loadRegProcessorIdentityJson() {
@@ -163,22 +173,24 @@ public class Utilities {
 						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
 				throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), error.get(0).getMessage());
 			}
-			String response = objMapper.writeValueAsString(idResponseDto.getResponse().getIdentity());
-			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
-			try {
-				return (JSONObject) new JSONParser().parse(response);
-			} catch (org.json.simple.parser.ParseException e) {
-				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
-						ExceptionUtils.getStackTrace(e));
-				throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
-			}
-
-
+			return convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
 		}
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 				"Utilities::retrieveIdrepoJson()::exit UIN is null");
 		return null;
+	}
+
+	public JSONObject convertIdResponseIdentityObjectToJsonObject(Object identityObject) throws JsonProcessingException {
+		String response = objMapper.writeValueAsString(identityObject);
+		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+				"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
+		try {
+			return (JSONObject) new JSONParser().parse(response);
+		} catch (org.json.simple.parser.ParseException e) {
+			logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					ExceptionUtils.getStackTrace(e));
+			throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
+		}
 	}
 
 	public JSONObject getRegistrationProcessorMappingJson() throws IOException {
@@ -333,6 +345,38 @@ public class Utilities {
 		return response;
 	}
 
+	public IdResponseDTO1 retrieveIdRepoJsonIdResponseDto(String uin) throws ApisResourceAccessException, IdRepoAppException, IOException {
+		IdResponseDTO1 response = null;
+		if (uin != null) {
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson()::entry");
+			List<String> pathSegments = new ArrayList<>();
+			pathSegments.add(uin);
+			IdResponseDTO1 idResponseDto;
+
+			idResponseDto = (IdResponseDTO1) residentServiceRestClient.getApi(ApiName.IDREPOGETIDBYUIN, pathSegments, "", "",
+					IdResponseDTO1.class);
+			if (idResponseDto == null) {
+				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
+				return null;
+			}
+			if (!idResponseDto.getErrors().isEmpty()) {
+				List<ServiceError> error = idResponseDto.getErrors();
+				logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+						"Utilities::retrieveIdrepoJson():: error with error message " + error.get(0).getMessage());
+				throw new IdRepoAppException(error.get(0).getErrorCode(), error.get(0).getMessage());
+			}
+
+			response = idResponseDto;
+
+			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
+					"Utilities::retrieveIdrepoJson():: IDREPOGETIDBYUIN GET service call ended Successfully");
+		}
+
+		return response;
+	}
+
 	public String getDefaultSource() {
 		String[] strs = provider.split(",");
 		List<String> strList = Lists.newArrayList(strs);
@@ -431,5 +475,25 @@ public class Utilities {
 
 	public SecureRandom getSecureRandom(){
 		return secureRandom;
+	}
+
+	@Cacheable(value = "amr-acr-mapping")
+	public Map<String, String> getAmrAcrMapping() throws ResidentServiceCheckedException {
+		String amrAcrJson = residentRestTemplate.getForObject(configServerFileStorageURL + amrAcrJsonFile,
+				String.class);
+		Map<String, Object> amrAcrMap = Map.of();
+		try {
+			if (amrAcrJson != null) {
+				amrAcrMap = objMapper.readValue(amrAcrJson.getBytes(UTF_8), Map.class);
+			}
+		} catch (IOException e) {
+			throw new ResidentServiceCheckedException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorMessage(), e);
+		}
+		Object obj = amrAcrMap.get(ACR_AMR);
+		Map<String, Object> map = (Map<String, Object>) obj;
+		Map<String, String> acrAmrMap = map.entrySet().stream().collect(
+				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
+		return acrAmrMap;
 	}
 }

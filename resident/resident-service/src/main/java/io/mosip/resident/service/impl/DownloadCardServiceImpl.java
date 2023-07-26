@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -356,13 +357,17 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		String uinForVid = "";
+		IdentityDTO identityDTOForDownloadableCardVid = null;
 		try {
-			uinForVid = utilities.getUinByVid(vid);
+			identityDTOForDownloadableCardVid = identityService.getIdentity(vid);
+			if(identityDTOForDownloadableCardVid!=null) {
+				uinForVid = identityDTOForDownloadableCardVid.getUIN();
+			}
 			residentTransactionEntity = insertDataForVidCard(vid, uinForVid);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
-				String uinForIndividualId = identityService
-						.getUinForIndividualId(identityService.getResidentIndvidualIdFromSession());
+				String uinForIndividualId = identityService.
+						getIdentity(identityService.getResidentIndvidualIdFromSession()).getUIN();
 				if (!uinForIndividualId.equals(uinForVid)) {
 					residentTransactionEntity.setRequestSummary(ResidentConstants.FAILED);
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
@@ -382,7 +387,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			credentialReqestDto.setEncrypt(
 					Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
 			credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
-			Map<String, Object> additionalAttributes = getVidDetails(vid, uinForVid, timeZoneOffset, locale);
+			Map<String, Object> additionalAttributes = getVidDetails(vid, identityDTOForDownloadableCardVid, timeZoneOffset, locale);
 			additionalAttributes.put(TEMPLATE_TYPE_CODE,
 					this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
 			additionalAttributes.put(APPLICANT_PHOTO,
@@ -435,7 +440,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						.equals(EventStatusInProgress.NEW.name())) ? TemplateType.REQUEST_RECEIVED
 								: TemplateType.FAILURE;
 
-				sendNotificationV2(uinForVid, RequestType.VID_CARD_DOWNLOAD, templateType, eventId, null, null);
+				sendNotificationV2(uinForVid, RequestType.VID_CARD_DOWNLOAD, templateType,
+						eventId, null, identityDTOForDownloadableCardVid);
 			}
 		}
 		responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
@@ -515,14 +521,18 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return residentTransactionEntity;
 	}
 
-	private Map<String, Object> getVidDetails(String vid, String uin, int timeZoneOffset, String locale)
+	private Map<String, Object> getVidDetails(String vid, IdentityDTO identityDTO, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		Map<String, Object> additionalAttributes = new HashMap<>();
 		String name = null;
 		ResponseWrapper<List<Map<String, ?>>> vidResponse = null;
+		String uin=null;
+		if(identityDTO!=null){
+			uin = identityDTO.getUIN();
+			name = identityDTO.getFullName();
+		}
 		if (uin != null) {
-			vidResponse = vidService.retrieveVids(uin, timeZoneOffset, locale);
-			name = getFullName(uin);
+			vidResponse = vidService.retrieveVids(timeZoneOffset, locale, uin);
 		}
 		if (vidResponse != null) {
 			List<Map<String, ?>> vidList = vidResponse.getResponse();
@@ -541,8 +551,9 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						additionalAttributes.put(TRANSACTION_COUNT,
 								replaceNullValueWithNA(vidData.get(TRANSACTION_COUNT)));
 						additionalAttributes.put(CARD_FORMAT, VID_CARD);
-						additionalAttributes.put(DATE_OF_BIRTH, identityService
-								.getIdentity(identityService.getResidentIndvidualIdFromSession()).getDateOfBirth());
+						if(identityDTO!=null) {
+							additionalAttributes.put(DATE_OF_BIRTH, identityDTO.getDateOfBirth());
+						}
 						if (name != null) {
 							additionalAttributes.put(ResidentConstants.NAME, name);
 						}
@@ -559,14 +570,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			return NA;
 		}
 		return o;
-	}
-
-	private String getFullName(String uin) throws IOException, ApisResourceAccessException {
-		List<String> attributeList = getAttributeList(uin);
-		if (attributeList.size() > 0) {
-			return attributeList.get(0);
-		}
-		return null;
 	}
 
 	/**
@@ -591,7 +594,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private void sendNotificationV2(String id, RequestType requestType, TemplateType templateType, String eventId,
-			Map<String, Object> additionalAttributes, Map identity) throws ResidentServiceCheckedException {
+			Map<String, Object> additionalAttributes, IdentityDTO identity) throws ResidentServiceCheckedException {
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(id);
 		notificationRequestDtoV2.setRequestType(requestType);

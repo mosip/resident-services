@@ -43,6 +43,7 @@ import io.mosip.resident.dto.OtpRequestDTOV2;
 import io.mosip.resident.dto.OtpRequestDTOV3;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyOtpService;
@@ -165,6 +166,13 @@ public class ProxyOtpControllerTest {
     public void testSendOtpExceptionApiResourceException() throws Exception {
         doThrow(new ApisResourceAccessException()).when(validator).validateProxySendOtpRequest(Mockito.any());
         proxyOtpController.sendOTP(userOtpRequest);
+    }
+
+    @Test(expected = Exception.class)
+    public void testSendOtpWithResidentServiceCheckedException() throws Exception {
+        Mockito.when(proxyOtpService.sendOtp(Mockito.any())).thenThrow(ResidentServiceCheckedException.class);
+        mockMvc.perform(MockMvcRequestBuilders.post("/contact-details/send-otp").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(reqJson.getBytes())).andExpect(status().isOk());
     }
 
     @Test

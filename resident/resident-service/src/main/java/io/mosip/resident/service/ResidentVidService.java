@@ -40,7 +40,7 @@ public interface ResidentVidService {
 	ResponseWrapper<List<Map<String, ?>>> retrieveVidsfromUin(String uin, int timeZoneOffset, String locale)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, IdentityDTO identityDTO)
+	ResponseWrapper<List<Map<String, ?>>> retrieveVids(int timeZoneOffset, String locale, String uin)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 }

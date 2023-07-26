@@ -1,30 +1,62 @@
 package io.mosip.resident.controller;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.crypto.SecretKey;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.util.DateUtils;
+import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
+import io.mosip.resident.constant.EventStatus;
+import io.mosip.resident.constant.IdType;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.ServiceType;
+import io.mosip.resident.dto.AidStatusRequestDTO;
+import io.mosip.resident.dto.AidStatusResponseDTO;
+import io.mosip.resident.dto.AuthHistoryRequestDTO;
+import io.mosip.resident.dto.AuthHistoryResponseDTO;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
+import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
+import io.mosip.resident.dto.AuthTypeStatusDtoV2;
+import io.mosip.resident.dto.BellNotificationDto;
+import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.PageDto;
+import io.mosip.resident.dto.RegStatusCheckResponseDTO;
+import io.mosip.resident.dto.RequestDTO;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
+import io.mosip.resident.dto.ResidentDocuments;
+import io.mosip.resident.dto.ResidentReprintRequestDto;
+import io.mosip.resident.dto.ResidentReprintResponseDto;
+import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
+import io.mosip.resident.dto.ResidentUpdateRequestDto;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
+import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ResponseDTO1;
+import io.mosip.resident.dto.ServiceHistoryResponseDto;
+import io.mosip.resident.dto.SortType;
+import io.mosip.resident.dto.UnreadNotificationDto;
+import io.mosip.resident.dto.UserInfoDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.CardNotReadyException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.DocumentService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdAuthServiceImpl;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
+import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,63 +82,32 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.util.DateUtils;
-import io.mosip.kernel.openid.bridge.api.service.validator.ScopeValidator;
-import io.mosip.resident.constant.EventStatus;
-import io.mosip.resident.constant.IdType;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.constant.ServiceType;
-import io.mosip.resident.dto.AidStatusRequestDTO;
-import io.mosip.resident.dto.AidStatusResponseDTO;
-import io.mosip.resident.dto.AuthHistoryRequestDTO;
-import io.mosip.resident.dto.AuthHistoryResponseDTO;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDto;
-import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
-import io.mosip.resident.dto.AuthTypeStatusDtoV2;
-import io.mosip.resident.dto.BellNotificationDto;
-import io.mosip.resident.dto.EuinRequestDTO;
-import io.mosip.resident.dto.PageDto;
-import io.mosip.resident.dto.RegStatusCheckResponseDTO;
-import io.mosip.resident.dto.RequestDTO;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
-import io.mosip.resident.dto.ResidentDocuments;
-import io.mosip.resident.dto.ResidentReprintRequestDto;
-import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
-import io.mosip.resident.dto.ResidentUpdateRequestDto;
-import io.mosip.resident.dto.ResidentUpdateResponseDTO;
-import io.mosip.resident.dto.ResponseDTO;
-import io.mosip.resident.dto.ServiceHistoryResponseDto;
-import io.mosip.resident.dto.SortType;
-import io.mosip.resident.dto.UnreadNotificationDto;
-import io.mosip.resident.dto.UserInfoDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.CardNotReadyException;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.DocumentService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdAuthServiceImpl;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
-import io.mosip.resident.util.JsonUtil;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
 import reactor.util.function.Tuples;
+
+import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -160,6 +161,9 @@ public class ResidentControllerTest {
 	@Mock
 	private Environment environment;
 
+	@Mock
+	private Utilities utilities;
+
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
@@ -185,9 +189,11 @@ public class ResidentControllerTest {
 	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
+	private JSONObject idRepoJson;
+	private String schemaJson;
 
 	@Before
-	public void setUp() throws ApisResourceAccessException {
+	public void setUp() throws ApisResourceAccessException, IOException {
 		MockitoAnnotations.initMocks(this);
 		authLockRequest = new RequestWrapper<AuthLockOrUnLockRequestDto>();
 
@@ -225,6 +231,10 @@ public class ResidentControllerTest {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
 		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn("UIN");
 		when(environment.getProperty(anyString())).thenReturn("property");
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
+
+		idRepoJson = null;
+		schemaJson = null;
 	}
 
 	@Test
@@ -453,9 +463,17 @@ public class ResidentControllerTest {
 		requestDTO.setRequest(request);
 		requestDTO.setId("mosip.resident.demographic");
 		requestDTO.setVersion("v1");
-
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.1");
+		when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+		IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+		ResponseDTO1 responseDTO1 = new ResponseDTO1();
+		responseDTO1.setIdentity(jsonObject);
+		idResponseDTO1.setResponse(responseDTO1);
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.anyString())).thenReturn(idResponseDTO1);
+		when(utilities.convertIdResponseIdentityObjectToJsonObject(Mockito.any())).thenReturn(jsonObject);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
-		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
+		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), ((ResponseWrapper<Object>)responseEntity.getBody()).getResponse());

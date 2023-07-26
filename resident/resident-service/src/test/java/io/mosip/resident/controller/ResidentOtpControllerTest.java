@@ -36,6 +36,7 @@ import io.mosip.resident.dto.OtpRequestDTO;
 import io.mosip.resident.dto.OtpResponseDTO;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentUpdateService;
 import io.mosip.resident.handler.service.UinCardRePrintService;
 import io.mosip.resident.helper.ObjectStoreHelper;
@@ -139,14 +140,12 @@ public class ResidentOtpControllerTest {
 				.andExpect(status().isOk());
 	}
 
-	@Test
-	public void createRequestGenerationSuccessTest() throws Exception {
-		Mockito.when(residentOtpService.generateOtp(otpRequestDTO)).thenReturn(otpResponseDTO);
-		Gson gson = new GsonBuilder().serializeNulls().create();
-		String json = gson.toJson(otpRequestDTO);
-		this.mockMvc
-				.perform(MockMvcRequestBuilders.post("/req/otp").contentType(MediaType.APPLICATION_JSON).content(json))
-				.andExpect(status().isOk());// .andExpect(jsonPath("$.response.vid", is("12345")))
+	@Test(expected = Exception.class)
+	public void testCreateRequestGenerationWithResidentServiceException() throws Exception {
+		Mockito.when(residentOtpService.generateOtp(Mockito.any())).thenThrow(ResidentServiceException.class);
+		mockMvc.perform(
+				MockMvcRequestBuilders.post("/req/otp").contentType(MediaType.APPLICATION_JSON_VALUE).content(reqJson))
+				.andExpect(status().isOk());
 	}
 
 	@Test
