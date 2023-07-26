@@ -133,10 +133,12 @@ public class RequestValidatorTest {
 	private ResidentService residentService = new ResidentServiceImpl();
 
 	private Object schema;
+	private String schemaJson;
 
 	@Before
 	public void setup() {
 		schema = "{\\\"$schema\\\":\\\"http:\\/\\/json-schema.org\\/draft-07\\/schema#\\\",\\\"description\\\":\\\"MOSIP Sample identity\\\",\\\"additionalProperties\\\":false,\\\"title\\\":\\\"MOSIP identity\\\",\\\"type\\\":\\\"object\\\",\\\"definitions\\\":{\\\"simpleType\\\":{\\\"uniqueItems\\\":true,\\\"additionalItems\\\":false,\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"language\\\",\\\"value\\\"],\\\"properties\\\":{\\\"language\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"documentType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"type\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"},\\\"refNumber\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"]}}},\\\"biometricsType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"version\\\":{\\\"type\\\":\\\"number\\\",\\\"minimum\\\":0},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"properties\\\":{\\\"identity\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"IDSchemaVersion\\\",\\\"fullName\\\",\\\"dateOfBirth\\\",\\\"gender\\\",\\\"addressLine1\\\",\\\"addressLine2\\\",\\\"addressLine3\\\",\\\"region\\\",\\\"province\\\",\\\"city\\\",\\\"zone\\\",\\\"postalCode\\\",\\\"phone\\\",\\\"email\\\",\\\"proofOfIdentity\\\",\\\"individualBiometrics\\\"],\\\"properties\\\":{\\\"proofOfAddress\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"gender\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"city\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"postalCode\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[(?i)A-Z0-9]{5}$|^NA$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfException-1\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"referenceIdentityNumber\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^([0-9]{10,30})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"kyc\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"province\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"zone\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfDateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"addressLine1\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine2\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"residenceStatus\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"kyc\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine3\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"email\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[A-Za-z0-9_\\\\\\\\-]+(\\\\\\\\.[A-Za-z0-9_]+)*@[A-Za-z0-9_-]+(\\\\\\\\.[A-Za-z0-9_]+)*(\\\\\\\\.[a-zA-Z]{2,})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerRID\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"fullName\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"dateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(1869|18[7-9][0-9]|19[0-9][0-9]|20[0-9][0-9])\\/([0][1-9]|1[0-2])\\/([0][1-9]|[1-2][0-9]|3[01])$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualAuthBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"introducerUIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfIdentity\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"IDSchemaVersion\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"number\\\",\\\"fieldType\\\":\\\"default\\\",\\\"minimum\\\":0},\\\"proofOfException\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"phone\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[+]*([0-9]{1})([0-9]{9})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerName\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfRelationship\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"UIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"region\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"}}}}}";
+		schemaJson = (String) schema;
 		Map<RequestIdType, String> map = new HashMap<RequestIdType, String>();
 		map.put(RequestIdType.RE_PRINT_ID, "mosip.resident.print");
 		map.put(RequestIdType.AUTH_LOCK_ID, "mosip.resident.authlock");
@@ -827,7 +829,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -840,7 +842,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -855,7 +857,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -871,7 +873,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -886,7 +888,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -904,7 +906,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -914,7 +916,7 @@ public class RequestValidatorTest {
 		RequestWrapper<ResidentUpdateRequestDto> requestWrapper = new RequestWrapper<>();
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 
 	}
 
@@ -924,7 +926,7 @@ public class RequestValidatorTest {
 		requestWrapper.setRequesttime(DateUtils.getUTCCurrentDateTimeString(pattern));
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -936,7 +938,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 	}
 
 	@Test
@@ -952,7 +954,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 	}
 
 	@Test
@@ -968,7 +970,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("v1");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, false);
+		requestValidator.validateUpdateRequest(requestWrapper, false, schemaJson);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -2844,7 +2846,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
+		requestValidator.validateUpdateRequest(requestWrapper, true, schemaJson);
 	}
 
 	@Test
@@ -2876,7 +2878,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
+		requestValidator.validateUpdateRequest(requestWrapper, true, schemaJson);
 	}
 
 	@Test
@@ -2914,7 +2916,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
+		requestValidator.validateUpdateRequest(requestWrapper, true, schemaJson);
 	}
 
 	@Test(expected = InvalidInputException.class)
@@ -2952,7 +2954,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
+		requestValidator.validateUpdateRequest(requestWrapper, true, schemaJson);
 	}
 
 	@Test
@@ -2996,7 +2998,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
+		requestValidator.validateUpdateRequest(requestWrapper, true, schemaJson);
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -3040,7 +3042,7 @@ public class RequestValidatorTest {
 		requestWrapper.setId("mosip.resident.updateuin");
 		requestWrapper.setVersion("1.0");
 		requestWrapper.setRequest(requestDTO);
-		requestValidator.validateUpdateRequest(requestWrapper, true);
+		requestValidator.validateUpdateRequest(requestWrapper, true, schemaJson);
 	}
 
 	@Test

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -334,17 +335,14 @@ public class RequestHandlerRequestValidator {
 	/**
 	 * Checks if is valid registration type and uin.
 	 *
-	 * @param registrationType
-	 *            the registration type
-	 * @param uin
-	 *            the uin
+	 * @param registrationType the registration type
+	 * @param uin              the uin
+	 * @param idResponseDto
 	 * @return true, if is valid registration type and uin
-	 * @throws BaseCheckedException
-	 *             the reg base checked exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws BaseCheckedException the reg base checked exception
+	 * @throws IOException          Signals that an I/O exception has occurred.
 	 */
-	public boolean isValidRegistrationTypeAndUin(String registrationType, String uin)
+	public boolean isValidRegistrationTypeAndUin(String registrationType, String uin, IdResponseDTO1 idResponseDto)
 			throws BaseCheckedException, IOException {
 		try {
 			if (registrationType != null
@@ -352,11 +350,10 @@ public class RequestHandlerRequestValidator {
 							|| registrationType.equalsIgnoreCase(RegistrationType.DEACTIVATED.toString()))
 					|| registrationType != null && registrationType.equals(RegistrationType.RES_UPDATE.toString())) {
 				boolean isValidUin = uinValidatorImpl.validateId(uin);
-				String status = utilities.retrieveIdrepoJsonStatus(uin);
-
+				String status = idResponseDto.getResponse().getStatus();
 				if (isValidUin) {
 					if(registrationType.equals(RegistrationType.RES_UPDATE.toString())) {
-						return validateUINForResUpdate(uin, status);
+						return validateUINForResUpdate(status, idResponseDto);
 					}
 					if (!status.equalsIgnoreCase(registrationType)) {
 						return true;
@@ -379,16 +376,18 @@ public class RequestHandlerRequestValidator {
 		}
 	}
 
-	private boolean validateUINForResUpdate(String uin, String status)
-			throws ApisResourceAccessException, IOException, BaseCheckedException {
-		JSONObject idObject = utilities.retrieveIdrepoJson(uin);
-		if(idObject!=null && status.equals("ACTIVATED"))
+	private boolean validateUINForResUpdate(String status, IdResponseDTO1 idResponseDto)
+			throws BaseCheckedException {
+		if(idResponseDto!=null && status.equals("ACTIVATED"))
 			return true;
 		else
 			throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					"UIN is not valid", new Throwable());
 	}
 
+	public boolean isValidVid(String vid) throws BaseCheckedException, IOException {
+		return isValidVid(vid, null);
+	}
 	/**
 	 * Checks if is valid vid.
 	 *
@@ -398,11 +397,17 @@ public class RequestHandlerRequestValidator {
 	 * @throws BaseCheckedException
 	 *             the reg base checked exception
 	 */
-	public boolean isValidVid(String vid) throws BaseCheckedException, IOException {
+	public boolean isValidVid(String vid, String sessionUin) throws BaseCheckedException, IOException {
 		boolean isValidVID = false;
 		try {
 			isValidVID = vidValidatorImpl.validateId(vid);
-			String result = utilities.getUinByVid(vid);
+			String result;
+			if(sessionUin!=null){
+				result = sessionUin;
+			} else {
+				result = utilities.getUinByVid(vid);
+			}
+
 			if (isValidVID && result != null) {
 				isValidVID = true;
 			} else {

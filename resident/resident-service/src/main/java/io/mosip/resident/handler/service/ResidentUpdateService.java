@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,11 +104,11 @@ public class ResidentUpdateService {
 	private static final String TYPE = "type";
 	private static final String VALUE = "value";
 
-	public PacketGeneratorResDto createPacket(ResidentUpdateDto request) throws BaseCheckedException, IOException {
-		return createPacket(request, defaultIdSchemaVersion);
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersionStr) throws BaseCheckedException, IOException {
+		return createPacket(request, defaultIdSchemaVersion, null, null);
 	}
 
-	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion) throws BaseCheckedException, IOException {
+	public PacketGeneratorResDto createPacket(ResidentUpdateDto request, String idSchemaVersion, String sessionUin, IdResponseDTO1 idResponseDto) throws BaseCheckedException, IOException {
 		logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 				request.getIdValue(), "ResidentUpdateServiceImpl::createPacket()");
 		if(idSchemaVersion == null){
@@ -119,8 +120,8 @@ public class ResidentUpdateService {
 		if (validator.isValidCenter(request.getCenterId())
 				&& request.getIdType().equals(ResidentIndividialIDType.UIN)
 						? validator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.toString(),
-								request.getIdValue())
-						: validator.isValidVid(request.getIdValue())) {
+								request.getIdValue(), idResponseDto)
+						: validator.isValidVid(request.getIdValue(), sessionUin)) {
 
 			logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(),
 					request.getIdValue(),
