@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -95,7 +96,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
 
     @Override
-    public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
+    public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language, IdentityDTO identityDTO) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
         logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
@@ -130,7 +131,7 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, identityDTO);
             }
 
             if (channelType.equalsIgnoreCase("email")) {
@@ -140,7 +141,7 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, identityDTO);
             }
 
             return true;
