@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -124,6 +125,7 @@ public class ProxyOtpServiceImpllTest {
     private OtpManager otpManager;
 
     private ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
+    private IdentityDTO identityDTO;
 
     @Before
     public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
@@ -144,7 +146,7 @@ public class ProxyOtpServiceImpllTest {
         response1 = new ResponseEntity<>(responseMap1, HttpStatus.ACCEPTED);
         Mockito.when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("EMAIL"));
         ReflectionTestUtils.setField(proxyOtpService, "mandatoryLanguage", "eng");
-        Mockito.when(otpManager.sendOtp(any(), any(), any())).thenReturn(true);
+        Mockito.when(otpManager.sendOtp(any(), any(), any(), any())).thenReturn(true);
         AuthNResponse authNResponse = new AuthNResponse(PreRegLoginConstant.EMAIL_SUCCESS, PreRegLoginConstant.SUCCESS);
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         response.setResponse(authNResponse);
@@ -153,7 +155,7 @@ public class ProxyOtpServiceImpllTest {
 
     @Test
     public void testSendOtpEmailSuccess() throws ResidentServiceCheckedException {
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test
@@ -162,41 +164,41 @@ public class ProxyOtpServiceImpllTest {
         requestDTO.setRequest(otpRequestDTOV2);
         Mockito.when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(),
                 Mockito.anyString())).thenReturn(List.of("PHONE"));
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test
     public void testSendOtpFailure() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        Mockito.when(otpManager.sendOtp(any(), any(), any())).thenReturn(false);
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        Mockito.when(otpManager.sendOtp(any(), any(), any(), any())).thenReturn(false);
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testHttpServerErrorException() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        Mockito.when(otpManager.sendOtp(any(), any(), any())).thenThrow(new HttpServerErrorException(HttpStatus.BAD_GATEWAY));
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        Mockito.when(otpManager.sendOtp(any(), any(), any(), any())).thenThrow(new HttpServerErrorException(HttpStatus.BAD_GATEWAY));
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testHttpClientErrorException() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        Mockito.when(otpManager.sendOtp(any(), any(), any())).thenThrow(new HttpClientErrorException(HttpStatus.BAD_GATEWAY));
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        Mockito.when(otpManager.sendOtp(any(), any(), any(), any())).thenThrow(new HttpClientErrorException(HttpStatus.BAD_GATEWAY));
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test(expected = ResidentServiceException.class)
     public void testResidentServiceException() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        Mockito.when(otpManager.sendOtp(any(), any(), any()))
+        Mockito.when(otpManager.sendOtp(any(), any(), any(), any()))
                 .thenThrow(new ResidentServiceException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
                         ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage()));
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testResidentServiceCheckedException() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        Mockito.when(otpManager.sendOtp(any(), any(), any()))
+        Mockito.when(otpManager.sendOtp(any(), any(), any(), any()))
                 .thenThrow(new ResidentServiceCheckedException(ResidentErrorCode.SEND_OTP_FAILED.getErrorCode(),
                         ResidentErrorCode.SEND_OTP_FAILED.getErrorMessage()));
-        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO).getStatusCode());
+        assertEquals(responseEntity.getStatusCode(), proxyOtpService.sendOtp(requestDTO, identityDTO).getStatusCode());
     }
 
     @Test(expected = ResidentServiceException.class)

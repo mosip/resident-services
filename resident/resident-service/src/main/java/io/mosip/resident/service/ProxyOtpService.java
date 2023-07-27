@@ -1,5 +1,6 @@
 package io.mosip.resident.service;
 
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import org.springframework.http.ResponseEntity;
 
@@ -15,7 +16,7 @@ import reactor.util.function.Tuple2;
  * This class is used to do operations on otp.
  */
 public interface ProxyOtpService {
-    ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ResidentServiceCheckedException;
+    ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ResidentServiceCheckedException;
 
     Tuple2<MainResponseDTO<AuthNResponse>, String> validateWithUserIdOtp(MainRequestDTO<OtpRequestDTOV3> userIdOtpRequest);
 }
