@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -68,7 +69,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
     private String mandatoryLanguage;
 
     @Override
-    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ResidentServiceCheckedException {
+    public ResponseEntity<MainResponseDTO<AuthNResponse>> sendOtp(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ResidentServiceCheckedException {
         MainResponseDTO<AuthNResponse> response = new MainResponseDTO<>();
         String userid = null;
         boolean isSuccess = false;
@@ -82,7 +83,7 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
 
             userid = userOtpRequest.getRequest().getUserId();
             otpChannel = requestValidator.validateUserIdAndTransactionId(userid, userOtpRequest.getRequest().getTransactionId());
-            boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language);
+            boolean otpSent = otpManager.sendOtp(userOtpRequest, otpChannel.get(0), language, identityDTO);
             AuthNResponse authNResponse = null;
             if (otpSent) {
                 if (otpChannel.get(0).equalsIgnoreCase(PreRegLoginConstant.PHONE_NUMBER))

@@ -157,6 +157,8 @@ public class DownloadCardServiceTest {
 		IdentityDTO identityDTO1 = new IdentityDTO();
 		identityDTO1.setUIN("234");
 		Mockito.when(identityService.getIdentity("123")).thenReturn(identityDTO1);
+		Map<String, Object> identityAttributes = new HashMap<>();
+		Mockito.when(identityService.getIdentityAttributes("1234567890",null)).thenReturn(identityAttributes);
 	}
 
 	@Test
