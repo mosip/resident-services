@@ -654,11 +654,6 @@ public class TemplateUtil {
 		return getTemplateTypeCode(smsTemplateCodeProperty);
 	}
 
-	public String getBellIconTemplateTypeCode(RequestType requestType, TemplateType templateType) {
-		String bellIconTemplateCodeProperty = requestType.getBellIconTemplateCodeProperty(templateType);
-		return getTemplateTypeCode(bellIconTemplateCodeProperty);
-	}
-
 	public String getPurposeTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String purposeTemplateCodeProperty = requestType.getPurposeTemplateCodeProperty(templateType);
 		return getTemplateTypeCode(purposeTemplateCodeProperty);
