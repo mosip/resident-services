@@ -327,12 +327,6 @@ public class TemplateUtilTest {
     }
 
     @Test
-    public void getBellIconTemplateTypeCodeTest() {
-        assertEquals(PROPERTY,
-                templateUtil.getBellIconTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));
-    }
-
-    @Test
     public void getPurposeTemplateTypeCodeTest() {
         assertEquals(PROPERTY,
                 templateUtil.getPurposeTemplateTypeCode(RequestType.AUTHENTICATION_REQUEST, TemplateType.SUCCESS));

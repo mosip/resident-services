@@ -284,10 +284,6 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return String.format(PREFIX_RESIDENT_TEMPLATE_SMS, templateType.getType(), getFeatureName());
 	}
 	
-	public String getBellIconTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_BELL_ICON, templateType.getType(), getFeatureName());
-	}
-	
 	public String getPurposeTemplateCodeProperty(TemplateType templateType) {
 		return String.format(PREFIX_RESIDENT_TEMPLATE_PURPOSE, templateType.getType(), getFeatureName());
 	}
