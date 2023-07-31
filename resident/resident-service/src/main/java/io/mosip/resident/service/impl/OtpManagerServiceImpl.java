@@ -225,6 +225,7 @@ public class OtpManagerServiceImpl implements OtpManager {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(IdType.UIN.name(), idRepoJson.get(IdType.UIN.name()));
         jsonObject.put(getChannel(userId, transactionId), userId);
+        residentUpdateRequestDto.setIdentity(jsonObject);
         residentDemographicUpdateRequestDTO.setIdentity(jsonObject);
         Tuple2<Object, String> tuple2 = residentService.reqUinUpdate(residentUpdateRequestDto, residentDemographicUpdateRequestDTO.getIdentity(), true,
                 idRepoJson, schemaJson, idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT3());
