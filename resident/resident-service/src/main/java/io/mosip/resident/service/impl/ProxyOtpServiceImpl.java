@@ -176,18 +176,13 @@ public class ProxyOtpServiceImpl implements ProxyOtpService {
         } finally {
             response.setResponsetime(GenericUtil.getCurrentResponseTime());
 
-            if (isSuccess) {
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.VALIDATE_OTP_SUCCESS,
-                		userid, "Validate OTP Success"));
-            } else {
+            if (!isSuccess) {
                 ExceptionJSONInfoDTO errors = new ExceptionJSONInfoDTO(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(),
                         ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorMessage());
                 List<ExceptionJSONInfoDTO> lst = new ArrayList<>();
                 lst.add(errors);
                 response.setErrors(lst);
                 response.setResponse(null);
-                audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.OTP_VALIDATION_FAILED,
-                		userid, "Validate OTP Failed"));
             }
 
         }
