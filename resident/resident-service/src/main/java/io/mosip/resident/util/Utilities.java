@@ -196,7 +196,7 @@ public class Utilities {
 		}
 	}
 
-	public Tuple3<JSONObject, String, IdResponseDTO1> getIdRepoJsonSchemaJsonAndIdResponseDtoFromIndividualId(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+	public Tuple3<JSONObject, String, IdResponseDTO1> getIdentityDataFromIndividualID(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		IdResponseDTO1 idResponseDto = retrieveIdRepoJsonIdResponseDto(individualId);
 		JSONObject idRepoJson = convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
 		String schemaJson = getSchemaJsonFromIdRepoJson(idRepoJson);

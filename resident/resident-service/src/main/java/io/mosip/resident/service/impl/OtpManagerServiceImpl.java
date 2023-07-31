@@ -218,17 +218,17 @@ public class OtpManagerServiceImpl implements OtpManager {
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
         residentUpdateRequestDto.setIndividualIdType(individualIdType);
-        Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = utilities.
-                getIdRepoJsonSchemaJsonAndIdResponseDtoFromIndividualId(individualId);
-        JSONObject idRepoJson = idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT1();
-        String schemaJson = idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT2();
+        Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+                getIdentityDataFromIndividualID(individualId);
+        JSONObject idRepoJson = identityData.getT1();
+        String schemaJson = identityData.getT2();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(IdType.UIN.name(), idRepoJson.get(IdType.UIN.name()));
         jsonObject.put(getChannel(userId, transactionId), userId);
         residentUpdateRequestDto.setIdentity(jsonObject);
         residentDemographicUpdateRequestDTO.setIdentity(jsonObject);
         Tuple2<Object, String> tuple2 = residentService.reqUinUpdate(residentUpdateRequestDto, residentDemographicUpdateRequestDTO.getIdentity(), true,
-                idRepoJson, schemaJson, idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT3());
+                idRepoJson, schemaJson, identityData.getT3());
         return tuple2;
     }
 

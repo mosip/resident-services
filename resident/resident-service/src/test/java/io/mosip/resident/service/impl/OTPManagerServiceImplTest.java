@@ -155,7 +155,7 @@ public class OTPManagerServiceImplTest {
         String schemaJson = "schema";
         Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
         Mockito.when(utilities.
-                getIdRepoJsonSchemaJsonAndIdResponseDtoFromIndividualId(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
+                getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 
     }
 

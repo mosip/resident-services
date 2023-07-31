@@ -453,16 +453,16 @@ public class ResidentController {
 			request.setIndividualIdType(getIdType(individualId));
 		}
 		try {
-			Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = utilities.
-					getIdRepoJsonSchemaJsonAndIdResponseDtoFromIndividualId(individualId);
-			JSONObject idRepoJson = idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT1();
-			String schemaJson = idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT2();
+			Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+					getIdentityDataFromIndividualID(individualId);
+			JSONObject idRepoJson = identityData.getT1();
+			String schemaJson = identityData.getT2();
 			validator.validateUpdateRequest(requestWrapper, true, schemaJson);
 			logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
 					idRepoJson.get(IdType.UIN.name()));
 			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true,
-					idRepoJson, schemaJson, idRepoJsonSchemaJsonAndIdResponseDtoTuple.getT3());
+					idRepoJson, schemaJson, identityData.getT3());
 			response.setId(requestDTO.getId());
 			response.setVersion(requestDTO.getVersion());
 			response.setResponse(tupleResponse.getT1());
