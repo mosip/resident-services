@@ -82,6 +82,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
+import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
 import javax.crypto.SecretKey;
@@ -234,7 +235,7 @@ public class ResidentControllerTest {
 		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
 
 		idRepoJson = null;
-		schemaJson = null;
+		schemaJson = "schema";
 	}
 
 	@Test
@@ -472,6 +473,9 @@ public class ResidentControllerTest {
 		idResponseDTO1.setResponse(responseDTO1);
 		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.anyString())).thenReturn(idResponseDTO1);
 		when(utilities.convertIdResponseIdentityObjectToJsonObject(Mockito.any())).thenReturn(jsonObject);
+		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, idResponseDTO1);
+		when(utilities.
+				getIdRepoJsonSchemaJsonAndIdResponseDtoFromIndividualId(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
 		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
