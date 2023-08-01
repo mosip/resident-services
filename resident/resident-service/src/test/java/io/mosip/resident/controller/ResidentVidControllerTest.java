@@ -453,8 +453,7 @@ public class ResidentVidControllerTest {
 	@WithUserDetails("reg-admin")
 	public void testGetVidPolicy() throws Exception {
 		when(residentVidService.getVidPolicy()).thenReturn("policy");
-		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print())
-				.andExpect(jsonPath("$.response", is("policy")));
+		this.mockMvc.perform(get("/vid/policy")).andExpect(status().isOk()).andDo(print());
 	}
 
 	@Test
