@@ -89,22 +89,18 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseEntity<ResponseWrapper<String>> getVidPolicy() {
+	public String getVidPolicy() throws ResidentServiceCheckedException {
 		logger.debug("ResidentVidController::getVidPolicy()::entry");
-		ResponseWrapper<String> response = new ResponseWrapper<>();
+		String policyResponse;
 		try {
-			response.setId(vidPolicyId);
-			response.setVersion(version);
-			response.setResponsetime(DateUtils.getUTCCurrentDateTimeString());
-			response.setResponse(residentVidService.getVidPolicy());
+			policyResponse = residentVidService.getVidPolicy();
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_FAILURE);
-			response.setErrors(List.of(new ServiceError(ResidentErrorCode.POLICY_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.POLICY_EXCEPTION.getErrorMessage())));
+			throw new ResidentServiceCheckedException(ResidentErrorCode.POLICY_EXCEPTION);
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_VID_POLICY_SUCCESS);
 		logger.debug("ResidentVidController::getVidPolicy()::exit");
-		return ResponseEntity.ok().body(response);
+		return policyResponse;
 	}
 
 	@PostMapping(path = "/vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
