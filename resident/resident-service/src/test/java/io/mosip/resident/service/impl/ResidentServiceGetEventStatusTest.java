@@ -97,7 +97,7 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put("authenticationMode", "OTP");
         templateVariables.put("partnerName", "partnerName");
         templateVariables.put("purpose", "authentication");
-        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
+        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
@@ -163,7 +163,7 @@ public class ResidentServiceGetEventStatusTest {
     
     @Test
     public void getEventStatusServiceTypeNotMappedTest() throws ResidentServiceCheckedException {
-        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, eventId, "eng", 0, LOCALE_EN_US)).
+        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), "eng", 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
     	residentTransactionEntity.get().setRequestTypeCode(RequestType.SEND_OTP.name());
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);
