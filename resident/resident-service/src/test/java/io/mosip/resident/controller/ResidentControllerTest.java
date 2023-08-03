@@ -742,7 +742,7 @@ public class ResidentControllerTest {
 						Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(bytes);
 		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
-				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
+				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.name(), "", "eng", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = Exception.class)
@@ -753,7 +753,7 @@ public class ResidentControllerTest {
 				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(),
 				Mockito.any())).thenThrow(new ApisResourceAccessException());
 		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
-				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
+				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.name(), "", "eng", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = ResidentServiceException.class)
