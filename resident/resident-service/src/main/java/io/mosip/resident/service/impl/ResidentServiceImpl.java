@@ -1873,7 +1873,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 			Map<String, String> eventStatusMap;
 
-			eventStatusMap = requestType.getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset, locale).getT1();
+			eventStatusMap = requestType.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, timeZoneOffset, locale).getT1();
 
 			EventStatusResponseDTO eventStatusResponseDTO = new EventStatusResponseDTO();
 			eventStatusResponseDTO.setEventId(eventId);

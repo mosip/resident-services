@@ -30,7 +30,6 @@ import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
@@ -131,25 +130,25 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForAuthenticationRequest() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals("Success",ackTemplateVariables.get(TemplateVariablesConstants.EVENT_STATUS));
     }
 
     @Test
     public void getAckTemplateVariablesForCredentialShare() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForCredentialShare( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForCredentialShare(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForDownloadPersonalizedCard() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForDownloadPersonalizedCard( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForOrderPhysicalCard() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
@@ -157,63 +156,57 @@ public class TemplateUtilTest {
     public void getAckTemplateVariablesForOrderPhysicalCardPaymentFailed() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.PAYMENT_FAILED.name());
         Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.ofNullable(residentTransactionEntity));
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForOrderPhysicalCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForGetMyId() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGetMyId( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGetMyId(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(eventId,ackTemplateVariables.get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getAckTemplateVariablesForBookAnAppointment() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForBookAnAppointment( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForBookAnAppointment(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(Collections.emptyMap(),ackTemplateVariables);
     }
 
     @Test
     public void getAckTemplateVariablesForUpdateMyUin() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForUpdateMyUin( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForGenerateVid() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGenerateVid( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGenerateVid(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForRevokeVid() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForRevokeVid( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForRevokeVid(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForVerifyPhoneOrEmail() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForVerifyPhoneEmail( eventId, 0, LOCALE_EN_US);
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForVerifyPhoneEmail(residentTransactionEntity, 0, LOCALE_EN_US);
         assertEquals(eventId,ackTemplateVariables.get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getAckTemplateVariablesForAuthLock() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock( eventId, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
-    }
-
-    @Test(expected = ResidentServiceException.class)
-    public void getCommonTemplateVariablesTestBadEventId() {
-        Mockito.when(residentTransactionRepository.findById(eventId)).thenReturn(java.util.Optional.empty());
-        templateUtil.getCommonTemplateVariables(eventId, "", 0, LOCALE_EN_US);
     }
 
     @Test
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.FAILED.name(), "Failed"));
-        assertEquals("Failed",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        assertEquals("Failed",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -222,24 +215,24 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
-        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
 
     @Test
     public void getAckTemplateVariablesForVidCardDownloadTest() {
-        assertEquals(2,templateUtil.getAckTemplateVariablesForVidCardDownload(eventId, "eng", 0, LOCALE_EN_US).size());
+        assertEquals(2,templateUtil.getAckTemplateVariablesForVidCardDownload(residentTransactionEntity, "eng", 0, LOCALE_EN_US).size());
     }
 
     @Test
     public void getAckTemplateVariablesForSendOtpTest() {
-        assertEquals(eventId,templateUtil.getAckTemplateVariablesForSendOtp(eventId, "eng", 0, LOCALE_EN_US).getT1().get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getAckTemplateVariablesForSendOtp(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1().get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
     public void getAckTemplateVariablesForValidateOtpTest() {
-        assertEquals(eventId,templateUtil.getAckTemplateVariablesForValidateOtp(eventId, "eng", 0, LOCALE_EN_US).getT1().get(TemplateVariablesConstants.EVENT_ID));
+        assertEquals(eventId,templateUtil.getAckTemplateVariablesForValidateOtp(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1().get(TemplateVariablesConstants.EVENT_ID));
     }
 
     @Test
@@ -375,7 +368,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode("requestType");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
-        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -390,7 +383,7 @@ public class TemplateUtilTest {
         residentTransactionEntity.setRequestTypeCode("requestType");
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
-        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -489,12 +482,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getDefaultTemplateVariablesTest(){
-        templateUtil.getDefaultTemplateVariables(eventId, "eng", 0, LOCALE_EN_US);
-    }
-
-    @Test
-    public void getFeatureNameTest(){
-        templateUtil.getFeatureName(eventId, LOCALE_EN_US);
+        templateUtil.getDefaultTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US);
     }
 
     @Test

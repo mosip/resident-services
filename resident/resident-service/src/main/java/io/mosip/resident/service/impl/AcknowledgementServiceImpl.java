@@ -19,6 +19,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManagerBuilder;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -26,6 +27,7 @@ import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to create service class implementation for getting acknowledgement API.
@@ -60,7 +62,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private Utility utility;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
+    public Tuple2<byte[], String> getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
 
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
@@ -71,15 +73,14 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.getRequestTypeFromString(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset, locale);
+            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.getRequestTypeFromString(requestTypeCode).getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, timeZoneOffset, locale);
 			String requestProperty = ackTemplateVariables.getT2();
             String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, requestProperty);
             Map<String, String> templateVariables = ackTemplateVariables.getT1();
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return utility.signPdf(templateValue, null);
-
+            return Tuples.of(utility.signPdf(templateValue, null), templateVariables.get(TemplateVariablesConstants.EVENT_TYPE));
     }
 
     public Map<String, Object> convertMapValueFromStringToObject(Map<String, String> templateVariables) {
