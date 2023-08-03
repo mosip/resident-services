@@ -102,10 +102,8 @@ public class ResidentServiceGetEventStatusTest {
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
-        ResponseWrapper primaryLangResp = new ResponseWrapper<>();
-		primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
-		Mockito.when(proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(primaryLangResp);
+        Mockito.when(templateUtil.getEventStatusTemplateTypeCode(Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 

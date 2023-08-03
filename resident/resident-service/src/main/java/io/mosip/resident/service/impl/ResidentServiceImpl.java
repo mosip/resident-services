@@ -1700,11 +1700,11 @@ public class ResidentServiceImpl implements ResidentService {
 		List<String> statusFilterListContainingAllStatus = new ArrayList<>();
 		if(statusCodeList == null || statusCodeList.isEmpty()) {
 			for (String status : statusFilterList) {
-				if (status.equalsIgnoreCase(EventStatus.SUCCESS.getStatus())) {
+				if (status.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllSuccessStatusList(env));
-				} else if (status.equalsIgnoreCase(EventStatus.FAILED.getStatus())) {
+				} else if (status.equalsIgnoreCase(EventStatus.FAILED.name())) {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllFailedStatusList(env));
-				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.getStatus())) {
+				} else if (status.equalsIgnoreCase(EventStatus.IN_PROGRESS.name())) {
 					statusFilterListContainingAllStatus.addAll(RequestType.getAllNewOrInprogressStatusList(env));
 				}
 			}
@@ -1736,7 +1736,7 @@ public class ResidentServiceImpl implements ResidentService {
 			throws ResidentServiceCheckedException {
 		List<ServiceHistoryResponseDto> serviceHistoryResponseDtoList = new ArrayList<>();
 		for (ResidentTransactionEntity residentTransactionEntity : residentTransactionEntityList) {
-			String statusCode = getEventStatusCode(residentTransactionEntity.getStatusCode());
+			Tuple2<String, String> statusCodes = getEventStatusCode(residentTransactionEntity.getStatusCode(), langCode);
 			RequestType requestType = RequestType
 					.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
@@ -1744,7 +1744,7 @@ public class ResidentServiceImpl implements ResidentService {
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
 			serviceHistoryResponseDto.setRequestType(requestType.name());
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
-			serviceHistoryResponseDto.setEventStatus(statusCode);
+			serviceHistoryResponseDto.setEventStatus(statusCodes.getT2());
 			if (residentTransactionEntity.getUpdDtimes() != null
 					&& residentTransactionEntity.getUpdDtimes().isAfter(residentTransactionEntity.getCrDtimes())) {
 				serviceHistoryResponseDto.setTimeStamp(utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getUpdDtimes()));
@@ -1755,7 +1755,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					serviceHistoryResponseDto.setServiceType(serviceType.get());
 					serviceHistoryResponseDto
-							.setDescription(getDescriptionForLangCode(residentTransactionEntity, langCode, statusCode, requestType));
+							.setDescription(getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
 				}
 			} else {
 				serviceHistoryResponseDto.setDescription(requestType.name());
@@ -1770,7 +1770,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public String getDescriptionForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
-		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
 		} else {
 			templateType = TemplateType.FAILURE;
@@ -1787,7 +1787,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public String getSummaryForLangCode(ResidentTransactionEntity residentTransactionEntity, String langCode, String statusCode, RequestType requestType)
 			throws ResidentServiceCheckedException {
 		TemplateType templateType;
-		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.toString())) {
+		if (statusCode.equalsIgnoreCase(EventStatus.SUCCESS.name())) {
 			templateType = TemplateType.SUCCESS;
 			String templateTypeCode = templateUtil.getSummaryTemplateTypeCode(requestType, templateType);
 			String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
@@ -1797,14 +1797,21 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 	}
 
-	public String getEventStatusCode(String statusCode) {
+	public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
+		String status;
+		String templateTypeCode;
 		if (EventStatusSuccess.containsStatus(statusCode)) {
-			return EventStatus.SUCCESS.getStatus();
+			status = EventStatus.SUCCESS.name();
+			templateTypeCode = templateUtil.getEventStatusTemplateTypeCode(EventStatus.SUCCESS);
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
-			return EventStatus.FAILED.getStatus();
+			status = EventStatus.FAILED.name();
+			templateTypeCode = templateUtil.getEventStatusTemplateTypeCode(EventStatus.FAILED);
 		} else {
-			return EventStatus.IN_PROGRESS.getStatus();
+			status = EventStatus.IN_PROGRESS.name();
+			templateTypeCode = templateUtil.getEventStatusTemplateTypeCode(EventStatus.IN_PROGRESS);
 		}
+		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
+		return Tuples.of(status, fileText);
 	}
 
 	@Override
@@ -1850,7 +1857,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
 			String requestTypeCode;
-			String statusCode;
+			Tuple2<String, String> statusCodes;
 			if (residentTransactionEntity.isPresent()) {
 				String idaToken = identityServiceImpl.getResidentIdaToken();
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
@@ -1858,7 +1865,7 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 				residentTransactionRepository.updateReadStatus(eventId);
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
-				statusCode = getEventStatusCode(residentTransactionEntity.get().getStatusCode());
+				statusCodes = getEventStatusCode(residentTransactionEntity.get().getStatusCode(), languageCode);
 			} else {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
 			}
@@ -1895,7 +1902,7 @@ public class ResidentServiceImpl implements ResidentService {
 			if (serviceType.isPresent()) {
 				if (!serviceType.get().equals(ServiceType.ALL.name())) {
 					eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION,
-							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode, statusCode, requestType));
+							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode, statusCodes.getT1(), requestType));
 				}
 			} else {
 				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, requestType.name());

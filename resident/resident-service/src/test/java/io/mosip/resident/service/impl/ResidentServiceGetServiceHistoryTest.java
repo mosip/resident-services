@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -176,10 +175,8 @@ public class ResidentServiceGetServiceHistoryTest {
 
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(any(), any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(any(), any())).thenReturn("template-type-code");
-        ResponseWrapper primaryLangResp = new ResponseWrapper<>();
-        primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
-        Mockito.when(proxyMasterdataService
-                .getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(primaryLangResp);
+        Mockito.when(templateUtil.getEventStatusTemplateTypeCode(Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(),
                 Mockito.anyString(), Mockito.anyList())).thenReturn(residentTransactionEntityList);
