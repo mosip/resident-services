@@ -39,6 +39,7 @@ import io.mosip.resident.service.impl.IdentityServiceTest;
 import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to test the TemplateUtil class
@@ -125,13 +126,13 @@ public class TemplateUtilTest {
         responseWrapper.setResponse(templateResponse);
         Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 "otp");
-        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.SUCCESS.getStatus());
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.SUCCESS.name(), "Success"));
     }
 
     @Test
     public void getAckTemplateVariablesForAuthenticationRequest() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthenticationRequest(eventId, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(EventStatus.SUCCESS.getStatus(),ackTemplateVariables.get(TemplateVariablesConstants.EVENT_STATUS));
+        assertEquals("Success",ackTemplateVariables.get(TemplateVariablesConstants.EVENT_STATUS));
     }
 
     @Test
@@ -211,8 +212,8 @@ public class TemplateUtilTest {
     @Test
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
-        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.FAILED.getStatus());
-        assertEquals(EventStatus.FAILED.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.FAILED.name(), "Failed"));
+        assertEquals("Failed",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -220,8 +221,8 @@ public class TemplateUtilTest {
     @Test
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
-        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
-        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -373,8 +374,8 @@ public class TemplateUtilTest {
                 responseWrapper);
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode("requestType");
-        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
-        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -387,9 +388,9 @@ public class TemplateUtilTest {
                 responseWrapper);
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode("requestType");
-        Mockito.when(residentService.getEventStatusCode(Mockito.anyString())).thenReturn(EventStatus.IN_PROGRESS.getStatus());
+        Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
-        assertEquals(EventStatus.IN_PROGRESS.getStatus(),templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(eventId, "eng", 0, LOCALE_EN_US).getT1().get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }

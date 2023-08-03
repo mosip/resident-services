@@ -19,6 +19,7 @@ import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.AuthenticationModeEnum;
+import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
 import io.mosip.resident.constant.EventStatusSuccess;
@@ -103,16 +104,16 @@ public class TemplateUtil {
 		Map<String, String> templateVariables = new HashMap<>();
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
 		ResidentTransactionEntity residentTransactionEntity = getEntityFromEventId(eventId);
-		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode());
+		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		RequestType requestType = RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode());
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
-		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCode);
+		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCodes.getT2());
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
 				templateVariables.put(TemplateVariablesConstants.SUMMARY,
 						getSummaryFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode,
-								statusCode, requestType));
+								statusCodes.getT1(), requestType));
 			}
 		} else {
 			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
@@ -466,7 +467,7 @@ public class TemplateUtil {
 		String purpose = "";
 		try {
 			purpose = residentService.getDescriptionForLangCode(residentTransactionEntity, languageCode,
-					residentService.getEventStatusCode(residentTransactionEntity.getStatusCode()),
+					residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode).getT1(),
 					RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()));
 		} catch (ResidentServiceCheckedException e) {
 			return "";
@@ -662,6 +663,11 @@ public class TemplateUtil {
 	public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
 		return getTemplateTypeCode(summaryTemplateCodeProperty);
+	}
+
+	public String getEventStatusTemplateTypeCode(EventStatus eventStatus) {
+		String eventStatusTemplateCodeProperty = eventStatus.getEventStatusTemplateCodeProperty();
+		return getTemplateTypeCode(eventStatusTemplateCodeProperty);
 	}
 
 	public String getAttributeListTemplateTypeCode(String attributeName) {
