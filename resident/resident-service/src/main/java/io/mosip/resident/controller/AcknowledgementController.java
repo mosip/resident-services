@@ -30,6 +30,7 @@ import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
 
 /**
  * This class is used to create api for getting acknowledgement.
@@ -79,10 +80,10 @@ public class AcknowledgementController {
 		}
         try {
         	logger.debug("AcknowledgementController::get acknowledgement download url");
-	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
-	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+	        Tuple2<byte[], String> tupleResponse = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
+	        resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
-	        featureName = templateUtil.getFeatureName(eventId, locale);
+	        featureName = tupleResponse.getT2();
 	        logger.debug("AcknowledgementController::getAcknowledgement()::exit");
         } catch(ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
