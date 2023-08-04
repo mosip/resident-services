@@ -2,7 +2,9 @@ package io.mosip.resident.controller;
 
 import java.util.Map;
 
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.service.IdentityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -63,6 +65,9 @@ public class ProxyOtpController {
     @Autowired
     private AuditUtil audit;
 
+	@Autowired
+	private IdentityService identityService;
+
 	/**
 	 * This Post api use to send otp to the user by email or sms
 	 *
@@ -85,9 +90,10 @@ public class ProxyOtpController {
 		ResponseEntity<MainResponseDTO<AuthNResponse>> responseEntity;
 		String userid = null;
 		try {
-			requestValidator.validateProxySendOtpRequest(userOtpRequest);
+			IdentityDTO identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
+			requestValidator.validateProxySendOtpRequest(userOtpRequest, identityDTO);
 			userid = userOtpRequest.getRequest().getUserId();
-			responseEntity = proxyOtpService.sendOtp(userOtpRequest);
+			responseEntity = proxyOtpService.sendOtp(userOtpRequest, identityDTO);
 		}
 		catch (InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.SEND_OTP_FAILURE, userid, "Send OTP"));

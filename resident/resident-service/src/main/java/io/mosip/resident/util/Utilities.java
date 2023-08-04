@@ -1,40 +1,8 @@
 package io.mosip.resident.util;
 
-import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
-import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
-import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.assertj.core.util.Lists;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.pdf.PdfReader;
-
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -57,7 +25,39 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.service.ProxyMasterdataService;
 import lombok.Data;
+import org.assertj.core.util.Lists;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import reactor.util.function.Tuple3;
+import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentConstants.AID_STATUS;
+import static io.mosip.resident.constant.ResidentConstants.STATUS_CODE;
+import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 
 /**
@@ -109,6 +109,9 @@ public class Utilities {
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
+
+	@Autowired
+	private ProxyMasterdataService proxyMasterdataService;
 
 	/** The config server file storage URL. */
 	@Value("${config.server.file.storage.uri}")
@@ -191,6 +194,22 @@ public class Utilities {
 					ExceptionUtils.getStackTrace(e));
 			throw new IdRepoAppException(ResidentErrorCode.RESIDENT_SYS_EXCEPTION.getErrorCode(), "Error while parsing string to JSONObject",e);
 		}
+	}
+
+	public Tuple3<JSONObject, String, IdResponseDTO1> getIdentityDataFromIndividualID(String individualId) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+		IdResponseDTO1 idResponseDto = retrieveIdRepoJsonIdResponseDto(individualId);
+		JSONObject idRepoJson = convertIdResponseIdentityObjectToJsonObject(idResponseDto.getResponse().getIdentity());
+		String schemaJson = getSchemaJsonFromIdRepoJson(idRepoJson);
+		return Tuples.of(idRepoJson, schemaJson, idResponseDto);
+	}
+
+	public String getSchemaJsonFromIdRepoJson(JSONObject idRepoJson) throws ResidentServiceCheckedException {
+		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
+		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
+		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
+		Object idSchema = idSchemaResponse.getResponse();
+		Map<String, ?> map = objMapper.convertValue(idSchema, Map.class);
+		return ((String) map.get("schemaJson"));
 	}
 
 	public JSONObject getRegistrationProcessorMappingJson() throws IOException {

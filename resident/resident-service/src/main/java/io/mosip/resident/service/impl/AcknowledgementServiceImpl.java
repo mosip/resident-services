@@ -26,6 +26,7 @@ import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 /**
  * This class is used to create service class implementation for getting acknowledgement API.
@@ -60,7 +61,7 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
     private Utility utility;
 
     @Override
-    public byte[] getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
+    public Tuple2<byte[], RequestType> getAcknowledgementPDF(String eventId, String languageCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::entry");
 
             Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
@@ -71,15 +72,15 @@ public class AcknowledgementServiceImpl implements AcknowledgementService {
             } else {
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
             }
-            Tuple2<Map<String, String>, String> ackTemplateVariables = RequestType.getRequestTypeFromString(requestTypeCode).getAckTemplateVariables(templateUtil, eventId, languageCode, timeZoneOffset, locale);
+            RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
+            Tuple2<Map<String, String>, String> ackTemplateVariables = requestType.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, timeZoneOffset, locale);
 			String requestProperty = ackTemplateVariables.getT2();
             String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, requestProperty);
             Map<String, String> templateVariables = ackTemplateVariables.getT1();
             InputStream stream = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
             InputStream templateValue = templateManager.merge(stream, convertMapValueFromStringToObject(templateVariables));
             logger.debug("AcknowledgementServiceImpl::getAcknowledgementPDF()::exit");
-            return utility.signPdf(templateValue, null);
-
+            return Tuples.of(utility.signPdf(templateValue, null), requestType);
     }
 
     public Map<String, Object> convertMapValueFromStringToObject(Map<String, String> templateVariables) {

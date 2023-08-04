@@ -30,9 +30,9 @@ import reactor.util.function.Tuple2;
 public enum RequestType implements PreUpdateInBatchJob {
 	AUTHENTICATION_REQUEST("Authentication Request", TemplateUtil::getAckTemplateVariablesForAuthenticationRequest,
 			"", null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
-	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForCredentialShare,
+	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForShareCredentialWithPartner,
 			"share-cred-with-partner", TemplateUtil::getNotificationTemplateVariablesForShareCredentialWithPartner,
-			TemplateUtil::getDescriptionTemplateVariablesForShareCredential,
+			TemplateUtil::getDescriptionTemplateVariablesForShareCredentialWithPartner,
 			ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY),
 	DOWNLOAD_PERSONALIZED_CARD("Download Personalized Card",
 			TemplateUtil::getAckTemplateVariablesForDownloadPersonalizedCard,
@@ -107,7 +107,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			"verify-my-phone-email",
 			TemplateUtil::getNotificationCommonTemplateVariables,
 			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),
-	DEFAULT("Default", TemplateUtil::getDefaultTemplateVariables, "",
+	DEFAULT("Default", TemplateUtil::getAckTemplateVariablesForDefault, "",
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
 	private static final String PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT = "resident.template.email.subject.%s.%s";
@@ -115,8 +115,6 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private static final String PREFIX_RESIDENT_TEMPLATE_EMAIL_CONTENT = "resident.template.email.content.%s.%s";
 
 	private static final String PREFIX_RESIDENT_TEMPLATE_SMS = "resident.template.sms.%s.%s";
-
-	private static final String PREFIX_RESIDENT_TEMPLATE_BELL_ICON = "resident.template.bell-icon.%s.%s";
 
 	private static final String PREFIX_RESIDENT_TEMPLATE_PURPOSE = "resident.template.purpose.%s.%s";
 
@@ -130,7 +128,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private static final String PREFIX_RESIDENT_REQUEST_IN_PROGRESS_STATUS_LIST = "resident.request.in-progress.status.list.";
 	private static final String PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST = "resident.request.new.status.list.";
 	private static final String SEPARATOR = ",";
-	private FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
+	private FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
 	private String featureName;
 	private ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction;
 	private FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
@@ -139,7 +137,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private String name;
 
 	private RequestType(String name,
-			FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+			FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
 			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
@@ -148,7 +146,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 	}
 
 	private RequestType(String name,
-			FiveArgsFunction<TemplateUtil, String, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
+			FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
 			String featureName,
 			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
 			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
@@ -284,10 +282,6 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return String.format(PREFIX_RESIDENT_TEMPLATE_SMS, templateType.getType(), getFeatureName());
 	}
 	
-	public String getBellIconTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_BELL_ICON, templateType.getType(), getFeatureName());
-	}
-	
 	public String getPurposeTemplateCodeProperty(TemplateType templateType) {
 		return String.format(PREFIX_RESIDENT_TEMPLATE_PURPOSE, templateType.getType(), getFeatureName());
 	}
@@ -296,8 +290,8 @@ public enum RequestType implements PreUpdateInBatchJob {
 		return String.format(PREFIX_RESIDENT_TEMPLATE_SUMMARY, templateType.getType(), getFeatureName());
 	}
 
-	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, String eventId, String languageCode, Integer timeZoneOffset, String locale) {
-		return ackTemplateVariablesFunction.apply(templateUtil, eventId, languageCode, timeZoneOffset, locale);
+	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, ResidentTransactionEntity residentTransactionEntity, String languageCode, Integer timeZoneOffset, String locale) {
+		return ackTemplateVariablesFunction.apply(templateUtil, residentTransactionEntity, languageCode, timeZoneOffset, locale);
 	}
 	
 	public Map<String, Object> getNotificationTemplateVariables(TemplateUtil templateUtil, NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
