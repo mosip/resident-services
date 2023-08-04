@@ -3,6 +3,7 @@ package io.mosip.resident.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,9 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
+
+    @Autowired
+    private IdentityServiceImpl identityService;
     
     @Value("${resident.channel.verification.status.id}")
     private String residentChannelVerificationStatusId;
@@ -42,9 +46,11 @@ public class VerificationServiceImpl implements VerificationService {
 		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::entry");
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
+        IdentityDTO identityDTO = identityService.getIdentity(individualId);
+        String idaToken = identityService.getIDAToken(identityDTO.getUIN());
         ResidentTransactionEntity residentTransactionEntity =
                 residentTransactionRepository.findTopByRefIdAndStatusCodeOrderByCrDtimesDesc
-                        (utility.getIdForResidentTransaction(individualId, List.of(channel)), EventStatusSuccess.OTP_VERIFIED.toString());
+                        (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
         if (residentTransactionEntity!=null) {
             verificationStatus = true;
             residentTransactionRepository.save(residentTransactionEntity);

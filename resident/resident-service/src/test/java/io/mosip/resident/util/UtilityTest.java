@@ -124,6 +124,7 @@ public class UtilityTest {
 	private static String token;
 	@Mock
 	private ObjectStoreHelper objectStoreHelper;
+	private String idaToken;
 
 
 	@Before
@@ -162,6 +163,7 @@ public class UtilityTest {
 				"CjfN3mlwxDxHm2DzMHnwbKR5orEm1NRyCnUfGGm5IMVTdDnXz1iUAsU7zeKA2XOdH3zQgMUu-vqJpgRWRG-XJHakSyblfAFIVAILRi7rwJQjL7X1lhm1ZAqUX" +
 				"Soh6kZBoOeYd_29RQQzFQNzpn_Ahk4GxQu_TLyvoWeNXpfx94om7TqrZYghtTg5_svku2P0NuFxzbWysPMjaHrEff0idKY94sKJ6eNpLXRXbJCPkAHtfVY0U3" +
 				"YDQqWUpYjE3hQCZz0u_L8sieJIN3mYtjd12rfOrjEKu2fFGu5UbJRVqkmOw0egVGHw";
+		idaToken = "123";
 	}
 
 	@Test
@@ -437,7 +439,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("EMAIL")));
+				utility.getIdForResidentTransaction(List.of("EMAIL"), identityDTO, idaToken));
 	}
 
 	@Test
@@ -449,7 +451,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("PHONE")));
+				utility.getIdForResidentTransaction(List.of("PHONE"), identityDTO, idaToken));
 	}
 
 	@Test
@@ -461,7 +463,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("PHONE","EMAIL")));
+				utility.getIdForResidentTransaction(List.of("PHONE","EMAIL"), identityDTO, idaToken));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -473,7 +475,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("PH")));
+				utility.getIdForResidentTransaction(List.of("PH"), identityDTO, idaToken));
 	}
 
 	@Test

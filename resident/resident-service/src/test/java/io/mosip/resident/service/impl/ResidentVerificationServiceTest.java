@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -56,7 +57,7 @@ public class ResidentVerificationServiceTest {
 	public void setup() throws Exception {
 		residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		when(utility.getIdForResidentTransaction(anyString(), anyList())).thenReturn("hash ref id");
+		when(utility.getIdForResidentTransaction(anyList(), any(), anyString())).thenReturn("hash ref id");
 	}
 
 	@Test

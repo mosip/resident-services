@@ -5,6 +5,7 @@ import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMI
 import java.security.NoSuchAlgorithmException;
 import java.util.stream.Collectors;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
@@ -86,6 +87,7 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 	@Override
 	public void insertData(OtpRequestDTO otpRequestDTO) throws ResidentServiceCheckedException, NoSuchAlgorithmException, ApisResourceAccessException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.SEND_OTP);
+		String individualId = otpRequestDTO.getIndividualId();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
 		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
@@ -95,14 +97,17 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
 		residentTransactionEntity.setLangCode("eng");
-		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(otpRequestDTO.getIndividualId()));
+		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
+		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
+		String idaToken= identityServiceImpl.getIDAToken(identityDTO.getUIN());
 		if( otpRequestDTO.getOtpChannel()!=null && otpRequestDTO.getOtpChannel().size()==1){
-			residentTransactionEntity.setRefId(utility.getIdForResidentTransaction(otpRequestDTO.getIndividualId(), otpRequestDTO.getOtpChannel()));
+			residentTransactionEntity.setRefId(utility.getIdForResidentTransaction(otpRequestDTO.getOtpChannel(),
+					identityDTO, idaToken));
 		} else{
-			residentTransactionEntity.setRefId(utility.getRefIdHash(otpRequestDTO.getIndividualId()));
+			residentTransactionEntity.setRefId(utility.getRefIdHash(individualId));
 		}
-		residentTransactionEntity.setIndividualId(otpRequestDTO.getIndividualId());
-		residentTransactionEntity.setTokenId(identityServiceImpl.getIDATokenForIndividualId(otpRequestDTO.getIndividualId()));
+		residentTransactionEntity.setIndividualId(individualId);
+		residentTransactionEntity.setTokenId(idaToken);
 		residentTransactionEntity.setPurpose(attributeList);
 		residentTransactionRepository.save(residentTransactionEntity);
 	}

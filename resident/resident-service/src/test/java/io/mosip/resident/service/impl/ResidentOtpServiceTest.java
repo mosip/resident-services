@@ -86,7 +86,7 @@ public class ResidentOtpServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException, NoSuchAlgorithmException {
 		OtpResponseDTO otpResponseDTO = getOtpResponseDTO();
 		when(residentServiceRestClient.postApi(anyString(), any(), any(), any())).thenReturn(otpResponseDTO);
-		when(utility.getIdForResidentTransaction(anyString(), anyList())).thenReturn("hash ref id");
+		when(utility.getIdForResidentTransaction(anyList(), any(), anyString())).thenReturn("hash ref id");
 
 		OtpRequestDTO otpRequestDTO = getOtpRequestDTO();
 		otpRequestDTO.setOtpChannel(List.of("EMAIL"));
@@ -111,7 +111,7 @@ public class ResidentOtpServiceTest {
 		otpRequestDTO.setOtpChannel(List.of("EMAIL"));
 		OtpResponseDTO otpResponseDTO = getOtpResponseDTO();
 		when(residentServiceRestClient.postApi(anyString(), any(), any(), any())).thenReturn(otpResponseDTO);
-		when(utility.getIdForResidentTransaction(anyString(), anyList()))
+		when(utility.getIdForResidentTransaction(anyList(), any(), anyString()))
 				.thenThrow(new ResidentServiceCheckedException());
 		residentOtpService.generateOtp(otpRequestDTO);
 	}
