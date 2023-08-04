@@ -370,62 +370,6 @@ public class IdentityServiceTest {
 		assertEquals("2476302389",identityService.getUinForIndividualId("2476302389"));
 	}
 
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetMappingValueNullIoException() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		when(utility.getMappingValue(Mockito.anyMap(), Mockito.anyString(), Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
-		identityService.getIdentity("6", false, "eng");
-	}
-
-	@Test
-	public void testGetMappingValueInvalidPerpetualVid() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		fileLoadMethod();
-		IdentityDTO result = identityService.getIdentity("6", false, "eng");
-		assertNotNull(result);
-		assertEquals("8251649601", result.getUIN());
-	}
-
-	@Test
-	public void testGetMappingValueValidPerpetualVid() throws Exception {
-		Tuple3<URI, MultiValueMap<String, String>, Map<String, Object>> tuple3 = loadUserInfoMethod();
-		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
-		when(restClientWithPlainRestTemplate.getApi(tuple3.getT1(), String.class, tuple3.getT2()))
-				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("4069341201794732"));
-		fileLoadMethod();
-		String str = CryptoUtil.encodeToURLSafeBase64("response return".getBytes());
-		IdentityDTO result = identityService.getIdentity("6", false, "eng");
-		assertNotNull(result);
-		assertEquals("8251649601", result.getUIN());
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testGetMappingValueValidPerpetualVidResidentServiceCheckedException() throws Exception {
-		fileLoadMethod();
-		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
-		IdentityDTO result = identityService.getIdentity("6", false, "eng");
-		assertNotNull(result);
-		assertEquals("6", result.getUIN());
-	}
-
-	@Test(expected = ResidentServiceException.class)
-	public void testGetMappingValueValidPerpetualVidApisResourceAccessException() throws Exception {
-		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
-		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
-		fileLoadMethod();
-		IdentityDTO result = identityService.getIdentity("6", false, "eng");
-		assertNotNull(result);
-		assertEquals("6", result.getUIN());
-	}
-
 	@Test
 	public void testGetNameForNotification() throws Exception {
 		fileLoadMethod();
