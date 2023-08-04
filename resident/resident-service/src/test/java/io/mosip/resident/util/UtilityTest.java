@@ -521,14 +521,14 @@ public class UtilityTest {
 	public void testGetFileNameAsPerFeatureName(){
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.SHARE_CRED_WITH_PARTNER, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.GENERATE_VID, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.REVOKE_VID, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.ORDER_PHYSICAL_CARD, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.DOWNLOAD_PERSONALIZED_CARD, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.UPDATE_MY_UIN, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.AUTH_TYPE_LOCK_UNLOCK, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.DEFAULT, 0, LOCALE));
 	}
 
 	@Test

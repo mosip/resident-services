@@ -30,9 +30,9 @@ import reactor.util.function.Tuple2;
 public enum RequestType implements PreUpdateInBatchJob {
 	AUTHENTICATION_REQUEST("Authentication Request", TemplateUtil::getAckTemplateVariablesForAuthenticationRequest,
 			"", null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
-	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForCredentialShare,
+	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForShareCredentialWithPartner,
 			"share-cred-with-partner", TemplateUtil::getNotificationTemplateVariablesForShareCredentialWithPartner,
-			TemplateUtil::getDescriptionTemplateVariablesForShareCredential,
+			TemplateUtil::getDescriptionTemplateVariablesForShareCredentialWithPartner,
 			ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY),
 	DOWNLOAD_PERSONALIZED_CARD("Download Personalized Card",
 			TemplateUtil::getAckTemplateVariablesForDownloadPersonalizedCard,
@@ -107,7 +107,7 @@ public enum RequestType implements PreUpdateInBatchJob {
 			"verify-my-phone-email",
 			TemplateUtil::getNotificationCommonTemplateVariables,
 			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),
-	DEFAULT("Default", TemplateUtil::getDefaultTemplateVariables, "",
+	DEFAULT("Default", TemplateUtil::getAckTemplateVariablesForDefault, "",
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
 	private static final String PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT = "resident.template.email.subject.%s.%s";
