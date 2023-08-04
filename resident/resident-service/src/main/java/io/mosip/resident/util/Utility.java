@@ -643,12 +643,12 @@ public class Utility {
 		return propertyName;
 	}
 
-	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset, String locale) {
-		String namingProperty = RequestType.getRequestTypeByName(featureName).getNamingProperty();
+	public String getFileNameAsPerFeatureName(String eventId, RequestType requestType, int timeZoneOffset, String locale) {
+		String namingProperty = requestType.getNamingProperty();
 		if (namingProperty == null) {
 			namingProperty = ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY;
 		}
-		return getFileNameAck(featureName, eventId, Objects.requireNonNull(this.env.getProperty(namingProperty)),
+		return getFileNameAck(requestType.getName(), eventId, Objects.requireNonNull(this.env.getProperty(namingProperty)),
 				timeZoneOffset, locale);
 	}
 	

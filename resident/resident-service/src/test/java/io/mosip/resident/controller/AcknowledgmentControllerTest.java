@@ -102,7 +102,7 @@ public class AcknowledgmentControllerTest {
 
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
-        when(acknowledgementService.getAcknowledgementPDF(anyString(), anyString(), Mockito.anyInt(), anyString())).thenReturn(Tuples.of("test".getBytes(), RequestType.AUTHENTICATION_REQUEST.getName()));
+        when(acknowledgementService.getAcknowledgementPDF(anyString(), anyString(), Mockito.anyInt(), anyString())).thenReturn(Tuples.of("test".getBytes(), RequestType.AUTHENTICATION_REQUEST));
         ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0, LOCALE_EN_US);
         assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
     }

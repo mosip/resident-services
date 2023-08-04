@@ -136,7 +136,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForCredentialShare() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForCredentialShare(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
+        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForShareCredentialWithPartner(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
@@ -191,12 +191,6 @@ public class TemplateUtilTest {
     }
 
     @Test
-    public void getAckTemplateVariablesForVerifyPhoneOrEmail() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForVerifyPhoneEmail(residentTransactionEntity, 0, LOCALE_EN_US);
-        assertEquals(eventId,ackTemplateVariables.get(TemplateVariablesConstants.EVENT_ID));
-    }
-
-    @Test
     public void getAckTemplateVariablesForAuthLock() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForAuthTypeLockUnlock(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
@@ -206,7 +200,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestFailedEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusFailure.AUTHENTICATION_FAILED.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.FAILED.name(), "Failed"));
-        assertEquals("Failed",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
+        assertEquals("Failed",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTHENTICATION_REQUEST, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -215,7 +209,7 @@ public class TemplateUtilTest {
     public void getCommonTemplateVariablesTestInProgressEventStatus() {
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
-        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTHENTICATION_REQUEST, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -366,9 +360,9 @@ public class TemplateUtilTest {
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 responseWrapper);
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
-        residentTransactionEntity.setRequestTypeCode("requestType");
+        residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
-        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.SEND_OTP, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -380,10 +374,10 @@ public class TemplateUtilTest {
         Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
                 responseWrapper);
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
-        residentTransactionEntity.setRequestTypeCode("requestType");
+        residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenThrow(new ApisResourceAccessException());
-        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US).get(
+        assertEquals("In Progress",templateUtil.getCommonTemplateVariables(residentTransactionEntity, RequestType.SEND_OTP, "eng", 0, LOCALE_EN_US).get(
                 TemplateVariablesConstants.EVENT_STATUS
         ));
     }
@@ -398,7 +392,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getDescriptionTemplateVariablesForShareCredentialTest(){
-        templateUtil.getDescriptionTemplateVariablesForShareCredential(residentTransactionEntity, null, null);
+        templateUtil.getDescriptionTemplateVariablesForShareCredentialWithPartner(residentTransactionEntity, null, null);
     }
 
     @Test
@@ -482,7 +476,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getDefaultTemplateVariablesTest(){
-        templateUtil.getDefaultTemplateVariables(residentTransactionEntity, "eng", 0, LOCALE_EN_US);
+        templateUtil.getAckTemplateVariablesForDefault(residentTransactionEntity, "eng", 0, LOCALE_EN_US);
     }
 
     @Test
