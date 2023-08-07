@@ -168,15 +168,6 @@ public enum RequestType implements PreUpdateInBatchJob {
         return RequestType.DEFAULT;
     }
 	
-	public static RequestType getRequestTypeByName(String name) {
-        for (RequestType requestType : values()) {
-            if (requestType.getName().equalsIgnoreCase(name)) {
-                return requestType;
-            }
-        }
-        return RequestType.DEFAULT;
-    }
-	
 	public Stream<String> getNewStatusList(Environment env) {
 		return getStatusListFromProperty(env, PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST);
 	}
