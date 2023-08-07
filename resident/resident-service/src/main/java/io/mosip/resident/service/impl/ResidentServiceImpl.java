@@ -37,7 +37,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
-import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -95,6 +94,7 @@ import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.MachineCreateRequestDTO;
 import io.mosip.resident.dto.MachineCreateResponseDTO;
 import io.mosip.resident.dto.MachineDto;
@@ -149,7 +149,6 @@ import io.mosip.resident.service.DocumentService;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.PartnerService;
-import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.JsonUtil;
@@ -299,9 +298,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private String ridSuffix;
 
 	private static String authTypes;
-
-	@Autowired
-	private ProxyMasterdataService proxyMasterdataService;
 
 	private TemplateManager templateManager;
 
@@ -1863,7 +1859,9 @@ public class ResidentServiceImpl implements ResidentService {
 				if (!idaToken.equals(residentTransactionEntity.get().getTokenId())) {
 					throw new ResidentServiceCheckedException(ResidentErrorCode.EID_NOT_BELONG_TO_SESSION);
 				}
-				residentTransactionRepository.updateReadStatus(eventId);
+				if (!residentTransactionEntity.get().isReadStatus()) {
+					residentTransactionRepository.updateReadStatus(eventId);
+				}
 				requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				statusCodes = getEventStatusCode(residentTransactionEntity.get().getStatusCode(), languageCode);
 			} else {
