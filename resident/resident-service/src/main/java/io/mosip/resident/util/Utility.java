@@ -22,7 +22,6 @@ import io.mosip.kernel.signature.dto.PDFSignatureRequestDto;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.LoggerFileConstant;
 import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.RequestType;
@@ -79,7 +78,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatter;
@@ -102,7 +100,6 @@ import java.util.stream.Stream;
 import static io.mosip.resident.constant.MappingJsonConstants.EMAIL;
 import static io.mosip.resident.constant.MappingJsonConstants.PHONE;
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-import static io.mosip.resident.constant.ResidentConstants.IMAGE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -124,7 +121,6 @@ public class Utility {
     private static final String LANGUAGE = "language";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
-	private static final String DATE_OF_BIRTH = "dob";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -195,9 +191,6 @@ public class Utility {
 	
 	@Value("${resident.date.time.replace.special.chars:{}}")
 	private String specialCharsReplacement;
-
-	@Value("${resident.dateofbirth.pattern}")
-	private String dateFormat;
 
 	@Autowired
 	private IdentityServiceImpl identityService;
@@ -905,56 +898,6 @@ public class Utility {
 			return JsonUtil.getJSONValue(docJson, VALUE);
 		}
 		return name;
-	}
-
-	/**
-	 * Get identity data by id, fetchFace and langCode.
-	 *
-	 * @param id
-	 * @param fetchFace
-	 * @param langCode
-	 * @return IdentityDTO object
-	 * @throws ResidentServiceCheckedException
-	 */
-	public IdentityDTO getIdentity(String id, boolean fetchFace, String langCode) throws ResidentServiceCheckedException {
-		logger.debug("IdentityServiceImpl::getIdentity()::entry");
-		IdentityDTO identityDTO = new IdentityDTO();
-		try {
-			Map<String, Object> identity =	identityService.getIdentityAttributes(id, null);
-			/**
-			 * It is assumed that in the UI schema the UIN is added.
-			 */
-			identityDTO.setUIN(getMappingValue(identity, IdType.UIN.name()));
-			identityDTO.setEmail(getMappingValue(identity, EMAIL));
-			identityDTO.setPhone(getMappingValue(identity, PHONE));
-			String dateOfBirth = getMappingValue(identity, DATE_OF_BIRTH);
-			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
-				identityDTO.setDateOfBirth(dateOfBirth);
-				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
-				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
-				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
-			}
-			String name = getMappingValue(identity, ResidentConstants.NAME, langCode);
-			identityDTO.setFullName(name);
-			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
-
-			if(fetchFace) {
-				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME),
-						identityService.getClaimValue(env.getProperty(IMAGE)));
-				identity.remove("individualBiometrics");
-			}
-
-		} catch (IOException e) {
-			logger.error("Error occured in accessing identity data %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
-		} catch (ApisResourceAccessException e) {
-			logger.error("Error occured in accessing identity data %s", e.getMessage());
-			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-		}
-		logger.debug("IdentityServiceImpl::getIdentity()::exit");
-		return identityDTO;
 	}
 
 }

@@ -27,6 +27,17 @@ public interface IdentityService {
 	 */
 	public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException;
 
+	/**
+	 * Get identity data by id, fetchFace and langCode.
+	 * 
+	 * @param id
+	 * @param fetchFace
+	 * @param langCode
+	 * @return IdentityDTO object
+	 * @throws ResidentServiceCheckedException
+	 */
+	public IdentityDTO getIdentity(String id, boolean fetchFace, String langCode) throws ResidentServiceCheckedException;
+
 	public String getIDAToken(String uin);
 
 	public String getIDAToken(String uin, String olvPartnerId);

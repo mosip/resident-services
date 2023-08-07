@@ -1,7 +1,35 @@
 package io.mosip.resident.service.impl;
 
+import static io.mosip.resident.util.Utility.IDENTITY;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.mosip.idrepository.core.util.TokenIDGenerator;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -23,31 +51,6 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static io.mosip.resident.constant.ResidentConstants.IMAGE;
-import static io.mosip.resident.util.Utility.IDENTITY;
 
 /**
  * Resident identity service implementation class.
@@ -60,6 +63,11 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
 	private static final String INDIVIDUAL_ID = "individual_id";
+	private static final String EMAIL = "email";
+	private static final String PHONE = "phone";
+	private static final String DATE_OF_BIRTH = "dob";
+	private static final String NAME = "name";
+	private static final String IMAGE = "mosip.resident.photo.token.claim-photo";
 	private static final String PHOTO_ATTRIB_PROP = "mosip.resident.photo.attribute.name";
 
 	private static final String VID = "VID";
@@ -90,6 +98,9 @@ public class IdentityServiceImpl implements IdentityService {
 
 	@Autowired
 	private RequestValidator requestValidator;
+	
+	@Value("${resident.dateofbirth.pattern}")
+	private String dateFormat;
 
 	@Autowired
 	private ResidentVidService residentVidService;
@@ -104,8 +115,49 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
-    	return utility.getIdentity(id, false, null);
+    	return getIdentity(id, false, null);
     }
+
+	@Override
+	public IdentityDTO getIdentity(String id, boolean fetchFace, String langCode) throws ResidentServiceCheckedException {
+		logger.debug("IdentityServiceImpl::getIdentity()::entry");
+		IdentityDTO identityDTO = new IdentityDTO();
+		try {
+			Map<String, Object> identity =	getIdentityAttributes(id, null);
+			/**
+			 * It is assumed that in the UI schema the UIN is added.
+			 */
+			identityDTO.setUIN(utility.getMappingValue(identity, UIN));
+			identityDTO.setEmail(utility.getMappingValue(identity, EMAIL));
+			identityDTO.setPhone(utility.getMappingValue(identity, PHONE));
+			String dateOfBirth = utility.getMappingValue(identity, DATE_OF_BIRTH);
+			if(dateOfBirth != null && !dateOfBirth.isEmpty()) {
+				identityDTO.setDateOfBirth(dateOfBirth);
+				DateTimeFormatter formatter=DateTimeFormatter.ofPattern(dateFormat);
+				LocalDate localDate=LocalDate.parse(dateOfBirth, formatter);
+				identityDTO.setYearOfBirth(Integer.toString(localDate.getYear()));
+			}
+			String name = utility.getMappingValue(identity, NAME, langCode);
+			identityDTO.setFullName(name);
+			identityDTO.putAll((Map<? extends String, ? extends Object>) identity.get(IDENTITY));
+
+			if(fetchFace) {
+				identity.put(env.getProperty(ResidentConstants.PHOTO_ATTRIBUTE_NAME), getClaimValue(env.getProperty(IMAGE)));
+				identity.remove("individualBiometrics");
+			}
+
+		} catch (IOException e) {
+			logger.error("Error occured in accessing identity data %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.IO_EXCEPTION.getErrorMessage(), e);
+		} catch (ApisResourceAccessException e) {
+			logger.error("Error occured in accessing identity data %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("IdentityServiceImpl::getIdentity()::exit");
+		return identityDTO;
+	}
 	
 	@Override
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
@@ -199,7 +251,11 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 
+	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
+		return utility.getMappingValue(identity, NAME, langCode);
+	}
 
+	
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 	

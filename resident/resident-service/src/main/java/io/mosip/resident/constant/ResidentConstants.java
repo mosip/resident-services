@@ -48,10 +48,13 @@ public class ResidentConstants {
     
     public static final String EVENT_ID = "eventId";
 
+    public static final String DOWNLOAD_CARD = "/download/card/";
+
     public static final String STATUS_CODE = "statusCode";
     public static final String STATUS = "status";
     public static final String URL = "url";
     public static final String RESIDENT = "RESIDENT";
+    public static final String RESIDENT_SERVICES = "resident-services";
 
     public static final String RESIDENT_CONTACT_DETAILS_UPDATE_ID="resident.contact.details.update.id";
 
@@ -65,6 +68,9 @@ public class ResidentConstants {
     public static final String IDP_REFERENCE_ID = "mosip.resident.oidc.keymanager.reference.id";
     public static final String RESIDENT_APP_ID = "resident.appid";
 
+    public static final String DATA_SHARE_APPLICATION_ID = "mosip.datashare.application.id";
+    public static final String DATA_SHARE_REFERENCE_ID = "mosip.datashare.reference.id";
+
     public static final String DOWNLOAD_UIN_CARD_ID = "mosip.resident.download.uin.card";
     public static final String LOWER_LEFT_X = "mosip.resident.service.uincard.lowerleftx";
     public static final String LOWER_LEFT_Y = "mosip.resident.service.uincard.lowerlefty";
@@ -76,6 +82,7 @@ public class ResidentConstants {
     public static final String SIGN_PDF_REFERENCE_ID = "mosip.resident.sign.pdf.reference.id";
     
     public static final String AUTHENTICATION_MODE_CLAIM_NAME = "mosip.resident.access_token.auth_mode.claim-name";
+    public static final String SUBJECT_CLAIM_NAME = "mosip.resident.access_token.subject.claim-name";
 
     public static final String MOSIP_RESIDENT_DOWNLOAD_PERSONALIZED_CARD_ID = "mosip.resident.download.personalized.card.id";
 
@@ -239,6 +246,7 @@ public class ResidentConstants {
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
 
     public static final String ID = "id";
+    public static final String REVOKE_VID = "revokeVidId";
     public static final String SCHEMA_TYPE = "schemaType";
     public static final String ALLOWED_FILE_TYPE = "mosip.allowed.extension";
     public static final  String MANDATORY_LANGUAGE="mosip.mandatory-languages";
@@ -250,6 +258,7 @@ public class ResidentConstants {
     public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
     public static final String VID = "vid";
     public static final String NAME = "name";
+    public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
 
     public static final String RESIDENT_NOTIFICATIONS_DEFAULT_PAGE_SIZE = "resident.notifications.default.page.size";
     public static final String RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT = "resident.service-history.download.max.count";
@@ -260,8 +269,10 @@ public class ResidentConstants {
     public static final String RESIDENT_REGISTRATION_CENTERS_DOWNLOAD_MAX_COUNT = "resident.registration-centers.download.max.count";
 
     public static final String PREFERRED_LANG_PROPERTY = "resident.update.preferred.language.by.name";
-
-    //    UI Schema keys
+    public static final String PREFERRED_LANGUAGE = "preferredLanguage";
+    public static final String RESIDENT_ATTRIBUTE_NAMES_WITHOUT_DOCUMENTS_REQUIRED = "resident.attribute.names.without.documents.required";
+    
+//    UI Schema keys
     public static final String FORMAT_REQUIRED = "formatRequired";
     public static final String ATTRIBUTE_NAME = "attributeName";
     public static final String FORMAT_OPTION = "formatOption";
