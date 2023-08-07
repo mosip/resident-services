@@ -604,17 +604,13 @@ public class Utility {
 		return fileName;
 	}
 
-	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
-		IdentityDTO identityDTO = identityService.getIdentity(individualId);
-		String uin ="";
+	public String getIdForResidentTransaction(List<String> channel, IdentityDTO identityDTO, String idaToken) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		String email ="";
 		String phone ="";
 		if (identityDTO != null) {
-			uin = identityDTO.getUIN();
 			email = identityDTO.getEmail();
 			phone = identityDTO.getPhone();
 		}
-		String idaToken= identityService.getIDAToken(uin);
 		String id;
 		if(email != null && phone !=null && channel.size()==2) {
 			id= email+phone+idaToken;
