@@ -10,11 +10,13 @@ import static org.mockito.Mockito.when;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -70,6 +72,7 @@ public class ResidentOtpServiceTest {
 	private ResidentTransactionRepository residentTransactionRepository;
 
 	private ResidentTransactionEntity residentTransactionEntity;
+	private IdentityDTO identityValue;
 
 	@Before
 	public void setup() throws Exception {
@@ -79,6 +82,12 @@ public class ResidentOtpServiceTest {
 		residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
 		when(utility.createEntity(any())).thenReturn(residentTransactionEntity);
 		when(utility.createEventId()).thenReturn("1122334455667788");
+		identityValue = new IdentityDTO();
+		identityValue.setEmail("aaa@bbb.com");
+		identityValue.setPhone("987654321");
+		identityValue.setUIN("123");
+		when(identityServiceImpl.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+		when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123");
 	}
 
 	@Test

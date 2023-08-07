@@ -30,7 +30,7 @@ public class VerificationServiceImpl implements VerificationService {
     private ResidentTransactionRepository residentTransactionRepository;
 
     @Autowired
-    private IdentityServiceImpl identityService;
+    private IdentityServiceImpl identityServiceImpl;
     
     @Value("${resident.channel.verification.status.id}")
     private String residentChannelVerificationStatusId;
@@ -46,8 +46,8 @@ public class VerificationServiceImpl implements VerificationService {
 		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::entry");
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
-        IdentityDTO identityDTO = identityService.getIdentity(individualId);
-        String idaToken = identityService.getIDAToken(identityDTO.getUIN());
+        IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
+        String idaToken = identityServiceImpl.getIDAToken(identityDTO.getUIN());
         ResidentTransactionEntity residentTransactionEntity =
                 residentTransactionRepository.findTopByRefIdAndStatusCodeOrderByCrDtimesDesc
                         (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
