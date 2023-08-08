@@ -115,7 +115,7 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
-    	return getIdentity(id, false, null);
+		return utility.getCachedIdentityData(id, getAccessToken());
     }
 
 	@Override
@@ -251,11 +251,7 @@ public class IdentityServiceImpl implements IdentityService {
 		}
 	}
 
-	public String getNameForNotification(Map<?, ?> identity, String langCode) throws ResidentServiceCheckedException, IOException {
-		return utility.getMappingValue(identity, NAME, langCode);
-	}
 
-	
 	@Override
 	public String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException {
 	
@@ -303,12 +299,19 @@ public class IdentityServiceImpl implements IdentityService {
 	}
 	
 	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
-		AuthUserDetails authUserDetails = getAuthUserDetails();
-		if (authUserDetails != null) {
-			String token = authUserDetails.getToken();
-				return getClaimsFromToken(claims, token);
+		String accessToken = getAccessToken();
+		if (!Objects.equals(accessToken, "")) {
+			return getClaimsFromToken(claims, accessToken);
 		}
 		return Map.of();
+	}
+
+	public String getAccessToken(){
+		AuthUserDetails authUserDetails = getAuthUserDetails();
+		if(authUserDetails != null){
+			return authUserDetails.getToken();
+		}
+		return "";
 	}
 	
 	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {

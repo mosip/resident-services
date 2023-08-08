@@ -58,6 +58,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -898,6 +899,16 @@ public class Utility {
 			return JsonUtil.getJSONValue(docJson, VALUE);
 		}
 		return name;
+	}
+
+	@Cacheable(value = "identityMapCache", key = "#accessToken")
+	public IdentityDTO getCachedIdentityData(String id, String accessToken) throws ResidentServiceCheckedException {
+		return identityService.getIdentity(id, false, null);
+	}
+
+	@CacheEvict(value = "identityMapCache", key = "#accessToken")
+	public void clearIdentityMapCache(String accessToken) {
+		logger.info("Clearing Identity Map cache");
 	}
 
 }
