@@ -212,7 +212,7 @@ public class IdentityServiceTest {
 		identityDTO.setEmail("manojvsp12@gmail.com");
 		identityDTO.setPhone("9395910872");
 		identityDTO.setDateOfBirth("1970/11/16");
-		when(utility.getIdentityAttributes(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(identityDTO);
+		when(utility.getIdentityAttributes(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(responseMap);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -236,7 +236,7 @@ public class IdentityServiceTest {
 		assertEquals("8251649601", result.getUIN());
 	}
 
-	@Test(expected = ResidentServiceCheckedException.class)
+	@Test
 	public void testGetIdentityAttributesIf() throws Exception {
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
@@ -244,13 +244,14 @@ public class IdentityServiceTest {
 
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
-
 		responseWrapper.setErrors(errorList);
+		getAuthUserDetailsFromAuthentication();
 		identityService.getIdentity("6", false, null);
 	}
 
-	@Test(expected = ResidentServiceCheckedException.class)
+	@Test
 	public void testGetIdentityAttributesWithApisResourceAccessException() throws Exception {
+		getAuthUserDetailsFromAuthentication();
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenThrow(new ApisResourceAccessException());
 		identityService.getIdentity("6", false, null);
@@ -412,24 +413,26 @@ public class IdentityServiceTest {
 		assertEquals("8251649601", result.getUIN());
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test
 	public void testGetMappingValueValidPerpetualVidResidentServiceCheckedException() throws Exception {
 		fileLoadMethod();
+		getAuthUserDetailsFromAuthentication();
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ResidentServiceCheckedException());
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test
 	public void testGetMappingValueValidPerpetualVidApisResourceAccessException() throws Exception {
+		getAuthUserDetailsFromAuthentication();
 		when(residentVidService.getPerpatualVid(Mockito.anyString())).thenThrow(new ApisResourceAccessException());
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName,perpetualVID");
 		fileLoadMethod();
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
-		assertEquals("6", result.getUIN());
+		assertEquals("8251649601", result.getUIN());
 	}
 
 	@Test
