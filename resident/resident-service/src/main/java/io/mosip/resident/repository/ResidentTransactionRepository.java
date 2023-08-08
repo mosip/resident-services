@@ -52,8 +52,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	@Modifying
     @Transactional
-	@Query("update ResidentTransactionEntity set pinned_status='true' where event_id=:eventId")
-	int updatePinnedStatus(@Param("eventId") String eventId);
+	@Query("update ResidentTransactionEntity set pinned_status=:status where event_id=:eventId")
+	int updatePinnedStatus(@Param("eventId") String eventId, @Param("status") boolean status);
 
 	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);
 

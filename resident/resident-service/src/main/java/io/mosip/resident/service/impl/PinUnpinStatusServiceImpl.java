@@ -52,7 +52,7 @@ public class PinUnpinStatusServiceImpl implements PinUnpinStatusService {
         try {
         	logger.debug("PinUnpinStatusServiceImpl::pinStatus()::entry");
             if (residentTransactionRepository.existsById(eventId)) {
-            	residentTransactionRepository.updatePinnedStatus(eventId);
+            	residentTransactionRepository.updatePinnedStatus(eventId, status);
             } else {
             	logger.error("PinUnpinStatusServiceImpl - %s", ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
                 throw new ResidentServiceCheckedException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND);
