@@ -143,7 +143,7 @@ public class LoginCheck {
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..)) && args(token,redirectURI,res)")
-	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) {
+	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) throws ApisResourceAccessException {
 		logger.debug("LoginCheck::onLogoutSuccess()::entry");
 		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ);
 		if (res.getStatus() == resStatusCode) {
@@ -152,6 +152,7 @@ public class LoginCheck {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
 		utility.clearUserInfoCache(token);
+		utility.clearIdentityMapCache(token);
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}
 
