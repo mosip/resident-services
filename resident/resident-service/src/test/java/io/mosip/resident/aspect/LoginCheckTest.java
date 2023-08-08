@@ -177,7 +177,7 @@ public class LoginCheckTest {
 	}
 
 	@Test
-	public void testOnLogoutSuccess() {
+	public void testOnLogoutSuccess() throws ApisResourceAccessException {
 		loginCheck.onLogoutSuccess(null, null, response);
 	}
 
