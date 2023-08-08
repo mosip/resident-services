@@ -40,6 +40,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuples;
 
 /**
  * Acknowledgment Controller Test
@@ -101,8 +102,7 @@ public class AcknowledgmentControllerTest {
 
     @Test
     public void testCreateRequestGenerationSuccess() throws Exception {
-        when(templateUtil.getFeatureName(anyString(), anyString())).thenReturn(RequestType.AUTHENTICATION_REQUEST.toString());
-        when(acknowledgementService.getAcknowledgementPDF(anyString(), anyString(), Mockito.anyInt(), anyString())).thenReturn("test".getBytes());
+        when(acknowledgementService.getAcknowledgementPDF(anyString(), anyString(), Mockito.anyInt(), anyString())).thenReturn(Tuples.of("test".getBytes(), RequestType.AUTHENTICATION_REQUEST));
         ResponseEntity<Object> response = acknowledgementController.getAcknowledgement("bf42d76e-b02e-48c8-a17a-6bb842d85ea9", "eng", 0, LOCALE_EN_US);
         assertEquals(response.getStatusCode(), responseEntity.getStatusCode());
     }

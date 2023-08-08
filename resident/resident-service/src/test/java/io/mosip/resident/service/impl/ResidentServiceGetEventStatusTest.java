@@ -97,15 +97,13 @@ public class ResidentServiceGetEventStatusTest {
         templateVariables.put("authenticationMode", "OTP");
         templateVariables.put("partnerName", "partnerName");
         templateVariables.put("purpose", "authentication");
-        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
+        Mockito.when(requestType.getAckTemplateVariables(templateUtil, Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn(Tuples.of(templateVariables, ""));
         Mockito.when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getResidentIdaToken()).thenReturn("123456789");
         Mockito.when(templateUtil.getPurposeTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
         Mockito.when(templateUtil.getSummaryTemplateTypeCode(Mockito.any(), Mockito.any())).thenReturn("template-type-code");
-        ResponseWrapper primaryLangResp = new ResponseWrapper<>();
-		primaryLangResp.setResponse(Map.of("filtext","Authentication is successful"));
-		Mockito.when(proxyMasterdataService
-				.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(primaryLangResp);
+        Mockito.when(templateUtil.getEventStatusTemplateTypeCode(Mockito.any())).thenReturn("template-type-code");
+        Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
     }
 
@@ -165,7 +163,7 @@ public class ResidentServiceGetEventStatusTest {
     
     @Test
     public void getEventStatusServiceTypeNotMappedTest() throws ResidentServiceCheckedException {
-        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, eventId, "eng", 0, LOCALE_EN_US)).
+        Mockito.when(RequestType.SEND_OTP.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), "eng", 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
     	residentTransactionEntity.get().setRequestTypeCode(RequestType.SEND_OTP.name());
         ResponseWrapper<EventStatusResponseDTO> resultResponseWrapper =residentService.getEventStatus(eventId, langCode, 0, LOCALE_EN_US);

@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -8,11 +9,13 @@ import static org.mockito.Mockito.when;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -42,7 +45,7 @@ public class ResidentVerificationServiceTest {
 	private VerificationService verificationService = new VerificationServiceImpl();
 
 	@Mock
-	private IdentityServiceImpl identityServiceImpl;
+	private IdentityServiceImpl identityService;
 
 	@Mock
 	private Utility utility;
@@ -52,11 +55,19 @@ public class ResidentVerificationServiceTest {
 
 	private ResidentTransactionEntity residentTransactionEntity;
 
+	private IdentityDTO identityValue;
+
 	@Before
 	public void setup() throws Exception {
 		residentTransactionEntity = new ResidentTransactionEntity();
 		residentTransactionEntity.setEventId(UUID.randomUUID().toString());
-		when(utility.getIdForResidentTransaction(anyString(), anyList())).thenReturn("hash ref id");
+		when(utility.getIdForResidentTransaction(anyList(), any(), anyString())).thenReturn("hash ref id");
+		identityValue = new IdentityDTO();
+		identityValue.setEmail("aaa@bbb.com");
+		identityValue.setPhone("987654321");
+		identityValue.setUIN("123");
+		when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityValue);
+		when(identityService.getIDAToken(Mockito.anyString())).thenReturn("123");
 	}
 
 	@Test

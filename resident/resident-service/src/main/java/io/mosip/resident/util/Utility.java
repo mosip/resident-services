@@ -604,17 +604,13 @@ public class Utility {
 		return fileName;
 	}
 
-	public String getIdForResidentTransaction(String individualId, List<String> channel) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
-		IdentityDTO identityDTO = identityService.getIdentity(individualId);
-		String uin ="";
+	public String getIdForResidentTransaction(List<String> channel, IdentityDTO identityDTO, String idaToken) throws ResidentServiceCheckedException, NoSuchAlgorithmException {
 		String email ="";
 		String phone ="";
 		if (identityDTO != null) {
-			uin = identityDTO.getUIN();
 			email = identityDTO.getEmail();
 			phone = identityDTO.getPhone();
 		}
-		String idaToken= identityService.getIDAToken(uin);
 		String id;
 		if(email != null && phone !=null && channel.size()==2) {
 			id= email+phone+idaToken;
@@ -643,12 +639,12 @@ public class Utility {
 		return propertyName;
 	}
 
-	public String getFileNameAsPerFeatureName(String eventId, String featureName, int timeZoneOffset, String locale) {
-		String namingProperty = RequestType.getRequestTypeByName(featureName).getNamingProperty();
+	public String getFileNameAsPerFeatureName(String eventId, RequestType requestType, int timeZoneOffset, String locale) {
+		String namingProperty = requestType.getNamingProperty();
 		if (namingProperty == null) {
 			namingProperty = ResidentConstants.ACK_NAMING_CONVENTION_PROPERTY;
 		}
-		return getFileNameAck(featureName, eventId, Objects.requireNonNull(this.env.getProperty(namingProperty)),
+		return getFileNameAck(requestType.getName(), eventId, Objects.requireNonNull(this.env.getProperty(namingProperty)),
 				timeZoneOffset, locale);
 	}
 	
@@ -904,13 +900,4 @@ public class Utility {
 		return name;
 	}
 
-	public String getSchemaJsonFromIdRepoJson(JSONObject idRepoJson) throws ResidentServiceCheckedException {
-		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ResidentConstants.ID_SCHEMA_VERSION));
-		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
-		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-		Object idSchema = idSchemaResponse.getResponse();
-		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-		return ((String) map.get("schemaJson"));
-	}
-	
 }
