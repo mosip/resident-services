@@ -207,6 +207,12 @@ public class IdentityServiceTest {
 		when(env.getProperty("mosip.resident.photo.attribute.name")).thenReturn("photo");
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName");
 		when(env.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
+		IdentityDTO identityDTO = new IdentityDTO();
+		identityDTO.setUIN("8251649601");
+		identityDTO.setEmail("manojvsp12@gmail.com");
+		identityDTO.setPhone("9395910872");
+		identityDTO.setDateOfBirth("1970/11/16");
+		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any())).thenReturn(identityDTO);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -240,14 +246,14 @@ public class IdentityServiceTest {
 		errorList.add(error);
 
 		responseWrapper.setErrors(errorList);
-		identityService.getIdentity("6");
+		identityService.getIdentity("6", false, null);
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityAttributesWithApisResourceAccessException() throws Exception {
 		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
 				.thenThrow(new ApisResourceAccessException());
-		identityService.getIdentity("6");
+		identityService.getIdentity("6", false, null);
 	}
 
 	@Test
@@ -424,15 +430,6 @@ public class IdentityServiceTest {
 		IdentityDTO result = identityService.getIdentity("6", false, "eng");
 		assertNotNull(result);
 		assertEquals("6", result.getUIN());
-	}
-
-	@Test
-	public void testGetNameForNotification() throws Exception {
-		fileLoadMethod();
-		Map<String, String> identity = new HashMap<>();
-		identity.put("name", "Kamesh");
-		ReflectionTestUtils.invokeMethod(identityService, "getNameForNotification",
-				identity, "eng");
 	}
 
 	@Test
