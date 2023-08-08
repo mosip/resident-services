@@ -901,9 +901,9 @@ public class Utility {
 		return name;
 	}
 
-	@Cacheable(value = "identityMapCache", key = "#accessToken")
-	public IdentityDTO getCachedIdentityData(String id, String accessToken) throws ResidentServiceCheckedException {
-		return identityService.getIdentity(id, false, null);
+	public Map<String, Object> getIdentityAttributes(String id, String schemaType, List<String> additionalAttributes,
+													 String accessToken) throws ResidentServiceCheckedException {
+		return identityService.getIdentityAttributes(id, schemaType, additionalAttributes, accessToken);
 	}
 
 	@CacheEvict(value = "identityMapCache", key = "#accessToken")

@@ -80,7 +80,7 @@ public class IdentityController {
 		}
 		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
 		String id = getIdFromUser();
-		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id, schemaType, List.of());
+		Map<String, ?> propertiesResponse = idServiceImpl.getIdentityAttributes(id, schemaType, List.of(), idServiceImpl.getAccessToken());
 		auditUtil.setAuditRequestDto(EventEnum.GET_INPUT_ATTRIBUTES_SUCCESS);
 		logger.debug("IdentityController::getInputAttributeValues()::exit");
 		responseWrapper.setResponse(propertiesResponse);

@@ -56,7 +56,7 @@ public interface IdentityService {
 	public String getResidentIndvidualIdFromSession() throws ApisResourceAccessException;
 
 	Map<String, Object> getIdentityAttributes(String id, String schemaType,
-			List<String> additionalAttributes) throws ResidentServiceCheckedException;
+			List<String> additionalAttributes, String token) throws ResidentServiceCheckedException;
 
 	String getUinForIndividualId(String idvid) throws ResidentServiceCheckedException;
 
@@ -68,4 +68,5 @@ public interface IdentityService {
 	String createSessionId();
 
 	public String getResidentIdaTokenFromAccessToken(String accessToken) throws ApisResourceAccessException, ResidentServiceCheckedException;
+	public String getAccessToken();
 }

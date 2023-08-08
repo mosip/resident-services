@@ -212,7 +212,7 @@ public class IdentityServiceTest {
 		identityDTO.setEmail("manojvsp12@gmail.com");
 		identityDTO.setPhone("9395910872");
 		identityDTO.setDateOfBirth("1970/11/16");
-		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any())).thenReturn(identityDTO);
+		when(utility.getIdentityAttributes(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(identityDTO);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -602,7 +602,7 @@ public class IdentityServiceTest {
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		assertEquals("8251649601",
-				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name"), token).get("UIN"));
 	}
 
 	@Test(expected = Exception.class)
@@ -614,7 +614,7 @@ public class IdentityServiceTest {
 		tuple3.getT3().put("photo", "NGFjNzk1OTYyYWRkIiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ");
 		Mockito.when(residentVidService.getPerpatualVid(Mockito.anyString())).thenReturn(Optional.of("1212121212"));
 		assertEquals("8251649601",
-				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name"), token).get("UIN"));
 	}
 
 	@Test
@@ -629,7 +629,7 @@ public class IdentityServiceTest {
 				.thenReturn(objectMapper.writeValueAsString(tuple3.getT3()));
 		Mockito.when(utility.convertToMaskData(Mockito.anyString())).thenReturn("81***23");
 		assertEquals("8251649601",
-				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
+				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name"), token).get("UIN"));
 	}
 
 	@Test(expected = InvalidInputException.class)

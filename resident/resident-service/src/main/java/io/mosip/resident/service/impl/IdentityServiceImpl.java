@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -115,7 +116,7 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
-		return utility.getCachedIdentityData(id, getAccessToken());
+		return getIdentity(id, false, null);
     }
 
 	@Override
@@ -161,14 +162,15 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType) throws ResidentServiceCheckedException, IOException {
-		return getIdentityAttributes(id, schemaType, List.of(
+		return utility.getIdentityAttributes(id, schemaType, List.of(
 				Objects.requireNonNull(env.getProperty(ResidentConstants.ADDITIONAL_ATTRIBUTE_TO_FETCH))
-				.split(ResidentConstants.COMMA)));
+				.split(ResidentConstants.COMMA)), getAccessToken());
 	}
 
+	@Cacheable(value = "identityMapCache", key = "#accessToken")
 	@Override
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType,
-			List<String> additionalAttributes) throws ResidentServiceCheckedException {
+			List<String> additionalAttributes, String accessToken) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
