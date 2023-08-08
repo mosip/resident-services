@@ -300,7 +300,7 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	private Map<String, String> getClaims(Set<String> claims) throws ApisResourceAccessException {
 		String accessToken = getAccessToken();
-		if (accessToken != null) {
+		if (!Objects.equals(accessToken, "")) {
 			return getClaimsFromToken(claims, accessToken);
 		}
 		return Map.of();
@@ -311,7 +311,7 @@ public class IdentityServiceImpl implements IdentityService {
 		if(authUserDetails != null){
 			return authUserDetails.getToken();
 		}
-		return null;
+		return "";
 	}
 	
 	private Map<String, String> getClaimsFromToken(Set<String> claims, String token) throws ApisResourceAccessException {
