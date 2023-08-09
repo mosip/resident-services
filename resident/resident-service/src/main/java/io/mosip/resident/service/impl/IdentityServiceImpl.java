@@ -198,7 +198,7 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, Object> response = finalFilter.stream()
 					.peek(a -> {
-						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID)) {
+						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID) && !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
 								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
