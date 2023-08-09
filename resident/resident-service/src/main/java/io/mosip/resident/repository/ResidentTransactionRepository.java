@@ -50,6 +50,11 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	@Query("update ResidentTransactionEntity set read_status='true' where event_id=:eventId")
 	int updateReadStatus(@Param("eventId") String eventId);
 
+	@Modifying
+    @Transactional
+	@Query("update ResidentTransactionEntity set pinned_status=:status where event_id=:eventId")
+	int updatePinnedStatus(@Param("eventId") String eventId, @Param("status") boolean status);
+
 	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);
 
 	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
