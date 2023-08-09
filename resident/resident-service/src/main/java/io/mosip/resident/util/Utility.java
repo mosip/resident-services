@@ -58,7 +58,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -122,6 +121,7 @@ public class Utility {
     private static final String LANGUAGE = "language";
 
 	private static final Logger logger = LoggerConfiguration.logConfig(Utility.class);
+	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -163,6 +163,10 @@ public class Utility {
 
 	@Autowired
 	private ObjectStoreHelper objectStoreHelper;
+
+	@Autowired
+	@Qualifier("restClientWithSelfTOkenRestTemplate")
+	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
 	private static String regProcessorIdentityJson = "";
 
@@ -902,8 +906,17 @@ public class Utility {
 	}
 
 	@Cacheable(value = "identityMapCache", key = "#accessToken")
-	public IdentityDTO getCachedIdentityData(String id, String accessToken) throws ResidentServiceCheckedException {
-		return identityService.getIdentity(id, false, null);
+	public ResponseWrapper<?> getCachedIdentityData(String id, String accessToken) throws ApisResourceAccessException {
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("id", id);
+
+		List<String> queryParamName = new ArrayList<String>();
+		queryParamName.add("type");
+
+		List<Object> queryParamValue = new ArrayList<>();
+		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
+		return restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
+				pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
 	}
 
 	@CacheEvict(value = "identityMapCache", key = "#accessToken")
