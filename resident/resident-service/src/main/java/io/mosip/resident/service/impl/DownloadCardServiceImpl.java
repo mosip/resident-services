@@ -242,12 +242,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		Tuple2<List<String>, Map<String, Object>> identityAttribute = null;
 		try {
 			individualId = identityService.getResidentIndvidualIdFromSession();
+			Map<String, Object> identityAttributes = getIdentityData(individualId);
 			residentTransactionEntity = createResidentTransactionEntity(individualId,
-					downloadPersonalizedCardMainRequestDTO.getRequest());
+					downloadPersonalizedCardMainRequestDTO.getRequest(), (String) identityAttributes.get(IdType.UIN.name()));
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
-				identityAttribute = getAttributeList();
+				identityAttribute = getAttributeList(identityAttributes);
 				List<String> attributeValues = identityAttribute.getT1();
 				if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))) {
 					password = utility.getPassword(attributeValues);
@@ -295,31 +296,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return Tuples.of(utility.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
-			DownloadPersonalizedCardDto downloadPersonalizedCardDto)
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility
-				.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD);
-		String eventId = utility.createEventId();
-		residentTransactionEntity.setEventId(eventId);
-		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
-		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
-		if (downloadPersonalizedCardDto.getAttributes() != null) {
-			residentTransactionEntity.setAttributeList(
-					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
-		}
-		return residentTransactionEntity;
-	}
-
-	private Tuple2<List<String>, Map<String, Object>>  getAttributeList() throws ApisResourceAccessException, IOException {
-		return getAttributeList(identityService.getResidentIndvidualIdFromSession());
-	}
-
-	private Tuple2<List<String>, Map<String, Object>> getAttributeList(String individualId) throws IOException, ApisResourceAccessException {
+	Map<String, Object> getIdentityData(String individualId) throws IOException {
 		Map<String, Object> identityAttributes = null;
-		List<String> attributeValues = new ArrayList<>();
 		try {
 			identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(individualId, null);
 		} catch (ResidentServiceCheckedException e) {
@@ -329,6 +307,29 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			logger.error("Unable to get attributes- " + e);
 			throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
 		}
+		return identityAttributes;
+	}
+
+	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
+																	  DownloadPersonalizedCardDto downloadPersonalizedCardDto, String uin)
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResidentTransactionEntity residentTransactionEntity = utility
+				.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD);
+		String eventId = utility.createEventId();
+		residentTransactionEntity.setEventId(eventId);
+		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
+		if (downloadPersonalizedCardDto.getAttributes() != null) {
+			residentTransactionEntity.setAttributeList(
+					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
+		}
+		return residentTransactionEntity;
+	}
+
+	private Tuple2<List<String>, Map<String, Object>> getAttributeList(Map<String, Object> identityAttributes) {
+		List<String> attributeValues = new ArrayList<>();
 		String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
 		if (attributeProperty != null) {
 			List<String> attributeList = List.of(attributeProperty.split("\\|"));
