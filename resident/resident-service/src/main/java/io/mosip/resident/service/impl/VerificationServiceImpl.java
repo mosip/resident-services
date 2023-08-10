@@ -48,12 +48,11 @@ public class VerificationServiceImpl implements VerificationService {
         boolean verificationStatus = false;
         IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
         String idaToken = identityServiceImpl.getIDAToken(identityDTO.getUIN());
-        ResidentTransactionEntity residentTransactionEntity =
-                residentTransactionRepository.findTopByRefIdAndStatusCodeOrderByCrDtimesDesc
+        boolean entityExist =
+                residentTransactionRepository.existsByRefIdAndStatusCode
                         (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
-        if (residentTransactionEntity!=null) {
+        if (entityExist) {
             verificationStatus = true;
-            residentTransactionRepository.save(residentTransactionEntity);
         }
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);
