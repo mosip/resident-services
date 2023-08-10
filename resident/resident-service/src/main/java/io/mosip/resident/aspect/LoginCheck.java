@@ -95,6 +95,7 @@ public class LoginCheck {
 					logger.info("Scheduling clearing auth token cache after : " + expDate);
 					taskScheduler.schedule(() -> {
 						utility.clearUserInfoCache(accessToken);
+						utility.clearIdentityMapCache(accessToken);
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
 					sessionId = identityServiceImpl.createSessionId();

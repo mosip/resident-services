@@ -127,9 +127,7 @@ public class ResidentCredentialController {
 		ResponseWrapper<ResidentCredentialResponseDtoV2> response = new ResponseWrapper<>();
 		Tuple2<ResidentCredentialResponseDtoV2, String> tupleResponse;
 		try {
-			validator.validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
-			validator.validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
-			validator.validatePurpose(requestDTO.getRequest().getPurpose());
+			validator.validateShareCredentialRequest(requestDTO);
 			String purpose = requestDTO.getRequest().getPurpose();
 			RequestWrapper<ResidentCredentialRequestDto> request = new RequestWrapper<ResidentCredentialRequestDto>();
 			ResidentCredentialRequestDto credentialRequestDto = new ResidentCredentialRequestDto();

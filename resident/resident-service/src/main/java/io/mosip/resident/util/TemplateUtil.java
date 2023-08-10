@@ -525,7 +525,6 @@ public class TemplateUtil {
 			logger.error("Error in getting name.. " + e.getMessage());
 			templateVariables.put(TemplateVariablesConstants.NAME, RESIDENT);
 		}
-		templateVariables.putAll(notificationAttributes);
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
 		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
@@ -594,10 +593,8 @@ public class TemplateUtil {
 	public Map<String, Object> getNotificationTemplateVariablesForShareCredentialWithPartner(
 			NotificationTemplateVariableDTO dto, Map<String, Object> notificationAttributes) {
 		Map<String, Object> templateVariables = getNotificationCommonTemplateVariables(dto, notificationAttributes);
-		if (TemplateType.SUCCESS.getType().equals(dto.getTemplateType().getType())) {
-			templateVariables.put(TemplateVariablesConstants.PARTNER_ID,
-					getEntityFromEventId(dto.getEventId()).getRequestedEntityId());
-		}
+		templateVariables.put(TemplateVariablesConstants.PARTNER_ID,
+				notificationAttributes.get(TemplateVariablesConstants.PARTNER_ID));
 		return templateVariables;
 	}
 
