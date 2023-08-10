@@ -23,7 +23,7 @@ public interface IdAuthService {
 	public Tuple2<Boolean, String> validateOtpV1(String transactionId, String individualId, String otp)
 			throws OtpValidationFailedException, ResidentServiceCheckedException;
 	
-	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType)
+	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp, RequestType requestType, String uin)
 			throws OtpValidationFailedException, ResidentServiceCheckedException;
 
 	public boolean authTypeStatusUpdate(String individualId, List<String> authType,

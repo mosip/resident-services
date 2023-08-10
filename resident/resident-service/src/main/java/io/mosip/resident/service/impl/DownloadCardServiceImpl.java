@@ -133,13 +133,15 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		byte[] pdfBytes = new byte[0];
+		IdentityDTO identityDTO = null;
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
-			String id = getIndividualIdForAid(individualId);
-			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, id,
-					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
+			identityDTO = identityService.getIdentity(individualId);
+			String uin = identityDTO.getUIN();
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, uin,
+					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID, uin);
 			residentTransactionEntity = updateResidentTransaction(individualId, transactionId, tupleResponse.getT2(),
-					id);
+					uin);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
@@ -211,7 +213,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						? TemplateType.SUCCESS
 						: TemplateType.FAILURE;
 
-				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, null);
+				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, identityDTO);
 			}
 		}
 		logger.debug("DownloadCardServiceImpl::getDownloadCardPDF()::exit");
@@ -219,11 +221,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private ResidentTransactionEntity updateResidentTransaction(String individualId, String transactionId,
-			ResidentTransactionEntity residentTransactionEntity, String id) throws ResidentServiceCheckedException {
+			ResidentTransactionEntity residentTransactionEntity, String id) {
 		residentTransactionEntity.setAuthTypeCode(OTP);
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(id));
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(id));
 		residentTransactionEntity.setRequestTrnId(transactionId);
 		return residentTransactionEntity;
 	}
@@ -578,27 +580,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			return NA;
 		}
 		return o;
-	}
-
-	/**
-	 * @param individualId - it can be UIN, VID or AID.
-	 * @return UIN or VID based on the flag "useVidOnly"
-	 */
-	private String getIndividualIdForAid(String individualId) {
-		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(IdType.UIN.toString())) {
-			return individualId;
-		} else {
-			try {
-				return identityService.getIndividualIdForAid(individualId);
-			} catch (ResidentServiceCheckedException e) {
-				throw new ResidentServiceException(ResidentErrorCode.AID_NOT_FOUND.getErrorCode(),
-						ResidentErrorCode.AID_NOT_FOUND.getErrorMessage(), e);
-			} catch (ApisResourceAccessException e) {
-				throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-			}
-		}
 	}
 
 	private void sendNotificationV2(String id, RequestType requestType, TemplateType templateType, String eventId,
