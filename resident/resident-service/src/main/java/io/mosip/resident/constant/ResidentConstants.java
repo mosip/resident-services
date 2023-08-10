@@ -239,6 +239,7 @@ public class ResidentConstants {
 
     public static final String INDIVIDUAL_ID = "individualId";
     public static final String ISSUER = "issuer";
+    public static final String PARTNER_ID = "partnerId";
     public static final String CREDENTIAL_TYPE = "credentialType";
     public static final String OTP = "otp";
     public static final String TRANSACTION_ID_OLD = "transactionID";
