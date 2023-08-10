@@ -1543,17 +1543,15 @@ public class ResidentServiceImpl implements ResidentService {
 			if (residentTransactionEntity.isPresent()) {
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
-				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
+				if (requestType.equals(RequestType.UPDATE_MY_UIN)) {
 					cardType = IdType.UIN.name();
-					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
-				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
-				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
+				} else if (requestType.equals(RequestType.VID_CARD_DOWNLOAD)) {
 					cardType = IdType.VID.name();
-					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
 				}
+				return downloadCardFromDataShareUrl(residentTransactionEntity.get());
 			} else {
 				throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.toString(),
 						ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
