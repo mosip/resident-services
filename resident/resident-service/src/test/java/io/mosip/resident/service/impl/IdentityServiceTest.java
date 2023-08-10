@@ -207,12 +207,7 @@ public class IdentityServiceTest {
 		when(env.getProperty("mosip.resident.photo.attribute.name")).thenReturn("photo");
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName");
 		when(env.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
-		IdentityDTO identityDTO = new IdentityDTO();
-		identityDTO.setUIN("8251649601");
-		identityDTO.setEmail("manojvsp12@gmail.com");
-		identityDTO.setPhone("9395910872");
-		identityDTO.setDateOfBirth("1970/11/16");
-		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any())).thenReturn(identityDTO);
+		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any())).thenReturn(responseWrapper);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -251,7 +246,8 @@ public class IdentityServiceTest {
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityAttributesWithApisResourceAccessException() throws Exception {
-		when(restClientWithSelfTOkenRestTemplate.getApi((ApiName) any(), anyMap(), anyList(), anyList(), any()))
+		getAuthUserDetailsFromAuthentication();
+		when(utility.getCachedIdentityData(Mockito.anyString(), Mockito.anyString()))
 				.thenThrow(new ApisResourceAccessException());
 		identityService.getIdentity("6", false, null);
 	}
