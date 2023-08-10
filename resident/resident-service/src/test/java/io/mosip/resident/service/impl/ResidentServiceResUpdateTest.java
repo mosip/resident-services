@@ -334,7 +334,8 @@ public class ResidentServiceResUpdateTest {
 	public void reqUinUpdateGetMachineIdTestWithSecureSession() throws BaseCheckedException, IOException {
 		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 		dto.setConsent(null);
-		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate
+				(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 	}
 
@@ -342,7 +343,7 @@ public class ResidentServiceResUpdateTest {
 	public void reqUinUpdateGetMachineIdTestWithSecureSessionDemographicEntityFailed() throws BaseCheckedException, IOException {
 		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 		Mockito.when(utility.getMappingJson()).thenReturn(null);
-		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 	}
 
@@ -417,7 +418,7 @@ public class ResidentServiceResUpdateTest {
 		IdentityServiceTest.getAuthUserDetailsFromAuthentication();
 		Mockito.when(idAuthService.validateOtp(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
 				.thenReturn(false);
-		residentServiceImpl.reqUinUpdate(dto);
+		residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 
 	}
 
@@ -548,7 +549,7 @@ public class ResidentServiceResUpdateTest {
 		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
 		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
 				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
-		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
 	}
@@ -582,7 +583,7 @@ public class ResidentServiceResUpdateTest {
 		Mockito.when(env.getProperty(ApiName.MACHINECREATE.name())).thenReturn("MACHINECREATE");
 		Mockito.when(residentServiceRestClient.postApi(eq("MACHINECREATE"), any(MediaType.class), any(HttpEntity.class),
 				eq(MachineCreateResponseDTO.class))).thenReturn(machineCreateResponseDTO);
-		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto);
+		Tuple2<Object, String> residentUpdateResponseDTO = residentServiceImpl.reqUinUpdate(dto, demographicIdentity, false, idRepoJson, schemaJson, idResponseDto);
 		assertEquals(((ResidentUpdateResponseDTO) residentUpdateResponseDTO.getT1()).getRegistrationId(), updateDto.getRegistrationId());
 		verify(residentServiceRestClient, atLeast(3)).postApi(any(), any(), any(), any(Class.class));
 	}

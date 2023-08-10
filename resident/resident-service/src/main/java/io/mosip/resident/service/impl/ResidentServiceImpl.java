@@ -787,10 +787,12 @@ public class ResidentServiceImpl implements ResidentService {
 		String eventId = null;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
+			String sessionUin = null;
 			if (Utility.isSecureSession()) {
+				sessionUin = idRepoJson.get(IdType.UIN.name()).toString();
 				residentUpdateResponseDTOV2 = new ResidentUpdateResponseDTOV2();
 				responseDto = residentUpdateResponseDTOV2;
-				residentTransactionEntity = createResidentTransEntity(dto);
+				residentTransactionEntity = createResidentTransEntity(dto, sessionUin);
 				if (residentTransactionEntity != null) {
 	    			eventId = residentTransactionEntity.getEventId();
 	    		}
@@ -861,10 +863,6 @@ public class ResidentServiceImpl implements ResidentService {
 				}
 			}
 			JSONObject mappingJsonObject = JsonUtil.readValue(mappingJson, JSONObject.class);
-			String sessionUin = null;
-			if(Utility.isSecureSession()){
-				sessionUin = idRepoJson.get(IdType.UIN.name()).toString();
-			}
 			validateAuthIndividualIdWithUIN(dto.getIndividualId(), dto.getIndividualIdType(), mappingJsonObject,
 					demographicIdentity, sessionUin);
 			JSONObject mappingDocument = JsonUtil.getJSONObject(mappingJsonObject, DOCUMENT);
@@ -1066,13 +1064,13 @@ public class ResidentServiceImpl implements ResidentService {
 		return Tuples.of(responseDto, eventId);
 	}
 
-	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto)
+	private ResidentTransactionEntity createResidentTransEntity(ResidentUpdateRequestDto dto, String sessionUin)
 			throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.UPDATE_MY_UIN);
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRefId(utility.convertToMaskData(dto.getIndividualId()));
 		residentTransactionEntity.setIndividualId(dto.getIndividualId());
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(sessionUin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		Map<String, ?> identityMap;
 		if (dto.getIdentityJson() != null) {

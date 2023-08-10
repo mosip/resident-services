@@ -906,11 +906,11 @@ public class Utility {
 	}
 
 	@Cacheable(value = "identityMapCache", key = "#accessToken")
-	public ResponseWrapper<?> getCachedIdentityData(String id, String accessToken) throws ApisResourceAccessException {
-		return getIdentityData(id);
+	public <T> T getCachedIdentityData(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
+		return getIdentityData(id, responseType);
 	}
 
-	public ResponseWrapper<?> getIdentityData(String id) throws ApisResourceAccessException {
+	public <T> T getIdentityData(String id, Class<?> responseType) throws ApisResourceAccessException {
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
 
@@ -920,7 +920,7 @@ public class Utility {
 		List<Object> queryParamValue = new ArrayList<>();
 		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
 		return restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
-				pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
+				pathsegments, queryParamName, queryParamValue, responseType);
 	}
 
 	@CacheEvict(value = "identityMapCache", key = "#accessToken")
