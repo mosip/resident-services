@@ -160,7 +160,12 @@ public class IdentityServiceImpl implements IdentityService {
 			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		try {
-			ResponseWrapper<?> responseWrapper = utility.getCachedIdentityData(id, getAccessToken());
+			ResponseWrapper<?> responseWrapper = null;
+			if(Utility.isSecureSession()){
+				responseWrapper = utility.getCachedIdentityData(id, getAccessToken());
+			} else {
+				responseWrapper = utility.getIdentityData(id);
+			}
 			if(responseWrapper.getErrors() != null && responseWrapper.getErrors().size() > 0) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());

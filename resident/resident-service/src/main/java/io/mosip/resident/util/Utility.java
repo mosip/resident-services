@@ -907,6 +907,10 @@ public class Utility {
 
 	@Cacheable(value = "identityMapCache", key = "#accessToken")
 	public ResponseWrapper<?> getCachedIdentityData(String id, String accessToken) throws ApisResourceAccessException {
+		return getIdentityData(id);
+	}
+
+	public ResponseWrapper<?> getIdentityData(String id) throws ApisResourceAccessException {
 		Map<String, String> pathsegments = new HashMap<String, String>();
 		pathsegments.put("id", id);
 
