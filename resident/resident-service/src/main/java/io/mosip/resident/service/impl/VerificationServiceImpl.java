@@ -3,7 +3,6 @@ package io.mosip.resident.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import io.mosip.resident.dto.IdentityDTO;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +11,9 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.dto.VerificationStatusDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
