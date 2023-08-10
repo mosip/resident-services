@@ -71,6 +71,7 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
+import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
@@ -1397,6 +1398,13 @@ public class RequestValidator {
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getOtp(), ResidentConstants.OTP);
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getTransactionID(),
 				ResidentConstants.TRANSACTION_ID_OLD);
+	}
+
+	public void validateShareCredentialRequest(RequestWrapper<ShareCredentialRequestDto> requestDTO) {
+		validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
+		validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
+		validatePurpose(requestDTO.getRequest().getPurpose());
+		validateDataToCheckNullOrEmpty(requestDTO.getRequest().getPartnerId(), ResidentConstants.PARTNER_ID);
 	}
 
 	private void validateDataToCheckNullOrEmpty(String variableValue, String variableName) {

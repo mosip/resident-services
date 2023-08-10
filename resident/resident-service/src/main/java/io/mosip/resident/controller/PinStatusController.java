@@ -44,7 +44,7 @@ public class PinStatusController {
     @PreAuthorize("@scopeValidator.hasAllScopes("
             + "@authorizedScopes.getPostPinStatus()"
             + ")")
-    @PostMapping(path = "pinned/{eventId}")
+    @PostMapping(path = "/pinned/{eventId}")
 	public ResponseWrapper<ResponseDTO> pinStatus(@PathVariable("eventId") String eventId)
 			throws ResidentServiceCheckedException {
     	logger.debug("PinStatusController::pinStatus()::entry");
@@ -65,7 +65,7 @@ public class PinStatusController {
     @PreAuthorize("@scopeValidator.hasAllScopes("
             + "@authorizedScopes.getPostUnPinStatus()"
             + ")")
-	@PostMapping(path = "unpinned/{eventId}")
+	@PostMapping(path = "/unpinned/{eventId}")
 	public ResponseWrapper<ResponseDTO> unPinStatus(@PathVariable("eventId") String eventId)
 			throws ResidentServiceCheckedException {
     	logger.debug("PinStatusController::unPinStatus()::entry");
