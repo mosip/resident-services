@@ -24,12 +24,14 @@ import java.util.stream.Collectors;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -109,11 +111,10 @@ public class IdAuthServiceTest {
     private Utility utility;
 
     @Before
-    public void setup() {
-
-        // when(environment.getProperty(ApiName.KERNELENCRYPTIONSERVICE.name()))
-        // .thenReturn("https://dev.mosip.net/idauthentication/v1/internal/getCertificate");
-
+    public void setup() throws ResidentServiceCheckedException {
+        IdentityDTO identityDTO1 = new IdentityDTO();
+        identityDTO1.setUIN("234");
+        Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO1);
     }
 
     @Test
@@ -229,7 +230,6 @@ public class IdAuthServiceTest {
         when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
-        when(identityService.getIDATokenForIndividualId(anyString())).thenReturn("346697314566835424394775924659202696");
 		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(anyString(),
 				anyString(), anyList())).thenReturn(residentTransactionEntity);
 

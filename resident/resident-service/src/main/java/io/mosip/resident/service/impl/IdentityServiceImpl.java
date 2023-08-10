@@ -162,9 +162,9 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			ResponseWrapper<?> responseWrapper = null;
 			if(Utility.isSecureSession()){
-				responseWrapper = utility.getCachedIdentityData(id, getAccessToken());
+				responseWrapper = utility.getCachedIdentityData(id, getAccessToken(), ResponseWrapper.class);
 			} else {
-				responseWrapper = utility.getIdentityData(id);
+				responseWrapper = utility.getIdentityData(id, ResponseWrapper.class);
 			}
 			if(responseWrapper.getErrors() != null && responseWrapper.getErrors().size() > 0) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
@@ -182,7 +182,7 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, Object> response = finalFilter.stream()
 					.peek(a -> {
-						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID)) {
+						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID) && !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
 								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));

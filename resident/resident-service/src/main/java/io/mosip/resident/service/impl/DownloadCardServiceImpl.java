@@ -133,13 +133,15 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		byte[] pdfBytes = new byte[0];
+		IdentityDTO identityDTO = null;
 		try {
 			String transactionId = downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId();
-			String id = getIndividualIdForAid(individualId);
-			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, id,
-					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
+			identityDTO = identityService.getIdentity(individualId);
+			String uin = identityDTO.getUIN();
+			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, uin,
+					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID, uin);
 			residentTransactionEntity = updateResidentTransaction(individualId, transactionId, tupleResponse.getT2(),
-					id);
+					uin);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
@@ -211,7 +213,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						? TemplateType.SUCCESS
 						: TemplateType.FAILURE;
 
-				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, null);
+				sendNotificationV2(individualId, RequestType.GET_MY_ID, templateType, eventId, null, identityDTO);
 			}
 		}
 		logger.debug("DownloadCardServiceImpl::getDownloadCardPDF()::exit");
@@ -219,11 +221,11 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 	}
 
 	private ResidentTransactionEntity updateResidentTransaction(String individualId, String transactionId,
-			ResidentTransactionEntity residentTransactionEntity, String id) throws ResidentServiceCheckedException {
+			ResidentTransactionEntity residentTransactionEntity, String id) {
 		residentTransactionEntity.setAuthTypeCode(OTP);
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityService.getIDATokenForIndividualId(id));
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(id));
 		residentTransactionEntity.setRequestTrnId(transactionId);
 		return residentTransactionEntity;
 	}
@@ -242,12 +244,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		Tuple2<List<String>, Map<String, Object>> identityAttribute = null;
 		try {
 			individualId = identityService.getResidentIndvidualIdFromSession();
+			Map<String, Object> identityAttributes = getIdentityData(individualId);
 			residentTransactionEntity = createResidentTransactionEntity(individualId,
-					downloadPersonalizedCardMainRequestDTO.getRequest());
+					downloadPersonalizedCardMainRequestDTO.getRequest(), (String) identityAttributes.get(IdType.UIN.name()));
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				decodedData = CryptoUtil.decodePlainBase64(encodeHtml);
-				identityAttribute = getAttributeList();
+				identityAttribute = getAttributeList(identityAttributes);
 				List<String> attributeValues = identityAttribute.getT1();
 				if (Boolean.parseBoolean(this.environment.getProperty(ResidentConstants.IS_PASSWORD_FLAG_ENABLED))) {
 					password = utility.getPassword(attributeValues);
@@ -295,31 +298,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return Tuples.of(utility.signPdf(new ByteArrayInputStream(decodedData), password), eventId);
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
-			DownloadPersonalizedCardDto downloadPersonalizedCardDto)
-			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		ResidentTransactionEntity residentTransactionEntity = utility
-				.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD);
-		String eventId = utility.createEventId();
-		residentTransactionEntity.setEventId(eventId);
-		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
-		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
-		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityService.getResidentIdaToken());
-		if (downloadPersonalizedCardDto.getAttributes() != null) {
-			residentTransactionEntity.setAttributeList(
-					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
-		}
-		return residentTransactionEntity;
-	}
-
-	private Tuple2<List<String>, Map<String, Object>>  getAttributeList() throws ApisResourceAccessException, IOException {
-		return getAttributeList(identityService.getResidentIndvidualIdFromSession());
-	}
-
-	private Tuple2<List<String>, Map<String, Object>> getAttributeList(String individualId) throws IOException, ApisResourceAccessException {
+	Map<String, Object> getIdentityData(String individualId) throws IOException {
 		Map<String, Object> identityAttributes = null;
-		List<String> attributeValues = new ArrayList<>();
 		try {
 			identityAttributes = (Map<String, Object>) identityService.getIdentityAttributes(individualId, null);
 		} catch (ResidentServiceCheckedException e) {
@@ -329,6 +309,29 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			logger.error("Unable to get attributes- " + e);
 			throw new IOException(ResidentErrorCode.DOWNLOAD_PERSONALIZED_CARD.getErrorCode(), e);
 		}
+		return identityAttributes;
+	}
+
+	private ResidentTransactionEntity createResidentTransactionEntity(String individualId,
+																	  DownloadPersonalizedCardDto downloadPersonalizedCardDto, String uin)
+			throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResidentTransactionEntity residentTransactionEntity = utility
+				.createEntity(RequestType.DOWNLOAD_PERSONALIZED_CARD);
+		String eventId = utility.createEventId();
+		residentTransactionEntity.setEventId(eventId);
+		residentTransactionEntity.setAuthTypeCode(identityService.getResidentAuthenticationMode());
+		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
+		residentTransactionEntity.setIndividualId(individualId);
+		residentTransactionEntity.setTokenId(identityService.getIDAToken(uin));
+		if (downloadPersonalizedCardDto.getAttributes() != null) {
+			residentTransactionEntity.setAttributeList(
+					downloadPersonalizedCardDto.getAttributes().stream().collect(Collectors.joining(SEMI_COLON)));
+		}
+		return residentTransactionEntity;
+	}
+
+	private Tuple2<List<String>, Map<String, Object>> getAttributeList(Map<String, Object> identityAttributes) {
+		List<String> attributeValues = new ArrayList<>();
 		String attributeProperty = this.environment.getProperty(ResidentConstants.PASSWORD_ATTRIBUTE);
 		if (attributeProperty != null) {
 			List<String> attributeList = List.of(attributeProperty.split("\\|"));
@@ -577,27 +580,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			return NA;
 		}
 		return o;
-	}
-
-	/**
-	 * @param individualId - it can be UIN, VID or AID.
-	 * @return UIN or VID based on the flag "useVidOnly"
-	 */
-	private String getIndividualIdForAid(String individualId) {
-		String idType = identityService.getIndividualIdType(individualId);
-		if (idType.equalsIgnoreCase(IdType.UIN.toString())) {
-			return individualId;
-		} else {
-			try {
-				return identityService.getIndividualIdForAid(individualId);
-			} catch (ResidentServiceCheckedException e) {
-				throw new ResidentServiceException(ResidentErrorCode.AID_NOT_FOUND.getErrorCode(),
-						ResidentErrorCode.AID_NOT_FOUND.getErrorMessage(), e);
-			} catch (ApisResourceAccessException e) {
-				throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
-			}
-		}
 	}
 
 	private void sendNotificationV2(String id, RequestType requestType, TemplateType templateType, String eventId,

@@ -207,7 +207,7 @@ public class IdentityServiceTest {
 		when(env.getProperty("mosip.resident.photo.attribute.name")).thenReturn("photo");
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName");
 		when(env.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
-		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any())).thenReturn(responseWrapper);
+		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(responseWrapper);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -247,7 +247,7 @@ public class IdentityServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetIdentityAttributesWithApisResourceAccessException() throws Exception {
 		getAuthUserDetailsFromAuthentication();
-		when(utility.getCachedIdentityData(Mockito.anyString(), Mockito.anyString()))
+		when(utility.getCachedIdentityData(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
 				.thenThrow(new ApisResourceAccessException());
 		identityService.getIdentity("6", false, null);
 	}

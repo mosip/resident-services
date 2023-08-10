@@ -253,7 +253,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		residentUpdateRequestDto.setIdentity(jsonObject);
 		residentUpdateRequestDto.setIndividualId("123434343");
 		assertNotNull(ReflectionTestUtils.invokeMethod(residentService,
-				"createResidentTransEntity", residentUpdateRequestDto));
+				"createResidentTransEntity", residentUpdateRequestDto, "1234567890"));
 	}
 
 	@Test
