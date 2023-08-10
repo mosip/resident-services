@@ -23,6 +23,7 @@ import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -98,6 +99,10 @@ public class CredentialStatusUpdateHelper {
 		notificationRequestDtoV2.setRequestType(requestType);
 		notificationRequestDtoV2.setEventId(txn.getEventId());
 		notificationRequestDtoV2.setId(txn.getIndividualId());
+		if (requestType.equals(RequestType.SHARE_CRED_WITH_PARTNER)) {
+			notificationRequestDtoV2
+					.setAdditionalAttributes(Map.of(TemplateVariablesConstants.PARTNER_ID, txn.getRequestedEntityId()));
+		}
 		notificationService.sendNotification(notificationRequestDtoV2, null);
 	}
 
@@ -140,9 +145,7 @@ public class CredentialStatusUpdateHelper {
 						sendNotification(txn, templateType.get(), requestType);
 					}
 				}
-
 				updateEntity(txn);
-				repo.save(txn);
 			}
 		}
 	}
