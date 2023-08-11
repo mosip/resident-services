@@ -195,7 +195,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Override
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp,
-																	RequestType requestType, String uin)
+																	RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthServiceImpl::validateOtpV2()::entry");
 		requestValidator.validateOtpCharLimit(otp);
@@ -205,14 +205,14 @@ public class IdAuthServiceImpl implements IdAuthService {
 		String authType = null;
 		try {
 			residentTransactionEntity = residentTransactionRepository
-					.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, uin,
+					.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, identityService.getIDAToken(individualId),
 							List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
 			if (residentTransactionEntity != null) {
 				authType = residentTransactionEntity.getAuthTypeCode();
 			}
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
-					requestType, uin);
+					requestType, individualId);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 			}
@@ -268,7 +268,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	private ResidentTransactionEntity updateResidentTransaction(boolean verified, String transactionId, RequestType requestType, String uin) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
-				findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, uin
+				findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, identityService.getIDAToken(uin)
 				, List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
 		if (residentTransactionEntity != null ) {
 			residentTransactionEntity.setRequestTypeCode(requestType.name());
