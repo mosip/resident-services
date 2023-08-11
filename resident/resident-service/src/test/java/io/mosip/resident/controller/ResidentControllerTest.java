@@ -1,7 +1,60 @@
 package io.mosip.resident.controller;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.crypto.SecretKey;
+
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.client.RestTemplate;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import io.mosip.kernel.cbeffutil.impl.CbeffImpl;
 import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
 import io.mosip.kernel.core.exception.ServiceError;
@@ -30,7 +83,6 @@ import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
 import io.mosip.resident.dto.ResidentDocuments;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
@@ -57,58 +109,8 @@ import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.client.RestTemplate;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
-
-import javax.crypto.SecretKey;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Sowmya Ujjappa Banakar
@@ -519,23 +521,8 @@ public class ResidentControllerTest {
 				.header("Content-Disposition", "attachment; filename=\"" +
 						"abc" + ".pdf\"")
 				.body(resource);
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(null);
-		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(objectResponseWrapper);
-		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
 
-		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
-		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
-		dto.setId("12345");
-		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
-		dto.setRequestId("12345");
-		dto.setStatusCode("200");
-		list.add(dto);
-		resultResponseWrapper.setResponse(list);
-		resultResponseWrapper.setResponsetime(null);
-		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(Tuples.of(pdfBytes, IdType.UIN));
 		ResponseEntity<?> resultRequestWrapper = residentController
 				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
@@ -544,69 +531,18 @@ public class ResidentControllerTest {
 	@Test(expected = CardNotReadyException.class)
 	@WithUserDetails("reg-admin")
 	public void testDownloadCardIndividualIdCardNotReadyException() throws Exception {
-		ResponseEntity<Object> responseEntity;
-		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" +
-						"abc" + ".pdf\"")
-				.body(resource);
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(null);
-		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(objectResponseWrapper);
-		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
-
-		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
-		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
-		dto.setId("12345");
-		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
-		dto.setRequestId("12345");
-		dto.setStatusCode("200");
-		list.add(dto);
-		resultResponseWrapper.setResponse(list);
-		resultResponseWrapper.setResponsetime(null);
 		byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
-		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0, LOCALE_EN_US);
-		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(Tuples.of(bytes, IdType.VID));
+		residentController.downloadCard("9876543210", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	@WithUserDetails("reg-admin")
 	public void testDownloadCardIndividualIdInvalidInputException() throws Exception {
-		doThrow(new InvalidInputException()).
-				when(validator).validateEventId(any());
-		ResponseEntity<Object> responseEntity;
-		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" +
-						"abc" + ".pdf\"")
-				.body(resource);
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(null);
-		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(objectResponseWrapper);
-		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
-
-		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
-		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
-		dto.setId("12345");
-		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
-		dto.setRequestId("12345");
-		dto.setStatusCode("200");
-		list.add(dto);
-		resultResponseWrapper.setResponse(list);
-		resultResponseWrapper.setResponsetime(null);
-		byte[] bytes = "a".getBytes(StandardCharsets.UTF_8);
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
-		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0, LOCALE_EN_US);
-		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
+		doThrow(new InvalidInputException()).when(validator).validateEventId(any());
+		residentController.downloadCard("9876543210", 0, LOCALE_EN_US);
 	}
 
 	@Test
