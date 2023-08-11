@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -57,15 +58,22 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes);
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.referenceLink) FROM ResidentTransactionEntity rte WHERE rte.eventId = :eventId")
+	Optional<ResidentTransactionEntity> findByEventId(@Param("eventId") String eventId);
+
+	@Modifying
+    @Transactional
+	@Query("UPDATE ResidentTransactionEntity SET requestSummary=:requestSummary, statusCode=:statusCode, statusComment=:statusComment, updBy=:updBy, updDtimes=:updDtimes WHERE eventId=:eventId")
+	int updateEventStatus(@Param("eventId") String eventId, @Param("requestSummary") String requestSummary, @Param("statusCode") String statusCode, @Param("statusComment") String statusComment, @Param("updBy") String updBy, @Param("updDtimes") LocalDateTime updDtimes);
+
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenId(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			Pageable pageable);
 
 	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
 			"WHERE token_id = :tokenId " +

@@ -43,6 +43,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -192,7 +194,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
-	private static String cardType = "UIN";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -1523,8 +1524,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public String getFileName(String eventId, int timeZoneOffset, String locale) {
-		if (cardType.equalsIgnoreCase(IdType.UIN.toString())) {
+	public String getFileName(String eventId, IdType cardType, int timeZoneOffset, String locale) {
+		if (cardType.equals(IdType.UIN)) {
 			return utility.getFileName(eventId, Objects
 					.requireNonNull(this.env.getProperty(ResidentConstants.UIN_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset, locale);
 		} else {
@@ -1534,24 +1535,23 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public byte[] downloadCard(String eventId) {
+	public Tuple2<byte[], IdType> downloadCard(String eventId) {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
-					.findById(eventId);
+					.findByEventId(eventId);
 			if (residentTransactionEntity.isPresent()) {
+				IdType cardType;
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
-				if (requestType.name().equalsIgnoreCase(RequestType.UPDATE_MY_UIN.name())) {
-					cardType = IdType.UIN.name();
-					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
-				} else if (requestType.name().equalsIgnoreCase(RequestType.VID_CARD_DOWNLOAD.toString())
-				|| requestType.name().equalsIgnoreCase(RequestType.GET_MY_ID.name())) {
-					cardType = IdType.VID.name();
-					return downloadCardFromDataShareUrl(residentTransactionEntity.get());
+				if (requestType.equals(RequestType.UPDATE_MY_UIN)) {
+					cardType = IdType.UIN;
+				} else if (requestType.equals(RequestType.VID_CARD_DOWNLOAD)) {
+					cardType = IdType.VID;
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
 				}
+				return Tuples.of(downloadCardFromDataShareUrl(residentTransactionEntity.get()), cardType);
 			} else {
 				throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.toString(),
 						ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
@@ -1580,12 +1580,9 @@ public class ResidentServiceImpl implements ResidentService {
 				if (pdfBytes.length == 0) {
 					throw new CardNotReadyException();
 				}
-				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
-				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
-				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
-				residentTransactionEntity.setUpdBy(utility.getSessionUserName());
-				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-				residentTransactionRepository.save(residentTransactionEntity);
+				residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
+						ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
+						utility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
 				return pdfBytes;
 			}
 		} catch (Exception e) {
@@ -1672,8 +1669,10 @@ public class ResidentServiceImpl implements ResidentService {
 					residentTransactionRepository.countByTokenIdBetweenCrDtimes(
 							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
 		} else {
-			return Tuples.of(residentTransactionRepository.findByTokenId(idaToken, pageFetch, (pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes),
+			Pageable pageable = PageRequest.of(pageStart, pageFetch);
+			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenId(idaToken,
+					onlineVerificationPartnerId, requestTypes, pageable);
+			return Tuples.of(entitiesList,
 					residentTransactionRepository.countByTokenId(idaToken, onlineVerificationPartnerId, requestTypes));
 		}
 	}
