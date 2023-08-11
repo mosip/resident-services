@@ -28,7 +28,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	ResidentTransactionEntity findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc
 	(String requestTrnId, String tokenId, List<String> statusCodes);
 
-	ResidentTransactionEntity findTopByRefIdAndStatusCodeOrderByCrDtimesDesc(String refId, String statusCode);
+	boolean existsByRefIdAndStatusCode(String refId, String statusCode);
 
 	public List<ResidentTransactionEntity> findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(List<String> statusCodes, List<String> requestTypes);
 
