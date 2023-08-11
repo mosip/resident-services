@@ -217,4 +217,24 @@ public class ResidentTransactionEntity {
 	public boolean getPinnedStatus() {
 		return this.pinnedStatus;
 	}
+
+	/**
+	 * Constructor used to get data (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenId(String, String, List<String>, Pageable))
+	 */
+	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String statusComment,
+			String refIdType, String refId, LocalDateTime crDtimes, LocalDateTime updDtimes, boolean readStatus,
+			boolean pinnedStatus, String purpose, String attributeList) {
+		this.eventId = eventId;
+		this.requestTypeCode = requestTypeCode;
+		this.statusCode = statusCode;
+		this.statusComment = statusComment;
+		this.refIdType = refIdType;
+		this.refId = refId;
+		this.crDtimes = crDtimes;
+		this.updDtimes = updDtimes;
+		this.readStatus = readStatus;
+		this.pinnedStatus = pinnedStatus;
+		this.purpose = purpose;
+		this.attributeList = attributeList;
+	}
 }

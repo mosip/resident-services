@@ -43,6 +43,8 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -1670,8 +1672,10 @@ public class ResidentServiceImpl implements ResidentService {
 					residentTransactionRepository.countByTokenIdBetweenCrDtimes(
 							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
 		} else {
-			return Tuples.of(residentTransactionRepository.findByTokenId(idaToken, pageFetch, (pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes),
+			Pageable pageable = PageRequest.of(pageStart, pageFetch);
+			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenId(idaToken,
+					onlineVerificationPartnerId, requestTypes, pageable);
+			return Tuples.of(entitiesList,
 					residentTransactionRepository.countByTokenId(idaToken, onlineVerificationPartnerId, requestTypes));
 		}
 	}
