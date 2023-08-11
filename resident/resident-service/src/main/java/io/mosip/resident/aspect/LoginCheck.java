@@ -94,8 +94,10 @@ public class LoginCheck {
 					Date expDate = decodedToken.asDate();
 					logger.info("Scheduling clearing auth token cache after : " + expDate);
 					taskScheduler.schedule(() -> {
-						utility.clearUserInfoCache(accessToken);
-						utility.clearIdentityMapCache(accessToken);
+						if(accessToken!=null && !accessToken.equals("")) {
+							utility.clearUserInfoCache(accessToken);
+							utility.clearIdentityMapCache(accessToken);
+						}
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
 					sessionId = identityServiceImpl.createSessionId();
@@ -152,8 +154,10 @@ public class LoginCheck {
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
-		utility.clearUserInfoCache(token);
-		utility.clearIdentityMapCache(token);
+		if(token!=null && !token.equals("")){
+			utility.clearUserInfoCache(token);
+			utility.clearIdentityMapCache(token);
+		}
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}
 
