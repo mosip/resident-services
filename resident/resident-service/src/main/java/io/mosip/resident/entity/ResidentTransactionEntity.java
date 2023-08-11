@@ -219,7 +219,9 @@ public class ResidentTransactionEntity {
 	}
 
 	/**
-	 * Constructor used to get data (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenId(String, String, List<String>, Pageable))
+	 * Constructor used to get data
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenId(String,
+	 * String, List<String>, Pageable))
 	 */
 	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String statusComment,
 			String refIdType, String refId, LocalDateTime crDtimes, LocalDateTime updDtimes, boolean readStatus,
