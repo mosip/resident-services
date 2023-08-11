@@ -37,6 +37,7 @@ import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.dto.BellNotificationDto;
@@ -61,6 +62,7 @@ import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
+import reactor.util.function.Tuple2;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -114,8 +116,6 @@ public class ResidentServiceDownloadCardTest {
 
     private byte[] result;
     private String eventId;
-    private String idType;
-    private String resultResponse;
 
     private Query query;
     private Optional<ResidentTransactionEntity> residentTransactionEntity;
@@ -126,8 +126,6 @@ public class ResidentServiceDownloadCardTest {
     public void setup() throws Exception {
         result = "data".getBytes();
         eventId = "123";
-        idType = "RID";
-        resultResponse = "[B@3a7e365";
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.toString());
@@ -175,15 +173,14 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertNotNull(response);
+        Tuple2<byte[], IdType> response = residentServiceImpl.downloadCard(eventId);
+        assertNotNull(response.getT1());
     }
 
     @Test(expected = EventIdNotPresentException.class)
     public void testEventIdNotPresentException() throws ResidentServiceCheckedException {
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertEquals(response, result);
+        residentServiceImpl.downloadCard(eventId);
     }
 
     @Test(expected = InvalidRequestTypeCodeException.class)
@@ -193,8 +190,8 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity.get().setRequestTypeCode(RequestType.REVOKE_VID.name());
         residentTransactionEntity.get().setAid(eventId);
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertEquals(response, result);
+        Tuple2<byte[], IdType> response = residentServiceImpl.downloadCard(eventId);
+        assertEquals(response.getT1(), result);
     }
 
     @Test
@@ -380,8 +377,8 @@ public class ResidentServiceDownloadCardTest {
         when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("data".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertNotNull(response);
+        Tuple2<byte[], IdType> response = residentServiceImpl.downloadCard(eventId);
+        assertNotNull(response.getT1());
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -390,23 +387,11 @@ public class ResidentServiceDownloadCardTest {
         residentTransactionEntity = Optional.of(new ResidentTransactionEntity());
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.VID_CARD_DOWNLOAD.name());
-        residentTransactionEntity.get().setAid(eventId);
         residentTransactionEntity.get().setReferenceLink(digitalCardStatusUri);
         residentTransactionEntity.get().setStatusCode(EventStatusSuccess.CARD_READY_TO_DOWNLOAD.name());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        digitalCardStatusResponseDto.setStatusCode("AVAILABLE");
-
-        digitalCardStatusResponseDto.setUrl(digitalCardStatusUri);
-        responseDto.setResponse(digitalCardStatusResponseDto);
-        responseDto.setVersion("v1");
-        responseDto.setId("io.mosip.digital.card");
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(residentCredentialServiceImpl.getCard(Mockito.anyString())).thenReturn(result);
-        Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(ApiName.DIGITAL_CARD_STATUS_URL.toString());
-        when(residentServiceRestClient.getApi(URI.create(ApiName.DIGITAL_CARD_STATUS_URL.name()+eventId),ResponseWrapper.class)).thenReturn(responseDto);
         when(residentServiceRestClient.getApi(URI.create(digitalCardStatusUri), byte[].class))
                 .thenReturn("".getBytes());
-        byte[] response = residentServiceImpl.downloadCard(eventId);
-        assertNotNull(response);
+        residentServiceImpl.downloadCard(eventId);
     }
 }

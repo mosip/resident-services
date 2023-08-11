@@ -194,7 +194,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
 	private static final String ALL = "ALL";
-	private static String cardType = "UIN";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -1525,8 +1524,8 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public String getFileName(String eventId, int timeZoneOffset, String locale) {
-		if (cardType.equalsIgnoreCase(IdType.UIN.toString())) {
+	public String getFileName(String eventId, IdType cardType, int timeZoneOffset, String locale) {
+		if (cardType.equals(IdType.UIN)) {
 			return utility.getFileName(eventId, Objects
 					.requireNonNull(this.env.getProperty(ResidentConstants.UIN_CARD_NAMING_CONVENTION_PROPERTY)), timeZoneOffset, locale);
 		} else {
@@ -1536,22 +1535,23 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	@Override
-	public byte[] downloadCard(String eventId) {
+	public Tuple2<byte[], IdType> downloadCard(String eventId) {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
 					.findById(eventId);
 			if (residentTransactionEntity.isPresent()) {
+				IdType cardType;
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
 				RequestType requestType = RequestType.getRequestTypeFromString(requestTypeCode);
 				if (requestType.equals(RequestType.UPDATE_MY_UIN)) {
-					cardType = IdType.UIN.name();
+					cardType = IdType.UIN;
 				} else if (requestType.equals(RequestType.VID_CARD_DOWNLOAD)) {
-					cardType = IdType.VID.name();
+					cardType = IdType.VID;
 				} else {
 					throw new InvalidRequestTypeCodeException(ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.toString(),
 							ResidentErrorCode.INVALID_REQUEST_TYPE_CODE.getErrorMessage());
 				}
-				return downloadCardFromDataShareUrl(residentTransactionEntity.get());
+				return Tuples.of(downloadCardFromDataShareUrl(residentTransactionEntity.get()), cardType);
 			} else {
 				throw new EventIdNotPresentException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND.toString(),
 						ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());

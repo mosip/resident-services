@@ -510,14 +510,15 @@ public class ResidentController {
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
 		logger.debug("ResidentController::downloadCard()::entry");
 		InputStreamResource resource = null;
+		Tuple2<byte[], IdType> tupleResponse;
 		try {
 		validator.validateEventId(eventId);
 		logger.debug(String.format("ResidentController::Requesting download digital card for event id: %s", eventId));
-		byte[] pdfBytes = residentService.downloadCard(eventId);
-		if (pdfBytes.length == 0) {
+		tupleResponse = residentService.downloadCard(eventId);
+		if (tupleResponse.getT1().length == 0) {
 			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
 		}
-		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		} catch(ResidentServiceException | EventIdNotPresentException | InvalidRequestTypeCodeException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
@@ -529,7 +530,7 @@ public class ResidentController {
 			}
 		logger.debug("ResidentController::downloadCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, timeZoneOffset, locale) + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, tupleResponse.getT2(), timeZoneOffset, locale) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
 	}

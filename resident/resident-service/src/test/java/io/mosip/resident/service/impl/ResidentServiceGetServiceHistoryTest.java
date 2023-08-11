@@ -393,7 +393,7 @@ public class ResidentServiceGetServiceHistoryTest {
     @Test
     public void testGetFileName(){
         Mockito.when(utility.getFileName(Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString())).thenReturn("Ack");
-        assertEquals("Ack", residentServiceImpl.getFileName("123", 0, LOCALE_EN_US));
+        assertEquals("Ack", residentServiceImpl.getFileName("123", IdType.UIN, 0, LOCALE_EN_US));
     }
 
     @Test
