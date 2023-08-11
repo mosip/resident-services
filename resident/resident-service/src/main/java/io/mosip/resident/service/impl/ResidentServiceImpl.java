@@ -1538,7 +1538,7 @@ public class ResidentServiceImpl implements ResidentService {
 	public Tuple2<byte[], IdType> downloadCard(String eventId) {
 		try {
 			Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository
-					.findById(eventId);
+					.findByEventId(eventId);
 			if (residentTransactionEntity.isPresent()) {
 				IdType cardType;
 				String requestTypeCode = residentTransactionEntity.get().getRequestTypeCode();
@@ -1580,12 +1580,9 @@ public class ResidentServiceImpl implements ResidentService {
 				if (pdfBytes.length == 0) {
 					throw new CardNotReadyException();
 				}
-				residentTransactionEntity.setRequestSummary(ResidentConstants.SUCCESS);
-				residentTransactionEntity.setStatusCode(EventStatusSuccess.CARD_DOWNLOADED.name());
-				residentTransactionEntity.setStatusComment(CARD_DOWNLOADED.name());
-				residentTransactionEntity.setUpdBy(utility.getSessionUserName());
-				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
-				residentTransactionRepository.save(residentTransactionEntity);
+				residentTransactionRepository.updateEventStatus(residentTransactionEntity.getEventId(),
+						ResidentConstants.SUCCESS, CARD_DOWNLOADED.name(), CARD_DOWNLOADED.name(),
+						utility.getSessionUserName(), DateUtils.getUTCCurrentDateTime());
 				return pdfBytes;
 			}
 		} catch (Exception e) {

@@ -58,6 +58,14 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);
 
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.referenceLink) FROM ResidentTransactionEntity rte WHERE rte.eventId = :eventId")
+	Optional<ResidentTransactionEntity> findByEventId(@Param("eventId") String eventId);
+
+	@Modifying
+    @Transactional
+	@Query("UPDATE ResidentTransactionEntity SET requestSummary=:requestSummary, statusCode=:statusCode, statusComment=:statusComment, updBy=:updBy, updDtimes=:updDtimes WHERE eventId=:eventId")
+	int updateEventStatus(@Param("eventId") String eventId, @Param("requestSummary") String requestSummary, @Param("statusCode") String statusCode, @Param("statusComment") String statusComment, @Param("updBy") String updBy, @Param("updDtimes") LocalDateTime updDtimes);
+
 	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
 			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
 			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +

@@ -238,4 +238,15 @@ public class ResidentTransactionEntity {
 		this.purpose = purpose;
 		this.attributeList = attributeList;
 	}
+
+	/**
+	 * Constructor used to get data
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByEventId(String))
+	 */
+	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String referenceLink) {
+		this.eventId = eventId;
+		this.requestTypeCode = requestTypeCode;
+		this.statusCode = statusCode;
+		this.referenceLink = referenceLink;
+	}
 }
