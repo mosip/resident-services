@@ -230,8 +230,6 @@ public class IdAuthServiceTest {
         when(encryptor.asymmetricEncrypt(any(), any())).thenReturn(request.getBytes());
 
         when(restClient.postApi(any(), any(), any(), any(Class.class))).thenReturn(response);
-		when(residentTransactionRepository.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(anyString(),
-				anyString(), anyList())).thenReturn(residentTransactionEntity);
 
         boolean result = idAuthService.validateOtp(transactionID, individualId, otp);
 

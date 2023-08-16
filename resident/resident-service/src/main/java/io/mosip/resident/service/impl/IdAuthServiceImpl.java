@@ -173,7 +173,8 @@ public class IdAuthServiceImpl implements IdAuthService {
 			String eventId, boolean authStatus) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		IdentityDTO identityDTO = identityService.getIdentity(individualId);
-		residentTransactionEntity = updateResidentTransaction(authStatus, transactionId, RequestType.VALIDATE_OTP, identityDTO.getUIN());
+		residentTransactionEntity = updateResidentTransaction(authStatus, transactionId, RequestType.VALIDATE_OTP,
+				identityService.getIDAToken(identityDTO.getUIN()));
 		if (residentTransactionEntity != null) {
 			eventId = residentTransactionEntity.getEventId();
 			TemplateType templateType = authStatus == true ? TemplateType.SUCCESS : TemplateType.FAILURE;
@@ -195,7 +196,7 @@ public class IdAuthServiceImpl implements IdAuthService {
 
 	@Override
 	public Tuple2<Boolean, ResidentTransactionEntity> validateOtpV2(String transactionId, String individualId, String otp,
-																	RequestType requestType, String uin)
+																	RequestType requestType)
 			throws OtpValidationFailedException, ResidentServiceCheckedException {
 		logger.debug("IdAuthServiceImpl::validateOtpV2()::entry");
 		requestValidator.validateOtpCharLimit(otp);
@@ -204,15 +205,16 @@ public class IdAuthServiceImpl implements IdAuthService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		String authType = null;
 		try {
+			String idaToken = identityService.getIDAToken(individualId);
 			residentTransactionEntity = residentTransactionRepository
-					.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, uin,
+					.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, idaToken,
 							List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
 			if (residentTransactionEntity != null) {
 				authType = residentTransactionEntity.getAuthTypeCode();
 			}
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
-					requestType, uin);
+					requestType, idaToken);
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 			}
@@ -266,9 +268,9 @@ public class IdAuthServiceImpl implements IdAuthService {
 		return Tuples.of(response.getResponse().isAuthStatus(), residentTransactionEntity);
 	}
 
-	private ResidentTransactionEntity updateResidentTransaction(boolean verified, String transactionId, RequestType requestType, String uin) throws ResidentServiceCheckedException {
+	private ResidentTransactionEntity updateResidentTransaction(boolean verified, String transactionId, RequestType requestType, String idaToken) throws ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = residentTransactionRepository.
-				findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, uin
+				findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, idaToken
 				, List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
 		if (residentTransactionEntity != null ) {
 			residentTransactionEntity.setRequestTypeCode(requestType.name());
