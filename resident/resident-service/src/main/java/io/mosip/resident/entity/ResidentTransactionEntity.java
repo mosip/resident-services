@@ -222,6 +222,11 @@ public class ResidentTransactionEntity {
 	 * Constructor used to get data
 	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenId(String, String, List<String>, Pageable))
 	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdBetweenCrDtimes(String, String, List<String>, LocalDateTime, LocalDateTime, Pageable))
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatus(String, String, List<String>, List<String>, Pageable))
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdAndSearchEventId(String, String, List<String>, String, Pageable))
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(String, String, List<String>, List<String>, LocalDateTime, LocalDateTime, Pageable))
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(String, String, List<String>, LocalDateTime, LocalDateTime, String, Pageable))
+	 * ()io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusSearchEventId(String, String, List<String>, List<String>, String, Pageable)
 	 */
 	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String statusComment,
 			String refIdType, String refId, LocalDateTime crDtimes, LocalDateTime updDtimes, boolean readStatus,

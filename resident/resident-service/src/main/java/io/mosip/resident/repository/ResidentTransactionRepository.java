@@ -66,6 +66,8 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	@Query("UPDATE ResidentTransactionEntity SET requestSummary=:requestSummary, statusCode=:statusCode, statusComment=:statusComment, updBy=:updBy, updDtimes=:updDtimes WHERE eventId=:eventId")
 	int updateEventStatus(@Param("eventId") String eventId, @Param("requestSummary") String requestSummary, @Param("statusCode") String statusCode, @Param("statusComment") String statusComment, @Param("updBy") String updBy, @Param("updDtimes") LocalDateTime updDtimes);
 
+	// Service history methods start---
+
 	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
 			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
 			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
@@ -83,31 +85,10 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	int countByTokenId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
 					   @Param("requestTypeCodes") List<String> requestTypeCodes);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdAndSearchEventId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("eventId") String eventId);
-
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId) " +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') "
-			, nativeQuery = true)
-	int countByTokenIdAndSearchEventId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-					   @Param("requestTypeCodes") List<String> requestTypeCodes , @Param("eventId") String eventId);
-
 	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
 			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
 			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
-			" AND cr_dtimes BETWEEN :startDate AND :endDate" +
+			" AND rte.crDtimes BETWEEN :startDate AND :endDate" +
 			" ORDER BY rte.pinnedStatus DESC," +
 			" rte.crDtimes DESC")
 	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId,
@@ -124,17 +105,15 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 					   @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
 									  @Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdInStatus(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes,
-														  @Param("statusCode") List<String> statusCode);
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND rte.statusCode IN (:statusCode)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenIdInStatus(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("statusCode") List<String> statusCode, Pageable pageable);
 
 	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
 			"WHERE token_id = :tokenId " +
@@ -146,20 +125,37 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 					   @Param("requestTypeCodes") List<String> requestTypeCodes,
 							   @Param("statusCode") List<String> statusCode);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" AND rte.eventId LIKE CONCAT('%', :eventId, '%')" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenIdAndSearchEventId(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("eventId") String eventId, Pageable pageable);
+
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
+			"WHERE token_id = :tokenId " +
 			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
 			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdInStatusBetweenCrDtimes(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-														  @Param("olvPartnerId") String olvPartnerId,
-														  @Param("requestTypeCodes") List<String> requestTypeCodes,
-														  @Param("statusCode") List<String> statusCode,
-																		 @Param("startDate") LocalDateTime startDate,
-																		 @Param("endDate") LocalDateTime endDate);
+			"olv_partner_id=:olvPartnerId) " +
+			"AND event_id LIKE CONCAT('%', :eventId, '%') "
+			, nativeQuery = true)
+	int countByTokenIdAndSearchEventId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
+					   @Param("requestTypeCodes") List<String> requestTypeCodes , @Param("eventId") String eventId);
+
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND rte.statusCode IN (:statusCode)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" AND rte.crDtimes BETWEEN :startDate AND :endDate" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenIdInStatusBetweenCrDtimes(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("statusCode") List<String> statusCode, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate, Pageable pageable);
 
 	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
 			"WHERE token_id = :tokenId " +
@@ -173,19 +169,17 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 							   @Param("statusCode") List<String> statusCode, @Param("startDate") LocalDateTime startDate,
 											  @Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate " +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimesSearchEventId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-																 @Param("olvPartnerId") String olvPartnerId,
-																 @Param("requestTypeCodes") List<String> requestTypeCodes,
-																			  @Param("startDate") LocalDateTime startDate,
-																 @Param("endDate") LocalDateTime endDate, @Param("eventId") String eventId);
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" AND rte.crDtimes BETWEEN :startDate AND :endDate" +
+			" AND rte.eventId LIKE CONCAT('%', :eventId, '%')" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimesSearchEventId(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate,
+			@Param("eventId") String eventId, Pageable pageable);
 
 	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
 			"WHERE token_id = :tokenId " +
@@ -198,18 +192,16 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 									  @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
 									  @Param("endDate") LocalDateTime endDate, @Param("eventId") String eventId);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdInStatusSearchEventId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-														  @Param("olvPartnerId") String olvPartnerId,
-														  @Param("requestTypeCodes") List<String> requestTypeCodes,
-														  @Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND rte.statusCode IN (:statusCode)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" AND rte.eventId LIKE CONCAT('%', :eventId, '%')" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenIdInStatusSearchEventId(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("statusCode") List<String> statusCode, @Param("eventId") String eventId, Pageable pageable);
 
 	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
 			"WHERE token_id = :tokenId " +
@@ -222,4 +214,5 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 							   @Param("requestTypeCodes") List<String> requestTypeCodes,
 							   @Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
 
+	// Service history methods end---
 }
