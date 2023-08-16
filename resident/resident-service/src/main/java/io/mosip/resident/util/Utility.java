@@ -932,6 +932,7 @@ public class Utility {
 	public void clearIdentityMapCache(String accessToken) {
 		logger.info("Clearing Identity Map cache IdResponseDto1");
 	}
+
 	@Cacheable(value = "partnerCache", key = "#partnerType + '_' + #apiUrl")
 	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
 		return proxyPartnerManagementService.getPartnersByPartnerType(partnerType, apiUrl);

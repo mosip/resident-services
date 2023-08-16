@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import io.mosip.resident.dto.IdentityDTO;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
@@ -736,7 +737,7 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private NotificationResponseDTO sendNotificationV2(String id, RequestType requestType, TemplateType templateType,
-													   String eventId, Map<String, Object> additionalAttributes, JSONObject idRepoJson) throws ResidentServiceCheckedException {
+													   String eventId, Map<String, Object> additionalAttributes, Map idRepoJson) throws ResidentServiceCheckedException {
 
 		NotificationRequestDtoV2 notificationRequestDtoV2 = new NotificationRequestDtoV2();
 		notificationRequestDtoV2.setId(id);
@@ -1128,6 +1129,7 @@ public class ResidentServiceImpl implements ResidentService {
 				LoggerFileConstant.APPLICATIONID.toString(), "ResidentServiceImpl::reqAauthTypeStatusUpdateV2():: entry");
 		ResponseDTO response = new ResponseDTO();
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
+		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		boolean isTransactionSuccessful = false;
 		List<ResidentTransactionEntity> residentTransactionEntities = List.of();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
@@ -1138,7 +1140,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.filter(partnerId -> !dummyOnlineVerificationPartnerId.equalsIgnoreCase(partnerId))
 					.map(partnerId -> {
 				try {
-					return createResidentTransactionEntity(individualId, partnerId);
+					return createResidentTransactionEntity(individualId, partnerId, identityDTO.getUIN());
 				} catch (ApisResourceAccessException e) {
 					logger.error("Error occured in creating entities %s", e.getMessage());
 					throw new ResidentServiceException(ResidentErrorCode.UNKNOWN_EXCEPTION, e);
@@ -1204,7 +1206,7 @@ public class ResidentServiceImpl implements ResidentService {
 			TemplateType templateType = isTransactionSuccessful ? TemplateType.REQUEST_RECEIVED : TemplateType.FAILURE;
 
 			NotificationResponseDTO notificationResponseDTO = sendNotificationV2(individualId, requestType,
-					templateType, eventId, null, null);
+					templateType, eventId, null, identityDTO);
 
 			if (isTransactionSuccessful) {
 				response.setMessage("The chosen authentication types have been successfully locked/unlocked.");
@@ -1218,7 +1220,7 @@ public class ResidentServiceImpl implements ResidentService {
 		return Tuples.of(response, eventId);
 	}
 
-	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId)
+	private ResidentTransactionEntity createResidentTransactionEntity(String individualId, String partnerId, String uin)
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity;
 		residentTransactionEntity = utility.createEntity(RequestType.AUTH_TYPE_LOCK_UNLOCK);
@@ -1228,7 +1230,7 @@ public class ResidentServiceImpl implements ResidentService {
 		residentTransactionEntity.setRequestSummary("Updating auth type lock status");
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityServiceImpl.getResidentIdaToken());
+		residentTransactionEntity.setTokenId(identityServiceImpl.getIDAToken(uin));
 		residentTransactionEntity.setAuthTypeCode(identityServiceImpl.getResidentAuthenticationMode());
 		residentTransactionEntity.setOlvPartnerId(partnerId);
 		residentTransactionEntity.setStatusComment("Updating auth type lock status");
