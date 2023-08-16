@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,9 @@ public class ProxyPartnerManagementServiceTest {
 	@Mock
 	private ResidentServiceRestClient residentServiceRestClient;
 
+	@Mock
+	private Utility utility;
+
 	@InjectMocks
 	private ProxyPartnerManagementService proxyPartnerManagementService = new ProxyPartnerManagementServiceImpl();
 
@@ -54,8 +59,8 @@ public class ProxyPartnerManagementServiceTest {
 		responseWrapper.setVersion("v1");
 		responseWrapper.setId("1");
 		responseWrapper.setResponse(Map.of("partners",List.of(partnerMap)));
-		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
-		.thenReturn(responseWrapper);
+		when(utility.getPartnersByPartnerType(any(), any()))
+				.thenReturn(responseWrapper);
 	}
 
 	@Test
@@ -82,6 +87,8 @@ public class ProxyPartnerManagementServiceTest {
 
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
+		when(utility.getPartnersByPartnerType(any(), any()))
+				.thenThrow(new ResidentServiceCheckedException());
 
 		responseWrapper.setErrors(errorList);
 		proxyPartnerManagementService.getPartnersByPartnerType(Optional.of("Device_Provider"));
@@ -90,8 +97,8 @@ public class ProxyPartnerManagementServiceTest {
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testGetPartnersByPartnerTypeWithApisResourceAccessException()
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
-		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
-				.thenThrow(new ApisResourceAccessException());
+		when(utility.getPartnersByPartnerType(any(), any()))
+				.thenThrow(new ResidentServiceCheckedException());
 		proxyPartnerManagementService.getPartnersByPartnerType(Optional.of("Device_Provider"));
 	}
 	
@@ -103,8 +110,8 @@ public class ProxyPartnerManagementServiceTest {
 
 	@Test(expected = ResidentServiceException.class)
 	public void testGetPartnerDetailFromPartnerIdException() throws ResidentServiceCheckedException, ApisResourceAccessException {
-		when(residentServiceRestClient.getApi(any(), (List<String>) any(), (List<String>) any(), any(), any()))
-		.thenThrow(new ApisResourceAccessException());
+		when(utility.getPartnersByPartnerType(any(), any()))
+				.thenThrow(new ResidentServiceException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION));
 		proxyPartnerManagementService.getPartnerDetailFromPartnerId("");
 	}
 

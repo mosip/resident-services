@@ -910,19 +910,14 @@ public class Utility {
 		return name;
 	}
 
-	@Cacheable(value = "identityMapCacheResponseWrapper", key = "#accessToken")
-	public <T> T getCachedIdentityDataForResponseWrapper(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
-		return getIdentityData(id, responseType);
-	}
-
-	@Cacheable(value = "identityMapCacheIdResponseDto1", key = "#accessToken")
-	public <T> T getCachedIdentityDataForIdResponseDto1(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
+	@Cacheable(value = "identityMapCache", key = "#accessToken")
+	public <T> T getCachedIdentityData(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
 		return getIdentityData(id, responseType);
 	}
 
 	public <T> T getIdentityData(String id, Class<?> responseType) throws ApisResourceAccessException {
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("id", id);
+		Map<String, String> pathSegments = new HashMap<String, String>();
+		pathSegments.put("id", id);
 
 		List<String> queryParamName = new ArrayList<String>();
 		queryParamName.add("type");
@@ -930,16 +925,11 @@ public class Utility {
 		List<Object> queryParamValue = new ArrayList<>();
 		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
 		return restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
-				pathsegments, queryParamName, queryParamValue, responseType);
+				pathSegments, queryParamName, queryParamValue, responseType);
 	}
 
-	@CacheEvict(value = "identityMapCacheResponseWrapper", key = "#accessToken")
-	public void clearIdentityMapCacheResponseWrapper(String accessToken) {
-		logger.info("Clearing Identity Map cache Response wrapper");
-	}
-
-	@CacheEvict(value = "identityMapCacheIdResponseDto1", key = "#accessToken")
-	public void clearIdentityMapCacheIdResponseDto1(String accessToken) {
+	@CacheEvict(value = "identityMapCache", key = "#accessToken")
+	public void clearIdentityMapCache(String accessToken) {
 		logger.info("Clearing Identity Map cache IdResponseDto1");
 	}
 	@Cacheable(value = "partnerCache", key = "#partnerType + '_' + #apiUrl")

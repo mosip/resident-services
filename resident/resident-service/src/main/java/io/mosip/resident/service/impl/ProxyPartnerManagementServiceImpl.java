@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,12 +32,15 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
 
+	@Autowired
+	private Utility utility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyPartnerManagementServiceImpl.class);
 
 	@Override
 	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType)
 			throws ResidentServiceCheckedException {
-		return getPartnersByPartnerType(partnerType, ApiName.PARTNER_API_URL);
+		return utility.getPartnersByPartnerType(partnerType, ApiName.PARTNER_API_URL);
 	}
 
 	@Override
@@ -78,7 +82,7 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
 	public Map<String, ?> getPartnerDetailFromPartnerId(String partnerId) {
 		ResponseWrapper<?> response = null;
 		try {
-			response = getPartnersByPartnerType(Optional.of(""), ApiName.PARTNER_DETAILS_NEW_URL);
+			response = utility.getPartnersByPartnerType(Optional.of(""), ApiName.PARTNER_DETAILS_NEW_URL);
 		} catch (ResidentServiceCheckedException e) {
 			throw new ResidentServiceException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);

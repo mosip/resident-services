@@ -3,12 +3,12 @@ package io.mosip.resident.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.InvalidInputException;
@@ -160,18 +160,17 @@ public class IdentityServiceImpl implements IdentityService {
 			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
 		try {
-			ResponseWrapper<?> responseWrapper = null;
+			IdResponseDTO1 idResponseDTO1;
 			if(Utility.isSecureSession()){
-				responseWrapper = utility.getCachedIdentityDataForResponseWrapper(id, getAccessToken(), ResponseWrapper.class);
+				idResponseDTO1 = (IdResponseDTO1)utility.getCachedIdentityData(id, getAccessToken(), IdResponseDTO1.class);
 			} else {
-				responseWrapper = utility.getIdentityData(id, ResponseWrapper.class);
+				idResponseDTO1 = (IdResponseDTO1)utility.getIdentityData(id, IdResponseDTO1.class);
 			}
-			if(responseWrapper.getErrors() != null && responseWrapper.getErrors().size() > 0) {
+			if(idResponseDTO1.getErrors() != null && idResponseDTO1.getErrors().size() > 0) {
 				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());
+						idResponseDTO1.getErrors().get(0).getErrorCode() + " --> " + idResponseDTO1.getErrors().get(0).getMessage());
 			}
-			Map<String, Object> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-			Map<String,Object> identity = (Map<String, Object>) identityResponse.get(IDENTITY);
+			Map<String,Object> identity = (Map<String, Object>) idResponseDTO1.getResponse().getIdentity();
 			List<String> finalFilter = new ArrayList<>();
 			if(schemaType != null) {
 				List<String> filterBySchema = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType);

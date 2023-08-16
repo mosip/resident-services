@@ -95,8 +95,7 @@ public class LoginCheck {
 					taskScheduler.schedule(() -> {
 						if(accessToken!=null && !accessToken.isEmpty()) {
 							utility.clearUserInfoCache(accessToken);
-							utility.clearIdentityMapCacheResponseWrapper(accessToken);
-							utility.clearIdentityMapCacheIdResponseDto1(accessToken);
+							utility.clearIdentityMapCache(accessToken);
 						}
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
@@ -156,8 +155,7 @@ public class LoginCheck {
 		}
 		if(token!=null && !token.isEmpty()){
 			utility.clearUserInfoCache(token);
-			utility.clearIdentityMapCacheResponseWrapper(token);
-			utility.clearIdentityMapCacheIdResponseDto1(token);
+			utility.clearIdentityMapCache(token);
 		}
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}

@@ -379,7 +379,7 @@ public class Utilities {
 			pathSegments.add(uin);
 			IdResponseDTO1 idResponseDto;
 
-			idResponseDto = (IdResponseDTO1) utility.getCachedIdentityDataForIdResponseDto1(uin, identityService.getAccessToken(), IdResponseDTO1.class);
+			idResponseDto = (IdResponseDTO1) utility.getCachedIdentityData(uin, identityService.getAccessToken(), IdResponseDTO1.class);
 			if (idResponseDto == null) {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
