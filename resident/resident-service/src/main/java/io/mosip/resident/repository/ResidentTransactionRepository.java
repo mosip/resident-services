@@ -107,9 +107,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
 			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
 			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
-			" AND cr_dtimes BETWEEN :startDate AND :endDate" +
-			" ORDER BY rte.pinnedStatus DESC," +
-			" rte.crDtimes DESC")
+			" AND rte.crDtimes BETWEEN :startDate AND :endDate")
 	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId,
 			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
 			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
