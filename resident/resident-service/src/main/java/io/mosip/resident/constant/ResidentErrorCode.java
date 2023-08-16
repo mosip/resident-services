@@ -1,9 +1,5 @@
 package io.mosip.resident.constant;
 
-import static io.mosip.resident.constant.ResidentErrorCode.VIRUS_SCAN_FAILED;
-
-import io.mosip.resident.exception.ResidentServiceException;
-
 public enum ResidentErrorCode {
 
 	NO_RID_FOUND_EXCEPTION("RES-SER-408", "RID not found"),
