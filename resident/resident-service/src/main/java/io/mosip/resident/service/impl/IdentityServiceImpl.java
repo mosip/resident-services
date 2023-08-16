@@ -162,7 +162,7 @@ public class IdentityServiceImpl implements IdentityService {
 		try {
 			ResponseWrapper<?> responseWrapper = null;
 			if(Utility.isSecureSession()){
-				responseWrapper = utility.getCachedIdentityData(id, getAccessToken(), ResponseWrapper.class);
+				responseWrapper = utility.getCachedIdentityDataForResponseWrapper(id, getAccessToken(), ResponseWrapper.class);
 			} else {
 				responseWrapper = utility.getIdentityData(id, ResponseWrapper.class);
 			}

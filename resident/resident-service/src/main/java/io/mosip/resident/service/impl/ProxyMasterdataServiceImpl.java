@@ -443,7 +443,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@CacheEvict(value = "templateCache", allEntries = true)
-	@Scheduled(fixedRateString = "${template.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
 	public void emptyTemplateCache() {
 		logger.info("Emptying Template cache");
 	}

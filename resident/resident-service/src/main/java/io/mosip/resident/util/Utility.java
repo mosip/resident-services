@@ -41,6 +41,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -58,6 +59,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -167,6 +169,9 @@ public class Utility {
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
+
+	@Autowired
+	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	private static String regProcessorIdentityJson = "";
 
@@ -905,8 +910,13 @@ public class Utility {
 		return name;
 	}
 
-	@Cacheable(value = "identityMapCache", key = "#accessToken")
-	public <T> T getCachedIdentityData(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
+	@Cacheable(value = "identityMapCacheResponseWrapper", key = "#accessToken")
+	public <T> T getCachedIdentityDataForResponseWrapper(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
+		return getIdentityData(id, responseType);
+	}
+
+	@Cacheable(value = "identityMapCacheIdResponseDto1", key = "#accessToken")
+	public <T> T getCachedIdentityDataForIdResponseDto1(String id, String accessToken, Class<?> responseType) throws ApisResourceAccessException {
 		return getIdentityData(id, responseType);
 	}
 
@@ -923,9 +933,24 @@ public class Utility {
 				pathsegments, queryParamName, queryParamValue, responseType);
 	}
 
-	@CacheEvict(value = "identityMapCache", key = "#accessToken")
-	public void clearIdentityMapCache(String accessToken) {
-		logger.info("Clearing Identity Map cache");
+	@CacheEvict(value = "identityMapCacheResponseWrapper", key = "#accessToken")
+	public void clearIdentityMapCacheResponseWrapper(String accessToken) {
+		logger.info("Clearing Identity Map cache Response wrapper");
+	}
+
+	@CacheEvict(value = "identityMapCacheIdResponseDto1", key = "#accessToken")
+	public void clearIdentityMapCacheIdResponseDto1(String accessToken) {
+		logger.info("Clearing Identity Map cache IdResponseDto1");
+	}
+	@Cacheable(value = "partnerCache", key = "#partnerType + '_' + #apiUrl")
+	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
+		return proxyPartnerManagementService.getPartnersByPartnerType(partnerType, apiUrl);
+	}
+
+	@CacheEvict(value = "partnerCache", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyTemplateCache() {
+		logger.info("Emptying Partner cache");
 	}
 
 }

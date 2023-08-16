@@ -20,7 +20,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -96,7 +95,8 @@ public class LoginCheck {
 					taskScheduler.schedule(() -> {
 						if(accessToken!=null && !accessToken.isEmpty()) {
 							utility.clearUserInfoCache(accessToken);
-							utility.clearIdentityMapCache(accessToken);
+							utility.clearIdentityMapCacheResponseWrapper(accessToken);
+							utility.clearIdentityMapCacheIdResponseDto1(accessToken);
 						}
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
@@ -156,7 +156,8 @@ public class LoginCheck {
 		}
 		if(token!=null && !token.isEmpty()){
 			utility.clearUserInfoCache(token);
-			utility.clearIdentityMapCache(token);
+			utility.clearIdentityMapCacheResponseWrapper(token);
+			utility.clearIdentityMapCacheIdResponseDto1(token);
 		}
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}

@@ -910,7 +910,7 @@ public class ResidentServiceImpl implements ResidentService {
 				if (residentUpdateResponseDTO != null) {
 					residentUpdateResponseDTO.setMessage(notificationResponseDTO.getMessage());
 					residentUpdateResponseDTO.setRegistrationId(response.getRegistrationId());
-					utility.clearIdentityMapCache(identityServiceImpl.getAccessToken());
+					utility.clearIdentityMapCacheResponseWrapper(identityServiceImpl.getAccessToken());
 				}
 			}
 			logger.debug(EventEnum.SEND_NOTIFICATION_SUCCESS.getDescription(), dto.getTransactionID());
