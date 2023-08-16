@@ -242,18 +242,12 @@ public class IdentityServiceImpl implements IdentityService {
 			if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
 				return idvid;
 			}
-			return utilities.getUinByVid(idvid);
+			return getIdentity(idvid).getUIN();
 		} catch (VidCreationException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
-		} catch (ApisResourceAccessException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-		} catch (IOException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage());
 		}
-		
+
 	}
 	
 	@Override
