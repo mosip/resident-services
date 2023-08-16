@@ -286,10 +286,12 @@ public class ResidentController {
 			response.setResponse(tupleResponse.getT1());
 			response.setId(authLockStatusUpdateV2Id);
 			response.setVersion(authLockStatusUpdateV2Version);
+			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_UNLOCK_SUCCESS);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED, "Request for auth lock failed"));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, authLockStatusUpdateV2Id));
+			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_UNLOCK_FAILURE);
 			throw e;
 		}
 		logger.debug("ResidentController::reqAauthTypeStatusUpdateV2()::exit");
