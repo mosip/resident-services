@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.ResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
@@ -124,6 +126,7 @@ public class IdentityServiceTest {
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	private static String token;
+	private IdResponseDTO1 idResponseDTO1;
 	
 	
 	@Before
@@ -207,7 +210,11 @@ public class IdentityServiceTest {
 		when(env.getProperty("mosip.resident.photo.attribute.name")).thenReturn("photo");
 		when(env.getProperty("resident.additional.identity.attribute.to.fetch")).thenReturn("UIN,email,phone,dateOfBirth,fullName");
 		when(env.getProperty("mosip.resident.photo.token.claim-photo")).thenReturn("picture");
-		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(responseWrapper);
+		idResponseDTO1 = new IdResponseDTO1();
+		ResponseDTO1 responseDTO1 = new ResponseDTO1();
+		responseDTO1.setIdentity(identityMap);
+		idResponseDTO1.setResponse(responseDTO1);
+		when(utility.getCachedIdentityData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
 	}
 
 	private void fileLoadMethod() throws Exception {
@@ -236,7 +243,8 @@ public class IdentityServiceTest {
 		ServiceError error = new ServiceError();
 		error.setErrorCode("101");
 		error.setMessage("errors");
-
+		idResponseDTO1.setErrors(List.of(error));
+		when(utility.getIdentityData(Mockito.any(), Mockito.any())).thenReturn(idResponseDTO1);
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
 
