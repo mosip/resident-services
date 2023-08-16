@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -1635,6 +1636,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(fromDateTime!=null && toDateTime!=null){
 			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
+		Pageable pageable = PageRequest.of(pageStart, pageFetch, Sort.by(Sort.Direction.DESC, "pinnedStatus").and(Sort.by(Sort.Direction.DESC, "crDtimes")));
 		if (statusFilter != null && searchText != null){
 			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
 							(pageStart) * pageFetch,
@@ -1664,14 +1666,12 @@ public class ResidentServiceImpl implements ResidentService {
 					residentTransactionRepository.countByTokenIdInStatus(
 							idaToken, onlineVerificationPartnerId, requestTypes, statusList));
 		} else if (fromDateTime != null && toDateTime != null) {
-			Pageable pageable = PageRequest.of(pageStart, pageFetch);
 			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), pageable);
 			return Tuples.of(entitiesList,
 					residentTransactionRepository.countByTokenIdBetweenCrDtimes(
 							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
 		} else {
-			Pageable pageable = PageRequest.of(pageStart, pageFetch);
 			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenId(idaToken,
 					onlineVerificationPartnerId, requestTypes, pageable);
 			return Tuples.of(entitiesList,
