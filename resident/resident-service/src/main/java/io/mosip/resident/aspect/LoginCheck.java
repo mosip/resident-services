@@ -94,7 +94,7 @@ public class LoginCheck {
 					Date expDate = decodedToken.asDate();
 					logger.info("Scheduling clearing auth token cache after : " + expDate);
 					taskScheduler.schedule(() -> {
-						if(accessToken!=null && !accessToken.equals("")) {
+						if(accessToken!=null && !accessToken.isEmpty()) {
 							utility.clearUserInfoCache(accessToken);
 							utility.clearIdentityMapCache(accessToken);
 						}
@@ -154,7 +154,7 @@ public class LoginCheck {
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
-		if(token!=null && !token.equals("")){
+		if(token!=null && !token.isEmpty()){
 			utility.clearUserInfoCache(token);
 			utility.clearIdentityMapCache(token);
 		}
