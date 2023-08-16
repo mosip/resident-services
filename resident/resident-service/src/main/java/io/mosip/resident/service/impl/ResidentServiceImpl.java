@@ -1664,8 +1664,10 @@ public class ResidentServiceImpl implements ResidentService {
 					residentTransactionRepository.countByTokenIdInStatus(
 							idaToken, onlineVerificationPartnerId, requestTypes, statusList));
 		} else if (fromDateTime != null && toDateTime != null) {
-			return Tuples.of(residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken, pageFetch, (pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()),
+			Pageable pageable = PageRequest.of(pageStart, pageFetch);
+			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
+					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), pageable);
+			return Tuples.of(entitiesList,
 					residentTransactionRepository.countByTokenIdBetweenCrDtimes(
 							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
 		} else {

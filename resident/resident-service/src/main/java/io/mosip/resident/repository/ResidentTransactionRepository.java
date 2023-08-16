@@ -104,17 +104,15 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	int countByTokenIdAndSearchEventId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
 					   @Param("requestTypeCodes") List<String> requestTypeCodes , @Param("eventId") String eventId);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
-																 @Param("endDate") LocalDateTime endDate);
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.statusComment, rte.refIdType, rte.refId, rte.crDtimes, rte.updDtimes, rte.readStatus, rte.pinnedStatus, rte.purpose, rte.attributeList) FROM ResidentTransactionEntity rte WHERE rte.tokenId = :tokenId" +
+			" AND rte.requestTypeCode IN (:requestTypeCodes)" +
+			" AND (rte.olvPartnerId IS NULL OR rte.olvPartnerId = :olvPartnerId)" +
+			" AND cr_dtimes BETWEEN :startDate AND :endDate" +
+			" ORDER BY rte.pinnedStatus DESC," +
+			" rte.crDtimes DESC")
+	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
 	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
 			"WHERE token_id = :tokenId " +
