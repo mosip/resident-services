@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,6 +60,9 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	@Autowired
 	Environment env;
 
+	@Autowired
+	Utility utility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
 
 	@Override
@@ -90,7 +94,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::entry");
-		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> responseWrapper = utility.getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
 

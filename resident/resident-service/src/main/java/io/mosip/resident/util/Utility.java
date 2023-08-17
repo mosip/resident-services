@@ -940,8 +940,18 @@ public class Utility {
 
 	@CacheEvict(value = "partnerCache", allEntries = true)
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
-	public void emptyTemplateCache() {
+	public void emptyPartnerCache() {
 		logger.info("Emptying Partner cache");
 	}
 
+	@Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
+	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
+		return proxyMasterdataService.getValidDocumentByLangCode(langCode);
+	}
+
+	@CacheEvict(value = "getValidDocumentByLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetValidDocumentByLangCodeCache() {
+		logger.info("Emptying getValidDocumentByLangCode cache");
+	}
 }

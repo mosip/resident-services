@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,7 @@ import reactor.util.function.Tuple2;
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
-public class ProxyMasterdataServiceTest {
+public class ProxyMasterDataServiceTest {
 
 	@Mock
 	private Environment env;
@@ -61,6 +62,9 @@ public class ProxyMasterdataServiceTest {
 
 	private String fieldName;
 	private boolean withValue;
+
+	@Mock
+	private Utility utility;
 
 	@Before
 	public void setup() {
@@ -129,7 +133,7 @@ public class ProxyMasterdataServiceTest {
 		docCatList.add(Map.of("code", "poi", "documenttypes", List.of(Map.of("code", "cob"))));
 		docCatList.add(Map.of("code", "poa", "documenttypes", List.of(Map.of("code", "coa"))));
 		responseWrapper.setResponse(Map.of("documentcategories", docCatList));
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		when(utility.getValidDocumentByLangCode(any())).thenReturn(responseWrapper);
 		Tuple2<List<String>, Map<String, List<String>>> result = proxyMasterdataService
 				.getValidDocCatAndTypeList("eng");
 		assertEquals("poi", result.getT1().get(0));

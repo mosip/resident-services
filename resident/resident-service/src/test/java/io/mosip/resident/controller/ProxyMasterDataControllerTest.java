@@ -7,6 +7,7 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +47,7 @@ import io.mosip.resident.util.AuditUtil;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
-public class ProxyMasterdataControllerTest {
+public class ProxyMasterDataControllerTest {
 	
     @MockBean
     private ProxyIdRepoService proxyIdRepoService;
@@ -89,6 +90,8 @@ public class ProxyMasterdataControllerTest {
 	private MockMvc mockMvc;
 
 	private ResponseWrapper responseWrapper;
+	@MockBean
+	private Utility utility;
 
 	@Before
 	public void setUp() throws Exception {
@@ -102,7 +105,7 @@ public class ProxyMasterdataControllerTest {
 
 	@Test
 	public void testGetValidDocumentByLangCode() throws Exception {
-		Mockito.when(proxyMasterdataService.getValidDocumentByLangCode(Mockito.anyString()))
+		Mockito.when(utility.getValidDocumentByLangCode(Mockito.anyString()))
 				.thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
 				.andExpect(status().isOk());
@@ -110,7 +113,7 @@ public class ProxyMasterdataControllerTest {
 
 	@Test(expected = Exception.class)
 	public void testGetValidDocumentByLangCodeWithResidentServiceCheckedException() throws Exception {
-		Mockito.when(proxyMasterdataService.getValidDocumentByLangCode(Mockito.anyString()))
+		Mockito.when(utility.getValidDocumentByLangCode(Mockito.anyString()))
 				.thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
 				.andExpect(status().isOk());
