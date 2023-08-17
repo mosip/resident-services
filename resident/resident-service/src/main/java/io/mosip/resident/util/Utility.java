@@ -939,7 +939,7 @@ public class Utility {
 	}
 
 	@CacheEvict(value = "partnerCache", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.partnerCache}")
 	public void emptyPartnerCache() {
 		logger.info("Emptying Partner cache");
 	}
@@ -950,79 +950,79 @@ public class Utility {
 	}
 
 	@CacheEvict(value = "getValidDocumentByLangCode", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getValidDocumentByLangCode}")
 	public void emptyGetValidDocumentByLangCodeCache() {
 		logger.info("Emptying getValidDocumentByLangCode cache");
 	}
 
 	@CacheEvict(value = "getLocationHierarchyLevelByLangCode", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLocationHierarchyLevelByLangCode}")
 	public void emptyGetLocationHierarchyLevelByLangCodeCache() {
 		logger.info("Emptying getLocationHierarchyLevelByLangCode cache");
 	}
 
 	@CacheEvict(value = "getImmediateChildrenByLocCodeAndLangCode", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCodeAndLangCode}")
 	public void emptyGetImmediateChildrenByLocCodeAndLangCodeCache() {
 		logger.info("Emptying getImmediateChildrenByLocCodeAndLangCode cache");
 	}
 
 	@CacheEvict(value = "getLocationDetailsByLocCodeAndLangCode", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLocationDetailsByLocCodeAndLangCode}")
 	public void emptyGetLocationDetailsByLocCodeAndLangCodeCache() {
 		logger.info("Emptying getLocationDetailsByLocCodeAndLangCode cache");
 	}
 
 	@CacheEvict(value = "getCoordinateSpecificRegistrationCenters", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getCoordinateSpecificRegistrationCenters}")
 	public void emptyGetCoordinateSpecificRegistrationCentersCache() {
 		logger.info("Emptying getCoordinateSpecificRegistrationCenters cache");
 	}
 
 	@CacheEvict(value = "getApplicantValidDocument", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getApplicantValidDocument}")
 	public void emptyGetApplicantValidDocumentCache() {
 		logger.info("Emptying getApplicantValidDocument cache");
 	}
 
 	@CacheEvict(value = "getRegistrationCentersByHierarchyLevel", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getRegistrationCentersByHierarchyLevel}")
 	public void emptyGetRegistrationCentersByHierarchyLevelCache() {
 		logger.info("Emptying getRegistrationCentersByHierarchyLevel cache");
 	}
 
 	@CacheEvict(value = "getRegistrationCenterByHierarchyLevelAndTextPaginated", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getRegistrationCenterByHierarchyLevelAndTextPaginated}")
 	public void emptyGetRegistrationCenterByHierarchyLevelAndTextPaginatedCache() {
 		logger.info("Emptying getRegistrationCenterByHierarchyLevelAndTextPaginated cache");
 	}
 
 	@CacheEvict(value = "getRegistrationCenterWorkingDays", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getRegistrationCenterWorkingDays}")
 	public void emptyGetRegistrationCenterWorkingDaysCache() {
 		logger.info("Emptying getRegistrationCenterWorkingDays cache");
 	}
 
 	@CacheEvict(value = "getLatestIdSchema", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLatestIdSchema}")
 	public void emptyGetLatestIdSchemaCache() {
 		logger.info("Emptying getLatestIdSchema cache");
 	}
 
 	@CacheEvict(value = "getGenderCodeByGenderTypeAndLangCode", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getGenderCodeByGenderTypeAndLangCode}")
 	public void emptyGetGenderCodeByGenderTypeAndLangCodeCache() {
 		logger.info("Emptying getGenderCodeByGenderTypeAndLangCode cache");
 	}
 
 	@CacheEvict(value = "getDocumentTypesByDocumentCategoryAndLangCode", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getDocumentTypesByDocumentCategoryAndLangCode}")
 	public void emptyGetDocumentTypesByDocumentCategoryAndLangCodeCache() {
 		logger.info("Emptying getDocumentTypesByDocumentCategoryAndLangCode cache");
 	}
 
 	@CacheEvict(value = "getDynamicFieldBasedOnLangCodeAndFieldName", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getDynamicFieldBasedOnLangCodeAndFieldName}")
 	public void emptyGetDynamicFieldBasedOnLangCodeAndFieldNameCache() {
 		logger.info("Emptying getDynamicFieldBasedOnLangCodeAndFieldName cache");
 	}
