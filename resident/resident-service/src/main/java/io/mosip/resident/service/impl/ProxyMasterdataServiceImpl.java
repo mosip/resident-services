@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -64,6 +65,9 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	Utility utility;
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
+
+	@Autowired
+	private Utilities utilities;
 
 	@Override
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
@@ -522,7 +526,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
-		ResponseWrapper<?> res = getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
+		ResponseWrapper<?> res = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
 		GenderTypeListDTO response = JsonUtil.readValue(JsonUtil.writeValueAsString(res.getResponse()),
 				GenderTypeListDTO.class);
 		Optional<String> genderCode = response.getGenderType().stream()

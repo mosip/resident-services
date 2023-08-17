@@ -291,7 +291,6 @@ public class ResidentController {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED, "Request for auth lock failed"));
 			e.setMetadata(Map.of(ResidentConstants.REQ_RES_ID, authLockStatusUpdateV2Id));
-			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_UNLOCK_FAILURE);
 			throw e;
 		}
 		logger.debug("ResidentController::reqAauthTypeStatusUpdateV2()::exit");

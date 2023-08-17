@@ -374,7 +374,7 @@ public class Utility {
 		if(isPreferedLangFlagEnabled){
 		try {
 			ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
-					proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
+					utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
 							env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
 			DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
 					mapper.writeValueAsString(responseWrapper.getResponse()),
