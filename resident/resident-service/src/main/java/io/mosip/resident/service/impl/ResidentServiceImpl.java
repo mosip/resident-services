@@ -43,6 +43,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -1636,7 +1637,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(fromDateTime!=null && toDateTime!=null){
 			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
-		Pageable pageable = PageRequest.of(pageStart, pageFetch, Sort.by(Sort.Direction.DESC, "pinnedStatus").and(Sort.by(Sort.Direction.DESC, "crDtimes")));
+		Pageable pageable = PageRequest.of(pageStart, pageFetch, Sort.by(Sort.Direction.DESC, "pinnedStatus", "crDtimes"));
 		if (statusFilter != null && searchText != null){
 			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
 							(pageStart) * pageFetch,
@@ -1666,11 +1667,9 @@ public class ResidentServiceImpl implements ResidentService {
 					residentTransactionRepository.countByTokenIdInStatus(
 							idaToken, onlineVerificationPartnerId, requestTypes, statusList));
 		} else if (fromDateTime != null && toDateTime != null) {
-			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
+			Page<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), pageable);
-			return Tuples.of(entitiesList,
-					residentTransactionRepository.countByTokenIdBetweenCrDtimes(
-							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
+			return Tuples.of(entitiesList.getContent(), (int)entitiesList.getTotalElements());
 		} else {
 			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenId(idaToken,
 					onlineVerificationPartnerId, requestTypes, pageable);
