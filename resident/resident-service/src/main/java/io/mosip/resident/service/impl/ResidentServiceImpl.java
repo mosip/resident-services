@@ -42,7 +42,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -166,7 +165,6 @@ import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
 @Service
-@ConditionalOnProperty(value = "resident.service.impl.logging.enabled", havingValue = "true", matchIfMissing = false)
 public class ResidentServiceImpl implements ResidentService {
 
 	private static final String NA = "NA";
