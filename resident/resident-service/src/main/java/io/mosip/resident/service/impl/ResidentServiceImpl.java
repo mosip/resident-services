@@ -1637,7 +1637,9 @@ public class ResidentServiceImpl implements ResidentService {
 		if(fromDateTime!=null && toDateTime!=null){
 			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
+		System.out.println("==========testing pageStart====>> "+pageStart+"==========testing pageFetch====>> "+pageFetch);
 		Pageable pageable = PageRequest.of(pageStart, pageFetch, Sort.by(Sort.Direction.DESC, "pinnedStatus", "crDtimes"));
+		System.out.println("==========testing pageable=========="+pageable.toString()+"==========testing pageable==========");
 		if (statusFilter != null && searchText != null){
 			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
 							(pageStart) * pageFetch,
