@@ -954,4 +954,10 @@ public class Utility {
 	public void emptyGetValidDocumentByLangCodeCache() {
 		logger.info("Emptying getValidDocumentByLangCode cache");
 	}
+
+	@CacheEvict(value = "getLocationHierarchyLevelByLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetLocationHierarchyLevelByLangCodeCache() {
+		logger.info("Emptying getLocationHierarchyLevelByLangCode cache");
+	}
 }

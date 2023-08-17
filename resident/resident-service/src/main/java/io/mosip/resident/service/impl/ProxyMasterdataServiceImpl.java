@@ -121,6 +121,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getLocationHierarchyLevelByLangCode", key = "#langCode")
 	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevelByLangCode()::entry");
