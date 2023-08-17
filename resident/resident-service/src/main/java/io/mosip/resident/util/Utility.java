@@ -960,4 +960,52 @@ public class Utility {
 	public void emptyGetLocationHierarchyLevelByLangCodeCache() {
 		logger.info("Emptying getLocationHierarchyLevelByLangCode cache");
 	}
+
+	@CacheEvict(value = "getImmediateChildrenByLocCodeAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetImmediateChildrenByLocCodeAndLangCodeCache() {
+		logger.info("Emptying getImmediateChildrenByLocCodeAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getLocationDetailsByLocCodeAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetLocationDetailsByLocCodeAndLangCodeCache() {
+		logger.info("Emptying getLocationDetailsByLocCodeAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getCoordinateSpecificRegistrationCenters", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetCoordinateSpecificRegistrationCentersCache() {
+		logger.info("Emptying getCoordinateSpecificRegistrationCenters cache");
+	}
+
+	@CacheEvict(value = "getApplicantValidDocument", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetApplicantValidDocumentCache() {
+		logger.info("Emptying getApplicantValidDocument cache");
+	}
+
+	@CacheEvict(value = "getRegistrationCentersByHierarchyLevel", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetRegistrationCentersByHierarchyLevelCache() {
+		logger.info("Emptying getRegistrationCentersByHierarchyLevel cache");
+	}
+
+	@CacheEvict(value = "getRegistrationCenterByHierarchyLevelAndTextPaginated", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetRegistrationCenterByHierarchyLevelAndTextPaginatedCache() {
+		logger.info("Emptying getRegistrationCenterByHierarchyLevelAndTextPaginated cache");
+	}
+
+	@CacheEvict(value = "getRegistrationCenterWorkingDays", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetRegistrationCenterWorkingDaysCache() {
+		logger.info("Emptying getRegistrationCenterWorkingDays cache");
+	}
+
+	@CacheEvict(value = "getLatestIdSchema", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetLatestIdSchemaCache() {
+		logger.info("Emptying getLatestIdSchema cache");
+	}
 }
