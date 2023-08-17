@@ -1008,4 +1008,16 @@ public class Utility {
 	public void emptyGetLatestIdSchemaCache() {
 		logger.info("Emptying getLatestIdSchema cache");
 	}
+
+	@CacheEvict(value = "getGenderCodeByGenderTypeAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetGenderCodeByGenderTypeAndLangCodeCache() {
+		logger.info("Emptying getGenderCodeByGenderTypeAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getDocumentTypesByDocumentCategoryAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetDocumentTypesByDocumentCategoryAndLangCodeCache() {
+		logger.info("Emptying getDocumentTypesByDocumentCategoryAndLangCode cache");
+	}
 }

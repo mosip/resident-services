@@ -492,6 +492,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 	
 	@Override
+	@Cacheable(value = "getDocumentTypesByDocumentCategoryAndLangCode", key = "{#documentcategorycode, #langCode}")
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
@@ -515,6 +516,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getGenderCodeByGenderTypeAndLangCode", key = "{#genderName, #langCode}")
 	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String genderName,
 			String langCode) throws ResidentServiceCheckedException, IOException {
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
