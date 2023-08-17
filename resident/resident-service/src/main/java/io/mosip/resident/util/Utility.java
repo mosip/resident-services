@@ -1020,4 +1020,10 @@ public class Utility {
 	public void emptyGetDocumentTypesByDocumentCategoryAndLangCodeCache() {
 		logger.info("Emptying getDocumentTypesByDocumentCategoryAndLangCode cache");
 	}
+
+	@CacheEvict(value = "getDynamicFieldBasedOnLangCodeAndFieldName", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec}")
+	public void emptyGetDynamicFieldBasedOnLangCodeAndFieldNameCache() {
+		logger.info("Emptying getDynamicFieldBasedOnLangCodeAndFieldName cache");
+	}
 }
