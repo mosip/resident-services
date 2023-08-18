@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,7 +61,13 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	@Autowired
 	Environment env;
 
+	@Autowired
+	Utility utility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataServiceImpl.class);
+
+	@Autowired
+	private Utilities utilities;
 
 	@Override
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
@@ -90,7 +98,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	public Tuple2<List<String>, Map<String, List<String>>> getValidDocCatAndTypeList(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getValidDocCatAndTypeList()::entry");
-		ResponseWrapper<?> responseWrapper = getValidDocumentByLangCode(langCode);
+		ResponseWrapper<?> responseWrapper = utility.getValidDocumentByLangCode(langCode);
 		Map<String, Object> response = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
 		List<Map<String, Object>> validDoc = (List<Map<String, Object>>) response.get(DOCUMENTCATEGORIES);
 
@@ -117,6 +125,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getLocationHierarchyLevelByLangCode", key = "#langCode")
 	public ResponseWrapper<?> getLocationHierarchyLevelByLangCode(String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevelByLangCode()::entry");
@@ -142,6 +151,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getImmediateChildrenByLocCodeAndLangCode", key = "#locationCode + '_' + #langCode")
 	public ResponseWrapper<?> getImmediateChildrenByLocCodeAndLangCode(String locationCode, String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getImmediateChildrenByLocCodeAndLangCode()::entry");
@@ -168,6 +178,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getLocationDetailsByLocCodeAndLangCode", key = "#locationCode + '_' + #langCode")
 	public ResponseWrapper<?> getLocationDetailsByLocCodeAndLangCode(String locationCode, String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getLocationDetailsByLocCodeAndLangCode()::entry");
@@ -194,6 +205,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getCoordinateSpecificRegistrationCenters", key = "{#langCode, #longitude, #latitude, #proximityDistance}")
 	public ResponseWrapper<?> getCoordinateSpecificRegistrationCenters(String langCode, double longitude,
 			double latitude, int proximityDistance) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getCoordinateSpecificRegistrationCenters()::entry");
@@ -222,6 +234,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getApplicantValidDocument", key = "{#applicantId, #languages}")
 	public ResponseWrapper<?> getApplicantValidDocument(String applicantId, List<String> languages)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getApplicantValidDocument()::entry");
@@ -255,6 +268,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getRegistrationCentersByHierarchyLevel", key = "{#langCode, #hierarchyLevel, #name}")
 	public ResponseWrapper<?> getRegistrationCentersByHierarchyLevel(String langCode, Short hierarchyLevel,
 			List<String> name) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCentersByHierarchyLevel()::entry");
@@ -288,6 +302,8 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getRegistrationCenterByHierarchyLevelAndTextPaginated", key = "{#langCode, #hierarchyLevel, #name, #pageNumber," +
+			" #pageSize, #orderBy, #sortBy}")
 	public ResponseWrapper<?> getRegistrationCenterByHierarchyLevelAndTextPaginated(String langCode,
 			Short hierarchyLevel, String name, int pageNumber, int pageSize, OrderEnum orderBy, String sortBy)
 			throws ResidentServiceCheckedException {
@@ -331,6 +347,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getRegistrationCenterWorkingDays", key = "{#registrationCenterID, #langCode}")
 	public ResponseWrapper<?> getRegistrationCenterWorkingDays(String registrationCenterID, String langCode)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getRegistrationCenterWorkingDays()::entry");
@@ -357,6 +374,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getLatestIdSchema", key = "{#schemaVersion, #domain, #type}")
 	public ResponseWrapper<?> getLatestIdSchema(double schemaVersion, String domain, String type)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getLatestIdSchema()::entry");
@@ -443,7 +461,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@CacheEvict(value = "templateCache", allEntries = true)
-	@Scheduled(fixedRateString = "${template.cache.expiry.time.millisec}")
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.templateCache}")
 	public void emptyTemplateCache() {
 		logger.info("Emptying Template cache");
 	}
@@ -478,6 +496,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 	
 	@Override
+	@Cacheable(value = "getDocumentTypesByDocumentCategoryAndLangCode", key = "{#documentcategorycode, #langCode}")
 	public ResponseWrapper<?> getDocumentTypesByDocumentCategoryAndLangCode(String documentcategorycode, String langCode) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getDocumentTypesByDocumentCategoryAndLangCode()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
@@ -501,12 +520,13 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
+	@Cacheable(value = "getGenderCodeByGenderTypeAndLangCode", key = "{#genderName, #langCode}")
 	public ResponseWrapper<GenderCodeResponseDTO> getGenderCodeByGenderTypeAndLangCode(String genderName,
 			String langCode) throws ResidentServiceCheckedException, IOException {
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::entry");
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
-		ResponseWrapper<?> res = getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
+		ResponseWrapper<?> res = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
 		GenderTypeListDTO response = JsonUtil.readValue(JsonUtil.writeValueAsString(res.getResponse()),
 				GenderTypeListDTO.class);
 		Optional<String> genderCode = response.getGenderType().stream()
