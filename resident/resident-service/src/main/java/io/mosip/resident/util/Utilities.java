@@ -520,4 +520,8 @@ public class Utilities {
 				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
 		return acrAmrMap;
 	}
+	@Cacheable(value = "getDynamicFieldBasedOnLangCodeAndFieldName", key = "{#fieldName, #langCode, #withValue}")
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
+		return proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
+	}
 }

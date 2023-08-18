@@ -95,6 +95,9 @@ public class NotificationService {
 	@Autowired
 	private TemplateUtil templateUtil;
 
+	@Autowired
+	private IdentityService identityService;
+
 	private static final String LINE_SEPARATOR = new  StringBuilder().append(LINE_BREAK).append(LINE_BREAK).toString();
 	private static final String EMAIL = "_EMAIL";
 	private static final String SMS = "_SMS";
@@ -120,7 +123,7 @@ public class NotificationService {
 				"NotificationService::sendNotification()::entry");
 		boolean smsStatus = false;
 		boolean emailStatus = false;
-		Map demographicIdentity = (identity == null || identity.isEmpty()) ? utility.retrieveIdrepoJson(dto.getId()) : identity;
+		Map demographicIdentity = (identity == null || identity.isEmpty()) ? identityService.getIdentity(dto.getId()) : identity;
 		Map mapperIdentity = getMapperIdentity();
 
 		Set<String> templateLangauges;

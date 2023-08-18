@@ -26,6 +26,10 @@ public enum EventEnum {
 	REQ_AUTH_UNLOCK_SUCCESS("RES-SER-203", RegistrationConstants.SYSTEM, "Request auth unlock: Success",
 			"Requesting auth unlock api for transaction id %s is success", "RES-SER", "Residence service", "RS-AUTH_LOCK_UNLOCK",
 			"Auth lock/unlock", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+
+	REQ_AUTH_LOCK_UNLOCK_SUCCESS("RES-SER-203", RegistrationConstants.SYSTEM, "Request auth lock unlock: Success",
+			"Requesting auth lock unlock api is success", "RES-SER", "Residence service", "RS-AUTH_LOCK_UNLOCK",
+			"Auth lock/unlock", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	REQ_AUTH_HISTORY_SUCCESS("RES-SER-204", RegistrationConstants.SYSTEM, "Request auth history: Success",
 			"Requesting auth history api for transaction id %s is success", "RES-SER", "Residence service", "RS-AUTH_HIST",
