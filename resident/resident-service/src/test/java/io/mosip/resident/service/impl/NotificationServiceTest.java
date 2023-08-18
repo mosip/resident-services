@@ -13,6 +13,7 @@ import io.mosip.resident.dto.NotificationResponseDTO;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ProxyIdRepoService;
 import io.mosip.resident.util.AuditUtil;
@@ -83,6 +84,9 @@ public class NotificationServiceTest {
 
 	@Mock
 	private RequestValidator requestValidator;
+
+	@Mock
+	private IdentityService identityService;
 	private Map<String, Object> mailingAttributes;
 	private NotificationRequestDto reqDto;
 	private NotificationRequestDtoV2 notificationRequestDtoV2;

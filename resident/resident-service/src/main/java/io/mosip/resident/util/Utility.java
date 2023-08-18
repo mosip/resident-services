@@ -41,6 +41,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -58,6 +59,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -167,6 +169,9 @@ public class Utility {
 	@Autowired
 	@Qualifier("restClientWithSelfTOkenRestTemplate")
 	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
+
+	@Autowired
+	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	private static String regProcessorIdentityJson = "";
 
@@ -369,7 +374,7 @@ public class Utility {
 		if(isPreferedLangFlagEnabled){
 		try {
 			ResponseWrapper<?> responseWrapper = (ResponseWrapper<DynamicFieldConsolidateResponseDto>)
-					proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
+					utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName,
 							env.getProperty(ResidentConstants.MANDATORY_LANGUAGE), true);
 			DynamicFieldConsolidateResponseDto dynamicFieldConsolidateResponseDto = mapper.readValue(
 					mapper.writeValueAsString(responseWrapper.getResponse()),
@@ -911,8 +916,8 @@ public class Utility {
 	}
 
 	public <T> T getIdentityData(String id, Class<?> responseType) throws ApisResourceAccessException {
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("id", id);
+		Map<String, String> pathSegments = new HashMap<String, String>();
+		pathSegments.put("id", id);
 
 		List<String> queryParamName = new ArrayList<String>();
 		queryParamName.add("type");
@@ -920,12 +925,105 @@ public class Utility {
 		List<Object> queryParamValue = new ArrayList<>();
 		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
 		return restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
-				pathsegments, queryParamName, queryParamValue, responseType);
+				pathSegments, queryParamName, queryParamValue, responseType);
 	}
 
 	@CacheEvict(value = "identityMapCache", key = "#accessToken")
 	public void clearIdentityMapCache(String accessToken) {
-		logger.info("Clearing Identity Map cache");
+		logger.info("Clearing Identity Map cache IdResponseDto1");
 	}
 
+	@Cacheable(value = "partnerCache", key = "#partnerType + '_' + #apiUrl")
+	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
+		return proxyPartnerManagementService.getPartnersByPartnerType(partnerType, apiUrl);
+	}
+
+	@CacheEvict(value = "partnerCache", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.partnerCache}")
+	public void emptyPartnerCache() {
+		logger.info("Emptying Partner cache");
+	}
+
+	@Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
+	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
+		return proxyMasterdataService.getValidDocumentByLangCode(langCode);
+	}
+
+	@CacheEvict(value = "getValidDocumentByLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getValidDocumentByLangCode}")
+	public void emptyGetValidDocumentByLangCodeCache() {
+		logger.info("Emptying getValidDocumentByLangCode cache");
+	}
+
+	@CacheEvict(value = "getLocationHierarchyLevelByLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLocationHierarchyLevelByLangCode}")
+	public void emptyGetLocationHierarchyLevelByLangCodeCache() {
+		logger.info("Emptying getLocationHierarchyLevelByLangCode cache");
+	}
+
+	@CacheEvict(value = "getImmediateChildrenByLocCodeAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getImmediateChildrenByLocCodeAndLangCode}")
+	public void emptyGetImmediateChildrenByLocCodeAndLangCodeCache() {
+		logger.info("Emptying getImmediateChildrenByLocCodeAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getLocationDetailsByLocCodeAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLocationDetailsByLocCodeAndLangCode}")
+	public void emptyGetLocationDetailsByLocCodeAndLangCodeCache() {
+		logger.info("Emptying getLocationDetailsByLocCodeAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getCoordinateSpecificRegistrationCenters", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getCoordinateSpecificRegistrationCenters}")
+	public void emptyGetCoordinateSpecificRegistrationCentersCache() {
+		logger.info("Emptying getCoordinateSpecificRegistrationCenters cache");
+	}
+
+	@CacheEvict(value = "getApplicantValidDocument", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getApplicantValidDocument}")
+	public void emptyGetApplicantValidDocumentCache() {
+		logger.info("Emptying getApplicantValidDocument cache");
+	}
+
+	@CacheEvict(value = "getRegistrationCentersByHierarchyLevel", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getRegistrationCentersByHierarchyLevel}")
+	public void emptyGetRegistrationCentersByHierarchyLevelCache() {
+		logger.info("Emptying getRegistrationCentersByHierarchyLevel cache");
+	}
+
+	@CacheEvict(value = "getRegistrationCenterByHierarchyLevelAndTextPaginated", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getRegistrationCenterByHierarchyLevelAndTextPaginated}")
+	public void emptyGetRegistrationCenterByHierarchyLevelAndTextPaginatedCache() {
+		logger.info("Emptying getRegistrationCenterByHierarchyLevelAndTextPaginated cache");
+	}
+
+	@CacheEvict(value = "getRegistrationCenterWorkingDays", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getRegistrationCenterWorkingDays}")
+	public void emptyGetRegistrationCenterWorkingDaysCache() {
+		logger.info("Emptying getRegistrationCenterWorkingDays cache");
+	}
+
+	@CacheEvict(value = "getLatestIdSchema", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getLatestIdSchema}")
+	public void emptyGetLatestIdSchemaCache() {
+		logger.info("Emptying getLatestIdSchema cache");
+	}
+
+	@CacheEvict(value = "getGenderCodeByGenderTypeAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getGenderCodeByGenderTypeAndLangCode}")
+	public void emptyGetGenderCodeByGenderTypeAndLangCodeCache() {
+		logger.info("Emptying getGenderCodeByGenderTypeAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getDocumentTypesByDocumentCategoryAndLangCode", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getDocumentTypesByDocumentCategoryAndLangCode}")
+	public void emptyGetDocumentTypesByDocumentCategoryAndLangCodeCache() {
+		logger.info("Emptying getDocumentTypesByDocumentCategoryAndLangCode cache");
+	}
+
+	@CacheEvict(value = "getDynamicFieldBasedOnLangCodeAndFieldName", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.getDynamicFieldBasedOnLangCodeAndFieldName}")
+	public void emptyGetDynamicFieldBasedOnLangCodeAndFieldNameCache() {
+		logger.info("Emptying getDynamicFieldBasedOnLangCodeAndFieldName cache");
+	}
 }
