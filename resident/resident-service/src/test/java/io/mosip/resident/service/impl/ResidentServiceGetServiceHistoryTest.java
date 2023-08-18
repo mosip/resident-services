@@ -293,12 +293,12 @@ public class ResidentServiceGetServiceHistoryTest {
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, sortType,
                 "SUCCESS", "1", "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
-//        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
-//                ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
-//                null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
-//        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
-//                null, sortType,
-//                null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
+                ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
+                null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
+        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, LocalDate.now(), LocalDate.now(),
+                null, sortType,
+                null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
         assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 ServiceType.AUTHENTICATION_REQUEST.toString(), sortType,
                 null, null, "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
