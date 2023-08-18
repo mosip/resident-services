@@ -1,15 +1,14 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.kernel.core.websub.spi.PublisherClient;
+import io.mosip.kernel.core.websub.spi.SubscriptionClient;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
+import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
+import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,17 +19,15 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.websub.spi.PublisherClient;
-import io.mosip.kernel.core.websub.spi.SubscriptionClient;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeRequest;
-import io.mosip.kernel.websub.api.model.SubscriptionChangeResponse;
-import io.mosip.kernel.websub.api.model.UnsubscriptionRequest;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.util.ResidentServiceRestClient;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
@@ -55,7 +52,10 @@ public class PartnerServiceImplTest {
 	@Mock
 	SubscriptionClient<SubscriptionChangeRequest, UnsubscriptionRequest, SubscriptionChangeResponse> subscribe;
 
-	private ResponseWrapper<Map<String, Object>> responseWrapper;
+	@Mock
+	private ProxyPartnerManagementServiceImpl proxyPartnerManagementService;
+
+	private ResponseWrapper responseWrapper;
 
 	@Before
 	public void setup() {
@@ -73,32 +73,23 @@ public class PartnerServiceImplTest {
 
 	@Test
 	public void testPartnerService()
-			throws ResidentServiceCheckedException, ApisResourceAccessException, URISyntaxException {
-		ReflectionTestUtils.setField(partnerService, "partnerServiceUrl",
-				"https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
-		URI uri = new URI("https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
-		when(residentServiceRestClient.getApi(uri, ResponseWrapper.class)).thenReturn(responseWrapper);
+			throws ResidentServiceCheckedException {
+		when(proxyPartnerManagementService.getPartnersByPartnerType(any())).thenReturn(responseWrapper);
 		ArrayList<String> partnerIds = partnerService.getPartnerDetails("Online_Verification_Partner");
 		assertEquals(1, partnerIds.size());
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
 	public void testPartnerServiceCatchBlock()
-			throws ResidentServiceCheckedException, ApisResourceAccessException, URISyntaxException {
-		ReflectionTestUtils.setField(partnerService, "partnerServiceUrl",
-				"https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
-		URI uri = new URI("https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
-		when(residentServiceRestClient.getApi((URI) any(), any())).thenThrow(new ApisResourceAccessException());
+			throws ResidentServiceCheckedException {
+		when(proxyPartnerManagementService.getPartnersByPartnerType(any())).thenThrow(new ResidentServiceCheckedException());
 		partnerService.getPartnerDetails("Online_Verification_Partner");
 	}
 
 	@Test
 	public void testPartnerServiceResponseNull()
-			throws ResidentServiceCheckedException, ApisResourceAccessException, URISyntaxException {
-		ReflectionTestUtils.setField(partnerService, "partnerServiceUrl",
-				"https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
-		URI uri = new URI("https://dev.mosip.net/v1/partnermanager/partners?partnerType=Online_Verification_Partner");
-		when(residentServiceRestClient.getApi(uri, ResponseWrapper.class)).thenReturn(null);
+			throws ResidentServiceCheckedException {
+		when(proxyPartnerManagementService.getPartnersByPartnerType(any())).thenReturn(null);
 		ArrayList<String> partnerIds = partnerService.getPartnerDetails("Online_Verification_Partner");
 		assertEquals(0, partnerIds.size());
 	}
