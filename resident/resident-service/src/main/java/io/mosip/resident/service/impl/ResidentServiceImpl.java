@@ -1640,7 +1640,7 @@ public class ResidentServiceImpl implements ResidentService {
 			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
 		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
-		Integer totalItems = 0;
+		int totalItems = 0;
 		Pageable pageable = PageRequest.of(pageStart, pageFetch,
 				Sort.by(Sort.Direction.DESC, "pinnedStatus", "crDtimes"));
 		Page<ResidentTransactionEntity> paginatedData = null;
