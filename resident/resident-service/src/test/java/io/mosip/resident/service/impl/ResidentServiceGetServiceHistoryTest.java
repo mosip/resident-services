@@ -153,7 +153,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFULL.toString());
 
         residentTransactionEntityList.add(residentTransactionEntity);
-
+        Page<ResidentTransactionEntity> page = new PageImpl<>(residentTransactionEntityList);
         partnerIds.add("m-partner-default-auth");
         partnerIds.add("MOVP");
 
@@ -179,9 +179,7 @@ public class ResidentServiceGetServiceHistoryTest {
         Mockito.when(templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn("success").thenReturn("Authentication is successful");
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn("property");
         Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(residentTransactionEntityList);
-        Mockito.when(residentTransactionRepository.countByTokenId(Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyList())).thenReturn(10);
+                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(page);
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "m-partner-default-auth");
     }
 
@@ -418,8 +416,9 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now().minusMinutes(1));
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
         residentTransactionEntityList.add(residentTransactionEntity);
+        Page<ResidentTransactionEntity> page = new PageImpl<>(residentTransactionEntityList);
         Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(residentTransactionEntityList);
+                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(page);
         pageStart = 2;
         pageSize = 3;
         fromDate = LocalDate.now();
@@ -435,8 +434,9 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now().minusMinutes(1));
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
         residentTransactionEntityList.add(residentTransactionEntity);
+        Page<ResidentTransactionEntity> page = new PageImpl<>(residentTransactionEntityList);
         Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(residentTransactionEntityList);
+                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(page);
         pageStart = 2;
         pageSize = 3;
         fromDate = LocalDate.now();

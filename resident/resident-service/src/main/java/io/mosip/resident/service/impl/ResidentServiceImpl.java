@@ -1637,44 +1637,41 @@ public class ResidentServiceImpl implements ResidentService {
 		if(fromDateTime!=null && toDateTime!=null){
 			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
-		logger.debug("==========testing pageStart====>> "+pageStart+"==========testing pageFetch====>> "+pageFetch);
-		Pageable pageable = PageRequest.of(pageStart, pageFetch, Sort.by(Sort.Direction.DESC, "pinnedStatus", "crDtimes"));
-		logger.debug("==========testing pageable=========="+pageable.toString()+"==========testing pageable==========");
-		if (statusFilter != null && searchText != null){
-			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken,
-							onlineVerificationPartnerId, requestTypes, statusList, searchText, pageable),
-					residentTransactionRepository.countByTokenIdInStatusSearchEventId(
-							idaToken, onlineVerificationPartnerId, requestTypes, statusList, searchText));
-		}else if (fromDateTime != null && toDateTime != null && searchText != null){
-			return Tuples.of(residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken,
-							onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), searchText, pageable),
-					residentTransactionRepository.countByTokenIdBetweenCrDtimesSearchEventId(
-							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), searchText));
+		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
+		Integer totalItems = 0;
+		Pageable pageable = PageRequest.of(pageStart, pageFetch,
+				Sort.by(Sort.Direction.DESC, "pinnedStatus", "crDtimes"));
+		Page<ResidentTransactionEntity> paginatedData = null;
+		if (statusFilter != null && searchText != null) {
+			paginatedData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, statusList, searchText, pageable);
+		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
+			paginatedData = residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
+					searchText, pageable);
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken,
-							onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), pageable),
-					residentTransactionRepository.countByTokenIdInStatusBetweenCrDtimes(
-							idaToken, onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
-		} else if(searchText !=null){
-			return Tuples.of(residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken,
-					onlineVerificationPartnerId, requestTypes, searchText, pageable),
-					residentTransactionRepository.countByTokenIdAndSearchEventId(
-							idaToken, onlineVerificationPartnerId, requestTypes, searchText));
+			paginatedData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken,
+					onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(),
+					dateTimeTuple2.getT2(), pageable);
+		} else if (searchText != null) {
+			paginatedData = residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, searchText, pageable);
 		} else if (statusFilter != null) {
-			return Tuples.of(residentTransactionRepository.findByTokenIdInStatus(idaToken,
-					onlineVerificationPartnerId, requestTypes, statusList, pageable),
-					residentTransactionRepository.countByTokenIdInStatus(
-							idaToken, onlineVerificationPartnerId, requestTypes, statusList));
+			paginatedData = residentTransactionRepository.findByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
+					requestTypes, statusList, pageable);
 		} else if (fromDateTime != null && toDateTime != null) {
-			Page<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
-					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), pageable);
-			return Tuples.of(entitiesList.getContent(), (int)entitiesList.getTotalElements());
+			paginatedData = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
+					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
+					pageable);
 		} else {
-			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenId(idaToken,
-					onlineVerificationPartnerId, requestTypes, pageable);
-			return Tuples.of(entitiesList,
-					residentTransactionRepository.countByTokenId(idaToken, onlineVerificationPartnerId, requestTypes));
+			paginatedData = residentTransactionRepository.findByTokenId(idaToken, onlineVerificationPartnerId,
+					requestTypes, pageable);
 		}
+		if (paginatedData != null && paginatedData.getContent() != null && !paginatedData.getContent().isEmpty()) {
+			entitiesList = paginatedData.getContent();
+			totalItems = (int) paginatedData.getTotalElements();
+		}
+		return Tuples.of(entitiesList, totalItems);
 	}
 
 	private List<String> getServiceQueryForNullServiceType() {
