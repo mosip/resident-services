@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.util.Utility;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -127,6 +128,9 @@ public class RequestHandlerRequestValidator {
 	@Autowired
 	private Utilities utilities;
 
+	@Autowired
+	private Utility utility;
+
 	/**
 	 * Validate.
 	 *
@@ -182,9 +186,6 @@ public class RequestHandlerRequestValidator {
 	public boolean isValidCenter(String centerId) throws BaseCheckedException, IOException {
 		String langCode = utilities.getLanguageCode();
 		boolean isValidCenter = false;
-		List<String> pathsegments = new ArrayList<>();
-		pathsegments.add(centerId);
-		pathsegments.add(langCode);
 		RegistrationCenterResponseDto rcpdto;
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
 		try {
@@ -192,8 +193,7 @@ public class RequestHandlerRequestValidator {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
 						LoggerFileConstant.REGISTRATIONID.toString(), "",
 						"PacketGeneratorServiceImpl::isValidCenter():: Centerdetails Api call started");
-				responseWrapper = (ResponseWrapper<?>) restClientService.getApi(ApiName.CENTERDETAILS, pathsegments, "",
-						"", ResponseWrapper.class);
+				responseWrapper = (ResponseWrapper<?>) utility.getCenterDetails(centerId, langCode);
 				rcpdto = mapper.readValue(mapper.writeValueAsString(responseWrapper.getResponse()),
 						RegistrationCenterResponseDto.class);
 				logger.debug(LoggerFileConstant.SESSIONID.toString(),
