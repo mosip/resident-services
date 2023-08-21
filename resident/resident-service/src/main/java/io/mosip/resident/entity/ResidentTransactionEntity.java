@@ -226,7 +226,9 @@ public class ResidentTransactionEntity {
 	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdAndSearchEventId(String, String, List<String>, String, Pageable))
 	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(String, String, List<String>, List<String>, LocalDateTime, LocalDateTime, Pageable))
 	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(String, String, List<String>, LocalDateTime, LocalDateTime, String, Pageable))
-	 * ()io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusSearchEventId(String, String, List<String>, List<String>, String, Pageable)
+	 * (io.mosip.resident.repository.ResidentTransactionRepository.findByTokenIdInStatusSearchEventId(String, String, List<String>, List<String>, String, Pageable))
+	 * 
+	 * not in use
 	 */
 	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String statusComment,
 			String refIdType, String refId, LocalDateTime crDtimes, LocalDateTime updDtimes, boolean readStatus,
