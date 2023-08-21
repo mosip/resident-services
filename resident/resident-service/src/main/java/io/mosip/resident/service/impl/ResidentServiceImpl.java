@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -1639,47 +1640,53 @@ public class ResidentServiceImpl implements ResidentService {
 		if(fromDateTime!=null && toDateTime!=null){
 			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
-		logger.debug("==========testing pageStart====>> "+pageStart+"==========testing pageFetch====>> "+pageFetch);
-		Pageable pageable = PageRequest.of(pageStart, pageFetch, Sort.by(Sort.Direction.DESC, "pinnedStatus", "crDtimes"));
-		logger.debug("==========testing pageable=========="+pageable.toString()+"==========testing pageable==========");
-		if (statusFilter != null && searchText != null){
-			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
-							(pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes, statusList, searchText),
-					residentTransactionRepository.countByTokenIdInStatusSearchEventId(
-							idaToken, onlineVerificationPartnerId, requestTypes, statusList, searchText));
-		}else if (fromDateTime != null && toDateTime != null && searchText != null){
-			return Tuples.of(residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken, pageFetch,
-							(pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), searchText),
-					residentTransactionRepository.countByTokenIdBetweenCrDtimesSearchEventId(
-							idaToken, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), searchText));
+		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
+		int totalItems = 0;
+		Pageable pageable = PageRequest.of(pageStart, pageFetch,
+				Sort.by(Sort.Direction.DESC, "pinned_status", "cr_dtimes"));
+		Page<Object[]> pageData = null;
+		if (statusFilter != null && searchText != null) {
+			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, statusList, searchText, pageable);
+		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
+			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
+					searchText, pageable);
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			return Tuples.of(residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken, pageFetch,
-							(pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()),
-					residentTransactionRepository.countByTokenIdInStatusBetweenCrDtimes(
-							idaToken, onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(), dateTimeTuple2.getT2()));
-		} else if(searchText !=null){
-			return Tuples.of(residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken, pageFetch, (pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes, searchText),
-					residentTransactionRepository.countByTokenIdAndSearchEventId(
-							idaToken, onlineVerificationPartnerId, requestTypes, searchText));
+			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken,
+					onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(),
+					dateTimeTuple2.getT2(), pageable);
+		} else if (searchText != null) {
+			pageData = residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, searchText, pageable);
 		} else if (statusFilter != null) {
-			return Tuples.of(residentTransactionRepository.findByTokenIdInStatus(idaToken, pageFetch, (pageStart) * pageFetch,
-							onlineVerificationPartnerId, requestTypes, statusList),
-					residentTransactionRepository.countByTokenIdInStatus(
-							idaToken, onlineVerificationPartnerId, requestTypes, statusList));
+			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
+					requestTypes, statusList, pageable);
 		} else if (fromDateTime != null && toDateTime != null) {
-			Page<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
-					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(), pageable);
-			return Tuples.of(entitiesList.getContent(), (int)entitiesList.getTotalElements());
+			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
+					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
+					pageable);
 		} else {
-			List<ResidentTransactionEntity> entitiesList = residentTransactionRepository.findByTokenId(idaToken,
-					onlineVerificationPartnerId, requestTypes, pageable);
-			return Tuples.of(entitiesList,
-					residentTransactionRepository.countByTokenId(idaToken, onlineVerificationPartnerId, requestTypes));
+			pageData = residentTransactionRepository.findByTokenId(idaToken, onlineVerificationPartnerId,
+					requestTypes, pageable);
 		}
+		if (pageData != null && pageData.getContent() != null && !pageData.getContent().isEmpty()) {
+			entitiesList = pageData.getContent().stream().map(objArr -> new ResidentTransactionEntity((String) objArr[0], (String) objArr[1], (String) objArr[2], (String) objArr[3],
+					(String) objArr[4], (String) objArr[5], toDateTime(objArr[6]), toDateTime(objArr[7]), (boolean) objArr[8],
+					(boolean) objArr[9], (String) objArr[10], (String) objArr[11]))
+					.collect(Collectors.toList());
+			totalItems = (int) pageData.getTotalElements();
+		}
+		return Tuples.of(entitiesList, totalItems);
+	}
+
+	public LocalDateTime toDateTime(Object dateTimeObject) {
+		if (dateTimeObject instanceof Timestamp) {
+			Timestamp timestamp = ((Timestamp) dateTimeObject);
+			LocalDateTime localDateTime = timestamp.toLocalDateTime();
+			return localDateTime;
+		}
+		return null;
 	}
 
 	private List<String> getServiceQueryForNullServiceType() {
