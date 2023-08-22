@@ -199,8 +199,8 @@ public class ResidentServiceGetServiceHistoryTest {
 	        return objArr;
 		}).collect(Collectors.toList());
         Page<Object[]> page = new PageImpl<>(entitiesList);
-        Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(),
-                Mockito.anyString(), Mockito.anyList(), Mockito.any())).thenReturn(page);
+        Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(),
+                Mockito.anyString(), Mockito.anyList())).thenReturn(page);
 		return page;
 	}
 
