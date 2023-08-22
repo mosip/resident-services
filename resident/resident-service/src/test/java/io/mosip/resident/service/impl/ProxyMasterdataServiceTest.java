@@ -10,11 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -44,7 +47,7 @@ import reactor.util.function.Tuple2;
 @RunWith(MockitoJUnitRunner.class)
 @RefreshScope
 @ContextConfiguration
-public class ProxyMasterdataServiceTest {
+public class ProxyMasterDataServiceTest {
 
 	@Mock
 	private Environment env;
@@ -61,6 +64,12 @@ public class ProxyMasterdataServiceTest {
 
 	private String fieldName;
 	private boolean withValue;
+
+	@Mock
+	private Utility utility;
+
+	@Mock
+	private Utilities utilities;
 
 	@Before
 	public void setup() {
@@ -129,7 +138,7 @@ public class ProxyMasterdataServiceTest {
 		docCatList.add(Map.of("code", "poi", "documenttypes", List.of(Map.of("code", "cob"))));
 		docCatList.add(Map.of("code", "poa", "documenttypes", List.of(Map.of("code", "coa"))));
 		responseWrapper.setResponse(Map.of("documentcategories", docCatList));
-		when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(responseWrapper);
+		when(utility.getValidDocumentByLangCode(any())).thenReturn(responseWrapper);
 		Tuple2<List<String>, Map<String, List<String>>> result = proxyMasterdataService
 				.getValidDocCatAndTypeList("eng");
 		assertEquals("poi", result.getT1().get(0));
@@ -657,8 +666,7 @@ public class ProxyMasterdataServiceTest {
 		response.setGenderType(List.of(genderTypeDTO));
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
-				.thenReturn(res);
+		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService
 				.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
 		assertEquals(genderTypeDTO.getCode(), responseWrapper.getResponse().getGenderCode());
@@ -671,8 +679,7 @@ public class ProxyMasterdataServiceTest {
 		response.setGenderType(List.of());
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
-		when(residentServiceRestClient.getApi((ApiName) any(), (Map<String, ?>) any(), any(), any(), any()))
-				.thenReturn(res);
+		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService
 				.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
 	}
