@@ -3,7 +3,6 @@ package io.mosip.resident.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import io.mosip.resident.dto.IdentityDTO;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +11,9 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.dto.VerificationStatusDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
@@ -48,12 +47,11 @@ public class VerificationServiceImpl implements VerificationService {
         boolean verificationStatus = false;
         IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
         String idaToken = identityServiceImpl.getIDAToken(identityDTO.getUIN());
-        ResidentTransactionEntity residentTransactionEntity =
-                residentTransactionRepository.findTopByRefIdAndStatusCodeOrderByCrDtimesDesc
+        boolean entityExist =
+                residentTransactionRepository.existsByRefIdAndStatusCode
                         (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
-        if (residentTransactionEntity!=null) {
+        if (entityExist) {
             verificationStatus = true;
-            residentTransactionRepository.save(residentTransactionEntity);
         }
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);

@@ -38,6 +38,7 @@ import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
 import io.mosip.resident.dto.CredentialReqestDto;
 import io.mosip.resident.dto.CredentialRequestStatusDto;
@@ -220,17 +221,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		ResidentCredentialResponseDto residentCredentialResponseDto = new ResidentCredentialResponseDto();
 		ResidentCredentialResponseDtoV2 residentCredentialResponseDtoV2=new ResidentCredentialResponseDtoV2();
 		RequestWrapper<CredentialReqestDto> requestDto = new RequestWrapper<>();
-		ResponseWrapper<PartnerResponseDto> parResponseDto = new ResponseWrapper<PartnerResponseDto>();
-		PartnerResponseDto partnerResponseDto = new PartnerResponseDto();
 		CredentialReqestDto credentialReqestDto = new CredentialReqestDto();
 		Map<String, Object> additionalAttributes = new HashMap<>();
-		String partnerUrl = env.getProperty(ApiName.PARTNER_API_URL.name()) + "/" + dto.getIssuer();
-		URI partnerUri = URI.create(partnerUrl);
+		additionalAttributes.put(TemplateVariablesConstants.PARTNER_ID, dto.getIssuer());
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		try {
-			
 			residentTransactionEntity = createResidentTransactionEntity(dto, individualId, purpose, sharableAttributes);
 			if (residentTransactionEntity != null) {
     			eventId = residentTransactionEntity.getEventId();
@@ -246,20 +243,13 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			requestDto.setId("mosip.credential.request.service.id");
 			requestDto.setRequest(credentialReqestDto);
 			requestDto.setRequesttime(DateUtils.formatToISOString(DateUtils.getUTCCurrentDateTime()));
-			requestDto.setVersion("1.0");
-			parResponseDto = residentServiceRestClient.getApi(partnerUri, ResponseWrapper.class);
-			partnerResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(parResponseDto.getResponse()),
-					PartnerResponseDto.class);
-			additionalAttributes.put("partnerName", partnerResponseDto.getOrganizationName());
-			additionalAttributes.put("encryptionKey", credentialReqestDto.getEncryptionKey());
-			additionalAttributes.put("credentialName", credentialReqestDto.getCredentialType());
+			requestDto.setVersion("1.0");			
 
 			ResponseWrapper<ResidentCredentialResponseDto> responseDto = residentServiceRestClient.postApi(
 					env.getProperty(ApiName.CREDENTIAL_REQ_URL.name()), MediaType.APPLICATION_JSON, requestDto,
 					ResponseWrapper.class);
 			residentCredentialResponseDto = JsonUtil.readValue(JsonUtil.writeValueAsString(responseDto.getResponse()),
 					ResidentCredentialResponseDto.class);
-			additionalAttributes.put("RID", residentCredentialResponseDto.getRequestId());
 			sendNotificationV2(individualId, RequestType.SHARE_CRED_WITH_PARTNER, TemplateType.REQUEST_RECEIVED,
 					eventId, additionalAttributes);
 

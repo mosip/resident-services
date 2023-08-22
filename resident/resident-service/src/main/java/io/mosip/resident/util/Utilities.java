@@ -25,6 +25,7 @@ import io.mosip.resident.exception.IdRepoAppException;
 import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import lombok.Data;
 import org.assertj.core.util.Lists;
@@ -113,6 +114,11 @@ public class Utilities {
 	@Autowired
 	private ProxyMasterdataService proxyMasterdataService;
 
+	@Autowired
+	private Utility utility;
+
+	@Autowired
+	private IdentityService identityService;
 	/** The config server file storage URL. */
 	@Value("${config.server.file.storage.uri}")
 	private String configServerFileStorageURL;
@@ -373,8 +379,7 @@ public class Utilities {
 			pathSegments.add(uin);
 			IdResponseDTO1 idResponseDto;
 
-			idResponseDto = (IdResponseDTO1) residentServiceRestClient.getApi(ApiName.IDREPOGETIDBYUIN, pathSegments, "", "",
-					IdResponseDTO1.class);
+			idResponseDto = (IdResponseDTO1) utility.getCachedIdentityData(uin, identityService.getAccessToken(), IdResponseDTO1.class);
 			if (idResponseDto == null) {
 				logger.debug(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.UIN.toString(), "",
 						"Utilities::retrieveIdrepoJson()::exit idResponseDto is null");
@@ -514,5 +519,9 @@ public class Utilities {
 		Map<String, String> acrAmrMap = map.entrySet().stream().collect(
 				Collectors.toMap(entry -> entry.getKey(), entry -> (String) ((ArrayList) entry.getValue()).get(0)));
 		return acrAmrMap;
+	}
+	@Cacheable(value = "getDynamicFieldBasedOnLangCodeAndFieldName", key = "{#fieldName, #langCode, #withValue}")
+	public ResponseWrapper<?> getDynamicFieldBasedOnLangCodeAndFieldName(String fieldName, String langCode, boolean withValue) throws ResidentServiceCheckedException {
+		return proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 	}
 }

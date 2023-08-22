@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
@@ -62,7 +63,7 @@ public interface ResidentService {
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																		  String searchColumn, String searchText, String langCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	byte[] downloadCard(String eventId) throws ResidentServiceCheckedException;
+	Tuple2<byte[], IdType> downloadCard(String eventId) throws ResidentServiceCheckedException;
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
@@ -84,7 +85,7 @@ public interface ResidentService {
 
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset, String locale) throws ApisResourceAccessException;
 
-	public String getFileName(String eventId, int timeZoneOffset, String locale);
+	public String getFileName(String eventId, IdType cardType, int timeZoneOffset, String locale);
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
                                                                           LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType, String statusFilter,

@@ -1,6 +1,31 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.util.Utility.IDENTITY;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.mosip.idrepository.core.util.TokenIDGenerator;
+import io.mosip.kernel.core.logger.spi.Logger;
+import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
+import io.mosip.resident.config.LoggerConfiguration;
+import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.exception.VidCreationException;
+import io.mosip.resident.handler.service.ResidentConfigService;
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import io.mosip.resident.validator.RequestValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +34,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,37 +44,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.mosip.idrepository.core.util.TokenIDGenerator;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.openid.bridge.model.AuthUserDetails;
-import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.ResidentConstants;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.exception.VidCreationException;
-import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.service.IdentityService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.util.ResidentServiceRestClient;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import io.mosip.resident.validator.RequestValidator;
+import static io.mosip.resident.util.Utility.IDENTITY;
 
 /**
  * Resident identity service implementation class.
@@ -60,7 +54,6 @@ import io.mosip.resident.validator.RequestValidator;
 @Component
 public class IdentityServiceImpl implements IdentityService {
 
-	private static final String RETRIEVE_IDENTITY_PARAM_TYPE_DEMO = "demo";
 	private static final String UIN = "UIN";
 	private static final String INDIVIDUAL_ID = "individual_id";
 	private static final String EMAIL = "email";
@@ -73,10 +66,6 @@ public class IdentityServiceImpl implements IdentityService {
 	private static final String VID = "VID";
 	private static final String AID = "AID";
 	private static final String  PERPETUAL_VID = "perpetualVID";
-
-	@Autowired
-	@Qualifier("restClientWithSelfTOkenRestTemplate")
-	private ResidentServiceRestClient restClientWithSelfTOkenRestTemplate;
 
 	@Autowired
 	private Utility utility;
@@ -115,7 +104,7 @@ public class IdentityServiceImpl implements IdentityService {
 	
 	@Override
     public IdentityDTO getIdentity(String id) throws ResidentServiceCheckedException{
-		return utility.getCachedIdentityData(id, getAccessToken());
+		return getIdentity(id, false, null);
     }
 
 	@Override
@@ -170,24 +159,18 @@ public class IdentityServiceImpl implements IdentityService {
 	public Map<String, Object> getIdentityAttributes(String id, String schemaType,
 			List<String> additionalAttributes) throws ResidentServiceCheckedException {
 		logger.debug("IdentityServiceImpl::getIdentityAttributes()::entry");
-		Map<String, String> pathsegments = new HashMap<String, String>();
-		pathsegments.put("id", id);
-		
-		List<String> queryParamName = new ArrayList<String>();
-		queryParamName.add("type");
-		
-		List<Object> queryParamValue = new ArrayList<>();
-		queryParamValue.add(RETRIEVE_IDENTITY_PARAM_TYPE_DEMO);
-		
 		try {
-			ResponseWrapper<?> responseWrapper = restClientWithSelfTOkenRestTemplate.getApi(ApiName.IDREPO_IDENTITY_URL,
-					pathsegments, queryParamName, queryParamValue, ResponseWrapper.class);
-			if(responseWrapper.getErrors() != null && responseWrapper.getErrors().size() > 0) {
-				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-						responseWrapper.getErrors().get(0).getErrorCode() + " --> " + responseWrapper.getErrors().get(0).getMessage());
+			IdResponseDTO1 idResponseDTO1;
+			if(Utility.isSecureSession()){
+				idResponseDTO1 = (IdResponseDTO1)utility.getCachedIdentityData(id, getAccessToken(), IdResponseDTO1.class);
+			} else {
+				idResponseDTO1 = (IdResponseDTO1)utility.getIdentityData(id, IdResponseDTO1.class);
 			}
-			Map<String, Object> identityResponse = new LinkedHashMap<>((Map<String, Object>) responseWrapper.getResponse());
-			Map<String,Object> identity = (Map<String, Object>) identityResponse.get(IDENTITY);
+			if(idResponseDTO1.getErrors() != null && idResponseDTO1.getErrors().size() > 0) {
+				throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+						idResponseDTO1.getErrors().get(0).getErrorCode() + " --> " + idResponseDTO1.getErrors().get(0).getMessage());
+			}
+			Map<String,Object> identity = (Map<String, Object>) idResponseDTO1.getResponse().getIdentity();
 			List<String> finalFilter = new ArrayList<>();
 			if(schemaType != null) {
 				List<String> filterBySchema = residentConfigService.getUiSchemaFilteredInputAttributes(schemaType);
@@ -198,7 +181,7 @@ public class IdentityServiceImpl implements IdentityService {
 			}
 			Map<String, Object> response = finalFilter.stream()
 					.peek(a -> {
-						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID)) {
+						if(a.equals(PERPETUAL_VID) || a.equals(ResidentConstants.MASK_PERPETUAL_VID) && !identity.containsKey(PERPETUAL_VID)) {
 							Optional<String> perpVid= Optional.empty();
 							try {
 								perpVid = residentVidService.getPerpatualVid((String) identity.get(UIN));
@@ -259,18 +242,12 @@ public class IdentityServiceImpl implements IdentityService {
 			if(getIndividualIdType(idvid).equalsIgnoreCase(UIN)){
 				return idvid;
 			}
-			return utilities.getUinByVid(idvid);
+			return getIdentity(idvid).getUIN();
 		} catch (VidCreationException e) {
 			throw new ResidentServiceCheckedException(ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorCode(),
 					ResidentErrorCode.VID_CREATION_EXCEPTION.getErrorMessage());
-		} catch (ApisResourceAccessException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage());
-		} catch (IOException e) {
-			throw new ResidentServiceCheckedException(ResidentErrorCode.IO_EXCEPTION.getErrorCode(),
-					ResidentErrorCode.IO_EXCEPTION.getErrorMessage());
 		}
-		
+
 	}
 	
 	@Override

@@ -11,6 +11,7 @@ import java.util.List;
 
 import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.ResponseDTO1;
+import io.mosip.resident.util.Utility;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -72,6 +73,9 @@ public class RequestHandlerRequestValidatorTest {
 	@Mock
 	private Environment env;
 
+	@Mock
+	private Utility utility;
+
 	private static final String ID = "110011";
 	private IdResponseDTO1 idResponseDto;
 	private ResponseDTO1 responseDTO1;
@@ -86,6 +90,8 @@ public class RequestHandlerRequestValidatorTest {
 		responseDTO1 = new ResponseDTO1();
 		responseDTO1.setStatus("ACTIVATED");
 		idResponseDto.setResponse(responseDTO1);
+		Mockito.when(utility.getCenterDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(new ResponseWrapper<>());
+		Mockito.when(utilities.getLanguageCode()).thenReturn("eng");
 	}
 
 	@Test(expected = RequestHandlerValidationException.class)
@@ -118,11 +124,11 @@ public class RequestHandlerRequestValidatorTest {
 		error.setMessage("invalid center");
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
-		ResponseWrapper<?> wrapper = new ResponseWrapper<>();
+		ResponseWrapper wrapper = new ResponseWrapper<>();
 		wrapper.setErrors(errorList);
 		RegistrationCenterResponseDto rcpdto = new RegistrationCenterResponseDto();
 		rcpdto.setRegistrationCenters(Lists.newArrayList(registrationCenterDto));
-		when(restClientService.getApi(any(), any(), anyString(), anyString(), any())).thenReturn(wrapper);
+		Mockito.when(utility.getCenterDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(wrapper);
 		Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenReturn(rcpdto);
 
 		requestHandlerRequestValidator.isValidCenter(ID);
@@ -150,8 +156,8 @@ public class RequestHandlerRequestValidatorTest {
 		wrapper.setErrors(errorList);
 		RegistrationCenterResponseDto rcpdto = new RegistrationCenterResponseDto();
 		rcpdto.setRegistrationCenters(Lists.newArrayList(registrationCenterDto));
-		when(restClientService.getApi(any(), any(), anyString(), anyString(), any()))
-				.thenThrow(new ApisResourceAccessException("error"));
+		Mockito.when(utility.getCenterDetails(Mockito.anyString(), Mockito.anyString())).thenThrow(new ApisResourceAccessException("error"));
+
 		requestHandlerRequestValidator.isValidCenter(ID);
 	}
 

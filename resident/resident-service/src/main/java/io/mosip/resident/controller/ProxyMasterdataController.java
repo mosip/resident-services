@@ -3,6 +3,8 @@ package io.mosip.resident.controller;
 import java.io.IOException;
 import java.util.List;
 
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +43,13 @@ public class ProxyMasterdataController {
 	@Autowired
 	private AuditUtil auditUtil;
 
+	@Autowired
+	private Utility utility;
+
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyMasterdataController.class);
+
+	@Autowired
+	private Utilities utilities;
 
 	/**
 	 * Get valid documents by language code.
@@ -64,7 +72,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getValidDocumentByLangCode()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = proxyMasterdataService.getValidDocumentByLangCode(langCode);
+			responseWrapper = utility.getValidDocumentByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_VALID_DOCUMENT_EXCEPTION);
 			throw e;
@@ -441,7 +449,7 @@ public class ProxyMasterdataController {
 		logger.debug("ProxyMasterdataController::getDynamicFieldBasedOnLangCodeAndFieldName()::entry");
 		ResponseWrapper<?> responseWrapper;
 		try {
-			responseWrapper = proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
+			responseWrapper = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(fieldName, langCode, withValue);
 		} catch (ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_DYNAMIC_FIELD_BASED_ON_LANG_CODE_AND_FIELD_NAME_EXCEPTION);
 			throw e;

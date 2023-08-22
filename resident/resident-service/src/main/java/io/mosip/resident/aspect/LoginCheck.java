@@ -20,7 +20,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -94,7 +93,10 @@ public class LoginCheck {
 					Date expDate = decodedToken.asDate();
 					logger.info("Scheduling clearing auth token cache after : " + expDate);
 					taskScheduler.schedule(() -> {
-						utility.clearUserInfoCache(accessToken);
+						if(accessToken!=null && !accessToken.isEmpty()) {
+							utility.clearUserInfoCache(accessToken);
+							utility.clearIdentityMapCache(accessToken);
+						}
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
 					sessionId = identityServiceImpl.createSessionId();
@@ -151,8 +153,10 @@ public class LoginCheck {
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
-		utility.clearUserInfoCache(token);
-		utility.clearIdentityMapCache(token);
+		if(token!=null && !token.isEmpty()){
+			utility.clearUserInfoCache(token);
+			utility.clearIdentityMapCache(token);
+		}
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}
 

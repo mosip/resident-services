@@ -126,8 +126,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		Mockito.when(utility.createEventId()).thenReturn("12345");
 		ArrayList<String> partnerIds = new ArrayList<>();
 		partnerIds.add("m-partner-default-auth");
-		Mockito.lenient().when(partnerService.getPartnerDetails(Mockito.anyString())).thenReturn(partnerIds);
-		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "2157245364", "partnerId");
+		ReflectionTestUtils.invokeMethod(residentService, "createResidentTransactionEntity", "2157245364", "partnerId", "2157245364");
 		ReflectionTestUtils.setField(residentService, "authTypes", "otp,bio-FIR,bio-IIR,bio-FACE");
 		ReflectionTestUtils.setField(residentService, "authLockStatusUpdateV2Id", "mosip.resident.auth.lock.status.update");
 	}
@@ -253,7 +252,7 @@ public class ResidentServiceRequestTypeAuthLockTest {
 		residentUpdateRequestDto.setIdentity(jsonObject);
 		residentUpdateRequestDto.setIndividualId("123434343");
 		assertNotNull(ReflectionTestUtils.invokeMethod(residentService,
-				"createResidentTransEntity", residentUpdateRequestDto));
+				"createResidentTransEntity", residentUpdateRequestDto, "1234567890"));
 	}
 
 	@Test

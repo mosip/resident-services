@@ -7,6 +7,8 @@ import java.security.PublicKey;
 
 import javax.crypto.SecretKey;
 
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +48,7 @@ import io.mosip.resident.util.AuditUtil;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ResidentTestBootApplication.class)
 @AutoConfigureMockMvc
-public class ProxyMasterdataControllerTest {
+public class ProxyMasterDataControllerTest {
 	
     @MockBean
     private ProxyIdRepoService proxyIdRepoService;
@@ -89,6 +91,11 @@ public class ProxyMasterdataControllerTest {
 	private MockMvc mockMvc;
 
 	private ResponseWrapper responseWrapper;
+	@MockBean
+	private Utility utility;
+
+	@MockBean
+	private Utilities utilities;
 
 	@Before
 	public void setUp() throws Exception {
@@ -102,7 +109,7 @@ public class ProxyMasterdataControllerTest {
 
 	@Test
 	public void testGetValidDocumentByLangCode() throws Exception {
-		Mockito.when(proxyMasterdataService.getValidDocumentByLangCode(Mockito.anyString()))
+		Mockito.when(utility.getValidDocumentByLangCode(Mockito.anyString()))
 				.thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
 				.andExpect(status().isOk());
@@ -110,7 +117,7 @@ public class ProxyMasterdataControllerTest {
 
 	@Test(expected = Exception.class)
 	public void testGetValidDocumentByLangCodeWithResidentServiceCheckedException() throws Exception {
-		Mockito.when(proxyMasterdataService.getValidDocumentByLangCode(Mockito.anyString()))
+		Mockito.when(utility.getValidDocumentByLangCode(Mockito.anyString()))
 				.thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/validdocuments/langCode"))
 				.andExpect(status().isOk());
@@ -292,14 +299,14 @@ public class ProxyMasterdataControllerTest {
 
 	@Test
 	public void testGetGenderTypesByLangCode() throws Exception {
-		Mockito.when(proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
+		Mockito.when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(responseWrapper);
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
 				.andExpect(status().isOk());
 	}
 
 	@Test(expected = Exception.class)
 	public void testGetGenderTypesByLangCodeWithResidentServiceCheckedException() throws Exception {
-		Mockito.when(proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenThrow(ResidentServiceCheckedException.class);
+		Mockito.when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenThrow(ResidentServiceCheckedException.class);
 		mockMvc.perform(MockMvcRequestBuilders.get("/auth-proxy/masterdata/dynamicfields/gender/eng?withValue=true"))
 				.andExpect(status().isOk());
 	}

@@ -286,6 +286,7 @@ public class ResidentController {
 			response.setResponse(tupleResponse.getT1());
 			response.setId(authLockStatusUpdateV2Id);
 			response.setVersion(authLockStatusUpdateV2Version);
+			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_UNLOCK_SUCCESS);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED, "Request for auth lock failed"));
@@ -510,14 +511,15 @@ public class ResidentController {
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
 		logger.debug("ResidentController::downloadCard()::entry");
 		InputStreamResource resource = null;
+		Tuple2<byte[], IdType> pdfBytesAndCardType;
 		try {
 		validator.validateEventId(eventId);
 		logger.debug(String.format("ResidentController::Requesting download digital card for event id: %s", eventId));
-		byte[] pdfBytes = residentService.downloadCard(eventId);
-		if (pdfBytes.length == 0) {
+		pdfBytesAndCardType = residentService.downloadCard(eventId);
+		if (pdfBytesAndCardType.getT1().length == 0) {
 			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
 		}
-		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytesAndCardType.getT1()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		} catch(ResidentServiceException | EventIdNotPresentException | InvalidRequestTypeCodeException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
@@ -529,7 +531,7 @@ public class ResidentController {
 			}
 		logger.debug("ResidentController::downloadCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, timeZoneOffset, locale) + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, pdfBytesAndCardType.getT2(), timeZoneOffset, locale) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
 	}
