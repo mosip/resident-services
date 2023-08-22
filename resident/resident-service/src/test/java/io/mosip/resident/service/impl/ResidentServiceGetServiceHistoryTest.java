@@ -23,8 +23,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -180,7 +178,7 @@ public class ResidentServiceGetServiceHistoryTest {
         ReflectionTestUtils.setField(residentServiceImpl, "onlineVerificationPartnerId", "m-partner-default-auth");
     }
 
-	private Page<Object[]> getPageData() {
+	private void getEntityData() {
 		List<Object[]> entitiesList = new ArrayList<>();
 		entitiesList = residentTransactionEntityList.stream().map(obj -> {
 			Object[] objArr = new Object[12];
@@ -198,10 +196,10 @@ public class ResidentServiceGetServiceHistoryTest {
 	        objArr[11] = obj.getAttributeList();
 	        return objArr;
 		}).collect(Collectors.toList());
-        Page<Object[]> page = new PageImpl<>(entitiesList);
         Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(),
-                Mockito.anyString(), Mockito.anyList())).thenReturn(page);
-		return page;
+                Mockito.anyString(), Mockito.anyList())).thenReturn(entitiesList);
+        Mockito.when(residentTransactionRepository.countByTokenId(Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyList())).thenReturn(residentTransactionEntityList.size());
 	}
 
     @Test
@@ -336,7 +334,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
         residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
         residentTransactionEntityList.add(residentTransactionEntity);
-        Page<Object[]> page = getPageData();
+        getEntityData();
        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
                 null, sortType,
                 null, "123", "eng", 0, LOCALE_EN_US).getResponse().getPageSize());
@@ -436,7 +434,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now().minusMinutes(1));
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
         residentTransactionEntityList.add(residentTransactionEntity);
-        Page<Object[]> page = getPageData();
+        getEntityData();
         pageStart = 2;
         pageSize = 3;
         fromDate = LocalDate.now();
@@ -452,7 +450,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setCrDtimes(LocalDateTime.now().minusMinutes(1));
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
         residentTransactionEntityList.add(residentTransactionEntity);
-        Page<Object[]> page = getPageData();
+        getEntityData();
         pageStart = 2;
         pageSize = 3;
         fromDate = LocalDate.now();
