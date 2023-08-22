@@ -38,17 +38,12 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
-import io.mosip.resident.dto.IdentityDTO;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -101,6 +96,7 @@ import io.mosip.resident.dto.DocumentResponseDTO;
 import io.mosip.resident.dto.EuinRequestDTO;
 import io.mosip.resident.dto.EventStatusResponseDTO;
 import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.MachineCreateRequestDTO;
 import io.mosip.resident.dto.MachineCreateResponseDTO;
 import io.mosip.resident.dto.MachineDto;
@@ -1642,40 +1638,55 @@ public class ResidentServiceImpl implements ResidentService {
 		}
 		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
 		int totalItems = 0;
-		Pageable pageable = PageRequest.of(pageStart, pageFetch,
-				Sort.by(Sort.Direction.DESC, "pinned_status", "cr_dtimes"));
-		Page<Object[]> pageData = null;
+		List<Object[]> pageData = null;
 		if (statusFilter != null && searchText != null) {
-			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken,
-					onlineVerificationPartnerId, requestTypes, statusList, searchText, pageable);
+			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
+					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList, searchText);
+			totalItems = residentTransactionRepository.countByTokenIdInStatusSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, statusList, searchText);
 		} else if (fromDateTime != null && toDateTime != null && searchText != null) {
-			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken,
+			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimesSearchEventId(idaToken, pageFetch,
+					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(),
+					dateTimeTuple2.getT2(), searchText);
+			totalItems = residentTransactionRepository.countByTokenIdBetweenCrDtimesSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
-					searchText, pageable);
+					searchText);
 		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
-			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken,
+			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken, pageFetch,
+					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList,
+					dateTimeTuple2.getT1(), dateTimeTuple2.getT2());
+			totalItems = residentTransactionRepository.countByTokenIdInStatusBetweenCrDtimes(idaToken,
 					onlineVerificationPartnerId, requestTypes, statusList, dateTimeTuple2.getT1(),
-					dateTimeTuple2.getT2(), pageable);
+					dateTimeTuple2.getT2());
 		} else if (searchText != null) {
-			pageData = residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken,
-					onlineVerificationPartnerId, requestTypes, searchText, pageable);
+			pageData = residentTransactionRepository.findByTokenIdAndSearchEventId(idaToken, pageFetch,
+					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, searchText);
+			totalItems = residentTransactionRepository.countByTokenIdAndSearchEventId(idaToken,
+					onlineVerificationPartnerId, requestTypes, searchText);
 		} else if (statusFilter != null) {
-			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
-					requestTypes, statusList, pageable);
+			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, pageFetch, pageStart * pageFetch,
+					onlineVerificationPartnerId, requestTypes, statusList);
+			totalItems = residentTransactionRepository.countByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
+					requestTypes, statusList);
 		} else if (fromDateTime != null && toDateTime != null) {
-			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken,
-					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
-					pageable);
+			pageData = residentTransactionRepository.findByTokenIdBetweenCrDtimes(idaToken, pageFetch,
+					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(),
+					dateTimeTuple2.getT2());
+			totalItems = residentTransactionRepository.countByTokenIdBetweenCrDtimes(idaToken,
+					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2());
 		} else {
-			pageData = residentTransactionRepository.findByTokenId(idaToken, onlineVerificationPartnerId,
-					requestTypes, pageable);
+			pageData = residentTransactionRepository.findByTokenId(idaToken, pageFetch, pageStart * pageFetch,
+					onlineVerificationPartnerId, requestTypes);
+			totalItems = residentTransactionRepository.countByTokenId(idaToken, onlineVerificationPartnerId,
+					requestTypes);
 		}
-		if (pageData != null && pageData.getContent() != null && !pageData.getContent().isEmpty()) {
-			entitiesList = pageData.getContent().stream().map(objArr -> new ResidentTransactionEntity((String) objArr[0], (String) objArr[1], (String) objArr[2], (String) objArr[3],
-					(String) objArr[4], (String) objArr[5], toDateTime(objArr[6]), toDateTime(objArr[7]), (boolean) objArr[8],
-					(boolean) objArr[9], (String) objArr[10], (String) objArr[11]))
+		if (pageData != null && !pageData.isEmpty()) {
+			entitiesList = pageData.stream()
+					.map(objArr -> new ResidentTransactionEntity((String) objArr[0], (String) objArr[1],
+							(String) objArr[2], (String) objArr[3], (String) objArr[4], (String) objArr[5],
+							toDateTime(objArr[6]), toDateTime(objArr[7]), (boolean) objArr[8], (boolean) objArr[9],
+							(String) objArr[10], (String) objArr[11]))
 					.collect(Collectors.toList());
-			totalItems = (int) pageData.getTotalElements();
 		}
 		return Tuples.of(entitiesList, totalItems);
 	}
