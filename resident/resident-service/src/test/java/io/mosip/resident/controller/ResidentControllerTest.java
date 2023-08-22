@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -73,6 +74,7 @@ import io.mosip.resident.dto.AuthLockOrUnLockRequestDtoV2;
 import io.mosip.resident.dto.AuthTypeStatusDtoV2;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.EuinRequestDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.RegStatusCheckResponseDTO;
 import io.mosip.resident.dto.RequestDTO;
@@ -81,10 +83,10 @@ import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
 import io.mosip.resident.dto.ResidentDocuments;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentReprintResponseDto;
-import io.mosip.resident.dto.ResidentServiceHistoryResponseDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import io.mosip.resident.dto.ResponseDTO;
+import io.mosip.resident.dto.ResponseDTO1;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.UnreadNotificationDto;
@@ -104,8 +106,10 @@ import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.test.ResidentTestBootApplication;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.JsonUtil;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
 /**
@@ -160,6 +164,9 @@ public class ResidentControllerTest {
 	@Mock
 	private Environment environment;
 
+	@Mock
+	private Utilities utilities;
+
 	@MockBean
 	private CryptoCoreSpec<byte[], byte[], SecretKey, PublicKey, PrivateKey, String> encryptor;
 
@@ -185,9 +192,11 @@ public class ResidentControllerTest {
 	/** The mock mvc. */
 	@Autowired
 	private MockMvc mockMvc;
+	private JSONObject idRepoJson;
+	private String schemaJson;
 
 	@Before
-	public void setUp() throws ApisResourceAccessException {
+	public void setUp() throws ApisResourceAccessException, IOException {
 		MockitoAnnotations.initMocks(this);
 		authLockRequest = new RequestWrapper<AuthLockOrUnLockRequestDto>();
 
@@ -225,6 +234,10 @@ public class ResidentControllerTest {
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("5734728510");
 		when(identityServiceImpl.getIndividualIdType(Mockito.any())).thenReturn("UIN");
 		when(environment.getProperty(anyString())).thenReturn("property");
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.any())).thenReturn(new IdResponseDTO1());
+
+		idRepoJson = null;
+		schemaJson = "schema";
 	}
 
 	@Test
@@ -453,9 +466,20 @@ public class ResidentControllerTest {
 		requestDTO.setRequest(request);
 		requestDTO.setId("mosip.resident.demographic");
 		requestDTO.setVersion("v1");
-
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("IDSchemaVersion", "0.1");
+		when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
+		IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+		ResponseDTO1 responseDTO1 = new ResponseDTO1();
+		responseDTO1.setIdentity(jsonObject);
+		idResponseDTO1.setResponse(responseDTO1);
+		when(utilities.retrieveIdRepoJsonIdResponseDto(Mockito.anyString())).thenReturn(idResponseDTO1);
+		when(utilities.convertIdResponseIdentityObjectToJsonObject(Mockito.any())).thenReturn(jsonObject);
+		Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, idResponseDTO1);
+		when(utilities.
+                getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
 		when(identityServiceImpl.getResidentIndvidualIdFromSession()).thenReturn("9876543210");
-		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
+		when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "12345"));
 		ResponseEntity<Object> responseEntity = residentController
 				.updateUinDemographics(requestDTO);
 		assertEquals(new ResidentUpdateResponseDTO(), ((ResponseWrapper<Object>)responseEntity.getBody()).getResponse());
@@ -497,23 +521,8 @@ public class ResidentControllerTest {
 				.header("Content-Disposition", "attachment; filename=\"" +
 						"abc" + ".pdf\"")
 				.body(resource);
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(null);
-		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(objectResponseWrapper);
-		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
 
-		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
-		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
-		dto.setId("12345");
-		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
-		dto.setRequestId("12345");
-		dto.setStatusCode("200");
-		list.add(dto);
-		resultResponseWrapper.setResponse(list);
-		resultResponseWrapper.setResponsetime(null);
-		byte[] bytes = "abc".getBytes(StandardCharsets.UTF_8);
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(Tuples.of(pdfBytes, IdType.UIN));
 		ResponseEntity<?> resultRequestWrapper = residentController
 				.downloadCard("9876543210", 0, LOCALE_EN_US);
 		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
@@ -522,69 +531,18 @@ public class ResidentControllerTest {
 	@Test(expected = CardNotReadyException.class)
 	@WithUserDetails("reg-admin")
 	public void testDownloadCardIndividualIdCardNotReadyException() throws Exception {
-		ResponseEntity<Object> responseEntity;
-		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" +
-						"abc" + ".pdf\"")
-				.body(resource);
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(null);
-		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(objectResponseWrapper);
-		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
-
-		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
-		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
-		dto.setId("12345");
-		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
-		dto.setRequestId("12345");
-		dto.setStatusCode("200");
-		list.add(dto);
-		resultResponseWrapper.setResponse(list);
-		resultResponseWrapper.setResponsetime(null);
 		byte[] bytes = "".getBytes(StandardCharsets.UTF_8);
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
-		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0, LOCALE_EN_US);
-		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
+		when(residentService.downloadCard(Mockito.anyString())).thenReturn(Tuples.of(bytes, IdType.VID));
+		residentController.downloadCard("9876543210", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = ResidentServiceException.class)
 	@WithUserDetails("reg-admin")
 	public void testDownloadCardIndividualIdInvalidInputException() throws Exception {
-		doThrow(new InvalidInputException()).
-				when(validator).validateEventId(any());
-		ResponseEntity<Object> responseEntity;
-		byte[] pdfBytes = "test".getBytes(StandardCharsets.UTF_8);
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
-		responseEntity = ResponseEntity.ok().contentType(MediaType.parseMediaType("application/pdf"))
-				.header("Content-Disposition", "attachment; filename=\"" +
-						"abc" + ".pdf\"")
-				.body(resource);
-		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponsetime(null);
-		ResponseWrapper<Object> objectResponseWrapper = new ResponseWrapper<>();
-		responseWrapper.setResponse(objectResponseWrapper);
-		ResponseWrapper<List<ResidentServiceHistoryResponseDto>> resultResponseWrapper = new ResponseWrapper<>();
-
-		List<ResidentServiceHistoryResponseDto> list = new ArrayList<>();
-		ResidentServiceHistoryResponseDto dto = new ResidentServiceHistoryResponseDto();
-		dto.setId("12345");
-		dto.setCardUrl("http://localhost:8080/mosip/resident/download-card/12345");
-		dto.setRequestId("12345");
-		dto.setStatusCode("200");
-		list.add(dto);
-		resultResponseWrapper.setResponse(list);
-		resultResponseWrapper.setResponsetime(null);
-		byte[] bytes = "a".getBytes(StandardCharsets.UTF_8);
 		ReflectionTestUtils.setField(residentController, "downloadCardEventidId", "id");
-		when(residentService.downloadCard(Mockito.anyString())).thenReturn(bytes);
-		ResponseEntity<?> resultRequestWrapper = residentController
-				.downloadCard("9876543210", 0, LOCALE_EN_US);
-		assertEquals(responseEntity.getStatusCode(), resultRequestWrapper.getStatusCode());
+		doThrow(new InvalidInputException()).when(validator).validateEventId(any());
+		residentController.downloadCard("9876543210", 0, LOCALE_EN_US);
 	}
 
 	@Test
@@ -720,7 +678,7 @@ public class ResidentControllerTest {
 						Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyString()))
 				.thenReturn(bytes);
 		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
-				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
+				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.name(), "", "eng", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = Exception.class)
@@ -731,7 +689,7 @@ public class ResidentControllerTest {
 				Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.anyInt(),
 				Mockito.any())).thenThrow(new ApisResourceAccessException());
 		residentController.downLoadServiceHistory(LocalDateTime.now(), LocalDate.now(), LocalDate.now(), SortType.ASC.name(),
-				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.getStatus(), "", "eng", 0, LOCALE_EN_US);
+				ServiceType.ID_MANAGEMENT_REQUEST.name(), EventStatus.SUCCESS.name(), "", "eng", 0, LOCALE_EN_US);
 	}
 
 	@Test(expected = ResidentServiceException.class)

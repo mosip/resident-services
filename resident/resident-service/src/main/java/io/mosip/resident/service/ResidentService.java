@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.json.simple.JSONObject;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.resident.constant.AuthTypeStatus;
+import io.mosip.resident.constant.IdType;
 import io.mosip.resident.dto.AidStatusRequestDTO;
 import io.mosip.resident.dto.AidStatusResponseDTO;
 import io.mosip.resident.dto.AuthHistoryRequestDTO;
@@ -48,7 +50,7 @@ public interface ResidentService {
 
 	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto) throws ResidentServiceCheckedException;
 	
-	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject, boolean validateIdObject) throws ResidentServiceCheckedException;
+	public Tuple2<Object, String> reqUinUpdate(ResidentUpdateRequestDto dto, JSONObject demographicJsonObject, boolean validateIdObject, JSONObject idRepoJson, String schemaJson, IdResponseDTO1 idResponseDto) throws ResidentServiceCheckedException;
 	
 	public Tuple2<ResponseDTO, String> reqAauthTypeStatusUpdateV2(AuthLockOrUnLockRequestDtoV2 request)
 			throws ResidentServiceCheckedException, ApisResourceAccessException;
@@ -61,7 +63,7 @@ public interface ResidentService {
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
 																		  String searchColumn, String searchText, String langCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
-	byte[] downloadCard(String eventId) throws ResidentServiceCheckedException;
+	Tuple2<byte[], IdType> downloadCard(String eventId) throws ResidentServiceCheckedException;
 
 	AidStatusResponseDTO getAidStatus(AidStatusRequestDTO reqDto, boolean performOtpValidation)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, OtpValidationFailedException;
@@ -83,7 +85,7 @@ public interface ResidentService {
 
 	public ResponseWrapper<UserInfoDto> getUserinfo(String Id, int timeZoneOffset, String locale) throws ApisResourceAccessException;
 
-	public String getFileName(String eventId, int timeZoneOffset, String locale);
+	public String getFileName(String eventId, IdType cardType, int timeZoneOffset, String locale);
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
                                                                           LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType, String statusFilter,

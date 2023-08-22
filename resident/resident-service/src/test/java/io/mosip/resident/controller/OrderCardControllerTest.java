@@ -1,12 +1,20 @@
 package io.mosip.resident.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
-import javax.crypto.SecretKey;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.dto.RequestWrapper;
+import io.mosip.resident.dto.ResidentCredentialRequestDto;
+import io.mosip.resident.dto.ResidentCredentialResponseDto;
+import io.mosip.resident.helper.ObjectStoreHelper;
+import io.mosip.resident.service.OrderCardService;
+import io.mosip.resident.service.ProxyIdRepoService;
+import io.mosip.resident.service.ResidentVidService;
+import io.mosip.resident.service.impl.IdentityServiceImpl;
+import io.mosip.resident.service.impl.ResidentServiceImpl;
+import io.mosip.resident.test.ResidentTestBootApplication;
+import io.mosip.resident.util.AuditUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,27 +34,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import javax.crypto.SecretKey;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
-import io.mosip.kernel.core.crypto.spi.CryptoCoreSpec;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.controller.AuthTransactionCallbackController;
-import io.mosip.resident.controller.DocumentController;
-import io.mosip.resident.controller.IdAuthController;
-import io.mosip.resident.controller.IdentityController;
-import io.mosip.resident.controller.OrderCardController;
-import io.mosip.resident.dto.RequestWrapper;
-import io.mosip.resident.dto.ResidentCredentialRequestDto;
-import io.mosip.resident.dto.ResidentCredentialResponseDto;
-import io.mosip.resident.helper.ObjectStoreHelper;
-import io.mosip.resident.service.OrderCardService;
-import io.mosip.resident.service.ProxyIdRepoService;
-import io.mosip.resident.service.ResidentVidService;
-import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ResidentServiceImpl;
-import io.mosip.resident.test.ResidentTestBootApplication;
-import io.mosip.resident.util.AuditUtil;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Resident order card controller test class.

@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.EventStatusSuccess;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.VerificationResponseDTO;
 import io.mosip.resident.dto.VerificationStatusDTO;
-import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.VerificationService;
@@ -27,6 +27,9 @@ public class VerificationServiceImpl implements VerificationService {
 
     @Autowired
     private ResidentTransactionRepository residentTransactionRepository;
+
+    @Autowired
+    private IdentityServiceImpl identityServiceImpl;
     
     @Value("${resident.channel.verification.status.id}")
     private String residentChannelVerificationStatusId;
@@ -42,12 +45,13 @@ public class VerificationServiceImpl implements VerificationService {
 		logger.debug("VerificationServiceImpl::checkChannelVerificationStatus::entry");
         VerificationResponseDTO verificationResponseDTO = new VerificationResponseDTO();
         boolean verificationStatus = false;
-        ResidentTransactionEntity residentTransactionEntity =
-                residentTransactionRepository.findTopByRefIdAndStatusCodeOrderByCrDtimesDesc
-                        (utility.getIdForResidentTransaction(individualId, List.of(channel)), EventStatusSuccess.OTP_VERIFIED.toString());
-        if (residentTransactionEntity!=null) {
+        IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
+        String idaToken = identityServiceImpl.getIDAToken(identityDTO.getUIN());
+        boolean entityExist =
+                residentTransactionRepository.existsByRefIdAndStatusCode
+                        (utility.getIdForResidentTransaction(List.of(channel), identityDTO, idaToken), EventStatusSuccess.OTP_VERIFIED.toString());
+        if (entityExist) {
             verificationStatus = true;
-            residentTransactionRepository.save(residentTransactionEntity);
         }
         VerificationStatusDTO verificationStatusDTO = new VerificationStatusDTO();
         verificationStatusDTO.setVerificationStatus(verificationStatus);

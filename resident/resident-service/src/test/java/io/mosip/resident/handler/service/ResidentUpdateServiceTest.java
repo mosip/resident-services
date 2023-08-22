@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import io.mosip.resident.dto.IdResponseDTO1;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
@@ -87,6 +88,9 @@ public class ResidentUpdateServiceTest {
 	private AuditUtil audit;
 
     private static final String rid = "10001100770000320200720092256";
+    private String idSchemaVersionStr;
+    private String sessionUin;
+    private IdResponseDTO1 idResponseDto;
 
     @Before
     public void setup() throws Exception {
@@ -106,7 +110,7 @@ public class ResidentUpdateServiceTest {
 
         Mockito.when(validator.isValidCenter(anyString())).thenReturn(Boolean.TRUE);
         Mockito.when(validator.isValidMachine(anyString())).thenReturn(Boolean.TRUE);
-        Mockito.when(validator.isValidRegistrationTypeAndUin(anyString(), anyString())).thenReturn(Boolean.TRUE);
+        Mockito.when(validator.isValidRegistrationTypeAndUin(anyString(), anyString(), any())).thenReturn(Boolean.TRUE);
         Mockito.when(validator.isValidVid(anyString())).thenReturn(Boolean.TRUE);
 
         Mockito.when(utilities.getDefaultSource()).thenReturn("source");
@@ -148,7 +152,7 @@ public class ResidentUpdateServiceTest {
     @Test(expected = BaseCheckedException.class)
     public void testCreatePacket() throws IOException, BaseCheckedException {
 
-        PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto);
+        PacketGeneratorResDto result = residentUpdateService.createPacket(residentUpdateDto, idSchemaVersionStr, sessionUin, idResponseDto);
 
         assertTrue(result.getRegistrationId().equalsIgnoreCase(rid));
 
@@ -160,7 +164,7 @@ public class ResidentUpdateServiceTest {
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
                 any(Class.class))).thenThrow(new ApisResourceAccessException("Error",new HttpClientErrorException(HttpStatus.OK, "message")));
 
-        residentUpdateService.createPacket(residentUpdateDto);
+        residentUpdateService.createPacket(residentUpdateDto, idSchemaVersionStr, sessionUin, idResponseDto);
     }
 
     
@@ -170,6 +174,6 @@ public class ResidentUpdateServiceTest {
         Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(),
                 any(Class.class))).thenThrow(new PacketCreatorException("code", "message"));
 
-        residentUpdateService.createPacket(residentUpdateDto);
+        residentUpdateService.createPacket(residentUpdateDto, idSchemaVersionStr, sessionUin, idResponseDto);
     }
 }

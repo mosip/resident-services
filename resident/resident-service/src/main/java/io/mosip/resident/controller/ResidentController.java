@@ -13,7 +13,10 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.util.Utilities;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -90,6 +93,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
 
 @RestController
 @Tag(name = "resident-controller", description = "Resident Controller")
@@ -113,6 +117,9 @@ public class ResidentController {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	private Utilities utilities;
+
 	@Value("${resident.authLockStatusUpdateV2.id}")
 	private String authLockStatusUpdateV2Id;
 
@@ -121,9 +128,6 @@ public class ResidentController {
 	
 	@Value("${resident.download.card.eventid.id}")
 	private String downloadCardEventidId;
-	
-	@Value("${resident.download.card.eventid.version}")
-	private String downloadCardEventidVersion;
 	
 	@Value("${resident.vid.version.new}")
 	private String newVersion;
@@ -282,6 +286,7 @@ public class ResidentController {
 			response.setResponse(tupleResponse.getT1());
 			response.setId(authLockStatusUpdateV2Id);
 			response.setVersion(authLockStatusUpdateV2Version);
+			audit.setAuditRequestDto(EventEnum.REQ_AUTH_LOCK_UNLOCK_SUCCESS);
 		} catch (InvalidInputException | ResidentServiceCheckedException e) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.REQUEST_FAILED, "Request for auth lock failed"));
@@ -407,7 +412,7 @@ public class ResidentController {
 			@Valid @RequestBody RequestWrapper<ResidentUpdateRequestDto> requestDTO)
 			throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentController::updateUin()::exit");
-		validator.validateUpdateRequest(requestDTO, false);
+		validator.validateUpdateRequest(requestDTO, false, null);
 		ResponseWrapper<Object> response = new ResponseWrapper<>();
 		logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 		response.setResponse(residentService.reqUinUpdate(requestDTO.getRequest()).getT1());
@@ -449,11 +454,16 @@ public class ResidentController {
 			request.setIndividualIdType(getIdType(individualId));
 		}
 		try {
-			validator.validateUpdateRequest(requestWrapper, true);
+			Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+					getIdentityDataFromIndividualID(individualId);
+			JSONObject idRepoJson = identityData.getT1();
+			String schemaJson = identityData.getT2();
+			validator.validateUpdateRequest(requestWrapper, true, schemaJson);
 			logger.debug(String.format("ResidentController::Requesting update uin api for transaction id %s", requestDTO.getRequest().getTransactionID()));
 			requestDTO.getRequest().getIdentity().put(IdType.UIN.name(),
-					identityServiceImpl.getUinForIndividualId(individualId));
-			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true);
+					idRepoJson.get(IdType.UIN.name()));
+			tupleResponse = residentService.reqUinUpdate(request, requestDTO.getRequest().getIdentity(), true,
+					idRepoJson, schemaJson, identityData.getT3());
 			response.setId(requestDTO.getId());
 			response.setVersion(requestDTO.getVersion());
 			response.setResponse(tupleResponse.getT1());
@@ -501,14 +511,15 @@ public class ResidentController {
             @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException {
 		logger.debug("ResidentController::downloadCard()::entry");
 		InputStreamResource resource = null;
+		Tuple2<byte[], IdType> pdfBytesAndCardType;
 		try {
 		validator.validateEventId(eventId);
 		logger.debug(String.format("ResidentController::Requesting download digital card for event id: %s", eventId));
-		byte[] pdfBytes = residentService.downloadCard(eventId);
-		if (pdfBytes.length == 0) {
+		pdfBytesAndCardType = residentService.downloadCard(eventId);
+		if (pdfBytesAndCardType.getT1().length == 0) {
 			throw new CardNotReadyException(Map.of(ResidentConstants.REQ_RES_ID, downloadCardEventidId));
 		}
-		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+		resource = new InputStreamResource(new ByteArrayInputStream(pdfBytesAndCardType.getT1()));
 		audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_SUCCESS, eventId));
 		} catch(ResidentServiceException | EventIdNotPresentException | InvalidRequestTypeCodeException | InvalidInputException e) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.RID_DIGITAL_CARD_REQ_FAILURE, eventId));
@@ -520,7 +531,7 @@ public class ResidentController {
 			}
 		logger.debug("ResidentController::downloadCard()::exit");
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
-				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, timeZoneOffset, locale) + ".pdf\"")
+				.header("Content-Disposition", "attachment; filename=\"" + residentService.getFileName(eventId, pdfBytesAndCardType.getT2(), timeZoneOffset, locale) + ".pdf\"")
 				.header(ResidentConstants.EVENT_ID, eventId)
 				.body(resource);
 	}

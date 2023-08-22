@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,7 +29,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	ResidentTransactionEntity findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc
 	(String requestTrnId, String tokenId, List<String> statusCodes);
 
-	ResidentTransactionEntity findTopByRefIdAndStatusCodeOrderByCrDtimesDesc(String refId, String statusCode);
+	boolean existsByRefIdAndStatusCode(String refId, String statusCode);
 
 	public List<ResidentTransactionEntity> findByStatusCodeInAndRequestTypeCodeInAndCredentialRequestIdIsNotNullOrderByCrDtimesAsc(List<String> statusCodes, List<String> requestTypes);
 
@@ -50,165 +51,155 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	@Query("update ResidentTransactionEntity set read_status='true' where event_id=:eventId")
 	int updateReadStatus(@Param("eventId") String eventId);
 
+	@Modifying
+    @Transactional
+	@Query("update ResidentTransactionEntity set pinned_status=:status where event_id=:eventId")
+	int updatePinnedStatus(@Param("eventId") String eventId, @Param("status") boolean status);
+
 	Optional<ResidentTransactionEntity> findOneByCredentialRequestId(String requestId);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes);
+	@Query(value = "SELECT NEW ResidentTransactionEntity(rte.eventId, rte.requestTypeCode, rte.statusCode, rte.referenceLink) FROM ResidentTransactionEntity rte WHERE rte.eventId = :eventId")
+	Optional<ResidentTransactionEntity> findByEventId(@Param("eventId") String eventId);
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" , nativeQuery = true)
-	int countByTokenId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-					   @Param("requestTypeCodes") List<String> requestTypeCodes);
+	@Modifying
+    @Transactional
+	@Query("UPDATE ResidentTransactionEntity SET requestSummary=:requestSummary, statusCode=:statusCode, statusComment=:statusComment, updBy=:updBy, updDtimes=:updDtimes WHERE eventId=:eventId")
+	int updateEventStatus(@Param("eventId") String eventId, @Param("requestSummary") String requestSummary, @Param("statusCode") String statusCode, @Param("statusComment") String statusComment, @Param("updBy") String updBy, @Param("updDtimes") LocalDateTime updDtimes);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdAndSearchEventId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("eventId") String eventId);
+	// Service history methods start---
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId) " +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') "
-			, nativeQuery = true)
-	int countByTokenIdAndSearchEventId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-					   @Param("requestTypeCodes") List<String> requestTypeCodes , @Param("eventId") String eventId);
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenId(@Param("tokenId") String tokenId, @Param("limit") int limit,
+			@Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
-																 @Param("endDate") LocalDateTime endDate);
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+					" AND rt.request_type_code IN (:requestTypeCodes)" +
+					" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)", nativeQuery = true)
+	int countByTokenId(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes);
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate ", nativeQuery = true)
-	int countByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-					   @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
-									  @Param("endDate") LocalDateTime endDate);
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.cr_dtimes BETWEEN :startDate AND :endDate" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId, @Param("limit") int limit,
+			@Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdInStatus(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-												  @Param("olvPartnerId") String olvPartnerId,
-												  @Param("requestTypeCodes") List<String> requestTypeCodes,
-														  @Param("statusCode") List<String> statusCode);
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.cr_dtimes BETWEEN :startDate AND :endDate", nativeQuery = true)
+	int countByTokenIdBetweenCrDtimes(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" , nativeQuery = true)
-	int countByTokenIdInStatus(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-					   @Param("requestTypeCodes") List<String> requestTypeCodes,
-							   @Param("statusCode") List<String> statusCode);
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.status_code IN (:statusCode)" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenIdInStatus(@Param("tokenId") String tokenId, @Param("limit") int limit,
+			@Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("statusCode") List<String> statusCode);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdInStatusBetweenCrDtimes(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-														  @Param("olvPartnerId") String olvPartnerId,
-														  @Param("requestTypeCodes") List<String> requestTypeCodes,
-														  @Param("statusCode") List<String> statusCode,
-																		 @Param("startDate") LocalDateTime startDate,
-																		 @Param("endDate") LocalDateTime endDate);
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+					" AND rt.request_type_code IN (:requestTypeCodes)" +
+					" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+					" AND rt.status_code IN (:statusCode)", nativeQuery = true)
+	int countByTokenIdInStatus(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("statusCode") List<String> statusCode);
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)"+
-			"AND cr_dtimes BETWEEN :startDate AND :endDate ", nativeQuery = true)
-	int countByTokenIdInStatusBetweenCrDtimes(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-							   @Param("requestTypeCodes") List<String> requestTypeCodes,
-							   @Param("statusCode") List<String> statusCode, @Param("startDate") LocalDateTime startDate,
-											  @Param("endDate") LocalDateTime endDate);
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.event_id LIKE CONCAT('%', :eventId, '%')" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenIdAndSearchEventId(@Param("tokenId") String tokenId, @Param("limit") int limit,
+			@Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("eventId") String eventId);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate " +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdBetweenCrDtimesSearchEventId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-																 @Param("olvPartnerId") String olvPartnerId,
-																 @Param("requestTypeCodes") List<String> requestTypeCodes,
-																			  @Param("startDate") LocalDateTime startDate,
-																 @Param("endDate") LocalDateTime endDate, @Param("eventId") String eventId);
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+					" AND rt.request_type_code IN (:requestTypeCodes)" +
+					" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+					" AND rt.event_id LIKE CONCAT('%', :eventId, '%')", nativeQuery = true)
+	int countByTokenIdAndSearchEventId(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("eventId") String eventId);
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND cr_dtimes BETWEEN :startDate AND :endDate "+
-			"AND event_id LIKE CONCAT('%', :eventId, '%') ", nativeQuery = true)
-	int countByTokenIdBetweenCrDtimesSearchEventId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-									  @Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
-									  @Param("endDate") LocalDateTime endDate, @Param("eventId") String eventId);
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.status_code IN (:statusCode)" +
+			" AND rt.cr_dtimes BETWEEN :startDate AND :endDate" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenIdInStatusBetweenCrDtimes(@Param("tokenId") String tokenId, @Param("limit") int limit,
+			@Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("statusCode") List<String> statusCode,
+			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT * FROM resident_transaction WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)" +
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " +
-			" order by pinned_status desc, " +
-			" cr_dtimes DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
-	List<ResidentTransactionEntity> findByTokenIdInStatusSearchEventId(@Param("tokenId") String tokenId , @Param("limit") int limit, @Param("offset") int offset,
-														  @Param("olvPartnerId") String olvPartnerId,
-														  @Param("requestTypeCodes") List<String> requestTypeCodes,
-														  @Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+					" AND rt.request_type_code IN (:requestTypeCodes)" +
+					" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+					" AND rt.status_code IN (:statusCode)" +
+					" AND rt.cr_dtimes BETWEEN :startDate AND :endDate", nativeQuery = true)
+	int countByTokenIdInStatusBetweenCrDtimes(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("statusCode") List<String> statusCode, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT COUNT(*) FROM resident_transaction " +
-			"WHERE token_id = :tokenId " +
-			" AND request_type_code IN (:requestTypeCodes) " +
-			" AND status_code IN (:statusCode) " +
-			"AND (olv_partner_id is null OR \n" +
-			"olv_partner_id=:olvPartnerId)"+
-			"AND event_id LIKE CONCAT('%', :eventId, '%') " , nativeQuery = true)
-	int countByTokenIdInStatusSearchEventId(@Param("tokenId") String tokenId,  @Param("olvPartnerId") String olvPartnerId,
-							   @Param("requestTypeCodes") List<String> requestTypeCodes,
-							   @Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.cr_dtimes BETWEEN :startDate AND :endDate" +
+			" AND rt.event_id LIKE CONCAT('%', :eventId, '%')" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenIdBetweenCrDtimesSearchEventId(@Param("tokenId") String tokenId,
+			@Param("limit") int limit, @Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
+			@Param("endDate") LocalDateTime endDate, @Param("eventId") String eventId);
 
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+					" AND rt.request_type_code IN (:requestTypeCodes)" +
+					" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+					" AND rt.cr_dtimes BETWEEN :startDate AND :endDate" +
+					" AND rt.event_id LIKE CONCAT('%', :eventId, '%')", nativeQuery = true)
+	int countByTokenIdBetweenCrDtimesSearchEventId(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate,
+			@Param("eventId") String eventId);
+
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+			" AND rt.request_type_code IN (:requestTypeCodes)" +
+			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+			" AND rt.status_code IN (:statusCode)" +
+			" AND rt.event_id LIKE CONCAT('%', :eventId, '%')" +
+			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
+			" LIMIT :limit OFFSET :offset", nativeQuery = true)
+	List<Object[]> findByTokenIdInStatusSearchEventId(@Param("tokenId") String tokenId, @Param("limit") int limit,
+			@Param("offset") int offset, @Param("olvPartnerId") String olvPartnerId,
+			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("statusCode") List<String> statusCode,
+			@Param("eventId") String eventId);
+
+	@Query(value = "SELECT COUNT(*) FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+					" AND rt.request_type_code IN (:requestTypeCodes)" +
+					" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
+					" AND rt.status_code IN (:statusCode)" +
+					" AND rt.event_id LIKE CONCAT('%', :eventId, '%')", nativeQuery = true)
+	int countByTokenIdInStatusSearchEventId(@Param("tokenId") String tokenId,
+			@Param("olvPartnerId") String olvPartnerId, @Param("requestTypeCodes") List<String> requestTypeCodes,
+			@Param("statusCode") List<String> statusCode, @Param("eventId") String eventId);
+
+	// Service history methods end---
 }

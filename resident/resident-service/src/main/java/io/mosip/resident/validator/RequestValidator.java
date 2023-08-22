@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -72,6 +71,7 @@ import io.mosip.resident.dto.ResidentCredentialRequestDto;
 import io.mosip.resident.dto.ResidentReprintRequestDto;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.dto.SharableAttributesDTO;
+import io.mosip.resident.dto.ShareCredentialRequestDto;
 import io.mosip.resident.dto.SortType;
 import io.mosip.resident.dto.VidRequestDto;
 import io.mosip.resident.dto.VidRevokeRequestDTO;
@@ -814,7 +814,7 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
+	public void validateUpdateRequest(RequestWrapper<ResidentUpdateRequestDto> requestDTO, boolean isPatch, String schemaJson) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
 		if (!isPatch) {
 			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
@@ -827,7 +827,7 @@ public class RequestValidator {
 		} else {
 			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
-			validateAttributeName(requestDTO.getRequest().getIdentity());
+			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
@@ -880,16 +880,9 @@ public class RequestValidator {
 		}
 	}
 
-	private void validateAttributeName(JSONObject identity) throws ApisResourceAccessException, IOException, ResidentServiceCheckedException {
-		JSONObject idRepoJson = utilities.retrieveIdrepoJson(identityService.getResidentIndvidualIdFromSession());
-		String idSchemaVersionStr = String.valueOf(idRepoJson.get(ID_SCHEMA_VERSION));
-		Double idSchemaVersion = Double.parseDouble(idSchemaVersionStr);
-		ResponseWrapper<?> idSchemaResponse = proxyMasterdataService.getLatestIdSchema(idSchemaVersion, null, null);
-		Object idSchema = idSchemaResponse.getResponse();
-		Map<String, ?> map = objectMapper.convertValue(idSchema, Map.class);
-		String schemaJson = ((String) map.get("schemaJson"));
+	private void validateAttributeName(JSONObject identity, String schemaJson) {
 		boolean status = false;
-		if (identity != null) {
+		if (identity != null && schemaJson!=null) {
 			status = identity.keySet().stream()
 					.filter(key -> !Objects.equals(key, ID_SCHEMA_VERSION))
 					.anyMatch(key -> schemaJson.contains(key.toString()));
@@ -1235,33 +1228,27 @@ public class RequestValidator {
 		return inputData.matches(regex);
 	}
 
-	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest) throws ApisResourceAccessException {
+	public void validateProxySendOtpRequest(MainRequestDTO<OtpRequestDTOV2> userOtpRequest, IdentityDTO identityDTO) throws ApisResourceAccessException {
 		validateRequestType(userOtpRequest.getId(), this.environment.getProperty(ResidentConstants.RESIDENT_CONTACT_DETAILS_SEND_OTP_ID), ID);
 		validateVersion(userOtpRequest.getVersion());
 		validateDate(userOtpRequest.getRequesttime());
 		validateUserIdAndTransactionId(userOtpRequest.getRequest().getUserId(), userOtpRequest.getRequest().getTransactionId());
-		validateSameUserId(userOtpRequest.getRequest().getUserId());
+		validateSameUserId(userOtpRequest.getRequest().getUserId(), identityDTO);
 	}
 
-	private void validateSameUserId(String userId) throws ApisResourceAccessException {
-		try {
-			IdentityDTO identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
-			if(phoneValidator(userId)){
-				String phone = identityDTO.getPhone();
-				if(phone!=null && phone.equalsIgnoreCase(userId)) {
-					throw new ResidentServiceException(ResidentErrorCode.SAME_PHONE_ERROR,
-							ResidentErrorCode.SAME_PHONE_ERROR.getErrorMessage());
-				}
-			} else {
-				String email = identityDTO.getEmail();
-				if(email!=null && email.equalsIgnoreCase(userId)){
-					throw new ResidentServiceException(ResidentErrorCode.SAME_EMAIL_ERROR,
-							ResidentErrorCode.SAME_EMAIL_ERROR.getErrorMessage());
-				}
+	private void validateSameUserId(String userId, IdentityDTO identityDTO) {
+		if(phoneValidator(userId)){
+			String phone = identityDTO.getPhone();
+			if(phone!=null && phone.equalsIgnoreCase(userId)) {
+				throw new ResidentServiceException(ResidentErrorCode.SAME_PHONE_ERROR,
+						ResidentErrorCode.SAME_PHONE_ERROR.getErrorMessage());
 			}
-		} catch (ResidentServiceCheckedException e) {
-			throw new ResidentServiceException(ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorCode(),
-					ResidentErrorCode.CLAIM_NOT_AVAILABLE.getErrorMessage(), e);
+		} else {
+			String email = identityDTO.getEmail();
+			if(email!=null && email.equalsIgnoreCase(userId)){
+				throw new ResidentServiceException(ResidentErrorCode.SAME_EMAIL_ERROR,
+						ResidentErrorCode.SAME_EMAIL_ERROR.getErrorMessage());
+			}
 		}
 	}
 
@@ -1411,6 +1398,13 @@ public class RequestValidator {
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getOtp(), ResidentConstants.OTP);
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getTransactionID(),
 				ResidentConstants.TRANSACTION_ID_OLD);
+	}
+
+	public void validateShareCredentialRequest(RequestWrapper<ShareCredentialRequestDto> requestDTO) {
+		validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
+		validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
+		validatePurpose(requestDTO.getRequest().getPurpose());
+		validateDataToCheckNullOrEmpty(requestDTO.getRequest().getPartnerId(), ResidentConstants.PARTNER_ID);
 	}
 
 	private void validateDataToCheckNullOrEmpty(String variableValue, String variableName) {

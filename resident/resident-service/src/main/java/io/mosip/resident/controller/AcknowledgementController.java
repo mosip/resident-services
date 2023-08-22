@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
+import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
@@ -26,10 +27,10 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.AcknowledgementService;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utility;
 import io.mosip.resident.validator.RequestValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.util.function.Tuple2;
 
 /**
  * This class is used to create api for getting acknowledgement.
@@ -57,9 +58,6 @@ public class AcknowledgementController {
     private AcknowledgementService acknowledgementService;
 
     @Autowired
-    private TemplateUtil templateUtil;
-
-    @Autowired
     private Utility utility;
 
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
@@ -69,7 +67,7 @@ public class AcknowledgementController {
                                                   @RequestHeader(name = "locale", required = false) String locale) throws ResidentServiceCheckedException, IOException {
         logger.debug("AcknowledgementController::getAcknowledgement()::entry");
         InputStreamResource resource = null;
-        String featureName = null;
+        RequestType requestType;
         try {
         	requestValidator.validateEventIdLanguageCode(eventId, languageCode);
         } catch (ResidentServiceException | InvalidInputException e) {
@@ -79,10 +77,10 @@ public class AcknowledgementController {
 		}
         try {
         	logger.debug("AcknowledgementController::get acknowledgement download url");
-	        byte[] pdfBytes = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
-	        resource = new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+	        Tuple2<byte[], RequestType> tupleResponse = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, timeZoneOffset, locale);
+	        resource = new InputStreamResource(new ByteArrayInputStream(tupleResponse.getT1()));
 	        auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_SUCCESS);
-	        featureName = templateUtil.getFeatureName(eventId, locale);
+	        requestType = tupleResponse.getT2();
 	        logger.debug("AcknowledgementController::getAcknowledgement()::exit");
         } catch(ResidentServiceCheckedException e) {
 			auditUtil.setAuditRequestDto(EventEnum.GET_ACKNOWLEDGEMENT_DOWNLOAD_URL_FAILURE);
@@ -94,7 +92,7 @@ public class AcknowledgementController {
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_PDF)
                 .header("Content-Disposition", "attachment; filename=\"" +
-                        utility.getFileNameAsPerFeatureName(eventId, featureName, timeZoneOffset, locale) + ".pdf\"")
+                        utility.getFileNameAsPerFeatureName(eventId, requestType, timeZoneOffset, locale) + ".pdf\"")
                 .body(resource);
     }
 }

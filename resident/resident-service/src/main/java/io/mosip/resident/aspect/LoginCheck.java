@@ -20,7 +20,6 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -94,7 +93,10 @@ public class LoginCheck {
 					Date expDate = decodedToken.asDate();
 					logger.info("Scheduling clearing auth token cache after : " + expDate);
 					taskScheduler.schedule(() -> {
-						utility.clearUserInfoCache(accessToken);
+						if(accessToken!=null && !accessToken.isEmpty()) {
+							utility.clearUserInfoCache(accessToken);
+							utility.clearIdentityMapCache(accessToken);
+						}
 					}, expDate);
 					idaToken = identityServiceImpl.getResidentIdaTokenFromAccessToken(accessToken);
 					sessionId = identityServiceImpl.createSessionId();
@@ -102,7 +104,6 @@ public class LoginCheck {
 				break;
 			}
 		}
-		audit.setAuditRequestDto(EventEnum.LOGIN_REQ);
 		if(idaToken!=null && !idaToken.isEmpty() && sessionId != null && !sessionId.isEmpty()) {
 			audit.setAuditRequestDto(EventEnum.LOGIN_REQ_SUCCESS);
 			ResidentSessionEntity newSessionData = new ResidentSessionEntity(sessionId, idaToken, DateUtils.getUTCCurrentDateTime(),
@@ -144,7 +145,7 @@ public class LoginCheck {
 	}
 
 	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.logoutUser(..)) && args(token,redirectURI,res)")
-	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) {
+	public void onLogoutSuccess(String token, String redirectURI, HttpServletResponse res) throws ApisResourceAccessException {
 		logger.debug("LoginCheck::onLogoutSuccess()::entry");
 		audit.setAuditRequestDto(EventEnum.LOGOUT_REQ);
 		if (res.getStatus() == resStatusCode) {
@@ -152,7 +153,10 @@ public class LoginCheck {
 		} else {
 			audit.setAuditRequestDto(EventEnum.LOGOUT_REQ_FAILURE);
 		}
-		utility.clearUserInfoCache(token);
+		if(token!=null && !token.isEmpty()){
+			utility.clearUserInfoCache(token);
+			utility.clearIdentityMapCache(token);
+		}
 		logger.debug("LoginCheck::onLogoutSuccess()::exit");
 	}
 

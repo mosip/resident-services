@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.ResidentUpdateResponseDTO;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +54,7 @@ import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
+import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
 /**
@@ -115,9 +119,10 @@ public class OTPManagerServiceImplTest {
 
     @Mock
     private Utilities utilities;
+    private IdentityDTO identityDTO;
 
     @Before
-    public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException {
+    public void setup() throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(otpManagerService).build();
         response = new ResponseWrapper<>();
@@ -145,28 +150,35 @@ public class OTPManagerServiceImplTest {
         Mockito.when(environment.getProperty("otp.request.flooding.duration", Long.class)).thenReturn(45L);
         Mockito.when(environment.getProperty("mosip.kernel.otp.expiry-time", Long.class)).thenReturn(45L);
         Mockito.when(environment.getProperty("otp.request.flooding.max-count", Integer.class)).thenReturn(8);
-}
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("UIN", "1234567898");
+        String schemaJson = "schema";
+        Tuple3<JSONObject, String, IdResponseDTO1> idRepoJsonSchemaJsonAndIdResponseDtoTuple = Tuples.of(jsonObject, schemaJson, new IdResponseDTO1());
+        Mockito.when(utilities.
+                getIdentityDataFromIndividualID(Mockito.anyString())).thenReturn(idRepoJsonSchemaJsonAndIdResponseDtoTuple);
+
+    }
 
     @Test
     public void testSendOtpSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng", identityDTO));
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testSendOtpAlreadyOtpSendError() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         when(otpTransactionRepository.checkotpsent(any(), any(), any(), any())).thenReturn(9);
-        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng", identityDTO));
     }
 
     @Test
     public void testSendOtpOtpSendWithinLessTime() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
         OtpTransactionEntity otpTransactionEntity = new OtpTransactionEntity();
-        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "EMAIL", "eng", identityDTO));
     }
 
     @Test
     public void testSendOtpPhoneSuccess() throws ResidentServiceCheckedException, IOException, ApisResourceAccessException {
-        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng", identityDTO));
     }
 
     @Test
@@ -201,7 +213,7 @@ public class OTPManagerServiceImplTest {
                         ArgumentMatchers.any(),
                         Mockito.eq(ResponseWrapper.class)))
                 .thenReturn(response1);
-        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng", identityDTO));
     }
 
     @Test(expected = ResidentServiceException.class)
@@ -211,7 +223,7 @@ public class OTPManagerServiceImplTest {
                         ArgumentMatchers.any(),
                         Mockito.eq(ResponseWrapper.class)))
                 .thenThrow(new RestClientException("error"));
-        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng"));
+        assertTrue(otpManagerService.sendOtp(requestDTO, "PHONE", "eng", identityDTO));
     }
 
     @Test
@@ -224,9 +236,8 @@ public class OTPManagerServiceImplTest {
     public void testUpdateUserIdWithEmail() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.1");
-        when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
         when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("EMAIL"));
-        when(residentService.reqUinUpdate(Mockito.any())).thenReturn(Tuples.of(jsonObject, "passed"));
+        Mockito.when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "passed"));
         assertEquals("passed",otpManagerService.updateUserId("kam@g.com", "1232323232").getT2());
     }
 
@@ -234,9 +245,8 @@ public class OTPManagerServiceImplTest {
     public void testUpdateUserIdWithPhone() throws ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("IDSchemaVersion", "0.1");
-        when(utilities.retrieveIdrepoJson(Mockito.anyString())).thenReturn(jsonObject);
         when(requestValidator.validateUserIdAndTransactionId(Mockito.anyString(), Mockito.anyString())).thenReturn(List.of("PHONE"));
-        when(residentService.reqUinUpdate(Mockito.any())).thenReturn(Tuples.of(jsonObject, "passed"));
+        Mockito.when(residentService.reqUinUpdate(Mockito.any(), Mockito.any(), Mockito.anyBoolean(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Tuples.of(new ResidentUpdateResponseDTO(), "passed"));
         assertEquals("passed",otpManagerService.updateUserId("kam@g.com", "1232323232").getT2());
     }
 }
