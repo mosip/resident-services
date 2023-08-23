@@ -1,29 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-
-import javax.xml.bind.DatatypeConverter;
-
-import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.CryptoUtil;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.kernel.core.util.HMACUtils;
 import io.mosip.preregistration.application.constant.PreRegLoginConstant;
@@ -35,10 +13,13 @@ import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.constant.TemplateType;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.MainRequestDTO;
 import io.mosip.resident.dto.NotificationRequestDto;
 import io.mosip.resident.dto.NotificationRequestDtoV2;
 import io.mosip.resident.dto.OtpRequestDTOV2;
+import io.mosip.resident.dto.ResidentDemographicUpdateRequestDTO;
 import io.mosip.resident.dto.ResidentUpdateRequestDto;
 import io.mosip.resident.entity.OtpTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
@@ -51,7 +32,26 @@ import io.mosip.resident.service.ResidentService;
 import io.mosip.resident.util.TemplateUtil;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.validator.RequestValidator;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
+
+import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @author Kamesh Shekhar Prasad
@@ -95,7 +95,7 @@ public class OtpManagerServiceImpl implements OtpManager {
 
 
     @Override
-    public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
+    public boolean sendOtp(MainRequestDTO<OtpRequestDTOV2> requestDTO, String channelType, String language, IdentityDTO identityDTO) throws IOException, ResidentServiceCheckedException, ApisResourceAccessException {
         logger.info("sessionId", "idType", "id", "In sendOtp method of otpmanager service ");
         String userId = requestDTO.getRequest().getUserId();
         NotificationRequestDto notificationRequestDto = new NotificationRequestDtoV2();
@@ -130,7 +130,7 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), null, userId, identityDTO);
             }
 
             if (channelType.equalsIgnoreCase("email")) {
@@ -140,7 +140,7 @@ public class OtpManagerServiceImpl implements OtpManager {
                 notificationRequestDtoV2.setRequestType(RequestType.SEND_OTP);
                 notificationRequestDtoV2.setOtp(otp);
                 notificationService
-                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, null);
+                        .sendNotification(notificationRequestDto, List.of(channelType), userId, null, identityDTO);
             }
 
             return true;
@@ -211,28 +211,25 @@ public class OtpManagerServiceImpl implements OtpManager {
 
     public Tuple2<Object, String> updateUserId(String userId, String transactionId) throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         ResidentUpdateRequestDto residentUpdateRequestDto = new ResidentUpdateRequestDto();
+        ResidentDemographicUpdateRequestDTO residentDemographicUpdateRequestDTO = new ResidentDemographicUpdateRequestDTO();
+
         String individualId= identityService.getResidentIndvidualIdFromSession();
         String individualIdType = templateUtil.getIndividualIdType();
         residentUpdateRequestDto.setIndividualId(individualId);
         residentUpdateRequestDto.setConsent(ACCEPTED);
-        residentUpdateRequestDto.setIdentityJson(getIdentityJson(individualId, transactionId, userId, individualIdType));
         residentUpdateRequestDto.setIndividualIdType(individualIdType);
-        return residentService.reqUinUpdate(residentUpdateRequestDto);
-    }
-
-    public String getIdentityJson(String individualId, String transactionId, String userId, String individualIdType) throws ApisResourceAccessException, IOException {
-        Map identityMap = new LinkedHashMap();
-        JSONObject obj = utilities.retrieveIdrepoJson(individualId);
-        String idSchemaVersionStr = String.valueOf(obj.get("IDSchemaVersion"));
-        String uin = String.valueOf(obj.get(IdType.UIN.name()));
-        identityMap.put("IDSchemaVersion", idSchemaVersionStr);
-        identityMap.put(IdType.UIN.name(), uin);
-        String channel = getChannel(userId, transactionId);
-        identityMap.put(channel, userId);
+        Tuple3<JSONObject, String, IdResponseDTO1> identityData = utilities.
+                getIdentityDataFromIndividualID(individualId);
+        JSONObject idRepoJson = identityData.getT1();
+        String schemaJson = identityData.getT2();
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("identity", identityMap);
-        String str = CryptoUtil.encodeToPlainBase64(jsonObject.toString().getBytes());
-        return String.valueOf(str);
+        jsonObject.put(IdType.UIN.name(), idRepoJson.get(IdType.UIN.name()));
+        jsonObject.put(getChannel(userId, transactionId), userId);
+        residentUpdateRequestDto.setIdentity(jsonObject);
+        residentDemographicUpdateRequestDTO.setIdentity(jsonObject);
+        Tuple2<Object, String> tuple2 = residentService.reqUinUpdate(residentUpdateRequestDto, residentDemographicUpdateRequestDTO.getIdentity(), true,
+                idRepoJson, schemaJson, identityData.getT3());
+        return tuple2;
     }
 
     public String getChannel(String userId, String transactionId) {

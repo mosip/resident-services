@@ -1,60 +1,6 @@
 package io.mosip.resident.util;
 
-import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.json.simple.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -76,6 +22,27 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.json.simple.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
@@ -123,8 +90,6 @@ public class UtilityTest {
 	private Utility utility;
 
 	private JSONObject identity;
-	
-	private JSONObject amrAcrJson;
 
 	@Mock
 	private Environment env;
@@ -159,6 +124,7 @@ public class UtilityTest {
 	private static String token;
 	@Mock
 	private ObjectStoreHelper objectStoreHelper;
+	private String idaToken;
 
 
 	@Before
@@ -169,15 +135,9 @@ public class UtilityTest {
 		String idJsonString = IOUtils.toString(is, "UTF-8");
 		identity = JsonUtil.readValue(idJsonString, JSONObject.class);
 		
-		File amrAcrJsonFile = new File(classLoader.getResource("amr-acr-mapping.json").getFile());
-		InputStream insputStream = new FileInputStream(amrAcrJsonFile);
-		String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
-		amrAcrJson = JsonUtil.readValue(amrAcrJsonString, JSONObject.class);
-		
 		ReflectionTestUtils.setField(utility, "mapper", mapper);
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
-		ReflectionTestUtils.setField(utility, "amrAcrJsonFile", "amr-acr-mapping.json");
 		ReflectionTestUtils.setField(utility, "formattingStyle", FormatStyle.MEDIUM.name());
 		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", mapper.readValue(replaceSplChars, Map.class));
         when(env.getProperty("resident.ui.datetime.pattern.default")).thenReturn("yyyy-MM-dd");
@@ -203,6 +163,7 @@ public class UtilityTest {
 				"CjfN3mlwxDxHm2DzMHnwbKR5orEm1NRyCnUfGGm5IMVTdDnXz1iUAsU7zeKA2XOdH3zQgMUu-vqJpgRWRG-XJHakSyblfAFIVAILRi7rwJQjL7X1lhm1ZAqUX" +
 				"Soh6kZBoOeYd_29RQQzFQNzpn_Ahk4GxQu_TLyvoWeNXpfx94om7TqrZYghtTg5_svku2P0NuFxzbWysPMjaHrEff0idKY94sKJ6eNpLXRXbJCPkAHtfVY0U3" +
 				"YDQqWUpYjE3hQCZz0u_L8sieJIN3mYtjd12rfOrjEKu2fFGu5UbJRVqkmOw0egVGHw";
+		idaToken = "2186705746";
 	}
 
 	@Test
@@ -478,7 +439,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("EMAIL")));
+				utility.getIdForResidentTransaction(List.of("EMAIL"), identityDTO, idaToken));
 	}
 
 	@Test
@@ -490,7 +451,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("PHONE")));
+				utility.getIdForResidentTransaction(List.of("PHONE"), identityDTO, idaToken));
 	}
 
 	@Test
@@ -502,7 +463,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("PHONE","EMAIL")));
+				utility.getIdForResidentTransaction(List.of("PHONE","EMAIL"), identityDTO, idaToken));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -514,7 +475,7 @@ public class UtilityTest {
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
 		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction("2186705746", List.of("PH")));
+				utility.getIdForResidentTransaction(List.of("PH"), identityDTO, idaToken));
 	}
 
 	@Test
@@ -562,14 +523,14 @@ public class UtilityTest {
 	public void testGetFileNameAsPerFeatureName(){
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "SHARE_CRED_WITH_PARTNER", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "GENERATE_VID", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "REVOKE_VID", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "ORDER_PHYSICAL_CARD", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "DOWNLOAD_PERSONALIZED_CARD", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "UPDATE_MY_UIN", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "AUTH_TYPE_LOCK_UNLOCK", 0, LOCALE));
-		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", "Generic", 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.SHARE_CRED_WITH_PARTNER, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.GENERATE_VID, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.REVOKE_VID, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.ORDER_PHYSICAL_CARD, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.DOWNLOAD_PERSONALIZED_CARD, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.UPDATE_MY_UIN, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.AUTH_TYPE_LOCK_UNLOCK, 0, LOCALE));
+		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.DEFAULT, 0, LOCALE));
 	}
 
 	@Test

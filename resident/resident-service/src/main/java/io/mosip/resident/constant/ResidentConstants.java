@@ -158,8 +158,6 @@ public class ResidentConstants {
     public static final String EMAIL_FROM_PROFILE = "mosip.resident.email.token.claim-email";
     public static final String PHONE_FROM_PROFILE = "mosip.resident.phone.token.claim-phone";
 
-    public static final String MESSAGE_CODE_MAXIMUM_LENGTH = "mosip.resident.message.code.maximum.length";
-
     public static final String TRANSACTION_TYPE_CODE = "transactionTypeCode";
     public static final String AID_STATUS = "aidStatus";
 
@@ -241,6 +239,7 @@ public class ResidentConstants {
 
     public static final String INDIVIDUAL_ID = "individualId";
     public static final String ISSUER = "issuer";
+    public static final String PARTNER_ID = "partnerId";
     public static final String CREDENTIAL_TYPE = "credentialType";
     public static final String OTP = "otp";
     public static final String TRANSACTION_ID_OLD = "transactionID";
@@ -292,5 +291,6 @@ public class ResidentConstants {
     public static final String REQUEST_ID = "requestId";
     public static final String AUTH_TYPES = "authTypes";
     public static final String RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.logging.interceptor.filter.enabled";
+    public static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
 }

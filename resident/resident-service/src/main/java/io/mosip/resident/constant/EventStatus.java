@@ -8,22 +8,18 @@ import java.util.stream.Stream;
  * @author Kamesh Shekhar Prasad
  */
 public enum EventStatus {
-    FAILED("Failed"), SUCCESS("Success"), IN_PROGRESS("In Progress");
+    FAILED, SUCCESS, IN_PROGRESS;
 	
-	private String status;
-	
-	private EventStatus(String status) {
-		this.status = status;
-	}
-	
-	public String getStatus() {
-		return status;
-	}
+	private static final String RESIDENT_TEMPLATE_EVENT_STATUS = "resident.event.status.%s.template.property";
 	
 	public static Optional<EventStatus> getEventStatusForText(String status) {
 		return Stream.of(values())
-			.filter(event -> event.getStatus()
+			.filter(event -> event.name()
 				.equalsIgnoreCase(status.trim()))
 			.findAny();
+	}
+
+	public String getEventStatusTemplateCodeProperty() {
+		return String.format(RESIDENT_TEMPLATE_EVENT_STATUS, name());
 	}
 }

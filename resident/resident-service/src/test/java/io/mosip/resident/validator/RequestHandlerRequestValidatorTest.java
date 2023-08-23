@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.ResponseDTO1;
+import io.mosip.resident.util.Utility;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
 import org.junit.Before;
@@ -70,7 +73,12 @@ public class RequestHandlerRequestValidatorTest {
 	@Mock
 	private Environment env;
 
+	@Mock
+	private Utility utility;
+
 	private static final String ID = "110011";
+	private IdResponseDTO1 idResponseDto;
+	private ResponseDTO1 responseDTO1;
 
 	@Before
 	public void setup() throws ApisResourceAccessException, IOException {
@@ -78,6 +86,12 @@ public class RequestHandlerRequestValidatorTest {
 		Mockito.when(restClientService.getApi(any(), any(), anyString(), anyString(), any(Class.class)))
 				.thenReturn(new ResponseWrapper<>());
 		Mockito.when(mapper.writeValueAsString(any())).thenReturn("String");
+		idResponseDto = new IdResponseDTO1();
+		responseDTO1 = new ResponseDTO1();
+		responseDTO1.setStatus("ACTIVATED");
+		idResponseDto.setResponse(responseDTO1);
+		Mockito.when(utility.getCenterDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(new ResponseWrapper<>());
+		Mockito.when(utilities.getLanguageCode()).thenReturn("eng");
 	}
 
 	@Test(expected = RequestHandlerValidationException.class)
@@ -110,11 +124,11 @@ public class RequestHandlerRequestValidatorTest {
 		error.setMessage("invalid center");
 		List<ServiceError> errorList = new ArrayList<ServiceError>();
 		errorList.add(error);
-		ResponseWrapper<?> wrapper = new ResponseWrapper<>();
+		ResponseWrapper wrapper = new ResponseWrapper<>();
 		wrapper.setErrors(errorList);
 		RegistrationCenterResponseDto rcpdto = new RegistrationCenterResponseDto();
 		rcpdto.setRegistrationCenters(Lists.newArrayList(registrationCenterDto));
-		when(restClientService.getApi(any(), any(), anyString(), anyString(), any())).thenReturn(wrapper);
+		Mockito.when(utility.getCenterDetails(Mockito.anyString(), Mockito.anyString())).thenReturn(wrapper);
 		Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenReturn(rcpdto);
 
 		requestHandlerRequestValidator.isValidCenter(ID);
@@ -142,10 +156,7 @@ public class RequestHandlerRequestValidatorTest {
 		wrapper.setErrors(errorList);
 		RegistrationCenterResponseDto rcpdto = new RegistrationCenterResponseDto();
 		rcpdto.setRegistrationCenters(Lists.newArrayList(registrationCenterDto));
-		when(restClientService.getApi(any(), any(), anyString(), anyString(), any()))
-				.thenThrow(new ApisResourceAccessException("error"));
-//        when(restClientService.getApi(any(), any(), anyString(), anyString(), any())).thenThrow(new ApisResourceAccessException("error", new HttpClientErrorException(HttpStatus.OK)));
-//        Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenThrow(ApisResourceAccessException.class);
+		Mockito.when(utility.getCenterDetails(Mockito.anyString(), Mockito.anyString())).thenThrow(new ApisResourceAccessException("error"));
 
 		requestHandlerRequestValidator.isValidCenter(ID);
 	}
@@ -206,9 +217,6 @@ public class RequestHandlerRequestValidatorTest {
 
 		when(restClientService.getApi(any(), any(), anyString(), anyString(), any()))
 				.thenThrow(new ApisResourceAccessException("error"));
-//        when(restClientService.getApi(any(), any(), anyString(), anyString(), any())).thenThrow(new ApisResourceAccessException("error", new HttpClientErrorException(HttpStatus.OK)));
-//        Mockito.when(mapper.readValue(anyString(), any(Class.class))).thenThrow(ApisResourceAccessException.class);
-
 		requestHandlerRequestValidator.isValidMachine(ID);
 	}
 
@@ -311,7 +319,7 @@ public class RequestHandlerRequestValidatorTest {
 		JSONObject idObject = new JSONObject();
 		when(utilities.retrieveIdrepoJson(anyString())).thenReturn(idObject);
 		boolean result = requestHandlerRequestValidator
-				.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234");
+				.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234", idResponseDto);
 		assertTrue(result);
 	}
 
@@ -320,15 +328,19 @@ public class RequestHandlerRequestValidatorTest {
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(true);
 		when(utilities.retrieveIdrepoJsonStatus(anyString())).thenReturn("ACTIVATED");
 		when(utilities.retrieveIdrepoJson(anyString())).thenReturn(null);
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234");
+		responseDTO1.setStatus("FAILED");
+		idResponseDto.setResponse(responseDTO1);
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234", idResponseDto);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testIsValidRegistrationTypeAndUinNestedNestedIf13() throws BaseCheckedException, IOException {
+		responseDTO1.setStatus("FAILED");
+		idResponseDto.setResponse(responseDTO1);
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(true);
 		when(utilities.retrieveIdrepoJsonStatus(anyString())).thenReturn("any status");
 		when(utilities.retrieveIdrepoJson(anyString())).thenReturn(new JSONObject());
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234", idResponseDto);
 	}
 
 	@Test
@@ -336,7 +348,7 @@ public class RequestHandlerRequestValidatorTest {
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(true);
 		when(utilities.retrieveIdrepoJsonStatus(anyString())).thenReturn("ACTIVATED");
 		boolean result = requestHandlerRequestValidator
-				.isValidRegistrationTypeAndUin(RegistrationType.DEACTIVATED.name(), "1234");
+				.isValidRegistrationTypeAndUin(RegistrationType.DEACTIVATED.name(), "1234", idResponseDto);
 		assertTrue(result);
 	}
 
@@ -344,38 +356,42 @@ public class RequestHandlerRequestValidatorTest {
 	public void testIsValidRegistrationTypeAndUinNestedNestedElse21() throws BaseCheckedException, IOException {
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(true);
 		when(utilities.retrieveIdrepoJsonStatus(anyString())).thenReturn("ACTIVATED");
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.ACTIVATED.name(), "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.ACTIVATED.name(), "1234", idResponseDto);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testIsValidRegistrationTypeAndUinNestedElse() throws BaseCheckedException, IOException {
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(false);
 
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.ACTIVATED.name(), "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.ACTIVATED.name(), "1234", idResponseDto);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testIsValidRegistrationTypeAndUinElse1() throws BaseCheckedException, IOException {
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(null, "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(null, "1234", idResponseDto);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testIsValidRegistrationTypeAndUinElse2() throws BaseCheckedException, IOException {
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin("any registration", "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin("any registration", "1234", idResponseDto);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testIsValidRegistrationTypeAndUinWithInvalidIDException() throws BaseCheckedException, IOException {
+		responseDTO1.setStatus("FAILED");
+		idResponseDto.setResponse(responseDTO1);
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(true);
 		when(utilities.retrieveIdrepoJsonStatus(anyString())).thenThrow(new InvalidIDException("errorcode", "message"));
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234", idResponseDto);
 	}
 
 	@Test(expected = BaseCheckedException.class)
 	public void testIsValidRegistrationTypeAndUinWithNumberFormatException() throws BaseCheckedException, IOException {
+		responseDTO1.setStatus("FAILED");
+		idResponseDto.setResponse(responseDTO1);
 		when(uinValidatorImpl.validateId(anyString())).thenReturn(true);
 		when(utilities.retrieveIdrepoJsonStatus(anyString())).thenThrow(new NumberFormatException("message"));
-		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234");
+		requestHandlerRequestValidator.isValidRegistrationTypeAndUin(RegistrationType.RES_UPDATE.name(), "1234", idResponseDto);
 	}
 
 	@Test

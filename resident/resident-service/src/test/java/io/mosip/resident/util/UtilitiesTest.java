@@ -80,6 +80,8 @@ public class UtilitiesTest {
 
     JSONObject identityVID;
 
+    private JSONObject amrAcrJson;
+
     @Before
     public void setUp() throws IOException, ApisResourceAccessException {
         ClassLoader classLoader = getClass().getClassLoader();
@@ -92,6 +94,12 @@ public class UtilitiesTest {
         is = new FileInputStream(idJsonVid);
         idJsonString = IOUtils.toString(is, "UTF-8");
         identityVID = JsonUtil.readValue(idJsonString, JSONObject.class);
+
+        File amrAcrJsonFile = new File(classLoader.getResource("amr-acr-mapping.json").getFile());
+        InputStream insputStream = new FileInputStream(amrAcrJsonFile);
+        String amrAcrJsonString = IOUtils.toString(insputStream, "UTF-8");
+        amrAcrJson = JsonUtil.readValue(amrAcrJsonString, JSONObject.class);
+        ReflectionTestUtils.setField(utilities, "amrAcrJsonFile", "amr-acr-mapping.json");
     }
 
     @Test

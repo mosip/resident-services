@@ -33,6 +33,7 @@ import io.mosip.kernel.core.templatemanager.spi.TemplateManager;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.kernel.templatemanager.velocity.builder.TemplateManagerBuilderImpl;
 import io.mosip.resident.constant.RequestType;
+import io.mosip.resident.constant.TemplateVariablesConstants;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
@@ -97,7 +98,8 @@ public class AcknowledgmentServiceTest {
         templateVariables = new LinkedHashMap<>();
         values = new LinkedHashMap<>();
         values.put("test", String.class);
-        templateVariables.put("eventId", eventId);
+        templateVariables.put(TemplateVariablesConstants.EVENT_ID, eventId);
+        templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.SHARE_CRED_WITH_PARTNER.getName());
         result = "test".getBytes(StandardCharsets.UTF_8);
         eventId = "bf42d76e-b02e-48c8-a17a-6bb842d85ea9";
         languageCode = "eng";
@@ -105,7 +107,7 @@ public class AcknowledgmentServiceTest {
         residentTransactionEntity.get().setEventId(eventId);
         residentTransactionEntity.get().setRequestTypeCode(RequestType.SHARE_CRED_WITH_PARTNER.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+        Mockito.when(RequestType.SHARE_CRED_WITH_PARTNER.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         ReflectionTestUtils.setField(acknowledgementService, "templateManagerBuilder", templateManagerBuilder);
         templateManagerBuilder.encodingType(ENCODE_TYPE).enableCache(false).resourceLoader(CLASSPATH).build();
@@ -125,85 +127,79 @@ public class AcknowledgmentServiceTest {
 
     @Test
     public void testAcknowledgementServiceTest() throws ResidentServiceCheckedException, IOException {
-          byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+          byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
           assertNotNull(actualResult);
     }
 
     @Test
     public void testAcknowledgementServiceRequestTypeGenerateVidTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.GENERATE_VID.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+    	templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.GENERATE_VID.getName());
+        Mockito.when(RequestType.GENERATE_VID.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         residentTransactionEntity.get().setRequestTypeCode(RequestType.GENERATE_VID.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
         assertNotNull(actualResult);
     }
 
     @Test
     public void testAcknowledgementServiceRequestTypeRevokeVidTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.REVOKE_VID.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+    	templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.REVOKE_VID.getName());
+        Mockito.when(RequestType.REVOKE_VID.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         residentTransactionEntity.get().setRequestTypeCode(RequestType.REVOKE_VID.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
         assertNotNull(actualResult);
     }
 
     @Test
     public void testAcknowledgementServiceRequestTypeOrderPhysicalCardTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.ORDER_PHYSICAL_CARD.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+    	templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.ORDER_PHYSICAL_CARD.getName());
+        Mockito.when(RequestType.ORDER_PHYSICAL_CARD.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         residentTransactionEntity.get().setRequestTypeCode(RequestType.ORDER_PHYSICAL_CARD.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
         assertNotNull(actualResult);
     }
 
     @Test
     public void testAcknowledgementServiceRequestTypeDownloadPersonalizedCardTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.DOWNLOAD_PERSONALIZED_CARD.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+    	templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.DOWNLOAD_PERSONALIZED_CARD.getName());
+        Mockito.when(RequestType.DOWNLOAD_PERSONALIZED_CARD.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         residentTransactionEntity.get().setRequestTypeCode(RequestType.DOWNLOAD_PERSONALIZED_CARD.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
         assertNotNull(actualResult);
     }
 
     @Test
     public void testAcknowledgementServiceRequestTypeUpdateMyUinTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.UPDATE_MY_UIN.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+    	templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.UPDATE_MY_UIN.getName());
+        Mockito.when(RequestType.UPDATE_MY_UIN.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         residentTransactionEntity.get().setRequestTypeCode(RequestType.UPDATE_MY_UIN.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
         assertNotNull(actualResult);
     }
 
     @Test
     public void testAcknowledgementServiceRequestTypeSecureMyIdTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.AUTH_TYPE_LOCK_UNLOCK.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
+    	templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, RequestType.AUTH_TYPE_LOCK_UNLOCK.getName());
+        Mockito.when(RequestType.AUTH_TYPE_LOCK_UNLOCK.getAckTemplateVariables(templateUtil, residentTransactionEntity.get(), languageCode, 0, LOCALE_EN_US)).
                 thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
         residentTransactionEntity.get().setRequestTypeCode(RequestType.AUTH_TYPE_LOCK_UNLOCK.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
+        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
         assertNotNull(actualResult);
     }
 
     @Test(expected = ResidentServiceCheckedException.class)
     public void testAcknowledgmentBadEventIdTest() throws ResidentServiceCheckedException, IOException {
-        residentTransactionEntity = Optional.empty();
-        Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(residentTransactionEntity);
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
-        assertNotNull(actualResult);
-    }
-
-    @Test(expected = ResidentServiceCheckedException.class)
-    public void testAcknowledgmentBadRequestTypeTest() throws ResidentServiceCheckedException, IOException {
-        Mockito.when(RequestType.GET_MY_ID.getAckTemplateVariables(templateUtil, eventId, languageCode, 0, LOCALE_EN_US)).
-                thenReturn(Tuples.of(templateVariables, "acknowledgement-order-a-physical-card"));
-        residentTransactionEntity.get().setRequestTypeCode(RequestType.GET_MY_ID.toString());
         Mockito.when(residentTransactionRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
-        byte[] actualResult = acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US);
-        assertNotNull(actualResult);
+        acknowledgementService.getAcknowledgementPDF(eventId, languageCode, 0, LOCALE_EN_US).getT1();
     }
 }
