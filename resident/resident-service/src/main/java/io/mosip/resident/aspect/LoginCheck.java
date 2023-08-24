@@ -114,8 +114,15 @@ public class LoginCheck {
 		}
 		logger.debug("LoginCheck::getUserDetails()::exit");
 	}
-	
-	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..))")
+
+	@After("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..)) && args(redirectURI,state,sessionState,code,error,stateCookie,req,res)")
+	public void getUserDetails(String redirectURI, String state, String sessionState, String code, String error, String stateCookie,
+							   HttpServletRequest req, HttpServletResponse res) throws ResidentServiceCheckedException, ApisResourceAccessException {
+		getUserDetails(redirectURI, state, sessionState, code, stateCookie, req, res);
+	}
+
+
+		@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..))")
 	public void login() {
 	}
 
@@ -134,7 +141,12 @@ public class LoginCheck {
 		logger.debug("LoginCheck::onLoginReq()::exit");
 	}
 
-	@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..))")
+	@Before("execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.login(..)) && args(state,redirectURI,stateParam,uiLocales,res)")
+	public void onLoginReq(String state, String redirectURI, String stateParam, String uiLocales, HttpServletResponse res) {
+		onLoginReq(state, redirectURI, stateParam, res);
+	}
+
+		@Pointcut(value = "execution(* io.mosip.kernel.authcodeflowproxy.api.controller.LoginController.loginRedirect(..))")
 	public void loginRedirect() {
 	}
 
