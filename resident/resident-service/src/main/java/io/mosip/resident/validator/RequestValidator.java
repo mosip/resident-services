@@ -27,8 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.kernel.core.idvalidator.exception.InvalidIDException;
 import io.mosip.kernel.core.idvalidator.spi.RidValidator;
 import io.mosip.kernel.core.idvalidator.spi.UinValidator;
@@ -82,13 +80,12 @@ import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
-import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import io.mosip.resident.service.impl.ResidentConfigServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
-import io.mosip.resident.util.Utilities;
 
 @Component
 public class RequestValidator {
@@ -119,13 +116,13 @@ public class RequestValidator {
 	private IdentityServiceImpl identityService;
 
 	@Autowired
+	private ProxyPartnerManagementService proxyPartnerManagementService;
+
+	@Autowired
 	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
-
-	@Autowired
-	private Utilities utilities;
 
 	private String euinId;
 
@@ -138,10 +135,6 @@ public class RequestValidator {
 	private String authLockId;
 
 	private String uinUpdateId;
-	@Autowired
-	private ProxyMasterdataService proxyMasterdataService;
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@Value("${resident.updateuin.id}")
 	public void setUinUpdateId(String uinUpdateId) {
@@ -1404,7 +1397,18 @@ public class RequestValidator {
 		validateRequestNewApi(requestDTO, RequestIdType.SHARE_CREDENTIAL);
 		validateSharableAttributes(requestDTO.getRequest().getSharableAttributes());
 		validatePurpose(requestDTO.getRequest().getPurpose());
-		validateDataToCheckNullOrEmpty(requestDTO.getRequest().getPartnerId(), ResidentConstants.PARTNER_ID);
+		validatePartnerId(requestDTO.getRequest().getPartnerId());
+	}
+
+	private void validatePartnerId(String partnerId) {
+		validateDataToCheckNullOrEmpty(partnerId, ResidentConstants.PARTNER_ID);
+		Map<String, ?> partnerDetail = proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType(
+				partnerId, environment.getProperty(ResidentConstants.RESIDENT_SHARE_CREDENTIAL_PARTNER_TYPE,
+						ResidentConstants.AUTH_PARTNER));
+		if(partnerDetail.isEmpty()) {
+			throw new ResidentServiceException(ResidentErrorCode.INVALID_INPUT.getErrorCode(),
+					ResidentErrorCode.INVALID_INPUT.getErrorMessage() + ResidentConstants.PARTNER_ID);
+		}
 	}
 
 	private void validateDataToCheckNullOrEmpty(String variableValue, String variableName) {
