@@ -932,14 +932,14 @@ public class Utility {
 		logger.info("Clearing Identity Map cache IdResponseDto1");
 	}
 
-	@Cacheable(value = "partnerListCache", key = "#partnerType.orElse(\"\") + '_' + #apiUrl")
-	public ResponseWrapper<?> getPartnersByPartnerType(Optional<String> partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
-		return proxyPartnerManagementService.getPartnersByPartnerType(partnerType, apiUrl);
+	@Cacheable(value = "partnerListCache", key = "#partnerType + '_' + #apiUrl")
+	public ResponseWrapper<?> getPartnersByPartnerType(String partnerType, ApiName apiUrl) throws ResidentServiceCheckedException {
+		return proxyPartnerManagementService.getPartnersByPartnerType(StringUtils.isBlank(partnerType) ? Optional.empty() : Optional.of(partnerType), apiUrl);
 	}
 
 	@CacheEvict(value = "partnerListCache", allEntries = true)
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.partnerCache}")
-	public void emptyPartnerCache() {
+	public void emptyPartnerListCache() {
 		logger.info("Emptying Partner list cache");
 	}
 

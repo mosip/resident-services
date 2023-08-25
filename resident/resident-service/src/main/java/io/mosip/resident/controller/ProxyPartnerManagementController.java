@@ -1,7 +1,6 @@
 package io.mosip.resident.controller;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -63,7 +62,7 @@ public class ProxyPartnerManagementController {
 			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
-	public ResponseWrapper<?> getPartnersByPartnerType(@RequestParam("partnerType") Optional<String> partnerType)
+	public ResponseWrapper<?> getPartnersByPartnerType(@RequestParam(name = "partnerType", required = false) String partnerType)
 			throws ResidentServiceCheckedException {
 		logger.debug("ProxyPartnerManagementController::getPartnersByPartnerType()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
