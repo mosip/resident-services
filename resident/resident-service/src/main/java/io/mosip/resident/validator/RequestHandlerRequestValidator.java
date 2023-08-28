@@ -383,7 +383,7 @@ public class RequestHandlerRequestValidator {
 
 	private boolean validateUINForResUpdate(String status)
 			throws BaseCheckedException {
-		if(status.equals("ACTIVATED"))
+		if(status.equals(RegistrationType.ACTIVATED.name()))
 			return true;
 		 else
 			throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
