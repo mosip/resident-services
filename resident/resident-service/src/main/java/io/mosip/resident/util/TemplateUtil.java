@@ -329,8 +329,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
-				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), env.getProperty(
-						ResidentConstants.RESIDENT_SHARE_CREDENTIAL_PARTNER_TYPE, ResidentConstants.AUTH_PARTNER)));
+				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), residentTransactionEntity.getRequestedEntityType()));
 		return Tuples.of(templateVariables,
 				Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY)));
 	}
@@ -388,8 +387,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
-				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), env.getProperty(
-						ResidentConstants.RESIDENT_ORDER_PHYSICAL_CARD_PARTNER_TYPE, ResidentConstants.PRINT_PARTNER)));
+				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), residentTransactionEntity.getRequestedEntityType()));
 		templateVariables.put(TemplateVariablesConstants.PAYMENT_STATUS,
 				getPaymentStatus(residentTransactionEntity.getStatusCode()));
 		templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK,
