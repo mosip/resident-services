@@ -116,13 +116,13 @@ public class RequestValidator {
 	private IdentityServiceImpl identityService;
 
 	@Autowired
-	private ProxyPartnerManagementService proxyPartnerManagementService;
-
-	@Autowired
 	private ResidentConfigServiceImpl residentConfigService;
 
 	@Autowired
 	private ResidentTransactionRepository residentTransactionRepository;
+
+	@Autowired
+	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	private String euinId;
 
