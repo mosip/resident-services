@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.mosip.resident.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -24,6 +21,7 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utility;
 
 /**
  * Resident proxy partner management service implementation class.
