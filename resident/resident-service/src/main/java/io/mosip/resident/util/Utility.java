@@ -943,6 +943,12 @@ public class Utility {
 		logger.info("Emptying Partner list cache");
 	}
 
+	@CacheEvict(value = "partnerDetailCache", allEntries = true)
+	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.partnerCache}")
+	public void emptyPartnerDetailCache() {
+		logger.info("Emptying Partner detail cache");
+	}
+
 	@Cacheable(value = "getValidDocumentByLangCode", key = "#langCode")
 	public ResponseWrapper<?> getValidDocumentByLangCode(String langCode) throws ResidentServiceCheckedException {
 		return proxyMasterdataService.getValidDocumentByLangCode(langCode);

@@ -101,10 +101,4 @@ public class ProxyPartnerManagementServiceImpl implements ProxyPartnerManagement
         		.findAny()
         		.orElse(Map.of());
 	}
-
-	@CacheEvict(value = "partnerDetailCache", allEntries = true)
-	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.partnerCache}")
-	public void emptyPartnerDetailCache() {
-		logger.info("Emptying Partner detail cache");
-	}
 }
