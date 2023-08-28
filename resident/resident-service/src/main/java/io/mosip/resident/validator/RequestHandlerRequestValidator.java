@@ -350,10 +350,15 @@ public class RequestHandlerRequestValidator {
 							|| registrationType.equalsIgnoreCase(RegistrationType.DEACTIVATED.toString()))
 					|| registrationType != null && registrationType.equals(RegistrationType.RES_UPDATE.toString())) {
 				boolean isValidUin = uinValidatorImpl.validateId(uin);
-				String status = idResponseDto.getResponse().getStatus();
+				String status = null;
+				if(idResponseDto == null){
+					status = utilities.retrieveIdrepoJsonStatus(uin);
+				} else {
+					status = idResponseDto.getResponse().getStatus();
+				}
 				if (isValidUin) {
 					if(registrationType.equals(RegistrationType.RES_UPDATE.toString())) {
-						return validateUINForResUpdate(status, idResponseDto);
+						return validateUINForResUpdate(status);
 					}
 					if (!status.equalsIgnoreCase(registrationType)) {
 						return true;
@@ -376,11 +381,11 @@ public class RequestHandlerRequestValidator {
 		}
 	}
 
-	private boolean validateUINForResUpdate(String status, IdResponseDTO1 idResponseDto)
+	private boolean validateUINForResUpdate(String status)
 			throws BaseCheckedException {
-		if(idResponseDto!=null && status.equals("ACTIVATED"))
+		if(status.equals(RegistrationType.ACTIVATED.name()))
 			return true;
-		else
+		 else
 			throw new BaseCheckedException(ResidentErrorCode.BASE_EXCEPTION.getErrorCode(),
 					"UIN is not valid", new Throwable());
 	}
