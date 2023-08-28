@@ -342,7 +342,8 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
-				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), null));
+				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), env.getProperty(
+						ResidentConstants.RESIDENT_AUTHENTICATION_REQUEST_PARTNER_TYPE, ResidentConstants.AUTH_PARTNER)));
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY)));
 	}
