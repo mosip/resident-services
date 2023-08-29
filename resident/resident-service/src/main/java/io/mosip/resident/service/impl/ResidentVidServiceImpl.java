@@ -1,33 +1,7 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.ResidentConstants.VID_POLICIES;
-import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
-
-import java.io.IOException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.mosip.idrepository.core.dto.VidPolicy;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -81,9 +55,33 @@ import io.mosip.resident.service.NotificationService;
 import io.mosip.resident.service.ResidentVidService;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICIES;
+import static io.mosip.resident.constant.ResidentConstants.VID_POLICY;
 
 @Component
 public class ResidentVidServiceImpl implements ResidentVidService {
@@ -170,7 +168,10 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Value("${perpatual.vid-type:PERPETUAL}")
 	private String perpatualVidType;
-	
+
+	@Autowired
+	private Utilities utilities;
+
 	@Override
 	public ResponseWrapper<VidResponseDto> generateVid(BaseVidRequestDto requestDto,
 			String individualId) throws OtpValidationFailedException, ResidentServiceCheckedException {
@@ -438,13 +439,13 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 
 	@Override
 	public ResponseWrapper<VidRevokeResponseDTO> revokeVid(BaseVidRevokeRequestDTO requestDto, String vid, String indivudalId)
-			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		return revokeVidV2(requestDto, vid, indivudalId).getT1();
 	}
 
 	@Override
 	public Tuple2<ResponseWrapper<VidRevokeResponseDTO>, String> revokeVidV2(BaseVidRevokeRequestDTO requestDto, String vid, String indivudalId)
-			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		boolean isV2Request = requestDto instanceof VidRevokeRequestDTOV2;
 		ResponseWrapper<VidRevokeResponseDTO> responseDto = new ResponseWrapper<>();
 		NotificationRequestDto notificationRequestDto = isV2Request? new NotificationRequestDtoV2() : new NotificationRequestDto();
@@ -489,9 +490,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 			notificationRequestDto.setId(uin);
-			String idaTokenForIndividualId = identityServiceImpl.getIDAToken(uin);
-			String idaTokenForVid = identityServiceImpl.getIDATokenForIndividualId(vid);
-			if(idaTokenForVid == null || !idaTokenForIndividualId.equalsIgnoreCase(idaTokenForVid)) {
+			String uinForVid = utilities.getUinByVid(vid);
+			if(uinForVid != null && !uin.equalsIgnoreCase(uinForVid)) {
 				if(Utility.isSecureSession()) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.getName(), ResidentConstants.FAILED));
