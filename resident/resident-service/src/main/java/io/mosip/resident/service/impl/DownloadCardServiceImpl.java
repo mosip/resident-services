@@ -367,13 +367,13 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
 		String uinForVid = "";
-		IdentityDTO identityDTOForDownloadableCardVid = null;
+		IdentityDTO identityDTO = null;
 		try {
-			identityDTOForDownloadableCardVid = identityService.getIdentity(vid);
-			if(identityDTOForDownloadableCardVid!=null) {
-				uinForVid = identityDTOForDownloadableCardVid.getUIN();
+			identityDTO = identityService.getIdentity(identityService.getResidentIndvidualIdFromSession());
+			if(identityDTO!=null) {
+				uinForVid = utilities.getUinByVid(vid);
 			}
-			residentTransactionEntity = insertDataForVidCard(vid, uinForVid);
+			residentTransactionEntity = insertDataForVidCard(vid, identityDTO.getUIN());
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				String uinForIndividualId = identityService.
@@ -383,8 +383,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					logger.error(LoggerFileConstant.SESSIONID.toString(), LoggerFileConstant.APPLICATIONID.toString(),
 							LoggerFileConstant.APPLICATIONID.toString(),
-							ResidentErrorCode.VID_NOT_BELONG_TO_SESSION.getErrorMessage());
-					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
+							ResidentErrorCode.VID_NOT_BELONG_TO_USER.getErrorMessage());
+					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_USER,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
 				}
 			}
@@ -397,7 +397,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			credentialReqestDto.setEncrypt(
 					Boolean.parseBoolean(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_FLAG)));
 			credentialReqestDto.setEncryptionKey(environment.getProperty(ResidentConstants.CREDENTIAL_ENCRYPTION_KEY));
-			Map<String, Object> additionalAttributes = getVidDetails(vid, identityDTOForDownloadableCardVid, timeZoneOffset, locale);
+			Map<String, Object> additionalAttributes = getVidDetails(vid, identityDTO, timeZoneOffset, locale);
 			additionalAttributes.put(TEMPLATE_TYPE_CODE,
 					this.environment.getProperty(ResidentConstants.VID_CARD_TEMPLATE_PROPERTY));
 			additionalAttributes.put(APPLICANT_PHOTO,
@@ -450,8 +450,8 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 						.equals(EventStatusInProgress.NEW.name())) ? TemplateType.REQUEST_RECEIVED
 								: TemplateType.FAILURE;
 
-				sendNotificationV2(uinForVid, RequestType.VID_CARD_DOWNLOAD, templateType,
-						eventId, null, identityDTOForDownloadableCardVid);
+				sendNotificationV2(identityDTO.getUIN(), RequestType.VID_CARD_DOWNLOAD, templateType,
+						eventId, null, identityDTO);
 			}
 		}
 		responseWrapper.setId(environment.getProperty(ResidentConstants.VID_DOWNLOAD_CARD_ID));
