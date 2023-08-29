@@ -69,7 +69,7 @@ public enum ResidentErrorCode {
 	IDVID_NOT_MATCH_TO_SESSION("RES-SER-452", "Provided individualId does not belong to the logged in session."),
 	UNAUTHORIZED("RES-ATH-401", "Authentication Failed"),
 	VID_NOT_BELONG_TO_INDIVITUAL("RES-SER-453", "Provided VID does not belong to the individualId."),
-	VID_NOT_BELONG_TO_SESSION("RES-SER-454", "Provided VID does not belong to the logged in session."),
+	VID_NOT_BELONG_TO_USER("RES-SER-454", "Provided VID does not belong to the logged in user."),
 	RID_NOT_FOUND("RES-SER-456", "RID not found"), AID_NOT_FOUND("RES-SER-457", "AID not found"),
 	CREDENTIAL_REQUEST_ID_NOT_FOUND("RES-SER-458", "Credential request id not found"),
 	CREDENTIAL_REQUEST_NOT_FOUND("RES-SER-459", "Credential request not found"),
