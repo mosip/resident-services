@@ -478,7 +478,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			try {
 				identityDTO = identityServiceImpl.getIdentity(indivudalId);
 			} catch (Exception e){
-				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
+				throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_USER,
 						Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
 			uin = identityDTO.getUIN();
@@ -496,7 +496,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.getName(), ResidentConstants.FAILED));
 					residentTransactionRepository.save(residentTransactionEntity);
-					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_SESSION,
+					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_USER,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
 				}
 			}
