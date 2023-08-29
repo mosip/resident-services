@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import io.mosip.resident.util.Utilities;
 import org.apache.commons.io.IOUtils;
 import org.assertj.core.util.Lists;
 import org.json.simple.JSONObject;
@@ -101,6 +102,9 @@ public class ResidentVidServiceTest {
     @Mock
     private IdentityServiceImpl identityServiceImpl;
 
+    @Mock
+    private Utilities utilities;
+
     @InjectMocks
     private ResidentVidServiceImpl residentVidService;
     
@@ -180,6 +184,7 @@ public class ResidentVidServiceTest {
         vid = "2038096257310540";
         when(mapper.convertValue("1516239022", LocalDateTime.class)).thenReturn(LocalDateTime.now());
         when(mapper.convertValue("1234343434", LocalDateTime.class)).thenReturn(LocalDateTime.now());
+        Mockito.when(utilities.getUinByVid(Mockito.anyString())).thenReturn("123");
     }
 
     @Test(expected = Exception.class)
@@ -281,7 +286,7 @@ public class ResidentVidServiceTest {
 	}
     
     @Test(expected = OtpValidationFailedException.class)
-    public void otpValidationFailedTest1() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
+    public void otpValidationFailedTest1() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException, IOException {
     	String vid = "2038096257310540";
 		when(idAuthService.validateOtp(anyString(), anyString(), anyString())).thenReturn(Boolean.FALSE);
 
@@ -289,7 +294,7 @@ public class ResidentVidServiceTest {
     }
     
     @Test(expected = Exception.class)
-    public void apiResourceAccessExceptionTest2() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
+    public void apiResourceAccessExceptionTest2() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException, IOException {
 
         String ERROR_CODE = "err";
         String vid = "2038096257310540";
@@ -306,7 +311,7 @@ public class ResidentVidServiceTest {
     }
     
     @Test(expected = Exception.class)
-    public void idRepoAppExceptionTest() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException {
+    public void idRepoAppExceptionTest() throws ResidentServiceCheckedException, OtpValidationFailedException, ApisResourceAccessException, IOException {
 
         String ERROR_CODE = "err";
         String vid = "2038096257310540";
@@ -468,8 +473,8 @@ public class ResidentVidServiceTest {
                 generateVid(vidRequestDtoV2, "123232323").getResponse().getVid());
     }
 
-    @Test(expected = ResidentServiceCheckedException.class)
-    public void testRevokeVidV2Failed() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+    @Test(expected = VidRevocationException.class)
+    public void testRevokeVidV2Failed() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
@@ -482,11 +487,10 @@ public class ResidentVidServiceTest {
     }
 
     @Test(expected = VidRevocationException.class)
-    public void testRevokeVidV2VidRevocationException() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+    public void testRevokeVidV2VidRevocationException() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIDATokenForIndividualId(Mockito.any())).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
@@ -496,7 +500,7 @@ public class ResidentVidServiceTest {
     }
 
     @Test
-    public void testRevokeVidV2Success() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+    public void testRevokeVidV2Success() throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
         IdentityServiceTest.getAuthUserDetailsFromAuthentication();
         ResponseWrapper<VidGeneratorResponseDto> responseWrapper = new ResponseWrapper<>();
         VidGeneratorResponseDto dto = new VidGeneratorResponseDto();
@@ -507,7 +511,6 @@ public class ResidentVidServiceTest {
         when(residentServiceRestClient.patchApi(any(), any(), any(), any())).thenReturn(responseWrapper);
         Mockito.when(utility.createEntity(Mockito.any())).thenReturn(new ResidentTransactionEntity());
         Mockito.when(utility.createEventId()).thenReturn("1236547899874563");
-        Mockito.when(identityServiceImpl.getIDATokenForIndividualId(Mockito.any())).thenReturn("123456789");
         Mockito.when(identityServiceImpl.getIDAToken(Mockito.anyString())).thenReturn("123456789");
         when(residentServiceRestClient.getApi(Mockito.anyString(), Mockito.any())).thenReturn(vidResponse);
         VidRevokeRequestDTOV2 vidRevokeRequestDTOV2 = new VidRevokeRequestDTOV2();
