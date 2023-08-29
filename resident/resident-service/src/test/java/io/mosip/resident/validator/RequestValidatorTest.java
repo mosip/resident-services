@@ -1809,7 +1809,7 @@ public class RequestValidatorTest {
 		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateDownloadCardInvalidIndividualId() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
 				new io.mosip.resident.dto.MainRequestDTO<>();
@@ -1822,7 +1822,7 @@ public class RequestValidatorTest {
 		requestValidator.validateDownloadCardRequest(downloadCardRequestDTOMainRequestDTO);
 	}
 
-	@Test(expected = InvalidInputException.class)
+	@Test(expected = ResidentServiceException.class)
 	public void testValidateDownloadCardEmptyIndividualId() throws Exception{
 		io.mosip.resident.dto.MainRequestDTO<DownloadCardRequestDTO> downloadCardRequestDTOMainRequestDTO =
 				new io.mosip.resident.dto.MainRequestDTO<>();

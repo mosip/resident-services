@@ -1310,7 +1310,9 @@ public class RequestValidator {
 		validateDate(downloadCardRequestDTOMainRequestDTO.getRequesttime());
 		validateTransactionId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
 		validateOTP(downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
-		validateIndividualIdV2(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId(), "Request Download Card Request");
+		String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
+		validateMissingInputParameter(individualId, TemplateVariablesConstants.INDIVIDUAL_ID, "Validation IndividualId");
+		validateIndividualIdV2(individualId, "Request Download Card Request");
 	}
 
 	private void validateIndividualIdV2(String individualId, String eventName) {
