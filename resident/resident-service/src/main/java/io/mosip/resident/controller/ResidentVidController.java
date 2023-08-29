@@ -1,25 +1,6 @@
 package io.mosip.resident.controller;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.logger.spi.Logger;
-import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
@@ -50,7 +31,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.util.function.Tuple2;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Resident VID controller class.
@@ -176,7 +174,7 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> revokeVid(
 			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTO> requestDto, @PathVariable String vid)
-			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		return revokeVid(requestDto, vid, true);
 	}
 
@@ -193,13 +191,13 @@ public class ResidentVidController {
 			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))) })
 	public ResponseEntity<Object> revokeVidV2(
 			@RequestBody(required = true) RequestWrapper<VidRevokeRequestDTOV2> requestDto, @PathVariable String vid)
-			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+			throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		return revokeVidV2Version(requestDto, vid, false);
 	}
 
 	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVid(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
-			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentVidController::revokeVid()::entry");
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
 				
@@ -221,7 +219,7 @@ public class ResidentVidController {
 	
 	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVidV2Version(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
-			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException {
+			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentVidController::revokeVidV2Version()::entry");
 		String residentIndividualId = !(requestDto.getRequest() instanceof VidRevokeRequestDTO)? null : ((VidRevokeRequestDTO)requestDto.getRequest()).getIndividualId();
 				
