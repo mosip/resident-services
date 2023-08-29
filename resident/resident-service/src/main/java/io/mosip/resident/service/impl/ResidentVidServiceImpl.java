@@ -490,14 +490,8 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				}
 			}
 			notificationRequestDto.setId(uin);
-			String uinForVid = null;
-			try{
-				uinForVid = utilities.getUinByVid(vid);
-			}catch (Exception exception){
-				uinForVid = null;
-			}
-
-			if(uinForVid == null || !uin.equalsIgnoreCase(uinForVid)) {
+			String uinForVid = utilities.getUinByVid(vid);
+			if(uinForVid != null && !uin.equalsIgnoreCase(uinForVid)) {
 				if(Utility.isSecureSession()) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.getName(), ResidentConstants.FAILED));
