@@ -2659,7 +2659,7 @@ public class RequestValidatorTest {
 		requestValidator.validateReqCredentialRequest(requestWrapper);
 	}
 
-	@Test(expected = ResidentServiceException.class)
+	@Test(expected = InvalidInputException.class)
 	public void testValidateReqCredentialRequestFailure(){
 		RequestWrapper<ResidentCredentialRequestDto> requestWrapper = new RequestWrapper<>();
 		ResidentCredentialRequestDto residentCredentialRequestDto = new ResidentCredentialRequestDto();
