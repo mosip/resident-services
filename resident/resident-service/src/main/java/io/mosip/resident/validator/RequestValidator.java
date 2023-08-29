@@ -513,9 +513,7 @@ public class RequestValidator {
 
 	public void validateAuthHistoryRequest(@Valid RequestWrapper<AuthHistoryRequestDTO> requestDTO) {
 		validateRequest(requestDTO, RequestIdType.AUTH_HISTORY_ID);
-
-		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId()))
-			throw new InvalidInputException("individualId");
+		validateIndividualIdV2(requestDTO.getRequest().getIndividualId(), "Request auth history API");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for auth history"));
@@ -1312,13 +1310,15 @@ public class RequestValidator {
 		validateDate(downloadCardRequestDTOMainRequestDTO.getRequesttime());
 		validateTransactionId(downloadCardRequestDTOMainRequestDTO.getRequest().getTransactionId());
 		validateOTP(downloadCardRequestDTOMainRequestDTO.getRequest().getOtp());
-		validateIndividualIdV2(downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId());
+		String individualId = downloadCardRequestDTOMainRequestDTO.getRequest().getIndividualId();
+		validateMissingInputParameter(individualId, TemplateVariablesConstants.INDIVIDUAL_ID, "Validation IndividualId");
+		validateIndividualIdV2(individualId, "Request Download Card Request");
 	}
 
-	private void validateIndividualIdV2(String individualId) {
+	private void validateIndividualIdV2(String individualId, String eventName) {
 		if (individualId == null || StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
-					"Request service history API"));
+					eventName));
 			throw new InvalidInputException("individualId");
 		}
 	}
@@ -1391,7 +1391,7 @@ public class RequestValidator {
 
 	public void validateReqCredentialRequest(RequestWrapper<ResidentCredentialRequestDto> requestWrapper) {
 		validateAPIRequestToCheckNull(requestWrapper);
-		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getIndividualId(), ResidentConstants.INDIVIDUAL_ID);
+		validateIndividualIdV2(requestWrapper.getRequest().getIndividualId(), "Credential Request API");
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getCredentialType(),
 				ResidentConstants.CREDENTIAL_TYPE);
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getIssuer(), ResidentConstants.ISSUER);
@@ -1478,7 +1478,7 @@ public class RequestValidator {
 	}
 
 	public void validateReqOtp(IndividualIdOtpRequestDTO individualIdRequestDto) {
-		validateIndividualIdV2(individualIdRequestDto.getIndividualId());
+		validateIndividualIdV2(individualIdRequestDto.getIndividualId(), "Request OTp");
 		validateTransactionId(individualIdRequestDto.getTransactionId());
 	}
 
