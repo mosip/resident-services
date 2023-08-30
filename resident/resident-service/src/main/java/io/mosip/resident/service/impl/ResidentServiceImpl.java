@@ -1594,9 +1594,9 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	private ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistoryDetails(String sortType,
-																						 Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime,
-																						 String serviceType, String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale, List<String> statusCodeList)
-			throws ResidentServiceCheckedException, ApisResourceAccessException {
+			Integer pageStart, Integer pageFetch, LocalDate fromDateTime, LocalDate toDateTime, String serviceType,
+			String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale,
+			List<String> statusCodeList) throws ResidentServiceCheckedException, ApisResourceAccessException {
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		String idaToken = identityServiceImpl.getResidentIdaToken();
 		responseWrapper.setResponse(getServiceHistoryResponse(sortType, pageStart, pageFetch, idaToken, statusFilter,
@@ -1604,37 +1604,39 @@ public class ResidentServiceImpl implements ResidentService {
 		responseWrapper.setId(serviceHistoryId);
 		responseWrapper.setVersion(serviceHistoryVersion);
 		responseWrapper.setResponsetime(DateUtils.getUTCCurrentDateTime());
-
 		return responseWrapper;
 	}
 
 	public PageDto<ServiceHistoryResponseDto> getServiceHistoryResponse(String sortType, Integer pageStart,
-																		Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
-																		LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset, String locale, List<String> statusCodeList)
-			throws ResidentServiceCheckedException {
-		Tuple2<List<ResidentTransactionEntity>, Integer> serviceHistoryData = getServiceHistoryData(sortType, idaToken, pageStart, pageFetch, statusFilter,
-				searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset, statusCodeList);
-
-		return new PageDto<>(pageStart, pageFetch, serviceHistoryData.getT2(), ( serviceHistoryData.getT2()/ pageFetch) + 1,
-				convertResidentEntityListToServiceHistoryDto(serviceHistoryData.getT1(), langCode, timeZoneOffset, locale));
+			Integer pageFetch, String idaToken, String statusFilter, String searchText, LocalDate fromDateTime,
+			LocalDate toDateTime, String serviceType, String langCode, int timeZoneOffset, String locale,
+			List<String> statusCodeList) throws ResidentServiceCheckedException {
+		Tuple2<List<ResidentTransactionEntity>, Integer> serviceHistoryData = getServiceHistoryData(sortType, idaToken,
+				pageStart, pageFetch, statusFilter, searchText, fromDateTime, toDateTime, serviceType, timeZoneOffset,
+				statusCodeList);
+		Integer totalItems = serviceHistoryData.getT2();
+		return new PageDto<>(pageStart, pageFetch, totalItems,
+				totalItems % pageFetch == 0 ? (totalItems / pageFetch) : (totalItems / pageFetch) + 1,
+				convertResidentEntityListToServiceHistoryDto(serviceHistoryData.getT1(), langCode, timeZoneOffset,
+						locale));
 	}
 
-	public Tuple2<List<ResidentTransactionEntity>, Integer> getServiceHistoryData(String sortType, String idaToken, Integer pageStart, Integer pageFetch,
-																				  String statusFilter, String searchText, LocalDate fromDateTime, LocalDate toDateTime,
-																				  String serviceType, int timeZoneOffset, List<String> statusCodeList){
+	public Tuple2<List<ResidentTransactionEntity>, Integer> getServiceHistoryData(String sortType, String idaToken,
+			Integer pageStart, Integer pageFetch, String statusFilter, String searchText, LocalDate fromDateTime,
+			LocalDate toDateTime, String serviceType, int timeZoneOffset, List<String> statusCodeList) {
 		List<String> requestTypes;
 		List<String> statusList = new ArrayList<>();
 		Tuple2<LocalDateTime, LocalDateTime> dateTimeTuple2 = null;
-		if(serviceType==null) {
+		if (serviceType == null) {
 			requestTypes = getServiceQueryForNullServiceType();
 		} else {
 			requestTypes = convertServiceTypeToResidentTransactionType(serviceType);
 		}
-		if(statusFilter!=null){
+		if (statusFilter != null) {
 			statusList = getStatusFilterQuery(statusFilter, statusCodeList);
 		}
-		if(fromDateTime!=null && toDateTime!=null){
-			dateTimeTuple2= getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
+		if (fromDateTime != null && toDateTime != null) {
+			dateTimeTuple2 = getDateQuery(fromDateTime, toDateTime, timeZoneOffset);
 		}
 		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
 		int totalItems = 0;
