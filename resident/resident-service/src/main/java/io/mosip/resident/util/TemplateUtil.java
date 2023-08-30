@@ -38,8 +38,8 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
-import io.mosip.resident.service.impl.ProxyPartnerManagementServiceImpl;
 import io.mosip.resident.service.impl.ResidentServiceImpl;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
@@ -68,7 +68,7 @@ public class TemplateUtil {
 	private IdentityServiceImpl identityServiceImpl;
 
 	@Autowired
-	private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
+	private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	@Autowired
 	private Utility utility;
@@ -329,7 +329,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
-				getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
+				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), residentTransactionEntity.getRequestedEntityType()));
 		return Tuples.of(templateVariables,
 				Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_SHARE_CREDENTIAL_TEMPLATE_PROPERTY)));
 	}
@@ -341,7 +341,8 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
-				getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
+				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), env.getProperty(
+						ResidentConstants.RESIDENT_AUTHENTICATION_REQUEST_PARTNER_TYPE, ResidentConstants.AUTH_PARTNER)));
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_AUTHENTICATION_REQUEST_TEMPLATE_PROPERTY)));
 	}
@@ -386,7 +387,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
-				getPartnerLogo(residentTransactionEntity.getRequestedEntityId()));
+				getPartnerLogo(residentTransactionEntity.getRequestedEntityId(), residentTransactionEntity.getRequestedEntityType()));
 		templateVariables.put(TemplateVariablesConstants.PAYMENT_STATUS,
 				getPaymentStatus(residentTransactionEntity.getStatusCode()));
 		templateVariables.put(TemplateVariablesConstants.DOWNLOAD_CARD_LINK,
@@ -655,10 +656,11 @@ public class TemplateUtil {
 		}
 	}
 
-	private String getPartnerLogo(String partnerId) {
+	private String getPartnerLogo(String partnerId, String partnerType) {
 		Map<String, ?> partnerDetail = new HashMap<>();
 		try {
-			partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(partnerId);
+			partnerDetail = proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType(partnerId,
+					partnerType);
 		} catch (Exception exception) {
 			logger.error(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION.getErrorCode(), exception);
 			return "";

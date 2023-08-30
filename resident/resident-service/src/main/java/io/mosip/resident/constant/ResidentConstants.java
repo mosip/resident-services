@@ -293,4 +293,15 @@ public class ResidentConstants {
     public static final String RESIDENT_REST_TEMPLATE_LOGGING_INTERCEPTOR_FILTER_ENABLED = "resident.rest.template.logging.interceptor.filter.enabled";
     public static final String ID_SCHEMA_VERSION = "IDSchemaVersion";
 
+//    Partner related constant
+    public static final String PARTNERS = "partners";
+	public static final String PMS_PARTNER_ID = "partnerID";
+    public static final String PARTNER_TYPE = "partnerType";
+	public static final String ORGANIZATION_NAME = "organizationName";
+	public static final String AUTH_PARTNER = "Auth_Partner";
+	public static final String PRINT_PARTNER = "Print_Partner";
+	public static final String RESIDENT_SHARE_CREDENTIAL_PARTNER_TYPE = "resident.share-credential.partner.type";
+	public static final String RESIDENT_AUTHENTICATION_REQUEST_PARTNER_TYPE = "resident.authentication-request.partner.type";
+	public static final String RESIDENT_ORDER_PHYSICAL_CARD_PARTNER_TYPE = "resident.order-physical-card.partner.type";
+
 }

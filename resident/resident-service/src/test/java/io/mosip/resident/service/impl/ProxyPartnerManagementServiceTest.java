@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.util.Utility;
@@ -67,14 +66,14 @@ public class ProxyPartnerManagementServiceTest {
 	public void testGetPartnersByPartnerType() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		responseWrapper.setErrors(null);
 		ResponseWrapper<?> result = proxyPartnerManagementService
-				.getPartnersByPartnerType(Optional.of("Device_Provider"));
+				.getPartnersByPartnerType("Device_Provider");
 		assertNotNull(result);
 	}
 	
 	@Test
 	public void testGetPartnersByPartnerTypeIf() throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResponseWrapper<?> result = proxyPartnerManagementService
-				.getPartnersByPartnerType(Optional.empty());
+				.getPartnersByPartnerType("");
 		assertNotNull(result);
 	}
 
@@ -91,7 +90,7 @@ public class ProxyPartnerManagementServiceTest {
 				.thenThrow(new ResidentServiceCheckedException());
 
 		responseWrapper.setErrors(errorList);
-		proxyPartnerManagementService.getPartnersByPartnerType(Optional.of("Device_Provider"));
+		proxyPartnerManagementService.getPartnersByPartnerType("Device_Provider");
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -99,12 +98,12 @@ public class ProxyPartnerManagementServiceTest {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		when(utility.getPartnersByPartnerType(any(), any()))
 				.thenThrow(new ResidentServiceCheckedException());
-		proxyPartnerManagementService.getPartnersByPartnerType(Optional.of("Device_Provider"));
+		proxyPartnerManagementService.getPartnersByPartnerType("Device_Provider");
 	}
 	
 	@Test
 	public void testGetPartnerDetailFromPartnerId() throws ResidentServiceCheckedException {
-		Map<String, ?> result = proxyPartnerManagementService.getPartnerDetailFromPartnerId("2345671");
+		Map<String, ?> result = proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType("2345671", "Auth");
 		assertEquals("2345671", result.get("partnerID"));
 	}
 
@@ -112,7 +111,7 @@ public class ProxyPartnerManagementServiceTest {
 	public void testGetPartnerDetailFromPartnerIdException() throws ResidentServiceCheckedException, ApisResourceAccessException {
 		when(utility.getPartnersByPartnerType(any(), any()))
 				.thenThrow(new ResidentServiceException(ResidentErrorCode.PARTNER_SERVICE_EXCEPTION));
-		proxyPartnerManagementService.getPartnerDetailFromPartnerId("");
+		proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType("", "Auth");
 	}
 
 }

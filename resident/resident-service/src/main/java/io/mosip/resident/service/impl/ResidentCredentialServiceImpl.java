@@ -66,6 +66,7 @@ import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.IdAuthService;
 import io.mosip.resident.service.NotificationService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.ResidentCredentialService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
@@ -75,9 +76,6 @@ import reactor.util.function.Tuples;
 
 @Service
 public class ResidentCredentialServiceImpl implements ResidentCredentialService {
-
-	private static final String PARTNER_TYPE = "partnerType";
-	private static final String ORGANIZATION_NAME = "organizationName";
 
 	@Autowired
 	IdAuthService idAuthService;
@@ -121,7 +119,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 	NotificationService notificationService;
 	
 	@Autowired
-    private ProxyPartnerManagementServiceImpl proxyPartnerManagementServiceImpl;
+    private ProxyPartnerManagementService proxyPartnerManagementService;
 
 	private SecureRandom random;
 	
@@ -310,9 +308,11 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			residentTransactionEntity.setAttributeList(data);
 		}
 		residentTransactionEntity.setRequestedEntityId(dto.getIssuer());
-		Map<String, ?> partnerDetail = proxyPartnerManagementServiceImpl.getPartnerDetailFromPartnerId(dto.getIssuer());
-		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ORGANIZATION_NAME));
-		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(PARTNER_TYPE));
+		Map<String, ?> partnerDetail = proxyPartnerManagementService.getPartnerDetailFromPartnerIdAndPartnerType(
+				dto.getIssuer(), env.getProperty(ResidentConstants.RESIDENT_SHARE_CREDENTIAL_PARTNER_TYPE,
+						ResidentConstants.AUTH_PARTNER));
+		residentTransactionEntity.setRequestedEntityName((String) partnerDetail.get(ResidentConstants.ORGANIZATION_NAME));
+		residentTransactionEntity.setRequestedEntityType((String) partnerDetail.get(ResidentConstants.PARTNER_TYPE));
 		residentTransactionEntity.setConsent(dto.getConsent());
 		return residentTransactionEntity;
 	}
