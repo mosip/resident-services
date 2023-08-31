@@ -1,5 +1,6 @@
 package io.mosip.resident.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
@@ -9,11 +10,13 @@ import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.JsonValue;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
@@ -62,17 +65,21 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
+import static io.mosip.resident.constant.ResidentConstants.VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -813,5 +820,62 @@ public class UtilityTest {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", "Bearer " + token);
 		return Tuples.of(uri, headers, userInfo);
+	}
+
+	@Test
+	public void testGetPreferredLanguageSingleLanguage() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "English");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn("languageAttribute");
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(1, preferredLanguages.size());
+		assertEquals("English", preferredLanguages.iterator().next());
+	}
+
+	@Test
+	public void testGetPreferredLanguageMultipleLanguages() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "English,Hindi,French");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn("languageAttribute");
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(3, preferredLanguages.size());
+		assertEquals(Set.of("English", "Hindi", "French"), preferredLanguages);
+	}
+
+	@Test
+	public void testGetPreferredLanguageAttributeNotSet() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "English");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn(null);
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(0, preferredLanguages.size());
+	}
+
+	@Test
+	public void testGetDefaultTemplateLanguagesV2() {
+		when(env.getProperty("mosip.default.template-languages")).thenReturn("en,fr,es");
+
+		List<String> result = utility.getDefaultTemplateLanguages();
+
+		assertEquals(3, result.size());
+		assertEquals(Arrays.asList("en", "fr", "es"), result);
+	}
+
+	@Test
+	public void testGetDefaultTemplateLanguagesEmpty() {
+		when(env.getProperty("mosip.default.template-languages")).thenReturn(null);
+
+		List<String> result = utility.getDefaultTemplateLanguages();
+
+		assertEquals(0, result.size());
 	}
 }
