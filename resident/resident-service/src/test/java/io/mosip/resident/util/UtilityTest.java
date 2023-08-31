@@ -12,6 +12,8 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
+import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.RegistrationCenterDto;
@@ -953,5 +955,71 @@ public class UtilityTest {
 	@Test
 	public void testClearIdentityMapCache() {
 		utility.clearIdentityMapCache(token);
+	}
+
+	@Test
+	public void testGetAuthTypeCodeFromKey() throws ResidentServiceCheckedException {
+		String reqTypeCode = "reqCode";
+
+		Map<String, String> amrAcrMapping = new HashMap<>();
+		amrAcrMapping.put("reqCode", "authCode");
+		when(utilities.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+
+		String result = utility.getAuthTypeCodefromkey(reqTypeCode);
+
+		assertEquals("authCode", result);
+	}
+
+	@Test
+	public void testGetAuthTypeCodeFromKey_NotFound() throws ResidentServiceCheckedException {
+		String reqTypeCode = "nonExistentCode";
+
+		Map<String, String> amrAcrMapping = new HashMap<>();
+		when(utilities.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+
+		String result = utility.getAuthTypeCodefromkey(reqTypeCode);
+
+		assertEquals(null, result); // Assuming null is returned when not found
+	}
+
+	@Test
+	public void testGetPreferredLanguageCodeForLanguageNameBasedOnFlag_FlagEnabled() throws ResidentServiceCheckedException {
+		String fieldName = "fieldName";
+		String preferredLang = "English";
+
+		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(createDynamicFieldResponse());
+		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
+				fieldName, "en", true))
+				.thenReturn(responseWrapper);
+
+		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
+
+		assertEquals("English", result);
+	}
+
+	@Test
+	public void testGetPreferredLanguageCodeForLanguageNameBasedOnFlag_FlagDisabled() {
+		String fieldName = "fieldName";
+		String preferredLang = "English";
+
+		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
+
+		assertEquals("English", result);
+	}
+
+	private DynamicFieldConsolidateResponseDto createDynamicFieldResponse() {
+		DynamicFieldCodeValueDTO codeValueDTO = new DynamicFieldCodeValueDTO();
+		codeValueDTO.setValue("English");
+		codeValueDTO.setCode("en");
+
+		List<DynamicFieldCodeValueDTO> values = new ArrayList<>();
+		values.add(codeValueDTO);
+
+		DynamicFieldConsolidateResponseDto responseDto = new DynamicFieldConsolidateResponseDto();
+		responseDto.setValues(values);
+
+		return responseDto;
 	}
 }
