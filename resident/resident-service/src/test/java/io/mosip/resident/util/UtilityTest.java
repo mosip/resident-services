@@ -1,6 +1,5 @@
 package io.mosip.resident.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.mosip.kernel.authcodeflowproxy.api.validator.ValidateTokenUtil;
 import io.mosip.kernel.core.exception.ServiceError;
@@ -10,13 +9,13 @@ import io.mosip.kernel.core.util.HMACUtils2;
 import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.MappingJsonConstants;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
-import io.mosip.resident.dto.JsonValue;
+import io.mosip.resident.dto.RegistrationCenterDto;
+import io.mosip.resident.dto.RegistrationCenterResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
@@ -24,6 +23,8 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -65,21 +66,21 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
-import static io.mosip.resident.constant.ResidentConstants.VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -124,7 +125,14 @@ public class UtilityTest {
 	private Utilities utilities;
 
 	@Mock
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Mock
 	private ValidateTokenUtil tokenValidationHelper;
+
+	@Mock
+	private ProxyPartnerManagementService proxyPartnerManagementService;
+
 	private ObjectMapper mapper = new ObjectMapper();
 
 	private String replaceSplChars = "{\" \": \"_\", \",\" : \"\", \":\" : \".\"}";
@@ -877,5 +885,73 @@ public class UtilityTest {
 		List<String> result = utility.getDefaultTemplateLanguages();
 
 		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testGetCenterDetails() throws ApisResourceAccessException {
+		String centerId = "center123";
+		String langCode = "en";
+
+		ResponseWrapper<RegistrationCenterResponseDto> expectedResponse = new ResponseWrapper<>();
+		RegistrationCenterResponseDto registrationCenterResponseDto = new RegistrationCenterResponseDto();
+		RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
+		registrationCenterDto.setId(centerId);
+		registrationCenterDto.setLangCode(langCode);
+		registrationCenterResponseDto.setRegistrationCenters(List.of(registrationCenterDto));
+		expectedResponse.setResponse(registrationCenterResponseDto);
+
+		List<String> pathSegments = Arrays.asList(centerId, langCode);
+		when(residentServiceRestClient.getApi(ApiName.CENTERDETAILS, pathSegments, "", "", ResponseWrapper.class))
+				.thenReturn(expectedResponse);
+
+		ResponseWrapper<?> result = utility.getCenterDetails(centerId, langCode);
+
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	public void testGetValidDocumentByLangCode() throws ResidentServiceCheckedException {
+		String langCode = "en";
+
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		when(proxyMasterdataService.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
+
+		ResponseWrapper<?> result = utility.getValidDocumentByLangCode(langCode);
+
+		assertEquals(responseWrapper, result);
+	}
+
+	@Test
+	public void testGetPartnersByPartnerType_WithPartnerType() throws ResidentServiceCheckedException {
+		String partnerType = "partner";
+		ApiName apiUrl = ApiName.PARTNER_API_URL;
+
+		ResponseWrapper expectedResponse = new ResponseWrapper<>();
+		when(proxyPartnerManagementService.getPartnersByPartnerType(
+				Optional.of(partnerType), apiUrl))
+				.thenReturn(expectedResponse);
+
+		ResponseWrapper<?> result = utility.getPartnersByPartnerType(partnerType, apiUrl);
+
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	public void testGetPartnersByPartnerType_WithoutPartnerType() throws ResidentServiceCheckedException {
+		ApiName apiUrl = ApiName.PARTNER_API_URL;
+
+		ResponseWrapper expectedResponse = new ResponseWrapper<>();
+		when(proxyPartnerManagementService.getPartnersByPartnerType(
+				Optional.empty(), apiUrl))
+				.thenReturn(expectedResponse);
+
+		ResponseWrapper<?> result = utility.getPartnersByPartnerType(null, apiUrl);
+
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	public void testClearIdentityMapCache() {
+		utility.clearIdentityMapCache(token);
 	}
 }
