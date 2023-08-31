@@ -988,6 +988,7 @@ public class UtilityTest {
 		String preferredLang = "English";
 
 		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
+		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
 		ResponseWrapper responseWrapper = new ResponseWrapper<>();
 		responseWrapper.setResponse(createDynamicFieldResponse());
 		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
@@ -996,7 +997,7 @@ public class UtilityTest {
 
 		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
 
-		assertEquals("English", result);
+		assertEquals("en", result);
 	}
 
 	@Test
