@@ -6,7 +6,6 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.HMACUtils2;
-import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.constant.ApiName;
@@ -34,7 +33,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -46,6 +47,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -67,6 +70,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -98,6 +102,9 @@ import static org.mockito.Mockito.when;
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest({JsonUtil.class})
 public class UtilityTest {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
 	@MockBean
 	private Environment environment;
 
@@ -359,6 +366,15 @@ public class UtilityTest {
 		utility.getMappingJson();
 	}
 
+    @Test
+    public void testReadResourceContent() throws UnsupportedEncodingException {
+		assertEquals("AXAXAXAX", utility.readResourceContent(new ByteArrayResource("AXAXAXAX".getBytes("UTF-8"))));
+    }
+    @Test
+    public void testReadResourceContent3() {
+		thrown.expect(ResidentServiceException.class);
+		utility.readResourceContent(new ClassPathResource("Path"));
+    }
 	@Test
 	public void testGetPreferredLanguage() throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -1263,7 +1279,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testLoadRegProcessorIdentityJson(){
+	public void testLoadRegProcessorIdentityJson() {
 		ReflectionTestUtils.setField(utility, "specialCharsReplacement", "$");
 		ReflectionTestUtils.invokeMethod(utility, "loadRegProcessorIdentityJson");
 	}
