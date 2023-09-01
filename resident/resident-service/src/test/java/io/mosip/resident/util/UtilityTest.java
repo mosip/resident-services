@@ -37,12 +37,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mvel2.integration.VariableResolverFactory;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -87,10 +90,35 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ContextConfiguration(classes = {Utility.class, ResidentServiceRestClient.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({ JsonUtil.class })
+@PrepareForTest({JsonUtil.class})
 public class UtilityTest {
+	@MockBean
+	private Environment environment;
+
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
+
+	@MockBean
+	private PDFGenerator pDFGenerator;
+
+	@MockBean(name = "restClientWithPlainRestTemplate")
+	private ResidentServiceRestClient residentServiceRestClient1;
+
+	@MockBean(name = "restClientWithSelfTOkenRestTemplate")
+	private ResidentServiceRestClient residentServiceRestClient2;
+
+	@MockBean(name = "selfTokenRestTemplate")
+	private RestTemplate restTemplate;
+
+	@MockBean
+	private ValidateTokenUtil validateTokenUtil;
+
+	@MockBean(name = "varres")
+	private VariableResolverFactory variableResolverFactory;
+
 	private static final String LOCALE = "en-US";
 
 	@Mock
@@ -106,7 +134,7 @@ public class UtilityTest {
 
 	@Mock
 	private IdentityServiceImpl identityService;
-	
+
 	@Mock
 	private HttpServletRequest request;
 
@@ -115,11 +143,11 @@ public class UtilityTest {
 
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
-	
+
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
-	
+
 	@Mock
 	private ObjectMapper objectMapper;
 
@@ -158,7 +186,7 @@ public class UtilityTest {
 		InputStream is = new FileInputStream(idJson);
 		String idJsonString = IOUtils.toString(is, "UTF-8");
 		identity = JsonUtil.readValue(idJsonString, JSONObject.class);
-		
+
 		ReflectionTestUtils.setField(utility, "mapper", mapper);
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
@@ -316,7 +344,7 @@ public class UtilityTest {
 	public void testGetMailingAttributesIdNull() throws Exception {
 		utility.getMailingAttributes(null, new HashSet<String>(), Map.of(), Map.of());
 	}
-	
+
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMailingAttributesIdEmpty() throws Exception {
 		utility.getMailingAttributes("", new HashSet<String>(), Map.of(), Map.of());
@@ -418,7 +446,7 @@ public class UtilityTest {
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
 		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
-		idRepoResponseDto.setIdentity(identityJson);		
+		idRepoResponseDto.setIdentity(identityJson);
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
@@ -429,7 +457,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameAsPerFeatureNameShareCredWithPartner(){
+	public void testGetFileNameAsPerFeatureNameShareCredWithPartner() {
 		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER", 0, LOCALE));
 		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID", 0, LOCALE));
 		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID", 0, LOCALE));
@@ -441,7 +469,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameAsPerFeatureNameGenerateVid(){
+	public void testGetFileNameAsPerFeatureNameGenerateVid() {
 		Mockito.when(env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY))
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
@@ -450,7 +478,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameNullEventId(){
+	public void testGetFileNameNullEventId() {
 		Mockito.when(env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY))
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
@@ -466,7 +494,7 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"2186705746").getBytes()),
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("EMAIL"), identityDTO, idaToken));
 	}
 
@@ -478,7 +506,7 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("8809989898"+"2186705746").getBytes()),
+		assertEquals(HMACUtils2.digestAsPlainText(("8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PHONE"), identityDTO, idaToken));
 	}
 
@@ -490,8 +518,8 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction(List.of("PHONE","EMAIL"), identityDTO, idaToken));
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "8809989898" + "2186705746").getBytes()),
+				utility.getIdForResidentTransaction(List.of("PHONE", "EMAIL"), identityDTO, idaToken));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -502,7 +530,7 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PH"), identityDTO, idaToken));
 	}
 
@@ -516,12 +544,12 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testCreateDownloadLinkFailure(){
+	public void testCreateDownloadLinkFailure() {
 		assertEquals("NA", utility.createDownloadCardLinkFromEventId(new ResidentTransactionEntity()));
 	}
 
 	@Test
-	public void testCreateDownloadLinkSuccess(){
+	public void testCreateDownloadLinkSuccess() {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		ReflectionTestUtils.setField(utility, "downloadCardUrl", "http://mosip/event/{eventId}");
 		residentTransactionEntity.setReferenceLink("http://mosip");
@@ -530,25 +558,25 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testCreateTrackServiceRequestLink(){
+	public void testCreateTrackServiceRequestLink() {
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
-		assertEquals(("http://mosip"+"2186705746111111"), utility.createTrackServiceRequestLink("2186705746111111"));
+		assertEquals(("http://mosip" + "2186705746111111"), utility.createTrackServiceRequestLink("2186705746111111"));
 	}
 
 	@Test
-	public void testCreateEventId(){
+	public void testCreateEventId() {
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
 		Mockito.when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
-		assertEquals(16,utility.createEventId().length());
+		assertEquals(16, utility.createEventId().length());
 	}
 
 	@Test
-	public void testCreateEntity(){
-		assertEquals("Unknown",utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER).getCrBy());
+	public void testCreateEntity() {
+		assertEquals("Unknown", utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER).getCrBy());
 	}
 
 	@Test
-	public void testGetFileNameAsPerFeatureName(){
+	public void testGetFileNameAsPerFeatureName() {
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
 		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.SHARE_CRED_WITH_PARTNER, 0, LOCALE));
@@ -583,44 +611,43 @@ public class UtilityTest {
 		String ipAddress = utility.getClientIp(request);
 		assertEquals("1.5.5", ipAddress);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForFileName_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, "en-US", localDateTime);
 		assertEquals("Aug_14_1993_4.54.00_PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForFileName_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(-330, "en-IN", localDateTime);
 		assertEquals("14-Aug-1993_10.24.00_PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForFileName_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, null, localDateTime);
 		assertEquals("1993-08-14_04.54.00_PM", formatWithOffsetForFileName);
 	}
-	
 
-	
+
 	@Test
 	public void test_formatWithOffsetForUI_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
 		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForUI_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(-330, "en-IN", localDateTime);
 		assertEquals("14-Aug-1993, 10:24:00 PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForUI_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
@@ -643,7 +670,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void test_formatWithOffsetForUI_local_null(){
+	public void test_formatWithOffsetForUI_local_null() {
 		ReflectionTestUtils.invokeMethod(utility, "formatToLocaleDateTime", null, null, LocalDateTime.now());
 	}
 
@@ -654,20 +681,20 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameAck(){
+	public void testGetFileNameAck() {
 		utility.getFileNameAck(RequestType.GET_MY_ID.getName(), "4936295739034704",
 				"Ack_{featureName}_{eventId}_{timestamp}", 0, "en-IN");
 	}
 
 	@Test
-	public void testReplaceSpecialChars(){
+	public void testReplaceSpecialChars() {
 		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", Map.of());
 		assertEquals("Get_My_Id",
 				ReflectionTestUtils.invokeMethod(utility, "replaceSpecialChars", "Get_My_Id"));
 	}
 
 	@Test
-	public void testGetFileNameForId(){
+	public void testGetFileNameForId() {
 		utility.getFileNameForId("Get_My_Id", "UIN_{id}_{timestamp}", 0, "en-IN");
 	}
 
@@ -710,7 +737,7 @@ public class UtilityTest {
 		)).thenReturn(responseWrapper);
 
 		when(objectMapper.writeValueAsString(any())).thenReturn("mock");
-		SignatureResponseDto signatureResponseDto= new SignatureResponseDto();
+		SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
 		signatureResponseDto.setData("ZGF0YQ==");
 		when(objectMapper.readValue(anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
 
@@ -765,7 +792,7 @@ public class UtilityTest {
 		)).thenReturn(responseWrapper);
 
 		when(objectMapper.writeValueAsString(any())).thenReturn("mock");
-		SignatureResponseDto signatureResponseDto= new SignatureResponseDto();
+		SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
 		signatureResponseDto.setData("ZGF0YQ==");
 		when(objectMapper.readValue(anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
 
@@ -780,7 +807,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testDecodeAndDecryptUserInfoOidcJwtDisabled(){
+	public void testDecodeAndDecryptUserInfoOidcJwtDisabled() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(false));
 		AuthErrorCode authErrorCode = null;
@@ -791,7 +818,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testDecodeAndDecryptUserInfo(){
+	public void testDecodeAndDecryptUserInfo() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(true));
 		AuthErrorCode authErrorCode = null;
@@ -802,7 +829,7 @@ public class UtilityTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testDecodeAndDecryptUserInfoOidcJwtDisabledFailure(){
+	public void testDecodeAndDecryptUserInfoOidcJwtDisabledFailure() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(true));
 		AuthErrorCode authErrorCode = AuthErrorCode.FORBIDDEN;
@@ -813,7 +840,7 @@ public class UtilityTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void testDecodeAndDecryptUserInfoOidcEncryptionEnabled(){
+	public void testDecodeAndDecryptUserInfoOidcEncryptionEnabled() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(false));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(false));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED)).thenReturn(String.valueOf(true));
@@ -827,7 +854,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testDecryptPayload(){
+	public void testDecryptPayload() {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
 		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("payload");
 		assertEquals("payload", ReflectionTestUtils.invokeMethod(utility, "decryptPayload", "payload"));
@@ -1121,7 +1148,7 @@ public class UtilityTest {
 		Map language = new HashMap();
 		language.put("language", "en");
 		language.put("value", "Kamesh");
-		identity.put("name",language);
+		identity.put("name", language);
 		identity.put("gender", "value2");
 
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
@@ -1141,7 +1168,7 @@ public class UtilityTest {
 	@Test
 	public void testGetMappingValueWithLangCodeNullIdentity() throws ResidentServiceCheckedException, IOException {
 		Map<String, Object> identity = new HashMap<>();
-		identity.put("name",null);
+		identity.put("name", null);
 		identity.put("gender", "value2");
 
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
@@ -1176,5 +1203,43 @@ public class UtilityTest {
 		String result = utility.getMappingValue(identity, MAPPING_NAME);
 
 		assertEquals("Kamesh", result);
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetCachedIdentityData() throws ApisResourceAccessException {
+		utility.getCachedIdentityData("1232", token, ResponseWrapper.class);
+	}
+
+	@Test
+	public void testClearUserInfoCache() {
+		utility.clearUserInfoCache(token);
+	}
+
+    @Test
+    public void testGetMappingJsonObject() throws ResidentServiceCheckedException {
+		JSONObject object = new JSONObject();
+		object.put("name", "Kamesh");
+		ReflectionTestUtils.setField(utility, "mappingJsonObject", object);
+		assertEquals(object, utility.getMappingJsonObject());
+    }
+
+	@Test(expected = ResidentServiceException.class)
+	public void testGetMappingJsonObjectNullMappingJsonObject() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", "");
+		utility.getMappingJsonObject();
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetMappingJsonObjectInvalidMappingJsonObject() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", "K");
+		utility.getMappingJsonObject();
+	}
+
+	@Test
+	public void testGetMappingJsonObjectValidMappingJsonObject() throws ResidentServiceCheckedException {
+		JSONObject object = new JSONObject();
+		object.put("name", "Kamesh");
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", object.toJSONString());
+		assertEquals(object, utility.getMappingJsonObject());
 	}
 }
