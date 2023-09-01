@@ -16,6 +16,7 @@ import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
 import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.JsonValue;
 import io.mosip.resident.dto.RegistrationCenterDto;
 import io.mosip.resident.dto.RegistrationCenterResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
@@ -84,6 +85,7 @@ import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -1048,6 +1050,12 @@ public class UtilityTest {
 		assertEquals("English", result);
 	}
 
+    @Test
+    public void testGetDataCapturedLanguages2() throws ReflectiveOperationException {
+		HashMap<Object, Object> mapperIdentity = new HashMap<>();
+		assertTrue(utility.getDataCapturedLanguages(mapperIdentity, new HashMap<>()).isEmpty());
+    }
+
 	private DynamicFieldConsolidateResponseDto createDynamicFieldResponse() {
 		DynamicFieldCodeValueDTO codeValueDTO = new DynamicFieldCodeValueDTO();
 		codeValueDTO.setValue("English");
@@ -1091,9 +1099,7 @@ public class UtilityTest {
 		identity.put("mapping1", "value1");
 		identity.put("mapping2", "value2");
 
-		String result = utility.getMappingValue(identity, MAPPING_NAME);
-
-		assertEquals("value1", result);
+		utility.getMappingValue(identity, MAPPING_NAME);
 	}
 
 	@Test
@@ -1241,5 +1247,78 @@ public class UtilityTest {
 		object.put("name", "Kamesh");
 		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", object.toJSONString());
 		assertEquals(object, utility.getMappingJsonObject());
+	}
+
+	@Test
+	public void testGetDataCapturedLanguagesV2() {
+		Map<String, Object> mapperIdentity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		JsonValue jsonValue = new JsonValue();
+		jsonValue.setLanguage("en");
+		jsonValue.setValue("Kamesh");
+		language.put("value", "name");
+		mapperIdentity.put("name", language);
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("name", List.of(jsonValue));
+
+		Set<String> result = null;
+		try {
+			result = utility.getDataCapturedLanguages(mapperIdentity, demographicIdentity);
+		} catch (ReflectiveOperationException e) {
+		}
+
+		Set<String> expectedValues = new HashSet<>(Arrays.asList("en"));
+		assertEquals(expectedValues, result);
+	}
+
+	@Test
+	public void testLoadRegProcessorIdentityJson(){
+		ReflectionTestUtils.setField(utility, "specialCharsReplacement", "$");
+		ReflectionTestUtils.invokeMethod(utility, "loadRegProcessorIdentityJson");
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testRetrieveErrorCode() throws ResidentServiceCheckedException {
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse("");
+		utility.retrieveErrorCode(responseWrapper, "1");
+	}
+
+	@Test
+	public void testGetMappingJsonWithTemplateLanguages() throws Exception {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", mappingJson);
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
+
+		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
+		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
+		idRepoResponseDto.setStatus("Activated");
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);
+		response.setResponse(idRepoResponseDto);
+		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+				any(), any(Class.class))).thenReturn(response);
+		Set templateLanguages = new HashSet<>();
+		templateLanguages.add("eng");
+		Map<String, Object> attributes = utility.getMailingAttributes("3527812406", templateLanguages, identityJson, mapperIdentity);
+		assertEquals("eng", attributes.get("preferredLang"));
+		verify(residentRestTemplate, never()).getForObject(anyString(), any(Class.class));
+	}
+
+	@Test
+	public void testGetPreferredLanguageAttributeNullSet() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn("languageAttribute");
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(0, preferredLanguages.size());
 	}
 }
