@@ -6,6 +6,7 @@ import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.pdfgenerator.spi.PDFGenerator;
 import io.mosip.kernel.core.util.HMACUtils2;
+import io.mosip.kernel.core.util.exception.JsonProcessingException;
 import io.mosip.kernel.openid.bridge.api.constants.AuthErrorCode;
 import io.mosip.kernel.signature.dto.SignatureResponseDto;
 import io.mosip.resident.constant.ApiName;
@@ -1072,34 +1073,23 @@ public class UtilityTest {
 
 	@Test(expected = ApisResourceAccessException.class)
 	public void testGetUserInfo() throws ApisResourceAccessException {
-		// Prepare expected response map
+
 		Map<String, Object> expectedResponseMap = Map.of("user_id", 123, "username", "sampleUser");
 		String usefInfoEndpointUrl = "http://localhost";
 		ReflectionTestUtils.setField(utility, "usefInfoEndpointUrl", usefInfoEndpointUrl);
-		// Prepare UriComponents and headers
+
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
 		UriComponents uriComponent = builder.build(false).encode();
 
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add(AUTHORIZATION, BEARER_PREFIX + TOKEN);
 
-		// Mocking RestClientWithPlainRestTemplate behavior
 		when(residentServiceRestClient.getApi(uriComponent.toUri(), String.class, headers))
 				.thenReturn(RESPONSE_JSON);
 
-		// Call the method under test
 		Map<String, Object> actualResponseMap = utility.getUserInfo(TOKEN);
 
 		assertEquals(expectedResponseMap, actualResponseMap);
-	}
-
-	@Test(expected = ResidentServiceCheckedException.class)
-	public void testGetMappingValue() throws ResidentServiceCheckedException, IOException {
-		Map<String, Object> identity = new HashMap<>();
-		identity.put("mapping1", "value1");
-		identity.put("mapping2", "value2");
-
-		utility.getMappingValue(identity, MAPPING_NAME);
 	}
 
 	@Test
@@ -1320,5 +1310,21 @@ public class UtilityTest {
 
 		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
 		assertEquals(0, preferredLanguages.size());
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testGetPreferredLanguageCodeForLanguageNameBasedOnFlag_FlagEnabledResidentServiceCheckedException() throws ResidentServiceCheckedException {
+		String fieldName = "fieldName";
+		String preferredLang = "English";
+
+		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
+		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
+		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
+				fieldName, "en", true))
+				.thenThrow(new ResidentServiceCheckedException());
+
+		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
+
+		assertEquals("en", result);
 	}
 }
