@@ -148,7 +148,8 @@ public class UtilityTest {
 	private static final String TOKEN = "sampleToken";
 	private static final String RESPONSE_JSON = "{\"user_id\": 123, \"username\": \"sampleUser\"}";
 
-
+	private static Map mappingJson;
+	private static final String MAPPING_NAME = "name";
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -187,6 +188,10 @@ public class UtilityTest {
 				"Soh6kZBoOeYd_29RQQzFQNzpn_Ahk4GxQu_TLyvoWeNXpfx94om7TqrZYghtTg5_svku2P0NuFxzbWysPMjaHrEff0idKY94sKJ6eNpLXRXbJCPkAHtfVY0U3" +
 				"YDQqWUpYjE3hQCZz0u_L8sieJIN3mYtjd12rfOrjEKu2fFGu5UbJRVqkmOw0egVGHw";
 		idaToken = "2186705746";
+		mappingJson = new HashMap<>();
+		Map mapping1 = new HashMap<>();
+		mapping1.put("mapping1", "value1");
+		mappingJson.put("identity", mapping1);
 	}
 
 	@Test
@@ -1052,4 +1057,105 @@ public class UtilityTest {
 
 		assertEquals(expectedResponseMap, actualResponseMap);
 	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetMappingValue() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		identity.put("mapping1", "value1");
+		identity.put("mapping2", "value2");
+
+		String result = utility.getMappingValue(identity, MAPPING_NAME);
+
+		assertEquals("value1", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCode() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		language.put("value", "Kamesh");
+		identity.put("name", List.of(language));
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, "en");
+
+		assertEquals("Kamesh", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeNull() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		language.put("value", "Kamesh");
+		identity.put("name", List.of(language));
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, null);
+
+		assertEquals("", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeMapIdentity() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		language.put("value", "Kamesh");
+		identity.put("name",language);
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, "en");
+
+		assertEquals("Kamesh", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeNullIdentity() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		identity.put("name",null);
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name_en", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, "en");
+
+		assertEquals("", result);
+	}
+
 }
