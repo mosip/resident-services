@@ -49,6 +49,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
@@ -80,8 +82,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -119,6 +119,9 @@ public class UtilityTest {
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
+
+	@Mock
+	private ResidentServiceRestClient restClientWithPlainRestTemplate;
 	
 	@Mock
 	private ObjectMapper objectMapper;
@@ -142,6 +145,12 @@ public class UtilityTest {
 	@Mock
 	private ObjectStoreHelper objectStoreHelper;
 	private String idaToken;
+
+	private static final String AUTHORIZATION = "Authorization";
+	private static final String BEARER_PREFIX = "Bearer ";
+	private static final String TOKEN = "sampleToken";
+	private static final String RESPONSE_JSON = "{\"user_id\": 123, \"username\": \"sampleUser\"}";
+
 
 
 	@Before
@@ -1022,5 +1031,28 @@ public class UtilityTest {
 		responseDto.setValues(values);
 
 		return responseDto;
+	}
+
+	@Test(expected = ApisResourceAccessException.class)
+	public void testGetUserInfo() throws ApisResourceAccessException {
+		// Prepare expected response map
+		Map<String, Object> expectedResponseMap = Map.of("user_id", 123, "username", "sampleUser");
+		String usefInfoEndpointUrl = "http://localhost";
+		ReflectionTestUtils.setField(utility, "usefInfoEndpointUrl", usefInfoEndpointUrl);
+		// Prepare UriComponents and headers
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
+		UriComponents uriComponent = builder.build(false).encode();
+
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add(AUTHORIZATION, BEARER_PREFIX + TOKEN);
+
+		// Mocking RestClientWithPlainRestTemplate behavior
+		when(restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), String.class, headers))
+				.thenReturn(RESPONSE_JSON);
+
+		// Call the method under test
+		Map<String, Object> actualResponseMap = utility.getUserInfo(TOKEN);
+
+		assertEquals(expectedResponseMap, actualResponseMap);
 	}
 }
