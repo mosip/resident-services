@@ -641,6 +641,11 @@ public class UtilityTest {
 		assertEquals("1.5.5", ipAddress);
 	}
 
+    @Test(expected = Exception.class)
+    public void testGetCardOrderTrackingId() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		utility.getCardOrderTrackingId("42", "42");
+    }
+
 	@Test
 	public void test_formatWithOffsetForFileName_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
@@ -1355,12 +1360,12 @@ public class UtilityTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void testGetPassword(){
+	public void testGetPassword() {
 		utility.getPassword(List.of("email"));
 	}
 
 	@Test
-	public void testCreateEntityNotAsyncRequestType(){
+	public void testCreateEntityNotAsyncRequestType() {
 		assertEquals("Unknown", utility.createEntity(RequestType.GENERATE_VID).getCrBy());
 	}
 }
