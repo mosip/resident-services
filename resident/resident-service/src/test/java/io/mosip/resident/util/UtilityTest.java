@@ -1158,4 +1158,23 @@ public class UtilityTest {
 		assertEquals("", result);
 	}
 
+	@Test
+	public void testGetMappingValueWithLangCodeStringAttributeValue() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		identity.put("name", "Kamesh");
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME);
+
+		assertEquals("Kamesh", result);
+	}
 }
