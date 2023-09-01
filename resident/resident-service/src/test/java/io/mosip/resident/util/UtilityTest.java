@@ -119,9 +119,6 @@ public class UtilityTest {
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
-
-	@Mock
-	private ResidentServiceRestClient restClientWithPlainRestTemplate;
 	
 	@Mock
 	private ObjectMapper objectMapper;
@@ -1047,7 +1044,7 @@ public class UtilityTest {
 		headers.add(AUTHORIZATION, BEARER_PREFIX + TOKEN);
 
 		// Mocking RestClientWithPlainRestTemplate behavior
-		when(restClientWithPlainRestTemplate.getApi(uriComponent.toUri(), String.class, headers))
+		when(residentServiceRestClient.getApi(uriComponent.toUri(), String.class, headers))
 				.thenReturn(RESPONSE_JSON);
 
 		// Call the method under test
