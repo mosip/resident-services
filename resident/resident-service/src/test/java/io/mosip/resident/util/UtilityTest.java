@@ -33,6 +33,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,6 +45,7 @@ import org.mvel2.integration.VariableResolverFactory;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
@@ -51,6 +53,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -370,11 +373,18 @@ public class UtilityTest {
     public void testReadResourceContent() throws UnsupportedEncodingException {
 		assertEquals("AXAXAXAX", utility.readResourceContent(new ByteArrayResource("AXAXAXAX".getBytes("UTF-8"))));
     }
-    @Test
+
+	@Test
     public void testReadResourceContent3() {
 		thrown.expect(ResidentServiceException.class);
 		utility.readResourceContent(new ClassPathResource("Path"));
     }
+
+    @Test(expected = Exception.class)
+    public void testMaskEmail() {
+		utility.maskEmail("jane.doe@example.org");
+    }
+
 	@Test
 	public void testGetPreferredLanguage() throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
@@ -1342,5 +1352,15 @@ public class UtilityTest {
 		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
 
 		assertEquals("en", result);
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetPassword(){
+		utility.getPassword(List.of("email"));
+	}
+
+	@Test
+	public void testCreateEntityNotAsyncRequestType(){
+		assertEquals("Unknown", utility.createEntity(RequestType.GENERATE_VID).getCrBy());
 	}
 }
