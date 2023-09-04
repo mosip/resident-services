@@ -20,20 +20,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.mosip.resident.service.IdentityService;
+import io.mosip.resident.service.ProxyMasterdataService;
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
+import org.mockito.exceptions.base.MockitoException;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -54,10 +63,20 @@ import io.mosip.resident.exception.IndividualIdNotFoundException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.VidCreationException;
 
+@ContextConfiguration(classes = {Utilities.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
 @PrepareForTest
 public class UtilitiesTest {
+
+    @MockBean
+    private Environment environment;
+
+    @MockBean
+    private ObjectMapper objectMapper;
+
+    @MockBean(name = "selfTokenRestTemplate")
+    private RestTemplate restTemplate;
 
     @InjectMocks
     @Spy
@@ -75,6 +94,18 @@ public class UtilitiesTest {
     @Mock
     @Qualifier("selfTokenRestTemplate")
     private RestTemplate residentRestTemplate;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Mock
+    private IdentityService identityService;
+
+    @Mock
+    private ProxyMasterdataService proxyMasterdataService;
+
+    @Mock
+    private Utility utility;
 
     JSONObject identity;
 
@@ -119,13 +150,13 @@ public class UtilitiesTest {
         JSONObject identityJsonObj = utilities.retrieveIdrepoJson("3527812406");
         assertEquals(identityJsonObj.get("UIN"), uin.get("UIN"));
     }
-    
+
     @Test
     public void testRetrieveIdrepoJsonIfFalse() throws ApisResourceAccessException, IOException {
         // UIN
         JSONObject identityJsonObj = utilities.retrieveIdrepoJson(null);
     }
-    
+
     @Test
     public void testRetrieveIdrepoJsonIfFalse2() throws ApisResourceAccessException, IOException {
         // UIN
@@ -185,7 +216,7 @@ public class UtilitiesTest {
         JSONObject registrationProcessorMappingJson = utilities.getRegistrationProcessorMappingJson();
         assertEquals(registrationProcessorMappingJson, identityObject);
     }
-    
+
     @Test
     public void testGetUinByVid() throws ApisResourceAccessException, IOException {
         JSONObject response = JsonUtil.getJSONObject(identityVID, "response");
@@ -235,19 +266,19 @@ public class UtilitiesTest {
         String status = utilities.retrieveIdrepoJsonStatus("3527812406");
         assertEquals(status, response.get("status"));
     }
-    
+
     @Test
     public void testRetrieveIdrepoJsonStatusNestedIf() throws ApisResourceAccessException, IOException {
-        
+
         Mockito.when(residentServiceRestClient.getApi(any(), anyList(), anyString(), anyString(), any(Class.class))).thenReturn(null);
-        
+
         // Status
         String status = utilities.retrieveIdrepoJsonStatus("3527812406");
     }
-    
+
     @Test
-    public void testRetrieveIdrepoJsonStatusWithUinNull() throws ApisResourceAccessException, IOException{
-    	utilities.retrieveIdrepoJsonStatus(null);
+    public void testRetrieveIdrepoJsonStatusWithUinNull() throws ApisResourceAccessException, IOException {
+        utilities.retrieveIdrepoJsonStatus(null);
     }
 
     @Test(expected = IdRepoAppException.class)
@@ -262,40 +293,46 @@ public class UtilitiesTest {
         // UIN
         utilities.retrieveIdrepoJsonStatus("3527812406");
     }
-    
+
     @Test
     public void testGenerateAudit() {
-    	List<Map<String, String>> mapList=utilities.generateAudit("12345");
-    	assertEquals("12345", mapList.get(0).get("id"));
+        List<Map<String, String>> mapList = utilities.generateAudit("12345");
+        assertEquals("12345", mapList.get(0).get("id"));
     }
-    
+
     @Test
     public void testGetLanguageCode() {
-    	when(env.getProperty(any())).thenReturn("mandatory languages");
-    	
-    	String result=utilities.getLanguageCode();
-    	assertNotNull(result);
+        when(env.getProperty(any())).thenReturn("mandatory languages");
+
+        String result = utilities.getLanguageCode();
+        assertNotNull(result);
     }
-    
+
     @Test
     public void testGetLanguageCodeElse() {
-    	when(env.getProperty(any())).thenReturn("");
-    	
-    	utilities.getLanguageCode();
+        when(env.getProperty(any())).thenReturn("");
+
+        utilities.getLanguageCode();
     }
-    
+
     @Test
     public void testGetLanguageCodeNestedIf() {
-    	when(env.getProperty("mosip.optional-languages")).thenReturn("optional-languages");
-    	
-    	String result=utilities.getLanguageCode();
-    	assertNotNull(result);
+        when(env.getProperty("mosip.optional-languages")).thenReturn("optional-languages");
+
+        String result = utilities.getLanguageCode();
+        assertNotNull(result);
+    }
+
+    @Test(expected = Exception.class)
+    public void testGetAmrAcrMapping() throws ResidentServiceCheckedException {
+        thrown.expect(MockitoException.class);
+        utilities.getAmrAcrMapping();
     }
 
     @Test
     public void testGetRidByIndividualId() throws ApisResourceAccessException {
         ResponseWrapper response = new ResponseWrapper<>();
-        response.setResponse(Map.of("rid","123"));
+        response.setResponse(Map.of("rid", "123"));
         Mockito.when(residentServiceRestClient.getApi((ApiName) any(), any(), any())).thenReturn(response);
         String rid = utilities.getRidByIndividualId("123");
         assertEquals("123", rid);
@@ -322,8 +359,8 @@ public class UtilitiesTest {
 
     @Test
     public void testGetTransactionTypeCode() throws ApisResourceAccessException, IOException {
-    	when(env.getProperty(any())).thenReturn("PACKET_UPLOAD,PACKET_RECEIVER");
-        HashMap<String ,Object> packetStatus = new HashMap<>();
+        when(env.getProperty(any())).thenReturn("PACKET_UPLOAD,PACKET_RECEIVER");
+        HashMap<String, Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "PACKET_RECEIVER");
         assertEquals(Optional.of("REQUEST_RECEIVED"),
                 ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus));
@@ -331,14 +368,14 @@ public class UtilitiesTest {
 
     @Test
     public void testGetTransactionTypeCodeFailed() throws ApisResourceAccessException, IOException {
-    	when(env.getProperty(any())).thenReturn("status,packet");
-        HashMap<String ,Object> packetStatus = new HashMap<>();
+        when(env.getProperty(any())).thenReturn("status,packet");
+        HashMap<String, Object> packetStatus = new HashMap<>();
         packetStatus.put(TRANSACTION_TYPE_CODE, "test");
         ReflectionTestUtils.invokeMethod(utilities, "getTransactionTypeCode", packetStatus);
     }
 
     @Test
-    public void testGetJson(){
+    public void testGetJson() {
         utilities.getJson("http://localhost", "http://localhost");
     }
 
@@ -401,13 +438,112 @@ public class UtilitiesTest {
         Mockito.when(objMapper.writeValueAsString(Mockito.any())).thenReturn(String.valueOf(objectArrayList));
         Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("SUCCESS");
         Map<String, String> result = utilities.getPacketStatus("10241102241004720230627060344");
-        assertEquals("SUCCESS",result.get("aidStatus"));
+        assertEquals("SUCCESS", result.get("aidStatus"));
     }
 
     @Test
-    public void testGetDefaultSource(){
+    public void testGetDefaultSource() {
         ReflectionTestUtils.setField(utilities, "provider",
                 "source:RESIDENT,process:ACTIVATED|DEACTIVATED|RES_UPDATE|LOST|RES_REPRINT,classname:io.mosip.commons.packet.impl.PacketWriterImpl\n");
         assertEquals("RESIDENT", utilities.getDefaultSource());
+    }
+
+    @Test
+    public void testGetIdentityDataFromIndividualID()
+            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any()))
+                .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
+        thrown.expect(IdRepoAppException.class);
+        utilities.getIdentityDataFromIndividualID("42");
+        verify(identityService).getAccessToken();
+        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any());
+    }
+
+    @Test
+    public void testGetIdentityDataFromIndividualID2()
+            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any()))
+                .thenReturn("Utilities::retrieveIdrepoJson()::entry");
+
+        ResponseDTO1 responseDTO1 = new ResponseDTO1();
+        responseDTO1.setDocuments(new ArrayList<>());
+        responseDTO1.setEntity("Utilities::retrieveIdrepoJson()::entry");
+        responseDTO1.setIdentity("Identity");
+        responseDTO1.setStatus("Utilities::retrieveIdrepoJson()::entry");
+
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        idResponseDTO1.setErrors(new ArrayList<>());
+        idResponseDTO1.setId("42");
+        idResponseDTO1.setResponse(responseDTO1);
+        idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
+        idResponseDTO1.setVersion("1.0.2");
+        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
+        thrown.expect(IdRepoAppException.class);
+        utilities.getIdentityDataFromIndividualID("42");
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
+        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any());
+    }
+
+    @Test
+    public void testGetIdentityDataFromIndividualID3()
+            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
+
+        ResponseDTO1 responseDTO1 = new ResponseDTO1();
+        responseDTO1.setDocuments(new ArrayList<>());
+        responseDTO1.setEntity("Utilities::retrieveIdrepoJson()::entry");
+        responseDTO1.setIdentity("Identity");
+        responseDTO1.setStatus("Utilities::retrieveIdrepoJson()::entry");
+
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        idResponseDTO1.setErrors(new ArrayList<>());
+        idResponseDTO1.setId("42");
+        idResponseDTO1.setResponse(responseDTO1);
+        idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
+        idResponseDTO1.setVersion("1.0.2");
+        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
+        thrown.expect(IdRepoAppException.class);
+        utilities.getIdentityDataFromIndividualID("42");
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
+        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any());
+    }
+
+    @Test
+    public void testGetIdentityDataFromIndividualID4()
+            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("");
+
+        ResponseDTO1 responseDTO1 = new ResponseDTO1();
+        responseDTO1.setDocuments(new ArrayList<>());
+        responseDTO1.setEntity("Utilities::retrieveIdrepoJson()::entry");
+        responseDTO1.setIdentity("Identity");
+        responseDTO1.setStatus("Utilities::retrieveIdrepoJson()::entry");
+
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        idResponseDTO1.setErrors(new ArrayList<>());
+        idResponseDTO1.setId("42");
+        idResponseDTO1.setResponse(responseDTO1);
+        idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
+        idResponseDTO1.setVersion("1.0.2");
+        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
+        thrown.expect(IdRepoAppException.class);
+        utilities.getIdentityDataFromIndividualID("42");
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
+        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any());
     }
 }
