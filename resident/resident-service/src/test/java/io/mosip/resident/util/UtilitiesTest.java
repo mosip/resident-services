@@ -1,33 +1,34 @@
 package io.mosip.resident.util;
 
-import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.ErrorDTO;
+import io.mosip.resident.dto.IdResponseDTO1;
+import io.mosip.resident.dto.ResponseDTO1;
+import io.mosip.resident.dto.VidResDTO;
+import io.mosip.resident.dto.VidResponseDTO1;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.IdRepoAppException;
+import io.mosip.resident.exception.IndividualIdNotFoundException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.VidCreationException;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyMasterdataService;
+
+import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
+
 import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -49,22 +50,32 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.ResidentErrorCode;
-import io.mosip.resident.dto.ErrorDTO;
-import io.mosip.resident.dto.IdResponseDTO1;
-import io.mosip.resident.dto.ResponseDTO1;
-import io.mosip.resident.dto.VidResDTO;
-import io.mosip.resident.dto.VidResponseDTO1;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.IdRepoAppException;
-import io.mosip.resident.exception.IndividualIdNotFoundException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.VidCreationException;
+import static io.mosip.resident.constant.ResidentConstants.TRANSACTION_TYPE_CODE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.verifyNew;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @ContextConfiguration(classes = {Utilities.class})
 @RunWith(PowerMockRunner.class)
@@ -326,10 +337,59 @@ public class UtilitiesTest {
         assertNotNull(result);
     }
 
+    @Test
+    public void testGetEmailAttribute() throws ResidentServiceCheckedException, IOException {
+        thrown.expect(Exception.class);
+        JSONObject jsonStringObject = JsonUtil.getJSONObject(identity, "response");
+        Mockito.when(objMapper.readValue(anyString(), any(Class.class))).thenReturn(jsonStringObject);
+
+        String identityString = JsonUtil.writeValueAsString(jsonStringObject);
+        ReflectionTestUtils.setField(utilities, "mappingJsonString", identityString);
+
+        utilities.getEmailAttribute();
+    }
+
+
+    @Test(expected = Exception.class)
+    public void testGetTotalNumberOfPageInPdf() throws IOException {
+        com.itextpdf.io.source.ByteArrayOutputStream byteArrayOutputStream = mock(
+                com.itextpdf.io.source.ByteArrayOutputStream.class);
+        when(byteArrayOutputStream.toByteArray()).thenReturn("AXAXAXAX".getBytes("UTF-8"));
+        utilities.getTotalNumberOfPageInPdf(byteArrayOutputStream);
+    }
+
     @Test(expected = Exception.class)
     public void testGetAmrAcrMapping() throws ResidentServiceCheckedException {
         thrown.expect(MockitoException.class);
         utilities.getAmrAcrMapping();
+    }
+
+    @Test
+    public void testGetDynamicFieldBasedOnLangCodeAndFieldName() throws ResidentServiceCheckedException {
+        ResponseWrapper responseWrapper = new ResponseWrapper<>();
+        responseWrapper.setErrors(new ArrayList<>());
+        responseWrapper.setId("https://example.org/example");
+        responseWrapper.setMetadata("Metadata");
+        responseWrapper.setResponse("Response");
+        responseWrapper.setResponsetime(LocalDateTime.of(1, 1, 1, 1, 1));
+        responseWrapper.setVersion("https://example.org/example");
+        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+                (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
+                .thenReturn(responseWrapper);
+        assertSame(responseWrapper,
+                utilities.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true));
+        verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
+                (String) org.mockito.Mockito.any(), anyBoolean());
+    }
+    @Test
+    public void testGetDynamicFieldBasedOnLangCodeAndFieldName2() throws ResidentServiceCheckedException {
+        when((ResponseWrapper<Object>) proxyMasterdataService.getDynamicFieldBasedOnLangCodeAndFieldName(
+                (String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(), anyBoolean()))
+                .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
+        thrown.expect(IdRepoAppException.class);
+        utilities.getDynamicFieldBasedOnLangCodeAndFieldName("Field Name", "Lang Code", true);
+        verify(proxyMasterdataService).getDynamicFieldBasedOnLangCodeAndFieldName((String) org.mockito.Mockito.any(),
+                (String) org.mockito.Mockito.any(), anyBoolean());
     }
 
     @Test
