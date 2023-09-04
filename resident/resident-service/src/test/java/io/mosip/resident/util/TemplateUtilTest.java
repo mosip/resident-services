@@ -355,10 +355,6 @@ public class TemplateUtilTest {
 
     @Test
     public void getCommonTemplateVariablesTestForRequestTypeNotPresentInServiceType() throws ResidentServiceCheckedException {
-        templateResponse.put(ResidentConstants.FILE_TEXT, "Unknown");
-        responseWrapper.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
-                responseWrapper);
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
@@ -369,10 +365,6 @@ public class TemplateUtilTest {
 
     @Test
     public void getCommonTemplateVariablesTestApiResourceException() throws ResidentServiceCheckedException, ApisResourceAccessException {
-        templateResponse.put(ResidentConstants.FILE_TEXT, "Unknown");
-        responseWrapper.setResponse(templateResponse);
-        Mockito.when(proxyMasterdataService.getAllTemplateBylangCodeAndTemplateTypeCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
-                responseWrapper);
         residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
         residentTransactionEntity.setRequestTypeCode(RequestType.SEND_OTP.name());
         Mockito.when(residentService.getEventStatusCode(Mockito.anyString(), Mockito.anyString())).thenReturn(Tuples.of(EventStatus.IN_PROGRESS.name(), "In Progress"));
@@ -384,10 +376,11 @@ public class TemplateUtilTest {
 
     @Test
     public void getDescriptionTemplateVariablesForAuthenticationRequestTest() {
-        residentTransactionEntity.setStatusComment("SUCCESS");
-        assertEquals("SUCCESS",
+    	Mockito.when(proxyMasterdataService.getTemplateValueFromTemplateTypeCodeAndLangCode(Mockito.anyString(), Mockito.anyString())).thenReturn(
+                "OTP Authentication Success");
+        assertEquals("OTP Authentication Success",
                 templateUtil.getDescriptionTemplateVariablesForAuthenticationRequest
-                        (residentTransactionEntity, null, null));
+                        (residentTransactionEntity, null, "eng"));
     }
 
     @Test
