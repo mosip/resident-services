@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.JavaType;
+import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.service.IdentityService;
 import io.mosip.resident.service.ProxyMasterdataService;
 import org.apache.commons.io.IOUtils;
@@ -448,51 +451,8 @@ public class UtilitiesTest {
         assertEquals("RESIDENT", utilities.getDefaultSource());
     }
 
-    @Test
-    public void testGetIdentityDataFromIndividualID()
-            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(identityService.getAccessToken()).thenReturn("ABC123");
-        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any()))
-                .thenThrow(new IdRepoAppException("An error occurred", "An error occurred"));
-        thrown.expect(IdRepoAppException.class);
-        utilities.getIdentityDataFromIndividualID("42");
-        verify(identityService).getAccessToken();
-        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any());
-    }
-
-    @Test
-    public void testGetIdentityDataFromIndividualID2()
-            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-        when(identityService.getAccessToken()).thenReturn("ABC123");
-        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any()))
-                .thenReturn("Utilities::retrieveIdrepoJson()::entry");
-
-        ResponseDTO1 responseDTO1 = new ResponseDTO1();
-        responseDTO1.setDocuments(new ArrayList<>());
-        responseDTO1.setEntity("Utilities::retrieveIdrepoJson()::entry");
-        responseDTO1.setIdentity("Identity");
-        responseDTO1.setStatus("Utilities::retrieveIdrepoJson()::entry");
-
-        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
-        idResponseDTO1.setErrors(new ArrayList<>());
-        idResponseDTO1.setId("42");
-        idResponseDTO1.setResponse(responseDTO1);
-        idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
-        idResponseDTO1.setVersion("1.0.2");
-        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
-        thrown.expect(IdRepoAppException.class);
-        utilities.getIdentityDataFromIndividualID("42");
-        verify(identityService).getAccessToken();
-        verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
-        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any());
-    }
-
-    @Test
-    public void testGetIdentityDataFromIndividualID3()
+    @Test(expected = Exception.class)
+    public void testGetIdentityDataFromIndividualIDNullIdeResponseDto()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         when(identityService.getAccessToken()).thenReturn("ABC123");
         when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
@@ -510,7 +470,7 @@ public class UtilitiesTest {
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
         idResponseDTO1.setVersion("1.0.2");
         when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
-                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
+                (Class<Object>) org.mockito.Mockito.any())).thenReturn(null);
         thrown.expect(IdRepoAppException.class);
         utilities.getIdentityDataFromIndividualID("42");
         verify(identityService).getAccessToken();
@@ -519,11 +479,11 @@ public class UtilitiesTest {
                 (Class<Object>) org.mockito.Mockito.any());
     }
 
-    @Test
-    public void testGetIdentityDataFromIndividualID4()
+    @Test(expected = IdRepoAppException.class)
+    public void testGetIdentityDataFromIndividualIDIdRepoAppException()
             throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
         when(identityService.getAccessToken()).thenReturn("ABC123");
-        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("");
+        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn("{} - {} - {} - {}");
 
         ResponseDTO1 responseDTO1 = new ResponseDTO1();
         responseDTO1.setDocuments(new ArrayList<>());
@@ -532,7 +492,8 @@ public class UtilitiesTest {
         responseDTO1.setStatus("Utilities::retrieveIdrepoJson()::entry");
 
         IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
-        idResponseDTO1.setErrors(new ArrayList<>());
+        idResponseDTO1.setErrors(List.of(new ServiceError(ResidentErrorCode.NO_RECORDS_FOUND.getErrorCode(),
+                ResidentErrorCode.NO_RECORDS_FOUND.getErrorMessage())));
         idResponseDTO1.setId("42");
         idResponseDTO1.setResponse(responseDTO1);
         idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
@@ -546,4 +507,45 @@ public class UtilitiesTest {
         verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
                 (Class<Object>) org.mockito.Mockito.any());
     }
+
+    @Test
+    public void testGetIdentityDataFromIndividual()
+            throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
+        when(identityService.getAccessToken()).thenReturn("ABC123");
+        JSONObject identity = new JSONObject();
+        identity.put(ResidentConstants.ID_SCHEMA_VERSION, "0.1");
+        when(objMapper.writeValueAsString((Object) org.mockito.Mockito.any())).thenReturn(identity.toJSONString());
+        ResponseWrapper idSchemaResponse = new ResponseWrapper();
+        JSONObject object = new JSONObject();
+        Object schema = "{\\\"$schema\\\":\\\"http:\\/\\/json-schema.org\\/draft-07\\/schema#\\\",\\\"description\\\":\\\"MOSIP Sample identity\\\",\\\"additionalProperties\\\":false,\\\"title\\\":\\\"MOSIP identity\\\",\\\"type\\\":\\\"object\\\",\\\"definitions\\\":{\\\"simpleType\\\":{\\\"uniqueItems\\\":true,\\\"additionalItems\\\":false,\\\"type\\\":\\\"array\\\",\\\"items\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"language\\\",\\\"value\\\"],\\\"properties\\\":{\\\"language\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"documentType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"type\\\":{\\\"type\\\":\\\"string\\\"},\\\"value\\\":{\\\"type\\\":\\\"string\\\"},\\\"refNumber\\\":{\\\"type\\\":[\\\"string\\\",\\\"null\\\"]}}},\\\"biometricsType\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"format\\\":{\\\"type\\\":\\\"string\\\"},\\\"version\\\":{\\\"type\\\":\\\"number\\\",\\\"minimum\\\":0},\\\"value\\\":{\\\"type\\\":\\\"string\\\"}}}},\\\"properties\\\":{\\\"identity\\\":{\\\"additionalProperties\\\":false,\\\"type\\\":\\\"object\\\",\\\"required\\\":[\\\"IDSchemaVersion\\\",\\\"fullName\\\",\\\"dateOfBirth\\\",\\\"gender\\\",\\\"addressLine1\\\",\\\"addressLine2\\\",\\\"addressLine3\\\",\\\"region\\\",\\\"province\\\",\\\"city\\\",\\\"zone\\\",\\\"postalCode\\\",\\\"phone\\\",\\\"email\\\",\\\"proofOfIdentity\\\",\\\"individualBiometrics\\\"],\\\"properties\\\":{\\\"proofOfAddress\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"gender\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"city\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"postalCode\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[(?i)A-Z0-9]{5}$|^NA$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfException-1\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"referenceIdentityNumber\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^([0-9]{10,30})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"kyc\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"province\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"zone\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfDateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"addressLine1\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine2\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"residenceStatus\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"kyc\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"addressLine3\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"email\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[A-Za-z0-9_\\\\\\\\-]+(\\\\\\\\.[A-Za-z0-9_]+)*@[A-Za-z0-9_-]+(\\\\\\\\.[A-Za-z0-9_]+)*(\\\\\\\\.[a-zA-Z]{2,})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerRID\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"fullName\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{3,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"dateOfBirth\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(1869|18[7-9][0-9]|19[0-9][0-9]|20[0-9][0-9])\\/([0][1-9]|1[0-2])\\/([0][1-9]|[1-2][0-9]|3[01])$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"individualAuthBiometrics\\\":{\\\"bioAttributes\\\":[\\\"leftEye\\\",\\\"rightEye\\\",\\\"rightIndex\\\",\\\"rightLittle\\\",\\\"rightRing\\\",\\\"rightMiddle\\\",\\\"leftIndex\\\",\\\"leftLittle\\\",\\\"leftRing\\\",\\\"leftMiddle\\\",\\\"leftThumb\\\",\\\"rightThumb\\\",\\\"face\\\"],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/biometricsType\\\"},\\\"introducerUIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"proofOfIdentity\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"IDSchemaVersion\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"number\\\",\\\"fieldType\\\":\\\"default\\\",\\\"minimum\\\":0},\\\"proofOfException\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"phone\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^[+]*([0-9]{1})([0-9]{9})$\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"introducerName\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"evidence\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"},\\\"proofOfRelationship\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/documentType\\\"},\\\"UIN\\\":{\\\"bioAttributes\\\":[],\\\"fieldCategory\\\":\\\"none\\\",\\\"format\\\":\\\"none\\\",\\\"type\\\":\\\"string\\\",\\\"fieldType\\\":\\\"default\\\"},\\\"region\\\":{\\\"bioAttributes\\\":[],\\\"validators\\\":[{\\\"validator\\\":\\\"^(?=.{0,50}$).*\\\",\\\"arguments\\\":[],\\\"type\\\":\\\"regex\\\"}],\\\"fieldCategory\\\":\\\"pvt\\\",\\\"format\\\":\\\"none\\\",\\\"fieldType\\\":\\\"default\\\",\\\"$ref\\\":\\\"#\\/definitions\\/simpleType\\\"}}}}}";
+        object.put("schemaJson", schema);
+        idSchemaResponse.setResponse(object);
+        Map schemaJson = new HashMap<>();
+        schemaJson.put("schemaJson", "schema");
+        when(objMapper.convertValue((Object) any(), (Class<Object>) any())).thenReturn(schemaJson);
+        when(proxyMasterdataService.getLatestIdSchema(Double.parseDouble("0.1"), null, null)).thenReturn(idSchemaResponse);
+
+        ResponseDTO1 responseDTO1 = new ResponseDTO1();
+        responseDTO1.setDocuments(new ArrayList<>());
+        responseDTO1.setEntity("Utilities::retrieveIdrepoJson()::entry");
+        responseDTO1.setIdentity("Identity");
+        responseDTO1.setStatus("Utilities::retrieveIdrepoJson()::entry");
+
+        responseDTO1.setIdentity(identity);
+
+        IdResponseDTO1 idResponseDTO1 = new IdResponseDTO1();
+        idResponseDTO1.setId("42");
+        idResponseDTO1.setResponse(responseDTO1);
+        idResponseDTO1.setResponsetime("Utilities::retrieveIdrepoJson()::entry");
+        idResponseDTO1.setVersion("1.0.2");
+        when(utility.getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any())).thenReturn(idResponseDTO1);
+        assertEquals("schema", utilities.getIdentityDataFromIndividualID("42").getT2());
+        verify(identityService).getAccessToken();
+        verify(objMapper).writeValueAsString((Object) org.mockito.Mockito.any());
+        verify(utility).getCachedIdentityData((String) org.mockito.Mockito.any(), (String) org.mockito.Mockito.any(),
+                (Class<Object>) org.mockito.Mockito.any());
+    }
+
+
 }
