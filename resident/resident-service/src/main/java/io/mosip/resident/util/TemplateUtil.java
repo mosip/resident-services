@@ -51,14 +51,13 @@ import reactor.util.function.Tuples;
 @Component
 public class TemplateUtil {
 
-	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s";
 	private static final String RESIDENT = "Resident";
 	private static final String DEFAULT = "default";
 	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 	private static final String LOGO_URL = "logoUrl";
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
-	private static final String UNKNOWN = "Unknown";
+	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -119,13 +118,14 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
 		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
 				replaceNullWithEmptyString(residentTransactionEntity.getAttributeList()), languageCode, requestType));
-		String authenticationMode = getAuthTypeCodeTemplateValue(
-				replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode);
-		if (authenticationMode.equalsIgnoreCase(UNKNOWN)) {
-			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-					replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()));
+		String authTypeCode = replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode());
+		AuthenticationModeEnum authenticationMode = AuthenticationModeEnum.getAuthenticationModeName(authTypeCode, env);
+		if (authenticationMode.equals(AuthenticationModeEnum.UNKNOWN)) {
+			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, authTypeCode);
 		} else {
-			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, authenticationMode);
+			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+					getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							authenticationMode.getTemplatePropertyName()));
 		}
 		try {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
@@ -195,11 +195,6 @@ public class TemplateUtil {
 			return attributeListTemplateValue.stream()
 					.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
 		}
-	}
-
-	private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-				AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env));
 	}
 
 	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
