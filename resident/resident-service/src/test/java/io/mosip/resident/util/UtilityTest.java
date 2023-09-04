@@ -12,8 +12,13 @@ import io.mosip.resident.constant.ApiName;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
+import io.mosip.resident.dto.DynamicFieldCodeValueDTO;
+import io.mosip.resident.dto.DynamicFieldConsolidateResponseDto;
 import io.mosip.resident.dto.IdRepoResponseDto;
 import io.mosip.resident.dto.IdentityDTO;
+import io.mosip.resident.dto.JsonValue;
+import io.mosip.resident.dto.RegistrationCenterDto;
+import io.mosip.resident.dto.RegistrationCenterResponseDto;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.IdRepoAppException;
@@ -21,28 +26,42 @@ import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.helper.ObjectStoreHelper;
 import io.mosip.resident.repository.ResidentTransactionRepository;
+import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mvel2.integration.VariableResolverFactory;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
@@ -54,6 +73,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -66,21 +86,52 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static io.mosip.resident.constant.RegistrationConstants.DATETIME_PATTERN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ContextConfiguration(classes = {Utility.class, ResidentServiceRestClient.class})
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*"})
-@PrepareForTest({ JsonUtil.class })
+@PrepareForTest({JsonUtil.class})
 public class UtilityTest {
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
+
+	@MockBean
+	private Environment environment;
+
+	@MockBean
+	private IdentityServiceImpl identityServiceImpl;
+
+	@MockBean
+	private PDFGenerator pDFGenerator;
+
+	@MockBean(name = "restClientWithPlainRestTemplate")
+	private ResidentServiceRestClient residentServiceRestClient1;
+
+	@MockBean(name = "restClientWithSelfTOkenRestTemplate")
+	private ResidentServiceRestClient residentServiceRestClient2;
+
+	@MockBean(name = "selfTokenRestTemplate")
+	private RestTemplate restTemplate;
+
+	@MockBean
+	private ValidateTokenUtil validateTokenUtil;
+
+	@MockBean(name = "varres")
+	private VariableResolverFactory variableResolverFactory;
+
 	private static final String LOCALE = "en-US";
 
 	@Mock
@@ -96,7 +147,7 @@ public class UtilityTest {
 
 	@Mock
 	private IdentityServiceImpl identityService;
-	
+
 	@Mock
 	private HttpServletRequest request;
 
@@ -105,11 +156,11 @@ public class UtilityTest {
 
 	@Mock
 	private ResidentTransactionRepository residentTransactionRepository;
-	
+
 	@Mock
 	@Qualifier("selfTokenRestTemplate")
 	private RestTemplate residentRestTemplate;
-	
+
 	@Mock
 	private ObjectMapper objectMapper;
 
@@ -117,7 +168,14 @@ public class UtilityTest {
 	private Utilities utilities;
 
 	@Mock
+	private ProxyMasterdataService proxyMasterdataService;
+
+	@Mock
 	private ValidateTokenUtil tokenValidationHelper;
+
+	@Mock
+	private ProxyPartnerManagementService proxyPartnerManagementService;
+
 	private ObjectMapper mapper = new ObjectMapper();
 
 	private String replaceSplChars = "{\" \": \"_\", \",\" : \"\", \":\" : \".\"}";
@@ -126,6 +184,13 @@ public class UtilityTest {
 	private ObjectStoreHelper objectStoreHelper;
 	private String idaToken;
 
+	private static final String AUTHORIZATION = "Authorization";
+	private static final String BEARER_PREFIX = "Bearer ";
+	private static final String TOKEN = "sampleToken";
+	private static final String RESPONSE_JSON = "{\"user_id\": 123, \"username\": \"sampleUser\"}";
+
+	private static Map mappingJson;
+	private static final String MAPPING_NAME = "name";
 
 	@Before
 	public void setUp() throws IOException, ApisResourceAccessException {
@@ -134,7 +199,7 @@ public class UtilityTest {
 		InputStream is = new FileInputStream(idJson);
 		String idJsonString = IOUtils.toString(is, "UTF-8");
 		identity = JsonUtil.readValue(idJsonString, JSONObject.class);
-		
+
 		ReflectionTestUtils.setField(utility, "mapper", mapper);
 		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "url");
 		ReflectionTestUtils.setField(utility, "residentIdentityJson", "json");
@@ -164,6 +229,10 @@ public class UtilityTest {
 				"Soh6kZBoOeYd_29RQQzFQNzpn_Ahk4GxQu_TLyvoWeNXpfx94om7TqrZYghtTg5_svku2P0NuFxzbWysPMjaHrEff0idKY94sKJ6eNpLXRXbJCPkAHtfVY0U3" +
 				"YDQqWUpYjE3hQCZz0u_L8sieJIN3mYtjd12rfOrjEKu2fFGu5UbJRVqkmOw0egVGHw";
 		idaToken = "2186705746";
+		mappingJson = new HashMap<>();
+		Map mapping1 = new HashMap<>();
+		mapping1.put("mapping1", "value1");
+		mappingJson.put("identity", mapping1);
 	}
 
 	@Test
@@ -288,7 +357,7 @@ public class UtilityTest {
 	public void testGetMailingAttributesIdNull() throws Exception {
 		utility.getMailingAttributes(null, new HashSet<String>(), Map.of(), Map.of());
 	}
-	
+
 	@Test(expected = ResidentServiceException.class)
 	public void testGetMailingAttributesIdEmpty() throws Exception {
 		utility.getMailingAttributes("", new HashSet<String>(), Map.of(), Map.of());
@@ -299,6 +368,22 @@ public class UtilityTest {
 		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", "");
 		utility.getMappingJson();
 	}
+
+    @Test
+    public void testReadResourceContent() throws UnsupportedEncodingException {
+		assertEquals("AXAXAXAX", utility.readResourceContent(new ByteArrayResource("AXAXAXAX".getBytes("UTF-8"))));
+    }
+
+	@Test
+    public void testReadResourceContent3() {
+		thrown.expect(ResidentServiceException.class);
+		utility.readResourceContent(new ClassPathResource("Path"));
+    }
+
+    @Test(expected = Exception.class)
+    public void testMaskEmail() {
+		utility.maskEmail("jane.doe@example.org");
+    }
 
 	@Test
 	public void testGetPreferredLanguage() throws Exception {
@@ -390,7 +475,7 @@ public class UtilityTest {
 		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
 		idRepoResponseDto.setStatus("Activated");
 		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
-		idRepoResponseDto.setIdentity(identityJson);		
+		idRepoResponseDto.setIdentity(identityJson);
 		response.setResponse(idRepoResponseDto);
 		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
 				any(), any(Class.class))).thenReturn(response);
@@ -401,7 +486,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameAsPerFeatureNameShareCredWithPartner(){
+	public void testGetFileNameAsPerFeatureNameShareCredWithPartner() {
 		assertEquals("SHARE_CRED_WITH_PARTNER", utility.getFileName("123", "SHARE_CRED_WITH_PARTNER", 0, LOCALE));
 		assertEquals("GENERATE_VID", utility.getFileName("123", "GENERATE_VID", 0, LOCALE));
 		assertEquals("REVOKE_VID", utility.getFileName("123", "REVOKE_VID", 0, LOCALE));
@@ -413,7 +498,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameAsPerFeatureNameGenerateVid(){
+	public void testGetFileNameAsPerFeatureNameGenerateVid() {
 		Mockito.when(env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY))
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
@@ -422,7 +507,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameNullEventId(){
+	public void testGetFileNameNullEventId() {
 		Mockito.when(env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY))
 				.thenReturn("Ack_Manage_my_VID_{eventId}_{timestamp}.pdf");
 		Mockito.when(env.getProperty("resident.datetime.pattern"))
@@ -438,7 +523,7 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"2186705746").getBytes()),
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("EMAIL"), identityDTO, idaToken));
 	}
 
@@ -450,7 +535,7 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("8809989898"+"2186705746").getBytes()),
+		assertEquals(HMACUtils2.digestAsPlainText(("8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PHONE"), identityDTO, idaToken));
 	}
 
@@ -462,8 +547,8 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
-				utility.getIdForResidentTransaction(List.of("PHONE","EMAIL"), identityDTO, idaToken));
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "8809989898" + "2186705746").getBytes()),
+				utility.getIdForResidentTransaction(List.of("PHONE", "EMAIL"), identityDTO, idaToken));
 	}
 
 	@Test(expected = ResidentServiceCheckedException.class)
@@ -474,7 +559,7 @@ public class UtilityTest {
 		identityDTO.setPhone("8809989898");
 		Mockito.when(identityService.getIdentity(Mockito.anyString())).thenReturn(identityDTO);
 		Mockito.when(identityService.getIDAToken(Mockito.anyString())).thenReturn("2186705746");
-		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com"+"8809989898"+"2186705746").getBytes()),
+		assertEquals(HMACUtils2.digestAsPlainText(("kameshprasad1338@gmail.com" + "8809989898" + "2186705746").getBytes()),
 				utility.getIdForResidentTransaction(List.of("PH"), identityDTO, idaToken));
 	}
 
@@ -488,12 +573,12 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testCreateDownloadLinkFailure(){
+	public void testCreateDownloadLinkFailure() {
 		assertEquals("NA", utility.createDownloadCardLinkFromEventId(new ResidentTransactionEntity()));
 	}
 
 	@Test
-	public void testCreateDownloadLinkSuccess(){
+	public void testCreateDownloadLinkSuccess() {
 		ResidentTransactionEntity residentTransactionEntity = new ResidentTransactionEntity();
 		ReflectionTestUtils.setField(utility, "downloadCardUrl", "http://mosip/event/{eventId}");
 		residentTransactionEntity.setReferenceLink("http://mosip");
@@ -502,25 +587,25 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testCreateTrackServiceRequestLink(){
+	public void testCreateTrackServiceRequestLink() {
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
-		assertEquals(("http://mosip"+"2186705746111111"), utility.createTrackServiceRequestLink("2186705746111111"));
+		assertEquals(("http://mosip" + "2186705746111111"), utility.createTrackServiceRequestLink("2186705746111111"));
 	}
 
 	@Test
-	public void testCreateEventId(){
+	public void testCreateEventId() {
 		ReflectionTestUtils.setField(utility, "trackServiceUrl", "http://mosip");
 		Mockito.when(utilities.getSecureRandom()).thenReturn(new SecureRandom());
-		assertEquals(16,utility.createEventId().length());
+		assertEquals(16, utility.createEventId().length());
 	}
 
 	@Test
-	public void testCreateEntity(){
-		assertEquals("Unknown",utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER).getCrBy());
+	public void testCreateEntity() {
+		assertEquals("Unknown", utility.createEntity(RequestType.SHARE_CRED_WITH_PARTNER).getCrBy());
 	}
 
 	@Test
-	public void testGetFileNameAsPerFeatureName(){
+	public void testGetFileNameAsPerFeatureName() {
 		Mockito.when(env.getProperty(Mockito.anyString()))
 				.thenReturn("AckFileName");
 		assertEquals("AckFileName", utility.getFileNameAsPerFeatureName("123", RequestType.SHARE_CRED_WITH_PARTNER, 0, LOCALE));
@@ -555,44 +640,48 @@ public class UtilityTest {
 		String ipAddress = utility.getClientIp(request);
 		assertEquals("1.5.5", ipAddress);
 	}
-	
+
+    @Test(expected = Exception.class)
+    public void testGetCardOrderTrackingId() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		utility.getCardOrderTrackingId("42", "42");
+    }
+
 	@Test
 	public void test_formatWithOffsetForFileName_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, "en-US", localDateTime);
 		assertEquals("Aug_14_1993_4.54.00_PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForFileName_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(-330, "en-IN", localDateTime);
 		assertEquals("14-Aug-1993_10.24.00_PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForFileName_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForFileName(0, null, localDateTime);
 		assertEquals("1993-08-14_04.54.00_PM", formatWithOffsetForFileName);
 	}
-	
 
-	
+
 	@Test
 	public void test_formatWithOffsetForUI_en_US() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(0, "en-US", localDateTime);
 		assertEquals("Aug 14, 1993, 4:54:00 PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForUI_en_IN() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
 		String formatWithOffsetForFileName = utility.formatWithOffsetForUI(-330, "en-IN", localDateTime);
 		assertEquals("14-Aug-1993, 10:24:00 PM", formatWithOffsetForFileName);
 	}
-	
+
 	@Test
 	public void test_formatWithOffsetForUI_null_locale() {
 		LocalDateTime localDateTime = LocalDateTime.of(1993, 8, 14, 16, 54);
@@ -615,7 +704,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void test_formatWithOffsetForUI_local_null(){
+	public void test_formatWithOffsetForUI_local_null() {
 		ReflectionTestUtils.invokeMethod(utility, "formatToLocaleDateTime", null, null, LocalDateTime.now());
 	}
 
@@ -626,20 +715,20 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testGetFileNameAck(){
+	public void testGetFileNameAck() {
 		utility.getFileNameAck(RequestType.GET_MY_ID.getName(), "4936295739034704",
 				"Ack_{featureName}_{eventId}_{timestamp}", 0, "en-IN");
 	}
 
 	@Test
-	public void testReplaceSpecialChars(){
+	public void testReplaceSpecialChars() {
 		ReflectionTestUtils.setField(utility, "specialCharsReplacementMap", Map.of());
 		assertEquals("Get_My_Id",
 				ReflectionTestUtils.invokeMethod(utility, "replaceSpecialChars", "Get_My_Id"));
 	}
 
 	@Test
-	public void testGetFileNameForId(){
+	public void testGetFileNameForId() {
 		utility.getFileNameForId("Get_My_Id", "UIN_{id}_{timestamp}", 0, "en-IN");
 	}
 
@@ -682,7 +771,7 @@ public class UtilityTest {
 		)).thenReturn(responseWrapper);
 
 		when(objectMapper.writeValueAsString(any())).thenReturn("mock");
-		SignatureResponseDto signatureResponseDto= new SignatureResponseDto();
+		SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
 		signatureResponseDto.setData("ZGF0YQ==");
 		when(objectMapper.readValue(anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
 
@@ -737,7 +826,7 @@ public class UtilityTest {
 		)).thenReturn(responseWrapper);
 
 		when(objectMapper.writeValueAsString(any())).thenReturn("mock");
-		SignatureResponseDto signatureResponseDto= new SignatureResponseDto();
+		SignatureResponseDto signatureResponseDto = new SignatureResponseDto();
 		signatureResponseDto.setData("ZGF0YQ==");
 		when(objectMapper.readValue(anyString(), (Class<Object>) any())).thenReturn(signatureResponseDto);
 
@@ -752,7 +841,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testDecodeAndDecryptUserInfoOidcJwtDisabled(){
+	public void testDecodeAndDecryptUserInfoOidcJwtDisabled() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(false));
 		AuthErrorCode authErrorCode = null;
@@ -763,7 +852,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testDecodeAndDecryptUserInfo(){
+	public void testDecodeAndDecryptUserInfo() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(true));
 		AuthErrorCode authErrorCode = null;
@@ -774,7 +863,7 @@ public class UtilityTest {
 	}
 
 	@Test(expected = ResidentServiceException.class)
-	public void testDecodeAndDecryptUserInfoOidcJwtDisabledFailure(){
+	public void testDecodeAndDecryptUserInfoOidcJwtDisabledFailure() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(true));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(true));
 		AuthErrorCode authErrorCode = AuthErrorCode.FORBIDDEN;
@@ -785,7 +874,7 @@ public class UtilityTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void testDecodeAndDecryptUserInfoOidcEncryptionEnabled(){
+	public void testDecodeAndDecryptUserInfoOidcEncryptionEnabled() {
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_SIGNED)).thenReturn(String.valueOf(false));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_JWT_VERIFY_ENABLED)).thenReturn(String.valueOf(false));
 		Mockito.when(env.getProperty(ResidentConstants.MOSIP_OIDC_ENCRYPTION_ENABLED)).thenReturn(String.valueOf(true));
@@ -799,7 +888,7 @@ public class UtilityTest {
 	}
 
 	@Test
-	public void testDecryptPayload(){
+	public void testDecryptPayload() {
 		Mockito.when(env.getProperty(Mockito.anyString())).thenReturn("RESIDENT");
 		Mockito.when(objectStoreHelper.decryptData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn("payload");
 		assertEquals("payload", ReflectionTestUtils.invokeMethod(utility, "decryptPayload", "payload"));
@@ -813,5 +902,470 @@ public class UtilityTest {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 		headers.add("Authorization", "Bearer " + token);
 		return Tuples.of(uri, headers, userInfo);
+	}
+
+	@Test
+	public void testGetPreferredLanguageSingleLanguage() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "English");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn("languageAttribute");
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(1, preferredLanguages.size());
+		assertEquals("English", preferredLanguages.iterator().next());
+	}
+
+	@Test
+	public void testGetPreferredLanguageMultipleLanguages() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "English,Hindi,French");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn("languageAttribute");
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(3, preferredLanguages.size());
+		assertEquals(Set.of("English", "Hindi", "French"), preferredLanguages);
+	}
+
+	@Test
+	public void testGetPreferredLanguageAttributeNotSet() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "English");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn(null);
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(0, preferredLanguages.size());
+	}
+
+	@Test
+	public void testGetDefaultTemplateLanguagesV2() {
+		when(env.getProperty("mosip.default.template-languages")).thenReturn("en,fr,es");
+
+		List<String> result = utility.getDefaultTemplateLanguages();
+
+		assertEquals(3, result.size());
+		assertEquals(Arrays.asList("en", "fr", "es"), result);
+	}
+
+	@Test
+	public void testGetDefaultTemplateLanguagesEmpty() {
+		when(env.getProperty("mosip.default.template-languages")).thenReturn(null);
+
+		List<String> result = utility.getDefaultTemplateLanguages();
+
+		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testGetCenterDetails() throws ApisResourceAccessException {
+		String centerId = "center123";
+		String langCode = "en";
+
+		ResponseWrapper<RegistrationCenterResponseDto> expectedResponse = new ResponseWrapper<>();
+		RegistrationCenterResponseDto registrationCenterResponseDto = new RegistrationCenterResponseDto();
+		RegistrationCenterDto registrationCenterDto = new RegistrationCenterDto();
+		registrationCenterDto.setId(centerId);
+		registrationCenterDto.setLangCode(langCode);
+		registrationCenterResponseDto.setRegistrationCenters(List.of(registrationCenterDto));
+		expectedResponse.setResponse(registrationCenterResponseDto);
+
+		List<String> pathSegments = Arrays.asList(centerId, langCode);
+		when(residentServiceRestClient.getApi(ApiName.CENTERDETAILS, pathSegments, "", "", ResponseWrapper.class))
+				.thenReturn(expectedResponse);
+
+		ResponseWrapper<?> result = utility.getCenterDetails(centerId, langCode);
+
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	public void testGetValidDocumentByLangCode() throws ResidentServiceCheckedException {
+		String langCode = "en";
+
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		when(proxyMasterdataService.getValidDocumentByLangCode(langCode)).thenReturn(responseWrapper);
+
+		ResponseWrapper<?> result = utility.getValidDocumentByLangCode(langCode);
+
+		assertEquals(responseWrapper, result);
+	}
+
+	@Test
+	public void testGetPartnersByPartnerType_WithPartnerType() throws ResidentServiceCheckedException {
+		String partnerType = "partner";
+		ApiName apiUrl = ApiName.PARTNER_API_URL;
+
+		ResponseWrapper expectedResponse = new ResponseWrapper<>();
+		when(proxyPartnerManagementService.getPartnersByPartnerType(
+				Optional.of(partnerType), apiUrl))
+				.thenReturn(expectedResponse);
+
+		ResponseWrapper<?> result = utility.getPartnersByPartnerType(partnerType, apiUrl);
+
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	public void testGetPartnersByPartnerType_WithoutPartnerType() throws ResidentServiceCheckedException {
+		ApiName apiUrl = ApiName.PARTNER_API_URL;
+
+		ResponseWrapper expectedResponse = new ResponseWrapper<>();
+		when(proxyPartnerManagementService.getPartnersByPartnerType(
+				Optional.empty(), apiUrl))
+				.thenReturn(expectedResponse);
+
+		ResponseWrapper<?> result = utility.getPartnersByPartnerType(null, apiUrl);
+
+		assertEquals(expectedResponse, result);
+	}
+
+	@Test
+	public void testClearIdentityMapCache() {
+		utility.clearIdentityMapCache(token);
+	}
+
+	@Test
+	public void testGetAuthTypeCodeFromKey() throws ResidentServiceCheckedException {
+		String reqTypeCode = "reqCode";
+
+		Map<String, String> amrAcrMapping = new HashMap<>();
+		amrAcrMapping.put("reqCode", "authCode");
+		when(utilities.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+
+		String result = utility.getAuthTypeCodefromkey(reqTypeCode);
+
+		assertEquals("authCode", result);
+	}
+
+	@Test
+	public void testGetAuthTypeCodeFromKey_NotFound() throws ResidentServiceCheckedException {
+		String reqTypeCode = "nonExistentCode";
+
+		Map<String, String> amrAcrMapping = new HashMap<>();
+		when(utilities.getAmrAcrMapping()).thenReturn(amrAcrMapping);
+
+		String result = utility.getAuthTypeCodefromkey(reqTypeCode);
+
+		assertEquals(null, result); // Assuming null is returned when not found
+	}
+
+	@Test
+	public void testGetPreferredLanguageCodeForLanguageNameBasedOnFlag_FlagEnabled() throws ResidentServiceCheckedException {
+		String fieldName = "fieldName";
+		String preferredLang = "English";
+
+		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
+		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse(createDynamicFieldResponse());
+		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
+				fieldName, "en", true))
+				.thenReturn(responseWrapper);
+
+		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
+
+		assertEquals("en", result);
+	}
+
+	@Test
+	public void testGetPreferredLanguageCodeForLanguageNameBasedOnFlag_FlagDisabled() {
+		String fieldName = "fieldName";
+		String preferredLang = "English";
+
+		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
+
+		assertEquals("English", result);
+	}
+
+    @Test
+    public void testGetDataCapturedLanguages2() throws ReflectiveOperationException {
+		HashMap<Object, Object> mapperIdentity = new HashMap<>();
+		assertTrue(utility.getDataCapturedLanguages(mapperIdentity, new HashMap<>()).isEmpty());
+    }
+
+	private DynamicFieldConsolidateResponseDto createDynamicFieldResponse() {
+		DynamicFieldCodeValueDTO codeValueDTO = new DynamicFieldCodeValueDTO();
+		codeValueDTO.setValue("English");
+		codeValueDTO.setCode("en");
+
+		List<DynamicFieldCodeValueDTO> values = new ArrayList<>();
+		values.add(codeValueDTO);
+
+		DynamicFieldConsolidateResponseDto responseDto = new DynamicFieldConsolidateResponseDto();
+		responseDto.setValues(values);
+
+		return responseDto;
+	}
+
+	@Test(expected = ApisResourceAccessException.class)
+	public void testGetUserInfo() throws ApisResourceAccessException {
+
+		Map<String, Object> expectedResponseMap = Map.of("user_id", 123, "username", "sampleUser");
+		String usefInfoEndpointUrl = "http://localhost";
+		ReflectionTestUtils.setField(utility, "usefInfoEndpointUrl", usefInfoEndpointUrl);
+
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(usefInfoEndpointUrl);
+		UriComponents uriComponent = builder.build(false).encode();
+
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add(AUTHORIZATION, BEARER_PREFIX + TOKEN);
+
+		when(residentServiceRestClient.getApi(uriComponent.toUri(), String.class, headers))
+				.thenReturn(RESPONSE_JSON);
+
+		Map<String, Object> actualResponseMap = utility.getUserInfo(TOKEN);
+
+		assertEquals(expectedResponseMap, actualResponseMap);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCode() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		language.put("value", "Kamesh");
+		identity.put("name", List.of(language));
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, "en");
+
+		assertEquals("Kamesh", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeNull() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		language.put("value", "Kamesh");
+		identity.put("name", List.of(language));
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, null);
+
+		assertEquals("", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeMapIdentity() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		language.put("value", "Kamesh");
+		identity.put("name", language);
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, "en");
+
+		assertEquals("Kamesh", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeNullIdentity() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		identity.put("name", null);
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name_en", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME, "en");
+
+		assertEquals("", result);
+	}
+
+	@Test
+	public void testGetMappingValueWithLangCodeStringAttributeValue() throws ResidentServiceCheckedException, IOException {
+		Map<String, Object> identity = new HashMap<>();
+		identity.put("name", "Kamesh");
+		identity.put("gender", "value2");
+
+		ReflectionTestUtils.setField(utility, "residentIdentityJson", "identity");
+		ReflectionTestUtils.setField(utility, "configServerFileStorageURL", "http://localhost");
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject1 = new JSONObject();
+		jsonObject1.put("name", "kamesh");
+		jsonObject1.put("gender", List.of("male"));
+		jsonObject.put("identity", jsonObject1);
+		when(residentRestTemplate.getForObject((String) any(), (Class<Object>) any(), (Object) any())).thenReturn(jsonObject);
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", jsonObject.toString());
+		String result = utility.getMappingValue(identity, MAPPING_NAME);
+
+		assertEquals("Kamesh", result);
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetCachedIdentityData() throws ApisResourceAccessException {
+		utility.getCachedIdentityData("1232", token, ResponseWrapper.class);
+	}
+
+	@Test
+	public void testClearUserInfoCache() {
+		utility.clearUserInfoCache(token);
+	}
+
+    @Test
+    public void testGetMappingJsonObject() throws ResidentServiceCheckedException {
+		JSONObject object = new JSONObject();
+		object.put("name", "Kamesh");
+		ReflectionTestUtils.setField(utility, "mappingJsonObject", object);
+		assertEquals(object, utility.getMappingJsonObject());
+    }
+
+	@Test(expected = ResidentServiceException.class)
+	public void testGetMappingJsonObjectNullMappingJsonObject() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", "");
+		utility.getMappingJsonObject();
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetMappingJsonObjectInvalidMappingJsonObject() throws ResidentServiceCheckedException {
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", "K");
+		utility.getMappingJsonObject();
+	}
+
+	@Test
+	public void testGetMappingJsonObjectValidMappingJsonObject() throws ResidentServiceCheckedException {
+		JSONObject object = new JSONObject();
+		object.put("name", "Kamesh");
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", object.toJSONString());
+		assertEquals(object, utility.getMappingJsonObject());
+	}
+
+	@Test
+	public void testGetDataCapturedLanguagesV2() {
+		Map<String, Object> mapperIdentity = new HashMap<>();
+		Map language = new HashMap();
+		language.put("language", "en");
+		JsonValue jsonValue = new JsonValue();
+		jsonValue.setLanguage("en");
+		jsonValue.setValue("Kamesh");
+		language.put("value", "name");
+		mapperIdentity.put("name", language);
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("name", List.of(jsonValue));
+
+		Set<String> result = null;
+		try {
+			result = utility.getDataCapturedLanguages(mapperIdentity, demographicIdentity);
+		} catch (ReflectiveOperationException e) {
+		}
+
+		Set<String> expectedValues = new HashSet<>(Arrays.asList("en"));
+		assertEquals(expectedValues, result);
+	}
+
+	@Test
+	public void testLoadRegProcessorIdentityJson() {
+		ReflectionTestUtils.setField(utility, "specialCharsReplacement", "$");
+		ReflectionTestUtils.invokeMethod(utility, "loadRegProcessorIdentityJson");
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testRetrieveErrorCode() throws ResidentServiceCheckedException {
+		ResponseWrapper responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setResponse("");
+		utility.retrieveErrorCode(responseWrapper, "1");
+	}
+
+	@Test
+	public void testGetMappingJsonWithTemplateLanguages() throws Exception {
+		ClassLoader classLoader = getClass().getClassLoader();
+		File idJson = new File(classLoader.getResource("IdentityMapping.json").getFile());
+		InputStream is = new FileInputStream(idJson);
+		String mappingJson = IOUtils.toString(is, "UTF-8");
+		ReflectionTestUtils.setField(utility, "regProcessorIdentityJson", mappingJson);
+		JSONObject mapperJson = JsonUtil.readValue(mappingJson, JSONObject.class);
+		Map mapperIdentity = (Map) mapperJson.get("identity");
+
+		ResponseWrapper<IdRepoResponseDto> response = new ResponseWrapper<>();
+		IdRepoResponseDto idRepoResponseDto = new IdRepoResponseDto();
+		idRepoResponseDto.setStatus("Activated");
+		JSONObject identityJson = JsonUtil.getJSONObject(identity, "identity");
+		idRepoResponseDto.setIdentity(identityJson);
+		response.setResponse(idRepoResponseDto);
+		Mockito.when(residentServiceRestClient.getApi(any(), any(), anyString(),
+				any(), any(Class.class))).thenReturn(response);
+		Set templateLanguages = new HashSet<>();
+		templateLanguages.add("eng");
+		Map<String, Object> attributes = utility.getMailingAttributes("3527812406", templateLanguages, identityJson, mapperIdentity);
+		assertEquals("eng", attributes.get("preferredLang"));
+		verify(residentRestTemplate, never()).getForObject(anyString(), any(Class.class));
+	}
+
+	@Test
+	public void testGetPreferredLanguageAttributeNullSet() {
+		Map<String, Object> demographicIdentity = new HashMap<>();
+		demographicIdentity.put("languageAttribute", "");
+
+		when(env.getProperty("mosip.default.user-preferred-language-attribute"))
+				.thenReturn("languageAttribute");
+
+		Set<String> preferredLanguages = utility.getPreferredLanguage(demographicIdentity);
+		assertEquals(0, preferredLanguages.size());
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testGetPreferredLanguageCodeForLanguageNameBasedOnFlag_FlagEnabledResidentServiceCheckedException() throws ResidentServiceCheckedException {
+		String fieldName = "fieldName";
+		String preferredLang = "English";
+
+		when(env.getProperty(ResidentConstants.MANDATORY_LANGUAGE)).thenReturn("en");
+		ReflectionTestUtils.setField(utility, "isPreferedLangFlagEnabled", true);
+		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(
+				fieldName, "en", true))
+				.thenThrow(new ResidentServiceCheckedException());
+
+		String result = utility.getPreferredLanguageCodeForLanguageNameBasedOnFlag(fieldName, preferredLang);
+
+		assertEquals("en", result);
+	}
+
+	@Test(expected = Exception.class)
+	public void testGetPassword() {
+		utility.getPassword(List.of("email"));
+	}
+
+	@Test
+	public void testCreateEntityNotAsyncRequestType() {
+		assertEquals("Unknown", utility.createEntity(RequestType.GENERATE_VID).getCrBy());
 	}
 }
