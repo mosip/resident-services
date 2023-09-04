@@ -34,9 +34,7 @@ import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -53,6 +51,7 @@ import reactor.util.function.Tuples;
 @Component
 public class TemplateUtil {
 
+	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s";
 	private static final String RESIDENT = "Resident";
 	private static final String DEFAULT = "default";
 	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
@@ -60,9 +59,6 @@ public class TemplateUtil {
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
 	private static final String UNKNOWN = "Unknown";
-
-	@Autowired
-	private ResidentTransactionRepository residentTransactionRepository;
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -213,7 +209,25 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForAuthenticationRequest(
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		return residentTransactionEntity.getStatusComment();
+		List<String> authTypeCodeTemplateValues = new ArrayList<>();
+		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
+				.getT1();
+		String authTypeCodeFromDB = residentTransactionEntity.getAuthTypeCode();
+		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
+			List<String> authTypeCodeListFromDB = List
+					.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+			for (String authTypeCode : authTypeCodeListFromDB) {
+				authTypeCodeTemplateValues.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+						getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode)));
+			}
+		}
+
+		if (authTypeCodeTemplateValues.isEmpty()) {
+			return "";
+		} else {
+			return authTypeCodeTemplateValues.stream()
+					.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+		}
 	}
 
 	public String getDescriptionTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,
@@ -306,16 +320,6 @@ public class TemplateUtil {
     public String replaceNullWithEmptyString(String input) {
         return input == null ? "" : input;
     }
-    
-	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
-		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
-		if (residentTransactionEntity.isPresent()) {
-			return residentTransactionEntity.get();
-		} else {
-			throw new ResidentServiceException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND,
-					ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
-		}
-	}
 
 	public String getIndividualIdType() throws ApisResourceAccessException {
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
@@ -632,6 +636,11 @@ public class TemplateUtil {
 	public String getEventStatusTemplateTypeCode(EventStatus eventStatus) {
 		String eventStatusTemplateCodeProperty = eventStatus.getEventStatusTemplateCodeProperty();
 		return getTemplateTypeCode(eventStatusTemplateCodeProperty);
+	}
+
+	public String getIDAuthRequestTypesTemplateTypeCode(String authTypeCode, String statusCode) {
+		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, authTypeCode, statusCode);
+		return getTemplateTypeCode(templateCodeProperty);
 	}
 
 	public String getAttributeListTemplateTypeCode(String attributeName) {
