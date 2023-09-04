@@ -18,14 +18,18 @@ public enum AuthenticationModeEnum {
         this.templatePropertyName = templatePropertyName;
     }
 
-    public static String getTemplatePropertyName(String authenticationModeName, Environment environment) {
+    public String getTemplatePropertyName() {
+        return templatePropertyName;
+    }
+
+    public static AuthenticationModeEnum getAuthenticationModeName(String authenticationModeName, Environment environment) {
         for (AuthenticationModeEnum authenticationModeEnum : values()) {
             if (Objects.requireNonNull(environment.getProperty(authenticationModeEnum.nameProperty)).
                     equalsIgnoreCase(authenticationModeName)) {
-                return authenticationModeEnum.templatePropertyName;
+                return authenticationModeEnum;
             }
         }
-        return AuthenticationModeEnum.UNKNOWN.templatePropertyName;
+        return AuthenticationModeEnum.UNKNOWN;
     }
 
 }
