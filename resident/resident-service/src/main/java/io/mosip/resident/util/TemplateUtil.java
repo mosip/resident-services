@@ -209,12 +209,10 @@ public class TemplateUtil {
 				.getT1();
 		String authTypeCodeFromDB = residentTransactionEntity.getAuthTypeCode();
 		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
-			List<String> authTypeCodeListFromDB = List
-					.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-			for (String authTypeCode : authTypeCodeListFromDB) {
-				authTypeCodeTemplateValues.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-						getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode)));
-			}
+			authTypeCodeTemplateValues = List.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
+					.map(authTypeCode -> getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+							getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode)))
+					.collect(Collectors.toList());
 		}
 
 		if (authTypeCodeTemplateValues.isEmpty()) {
