@@ -178,7 +178,8 @@ public class LoginCheckTest {
 
 	@Test
 	public void testOnLogoutSuccess() throws ApisResourceAccessException {
-		loginCheck.onLogoutSuccess(null, null, response);
+		response.setStatus(302);
+		loginCheck.onLogoutSuccess("abc", null, response);
 	}
 
 	@Test
@@ -198,6 +199,12 @@ public class LoginCheckTest {
 		cookies1[0] = cookie;
 		Mockito.when(request.getCookies()).thenReturn(cookies1);
 		loginCheck.onValidateTokenSuccess(request, response);
+	}
+
+	@Test
+	public void testOnLoginReqV2(){
+		response.setStatus(300);
+		loginCheck.onLoginReq(null, null, null, null, response);
 	}
 
 }
