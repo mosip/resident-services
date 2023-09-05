@@ -369,6 +369,9 @@ public class IdentityServiceImpl implements IdentityService {
 		String authenticationMode = getClaimFromIdToken(
 				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
+		if(authTypeCode == null) {
+			return authenticationMode;
+		}
 		return authTypeCode;
 	}
 
