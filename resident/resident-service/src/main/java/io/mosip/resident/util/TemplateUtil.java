@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.AuthenticationModeEnum;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -57,7 +56,9 @@ public class TemplateUtil {
 	private static final String LOGO_URL = "logoUrl";
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
+	private static final String UNKNOWN = "UNKNOWN";
 	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s.%s";
+	private static final String CODE = "code";
 	private static final String DESCR = "descr";
 
 	@Autowired
@@ -119,15 +120,8 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
 		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
 				replaceNullWithEmptyString(residentTransactionEntity.getAttributeList()), languageCode, requestType));
-		String authTypeCode = replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode());
-		AuthenticationModeEnum authenticationMode = AuthenticationModeEnum.getAuthenticationModeName(authTypeCode, env);
-		if (authenticationMode.equals(AuthenticationModeEnum.UNKNOWN)) {
-			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, authTypeCode);
-		} else {
-			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-					getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							authenticationMode.getTemplatePropertyName()));
-		}
+		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCodes.getT1(), languageCode, CODE));
 		try {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
 		} catch (ApisResourceAccessException e) {
@@ -205,14 +199,17 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForAuthenticationRequest(
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		List<String> authTypeCodeTemplateValues = new ArrayList<>();
 		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
 				.getT1();
-		String authTypeCodeFromDB = residentTransactionEntity.getAuthTypeCode();
+		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode, DESCR);
+	}
+
+	private String getAuthTypeCodeTemplateData(String authTypeCodeFromDB, String statusCode, String languageCode, String typeOfData) {
+		List<String> authTypeCodeTemplateValues = new ArrayList<>();
 		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
 			authTypeCodeTemplateValues = List.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
 					.map(authTypeCode -> getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode, DESCR)))
+							getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode, typeOfData)))
 					.collect(Collectors.toList());
 		}
 
@@ -633,8 +630,12 @@ public class TemplateUtil {
 	}
 
 	private String getIDAuthRequestTypesTemplateTypeCode(String authTypeCode, String statusCode, String typeOfData) {
-		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, authTypeCode, statusCode, typeOfData);
-		return getTemplateTypeCode(templateCodeProperty);
+		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, authTypeCode, statusCode,
+				typeOfData);
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		return templateTypeCode == null
+				? getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, UNKNOWN, statusCode, typeOfData))
+				: templateTypeCode;
 	}
 
 	public String getAttributeListTemplateTypeCode(String attributeName) {
