@@ -57,7 +57,8 @@ public class TemplateUtil {
 	private static final String LOGO_URL = "logoUrl";
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
-	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s";
+	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s.%s";
+	private static final String DESCR = "descr";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -211,7 +212,7 @@ public class TemplateUtil {
 		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
 			authTypeCodeTemplateValues = List.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
 					.map(authTypeCode -> getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode)))
+							getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode, DESCR)))
 					.collect(Collectors.toList());
 		}
 
@@ -631,8 +632,8 @@ public class TemplateUtil {
 		return getTemplateTypeCode(eventStatusTemplateCodeProperty);
 	}
 
-	public String getIDAuthRequestTypesTemplateTypeCode(String authTypeCode, String statusCode) {
-		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, authTypeCode, statusCode);
+	private String getIDAuthRequestTypesTemplateTypeCode(String authTypeCode, String statusCode, String typeOfData) {
+		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, authTypeCode, statusCode, typeOfData);
 		return getTemplateTypeCode(templateCodeProperty);
 	}
 
