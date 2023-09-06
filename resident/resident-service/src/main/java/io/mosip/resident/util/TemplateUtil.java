@@ -57,9 +57,8 @@ public class TemplateUtil {
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
 	private static final String UNKNOWN = "UNKNOWN";
-	private static final String RESIDENT_ID_AUTH_REQUEST_TYPES = "resident.id-auth.request-types.%s.%s.%s";
-	private static final String CODE = "code";
-	private static final String DESCR = "descr";
+	private static final String RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY = "resident.auth-type-code.%s.code";
+	private static final String RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR = "resident.id-auth.request-type.%s.%s.descr";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -121,7 +120,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
 				replaceNullWithEmptyString(residentTransactionEntity.getAttributeList()), languageCode, requestType));
 		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCodes.getT1(), languageCode, CODE));
+				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
 		try {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
 		} catch (ApisResourceAccessException e) {
@@ -201,15 +200,22 @@ public class TemplateUtil {
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
 		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
 				.getT1();
-		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode, DESCR);
+		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode);
 	}
 
-	private String getAuthTypeCodeTemplateData(String authTypeCodeFromDB, String statusCode, String languageCode, String typeOfData) {
+	private String getAuthTypeCodeTemplateData(String authTypeCodeFromDB, String statusCode, String languageCode) {
 		List<String> authTypeCodeTemplateValues = new ArrayList<>();
 		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
 			authTypeCodeTemplateValues = List.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
-					.map(authTypeCode -> getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getIDAuthRequestTypesTemplateTypeCode(authTypeCode.trim(), statusCode, typeOfData)))
+					.map(authTypeCode -> {
+						String templateTypeCode;
+						if(statusCode == null) {
+							templateTypeCode = getAuthTypeCodeTemplateTypeCode(authTypeCode.trim());
+						} else {
+							templateTypeCode = getIDAuthRequestTypeDescriptionTemplateTypeCode(authTypeCode.trim(), statusCode);
+						}
+						return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+					})
 					.collect(Collectors.toList());
 		}
 
@@ -629,12 +635,19 @@ public class TemplateUtil {
 		return getTemplateTypeCode(eventStatusTemplateCodeProperty);
 	}
 
-	private String getIDAuthRequestTypesTemplateTypeCode(String authTypeCode, String statusCode, String typeOfData) {
-		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, authTypeCode, statusCode,
-				typeOfData);
+	private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
+		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		return templateTypeCode == null
-				? getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPES, UNKNOWN, statusCode, typeOfData))
+				? getTemplateTypeCode(String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, UNKNOWN))
+				: templateTypeCode;
+	}
+
+	private String getIDAuthRequestTypeDescriptionTemplateTypeCode(String authTypeCode, String statusCode) {
+		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, authTypeCode, statusCode);
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		return templateTypeCode == null
+				? getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode))
 				: templateTypeCode;
 	}
 
