@@ -232,7 +232,7 @@ public class ResidentTransactionEntity {
 	 */
 	public ResidentTransactionEntity(String eventId, String requestTypeCode, String statusCode, String statusComment,
 			String refIdType, String refId, LocalDateTime crDtimes, LocalDateTime updDtimes, boolean readStatus,
-			boolean pinnedStatus, String purpose, String attributeList) {
+			boolean pinnedStatus, String purpose, String attributeList, String authTypeCode) {
 		this.eventId = eventId;
 		this.requestTypeCode = requestTypeCode;
 		this.statusCode = statusCode;
@@ -245,6 +245,7 @@ public class ResidentTransactionEntity {
 		this.pinnedStatus = pinnedStatus;
 		this.purpose = purpose;
 		this.attributeList = attributeList;
+		this.authTypeCode = authTypeCode;
 	}
 
 	/**
