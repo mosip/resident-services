@@ -134,9 +134,10 @@ public class TemplateUtil {
 	public String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
 		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
-		templateTypeCode = templateTypeCode == null
-				? getTemplateTypeCode(String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, RequestType.DEFAULT.name()))
-				: templateTypeCode;
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", requestType.name());
+			templateTypeCode = getTemplateTypeCode(String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, RequestType.DEFAULT.name()));
+		}
 		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
