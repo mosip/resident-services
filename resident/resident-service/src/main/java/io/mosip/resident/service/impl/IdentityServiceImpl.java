@@ -369,6 +369,10 @@ public class IdentityServiceImpl implements IdentityService {
 		String authenticationMode = getClaimFromIdToken(
 				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
+		if(authTypeCode == null) {
+			logger.warn("Mapping is missing for %s in AMR to ACR mapping file", authenticationMode);
+			return authenticationMode;
+		}
 		return authTypeCode;
 	}
 
