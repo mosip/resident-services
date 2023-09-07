@@ -67,7 +67,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 
 	// Service history methods start---
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" ORDER BY rt.pinned_status DESC, rt.cr_dtimes DESC" +
@@ -82,7 +82,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	int countByTokenId(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
 			@Param("requestTypeCodes") List<String> requestTypeCodes);
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" AND rt.cr_dtimes BETWEEN :startDate AND :endDate" +
@@ -101,7 +101,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" AND rt.status_code IN (:statusCode)" +
@@ -118,7 +118,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	int countByTokenIdInStatus(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
 			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("statusCode") List<String> statusCode);
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" AND rt.event_id LIKE CONCAT('%', :eventId, '%')" +
@@ -135,7 +135,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 	int countByTokenIdAndSearchEventId(@Param("tokenId") String tokenId, @Param("olvPartnerId") String olvPartnerId,
 			@Param("requestTypeCodes") List<String> requestTypeCodes, @Param("eventId") String eventId);
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" AND rt.status_code IN (:statusCode)" +
@@ -157,7 +157,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			@Param("statusCode") List<String> statusCode, @Param("startDate") LocalDateTime startDate,
 			@Param("endDate") LocalDateTime endDate);
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" AND rt.cr_dtimes BETWEEN :startDate AND :endDate" +
@@ -179,7 +179,7 @@ public interface ResidentTransactionRepository extends JpaRepository<ResidentTra
 			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate,
 			@Param("eventId") String eventId);
 
-	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
+	@Query(value = "SELECT rt.event_id, rt.request_type_code, rt.status_code, rt.status_comment, rt.ref_id_type, rt.ref_id, rt.cr_dtimes, rt.upd_dtimes, rt.read_status, rt.pinned_status, rt.purpose, rt.attribute_list, rt.auth_type_code FROM resident_transaction rt WHERE rt.token_id = :tokenId" +
 			" AND rt.request_type_code IN (:requestTypeCodes)" +
 			" AND (rt.olv_partner_id IS NULL OR rt.olv_partner_id = :olvPartnerId)" +
 			" AND rt.status_code IN (:statusCode)" +
