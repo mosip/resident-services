@@ -111,7 +111,7 @@ public class TemplateUtil {
 								statusCodes.getT1(), requestType));
 			}
 		} else {
-			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
+			templateVariables.put(TemplateVariablesConstants.SUMMARY, getEventTypeBasedOnLangcode(requestType, languageCode));
 		}
 		templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
 				utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getCrDtimes()));
@@ -131,7 +131,7 @@ public class TemplateUtil {
 		return templateVariables;
 	}
 
-	private String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
+	public String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
 		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		templateTypeCode = templateTypeCode == null
