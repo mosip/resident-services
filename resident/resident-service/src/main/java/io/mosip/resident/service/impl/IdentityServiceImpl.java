@@ -370,6 +370,7 @@ public class IdentityServiceImpl implements IdentityService {
 				this.env.getProperty(ResidentConstants.AUTHENTICATION_MODE_CLAIM_NAME));
 		String authTypeCode = utility.getAuthTypeCodefromkey(authenticationMode);
 		if(authTypeCode == null) {
+			logger.warn("Configuration is missing for " + authenticationMode);
 			return authenticationMode;
 		}
 		return authTypeCode;
