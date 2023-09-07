@@ -648,17 +648,23 @@ public class TemplateUtil {
 	private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
 		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
-		return templateTypeCode == null
-				? getTemplateTypeCode(String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, UNKNOWN))
-				: templateTypeCode;
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", authTypeCode);
+			return getTemplateTypeCode(String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, UNKNOWN));
+		} else {
+			return templateTypeCode;
+		}
 	}
 
 	private String getIDAuthRequestTypeDescriptionTemplateTypeCode(String authTypeCode, String statusCode) {
 		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, authTypeCode, statusCode);
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
-		return templateTypeCode == null
-				? getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode))
-				: templateTypeCode;
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", authTypeCode);
+			return getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode));
+		} else {
+			return templateTypeCode;
+		}
 	}
 
 	public String getAttributeListTemplateTypeCode(String attributeName) {
