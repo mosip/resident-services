@@ -1687,7 +1687,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.map(objArr -> new ResidentTransactionEntity((String) objArr[0], (String) objArr[1],
 							(String) objArr[2], (String) objArr[3], (String) objArr[4], (String) objArr[5],
 							toDateTime(objArr[6]), toDateTime(objArr[7]), (boolean) objArr[8], (boolean) objArr[9],
-							(String) objArr[10], (String) objArr[11]))
+							(String) objArr[10], (String) objArr[11], (String) objArr[12]))
 					.collect(Collectors.toList());
 		}
 		return Tuples.of(entitiesList, totalItems);
