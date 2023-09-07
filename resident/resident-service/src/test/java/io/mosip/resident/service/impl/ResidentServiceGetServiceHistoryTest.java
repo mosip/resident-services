@@ -181,7 +181,7 @@ public class ResidentServiceGetServiceHistoryTest {
 	private void getEntityData() {
 		List<Object[]> entitiesList = new ArrayList<>();
 		entitiesList = residentTransactionEntityList.stream().map(obj -> {
-			Object[] objArr = new Object[12];
+			Object[] objArr = new Object[13];
 	        objArr[0] = obj.getEventId();
 	        objArr[1] = obj.getRequestTypeCode();
 	        objArr[2] = obj.getStatusCode();
@@ -194,6 +194,7 @@ public class ResidentServiceGetServiceHistoryTest {
 	        objArr[9] = obj.getPinnedStatus();
 	        objArr[10] = obj.getPurpose();
 	        objArr[11] = obj.getAttributeList();
+	        objArr[12] = obj.getAuthTypeCode();
 	        return objArr;
 		}).collect(Collectors.toList());
         Mockito.when(residentTransactionRepository.findByTokenId(Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt(),
@@ -333,6 +334,7 @@ public class ResidentServiceGetServiceHistoryTest {
     public void testGetServiceHistoryWithUpdatedDtimes() throws ResidentServiceCheckedException, ApisResourceAccessException {
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
         residentTransactionEntity.setRequestTypeCode(RequestType.REVOKE_VID.name());
+        residentTransactionEntity.setAuthTypeCode("OTP");
         residentTransactionEntityList.add(residentTransactionEntity);
         getEntityData();
        assertEquals(10, residentServiceImpl.getServiceHistory(pageStart, pageSize, null, null,
@@ -433,6 +435,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFULL.toString());
         residentTransactionEntity.setCrDtimes(LocalDateTime.now().minusMinutes(1));
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
+        residentTransactionEntity.setAuthTypeCode("OTP");
         residentTransactionEntityList.add(residentTransactionEntity);
         getEntityData();
         pageStart = 2;
@@ -449,6 +452,7 @@ public class ResidentServiceGetServiceHistoryTest {
         residentTransactionEntity.setStatusCode(EventStatusSuccess.AUTHENTICATION_SUCCESSFULL.toString());
         residentTransactionEntity.setCrDtimes(LocalDateTime.now().minusMinutes(1));
         residentTransactionEntity.setUpdDtimes(LocalDateTime.now());
+        residentTransactionEntity.setAuthTypeCode("OTP");
         residentTransactionEntityList.add(residentTransactionEntity);
         getEntityData();
         pageStart = 2;
