@@ -59,6 +59,7 @@ public class TemplateUtil {
 	private static final String UNKNOWN = "UNKNOWN";
 	private static final String RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY = "resident.auth-type-code.%s.code";
 	private static final String RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR = "resident.id-auth.request-type.%s.%s.descr";
+	private static final String RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY = "resident.event.type.%s.template.property";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -101,7 +102,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
 		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
-		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
+		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, getEventTypeBasedOnLangcode(requestType, languageCode));
 		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCodes.getT2());
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
@@ -128,6 +129,15 @@ public class TemplateUtil {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, "");
 		}
 		return templateVariables;
+	}
+
+	private String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
+		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		templateTypeCode = templateTypeCode == null
+				? getTemplateTypeCode(String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, RequestType.DEFAULT.name()))
+				: templateTypeCode;
+		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	/**
@@ -528,7 +538,7 @@ public class TemplateUtil {
 			templateVariables.put(TemplateVariablesConstants.NAME, RESIDENT);
 		}
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
-		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
+		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, getEventTypeBasedOnLangcode(dto.getRequestType(), langCode));
 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
 		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
 		
