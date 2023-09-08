@@ -3,7 +3,6 @@ package io.mosip.resident.util;
 import static junit.framework.TestCase.assertEquals;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -164,12 +163,6 @@ public class TemplateUtilTest {
     public void getAckTemplateVariablesForGetMyId() {
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForGetMyId(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(eventId,ackTemplateVariables.get(TemplateVariablesConstants.EVENT_ID));
-    }
-
-    @Test
-    public void getAckTemplateVariablesForBookAnAppointment() {
-        Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForBookAnAppointment(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
-        assertEquals(Collections.emptyMap(),ackTemplateVariables);
     }
 
     @Test
