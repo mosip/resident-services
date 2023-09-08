@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 public enum ServiceType {
     AUTHENTICATION_REQUEST(List.of(RequestType.AUTHENTICATION_REQUEST)),
 	SERVICE_REQUEST(List.of(RequestType.DOWNLOAD_PERSONALIZED_CARD, RequestType.ORDER_PHYSICAL_CARD,
-			RequestType.GET_MY_ID, RequestType.BOOK_AN_APPOINTMENT, RequestType.VID_CARD_DOWNLOAD)),
+			RequestType.GET_MY_ID, RequestType.VID_CARD_DOWNLOAD)),
     DATA_UPDATE_REQUEST(List.of(RequestType.UPDATE_MY_UIN)),
     ID_MANAGEMENT_REQUEST(List.of(RequestType.GENERATE_VID, RequestType.REVOKE_VID,
             RequestType.VALIDATE_OTP, RequestType.AUTH_TYPE_LOCK_UNLOCK)),
