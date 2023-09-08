@@ -2066,7 +2066,7 @@ public class ResidentServiceImpl implements ResidentService {
 		servHistoryMap.put("eventReqTimeStamp", utility.formatWithOffsetForUI(timeZoneOffset, locale, eventReqDateTime));
 		servHistoryMap.put("fromDate", fromDate);
 		servHistoryMap.put("toDate", toDate);
-		servHistoryMap.put("statusFilter", statusFilter);
+		servHistoryMap.put("statusFilter", Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim).collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER)));
 		servHistoryMap.put("serviceType", Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim).collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER)));
 		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
 
