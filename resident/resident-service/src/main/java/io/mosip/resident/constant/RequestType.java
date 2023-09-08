@@ -58,7 +58,6 @@ public enum RequestType implements PreUpdateInBatchJob {
 	GET_MY_ID("Get UIN Card", TemplateUtil::getAckTemplateVariablesForGetMyId,
 			"get-my-uin-card", TemplateUtil::getNotificationTemplateVariablesForGetMyId,
 			TemplateUtil::getDescriptionTemplateVariablesForGetMyId),
-	BOOK_AN_APPOINTMENT("Book An Appointment", TemplateUtil::getAckTemplateVariablesForBookAnAppointment, "", null, null),
 	UPDATE_MY_UIN("Update UIN Data", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
 			"update-demo-data", TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin,
 			TemplateUtil::getDescriptionTemplateVariablesForUpdateMyUin,

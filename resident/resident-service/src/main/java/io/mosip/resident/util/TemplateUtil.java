@@ -2,7 +2,6 @@ package io.mosip.resident.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -417,11 +416,6 @@ public class TemplateUtil {
 		templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
 		return Tuples.of(templateVariables,
 				Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_GET_MY_ID_TEMPLATE_PROPERTY)));
-	}
-
-	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForBookAnAppointment(ResidentTransactionEntity residentTransactionEntity,
-			String languageCode, Integer timeZoneOffset, String locale) {
-		return Tuples.of(Collections.emptyMap(), "");
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(ResidentTransactionEntity residentTransactionEntity,

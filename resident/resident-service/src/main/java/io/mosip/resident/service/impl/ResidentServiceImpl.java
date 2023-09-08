@@ -2073,7 +2073,7 @@ public class ResidentServiceImpl implements ResidentService {
 		InputStream serviceHistTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
 		InputStream serviceHistTemplateData = templateManager.merge(serviceHistTemplate, servHistoryMap);
 		StringWriter writer = new StringWriter();
-		IOUtils.copy(serviceHistTemplateData, writer, "UTF-8");
+		IOUtils.copy(serviceHistTemplateData, writer, ENCODE_TYPE);
 		logger.debug("ResidentServiceImpl::residentServiceHistoryPDF()::exit");
 		return utility.signPdf(new ByteArrayInputStream(writer.toString().getBytes()), null);
 	}
