@@ -18,7 +18,7 @@ CREATE TABLE resident.resident_session(
     login_dtimes timestamp,
 	ip_address character varying(128),
 	host character varying(128),
-	machine_type character varying(30),
+	machine_type character varying(100),
     CONSTRAINT pk_session_id PRIMARY KEY (session_id)
 );
 
