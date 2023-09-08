@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.AuthenticationModeEnum;
 import io.mosip.resident.constant.EventStatus;
 import io.mosip.resident.constant.EventStatusFailure;
 import io.mosip.resident.constant.EventStatusInProgress;
@@ -34,9 +33,7 @@ import io.mosip.resident.dto.NotificationTemplateVariableDTO;
 import io.mosip.resident.entity.ResidentTransactionEntity;
 import io.mosip.resident.exception.ApisResourceAccessException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
-import io.mosip.resident.repository.ResidentTransactionRepository;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.service.ProxyPartnerManagementService;
 import io.mosip.resident.service.impl.IdentityServiceImpl;
@@ -59,10 +56,10 @@ public class TemplateUtil {
 	private static final String LOGO_URL = "logoUrl";
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
-	private static final String UNKNOWN = "Unknown";
-
-	@Autowired
-	private ResidentTransactionRepository residentTransactionRepository;
+	private static final String UNKNOWN = "UNKNOWN";
+	private static final String RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY = "resident.auth-type-code.%s.code";
+	private static final String RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR = "resident.id-auth.request-type.%s.%s.descr";
+	private static final String RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY = "resident.event.type.%s.template.property";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -105,7 +102,7 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, residentTransactionEntity.getEventId());
 		Tuple2<String, String> statusCodes = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode);
 		Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
-		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, requestType.getName());
+		templateVariables.put(TemplateVariablesConstants.EVENT_TYPE, getEventTypeBasedOnLangcode(requestType, languageCode));
 		templateVariables.put(TemplateVariablesConstants.EVENT_STATUS, statusCodes.getT2());
 		if (serviceType.isPresent()) {
 			if (!serviceType.get().equals(ServiceType.ALL.name())) {
@@ -114,7 +111,7 @@ public class TemplateUtil {
 								statusCodes.getT1(), requestType));
 			}
 		} else {
-			templateVariables.put(TemplateVariablesConstants.SUMMARY, requestType.name());
+			templateVariables.put(TemplateVariablesConstants.SUMMARY, getEventTypeBasedOnLangcode(requestType, languageCode));
 		}
 		templateVariables.put(TemplateVariablesConstants.TIMESTAMP,
 				utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getCrDtimes()));
@@ -123,14 +120,8 @@ public class TemplateUtil {
 		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
 		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
 				replaceNullWithEmptyString(residentTransactionEntity.getAttributeList()), languageCode, requestType));
-		String authenticationMode = getAuthTypeCodeTemplateValue(
-				replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()), languageCode);
-		if (authenticationMode.equalsIgnoreCase(UNKNOWN)) {
-			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
-					replaceNullWithEmptyString(residentTransactionEntity.getAuthTypeCode()));
-		} else {
-			templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE, authenticationMode);
-		}
+		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
+				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
 		try {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, getIndividualIdType());
 		} catch (ApisResourceAccessException e) {
@@ -138,6 +129,16 @@ public class TemplateUtil {
 			templateVariables.put(TemplateVariablesConstants.INDIVIDUAL_ID, "");
 		}
 		return templateVariables;
+	}
+
+	public String getEventTypeBasedOnLangcode(RequestType requestType, String languageCode) {
+		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", requestType.name());
+			templateTypeCode = getTemplateTypeCode(String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, RequestType.DEFAULT.name()));
+		}
+		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	/**
@@ -201,11 +202,6 @@ public class TemplateUtil {
 		}
 	}
 
-	private String getAuthTypeCodeTemplateValue(String authenticationMode, String languageCode) {
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-				AuthenticationModeEnum.getTemplatePropertyName(authenticationMode, env));
-	}
-
 	public String getTemplateValueFromTemplateTypeCodeAndLangCode(String languageCode, String templateTypeCode) {
 		return proxyMasterdataService
 					.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
@@ -213,7 +209,33 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForAuthenticationRequest(
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		return residentTransactionEntity.getStatusComment();
+		String statusCode = residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode)
+				.getT1();
+		return getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), statusCode, languageCode);
+	}
+
+	private String getAuthTypeCodeTemplateData(String authTypeCodeFromDB, String statusCode, String languageCode) {
+		List<String> authTypeCodeTemplateValues = new ArrayList<>();
+		if (authTypeCodeFromDB != null && !authTypeCodeFromDB.isEmpty()) {
+			authTypeCodeTemplateValues = List.of(authTypeCodeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
+					.map(authTypeCode -> {
+						String templateTypeCode;
+						if(statusCode == null) {
+							templateTypeCode = getAuthTypeCodeTemplateTypeCode(authTypeCode.trim());
+						} else {
+							templateTypeCode = getIDAuthRequestTypeDescriptionTemplateTypeCode(authTypeCode.trim(), statusCode);
+						}
+						return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+					})
+					.collect(Collectors.toList());
+		}
+
+		if (authTypeCodeTemplateValues.isEmpty()) {
+			return "";
+		} else {
+			return authTypeCodeTemplateValues.stream()
+					.collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
+		}
 	}
 
 	public String getDescriptionTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,
@@ -306,16 +328,6 @@ public class TemplateUtil {
     public String replaceNullWithEmptyString(String input) {
         return input == null ? "" : input;
     }
-    
-	private ResidentTransactionEntity getEntityFromEventId(String eventId) {
-		Optional<ResidentTransactionEntity> residentTransactionEntity = residentTransactionRepository.findById(eventId);
-		if (residentTransactionEntity.isPresent()) {
-			return residentTransactionEntity.get();
-		} else {
-			throw new ResidentServiceException(ResidentErrorCode.EVENT_STATUS_NOT_FOUND,
-					ResidentErrorCode.EVENT_STATUS_NOT_FOUND.getErrorMessage());
-		}
-	}
 
 	public String getIndividualIdType() throws ApisResourceAccessException {
 		String individualId = identityServiceImpl.getResidentIndvidualIdFromSession();
@@ -527,7 +539,7 @@ public class TemplateUtil {
 			templateVariables.put(TemplateVariablesConstants.NAME, RESIDENT);
 		}
 		templateVariables.put(TemplateVariablesConstants.EVENT_ID, dto.getEventId());
-		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, dto.getRequestType().getName());
+		templateVariables.put(TemplateVariablesConstants.EVENT_DETAILS, getEventTypeBasedOnLangcode(dto.getRequestType(), langCode));
 		templateVariables.put(TemplateVariablesConstants.DATE, getDate());
 		templateVariables.put(TemplateVariablesConstants.TIME, getTime());
 		
@@ -632,6 +644,28 @@ public class TemplateUtil {
 	public String getEventStatusTemplateTypeCode(EventStatus eventStatus) {
 		String eventStatusTemplateCodeProperty = eventStatus.getEventStatusTemplateCodeProperty();
 		return getTemplateTypeCode(eventStatusTemplateCodeProperty);
+	}
+
+	private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
+		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", authTypeCode);
+			return getTemplateTypeCode(String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, UNKNOWN));
+		} else {
+			return templateTypeCode;
+		}
+	}
+
+	private String getIDAuthRequestTypeDescriptionTemplateTypeCode(String authTypeCode, String statusCode) {
+		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, authTypeCode, statusCode);
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", authTypeCode);
+			return getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode));
+		} else {
+			return templateTypeCode;
+		}
 	}
 
 	public String getAttributeListTemplateTypeCode(String attributeName) {

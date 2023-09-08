@@ -1687,7 +1687,7 @@ public class ResidentServiceImpl implements ResidentService {
 					.map(objArr -> new ResidentTransactionEntity((String) objArr[0], (String) objArr[1],
 							(String) objArr[2], (String) objArr[3], (String) objArr[4], (String) objArr[5],
 							toDateTime(objArr[6]), toDateTime(objArr[7]), (boolean) objArr[8], (boolean) objArr[9],
-							(String) objArr[10], (String) objArr[11]))
+							(String) objArr[10], (String) objArr[11], (String) objArr[12]))
 					.collect(Collectors.toList());
 		}
 		return Tuples.of(entitiesList, totalItems);
@@ -1761,7 +1761,7 @@ public class ResidentServiceImpl implements ResidentService {
 			Optional<String> serviceType = ServiceType.getServiceTypeFromRequestType(requestType);
 
 			ServiceHistoryResponseDto serviceHistoryResponseDto = new ServiceHistoryResponseDto();
-			serviceHistoryResponseDto.setRequestType(requestType.name());
+			serviceHistoryResponseDto.setRequestType(templateUtil.getEventTypeBasedOnLangcode(requestType, langCode));
 			serviceHistoryResponseDto.setEventId(residentTransactionEntity.getEventId());
 			serviceHistoryResponseDto.setEventStatus(statusCodes.getT2());
 			if (residentTransactionEntity.getUpdDtimes() != null
@@ -1777,7 +1777,7 @@ public class ResidentServiceImpl implements ResidentService {
 							.setDescription(getDescriptionForLangCode(residentTransactionEntity, langCode, statusCodes.getT1(), requestType));
 				}
 			} else {
-				serviceHistoryResponseDto.setDescription(requestType.name());
+				serviceHistoryResponseDto.setDescription(templateUtil.getEventTypeBasedOnLangcode(requestType, langCode));
 			}
 			serviceHistoryResponseDto.setPinnedStatus(residentTransactionEntity.getPinnedStatus());
 			serviceHistoryResponseDto.setReadStatus(residentTransactionEntity.isReadStatus());
@@ -1926,7 +1926,7 @@ public class ResidentServiceImpl implements ResidentService {
 							getDescriptionForLangCode(residentTransactionEntity.get(), languageCode, statusCodes.getT1(), requestType));
 				}
 			} else {
-				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, requestType.name());
+				eventStatusMap.put(TemplateVariablesConstants.DESCRIPTION, templateUtil.getEventTypeBasedOnLangcode(requestType, languageCode));
 			}
 			eventStatusResponseDTO.setInfo(eventStatusMap);
 			responseWrapper.setId(serviceEventId);
