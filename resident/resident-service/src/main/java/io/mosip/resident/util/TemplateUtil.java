@@ -419,11 +419,6 @@ public class TemplateUtil {
 				Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_GET_MY_ID_TEMPLATE_PROPERTY)));
 	}
 
-	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForBookAnAppointment(ResidentTransactionEntity residentTransactionEntity,
-			String languageCode, Integer timeZoneOffset, String locale) {
-		return Tuples.of(Collections.emptyMap(), "");
-	}
-
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForUpdateMyUin(ResidentTransactionEntity residentTransactionEntity,
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.UPDATE_MY_UIN,
