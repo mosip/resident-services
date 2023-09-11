@@ -260,7 +260,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 				residentTransactionEntity.setRefId(utility.convertToMaskData(vidResponseDto.getVid()));
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_GENERATED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_GENERATED.name());
-				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.GENERATE_VID.getName(), ResidentConstants.SUCCESS));
+				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.GENERATE_VID.name(), ResidentConstants.SUCCESS));
 			}
 			
 		} catch (JsonProcessingException e) {
@@ -282,7 +282,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setStatusComment(ResidentConstants.FAILED);
 					residentTransactionEntity
-							.setRequestSummary(String.format("%s - %s", RequestType.GENERATE_VID.getName(), ResidentConstants.FAILED));
+							.setRequestSummary(String.format("%s - %s", RequestType.GENERATE_VID.name(), ResidentConstants.FAILED));
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
@@ -494,7 +494,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(uinForVid != null && !uin.equalsIgnoreCase(uinForVid)) {
 				if(Utility.isSecureSession()) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.getName(), ResidentConstants.FAILED));
+					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.name(), ResidentConstants.FAILED));
 					residentTransactionRepository.save(residentTransactionEntity);
 					throw new ResidentServiceCheckedException(ResidentErrorCode.VID_NOT_BELONG_TO_USER,
 							Map.of(ResidentConstants.EVENT_ID, eventId));
@@ -553,7 +553,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			if(Utility.isSecureSession()) {
 				residentTransactionEntity.setStatusCode(EventStatusSuccess.VID_REVOKED.name());
 				residentTransactionEntity.setStatusComment(EventStatusSuccess.VID_REVOKED.name());
-				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.getName(), ResidentConstants.SUCCESS));
+				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.name(), ResidentConstants.SUCCESS));
 			}
 		} catch (JsonProcessingException e) {
 			logger.error(EventEnum.VID_JSON_PARSING_EXCEPTION.getDescription(), requestDto.getTransactionID());
@@ -571,7 +571,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setStatusComment(ResidentConstants.FAILED);
 					residentTransactionEntity
-							.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.getName(), ResidentConstants.FAILED));
+							.setRequestSummary(String.format("%s - %s", RequestType.REVOKE_VID.name(), ResidentConstants.FAILED));
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
@@ -652,7 +652,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 		if(Utility.isSecureSession()) {
 			residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 			residentTransactionEntity.setStatusComment(ResidentConstants.FAILED);
-			residentTransactionEntity.setRequestSummary(String.format("%s - %s", requestType.getName(), ResidentConstants.FAILED));
+			residentTransactionEntity.setRequestSummary(String.format("%s - %s", requestType.name(), ResidentConstants.FAILED));
 			throw targetExceptionCreator.apply(eventId, e);
 		}
 	}
