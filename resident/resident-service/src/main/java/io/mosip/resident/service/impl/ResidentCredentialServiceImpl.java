@@ -233,7 +233,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 			if (dto.getConsent() == null || dto.getConsent().trim().isEmpty()
 					|| !dto.getConsent().equalsIgnoreCase(ConsentStatusType.ACCEPTED.name())) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.getName(), EventStatusFailure.FAILED.name()));
+				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.name(), EventStatusFailure.FAILED.name()));
 				throw new ResidentServiceException(ResidentErrorCode.CONSENT_DENIED.getErrorCode(),
 						ResidentErrorCode.CONSENT_DENIED.getErrorMessage());
 			}
@@ -256,7 +256,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (ResidentServiceCheckedException | ApisResourceAccessException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.getName(), EventStatusFailure.FAILED.name()));
+				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.name(), EventStatusFailure.FAILED.name()));
 			}
 			sendNotificationV2(individualId, RequestType.SHARE_CRED_WITH_PARTNER, TemplateType.FAILURE,
 					eventId, additionalAttributes);
@@ -265,7 +265,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		} catch (IOException e) {
 			if (residentTransactionEntity != null) {
 				residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
-				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.getName(), EventStatusFailure.FAILED.name()));
+				residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.name(), EventStatusFailure.FAILED.name()));
 			}
 			sendNotificationV2(individualId, RequestType.SHARE_CRED_WITH_PARTNER, TemplateType.FAILURE,
 					eventId, additionalAttributes);
@@ -277,7 +277,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 				if(residentTransactionEntity.getStatusCode() == null || residentTransactionEntity.getRequestSummary() == null) {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setStatusComment(EventStatusFailure.FAILED.name());
-					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.getName(), EventStatusFailure.FAILED.name()));
+					residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.name(), EventStatusFailure.FAILED.name()));
 				}
 				residentTransactionRepository.save(residentTransactionEntity);
 			}
@@ -324,7 +324,7 @@ public class ResidentCredentialServiceImpl implements ResidentCredentialService 
 		residentTransactionEntity.setRequestTrnId(dto.getTransactionID());
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.NEW.name());
 		residentTransactionEntity.setStatusComment(EventStatusInProgress.NEW.name());
-		residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.getName(), EventStatusInProgress.NEW.name()));
+		residentTransactionEntity.setRequestSummary(String.format("%s - %s", RequestType.SHARE_CRED_WITH_PARTNER.name(), EventStatusInProgress.NEW.name()));
 		residentTransactionEntity.setAid(residentCredentialResponseDto.getRequestId());
 		residentTransactionEntity.setCredentialRequestId(residentCredentialResponseDto.getRequestId());
 	}
