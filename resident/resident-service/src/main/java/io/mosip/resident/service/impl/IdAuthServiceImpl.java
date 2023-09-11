@@ -205,18 +205,12 @@ public class IdAuthServiceImpl implements IdAuthService {
 		ResidentTransactionEntity residentTransactionEntity = null;
 		String authType = null;
 		try {
-			String idaToken = identityService.getIDAToken(individualId);
-			residentTransactionEntity = residentTransactionRepository
-					.findTopByRequestTrnIdAndTokenIdAndStatusCodeInOrderByCrDtimesDesc(transactionId, idaToken,
-							List.of(EventStatusInProgress.OTP_REQUESTED.name(), EventStatusFailure.OTP_VERIFICATION_FAILED.name()));
-			if (residentTransactionEntity != null) {
-				authType = residentTransactionEntity.getAuthTypeCode();
-			}
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
-					requestType, idaToken);
+					requestType, identityService.getIDAToken(individualId));
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
+				authType = residentTransactionEntity.getAuthTypeCode();
 			}
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
