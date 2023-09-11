@@ -29,19 +29,18 @@ import reactor.util.function.Tuple2;
 
 public enum RequestType implements PreUpdateInBatchJob {
 	AUTHENTICATION_REQUEST("Authentication Request", TemplateUtil::getAckTemplateVariablesForAuthenticationRequest,
-			"", null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
+			null, TemplateUtil::getDescriptionTemplateVariablesForAuthenticationRequest),
 	SHARE_CRED_WITH_PARTNER("Share Credential With Partner", TemplateUtil::getAckTemplateVariablesForShareCredentialWithPartner,
-			"share-cred-with-partner", TemplateUtil::getNotificationTemplateVariablesForShareCredentialWithPartner,
+			TemplateUtil::getNotificationTemplateVariablesForShareCredentialWithPartner,
 			TemplateUtil::getDescriptionTemplateVariablesForShareCredentialWithPartner,
 			ResidentConstants.ACK_SHARE_CREDENTIAL_NAMING_CONVENTION_PROPERTY),
 	DOWNLOAD_PERSONALIZED_CARD("Download Personalized Card",
 			TemplateUtil::getAckTemplateVariablesForDownloadPersonalizedCard,
-			"cust-and-down-my-card",
 			TemplateUtil::getNotificationTemplateVariablesForDownloadPersonalizedCard,
 			TemplateUtil::getDescriptionTemplateVariablesForDownloadPersonalizedCard,
 			ResidentConstants.ACK_PERSONALIZED_CARD_NAMING_CONVENTION_PROPERTY),
 	ORDER_PHYSICAL_CARD("Order a Physical Card", TemplateUtil::getAckTemplateVariablesForOrderPhysicalCard,
-			"order-a-physical-card", TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard,
+			TemplateUtil::getNotificationTemplateVariablesForOrderPhysicalCard,
 			TemplateUtil::getDescriptionTemplateVariablesForOrderPhysicalCard,
 			ResidentConstants.ACK_ORDER_PHYSICAL_CARD_NAMING_CONVENTION_PROPERTY) {
 		@Override
@@ -53,13 +52,12 @@ public enum RequestType implements PreUpdateInBatchJob {
 				txn.setTrackingId(trackingId);
 			}
 		}
-
 	},
 	GET_MY_ID("Get UIN Card", TemplateUtil::getAckTemplateVariablesForGetMyId,
-			"get-my-uin-card", TemplateUtil::getNotificationTemplateVariablesForGetMyId,
+			TemplateUtil::getNotificationTemplateVariablesForGetMyId,
 			TemplateUtil::getDescriptionTemplateVariablesForGetMyId),
 	UPDATE_MY_UIN("Update UIN Data", TemplateUtil::getAckTemplateVariablesForUpdateMyUin,
-			"update-demo-data", TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin,
+			TemplateUtil::getNotificationTemplateVariablesForUpdateMyUin,
 			TemplateUtil::getDescriptionTemplateVariablesForUpdateMyUin,
 			ResidentConstants.ACK_UPDATE_MY_DATA_NAMING_CONVENTION_PROPERTY) {
 		@Override
@@ -72,22 +70,19 @@ public enum RequestType implements PreUpdateInBatchJob {
 		}
 	},
 	GENERATE_VID("Generate VID", TemplateUtil::getAckTemplateVariablesForGenerateVid,
-			"gen-or-revoke-vid",
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
 			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
-	REVOKE_VID("Revoke VID", TemplateUtil::getAckTemplateVariablesForRevokeVid, "gen-or-revoke-vid",
+	REVOKE_VID("Revoke VID", TemplateUtil::getAckTemplateVariablesForRevokeVid,
 			TemplateUtil::getNotificationTemplateVariablesForGenerateOrRevokeVid,
 			TemplateUtil::getDescriptionTemplateVariablesForManageMyVid,
 			ResidentConstants.ACK_MANAGE_MY_VID_NAMING_CONVENTION_PROPERTY),
 	AUTH_TYPE_LOCK_UNLOCK("Secure My ID",
 			TemplateUtil::getAckTemplateVariablesForAuthTypeLockUnlock,
-			"lock-unlock-auth",
 			TemplateUtil::getNotificationTemplateVariablesForAuthTypeLockUnlock,
 			TemplateUtil::getDescriptionTemplateVariablesForSecureMyId,
 			ResidentConstants.ACK_SECURE_MY_ID_NAMING_CONVENTION_PROPERTY),
 	VID_CARD_DOWNLOAD("Download VID Card", TemplateUtil::getAckTemplateVariablesForVidCardDownload,
-			"vid-card-download",
 			TemplateUtil::getNotificationTemplateVariablesForVidCardDownload,
 			TemplateUtil::getDescriptionTemplateVariablesForVidCardDownload) {
 		@Override
@@ -99,14 +94,12 @@ public enum RequestType implements PreUpdateInBatchJob {
 			}
 		}
 	},
-
-	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp, "send-otp",
+	SEND_OTP("Send OTP", TemplateUtil::getAckTemplateVariablesForSendOtp,
 			TemplateUtil::getNotificationSendOtpVariables, null),
 	VALIDATE_OTP("Verify My Phone/Email", TemplateUtil::getAckTemplateVariablesForValidateOtp,
-			"verify-my-phone-email",
 			TemplateUtil::getNotificationCommonTemplateVariables,
 			TemplateUtil::getDescriptionTemplateVariablesForValidateOtp),
-	DEFAULT("Default", TemplateUtil::getAckTemplateVariablesForDefault, "",
+	DEFAULT("Default", TemplateUtil::getAckTemplateVariablesForDefault,
 			TemplateUtil::getNotificationCommonTemplateVariables, null);
 
 	private static final String PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT = "resident.template.email.subject.%s.%s";
@@ -128,31 +121,26 @@ public enum RequestType implements PreUpdateInBatchJob {
 	private static final String PREFIX_RESIDENT_REQUEST_NEW_STATUS_LIST = "resident.request.new.status.list.";
 	private static final String SEPARATOR = ",";
 	private FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction;
-	private String featureName;
 	private ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction;
 	private FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables;
 	private String namingProperty;
-
 	private String name;
 
 	private RequestType(String name,
 			FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
-			String featureName,
 			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
 			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables) {
 		this(name, ackTemplateVariablesFunction,
-				featureName, notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
+				notificationTemplateVariablesFunction, getDescriptionTemplateVariables, null);
 	}
 
 	private RequestType(String name,
 			FiveArgsFunction<TemplateUtil, ResidentTransactionEntity, String, Integer, String, Tuple2<Map<String, String>, String>> ackTemplateVariablesFunction,
-			String featureName,
 			ThreeArgsFunction<TemplateUtil, NotificationTemplateVariableDTO, Map<String, Object>, Map<String, Object>> notificationTemplateVariablesFunction,
 			FourArgsFunction<TemplateUtil, ResidentTransactionEntity, String, String, String> getDescriptionTemplateVariables,
 			String namingProperty) {
 		this.name = name;
 		this.ackTemplateVariablesFunction = ackTemplateVariablesFunction;
-		this.featureName = featureName;
 		this.notificationTemplateVariablesFunction = notificationTemplateVariablesFunction;
 		this.getDescriptionTemplateVariables = getDescriptionTemplateVariables;
 		this.namingProperty = namingProperty;
@@ -254,30 +242,26 @@ public enum RequestType implements PreUpdateInBatchJob {
 				.collect(Collectors.toUnmodifiableList());
 	}
 	
-	public String getFeatureName() {
-		return featureName;
-	}
-
 	public String getName() { return  name; }
 
 	public String getEmailSubjectTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT, templateType.getType(), getFeatureName());
+		return String.format(PREFIX_RESIDENT_TEMPLATE_EMAIL_SUBJECT, templateType.getType(), name());
 	}
 	
 	public String getEmailContentTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_EMAIL_CONTENT, templateType.getType(), getFeatureName());
+		return String.format(PREFIX_RESIDENT_TEMPLATE_EMAIL_CONTENT, templateType.getType(), name());
 	}
 
 	public String getSmsTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_SMS, templateType.getType(), getFeatureName());
+		return String.format(PREFIX_RESIDENT_TEMPLATE_SMS, templateType.getType(), name());
 	}
 	
 	public String getPurposeTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_PURPOSE, templateType.getType(), getFeatureName());
+		return String.format(PREFIX_RESIDENT_TEMPLATE_PURPOSE, templateType.getType(), name());
 	}
 	
 	public String getSummaryTemplateCodeProperty(TemplateType templateType) {
-		return String.format(PREFIX_RESIDENT_TEMPLATE_SUMMARY, templateType.getType(), getFeatureName());
+		return String.format(PREFIX_RESIDENT_TEMPLATE_SUMMARY, templateType.getType(), name());
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariables(TemplateUtil templateUtil, ResidentTransactionEntity residentTransactionEntity, String languageCode, Integer timeZoneOffset, String locale) {
