@@ -10,16 +10,11 @@ import java.util.stream.Stream;
 public enum EventStatus {
     FAILED, SUCCESS, IN_PROGRESS;
 	
-	private static final String RESIDENT_TEMPLATE_EVENT_STATUS = "resident.event.status.%s.template.property";
 	
 	public static Optional<EventStatus> getEventStatusForText(String status) {
 		return Stream.of(values())
 			.filter(event -> event.name()
 				.equalsIgnoreCase(status.trim()))
 			.findAny();
-	}
-
-	public String getEventStatusTemplateCodeProperty() {
-		return String.format(RESIDENT_TEMPLATE_EVENT_STATUS, name());
 	}
 }

@@ -103,6 +103,8 @@ public class ResidentConstants {
     public static final String VID_DOWNLOAD_CARD_VERSION = "mosip.resident.request.vid.card.version";
 
     public static final String SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE = "mosip.resident.service.history.template.type.code";
+    public static final String RESIDENT_ALL_TEMPLATE_PROPERTY = "resident.ALL.template.property";
+    public static final String RESIDENT_UNKNOWN_TEMPLATE_PROPERTY = "resident.UNKNOWN.template.property";
     public static final String PHOTO_ATTRIBUTE_NAME = "mosip.resident.photo.attribute.name";
     public static final String APPLICANT_NAME_PROPERTY = "mosip.resident.applicant.name.property";
     public static final String AUTHENTICATION_MODE_PROPERTY = "mosip.resident.authentication.mode.property";
