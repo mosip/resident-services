@@ -59,6 +59,8 @@ public class TemplateUtil {
 	private static final String RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY = "resident.auth-type-code.%s.code";
 	private static final String RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR = "resident.id-auth.request-type.%s.%s.descr";
 	private static final String RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY = "resident.event.type.%s.template.property";
+	private static final String RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY = "resident.service-type.%s.template.property";
+	private static final String RESIDENT_TEMPLATE_EVENT_STATUS = "resident.event.status.%s.template.property";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -135,7 +137,27 @@ public class TemplateUtil {
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
 			logger.warn("Template property is missing for %s", requestType.name());
-			templateTypeCode = getTemplateTypeCode(String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, RequestType.DEFAULT.name()));
+			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+		}
+		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+	}
+
+	public String getServiceTypeBasedOnLangcode(ServiceType serviceType, String languageCode) {
+		String templateCodeProperty = String.format(RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY, serviceType.name());
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", serviceType.name());
+			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
+		}
+		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
+	}
+
+	public String getEventStatusBasedOnLangcode(EventStatus eventStatus, String languageCode) {
+		String templateCodeProperty = String.format(RESIDENT_TEMPLATE_EVENT_STATUS, eventStatus.name());
+		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
+		if (templateTypeCode == null) {
+			logger.warn("Template property is missing for %s", eventStatus.name());
+			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
 		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
@@ -633,11 +655,6 @@ public class TemplateUtil {
 	public String getSummaryTemplateTypeCode(RequestType requestType, TemplateType templateType) {
 		String summaryTemplateCodeProperty = requestType.getSummaryTemplateCodeProperty(templateType);
 		return getTemplateTypeCode(summaryTemplateCodeProperty);
-	}
-
-	public String getEventStatusTemplateTypeCode(EventStatus eventStatus) {
-		String eventStatusTemplateCodeProperty = eventStatus.getEventStatusTemplateCodeProperty();
-		return getTemplateTypeCode(eventStatusTemplateCodeProperty);
 	}
 
 	private String getAuthTypeCodeTemplateTypeCode(String authTypeCode) {
