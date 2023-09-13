@@ -37,6 +37,7 @@ import io.mosip.resident.constant.EventStatusSuccess;
 import io.mosip.resident.constant.IdType;
 import io.mosip.resident.constant.RequestType;
 import io.mosip.resident.constant.ResidentConstants;
+import io.mosip.resident.constant.ServiceType;
 import io.mosip.resident.dto.BellNotificationDto;
 import io.mosip.resident.dto.PageDto;
 import io.mosip.resident.dto.ServiceHistoryResponseDto;
@@ -190,7 +191,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",	
                 LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
-                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0, LOCALE_EN_US);
+                ServiceType.SERVICE_REQUEST.name(), "SUCCESS", 0, LOCALE_EN_US);
         assertNotNull(pdfDocument);
     }
 
@@ -223,7 +224,7 @@ public class ResidentServiceDownloadCardTest {
         Mockito.when(utility.signPdf(any(), any())).thenReturn("pdf".getBytes(StandardCharsets.UTF_8));
         byte[] pdfDocument = residentServiceImpl.downLoadServiceHistory(responseWrapper, "eng",
                 LocalDateTime.now(), LocalDate.now(), LocalDate.now(),
-                String.valueOf(RequestType.DOWNLOAD_PERSONALIZED_CARD), "SUCCESS", 0, LOCALE_EN_US);
+                ServiceType.SERVICE_REQUEST.name(), "SUCCESS", 0, LOCALE_EN_US);
         assertNotNull(pdfDocument);
     }
 

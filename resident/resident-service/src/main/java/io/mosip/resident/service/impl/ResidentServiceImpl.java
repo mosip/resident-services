@@ -193,7 +193,6 @@ public class ResidentServiceImpl implements ResidentService {
 	private static final String CLASSPATH = "classpath";
 	private static final String ENCODE_TYPE = "UTF-8";
 	private static final String UPDATED = " updated";
-	private static final String ALL = "ALL";
 
 	@Autowired
 	private UINCardDownloadService uinCardDownloadService;
@@ -1817,20 +1816,16 @@ public class ResidentServiceImpl implements ResidentService {
 	}
 
 	public Tuple2<String, String> getEventStatusCode(String statusCode, String langCode) {
-		String status;
-		String templateTypeCode;
+		EventStatus status;
 		if (EventStatusSuccess.containsStatus(statusCode)) {
-			status = EventStatus.SUCCESS.name();
-			templateTypeCode = templateUtil.getEventStatusTemplateTypeCode(EventStatus.SUCCESS);
+			status = EventStatus.SUCCESS;
 		} else if (EventStatusFailure.containsStatus(statusCode)) {
-			status = EventStatus.FAILED.name();
-			templateTypeCode = templateUtil.getEventStatusTemplateTypeCode(EventStatus.FAILED);
+			status = EventStatus.FAILED;
 		} else {
-			status = EventStatus.IN_PROGRESS.name();
-			templateTypeCode = templateUtil.getEventStatusTemplateTypeCode(EventStatus.IN_PROGRESS);
+			status = EventStatus.IN_PROGRESS;
 		}
-		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(langCode, templateTypeCode);
-		return Tuples.of(status, fileText);
+		String fileText = templateUtil.getEventStatusBasedOnLangcode(status, langCode);
+		return Tuples.of(status.name(), fileText);
 	}
 
 	@Override
@@ -2031,6 +2026,8 @@ public class ResidentServiceImpl implements ResidentService {
 										 String serviceType, String statusFilter, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, IOException {
 
 		logger.debug("ResidentServiceImpl::getResidentServicePDF()::entry");
+		String serviceTypeTemplateData;
+		String statusFilterTemplateData;
 		String templateTypeCode = this.env.getProperty(ResidentConstants.SERVICE_HISTORY_PROPERTY_TEMPLATE_TYPE_CODE);
 		String fileText = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 		// for avoiding null values in PDF
@@ -2057,17 +2054,26 @@ public class ResidentServiceImpl implements ResidentService {
 			toDate = LocalDate.now();
 		}
 		if(statusFilter == null){
-			statusFilter = ALL;
+			statusFilterTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+		} else {
+			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
+					.map(status -> templateUtil.getEventStatusBasedOnLangcode(EventStatus.getEventStatusForText(status).get(), languageCode))
+					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
 
-		if(serviceType == null){
-			serviceType = ALL;
+		if(serviceType == null || serviceType.equals(ServiceType.ALL.name())) {
+			serviceTypeTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
+		} else {
+			serviceTypeTemplateData = Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
+					.map(service -> templateUtil.getServiceTypeBasedOnLangcode(ServiceType.getServiceTypeFromString(service).get(), languageCode))
+					.collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER));
 		}
+
 		servHistoryMap.put("eventReqTimeStamp", utility.formatWithOffsetForUI(timeZoneOffset, locale, eventReqDateTime));
 		servHistoryMap.put("fromDate", fromDate);
 		servHistoryMap.put("toDate", toDate);
-		servHistoryMap.put("statusFilter", Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim).collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER)));
-		servHistoryMap.put("serviceType", Stream.of(serviceType.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim).collect(Collectors.joining(UI_ATTRIBUTE_DATA_DELIMITER)));
+		servHistoryMap.put("statusFilter", statusFilterTemplateData);
+		servHistoryMap.put("serviceType", serviceTypeTemplateData);
 		servHistoryMap.put("serviceHistoryDtlsList", serviceHistoryDtlsList);
 
 		InputStream serviceHistTemplate = new ByteArrayInputStream(fileText.getBytes(StandardCharsets.UTF_8));
