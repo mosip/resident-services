@@ -1034,15 +1034,19 @@ public class RequestValidator {
 		}
 	}
 
-	public void validateServiceHistoryRequest(LocalDate fromDateTime, LocalDate toDateTime, String sortType, String serviceType, String statusFilter) {
+	public void validateServiceHistoryRequest(LocalDate fromDateTime, LocalDate toDateTime, String sortType,
+			String serviceType, String statusFilter, String langCode, String searchText) {
+		validateLanguageCode(langCode);
 		validateServiceType(serviceType, "Request service history API");
 		validateSortType(sortType, "Request service history API");
 		validateStatusFilter(statusFilter, "Request service history API");
 		validateFromDateTimeToDateTime(fromDateTime, toDateTime, "Request service history API");
-		if(!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime", "Request service history API"));
+		if (!isValidDate(fromDateTime) || !isValidDate(toDateTime)) {
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "fromDateTime",
+					"Request service history API"));
 			throw new InvalidInputException("DateTime");
 		}
+		validateSearchText(searchText);
 	}
 	
 	public void validateSearchText(String searchText) {
@@ -1154,11 +1158,7 @@ public class RequestValidator {
 		validateLanguageCode(languageCode);
 	}
 
-	public void validateOnlyLanguageCode(String languageCode) {
-		validateLanguageCode(languageCode);
-	}
-
-	private void validateLanguageCode(String languageCode) {
+	public void validateLanguageCode(String languageCode) {
 		List<String> allowedMandatoryLanguage = List.of(mandatoryLanguages.split(","));
 		List<String> allowedOptionalLanguage = List.of(optionalLanguages.split(","));
 		if(StringUtils.isEmpty(languageCode)) {

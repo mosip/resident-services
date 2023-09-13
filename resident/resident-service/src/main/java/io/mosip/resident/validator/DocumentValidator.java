@@ -94,7 +94,7 @@ public class DocumentValidator implements Validator {
 		if (docTypCode == null || StringUtils.isEmpty(docTypCode)) {
 			throw new InvalidInputException(DOC_TYP_CODE);
 		}
-		requestValidator.validateOnlyLanguageCode(langCode);
+		requestValidator.validateLanguageCode(langCode);
 		validateDocCatCode(docCatCode, langCode);
 		validateDocTypeCode(docCatCode, docTypCode, langCode);
 	}
