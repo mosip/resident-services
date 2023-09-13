@@ -50,3 +50,16 @@ GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
    TO residentuser;
 
 
+-- otp_transaction table
+
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
+   ON resident.otp_transaction
+   TO residentuser;
+
+
+-- resident_grievance_ticket table
+
+GRANT SELECT, INSERT, REFERENCES, UPDATE, DELETE
+   ON resident.resident_grievance_ticket
+   TO residentuser;
+
