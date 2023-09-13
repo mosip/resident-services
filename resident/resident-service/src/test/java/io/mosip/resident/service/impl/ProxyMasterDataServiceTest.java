@@ -1,15 +1,17 @@
 package io.mosip.resident.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import io.mosip.kernel.core.exception.ServiceError;
+import io.mosip.kernel.core.http.ResponseWrapper;
+import io.mosip.resident.constant.ApiName;
+import io.mosip.resident.constant.OrderEnum;
+import io.mosip.resident.dto.TemplateDto;
+import io.mosip.resident.dto.TemplateResponseDto;
+import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
+import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
+import io.mosip.resident.service.ProxyMasterdataService;
+import io.mosip.resident.util.ResidentServiceRestClient;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
 import org.junit.Before;
@@ -22,22 +24,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
-
-import io.mosip.kernel.core.exception.ServiceError;
-import io.mosip.kernel.core.http.ResponseWrapper;
-import io.mosip.resident.constant.ApiName;
-import io.mosip.resident.constant.OrderEnum;
-import io.mosip.resident.dto.GenderCodeResponseDTO;
-import io.mosip.resident.dto.GenderTypeDTO;
-import io.mosip.resident.dto.GenderTypeListDTO;
-import io.mosip.resident.dto.TemplateDto;
-import io.mosip.resident.dto.TemplateResponseDto;
-import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.ResidentServiceCheckedException;
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.service.ProxyMasterdataService;
-import io.mosip.resident.util.ResidentServiceRestClient;
 import reactor.util.function.Tuple2;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Resident proxy masterdata service test class.
@@ -658,30 +656,37 @@ public class ProxyMasterDataServiceTest {
 		proxyMasterdataService.getDocumentTypesByDocumentCategoryAndLangCode("DOC", "eng");
 	}
 
-	@Test
+	@Test(expected = InvalidInputException.class)
 	public void testGetGenderCodeByGenderTypeAndLangCode()
-			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-		GenderTypeListDTO response = new GenderTypeListDTO();
-		GenderTypeDTO genderTypeDTO = new GenderTypeDTO("MLE", "Male", "eng", "true");
-		response.setGenderType(List.of(genderTypeDTO));
+			throws ResidentServiceCheckedException, IOException {
+		Map response = new HashMap<>();
+		ArrayList<Map> mapArrayList = new ArrayList<>();
+		Map value = new HashMap<>();
+		value.put("code", "FLE");
+		value.put("value", "female");
+		mapArrayList.add(value);
+		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
 		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
-		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService
-				.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
-		assertEquals(genderTypeDTO.getCode(), responseWrapper.getResponse().getGenderCode());
+		proxyMasterdataService.getGenderCodeByGenderTypeAndLangCode("123", "eng");
 	}
 
 	@Test
-	public void testGetGenderCodeByGenderTypeAndLangCodeNoValue()
-			throws ApisResourceAccessException, ResidentServiceCheckedException, IOException {
-		GenderTypeListDTO response = new GenderTypeListDTO();
-		response.setGenderType(List.of());
+	public void testGetGenderCodeByGenderTypeAndLangCodeWithValue()
+			throws ResidentServiceCheckedException, IOException {
+		Map response = new HashMap<>();
+		ArrayList<Map> mapArrayList = new ArrayList<>();
+		Map value = new HashMap<>();
+		value.put("code", "FLE");
+		value.put("value", "female");
+		mapArrayList.add(value);
+		response.put("values", mapArrayList);
 		ResponseWrapper res = new ResponseWrapper();
 		res.setResponse(response);
 		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
-		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = proxyMasterdataService
-				.getGenderCodeByGenderTypeAndLangCode("Male", "eng");
+		assertEquals("FLE", proxyMasterdataService
+				.getGenderCodeByGenderTypeAndLangCode("female", "eng").getResponse().getGenderCode());
 	}
 
 }
