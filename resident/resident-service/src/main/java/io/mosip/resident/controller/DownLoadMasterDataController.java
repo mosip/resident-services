@@ -81,7 +81,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			validator.validateName(name);
 			InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
 					hierarchyLevel, name);
@@ -115,7 +115,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.getNearestRegistrationcenters(langCode, longitude,
 					latitude, proximityDistance);
 			resource = new InputStreamResource(pdfInputStream);
@@ -145,7 +145,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_SUPPORTING_FILENAME = DOWNLOADABLE_SUPPORTING_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
 			resource = new InputStreamResource(pdfInputStream);
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);
