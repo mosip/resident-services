@@ -1,28 +1,5 @@
 package io.mosip.resident.service.impl;
 
-import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import io.mosip.resident.exception.ResidentServiceException;
-import io.mosip.resident.util.Utilities;
-import io.mosip.resident.util.Utility;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -31,15 +8,36 @@ import io.mosip.resident.constant.OrderEnum;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.ResidentErrorCode;
 import io.mosip.resident.dto.GenderCodeResponseDTO;
-import io.mosip.resident.dto.GenderTypeListDTO;
 import io.mosip.resident.dto.TemplateResponseDto;
 import io.mosip.resident.exception.ApisResourceAccessException;
+import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
+import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.service.ProxyMasterdataService;
 import io.mosip.resident.util.JsonUtil;
 import io.mosip.resident.util.ResidentServiceRestClient;
+import io.mosip.resident.util.Utilities;
+import io.mosip.resident.util.Utility;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static io.mosip.resident.constant.MappingJsonConstants.GENDER;
 
 /**
  * Resident proxy masterdata service implementation class.
@@ -54,6 +52,8 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	private static final String DOCUMENTTYPES = "documenttypes";
 
 	private static final String DOCUMENTCATEGORIES = "documentcategories";
+	private static final String GENDER_NAME = "genderName";
+	private static final Object VALUES = "values";
 
 	@Autowired
 	private ResidentServiceRestClient residentServiceRestClient;
@@ -527,14 +527,17 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		ResponseWrapper<GenderCodeResponseDTO> responseWrapper = new ResponseWrapper<>();
 		GenderCodeResponseDTO genderCodeResponseDTO = new GenderCodeResponseDTO();
 		ResponseWrapper<?> res = utilities.getDynamicFieldBasedOnLangCodeAndFieldName(GENDER, langCode, true);
-		GenderTypeListDTO response = JsonUtil.readValue(JsonUtil.writeValueAsString(res.getResponse()),
-				GenderTypeListDTO.class);
-		Optional<String> genderCode = response.getGenderType().stream()
-				.filter(map -> map.getGenderName().equalsIgnoreCase(genderName))
-				.map(map -> map.getCode())
-				.findAny();
-		if (genderCode.isPresent()) {
-			genderCodeResponseDTO.setGenderCode(genderCode.get());
+		Map response = (Map) res.getResponse();
+		ArrayList<Map> responseValues = (ArrayList<Map>) response.get(VALUES);
+		String genderCode = responseValues.stream()
+				.filter(responseMap -> responseMap.get(ResidentConstants.VALUE).toString().equalsIgnoreCase(genderName))
+				.map(responseMap -> responseMap.get(CODE).toString())
+				.findFirst()
+				.orElse(null);
+		if (genderCode!=null) {
+			genderCodeResponseDTO.setGenderCode(genderCode);
+		} else {
+			throw new  InvalidInputException(GENDER_NAME);
 		}
 		responseWrapper.setResponse(genderCodeResponseDTO);
 		logger.debug("ProxyMasterdataServiceImpl::getGenderCodeByGenderTypeAndLangCode()::exit");
