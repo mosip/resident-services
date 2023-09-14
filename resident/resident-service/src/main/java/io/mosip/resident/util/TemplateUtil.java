@@ -261,12 +261,12 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForShareCredentialWithPartner(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
-		return addAttributeListInPurpose(fileText, residentTransactionEntity.getAttributeList(), languageCode);
+		return fileText;
 	}
 
 	public String getDescriptionTemplateVariablesForDownloadPersonalizedCard(
 			ResidentTransactionEntity residentTransactionEntity, String fileText, String languageCode) {
-		return addAttributeListInPurpose(fileText, residentTransactionEntity.getAttributeList(), languageCode);
+		return fileText;
 	}
 
 	public String getDescriptionTemplateVariablesForOrderPhysicalCard(
@@ -281,7 +281,7 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForUpdateMyUin(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
-		return addAttributeListInPurpose(fileText, residentTransactionEntity.getAttributeList(), languageCode);
+		return fileText;
 	}
 
 	public String getDescriptionTemplateVariablesForManageMyVid(ResidentTransactionEntity residentTransactionEntity,
@@ -388,24 +388,6 @@ public class TemplateUtil {
 				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
 		return Tuples.of(templateVariables, Objects.requireNonNull(
 				this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
-	}
-
-	/**
-	 * This method will replace attribute placeholder in template and add attribute
-	 * list into it.
-	 * 
-	 * @param fileText     This contains value of template.
-	 * @param attributes   This contains attributes of request type stored in
-	 *                     template.
-	 * @param languageCode This contains logged-in language code.
-	 * @return purpose after adding attributes.
-	 */
-	private String addAttributeListInPurpose(String fileText, String attributes, String languageCode) {
-		if (fileText != null && fileText.contains(ResidentConstants.ATTRIBUTES)) {
-			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.ATTRIBUTES,
-					getAttributesDisplayText(attributes, languageCode, RequestType.DEFAULT));
-		}
-		return fileText;
 	}
 
 	public Tuple2<Map<String, String>, String> getAckTemplateVariablesForOrderPhysicalCard(ResidentTransactionEntity residentTransactionEntity,
