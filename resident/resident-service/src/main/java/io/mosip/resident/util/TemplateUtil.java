@@ -120,7 +120,7 @@ public class TemplateUtil {
 				utility.createTrackServiceRequestLink(residentTransactionEntity.getEventId()));
 		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
 		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
-				replaceNullWithEmptyString(residentTransactionEntity.getAttributeList()), languageCode, requestType));
+				residentTransactionEntity.getAttributeList(), languageCode, requestType));
 		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
 				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
 		try {
