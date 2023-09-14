@@ -50,8 +50,6 @@ import reactor.util.function.Tuples;
 public class TemplateUtil {
 
 	private static final String RESIDENT = "Resident";
-	private static final String DEFAULT = "default";
-	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 	private static final String LOGO_URL = "logoUrl";
 	private static final CharSequence GENERATED = "generated";
 	private static final CharSequence REVOKED = "revoked";
@@ -61,6 +59,7 @@ public class TemplateUtil {
 	private static final String RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY = "resident.event.type.%s.template.property";
 	private static final String RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY = "resident.service-type.%s.template.property";
 	private static final String RESIDENT_TEMPLATE_EVENT_STATUS = "resident.event.status.%s.template.property";
+	private static final String RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST = "resident.%s.template.property.attribute.list";
 
 	@Autowired
 	private IdentityServiceImpl identityServiceImpl;
@@ -136,7 +135,7 @@ public class TemplateUtil {
 		String templateCodeProperty = String.format(RESIDENT_EVENT_TYPE_TEMPLATE_PROPERTY, requestType.name());
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
-			logger.warn("Template property is missing for %s", requestType.name());
+			logger.warn(String.format("Template property is missing for %s", requestType.name()));
 			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
 		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
@@ -146,7 +145,7 @@ public class TemplateUtil {
 		String templateCodeProperty = String.format(RESIDENT_SERVICE_TYPE_TEMPLATE_PROPERTY, serviceType.name());
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
-			logger.warn("Template property is missing for %s", serviceType.name());
+			logger.warn(String.format("Template property is missing for %s", serviceType.name()));
 			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
 		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
@@ -156,7 +155,7 @@ public class TemplateUtil {
 		String templateCodeProperty = String.format(RESIDENT_TEMPLATE_EVENT_STATUS, eventStatus.name());
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
-			logger.warn("Template property is missing for %s", eventStatus.name());
+			logger.warn(String.format("Template property is missing for %s", eventStatus.name()));
 			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
 		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
@@ -210,8 +209,7 @@ public class TemplateUtil {
 				List<String> attributeListFromDB = List
 						.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 				for (String attribute : attributeListFromDB) {
-					attributeListTemplateValue.add(getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getAttributeListTemplateTypeCode(attribute.trim())));
+					attributeListTemplateValue.add(getAttributeBasedOnLangcode(attribute.trim(), languageCode));
 				}
 			}
 		}
@@ -306,7 +304,7 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForValidateOtp(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
-		String channels = residentTransactionEntity.getPurpose();
+		String channels = residentTransactionEntity.getAttributeList();
 		if (channels != null && !channels.isEmpty()) {
 			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL, channels);
 		}
@@ -322,18 +320,15 @@ public class TemplateUtil {
 				String fileTextTemplate = fileText;
 				String templateData = "";
 				if (authType.contains(EventStatusSuccess.UNLOCKED.name())) {
-					templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getAttributeListTemplateTypeCode(EventStatusSuccess.UNLOCKED.name()));
+					templateData = getAttributeBasedOnLangcode(EventStatusSuccess.UNLOCKED.name(), languageCode);
 					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
 							templateData);
 				} else {
-					templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-							getAttributeListTemplateTypeCode(EventStatusSuccess.LOCKED.name()));
+					templateData = getAttributeBasedOnLangcode(EventStatusSuccess.LOCKED.name(), languageCode);
 					fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.STATUS,
 							templateData);
 				}
-				templateData = getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-						getAttributeListTemplateTypeCode(authType.split(ResidentConstants.COLON)[0].trim()));
+				templateData = getAttributeBasedOnLangcode(authType.split(ResidentConstants.COLON)[0].trim(), languageCode);
 				fileTextTemplate = fileTextTemplate.replace(ResidentConstants.DOLLAR + ResidentConstants.AUTH_TYPE,
 						templateData);
 				return fileTextTemplate;
@@ -643,8 +638,8 @@ public class TemplateUtil {
 		String templateCodeProperty = String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, authTypeCode);
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
-			logger.warn("Template property is missing for %s", authTypeCode);
-			return getTemplateTypeCode(String.format(RESIDENT_AUTH_TYPE_CODE_TEMPLATE_PROPERTY, UNKNOWN));
+			logger.warn(String.format("Template property is missing for %s", authTypeCode));
+			return getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		} else {
 			return templateTypeCode;
 		}
@@ -654,21 +649,21 @@ public class TemplateUtil {
 		String templateCodeProperty = String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, authTypeCode, statusCode);
 		String templateTypeCode = getTemplateTypeCode(templateCodeProperty);
 		if (templateTypeCode == null) {
-			logger.warn("Template property is missing for %s", authTypeCode);
+			logger.warn(String.format("Template property is missing for %s", authTypeCode));
 			return getTemplateTypeCode(String.format(RESIDENT_ID_AUTH_REQUEST_TYPE_DESCR, UNKNOWN, statusCode));
 		} else {
 			return templateTypeCode;
 		}
 	}
 
-	public String getAttributeListTemplateTypeCode(String attributeName) {
+	public String getAttributeBasedOnLangcode(String attributeName, String languageCode) {
 		String templateTypeCode = getTemplateTypeCode(
 				String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, attributeName));
-		if (templateTypeCode != null && !templateTypeCode.isEmpty()) {
-			return templateTypeCode;
-		} else {
-			return getTemplateTypeCode(String.format(RESIDENT_TEMPLATE_PROPERTY_ATTRIBUTE_LIST, DEFAULT));
+		if (templateTypeCode == null) {
+			logger.warn(String.format("Template property is missing for %s", attributeName));
+			templateTypeCode = getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY);
 		}
+		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, templateTypeCode);
 	}
 
 	private String getTemplateTypeCode(String templateCodeProperty) {
