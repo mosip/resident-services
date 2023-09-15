@@ -206,11 +206,9 @@ public class TemplateUtil {
 					return attr;
 				}).collect(Collectors.toList());
 			} else {
-				List<String> attributeListFromDB = List
-						.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
-				for (String attribute : attributeListFromDB) {
-					attributeListTemplateValue.add(getAttributeBasedOnLangcode(attribute.trim(), languageCode));
-				}
+				attributeListTemplateValue = List.of(attributesFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER)).stream()
+						.map(attribute -> getAttributeBasedOnLangcode(attribute.trim(), languageCode))
+						.collect(Collectors.toList());
 			}
 		}
 		if (attributeListTemplateValue.isEmpty()) {
@@ -304,10 +302,9 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForValidateOtp(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
-		String channels = residentTransactionEntity.getAttributeList();
-		if (channels != null && !channels.isEmpty()) {
-			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL, channels);
-		}
+		String channelsTemplateData = getAttributesDisplayText(
+				residentTransactionEntity.getAttributeList(), languageCode, RequestType.VALIDATE_OTP);
+			fileText = fileText.replace(ResidentConstants.DOLLAR + ResidentConstants.CHANNEL, channelsTemplateData);
 		return fileText;
 	}
 
