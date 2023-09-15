@@ -90,6 +90,7 @@ import io.mosip.resident.util.EventEnum;
 @Component
 public class RequestValidator {
 
+	private static final String OTP = "otp";
 	private static final String ID = "id";
 	private static final String VERSION = "version";
 	private static final String REQUESTTIME = "requesttime";
@@ -322,9 +323,9 @@ public class RequestValidator {
 		if(vidRequestDto instanceof VidRequestDto) {
 			if (otpValidationRequired && StringUtils.isEmpty(((VidRequestDto)vidRequestDto).getOtp())) {
 				audit.setAuditRequestDto(
-						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to generate VID"));
+						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request to generate VID"));
 
-				throw new InvalidInputException("otp");
+				throw new InvalidInputException(OTP);
 			}
 		}
 
@@ -377,9 +378,9 @@ public class RequestValidator {
 		if(vidRequestDto instanceof VidRequestDto) {
 			if (otpValidationRequired && StringUtils.isEmpty(((VidRequestDto)vidRequestDto).getOtp())) {
 				audit.setAuditRequestDto(
-						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to generate VID"));
+						EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request to generate VID"));
 
-				throw new InvalidInputException("otp");
+				throw new InvalidInputException(OTP);
 			}
 		}
 
@@ -442,9 +443,9 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp",
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP,
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
-			throw new InvalidInputException("otp");
+			throw new InvalidInputException(OTP);
 		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
@@ -494,8 +495,8 @@ public class RequestValidator {
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for EUIN"));
-			throw new InvalidInputException("otp");
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request for EUIN"));
+			throw new InvalidInputException(OTP);
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
 			audit.setAuditRequestDto(
@@ -509,8 +510,8 @@ public class RequestValidator {
 		validateIndividualIdV2(requestDTO.getRequest().getIndividualId(), "Request auth history API");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for auth history"));
-			throw new InvalidInputException("otp");
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request for auth history"));
+			throw new InvalidInputException(OTP);
 		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
@@ -665,8 +666,8 @@ public class RequestValidator {
 			}
 
 			if (isOtpValidationRequired && StringUtils.isEmpty(vidRevokeRequestDTO.getOtp())) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to revoke VID"));
-				throw new InvalidInputException("otp");
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request to revoke VID"));
+				throw new InvalidInputException(OTP);
 			}
 		}
 
@@ -718,8 +719,8 @@ public class RequestValidator {
 			}
 
 			if (isOtpValidationRequired && StringUtils.isEmpty(vidRevokeRequestDTO.getOtp())) {
-				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request to revoke VID"));
-				throw new InvalidInputException("otp");
+				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request to revoke VID"));
+				throw new InvalidInputException(OTP);
 			}
 		}
 
@@ -794,8 +795,8 @@ public class RequestValidator {
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for print UIN API"));
-			throw new InvalidInputException("otp");
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request for print UIN API"));
+			throw new InvalidInputException(OTP);
 		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
@@ -823,8 +824,8 @@ public class RequestValidator {
 		}
 		if (!isPatch && StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(
-					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp", "Request for update uin"));
-			throw new InvalidInputException("otp");
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request for update uin"));
+			throw new InvalidInputException(OTP);
 		}
 
 		if(requestDTO.getRequest().getIdentity()!=null) {
@@ -953,9 +954,9 @@ public class RequestValidator {
 			throw new InvalidInputException("individualId");
 		}
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
-			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "otp",
+			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP,
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
-			throw new InvalidInputException("otp");
+			throw new InvalidInputException(OTP);
 		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getTransactionID())) {
@@ -1269,12 +1270,12 @@ public class RequestValidator {
 	public void validateOTP(String otp) {
 		if(otp==null){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"otp", "otp must not be null"));
-			throw new InvalidInputException("otp");
+					OTP, "otp must not be null"));
+			throw new InvalidInputException(OTP);
 		} else if (!isNumeric(otp) || otp.length() != otpLength){
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID,
-					"otp", "otp is invalid"));
-			throw new InvalidInputException("otp");
+					OTP, "otp is invalid"));
+			throw new InvalidInputException(OTP);
 		}
 	}
 
@@ -1388,7 +1389,7 @@ public class RequestValidator {
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getCredentialType(),
 				ResidentConstants.CREDENTIAL_TYPE);
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getIssuer(), ResidentConstants.ISSUER);
-		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getOtp(), ResidentConstants.OTP);
+		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getOtp(), OTP);
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getTransactionID(),
 				ResidentConstants.TRANSACTION_ID_OLD);
 	}

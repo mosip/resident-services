@@ -2,7 +2,6 @@ package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.EventStatusSuccess.CARD_DOWNLOADED;
 import static io.mosip.resident.constant.ResidentConstants.SEMI_COLON;
-import static io.mosip.resident.constant.TemplateVariablesConstants.OTP;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID;
 import static io.mosip.resident.constant.TemplateVariablesConstants.VID_TYPE;
 
@@ -140,8 +139,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 			String uin = identityDTO.getUIN();
 			Tuple2<Boolean, ResidentTransactionEntity> tupleResponse = idAuthService.validateOtpV2(transactionId, uin,
 					downloadCardRequestDTOMainRequestDTO.getRequest().getOtp(), RequestType.GET_MY_ID);
-			residentTransactionEntity = updateResidentTransaction(individualId, transactionId, tupleResponse.getT2(),
-					uin);
+			residentTransactionEntity = tupleResponse.getT2();
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
 				if (tupleResponse.getT1()) {
@@ -181,10 +179,6 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e,
 					Map.of(ResidentConstants.EVENT_ID, eventId));
 		} catch (OtpValidationFailedException e) {
-			if (residentTransactionEntity != null) {
-				residentTransactionEntity.setStatusCode(EventStatusFailure.OTP_VERIFICATION_FAILED.name());
-				residentTransactionEntity.setStatusComment(EventStatusFailure.OTP_VERIFICATION_FAILED.name());
-			}
 			throw new ResidentServiceException(ResidentErrorCode.OTP_VALIDATION_FAILED.getErrorCode(), e.getErrorText(),
 					e, Map.of(ResidentConstants.EVENT_ID, eventId));
 		} catch (Exception e) {
@@ -205,8 +199,7 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 					residentTransactionEntity
 							.setRequestSummary(RequestType.GET_MY_ID.name() + " - " + ResidentConstants.FAILED);
 				}
-				residentTransactionEntity.setUpdBy(utility.getSessionUserName());
-				residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
+				updateResidentTransaction(individualId, residentTransactionEntity);
 				residentTransactionRepository.save(residentTransactionEntity);
 
 				TemplateType templateType = (residentTransactionEntity.getStatusCode().equals(CARD_DOWNLOADED.name()))
@@ -220,14 +213,12 @@ public class DownloadCardServiceImpl implements DownloadCardService {
 		return Tuples.of(pdfBytes, eventId);
 	}
 
-	private ResidentTransactionEntity updateResidentTransaction(String individualId, String transactionId,
-			ResidentTransactionEntity residentTransactionEntity, String id) {
-		residentTransactionEntity.setAuthTypeCode(OTP);
+	private void updateResidentTransaction(String individualId, ResidentTransactionEntity residentTransactionEntity) {
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
-		residentTransactionEntity.setTokenId(identityService.getIDAToken(id));
-		residentTransactionEntity.setRequestTrnId(transactionId);
-		return residentTransactionEntity;
+		residentTransactionEntity.setRefIdType(identityService.getIndividualIdType(individualId));
+		residentTransactionEntity.setUpdBy(utility.getSessionUserName());
+		residentTransactionEntity.setUpdDtimes(DateUtils.getUTCCurrentDateTime());
 	}
 
 	@Override
