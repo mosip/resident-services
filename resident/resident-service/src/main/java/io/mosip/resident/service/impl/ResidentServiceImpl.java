@@ -1151,9 +1151,10 @@ public class ResidentServiceImpl implements ResidentService {
     		}
 
 			List<AuthTypeStatusDtoV2> authTypesStatusList = authLockOrUnLockRequestDtoV2.getAuthTypes();
-			String authType = authTypesStatusList.stream().map(dto ->ResidentServiceImpl.getAuthTypeBasedOnConfigV2(dto)
-							+ResidentConstants.COLON+ (dto.getLocked()? LOCKED:UNLOCKED))
-					.collect(Collectors.joining(ResidentConstants.AUTH_TYPE_LIST_DELIMITER));
+			String authType = authTypesStatusList.stream()
+					.map(dto -> String.format("%s%s%s", ResidentServiceImpl.getAuthTypeBasedOnConfigV2(dto),
+							ResidentConstants.COLON, (dto.getLocked() ? LOCKED : UNLOCKED)))
+					.collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 
 			Map<String, AuthTypeStatus> authTypeStatusMap = authTypesStatusList.stream()
 					.collect(Collectors.toMap(ResidentServiceImpl::getAuthTypeBasedOnConfigV2,
@@ -1169,7 +1170,7 @@ public class ResidentServiceImpl implements ResidentService {
 			residentTransactionEntities.forEach(residentTransactionEntity -> {
 				if (requestId != null) {
 					residentTransactionEntity.setRequestSummary(EventStatusInProgress.NEW.name());
-					residentTransactionEntity.setPurpose(authType);
+					residentTransactionEntity.setAttributeList(authType);
 				} else {
 					residentTransactionEntity.setStatusCode(EventStatusFailure.FAILED.name());
 					residentTransactionEntity.setRequestSummary(EventStatusFailure.FAILED.name());
