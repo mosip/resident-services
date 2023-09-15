@@ -307,9 +307,9 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
-		if (residentTransactionEntity.getPurpose() != null && !residentTransactionEntity.getPurpose().isEmpty()) {
+		if (residentTransactionEntity.getAttributeList() != null && !residentTransactionEntity.getAttributeList().isEmpty()) {
 			List<String> authTypeListFromEntity = List
-					.of(residentTransactionEntity.getPurpose().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+					.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 			return authTypeListFromEntity.stream().map(authType -> {
 				String fileTextTemplate = fileText;
 				String templateData = "";
@@ -328,7 +328,8 @@ public class TemplateUtil {
 				return fileTextTemplate;
 			}).collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
 		}
-		return fileText;
+		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
+				getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY));
 	}
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForDefault(ResidentTransactionEntity residentTransactionEntity, String languageCode, Integer timeZoneOffset, String locale){
@@ -460,7 +461,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTH_TYPE_LOCK_UNLOCK,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(ResidentConstants.AUTH_TYPE, residentTransactionEntity.getPurpose());
+		templateVariables.put(ResidentConstants.AUTH_TYPE, residentTransactionEntity.getAttributeList());
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY)));
 	}

@@ -465,7 +465,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getDescriptionTemplateVariablesForSecureMyIdTest(){
-        residentTransactionEntity.setPurpose("fullName,dateOfBirth,UIN,perpetualVID,phone,email");
+        residentTransactionEntity.setAttributeList("fullName,dateOfBirth,UIN,perpetualVID,phone,email");
         assertEquals("OTP, OTP, OTP, OTP, OTP, OTP", templateUtil.getDescriptionTemplateVariablesForSecureMyId(
                 residentTransactionEntity,
                 "OTP", "eng"));
@@ -473,7 +473,7 @@ public class TemplateUtilTest {
 
     @Test
     public void getDescriptionTemplateVariablesForSecureMyIdUnlockedTest(){
-        residentTransactionEntity.setPurpose("UNLOCKED,dateOfBirth,UIN,perpetualVID,phone,email");
+        residentTransactionEntity.setAttributeList("UNLOCKED,dateOfBirth,UIN,perpetualVID,phone,email");
         assertEquals("OTP, OTP, OTP, OTP, OTP, OTP", templateUtil.getDescriptionTemplateVariablesForSecureMyId(
                 residentTransactionEntity,
                 "OTP", "eng"));
