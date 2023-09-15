@@ -513,7 +513,8 @@ public class TemplateUtil {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.VALIDATE_OTP,
 				languageCode, timeZoneOffset, locale);
 		templateVariables.put(ResidentConstants.CHANNEL,
-				replaceNullWithEmptyString(residentTransactionEntity.getAttributeList()));
+				templateVariables.get(TemplateVariablesConstants.ATTRIBUTE_LIST));
+		templateVariables.remove(TemplateVariablesConstants.PURPOSE);
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
 	}
