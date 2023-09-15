@@ -117,9 +117,6 @@ public class TemplateUtil {
 				utility.formatWithOffsetForUI(timeZoneOffset, locale, residentTransactionEntity.getCrDtimes()));
 		templateVariables.put(TemplateVariablesConstants.TRACK_SERVICE_REQUEST_LINK,
 				utility.createTrackServiceRequestLink(residentTransactionEntity.getEventId()));
-		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
-		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
-				residentTransactionEntity.getAttributeList(), languageCode, requestType));
 		templateVariables.put(TemplateVariablesConstants.AUTHENTICATION_MODE,
 				getAuthTypeCodeTemplateData(residentTransactionEntity.getAuthTypeCode(), null, languageCode));
 		try {
@@ -176,7 +173,7 @@ public class TemplateUtil {
 		List<String> attributeListTemplateValue = new ArrayList<>();
 		if (attributesFromDB != null && !attributesFromDB.isEmpty()) {
 			Optional<String> schemaType = UISchemaTypes.getUISchemaTypeFromRequestTypeCode(requestType);
-			if (schemaType.isPresent() && attributesFromDB.contains(ResidentConstants.SEMI_COLON)) {
+			if (schemaType.isPresent()) {
 //	    		Cacheable UI Schema data
 				Map<String, Map<String, Object>> uiSchemaDataMap = residentConfigService
 						.getUISchemaCacheableData(schemaType.get()).get(languageCode);
@@ -351,6 +348,9 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.SHARE_CRED_WITH_PARTNER,
 				languageCode, timeZoneOffset, locale);
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+				residentTransactionEntity.getAttributeList(), languageCode, RequestType.SHARE_CRED_WITH_PARTNER));
+		templateVariables.put(TemplateVariablesConstants.PURPOSE, residentTransactionEntity.getPurpose());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_NAME,
 				residentTransactionEntity.getRequestedEntityName());
 		templateVariables.put(TemplateVariablesConstants.PARTNER_LOGO,
@@ -376,8 +376,8 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.DOWNLOAD_PERSONALIZED_CARD,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+				residentTransactionEntity.getAttributeList(), languageCode, RequestType.DOWNLOAD_PERSONALIZED_CARD));
 		return Tuples.of(templateVariables, Objects.requireNonNull(
 				this.env.getProperty(ResidentConstants.ACK_DOWNLOAD_PERSONALIZED_CARD_TEMPLATE_PROPERTY)));
 	}
@@ -386,8 +386,8 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.ORDER_PHYSICAL_CARD,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+				residentTransactionEntity.getAttributeList(), languageCode, RequestType.ORDER_PHYSICAL_CARD));
 		templateVariables.put(TemplateVariablesConstants.TRACKING_ID, residentTransactionEntity.getTrackingId());
 		templateVariables.put(TemplateVariablesConstants.ORDER_TRACKING_LINK,
 				residentTransactionEntity.getReferenceLink());
@@ -407,9 +407,6 @@ public class TemplateUtil {
 			Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.GET_MY_ID,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
-		templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
 		return Tuples.of(templateVariables,
 				Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_GET_MY_ID_TEMPLATE_PROPERTY)));
 	}
@@ -418,8 +415,8 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.UPDATE_MY_UIN,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
+		templateVariables.put(TemplateVariablesConstants.ATTRIBUTE_LIST, getAttributesDisplayText(
+				residentTransactionEntity.getAttributeList(), languageCode, RequestType.UPDATE_MY_UIN));
 		templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
 				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
 						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
@@ -433,26 +430,10 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.GENERATE_VID,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
-		templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
 		templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
 		templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
 		return Tuples.of(templateVariables,
 				Objects.requireNonNull(this.env.getProperty(ResidentConstants.ACK_MANAGE_MY_VID_TEMPLATE_PROPERTY)));
-	}
-
-	public String getPurposeFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
-			String languageCode) {
-		String purpose = "";
-		try {
-			purpose = residentService.getDescriptionForLangCode(residentTransactionEntity, languageCode,
-					residentService.getEventStatusCode(residentTransactionEntity.getStatusCode(), languageCode).getT1(),
-					RequestType.getRequestTypeFromString(residentTransactionEntity.getRequestTypeCode()));
-		} catch (ResidentServiceCheckedException e) {
-			return "";
-		}
-		return purpose;
 	}
 
 	public String getSummaryFromResidentTransactionEntityLangCode(ResidentTransactionEntity residentTransactionEntity,
@@ -469,8 +450,6 @@ public class TemplateUtil {
 			Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.REVOKE_VID,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
 		templateVariables.put(TemplateVariablesConstants.VID_TYPE, residentTransactionEntity.getRefIdType());
 		templateVariables.put(TemplateVariablesConstants.VID, residentTransactionEntity.getRefId());
 		return Tuples.of(templateVariables,
@@ -481,8 +460,7 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.AUTH_TYPE_LOCK_UNLOCK,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
-		templateVariables.put(ResidentConstants.AUTH_TYPE, templateVariables.get(TemplateVariablesConstants.PURPOSE));
+		templateVariables.put(ResidentConstants.AUTH_TYPE, residentTransactionEntity.getPurpose());
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_AUTH_TYPE_LOCK_UNLOCK_TEMPLATE_PROPERTY)));
 	}
@@ -491,14 +469,11 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.VID_CARD_DOWNLOAD,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(TemplateVariablesConstants.PURPOSE,
-				getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, languageCode));
 		templateVariables.put(TemplateVariablesConstants.DOWNLOAD_LINK,
 				(!residentTransactionEntity.getStatusCode().equals(EventStatusSuccess.CARD_DOWNLOADED.name())
 						&& !residentTransactionEntity.getStatusCode().equals(EventStatusFailure.FAILED.name()))
 								? utility.createDownloadCardLinkFromEventId(residentTransactionEntity)
 								: ResidentConstants.NOT_AVAILABLE);
-		templateVariables.remove(TemplateVariablesConstants.ATTRIBUTE_LIST);
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_VID_CARD_DOWNLOAD_TEMPLATE_PROPERTY)));
 	}
@@ -512,9 +487,8 @@ public class TemplateUtil {
 			String languageCode, Integer timeZoneOffset, String locale) {
 		Map<String, String> templateVariables = getCommonTemplateVariables(residentTransactionEntity, RequestType.VALIDATE_OTP,
 				languageCode, timeZoneOffset, locale);
-		templateVariables.put(ResidentConstants.CHANNEL,
-				templateVariables.get(TemplateVariablesConstants.ATTRIBUTE_LIST));
-		templateVariables.remove(TemplateVariablesConstants.PURPOSE);
+		templateVariables.put(ResidentConstants.CHANNEL, getAttributesDisplayText(
+				residentTransactionEntity.getAttributeList(), languageCode, RequestType.VALIDATE_OTP));
 		return Tuples.of(templateVariables, Objects
 				.requireNonNull(this.env.getProperty(ResidentConstants.ACK_VERIFY_PHONE_EMAIL_TEMPLATE_PROPERTY)));
 	}
