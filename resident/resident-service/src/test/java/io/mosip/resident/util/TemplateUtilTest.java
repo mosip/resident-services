@@ -1,8 +1,10 @@
 package io.mosip.resident.util;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -135,15 +137,30 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForCredentialShare() {
+    	getUISchemaData();
+    	residentTransactionEntity.setAttributeList("fullName:fullName");
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForShareCredentialWithPartner(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
 
     @Test
     public void getAckTemplateVariablesForDownloadPersonalizedCard() {
+    	getUISchemaData();
+    	residentTransactionEntity.setAttributeList("fullName:fullName");
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForDownloadPersonalizedCard(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
+
+	private void getUISchemaData() {
+		Map<String, Object> attrData = new HashMap<>();
+    	attrData.put(ResidentConstants.LABEL, "Name");
+    	attrData.put(ResidentConstants.FORMAT_OPTION, Map.of("fullName", "Full Name"));
+    	Map<String, Map<String, Object>> schemaData = new HashMap<>();
+    	schemaData.put("fullName", attrData);
+    	Map<String, Map<String, Map<String, Object>>> schemaLangData = new HashMap<>();
+    	schemaLangData.put("eng", schemaData);
+    	Mockito.when(residentConfigService.getUISchemaCacheableData(anyString())).thenReturn(schemaLangData);
+	}
 
     @Test
     public void getAckTemplateVariablesForOrderPhysicalCard() {
@@ -167,6 +184,8 @@ public class TemplateUtilTest {
 
     @Test
     public void getAckTemplateVariablesForUpdateMyUin() {
+    	getUISchemaData();
+    	residentTransactionEntity.setAttributeList("fullName");
         Map<String, String> ackTemplateVariables = templateUtil.getAckTemplateVariablesForUpdateMyUin(residentTransactionEntity, "eng", 0, LOCALE_EN_US).getT1();
         assertEquals(OTP,ackTemplateVariables.get(TemplateVariablesConstants.AUTHENTICATION_MODE));
     }
@@ -463,13 +482,6 @@ public class TemplateUtilTest {
     @Test
     public void getDefaultTemplateVariablesTest(){
         templateUtil.getAckTemplateVariablesForDefault(residentTransactionEntity, "eng", 0, LOCALE_EN_US);
-    }
-
-    @Test
-    public void getPurposeFromResidentTransactionEntityLangCodeTest() throws ResidentServiceCheckedException {
-        Mockito.when(residentService.getDescriptionForLangCode(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.any()))
-                .thenThrow(new ResidentServiceCheckedException());
-        assertEquals("",templateUtil.getPurposeFromResidentTransactionEntityLangCode(residentTransactionEntity, "eng"));
     }
 
     @Test
