@@ -203,14 +203,14 @@ public class IdAuthServiceImpl implements IdAuthService {
 		AuthResponseDTO response = null;
 		String eventId = ResidentConstants.NOT_AVAILABLE;
 		ResidentTransactionEntity residentTransactionEntity = null;
-		String authType = null;
+		String channels = null;
 		try {
 			response = internelOtpAuth(transactionId, individualId, otp);
 			residentTransactionEntity = updateResidentTransaction(response.getResponse().isAuthStatus(), transactionId,
 					requestType, identityService.getIDAToken(individualId));
 			if (residentTransactionEntity != null) {
 				eventId = residentTransactionEntity.getEventId();
-				authType = residentTransactionEntity.getAuthTypeCode();
+				channels = residentTransactionEntity.getAttributeList();
 			}
 		} catch (ApisResourceAccessException | InvalidKeySpecException | NoSuchAlgorithmException | IOException
 				| JsonProcessingException | java.security.cert.CertificateException e) {
@@ -234,19 +234,19 @@ public class IdAuthServiceImpl implements IdAuthService {
 						response.getErrors().get(0).getErrorMessage(), Map.of(ResidentConstants.EVENT_ID, eventId));
 			}
 			if (response.getErrors().get(0).getErrorCode().equals(ResidentConstants.OTP_AUTH_LOCKED_ERR_CODE)) {
-				if (authType != null) {
-					if (authType.equals(ResidentConstants.PHONE)) {
+				if (channels != null) {
+					if (channels.equals(ResidentConstants.PHONE)) {
 						throw new OtpValidationFailedException(ResidentErrorCode.SMS_AUTH_LOCKED.getErrorCode(),
 								ResidentErrorCode.SMS_AUTH_LOCKED.getErrorMessage(),
 								Map.of(ResidentConstants.EVENT_ID, eventId));
 					}
-					if (authType.equals(ResidentConstants.EMAIL)) {
+					if (channels.equals(ResidentConstants.EMAIL)) {
 						throw new OtpValidationFailedException(ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorCode(),
 								ResidentErrorCode.EMAIL_AUTH_LOCKED.getErrorMessage(),
 								Map.of(ResidentConstants.EVENT_ID, eventId));
 					}
-					boolean containsPhone = authType.contains(ResidentConstants.PHONE);
-					boolean containsEmail = authType.contains(ResidentConstants.EMAIL);
+					boolean containsPhone = channels.contains(ResidentConstants.PHONE);
+					boolean containsEmail = channels.contains(ResidentConstants.EMAIL);
 					if (containsPhone && containsEmail) {
 						throw new OtpValidationFailedException(
 								ResidentErrorCode.SMS_AND_EMAIL_AUTH_LOCKED.getErrorCode(),

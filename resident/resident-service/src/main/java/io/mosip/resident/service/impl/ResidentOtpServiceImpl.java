@@ -1,6 +1,7 @@
 package io.mosip.resident.service.impl;
 
 import static io.mosip.resident.constant.ResidentConstants.ATTRIBUTE_LIST_DELIMITER;
+import static io.mosip.resident.constant.ResidentConstants.OTP;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.stream.Collectors;
@@ -90,13 +91,12 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		String individualId = otpRequestDTO.getIndividualId();
 		residentTransactionEntity.setEventId(utility.createEventId());
 		residentTransactionEntity.setRequestTrnId(otpRequestDTO.getTransactionID());
-		String attributeList = otpRequestDTO.getOtpChannel().stream().collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
+		String attributeList = otpRequestDTO.getOtpChannel().stream().map(String::toUpperCase).collect(Collectors.joining(ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
-		residentTransactionEntity.setAuthTypeCode(attributeList);
+		residentTransactionEntity.setAuthTypeCode(OTP);
 		residentTransactionEntity.setRequestSummary("OTP Generated");
 		residentTransactionEntity.setStatusCode(EventStatusInProgress.OTP_REQUESTED.name());
 		residentTransactionEntity.setStatusComment("OTP_REQUESTED");
-		residentTransactionEntity.setLangCode("eng");
 		residentTransactionEntity.setRefIdType(identityServiceImpl.getIndividualIdType(individualId));
 		IdentityDTO identityDTO = identityServiceImpl.getIdentity(individualId);
 		String idaToken= identityServiceImpl.getIDAToken(identityDTO.getUIN());
@@ -108,7 +108,6 @@ public class ResidentOtpServiceImpl implements ResidentOtpService {
 		}
 		residentTransactionEntity.setIndividualId(individualId);
 		residentTransactionEntity.setTokenId(idaToken);
-		residentTransactionEntity.setPurpose(attributeList);
 		residentTransactionRepository.save(residentTransactionEntity);
 	}
 

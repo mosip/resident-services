@@ -1511,7 +1511,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "";
         String serviceType = "";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType, "eng", null);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -1520,7 +1520,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "";
         String serviceType = "BadServiceType";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType, "eng", null);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -1529,7 +1529,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "BadSortType";
         String serviceType = "DATA_SHARE_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, sortType, sortType, "eng", null);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -1537,7 +1537,7 @@ public class RequestValidatorTest {
         LocalDate fromDate = LocalDate.now();
         LocalDate toDate = LocalDate.now();
         String serviceType = "DATA_SHARE_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, null, null, serviceType);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, null, null, serviceType, "eng", null);
     }
 
     @Test
@@ -1546,7 +1546,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "DATA_SHARE_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test
@@ -1555,7 +1555,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "SERVICE_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test
@@ -1564,7 +1564,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "ID_MANAGEMENT_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test
@@ -1573,7 +1573,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "DATA_UPDATE_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test
@@ -1582,7 +1582,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "AUTHENTICATION_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test
@@ -1591,7 +1591,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "DESC";
         String serviceType = "AUTHENTICATION_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
 
@@ -2116,27 +2116,27 @@ public class RequestValidatorTest {
 
     @Test(expected = InvalidInputException.class)
     public void testValidateOnlyLanguageCode() {
-        requestValidator.validateOnlyLanguageCode(null);
+        requestValidator.validateLanguageCode(null);
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidateOnlyEmptyLanguageCode() {
-        requestValidator.validateOnlyLanguageCode("");
+        requestValidator.validateLanguageCode("");
     }
 
     @Test(expected = InvalidInputException.class)
     public void testValidateOnlyInvalidLanguageCode() {
-        requestValidator.validateOnlyLanguageCode("fra");
+        requestValidator.validateLanguageCode("fra");
     }
 
     @Test
     public void testValidateOnlyValidLanguageCodeSuccess() {
-        requestValidator.validateOnlyLanguageCode("eng");
+        requestValidator.validateLanguageCode("eng");
     }
 
     @Test
     public void testValidateOnlyInvalidLanguageCodeSuccess() {
-        requestValidator.validateOnlyLanguageCode("ara");
+        requestValidator.validateLanguageCode("ara");
     }
 
     @Test
@@ -2357,7 +2357,7 @@ public class RequestValidatorTest {
         LocalDate toDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "AUTHENTICATION_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test(expected = InvalidInputException.class)
@@ -2367,7 +2367,7 @@ public class RequestValidatorTest {
         LocalDate fromDate = LocalDate.now();
         String sortType = "ASC";
         String serviceType = "AUTHENTICATION_REQUEST";
-        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null);
+        requestValidator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, null, "eng", null);
     }
 
     @Test(expected = InvalidInputException.class)

@@ -383,9 +383,7 @@ public class ResidentController {
 		logger.info("TimeZone-offset: " + timeZoneOffset);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		try {
-			validator.validateOnlyLanguageCode(langCode);
-			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
-			validator.validateSearchText(searchText);
+			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter, langCode, searchText);
 			responseWrapper = residentService.getServiceHistory(pageStart, pageFetch, fromDate, toDate, serviceType,
 					sortType, statusFilter, searchText, langCode, timeZoneOffset, locale,
 					RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
@@ -669,7 +667,7 @@ public class ResidentController {
 		String id = null;
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = new ResponseWrapper<>();
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			id = identityServiceImpl.getResidentIdaToken();
 			notificationDtoList = residentService.getNotificationList(pageStart, pageFetch, id, langCode,
 					timeZoneOffset, locale);
@@ -699,7 +697,7 @@ public class ResidentController {
 		logger.debug("ResidentController::downLoadServiceHistory::entry");
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(languageCode);
+			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter, languageCode, searchText);
 			ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
 					null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter,
 					searchText, languageCode, timeZoneOffset, locale);

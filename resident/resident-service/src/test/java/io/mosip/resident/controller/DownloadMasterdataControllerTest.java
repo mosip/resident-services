@@ -135,7 +135,7 @@ public class DownloadMasterdataControllerTest {
     @Test(expected = Exception.class)
     public void testDownloadRegistrationCentersByHierarchyLevelInvalidInputException() throws Exception {
         doThrow(new InvalidInputException()).
-                when(validator).validateOnlyLanguageCode(any());
+                when(validator).validateLanguageCode(any());
         Mockito.when(downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(Mockito.any(),
                 Mockito.any(), Mockito.any())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get("/download/registration-centers-list?langcode=eng&hierarchylevel=5&name=14022")).
@@ -154,7 +154,7 @@ public class DownloadMasterdataControllerTest {
     @Test(expected = Exception.class)
     public void testDownloadNearestRegistrationCentersFailed() throws Exception {
         doThrow(new InvalidInputException()).
-                when(validator).validateOnlyLanguageCode(any());
+                when(validator).validateLanguageCode(any());
         Mockito.when(downLoadMasterDataService.getNearestRegistrationcenters(Mockito.anyString(),
                 Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyInt())).thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
@@ -174,7 +174,7 @@ public class DownloadMasterdataControllerTest {
     @Test(expected = Exception.class)
     public void testDownloadSupportingDocsByLanguageFailed() throws Exception {
         doThrow(new InvalidInputException()).
-                when(validator).validateOnlyLanguageCode(any());
+                when(validator).validateLanguageCode(any());
         Mockito.when(downLoadMasterDataService.downloadSupportingDocsByLanguage(Mockito.anyString())).
                 thenReturn( new ByteArrayInputStream(pdfbytes));
         mockMvc.perform(MockMvcRequestBuilders.get
