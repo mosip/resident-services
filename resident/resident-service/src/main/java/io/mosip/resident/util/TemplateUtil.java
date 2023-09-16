@@ -307,9 +307,15 @@ public class TemplateUtil {
 
 	public String getDescriptionTemplateVariablesForSecureMyId(ResidentTransactionEntity residentTransactionEntity,
 			String fileText, String languageCode) {
+		String authTypeFromDB;
 		if (residentTransactionEntity.getAttributeList() != null && !residentTransactionEntity.getAttributeList().isEmpty()) {
+			authTypeFromDB = residentTransactionEntity.getAttributeList();
+		} else {
+			authTypeFromDB = residentTransactionEntity.getPurpose();
+		}
+		if (authTypeFromDB != null) {
 			List<String> authTypeListFromEntity = List
-					.of(residentTransactionEntity.getAttributeList().split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
+					.of(authTypeFromDB.split(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 			return authTypeListFromEntity.stream().map(authType -> {
 				String fileTextTemplate = fileText;
 				String templateData = "";
@@ -328,8 +334,7 @@ public class TemplateUtil {
 				return fileTextTemplate;
 			}).collect(Collectors.joining(ResidentConstants.UI_ATTRIBUTE_DATA_DELIMITER));
 		}
-		return getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode,
-				getTemplateTypeCode(ResidentConstants.RESIDENT_UNKNOWN_TEMPLATE_PROPERTY));
+		return fileText;
 	}
 
     public Tuple2<Map<String, String>, String> getAckTemplateVariablesForDefault(ResidentTransactionEntity residentTransactionEntity, String languageCode, Integer timeZoneOffset, String locale){
