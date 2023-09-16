@@ -184,7 +184,6 @@ public class ResidentConstants {
     public static final String CHANNEL = "channel";
     public static final String ATTRIBUTE_LIST_DELIMITER = ",";
     public static final String UI_ATTRIBUTE_DATA_DELIMITER = ", ";
-    public static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
     public static final String REQ_RES_ID = "reqResId";
