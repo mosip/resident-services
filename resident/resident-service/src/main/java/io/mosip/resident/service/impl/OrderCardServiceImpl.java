@@ -128,7 +128,7 @@ public class OrderCardServiceImpl implements OrderCardService {
 			throws ApisResourceAccessException, ResidentServiceCheckedException {
 		ResidentTransactionEntity residentTransactionEntity = utility.createEntity(RequestType.ORDER_PHYSICAL_CARD);
 		residentTransactionEntity.setEventId(utility.createEventId());
-		String attributeList = requestDto.getSharableAttributes().stream().collect(Collectors.joining(", "));
+		String attributeList = requestDto.getSharableAttributes().stream().collect(Collectors.joining(ResidentConstants.ATTRIBUTE_LIST_DELIMITER));
 		residentTransactionEntity.setAttributeList(attributeList);
 		residentTransactionEntity.setRefId(utility.convertToMaskData(individualId));
 		residentTransactionEntity.setIndividualId(individualId);
