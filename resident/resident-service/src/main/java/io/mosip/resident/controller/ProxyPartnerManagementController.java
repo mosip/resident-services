@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -54,7 +58,8 @@ public class ProxyPartnerManagementController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@RequestMapping(method = RequestMethod.GET)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @RequestMapping(method = RequestMethod.GET)
 	@Operation(summary = "getPartnersByPartnerType", description = "getPartnersByPartnerType", tags = {
 			"proxy-partner-management-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),

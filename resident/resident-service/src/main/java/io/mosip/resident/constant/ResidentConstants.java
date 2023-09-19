@@ -305,4 +305,7 @@ public class ResidentConstants {
 	public static final String RESIDENT_AUTHENTICATION_REQUEST_PARTNER_TYPE = "resident.authentication-request.partner.type";
 	public static final String RESIDENT_ORDER_PHYSICAL_CARD_PARTNER_TYPE = "resident.order-physical-card.partner.type";
 
+	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
+
+    public static final String API_RESPONSE_TIME_ID = "api.response.time";
 }

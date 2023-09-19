@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -25,11 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
-import io.mosip.resident.constant.RequestIdType;
 import io.mosip.resident.constant.ResidentConstants;
 import io.mosip.resident.constant.UISchemaTypes;
 import io.mosip.resident.dto.CredentialCancelRequestResponseDto;
@@ -85,7 +88,8 @@ public class ResidentCredentialController {
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentCredentialController.class);
 
 	@ResponseFilter
-	@PostMapping(value = "/req/credential")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(value = "/req/credential")
 	@Operation(summary = "reqCredential", description = "reqCredential", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -111,7 +115,8 @@ public class ResidentCredentialController {
 	}
 	
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestShareCredWithPartner()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostRequestShareCredWithPartner()" + ")")
 	@PostMapping(value = "/share-credential")
 	@Operation(summary = "requestShareCredWithPartner", description = "requestShareCredWithPartner", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
@@ -151,7 +156,8 @@ public class ResidentCredentialController {
 				.body(response);
 	}
 	
-	@GetMapping(value = "req/credential/status/{requestId}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(value = "req/credential/status/{requestId}")
 	@Operation(summary = "getCredentialStatus", description = "getCredentialStatus", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -173,7 +179,8 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@GetMapping(value = "req/card/{requestId}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(value = "req/card/{requestId}")
 	@Operation(summary = "getCard", description = "getCard", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -198,7 +205,8 @@ public class ResidentCredentialController {
 				.body((Object) resource);
 	}
 	
-	@GetMapping(value = "credential/types")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(value = "credential/types")
 	@Operation(summary = "getCredentialTypes", description = "getCredentialTypes", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -221,7 +229,8 @@ public class ResidentCredentialController {
 	}
 
 
-	@GetMapping(value = "req/credential/cancel/{requestId}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(value = "req/credential/cancel/{requestId}")
 	@Operation(summary = "cancelCredentialRequest", description = "cancelCredentialRequest", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -243,7 +252,8 @@ public class ResidentCredentialController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@GetMapping(value = "req/policy/partnerId/{partnerId}/credentialType/{credentialType}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(value = "req/policy/partnerId/{partnerId}/credentialType/{credentialType}")
 	@Operation(summary = "getPolicyByCredentialType", description = "getPolicyByCredentialType", tags = { "resident-credential-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),

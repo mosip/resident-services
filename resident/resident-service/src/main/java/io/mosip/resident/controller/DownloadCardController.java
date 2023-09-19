@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.exception.BaseCheckedException;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -76,6 +80,7 @@ public class DownloadCardController {
 
     private static final Logger logger = LoggerConfiguration.logConfig(DownloadCardController.class);
 
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @PostMapping("/download-card")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Card successfully downloaded", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseWrapper.class)))),
@@ -118,6 +123,7 @@ public class DownloadCardController {
 				.header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(resource);
 	}
     
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPostPersonalizedCard()" + ")")
     @PostMapping("/download/personalized-card")
 	public ResponseEntity<Object> downloadPersonalizedCard(
@@ -153,6 +159,7 @@ public class DownloadCardController {
                 .body(resource);
     }
 
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @GetMapping("/request-card/vid/{VID}")
     public ResponseEntity<Object> requestVidCard(@PathVariable("VID") String vid, 
     		@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
@@ -176,6 +183,7 @@ public class DownloadCardController {
 				.body(tupleResponse.getT1());
 	}
 
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @GetMapping("/aid-stage/{aid}")
     public ResponseEntity<Object> getStatus(@PathVariable("aid") String aid) throws BaseCheckedException, IOException {
     	logger.debug("DownloadCardController::getStatus()::entry");
