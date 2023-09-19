@@ -1,5 +1,6 @@
 package io.mosip.resident.controller;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
@@ -115,6 +116,7 @@ public class ResidentVidController {
 		return generateVid(requestDto, true);
 	}
 
+	@Timed(value="timed.POST /generate-vid",description="time to generate VID", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getPostgeneratevid()"
 		+ ")")

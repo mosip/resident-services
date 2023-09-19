@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -359,6 +360,7 @@ public class ResidentController {
 		return responseWrapper;
 	}
 
+	@Timed(value="timed.GET /service-history",description="time to get service history", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetServiceAuthHistoryRoles()" + ")")
 	@GetMapping(path = "/service-history/{langCode}")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
@@ -681,6 +683,7 @@ public class ResidentController {
 		return notificationDtoList;
 	}
 
+	@Timed(value="timed.GET /download/service-history",description="time to download service history", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@GetMapping(path = "/download/service-history")
 	public ResponseEntity<Object> downLoadServiceHistory(
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
