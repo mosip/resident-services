@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.ResidentConstants;
@@ -52,6 +53,7 @@ public class ResidentOtpController {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentOtpController.class);
 
+	@Timed(value="timed.POST /req/otp",description="time to request OTP", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@PostMapping(value = "/req/otp")
 	@Operation(summary = "reqOtp", description = "reqOtp", tags = { "resident-otp-controller" })
 	@ApiResponses(value = {
