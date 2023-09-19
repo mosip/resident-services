@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
@@ -53,8 +56,8 @@ public class ResidentOtpController {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ResidentOtpController.class);
 
-	@Timed(value="timed.POST /req/otp",description="time to request OTP", percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@PostMapping(value = "/req/otp")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(value = "/req/otp")
 	@Operation(summary = "reqOtp", description = "reqOtp", tags = { "resident-otp-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -76,7 +79,8 @@ public class ResidentOtpController {
 		return otpResponseDTO;
 	}
 	
-	@PostMapping(value = "/individualId/otp")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(value = "/individualId/otp")
 	@Operation(summary = "reqIndividualIdOtp", description = "reqIndividualIdOtp", tags = { "resident-otp-controller" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),

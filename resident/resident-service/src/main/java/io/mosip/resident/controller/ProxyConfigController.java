@@ -1,10 +1,14 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -48,7 +52,8 @@ public class ProxyConfigController {
 	 *                                         exception
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/config/ui-properties")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/proxy/config/ui-properties")
 	@Operation(summary = "getResidentUIProperties", description = "Get the Resident-UI properties", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -65,7 +70,8 @@ public class ProxyConfigController {
 	}
 
 	@GetMapping("/auth-proxy/config/ui-schema/{schemaType}")
-	@Operation(summary = "getResidentUISchema", description = "Get the Resident-UI Schema", tags = {
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @Operation(summary = "getResidentUISchema", description = "Get the Resident-UI Schema", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -88,7 +94,8 @@ public class ProxyConfigController {
 	}
 
 	@GetMapping("/auth-proxy/config/identity-mapping")
-	@Operation(summary = "getIdentityMapping", description = "Get the identity-mapping", tags = {
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @Operation(summary = "getIdentityMapping", description = "Get the identity-mapping", tags = {
 			"proxy-config-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
