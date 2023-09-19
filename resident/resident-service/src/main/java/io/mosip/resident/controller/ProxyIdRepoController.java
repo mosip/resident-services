@@ -1,5 +1,7 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_EXCEPTION;
 import static io.mosip.resident.util.EventEnum.GET_IDENTITY_UPDATE_COUNT_SUCCESS;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.idrepository.core.exception.IdRepoAppException;
 import io.mosip.kernel.core.exception.ExceptionUtils;
 import io.mosip.kernel.core.exception.ServiceError;
@@ -49,7 +52,8 @@ public class ProxyIdRepoController {
 
 	private static final Logger logger = LoggerConfiguration.logConfig(ProxyIdRepoController.class);
 
-	@GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(path = "/update-count", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Get Remaining update count by Individual Id Request", description = "Get Remaining update count by Individual Id Request", tags = {
 			"proxy-id-repo-identity-update-controller" })
 	@ApiResponses(value = {

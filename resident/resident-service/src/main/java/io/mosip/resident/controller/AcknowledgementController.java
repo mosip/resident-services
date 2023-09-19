@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Map;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
 import io.mosip.resident.constant.LoggerFileConstant;
@@ -40,7 +44,7 @@ import reactor.util.function.Tuple2;
 @Tag(name="AcknowledgementController", description="AcknowledgementController")
 public class AcknowledgementController {
 
-    private static final Logger logger = LoggerConfiguration.logConfig(AcknowledgementController.class);
+	private static final Logger logger = LoggerConfiguration.logConfig(AcknowledgementController.class);
     
     @Value("${resident.event.ack.download.id}")
     private String ackDownloadId;
@@ -60,6 +64,7 @@ public class AcknowledgementController {
     @Autowired
     private Utility utility;
 
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
     @GetMapping("/ack/download/pdf/event/{eventId}/language/{languageCode}")
     public ResponseEntity<Object> getAcknowledgement(@PathVariable("eventId") String eventId,
                                                   @PathVariable("languageCode") String languageCode,
