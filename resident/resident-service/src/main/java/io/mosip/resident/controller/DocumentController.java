@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -84,6 +88,7 @@ public class DocumentController {
 	 * @param file          The file to be uploaded
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
+	@Timed(value="api.response.time",description="API Response Time", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@PostMapping(path = "/documents/{transaction-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentResponseDTO> uploadDocuments(@PathVariable("transaction-id") String transactionId,
 			@RequestPart(value = "file", required = true) MultipartFile file,
@@ -132,6 +137,8 @@ public class DocumentController {
 	 * @param transactionId The transaction ID of the document
 	 * @return ResponseWrapper<List<DocumentResponseDTO>>
 	 */
+
+	@Timed(value="api.response.time",description="API Response Time", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@GetMapping(path = "/documents/{transaction-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<List<DocumentResponseDTO>> getDocumentsByTransactionId(
 			@PathVariable("transaction-id") String transactionId) {
@@ -170,6 +177,7 @@ public class DocumentController {
 	 * @param documentId    The document ID of the document should be passed as Path Variable
 	 * @return ResponseWrapper<DocumentResponseDTO>
 	 */
+	@Timed(value="api.response.time",description="API Response Time", percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@GetMapping(path = "/document/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<DocumentDTO> getDocumentByDocumentId(
 			@RequestParam("transactionId") String transactionId,
@@ -209,6 +217,7 @@ public class DocumentController {
 	 * @param documentId    The document ID of the document
 	 * @return ResponseWrapper<ResponseDTO>
 	 */
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@DeleteMapping(path = "/documents/{document-id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseWrapper<ResponseDTO> deleteDocument(
 			@RequestParam("transactionId") String transactionId,

@@ -47,6 +47,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.util.function.Tuple2;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +84,8 @@ public class ResidentVidController {
 	@Value("${resident.vid.version}")
 	private String version;
 	
-	@GetMapping(path = "/vid/policy")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(path = "/vid/policy")
 	@Operation(summary = "Retrieve VID policy", description = "Retrieve VID policy", tags = { "Resident Service" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "VID Policy retrieved successfully", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResidentVidRequestDto.class)))),
@@ -102,7 +106,8 @@ public class ResidentVidController {
 		return policyResponse;
 	}
 
-	@PostMapping(path = "/vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(path = "/vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "generateVid", description = "generateVid", tags = { "Resident Service" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "VID successfully generated", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResidentVidRequestDto.class)))),
@@ -116,8 +121,8 @@ public class ResidentVidController {
 		return generateVid(requestDto, true);
 	}
 
-	@Timed(value="timed.POST /generate-vid",description="time to generate VID", percentiles = {0.5, 0.9, 0.95, 0.99} )
-	@PreAuthorize("@scopeValidator.hasAllScopes("
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getPostgeneratevid()"
 		+ ")")
 	@PostMapping(path = "/generate-vid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -166,7 +171,8 @@ public class ResidentVidController {
 				.body(tupleResponse.getT1());
 	}
 
-	@PatchMapping(path = "/vid/{vid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PatchMapping(path = "/vid/{vid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "Revoke VID", description = "Revoke VID", tags = { "Resident Service" })
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "VID successfully revoked", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseWrapper.class)))),
@@ -180,7 +186,8 @@ public class ResidentVidController {
 		return revokeVid(requestDto, vid, true);
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes("
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getPatchrevokevid()"
 		+ ")")
 	@PatchMapping(path = "/revoke-vid/{vid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -197,7 +204,6 @@ public class ResidentVidController {
 		return revokeVidV2Version(requestDto, vid, false);
 	}
 
-	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVid(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
 			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentVidController::revokeVid()::entry");
@@ -219,7 +225,6 @@ public class ResidentVidController {
 		return ResponseEntity.ok().body(vidResponseDto);
 	}
 	
-	@SuppressWarnings("unused")
 	private ResponseEntity<Object> revokeVidV2Version(RequestWrapper<? extends BaseVidRevokeRequestDTO> requestDto, String vid,
 			boolean isOtpValidationRequired) throws OtpValidationFailedException, ResidentServiceCheckedException, ApisResourceAccessException, IOException {
 		logger.debug("ResidentVidController::revokeVidV2Version()::entry");
@@ -247,7 +252,8 @@ public class ResidentVidController {
 		return identityServiceImpl.getResidentIndvidualIdFromSession();
 	}
 	
-	@PreAuthorize("@scopeValidator.hasAllScopes("
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes("
 			+ "@authorizedScopes.getGetvids()"
 		+ ")")
 	@GetMapping(path = "/vids", consumes = MediaType.ALL_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
