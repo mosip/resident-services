@@ -27,6 +27,7 @@ import org.springframework.test.context.ContextConfiguration;
 import reactor.util.function.Tuple2;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +35,11 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -687,6 +692,58 @@ public class ProxyMasterDataServiceTest {
 		when(utilities.getDynamicFieldBasedOnLangCodeAndFieldName(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean())).thenReturn(res);
 		assertEquals("FLE", proxyMasterdataService
 				.getGenderCodeByGenderTypeAndLangCode("female", "eng").getResponse().getGenderCode());
+	}
+
+	@Test
+	public void testGetLocationHierarchyLevels() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+		responseWrapper.setErrors(new ArrayList<>());
+		responseWrapper.setId("https://example.org/example");
+		responseWrapper.setMetadata("Metadata");
+		responseWrapper.setResponse("Response");
+		responseWrapper.setResponsetime(LocalDateTime.of(1, 1, 1, 1, 1));
+		responseWrapper.setVersion("https://example.org/example");
+		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any())).thenReturn(responseWrapper);
+		assertSame(responseWrapper, proxyMasterdataService.getLocationHierarchyLevels("2020-03-01"));
+		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any());
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetLocationHierarchyLevels4() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ArrayList<ServiceError> serviceErrorList = new ArrayList<>();
+		serviceErrorList.add(new ServiceError("An error occurred", "An error occurred"));
+		ResponseWrapper<Object> responseWrapper = (ResponseWrapper<Object>) mock(ResponseWrapper.class);
+		when(responseWrapper.getErrors()).thenReturn(serviceErrorList);
+		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any())).thenReturn(responseWrapper);
+		proxyMasterdataService.getLocationHierarchyLevels("2020-03-01");
+		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any());
+		verify(responseWrapper, atLeast(1)).getErrors();
+	}
+
+	@Test
+	public void testGetLocationHierarchyLevels5() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		ResponseWrapper<Object> responseWrapper = (ResponseWrapper<Object>) mock(ResponseWrapper.class);
+		when(responseWrapper.getErrors()).thenReturn(new ArrayList<>());
+		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any())).thenReturn(responseWrapper);
+		proxyMasterdataService.getLocationHierarchyLevels(null);
+		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any());
+		verify(responseWrapper, atLeast(1)).getErrors();
+	}
+
+	@Test(expected = ResidentServiceCheckedException.class)
+	public void testGetLocationHierarchyLevels6() throws ApisResourceAccessException, ResidentServiceCheckedException {
+		when(residentServiceRestClient.getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any())).thenThrow(new ApisResourceAccessException());
+		proxyMasterdataService.getLocationHierarchyLevels("2020-03-01");
+		verify(residentServiceRestClient).getApi((ApiName) any(), (List<String>) any(), (List<String>) any(),
+				(List<Object>) any(), (Class<Object>) any());
+		verify(responseWrapper, atLeast(1)).getErrors();
 	}
 
 }
