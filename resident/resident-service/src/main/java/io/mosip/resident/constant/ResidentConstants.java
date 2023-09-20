@@ -258,7 +258,6 @@ public class ResidentConstants {
     public static final String VID_CARD_TEMPLATE_PROPERTY = "mosip.resident.vid.card.template.property";
 
     public static final String IMAGE = "mosip.resident.photo.token.claim-photo";
-    public static final String VID = "vid";
     public static final String NAME = "name";
     public static final String ONLINE_VERIFICATION_PARTNER_ID = "ida.online-verification-partner-id";
 
@@ -308,4 +307,8 @@ public class ResidentConstants {
 	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
 
     public static final String API_RESPONSE_TIME_ID = "api.response.time";
+    
+    public static final String UIN = "UIN";
+    public static final String VID = "VID";
+    public static final String AID = "AID";
 }
