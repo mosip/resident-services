@@ -313,7 +313,7 @@ public class RequestValidator {
 		}
 
 		if (StringUtils.isEmpty(individualId)
-				|| !validateIndividualIdvIdWithoutIdType(individualId)) {
+				|| !validateUinOrVid(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request generate VID API"));
 			throw new InvalidInputException("individualId");
@@ -368,7 +368,7 @@ public class RequestValidator {
 		}
 
 		if (StringUtils.isEmpty(individualId)
-				|| !validateIndividualIdvIdWithoutIdType(individualId)) {
+				|| !validateUinOrVid(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request generate VID API"));
 			throw new InvalidInputException("individualId");
@@ -437,7 +437,7 @@ public class RequestValidator {
 
 		String individualId = requestDTO.getRequest().getIndividualId();
 		if (StringUtils.isEmpty(individualId)
-				|| !validateIndividualIdvIdWithoutIdType(individualId)) {
+				|| !validateUinOrVid(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("individualId");
@@ -480,7 +480,7 @@ public class RequestValidator {
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for EUIN");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
+				|| (!validateUinOrVid(requestDTO.getRequest().getIndividualId()))) {
 			audit.setAuditRequestDto(
 					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request for EUIN"));
 			throw new InvalidInputException("individualId");
@@ -507,7 +507,12 @@ public class RequestValidator {
 
 	public void validateAuthHistoryRequest(@Valid RequestWrapper<AuthHistoryRequestDTO> requestDTO) {
 		validateRequest(requestDTO, RequestIdType.AUTH_HISTORY_ID);
-		validateIndividualIdV2(requestDTO.getRequest().getIndividualId(), "Request auth history API");
+		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
+				|| (!validateUinOrVid(requestDTO.getRequest().getIndividualId()))) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request auth history API"));
+			throw new InvalidInputException("individualId");
+		}
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getOtp())) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, OTP, "Request for auth history"));
@@ -660,7 +665,7 @@ public class RequestValidator {
 		if(requestDto.getRequest() instanceof VidRevokeRequestDTO) {
 			VidRevokeRequestDTO vidRevokeRequestDTO = (VidRevokeRequestDTO) requestDto.getRequest();
 			if (StringUtils.isEmpty(vidRevokeRequestDTO.getIndividualId())
-					|| (!validateIndividualIdvIdWithoutIdType(vidRevokeRequestDTO.getIndividualId()))) {
+					|| (!validateUinOrVid(vidRevokeRequestDTO.getIndividualId()))) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
 				throw new InvalidInputException("individualId");
 			}
@@ -713,7 +718,7 @@ public class RequestValidator {
 		if(requestDto.getRequest() instanceof VidRevokeRequestDTO) {
 			VidRevokeRequestDTO vidRevokeRequestDTO = (VidRevokeRequestDTO) requestDto.getRequest();
 			if (StringUtils.isEmpty(vidRevokeRequestDTO.getIndividualId())
-					|| (!validateIndividualIdvIdWithoutIdType(vidRevokeRequestDTO.getIndividualId()))) {
+					|| (!validateUinOrVid(vidRevokeRequestDTO.getIndividualId()))) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Request to revoke VID"));
 				throw new InvalidInputException("individualId");
 			}
@@ -779,7 +784,7 @@ public class RequestValidator {
 		validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for print UIN API");
 
 		if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-				|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
+				|| (!validateUinOrVid(requestDTO.getRequest().getIndividualId()))) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request for print UIN API"));
 			throw new InvalidInputException("individualId");
@@ -811,14 +816,14 @@ public class RequestValidator {
 			validateRequest(requestDTO, RequestIdType.RES_UPDATE);
 			validateIndividualIdType(requestDTO.getRequest().getIndividualIdType(), "Request for update uin");
 			if (StringUtils.isEmpty(requestDTO.getRequest().getIndividualId())
-					|| (!validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId()))) {
+					|| (!validateUinOrVid(requestDTO.getRequest().getIndividualId()))) {
 				audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 						"Request for update uin"));
 				throw new InvalidInputException("individualId");
 			}
 		} else {
 			validateRequestNewApi(requestDTO, RequestIdType.RES_UPDATE);
-			validateIndividualIdvIdWithoutIdType(requestDTO.getRequest().getIndividualId());
+			validateUinOrVid(requestDTO.getRequest().getIndividualId());
 			validateAttributeName(requestDTO.getRequest().getIdentity(), schemaJson);
 			validateLanguageCodeInIdentityJson(requestDTO.getRequest().getIdentity());
 		}
@@ -948,7 +953,7 @@ public class RequestValidator {
 
 		String individualId = requestDTO.getRequest().getIndividualId();
 		if (StringUtils.isEmpty(individualId)
-				|| !validateIndividualIdvIdWithoutIdType(individualId)) {
+				|| !validateUinOrVid(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					"Request auth " + authTypeStatus.toString().toLowerCase() + " API"));
 			throw new InvalidInputException("individualId");
@@ -993,10 +998,6 @@ public class RequestValidator {
 			}
 
 		}
-	}
-
-	private boolean validateIndividualIdvIdWithoutIdType(String individualId) {
-		return this.validateUin(individualId) || this.validateVid(individualId) || this.validateRid(individualId);
 	}
 
 	private boolean validateUinOrVid(String individualId) {
@@ -1310,7 +1311,7 @@ public class RequestValidator {
 	}
 
 	private void validateIndividualIdV2(String individualId, String eventName) {
-		if (individualId == null || StringUtils.isEmpty(individualId) || !validateIndividualIdvIdWithoutIdType(individualId)) {
+		if (individualId == null || StringUtils.isEmpty(individualId)) {
 			audit.setAuditRequestDto(EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId",
 					eventName));
 			throw new InvalidInputException("individualId");
@@ -1385,7 +1386,12 @@ public class RequestValidator {
 
 	public void validateReqCredentialRequest(RequestWrapper<ResidentCredentialRequestDto> requestWrapper) {
 		validateAPIRequestToCheckNull(requestWrapper);
-		validateIndividualIdV2(requestWrapper.getRequest().getIndividualId(), "Credential Request API");
+		if (StringUtils.isEmpty(requestWrapper.getRequest().getIndividualId())
+				|| (!validateUinOrVid(requestWrapper.getRequest().getIndividualId()))) {
+			audit.setAuditRequestDto(
+					EventEnum.getEventEnumWithValue(EventEnum.INPUT_INVALID, "individualId", "Credential Request API"));
+			throw new InvalidInputException("individualId");
+		}
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getCredentialType(),
 				ResidentConstants.CREDENTIAL_TYPE);
 		validateDataToCheckNullOrEmpty(requestWrapper.getRequest().getIssuer(), ResidentConstants.ISSUER);
