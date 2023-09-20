@@ -460,6 +460,35 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		}
 	}
 
+	@Override
+	@Cacheable(value = "getLocationHierarchyLevels", key = "#lastUpdated")
+	public ResponseWrapper<?> getLocationHierarchyLevels(String lastUpdated) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevels()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		List<String> pathsegements = null;
+		List<String> queryParamName = new ArrayList<String>();
+		List<Object> queryParamValue = new ArrayList<>();
+		if(lastUpdated!=null){
+			queryParamName.add("lastUpdated");
+			queryParamValue.add(lastUpdated);
+		}
+		try {
+			responseWrapper = (ResponseWrapper<?>) residentServiceRestClient.getApi(ApiName.LOCATION_HIERARCHY,
+					pathsegements, queryParamName, queryParamValue, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.error(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException e) {
+			logger.error("Error occured in accessing location hierarchy level %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevels()::exit");
+		return responseWrapper;
+	}
+
 	@CacheEvict(value = "templateCache", allEntries = true)
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.templateCache}")
 	public void emptyTemplateCache() {

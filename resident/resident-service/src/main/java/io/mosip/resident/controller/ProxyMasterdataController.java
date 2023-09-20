@@ -4,10 +4,13 @@ import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DES
 import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -109,10 +112,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::exit");
 		return responseWrapper;
 	}
@@ -531,6 +534,31 @@ public class ProxyMasterdataController {
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_GENDER_CODE_SUCCESS);
 		logger.debug("ProxyMasterdataController::getGenderCodeByGenderTypeAndLangCode::exit");
+		return responseWrapper;
+	}
+
+	@ResponseFilter
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+	@GetMapping("/proxy/masterdata/locationHierarchyLevels")
+	@Operation(summary = "Retrieve all location Hierarchy Level details", description = "Retrieve all location Hierarchy Level details", tags = {
+			"proxy-masterdata-controller" })
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(hidden = true))),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(hidden = true))) })
+	public ResponseWrapper<?> getLocationHierarchyLevel(
+			@RequestParam(name = "lastUpdated", required = false) @ApiParam(value = "last updated rows", required = false) String lastUpdated) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::entry");
+		ResponseWrapper<?> responseWrapper;
+		try {
+			responseWrapper = proxyMasterdataService.getLocationHierarchyLevels(lastUpdated);
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
+			throw e;
+		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_SUCCESS);
+		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::exit");
 		return responseWrapper;
 	}
 

@@ -229,6 +229,13 @@ public enum EventEnum {
 	GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION("RES-SER-148", RegistrationConstants.SYSTEM, "get location hierarchy levels: Failed",
 			"get location hierarchy level by lang code is failed", "RES-SER", "Residence service", "RS-LOC",
 			"Location", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+
+	GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS("RES-SER-147", RegistrationConstants.SYSTEM, "get location hierarchy levels for all language: Success",
+			"get location hierarchy level is succeed", "RES-SER", "Residence service", "RS-LOC",
+			"Location", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
+	GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION("RES-SER-148", RegistrationConstants.SYSTEM, "get location hierarchy levels for all language: Failed",
+			"get location hierarchy level is failed", "RES-SER", "Residence service", "RS-LOC",
+			"Location", RegistrationConstants.RESIDENT_APPLICATION_ID, RegistrationConstants.RESIDENT_APPLICATION_NAME),
 	
 	GET_IMMEDIATE_CHILDREN_SUCCESS("RES-SER-150", RegistrationConstants.SYSTEM, "get immediate children: Success",
 			"get immediate children by location code and lang code is succeed", "RES-SER", "Residence service", "RS-CHILD",
