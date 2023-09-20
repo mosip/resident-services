@@ -112,10 +112,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLocationHierarchyLevelByLangCode(langCode);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
 		logger.debug("ProxyMasterdataController::getLocationHierarchyLevelByLangCode()::exit");
 		return responseWrapper;
 	}
@@ -554,10 +554,10 @@ public class ProxyMasterdataController {
 		try {
 			responseWrapper = proxyMasterdataService.getLocationHierarchyLevels(lastUpdated);
 		} catch (ResidentServiceCheckedException e) {
-			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_SUCCESS);
+			auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_EXCEPTION);
 			throw e;
 		}
-		auditUtil.setAuditRequestDto(EventEnum.GET_DOCUMENT_TYPES_SUCCESS);
+		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
 		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::exit");
 		return responseWrapper;
 	}
