@@ -16,7 +16,6 @@ import io.mosip.resident.dto.IdResponseDTO1;
 import io.mosip.resident.dto.IdentityDTO;
 import io.mosip.resident.dto.ResponseDTO1;
 import io.mosip.resident.exception.ApisResourceAccessException;
-import io.mosip.resident.exception.InvalidInputException;
 import io.mosip.resident.exception.ResidentServiceCheckedException;
 import io.mosip.resident.exception.ResidentServiceException;
 import io.mosip.resident.handler.service.ResidentConfigService;
@@ -633,11 +632,10 @@ public class IdentityServiceTest {
 				identityService.getIdentityAttributes("4578987854", "personalized-card", List.of("Name")).get("UIN"));
 	}
 
-	@Test(expected = InvalidInputException.class)
 	public void testGetIndividualIdType(){
 		Mockito.when(requestValidator.validateUin(Mockito.anyString())).thenReturn(false);
-		Mockito.when(requestValidator.validateRid(Mockito.anyString())).thenReturn(false);
-		identityService.getIndividualIdType("3434343343");
+		Mockito.when(requestValidator.validateVid(Mockito.anyString())).thenReturn(false);
+		assertEquals(ResidentConstants.AID, identityService.getIndividualIdType("3434343343"));
 	}
 
 	@Test
