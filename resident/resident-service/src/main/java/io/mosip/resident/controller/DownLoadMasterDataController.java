@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.kernel.core.util.DateUtils;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -70,7 +74,8 @@ public class DownLoadMasterDataController {
 	 * @return
 	 * @throws ResidentServiceCheckedException
 	 */
-	@GetMapping("/download/registration-centers-list")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/download/registration-centers-list")
 	public ResponseEntity<Object> downloadRegistrationCentersByHierarchyLevel(@RequestParam(name="langcode") String langCode,
 			@RequestParam(name="hierarchylevel") Short hierarchyLevel, @RequestParam("name") String name,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
@@ -81,7 +86,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			validator.validateName(name);
 			InputStream pdfInputStream = downLoadMasterDataService.downloadRegistrationCentersByHierarchyLevel(langCode,
 					hierarchyLevel, name);
@@ -103,7 +108,8 @@ public class DownLoadMasterDataController {
 				.body(resource);
 	}
 	
-	@GetMapping("/download/nearestRegistrationcenters")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/download/nearestRegistrationcenters")
 	public ResponseEntity<Object> downloadNearestRegistrationcenters(@RequestParam(name="langcode") String langCode,
 			@RequestParam(name="longitude") double longitude, @RequestParam(name="latitude") double latitude,
 			@RequestParam(name="proximitydistance") int proximityDistance,
@@ -115,7 +121,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_REGCEN_FILENAME = DOWNLOADABLE_REGCEN_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.getNearestRegistrationcenters(langCode, longitude,
 					latitude, proximityDistance);
 			resource = new InputStreamResource(pdfInputStream);
@@ -135,7 +141,8 @@ public class DownLoadMasterDataController {
 				.body(resource);
 	}
 	
-	@GetMapping(path = "/download/supporting-documents", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(path = "/download/supporting-documents", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Object> downloadSupportingDocsByLanguage(@RequestParam(name = "langcode") String langCode,
 			@RequestHeader(name = "time-zone-offset", required = false, defaultValue = "0") int timeZoneOffset,
             @RequestHeader(name = "locale", required = false) String locale)
@@ -145,7 +152,7 @@ public class DownLoadMasterDataController {
 		DOWNLOADABLE_SUPPORTING_FILENAME = DOWNLOADABLE_SUPPORTING_FILENAME + getCurrentDateAndTime();
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			InputStream pdfInputStream = downLoadMasterDataService.downloadSupportingDocsByLanguage(langCode);
 			resource = new InputStreamResource(pdfInputStream);
 			auditUtil.setAuditRequestDto(EventEnum.DOWNLOAD_SUPPORTING_DOCS_SUCCESS);

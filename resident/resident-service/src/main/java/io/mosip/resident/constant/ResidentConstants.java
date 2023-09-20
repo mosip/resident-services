@@ -184,7 +184,6 @@ public class ResidentConstants {
     public static final String CHANNEL = "channel";
     public static final String ATTRIBUTE_LIST_DELIMITER = ",";
     public static final String UI_ATTRIBUTE_DATA_DELIMITER = ", ";
-    public static final String AUTH_TYPE_LIST_DELIMITER = ", ";
 
     public static final String HTTP_STATUS_CODE = "httpStatusCode";
     public static final String REQ_RES_ID = "reqResId";
@@ -243,7 +242,7 @@ public class ResidentConstants {
     public static final String ISSUER = "issuer";
     public static final String PARTNER_ID = "partnerId";
     public static final String CREDENTIAL_TYPE = "credentialType";
-    public static final String OTP = "otp";
+    public static final String OTP = "OTP";
     public static final String TRANSACTION_ID_OLD = "transactionID";
 
     public static final String MUST_NOT_BE_EMPTY = " must not be empty.";
@@ -306,4 +305,7 @@ public class ResidentConstants {
 	public static final String RESIDENT_AUTHENTICATION_REQUEST_PARTNER_TYPE = "resident.authentication-request.partner.type";
 	public static final String RESIDENT_ORDER_PHYSICAL_CARD_PARTNER_TYPE = "resident.order-physical-card.partner.type";
 
+	public static final String API_RESPONSE_TIME_DESCRIPTION = "API Response Time";
+
+    public static final String API_RESPONSE_TIME_ID = "api.response.time";
 }

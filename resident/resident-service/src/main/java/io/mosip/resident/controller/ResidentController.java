@@ -1,5 +1,7 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_SERVICE_HISTORY_DOWNLOAD_MAX_COUNT;
 import static io.mosip.resident.constant.ResidentConstants.RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE;
 
@@ -38,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.exception.ServiceError;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
@@ -359,6 +362,7 @@ public class ResidentController {
 		return responseWrapper;
 	}
 
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
 	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetServiceAuthHistoryRoles()" + ")")
 	@GetMapping(path = "/service-history/{langCode}")
 	@Operation(summary = "getServiceHistory", description = "getServiceHistory", tags = { "resident-controller" })
@@ -383,9 +387,7 @@ public class ResidentController {
 		logger.info("TimeZone-offset: " + timeZoneOffset);
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = new ResponseWrapper<>();
 		try {
-			validator.validateOnlyLanguageCode(langCode);
-			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter);
-			validator.validateSearchText(searchText);
+			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter, langCode, searchText);
 			responseWrapper = residentService.getServiceHistory(pageStart, pageFetch, fromDate, toDate, serviceType,
 					sortType, statusFilter, searchText, langCode, timeZoneOffset, locale,
 					RESIDENT_VIEW_HISTORY_DEFAULT_PAGE_SIZE, null);
@@ -401,7 +403,8 @@ public class ResidentController {
 
 	@Deprecated
 	@ResponseFilter
-	@PostMapping(value = "/req/update-uin")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(value = "/req/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -429,7 +432,8 @@ public class ResidentController {
 	 * @return ResponseWrapper<ResidentUpdateResponseDTO>
 	 * @throws ApisResourceAccessException
 	 */
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPatchUpdateUin()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getPatchUpdateUin()" + ")")
 	@ResponseFilter
 	@PatchMapping(value = "/update-uin")
 	@Operation(summary = "updateUin", description = "updateUin", tags = { "resident-controller" })
@@ -478,7 +482,8 @@ public class ResidentController {
 		return ResponseEntity.ok().header(ResidentConstants.EVENT_ID, tupleResponse.getT2()).body(response);
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetAuthLockStatus()" + ")")
 	@GetMapping(path = "/auth-lock-status")
 	public ResponseWrapper<AuthLockOrUnLockRequestDtoV2> getAuthLockStatus() throws ApisResourceAccessException {
 		logger.debug("ResidentController::getAuthLockStatus()::entry");
@@ -497,7 +502,8 @@ public class ResidentController {
 		return responseWrapper;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetDownloadCard()" + ")")
 	@GetMapping(path = "/download-card/event/{eventId}")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "Card successfully downloaded", content = @Content(schema = @Schema(implementation = ResponseWrapper.class))),
@@ -551,7 +557,8 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PostMapping("/aid/status")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping("/aid/status")
 	@Operation(summary = "checkAidStatus", description = "Get AID Status", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),
@@ -581,7 +588,8 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetNotificationCount()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetNotificationCount()" + ")")
 	@GetMapping("/unread/notification-count")
 	@Operation(summary = "unreadnotification-count", description = "Get notification count", tags = {
 			"resident-controller" })
@@ -608,7 +616,8 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetNotificationClick()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetNotificationClick()" + ")")
 	@GetMapping("/bell/notification-click")
 	@Operation(summary = "checkLastClickdttimes", description = "Get notification-clickdttimes", tags = {
 			"resident-controller" })
@@ -635,7 +644,8 @@ public class ResidentController {
 		return response;
 	}
 
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetupdatedttimes()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetupdatedttimes()" + ")")
 	@PutMapping(path = "/bell/updatedttime")
 	@Operation(summary = "updatebellClickdttimes", description = "updatedttimes")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -651,7 +661,8 @@ public class ResidentController {
 	}
 
 	@ResponseFilter
-	@PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PreAuthorize("@scopeValidator.hasAllScopes(" + "@authorizedScopes.getGetUnreadServiceList()" + ")")
 	@GetMapping("/notifications/{langCode}")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -669,7 +680,7 @@ public class ResidentController {
 		String id = null;
 		ResponseWrapper<PageDto<ServiceHistoryResponseDto>> notificationDtoList = new ResponseWrapper<>();
 		try {
-			validator.validateOnlyLanguageCode(langCode);
+			validator.validateLanguageCode(langCode);
 			id = identityServiceImpl.getResidentIdaToken();
 			notificationDtoList = residentService.getNotificationList(pageStart, pageFetch, id, langCode,
 					timeZoneOffset, locale);
@@ -683,7 +694,8 @@ public class ResidentController {
 		return notificationDtoList;
 	}
 
-	@GetMapping(path = "/download/service-history")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping(path = "/download/service-history")
 	public ResponseEntity<Object> downLoadServiceHistory(
 			@RequestParam(name = "eventReqDateTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime eventReqDateTime,
 			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
@@ -699,7 +711,7 @@ public class ResidentController {
 		logger.debug("ResidentController::downLoadServiceHistory::entry");
 		InputStreamResource resource = null;
 		try {
-			validator.validateOnlyLanguageCode(languageCode);
+			validator.validateServiceHistoryRequest(fromDate, toDate, sortType, serviceType, statusFilter, languageCode, searchText);
 			ResponseWrapper<PageDto<ServiceHistoryResponseDto>> responseWrapper = residentService.getServiceHistory(
 					null, maxEventsServiceHistoryPageSize, fromDate, toDate, serviceType, sortType, statusFilter,
 					searchText, languageCode, timeZoneOffset, locale);
@@ -724,7 +736,8 @@ public class ResidentController {
 	}
 	
 	@ResponseFilter
-	@GetMapping("/profile")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/profile")
 	@Operation(summary = "get", description = "Get unread-service-list", tags = { "resident-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(hidden = true))),

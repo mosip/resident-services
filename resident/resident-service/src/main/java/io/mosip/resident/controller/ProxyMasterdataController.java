@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.http.ResponseFilter;
 import io.mosip.kernel.core.http.ResponseWrapper;
 import io.mosip.kernel.core.logger.spi.Logger;
@@ -295,7 +299,8 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/proxy/masterdata/registrationcenters/page/{langcode}/{hierarchylevel}/{name}")
 	@Operation(summary = "getRegistrationCenterByHierarchyLevelAndTextPaginated", description = "getRegistrationCenterByHierarchyLevelAndTextPaginated", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -334,7 +339,8 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/proxy/masterdata/workingdays/{registrationCenterID}/{langCode}")
 	@Operation(summary = "getRegistrationCenterWorkingDays", description = "getRegistrationCenterWorkingDays", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -368,7 +374,8 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/masterdata/idschema/latest")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/proxy/masterdata/idschema/latest")
 	@Operation(summary = "getLatestIdSchema", description = "getLatestIdSchema", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -403,7 +410,8 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/auth-proxy/masterdata/templates/{langcode}/{templatetypecode}")
 	@Operation(summary = "getAllTemplateBylangCodeAndTemplateTypeCode", description = "getAllTemplateBylangCodeAndTemplateTypeCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -434,7 +442,8 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/auth-proxy/masterdata/dynamicfields/{fieldName}/{langCode}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/auth-proxy/masterdata/dynamicfields/{fieldName}/{langCode}")
 	@Operation(summary = "getDynamicFieldBasedOnLangCodeAndFieldName", description = "Service to fetch  dynamic field based on langcode and field name", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -468,7 +477,8 @@ public class ProxyMasterdataController {
 	 * @throws ResidentServiceCheckedException
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/proxy/masterdata/documenttypes/{documentcategorycode}/{langcode}")
 	@Operation(summary = "getDocumentTypesByDocumentCategoryLangCode", description = "getDocumentTypesByDocumentCategoryLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
@@ -500,7 +510,8 @@ public class ProxyMasterdataController {
 	 * @throws IOException 
 	 */
 	@ResponseFilter
-	@GetMapping("/proxy/masterdata/gendercode/{gendertype}/{langcode}")
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @GetMapping("/proxy/masterdata/gendercode/{gendertype}/{langcode}")
 	@Operation(summary = "getGenderCodeByGenderTypeAndLangCode", description = "getGenderCodeByGenderTypeAndLangCode", tags = {
 			"proxy-masterdata-controller" })
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
