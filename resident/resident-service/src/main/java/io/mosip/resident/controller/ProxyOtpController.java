@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.util.Map;
 
 import io.mosip.resident.dto.IdentityDTO;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.kernel.core.authmanager.model.AuthNResponse;
 import io.mosip.kernel.core.logger.spi.Logger;
 import io.mosip.resident.config.LoggerConfiguration;
@@ -75,7 +79,8 @@ public class ProxyOtpController {
 	 * @return AuthNResponse
 	 */
 
-	@PostMapping(value = "/contact-details/send-otp", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(value = "/contact-details/send-otp", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "sendOTP", description = "Send Otp to UserId", tags = "login-controller")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),
@@ -120,7 +125,8 @@ public class ProxyOtpController {
 	 * @param userIdOtpRequest
 	 * @return AuthNResponse
 	 */
-	@PostMapping(value = "/contact-details/update-data", produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(value = "/contact-details/update-data", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "validateWithUserIdOtp", description = "Validate UserId and Otp", tags = "login-controller")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK"),

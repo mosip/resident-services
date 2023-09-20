@@ -1,5 +1,8 @@
 package io.mosip.resident.controller;
 
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_DESCRIPTION;
+import static io.mosip.resident.constant.ResidentConstants.API_RESPONSE_TIME_ID;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.micrometer.core.annotation.Timed;
 import io.mosip.preregistration.application.dto.TransliterationRequestDTO;
 import io.mosip.preregistration.application.dto.TransliterationResponseDTO;
 import io.mosip.preregistration.application.service.TransliterationService;
@@ -60,7 +64,8 @@ public class TransliterationController {
 	 * @param requestDTO
 	 * @return responseDto with transliterated toFieldValue.
 	 */
-	@PostMapping(path = "/transliterate", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	@Timed(value=API_RESPONSE_TIME_ID,description=API_RESPONSE_TIME_DESCRIPTION, percentiles = {0.5, 0.9, 0.95, 0.99} )
+    @PostMapping(path = "/transliterate", consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary  = "Get Pre-Registartion-Translitration data", description = "Get Pre-Registartion-Translitration data", tags = "Transliteration Controller")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Given key is translitrated successfully"),
 			@ApiResponse(responseCode = "201", description = "Created" ,content = @Content(schema = @Schema(hidden = true))),
