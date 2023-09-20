@@ -312,7 +312,7 @@ public class ResidentVidServiceImpl implements ResidentVidService {
 			/**
 			 * Check If id type is VID.
 			 */
-			if (idType.equalsIgnoreCase(IdType.VID.name())) {
+			if (idType.equalsIgnoreCase(ResidentConstants.VID)) {
 				/**
 				 * Checks if VID type is Perpetual VID.
 				 */

@@ -162,7 +162,7 @@ public class AuditUtilTest {
 	@Test
 	public void testGetRefIdandType() throws ApisResourceAccessException {
 		String individualId = "9054257143";
-		String refIdType = "UIN";
+		String refIdType = ResidentConstants.UIN;
 		Mockito.when(identityService.getResidentIndvidualIdFromSession()).thenReturn(individualId);
 		Mockito.when(identityService.getIndividualIdType(individualId)).thenReturn(refIdType);
 		Tuple2<String, String> refIdandType = auditUtil.getRefIdandType();
