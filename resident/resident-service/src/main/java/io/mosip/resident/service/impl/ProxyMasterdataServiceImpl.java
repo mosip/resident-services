@@ -461,7 +461,7 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 	}
 
 	@Override
-	@Cacheable(value = "getLocationHierarchyLevels", key = "#lastUpdated")
+	@Cacheable(value = "getLocationHierarchyLevels")
 	public ResponseWrapper<?> getLocationHierarchyLevels(String lastUpdated) throws ResidentServiceCheckedException {
 		logger.debug("ProxyMasterdataServiceImpl::getLocationHierarchyLevels()::entry");
 		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
