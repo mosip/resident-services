@@ -61,7 +61,7 @@ public interface ResidentService {
 
 	ResponseWrapper<PageDto<ServiceHistoryResponseDto>> getServiceHistory(Integer pageStart, Integer pageFetch,
 																		  LocalDate fromDateTime, LocalDate toDateTime, String serviceType, String sortType,
-																		  String searchColumn, String searchText, String langCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
+																		  String statusFilter, String searchText, String langCode, int timeZoneOffset, String locale) throws ResidentServiceCheckedException, ApisResourceAccessException;
 
 	Tuple2<byte[], IdType> downloadCard(String eventId) throws ResidentServiceCheckedException;
 

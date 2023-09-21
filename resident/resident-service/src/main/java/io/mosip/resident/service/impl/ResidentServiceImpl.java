@@ -1627,12 +1627,12 @@ public class ResidentServiceImpl implements ResidentService {
 		List<String> requestTypes;
 		List<String> statusList = new ArrayList<>();
 		Tuple2<LocalDateTime, LocalDateTime> dateTimeTuple2 = null;
-		if (serviceType == null) {
+		if (serviceType == null || serviceType.equals(ServiceType.ALL.name())) {
 			requestTypes = getServiceQueryForNullServiceType();
 		} else {
 			requestTypes = convertServiceTypeToResidentTransactionType(serviceType);
 		}
-		if (statusFilter != null) {
+		if (statusFilter != null && !statusFilter.equals(EventStatus.ALL.name())) {
 			statusList = getStatusFilterQuery(statusFilter, statusCodeList);
 		}
 		if (fromDateTime != null && toDateTime != null) {
@@ -1641,7 +1641,7 @@ public class ResidentServiceImpl implements ResidentService {
 		List<ResidentTransactionEntity> entitiesList = new ArrayList<>();
 		int totalItems = 0;
 		List<Object[]> pageData = null;
-		if (statusFilter != null && searchText != null) {
+		if (statusFilter != null && !statusFilter.equals(EventStatus.ALL.name()) && searchText != null) {
 			pageData = residentTransactionRepository.findByTokenIdInStatusSearchEventId(idaToken, pageFetch,
 					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList, searchText);
 			totalItems = residentTransactionRepository.countByTokenIdInStatusSearchEventId(idaToken,
@@ -1653,7 +1653,7 @@ public class ResidentServiceImpl implements ResidentService {
 			totalItems = residentTransactionRepository.countByTokenIdBetweenCrDtimesSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, dateTimeTuple2.getT1(), dateTimeTuple2.getT2(),
 					searchText);
-		} else if (fromDateTime != null && toDateTime != null && statusFilter != null) {
+		} else if (fromDateTime != null && toDateTime != null && statusFilter != null && !statusFilter.equals(EventStatus.ALL.name())) {
 			pageData = residentTransactionRepository.findByTokenIdInStatusBetweenCrDtimes(idaToken, pageFetch,
 					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, statusList,
 					dateTimeTuple2.getT1(), dateTimeTuple2.getT2());
@@ -1665,7 +1665,7 @@ public class ResidentServiceImpl implements ResidentService {
 					pageStart * pageFetch, onlineVerificationPartnerId, requestTypes, searchText);
 			totalItems = residentTransactionRepository.countByTokenIdAndSearchEventId(idaToken,
 					onlineVerificationPartnerId, requestTypes, searchText);
-		} else if (statusFilter != null) {
+		} else if (statusFilter != null && !statusFilter.equals(EventStatus.ALL.name())) {
 			pageData = residentTransactionRepository.findByTokenIdInStatus(idaToken, pageFetch, pageStart * pageFetch,
 					onlineVerificationPartnerId, requestTypes, statusList);
 			totalItems = residentTransactionRepository.countByTokenIdInStatus(idaToken, onlineVerificationPartnerId,
@@ -2054,7 +2054,7 @@ public class ResidentServiceImpl implements ResidentService {
 		if(toDate == null){
 			toDate = LocalDate.now();
 		}
-		if(statusFilter == null){
+		if(statusFilter == null || statusFilter.equals(EventStatus.ALL.name())){
 			statusFilterTemplateData = templateUtil.getTemplateValueFromTemplateTypeCodeAndLangCode(languageCode, env.getProperty(ResidentConstants.RESIDENT_ALL_TEMPLATE_PROPERTY));
 		} else {
 			statusFilterTemplateData = Stream.of(statusFilter.split(ATTRIBUTE_LIST_DELIMITER)).map(String::trim)
