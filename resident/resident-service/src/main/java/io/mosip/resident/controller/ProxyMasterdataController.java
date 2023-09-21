@@ -12,6 +12,7 @@ import io.mosip.resident.util.AuditUtil;
 import io.mosip.resident.util.EventEnum;
 import io.mosip.resident.util.Utilities;
 import io.mosip.resident.util.Utility;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -555,6 +556,24 @@ public class ProxyMasterdataController {
 		}
 		auditUtil.setAuditRequestDto(EventEnum.GET_LOCATION_HIERARCHY_LEVEL_ALL_LANG_SUCCESS);
 		logger.debug("ProxyMaster dataController::getLocationHierarchyLevel::exit");
+		return responseWrapper;
+	}
+
+	@ResponseFilter
+	@GetMapping("/proxy/masterdata/dynamicfields/all/{fieldName}")
+	@ApiOperation(value = "Service to fetch all dynamic field value for all languages")
+	public ResponseWrapper<?> getAllDynamicFieldByName(
+			@PathVariable("fieldName") String fieldName) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::entry");
+		ResponseWrapper<?> responseWrapper;
+		try {
+			responseWrapper = proxyMasterdataService.getAllDynamicFieldByName(fieldName);
+		} catch (ResidentServiceCheckedException e) {
+			auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_EXCEPTION);
+			throw e;
+		}
+		auditUtil.setAuditRequestDto(EventEnum.GET_ALL_DYNAMIC_FIELD_VALUE_SUCCESS);
+		logger.debug("ProxyMaster dataController::getAllDynamicFieldByName::exit");
 		return responseWrapper;
 	}
 

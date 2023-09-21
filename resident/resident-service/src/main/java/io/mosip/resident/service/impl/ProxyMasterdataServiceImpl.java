@@ -489,6 +489,30 @@ public class ProxyMasterdataServiceImpl implements ProxyMasterdataService {
 		return responseWrapper;
 	}
 
+	@Override
+	@Cacheable(value = "getAllDynamicFieldByName", key = "#fieldName")
+	public ResponseWrapper<?> getAllDynamicFieldByName(String fieldName) throws ResidentServiceCheckedException {
+		logger.debug("ProxyMasterdataServiceImpl::getAllDynamicFieldByName()::entry");
+		ResponseWrapper<?> responseWrapper = new ResponseWrapper<>();
+		Map<String, String> pathsegments = new HashMap<String, String>();
+		pathsegments.put("fieldName", fieldName);
+		try {
+			responseWrapper = residentServiceRestClient.getApi(ApiName.DYNAMIC_FIELD_BASED_ON_FIELD_NAME,
+					pathsegments, ResponseWrapper.class);
+			if (responseWrapper.getErrors() != null && !responseWrapper.getErrors().isEmpty()) {
+				logger.error(responseWrapper.getErrors().get(0).toString());
+				throw new ResidentServiceCheckedException(ResidentErrorCode.BAD_REQUEST.getErrorCode(),
+						responseWrapper.getErrors().get(0).getMessage());
+			}
+		} catch (ApisResourceAccessException | ResidentServiceCheckedException e) {
+			logger.error("Error occured in accessing dynamic data %s", e.getMessage());
+			throw new ResidentServiceCheckedException(ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorCode(),
+					ResidentErrorCode.API_RESOURCE_ACCESS_EXCEPTION.getErrorMessage(), e);
+		}
+		logger.debug("ProxyMasterdataServiceImpl::getDynamicFieldBasedOnLangCodeAndFieldName()::exit");
+		return responseWrapper;
+	}
+
 	@CacheEvict(value = "templateCache", allEntries = true)
 	@Scheduled(fixedRateString = "${resident.cache.expiry.time.millisec.templateCache}")
 	public void emptyTemplateCache() {

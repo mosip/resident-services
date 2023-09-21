@@ -353,5 +353,19 @@ public class ProxyMasterDataControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/locationHierarchyLevels"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testGetAllDynamicField() throws Exception {
+        Mockito.when(proxyMasterdataService.getAllDynamicFieldByName("gender")).thenReturn(responseWrapper);
+        mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/dynamicfields/all/gender"))
+                .andExpect(status().isOk());
+    }
+
+    @Test(expected = Exception.class)
+    public void testGetAllDynamicFieldFailure() throws Exception {
+        Mockito.when(proxyMasterdataService.getAllDynamicFieldByName("gender")).thenThrow(new ResidentServiceCheckedException());
+        mockMvc.perform(MockMvcRequestBuilders.get("/proxy/masterdata/dynamicfields/all/gender"))
+                .andExpect(status().isOk());
+    }
 }
 
